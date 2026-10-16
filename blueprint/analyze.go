@@ -72,6 +72,7 @@ type Field struct {
 	Occurs      int         `json:"occurs,omitempty"`
 	OccursMin   int         `json:"occursMin,omitempty"`
 	DependingOn string      `json:"dependingOn,omitempty"`
+	IndexedBy   []string    `json:"indexedBy,omitempty"`
 	Redefines   string      `json:"redefines,omitempty"`
 	Values      []string    `json:"values,omitempty"`
 	Description string      `json:"description,omitempty"`
@@ -97,10 +98,12 @@ type Paragraph struct {
 	PerformedBy []string  `json:"performedBy,omitempty"`
 }
 
-// Perform is a PERFORM statement naming a procedure or a THRU range.
+// Perform is a PERFORM statement naming a procedure or a THRU range, or a
+// SORT statement's input or output procedure.
 type Perform struct {
 	Target string `json:"target"`
 	Thru   string `json:"thru,omitempty"`
+	Sort   bool   `json:"sort,omitempty"`
 	Source string `json:"source"`
 }
 
@@ -222,6 +225,7 @@ func newField(f *layout.Field) Field {
 		Occurs:      f.Occurs,
 		OccursMin:   f.OccursMin,
 		DependingOn: f.DependingOn,
+		IndexedBy:   f.IndexedBy,
 		Redefines:   f.Redefines,
 		Values:      f.Values,
 		Description: oneLine(f.Comment),
@@ -248,7 +252,7 @@ func newParagraph(para structure.Paragraph) Paragraph {
 		PerformedBy: para.PerformedBy,
 	}
 	for _, perform := range para.Performs {
-		p.Performs = append(p.Performs, Perform{Target: perform.Target, Thru: perform.Thru, Source: perform.Pos.String()})
+		p.Performs = append(p.Performs, Perform{Target: perform.Target, Thru: perform.Thru, Sort: perform.Sort, Source: perform.Pos.String()})
 	}
 	return p
 }

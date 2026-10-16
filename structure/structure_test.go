@@ -29,12 +29,15 @@ func TestParagraphs(t *testing.T) {
 			if perform.Thru != "" {
 				target += " THRU " + perform.Thru
 			}
+			if perform.Sort {
+				target = "SORT " + target
+			}
 			s.performs = append(s.performs, target)
 		}
 		got = append(got, s)
 	}
 	want := []summary{
-		{name: "MAIN-PARA", performs: []string{"INIT-PARA", "WORK-PARA THRU WORK-EXIT", "INIT-PARA"}},
+		{name: "MAIN-PARA", performs: []string{"INIT-PARA", "WORK-PARA THRU WORK-EXIT", "INIT-PARA", "SORT INIT-PARA", "SORT WORK-PARA THRU WORK-EXIT"}},
 		{name: "INIT-PARA", performedBy: []string{"MAIN-PARA"}},
 		{name: "WORK-PARA", performedBy: []string{"MAIN-PARA"}},
 		{name: "WORK-EXIT"},
@@ -42,7 +45,7 @@ func TestParagraphs(t *testing.T) {
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got  %+v\nwant %+v", got, want)
 	}
-	if pos := paragraphs[0].Performs[1].Pos; pos.Line != 9 {
-		t.Errorf("PERFORM THRU at line %d, want 9", pos.Line)
+	if pos := paragraphs[0].Performs[1].Pos; pos.Line != 16 {
+		t.Errorf("PERFORM THRU at line %d, want 16", pos.Line)
 	}
 }

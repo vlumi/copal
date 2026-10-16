@@ -1,6 +1,13 @@
        IDENTIFICATION DIVISION.
        PROGRAM-ID. FLOW.
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT WORK-SORT ASSIGN TO SORTWK.
        DATA DIVISION.
+       FILE SECTION.
+       SD  WORK-SORT.
+       01  WORK-RECORD                 PIC X(10).
        WORKING-STORAGE SECTION.
        01  WS-I                        PIC 99.
        PROCEDURE DIVISION.
@@ -11,6 +18,9 @@
            PERFORM 2 TIMES
                PERFORM INIT-PARA
            END-PERFORM
+           SORT WORK-SORT ON ASCENDING KEY WORK-RECORD
+               INPUT PROCEDURE IS INIT-PARA
+               OUTPUT PROCEDURE WORK-PARA THRU WORK-EXIT
            STOP RUN.
        INIT-PARA.
            MOVE 0 TO WS-I.

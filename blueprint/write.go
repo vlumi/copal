@@ -211,19 +211,26 @@ func fieldNotes(f Field) string {
 	case f.Occurs > 0:
 		notes = append(notes, fmt.Sprintf("OCCURS %d", f.Occurs))
 	}
+	if len(f.IndexedBy) > 0 {
+		notes = append(notes, "INDEXED BY "+strings.Join(f.IndexedBy, ", "))
+	}
 	if len(f.Values) > 0 {
 		notes = append(notes, "VALUE "+strings.Join(f.Values, ", "))
 	}
 	return strings.Join(notes, "; ")
 }
 
-// performTargets lists the procedures performed, each once, in order.
+// performTargets lists the procedures performed, each once, in order, and
+// marks those a SORT performs.
 func performTargets(performs []Perform) []string {
 	var targets []string
 	for _, p := range performs {
 		target := p.Target
 		if p.Thru != "" {
 			target += " THRU " + p.Thru
+		}
+		if p.Sort {
+			target += " (SORT)"
 		}
 		if !slices.Contains(targets, target) {
 			targets = append(targets, target)

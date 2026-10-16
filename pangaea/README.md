@@ -6,7 +6,7 @@ A small COBOL batch bank, the specimen Copal is developed against. Fiction writt
 
 - [copybooks/](copybooks/): record layouts, one copybook per record.
 - [programs/](programs/): the COBOL programs, fixed-format, compiled with GnuCOBOL 3.2 in IBM dialect.
-- [jobs/](jobs/): job files in a small subset of JCL, run by the Go runner in [runner/](runner/).
+- [jobs/](jobs/): job files in a small subset of JCL, run by the Go runner in [runner/](runner/): the daily batch and the month-end job.
 - [testdata/](testdata/): fixtures, each an `input` directory of datasets to start from and a `golden` directory of the datasets, job log and reports a run produces.
 
 The Go packages around the COBOL are the bank's machine room, not the bank: [jcl/](jcl/) parses job files, [dataset/](dataset/) keeps the datasets and their catalog, [runner/](runner/) runs jobs and [compile/](compile/) compiles the programs. [generate/](generate/) makes up customers and their business, and [bank/](bank/) runs the bank day after day, and [console/](console/) shows it in the browser. `cmd/pangaea` puts them on the command line.
@@ -26,11 +26,15 @@ The Go packages around the COBOL are the bank's machine room, not the bank: [jcl
 
 The day's inputs are the current generations, (0), of the bank control record, the account master, the accruals and the transaction file, and the rate table; it writes the next generations, (+1), of the control record, the master and the accruals, and the day's audit trail and rejects. Everything in between is temporary. So a month's interest and fees are posted on the first business day of the next month, as the batch's first postings.
 
-`make pangaea-daily` runs it on the fixture in `testdata/daily` and shows the reports; the fixture in `testdata/month-end` closes October. `make test` runs it on every fixture and compares with the golden files; `make pangaea-golden` rewrites them after a deliberate change.
+`make pangaea-daily` runs it on the fixture in `testdata/daily` and shows the reports; the fixture in `testdata/month-end` closes October and runs the month-end job after it.
+
+## The month-end job
+
+[MONTHLY.jcl](jobs/MONTHLY.jcl) runs on the first business day of every month, after the daily batch has posted the closed month's interest and fees; the bank's scheduler starts it, as an operations team's would. **STMTPRT** prints a statement for every account: the opening balance, the month's postings in the order they posted, the interest and fees posted for the month, and the closing balance. It reads every audit trail at once, the whole generation data group, picks the month's postings in a `SORT` input procedure, and prints in the output procedure against the master the month closed with. `make test` runs it on every fixture and compares with the golden files; `make pangaea-golden` rewrites them after a deliberate change.
 
 ## The running bank
 
-`make bank-reset` makes a new bank in `pangaea/run/bank`: about three thousand accounts for two thousand customers, generated from a seed (`SEED=1`, `ACCOUNTS=3000` by default), on business day 2026-09-01. `make bank-days N=5` runs the next five business days: for each it generates the branches' transaction file for the day and runs the daily batch on it.
+`make bank-reset` makes a new bank in `pangaea/run/bank`: about three thousand accounts for two thousand customers, generated from a seed (`SEED=1`, `ACCOUNTS=3000` by default), on business day 2026-09-01. `make bank-days N=5` runs the next five business days: for each it generates the branches' transaction file for the day and runs the daily batch on it, and on the first business day of a month the month-end job too.
 
 Every generation stays cataloged in `pangaea/run/bank/datasets`, so the history of the master, the audit trail and the rejects is all there; each day's job log and reports are in `pangaea/run/bank/sysout/DATE`. The same seed always gives the same bank, day after day.
 
