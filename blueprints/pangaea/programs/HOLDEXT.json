@@ -1,0 +1,2006 @@
+{
+  "program": "HOLDEXT",
+  "source": "pangaea/programs/HOLDEXT.cbl",
+  "description": [
+    "HOLDEXT: EXTRACT THE DAY'S HOLDS FOR POSTING",
+    "",
+    "AT THE END OF THE ONLINE DAY, READS THE HOLDS IN KEY ORDER,",
+    "WHICH IS ACCOUNT ORDER, AND WRITES THE CARD FILE FOR THE",
+    "NIGHT'S BATCH IN THE FORM OF THE DAILY TRANSACTION FILE: A",
+    "HEADER FROM THE CARDS FOR THE BUSINESS DATE, A DETAIL FOR",
+    "EVERY CARD PURCHASE AND ATM WITHDRAWAL STILL HELD, ANOTHER",
+    "FOR THE FEE OF A WITHDRAWAL THAT HAD ONE, AND A TRAILER WITH",
+    "THE CONTROL TOTALS. REVERSED PURCHASES ARE LEFT OUT.",
+    "TRANSACTION IDS ARE 9, THE HOLD NUMBER, 00, AND 1 FOR THE",
+    "AMOUNT OR 2 FOR THE FEE.",
+    "",
+    "RETURN CODES: 0 EXTRACTED, 16 A HOLD OF ANOTHER DAY OR I/O.",
+    "",
+    "MODIFICATION HISTORY",
+    "DATE       BY  CHANGE",
+    "2003-05-19 MV  CR-0342 ORIGINAL VERSION.",
+    "2007-02-05 MV  CR-0415 ATM FEES."
+  ],
+  "identification": [
+    {
+      "paragraph": "AUTHOR",
+      "text": "M. VARGA, ONLINE SYSTEMS."
+    },
+    {
+      "paragraph": "INSTALLATION",
+      "text": "FIRST BANK OF PANGAEA, DATA CENTER."
+    },
+    {
+      "paragraph": "DATE-WRITTEN",
+      "text": "2003-05-19."
+    }
+  ],
+  "files": [
+    {
+      "name": "CONTROL-FILE",
+      "kind": "FD",
+      "assign": "BANKCTL",
+      "organization": "SEQUENTIAL",
+      "status": "WS-CONTROL-STATUS",
+      "opened": [
+        "INPUT"
+      ],
+      "records": [
+        "BANK-CONTROL-RECORD"
+      ],
+      "source": "pangaea/programs/HOLDEXT.cbl:30"
+    },
+    {
+      "name": "HOLD-FILE",
+      "kind": "FD",
+      "assign": "HOLDS",
+      "organization": "INDEXED",
+      "recordKey": "HD-KEY",
+      "status": "WS-HOLD-STATUS",
+      "opened": [
+        "INPUT"
+      ],
+      "records": [
+        "HOLD-RECORD"
+      ],
+      "source": "pangaea/programs/HOLDEXT.cbl:33"
+    },
+    {
+      "name": "TRAN-OUT",
+      "kind": "FD",
+      "assign": "TRANOUT",
+      "organization": "SEQUENTIAL",
+      "status": "WS-TRAN-OUT-STATUS",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "TRAN-OUT-RECORD"
+      ],
+      "source": "pangaea/programs/HOLDEXT.cbl:38"
+    },
+    {
+      "name": "REPORT-OUT",
+      "kind": "FD",
+      "assign": "HOLDRPT",
+      "organization": "LINE SEQUENTIAL",
+      "status": "WS-REPORT-STATUS",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "REPORT-LINE"
+      ],
+      "source": "pangaea/programs/HOLDEXT.cbl:41"
+    }
+  ],
+  "records": [
+    {
+      "section": "file",
+      "file": "CONTROL-FILE",
+      "copybook": "BANKCTL",
+      "level": 1,
+      "name": "BANK-CONTROL-RECORD",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "description": "BANKCTL: BANK CONTROL RECORD, ONE PER FILE THE BUSINESS DATE THE BATCH RUNS FOR, NEVER THE CLOCK.",
+      "source": "pangaea/copybooks/BANKCTL.cpy:5",
+      "fields": [
+        {
+          "level": 5,
+          "name": "BC-BUSINESS-DATE",
+          "start": 1,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/BANKCTL.cpy:6"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 9,
+          "length": 72,
+          "picture": "X(72)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/BANKCTL.cpy:7"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "HOLD-FILE",
+      "copybook": "HOLDREC",
+      "level": 1,
+      "name": "HOLD-RECORD",
+      "start": 1,
+      "length": 100,
+      "category": "group",
+      "description": "HOLDREC: HOLD RECORD, 100 BYTES AN AMOUNT AUTHORIZED ONLINE AND NOT YET POSTED: A CARD PURCHASE OR AN ATM WITHDRAWAL AND ITS FEE. INDEXED BY ACCOUNT AND HOLD NUMBER, THE AUTHORIZATION CODE, WHICH NUMBERS THE DAY'S HOLDS FROM 1. A REVERSED PURCHASE STAYS, MARKED. MODIFICATION HISTORY DATE       BY  CHANGE 2003-05-19 MV  CR-0342 ORIGINAL VERSION. 2007-02-05 MV  CR-0415 ATM FEE.",
+      "source": "pangaea/copybooks/HOLDREC.cpy:13",
+      "fields": [
+        {
+          "level": 5,
+          "name": "HD-KEY",
+          "start": 1,
+          "length": 16,
+          "category": "group",
+          "source": "pangaea/copybooks/HOLDREC.cpy:14",
+          "fields": [
+            {
+              "level": 10,
+              "name": "HD-ACCT-NO",
+              "start": 1,
+              "length": 10,
+              "picture": "9(10)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "digits": 10,
+              "source": "pangaea/copybooks/HOLDREC.cpy:15"
+            },
+            {
+              "level": 10,
+              "name": "HD-HOLD-NO",
+              "start": 11,
+              "length": 6,
+              "picture": "9(6)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "digits": 6,
+              "source": "pangaea/copybooks/HOLDREC.cpy:16"
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "name": "HD-CARD-NO",
+          "start": 17,
+          "length": 16,
+          "picture": "9(16)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 16,
+          "source": "pangaea/copybooks/HOLDREC.cpy:17"
+        },
+        {
+          "level": 5,
+          "name": "HD-KIND",
+          "start": 33,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "conditions": [
+            {
+              "name": "HD-PURCHASE",
+              "values": [
+                "'P'"
+              ],
+              "source": "pangaea/copybooks/HOLDREC.cpy:19"
+            },
+            {
+              "name": "HD-WITHDRAWAL",
+              "values": [
+                "'W'"
+              ],
+              "source": "pangaea/copybooks/HOLDREC.cpy:20"
+            }
+          ],
+          "source": "pangaea/copybooks/HOLDREC.cpy:18"
+        },
+        {
+          "level": 5,
+          "name": "HD-STATUS",
+          "start": 34,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "conditions": [
+            {
+              "name": "HD-OPEN",
+              "values": [
+                "'O'"
+              ],
+              "source": "pangaea/copybooks/HOLDREC.cpy:22"
+            },
+            {
+              "name": "HD-REVERSED",
+              "values": [
+                "'R'"
+              ],
+              "source": "pangaea/copybooks/HOLDREC.cpy:23"
+            }
+          ],
+          "source": "pangaea/copybooks/HOLDREC.cpy:21"
+        },
+        {
+          "level": 5,
+          "name": "HD-AMOUNT",
+          "start": 35,
+          "length": 9,
+          "picture": "9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 9,
+          "scale": 2,
+          "source": "pangaea/copybooks/HOLDREC.cpy:24"
+        },
+        {
+          "level": 5,
+          "name": "HD-FEE",
+          "start": 44,
+          "length": 5,
+          "picture": "9(3)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 5,
+          "scale": 2,
+          "source": "pangaea/copybooks/HOLDREC.cpy:25"
+        },
+        {
+          "level": 5,
+          "name": "HD-TERMINAL",
+          "start": 49,
+          "length": 20,
+          "picture": "X(20)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/HOLDREC.cpy:26"
+        },
+        {
+          "level": 5,
+          "name": "HD-TIMESTAMP",
+          "start": 69,
+          "length": 14,
+          "picture": "9(14)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 14,
+          "source": "pangaea/copybooks/HOLDREC.cpy:27"
+        },
+        {
+          "level": 5,
+          "name": "HD-BUSINESS-DATE",
+          "start": 83,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/HOLDREC.cpy:28"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 91,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/HOLDREC.cpy:29"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "TRAN-OUT",
+      "level": 1,
+      "name": "TRAN-OUT-RECORD",
+      "start": 1,
+      "length": 80,
+      "picture": "X(80)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "source": "pangaea/programs/HOLDEXT.cbl:52"
+    },
+    {
+      "section": "file",
+      "file": "REPORT-OUT",
+      "level": 1,
+      "name": "REPORT-LINE",
+      "start": 1,
+      "length": 80,
+      "picture": "X(80)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "source": "pangaea/programs/HOLDEXT.cbl:54"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-FILE-STATUSES",
+      "start": 1,
+      "length": 8,
+      "category": "group",
+      "source": "pangaea/programs/HOLDEXT.cbl:57",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-CONTROL-STATUS",
+          "start": 1,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/HOLDEXT.cbl:58"
+        },
+        {
+          "level": 5,
+          "name": "WS-HOLD-STATUS",
+          "start": 3,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/HOLDEXT.cbl:59"
+        },
+        {
+          "level": 5,
+          "name": "WS-TRAN-OUT-STATUS",
+          "start": 5,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/HOLDEXT.cbl:60"
+        },
+        {
+          "level": 5,
+          "name": "WS-REPORT-STATUS",
+          "start": 7,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/HOLDEXT.cbl:61"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ABORT-MESSAGE",
+      "start": 1,
+      "length": 40,
+      "picture": "X(40)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "source": "pangaea/programs/HOLDEXT.cbl:63"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-HOLDS-END-SW",
+      "start": 1,
+      "length": 1,
+      "picture": "X",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "values": [
+        "'N'"
+      ],
+      "conditions": [
+        {
+          "name": "END-OF-HOLDS",
+          "values": [
+            "'Y'"
+          ],
+          "source": "pangaea/programs/HOLDEXT.cbl:65"
+        }
+      ],
+      "source": "pangaea/programs/HOLDEXT.cbl:64"
+    },
+    {
+      "section": "working-storage",
+      "copybook": "TRANREC",
+      "level": 1,
+      "name": "TRAN-RECORD",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "description": "TRANREC: DAILY TRANSACTION FILE RECORD, 80 BYTES ONE HEADER, THE DETAILS, ONE TRAILER, TOLD APART BY THE RECORD TYPE. THE BODY IS REDEFINED FOR EACH RECORD TYPE. THE TRAILER CARRIES THE SENDER'S CONTROL TOTALS: THE DETAIL COUNT, THE SUM OF AMOUNTS AND THE SUM OF ACCOUNT NUMBERS. A TRANSFER (TR) NAMES THE ACCOUNT IT GOES TO. POSTING SPLITS IT IN TWO: THE DEBIT ON THE SENDING ACCOUNT, THEN A TRANSFER CREDIT (TC) ON THE RECEIVING ONE. A CREDIT THAT CANNOT POST GOES BACK AS A RETURNED TRANSFER (RT). TC AND RT ARE MADE BY POSTING, NEVER RECEIVED IN THE DAILY FILE. WHEN A MONTH CLOSES, THE BANK CREDITS ITS INTEREST (IN), CHARGES OVERDRAFT INTEREST (OD) AND THE MAINTENANCE FEE (MF). THESE TOO ARE NEVER RECEIVED IN THE DAILY FILE. THE CARD FILE, FROM THE ONLINE DAY'S HOLDS, HAS THE SAME FORM AND ITS OWN SOURCE: CARD PURCHASES (CP), ATM WITHDRAWALS (AW) AND ATM FEES (AF), WHICH WERE AUTHORIZED WHEN THEY WERE MADE. MODIFICATION HISTORY DATE       BY  CHANGE 1987-03-12 JA  ORIGINAL VERSION. 1991-06-03 PK  CR-0117 ACCOUNT NUMBER HASH IN THE TRAILER. 1996-04-15 PK  CR-0233 TRANSFERS: COUNTER ACCOUNT, FROM THE FILLER. 2001-09-03 TL  CR-0298 MONTH-END INTEREST AND FEE CODES. 2003-05-19 MV  CR-0342 THE CARD FILE AND ITS CODES.",
+      "source": "pangaea/copybooks/TRANREC.cpy:31",
+      "fields": [
+        {
+          "level": 5,
+          "name": "TR-REC-TYPE",
+          "start": 1,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "conditions": [
+            {
+              "name": "TR-HEADER",
+              "values": [
+                "'H'"
+              ],
+              "source": "pangaea/copybooks/TRANREC.cpy:33"
+            },
+            {
+              "name": "TR-DETAIL",
+              "values": [
+                "'D'"
+              ],
+              "source": "pangaea/copybooks/TRANREC.cpy:34"
+            },
+            {
+              "name": "TR-TRAILER",
+              "values": [
+                "'T'"
+              ],
+              "source": "pangaea/copybooks/TRANREC.cpy:35"
+            }
+          ],
+          "source": "pangaea/copybooks/TRANREC.cpy:32"
+        },
+        {
+          "level": 5,
+          "name": "TR-BODY",
+          "start": 2,
+          "length": 79,
+          "picture": "X(79)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/TRANREC.cpy:36"
+        },
+        {
+          "level": 5,
+          "name": "TR-HEADER-BODY",
+          "start": 2,
+          "length": 79,
+          "category": "group",
+          "redefines": "TR-BODY",
+          "source": "pangaea/copybooks/TRANREC.cpy:37",
+          "fields": [
+            {
+              "level": 10,
+              "name": "TH-BUSINESS-DATE",
+              "start": 2,
+              "length": 8,
+              "picture": "9(8)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "digits": 8,
+              "source": "pangaea/copybooks/TRANREC.cpy:38"
+            },
+            {
+              "level": 10,
+              "name": "TH-SOURCE",
+              "start": 10,
+              "length": 8,
+              "picture": "X(8)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "conditions": [
+                {
+                  "name": "TH-FROM-BRANCHES",
+                  "values": [
+                    "'BRANCHES'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:40"
+                },
+                {
+                  "name": "TH-FROM-CARDS",
+                  "values": [
+                    "'CARDS'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:41"
+                }
+              ],
+              "source": "pangaea/copybooks/TRANREC.cpy:39"
+            },
+            {
+              "level": 10,
+              "name": "TH-FILE-SEQ",
+              "start": 18,
+              "length": 6,
+              "picture": "9(6)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "digits": 6,
+              "source": "pangaea/copybooks/TRANREC.cpy:42"
+            },
+            {
+              "level": 10,
+              "name": "FILLER",
+              "start": 24,
+              "length": 57,
+              "picture": "X(57)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "source": "pangaea/copybooks/TRANREC.cpy:43"
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "name": "TR-DETAIL-BODY",
+          "start": 2,
+          "length": 79,
+          "category": "group",
+          "redefines": "TR-BODY",
+          "source": "pangaea/copybooks/TRANREC.cpy:44",
+          "fields": [
+            {
+              "level": 10,
+              "name": "TD-TRAN-ID",
+              "start": 2,
+              "length": 10,
+              "picture": "9(10)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "digits": 10,
+              "source": "pangaea/copybooks/TRANREC.cpy:45"
+            },
+            {
+              "level": 10,
+              "name": "TD-ACCT-NO",
+              "start": 12,
+              "length": 10,
+              "picture": "9(10)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "digits": 10,
+              "source": "pangaea/copybooks/TRANREC.cpy:46"
+            },
+            {
+              "level": 10,
+              "name": "TD-TRAN-CODE",
+              "start": 22,
+              "length": 2,
+              "picture": "XX",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "conditions": [
+                {
+                  "name": "TD-DEPOSIT",
+                  "values": [
+                    "'DP'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:48"
+                },
+                {
+                  "name": "TD-WITHDRAWAL",
+                  "values": [
+                    "'WD'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:49"
+                },
+                {
+                  "name": "TD-FEE",
+                  "values": [
+                    "'FE'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:50"
+                },
+                {
+                  "name": "TD-TRANSFER",
+                  "values": [
+                    "'TR'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:51"
+                },
+                {
+                  "name": "TD-TRANSFER-CREDIT",
+                  "values": [
+                    "'TC'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:52"
+                },
+                {
+                  "name": "TD-TRANSFER-RETURN",
+                  "values": [
+                    "'RT'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:53"
+                },
+                {
+                  "name": "TD-INTEREST",
+                  "values": [
+                    "'IN'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:54"
+                },
+                {
+                  "name": "TD-OVERDRAFT-INTEREST",
+                  "values": [
+                    "'OD'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:55"
+                },
+                {
+                  "name": "TD-MAINTENANCE-FEE",
+                  "values": [
+                    "'MF'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:56"
+                },
+                {
+                  "name": "TD-CARD-PURCHASE",
+                  "values": [
+                    "'CP'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:57"
+                },
+                {
+                  "name": "TD-ATM-WITHDRAWAL",
+                  "values": [
+                    "'AW'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:58"
+                },
+                {
+                  "name": "TD-ATM-FEE",
+                  "values": [
+                    "'AF'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:59"
+                },
+                {
+                  "name": "TD-KNOWN-CODE",
+                  "values": [
+                    "'DP'",
+                    "'WD'",
+                    "'FE'",
+                    "'TR'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:60"
+                },
+                {
+                  "name": "TD-CARD-CODE",
+                  "values": [
+                    "'CP'",
+                    "'AW'",
+                    "'AF'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:61"
+                }
+              ],
+              "source": "pangaea/copybooks/TRANREC.cpy:47"
+            },
+            {
+              "level": 10,
+              "name": "TD-AMOUNT",
+              "start": 24,
+              "length": 11,
+              "picture": "9(9)V99",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "digits": 11,
+              "scale": 2,
+              "source": "pangaea/copybooks/TRANREC.cpy:62"
+            },
+            {
+              "level": 10,
+              "name": "TD-DESCRIPTION",
+              "start": 35,
+              "length": 20,
+              "picture": "X(20)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "source": "pangaea/copybooks/TRANREC.cpy:63"
+            },
+            {
+              "level": 10,
+              "name": "TD-COUNTER-ACCT-NO",
+              "start": 55,
+              "length": 10,
+              "picture": "9(10)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "digits": 10,
+              "source": "pangaea/copybooks/TRANREC.cpy:64"
+            },
+            {
+              "level": 10,
+              "name": "FILLER",
+              "start": 65,
+              "length": 16,
+              "picture": "X(16)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "source": "pangaea/copybooks/TRANREC.cpy:65"
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "name": "TR-TRAILER-BODY",
+          "start": 2,
+          "length": 79,
+          "category": "group",
+          "redefines": "TR-BODY",
+          "source": "pangaea/copybooks/TRANREC.cpy:66",
+          "fields": [
+            {
+              "level": 10,
+              "name": "TT-DETAIL-COUNT",
+              "start": 2,
+              "length": 8,
+              "picture": "9(8)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "digits": 8,
+              "source": "pangaea/copybooks/TRANREC.cpy:67"
+            },
+            {
+              "level": 10,
+              "name": "TT-AMOUNT-TOTAL",
+              "start": 10,
+              "length": 15,
+              "picture": "9(13)V99",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "digits": 15,
+              "scale": 2,
+              "source": "pangaea/copybooks/TRANREC.cpy:68"
+            },
+            {
+              "level": 10,
+              "name": "TT-ACCT-HASH",
+              "start": 25,
+              "length": 15,
+              "picture": "9(15)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "digits": 15,
+              "source": "pangaea/copybooks/TRANREC.cpy:69"
+            },
+            {
+              "level": 10,
+              "name": "FILLER",
+              "start": 40,
+              "length": 41,
+              "picture": "X(41)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "source": "pangaea/copybooks/TRANREC.cpy:70"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-TRAN-ID",
+      "start": 1,
+      "length": 10,
+      "category": "group",
+      "source": "pangaea/programs/HOLDEXT.cbl:69",
+      "fields": [
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 1,
+          "length": 1,
+          "picture": "9",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 1,
+          "values": [
+            "9"
+          ],
+          "source": "pangaea/programs/HOLDEXT.cbl:70"
+        },
+        {
+          "level": 5,
+          "name": "WS-TI-HOLD-NO",
+          "start": 2,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 6,
+          "source": "pangaea/programs/HOLDEXT.cbl:71"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 8,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 2,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/HOLDEXT.cbl:72"
+        },
+        {
+          "level": 5,
+          "name": "WS-TI-PART",
+          "start": 10,
+          "length": 1,
+          "picture": "9",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 1,
+          "source": "pangaea/programs/HOLDEXT.cbl:73"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-TOTALS",
+      "start": 1,
+      "length": 54,
+      "category": "group",
+      "source": "pangaea/programs/HOLDEXT.cbl:75",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-HOLD-COUNT",
+          "start": 1,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/HOLDEXT.cbl:76"
+        },
+        {
+          "level": 5,
+          "name": "WS-REVERSED-COUNT",
+          "start": 9,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/HOLDEXT.cbl:77"
+        },
+        {
+          "level": 5,
+          "name": "WS-DETAIL-COUNT",
+          "start": 17,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/HOLDEXT.cbl:78"
+        },
+        {
+          "level": 5,
+          "name": "WS-AMOUNT-TOTAL",
+          "start": 25,
+          "length": 15,
+          "picture": "9(13)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 15,
+          "scale": 2,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/HOLDEXT.cbl:79"
+        },
+        {
+          "level": 5,
+          "name": "WS-ACCT-HASH",
+          "start": 40,
+          "length": 15,
+          "picture": "9(15)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 15,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/HOLDEXT.cbl:80"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REPORT-COUNT-LINE",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "source": "pangaea/programs/HOLDEXT.cbl:82",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-RC-LABEL",
+          "start": 1,
+          "length": 30,
+          "picture": "X(30)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/HOLDEXT.cbl:83"
+        },
+        {
+          "level": 5,
+          "name": "WS-RC-VALUE",
+          "start": 31,
+          "length": 10,
+          "picture": "ZZ,ZZZ,ZZ9",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "source": "pangaea/programs/HOLDEXT.cbl:84"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 41,
+          "length": 40,
+          "picture": "X(40)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "SPACES"
+          ],
+          "source": "pangaea/programs/HOLDEXT.cbl:85"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REPORT-AMOUNT-LINE",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "source": "pangaea/programs/HOLDEXT.cbl:86",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-RA-LABEL",
+          "start": 1,
+          "length": 30,
+          "picture": "X(30)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/HOLDEXT.cbl:87"
+        },
+        {
+          "level": 5,
+          "name": "WS-RA-VALUE",
+          "start": 31,
+          "length": 20,
+          "picture": "Z,ZZZ,ZZZ,ZZZ,ZZ9.99",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "source": "pangaea/programs/HOLDEXT.cbl:88"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 51,
+          "length": 30,
+          "picture": "X(30)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "SPACES"
+          ],
+          "source": "pangaea/programs/HOLDEXT.cbl:89"
+        }
+      ]
+    }
+  ],
+  "paragraphs": [
+    {
+      "name": "0000-MAIN",
+      "description": "WRITE THE HEADER, A DETAIL OR TWO PER HOLD, AND THE TRAILER.",
+      "source": "pangaea/programs/HOLDEXT.cbl:93",
+      "performs": [
+        {
+          "target": "1000-INITIALIZE",
+          "source": "pangaea/programs/HOLDEXT.cbl:94"
+        },
+        {
+          "target": "2000-EXTRACT-HOLD",
+          "source": "pangaea/programs/HOLDEXT.cbl:95"
+        },
+        {
+          "target": "3000-WRITE-TRAILER",
+          "source": "pangaea/programs/HOLDEXT.cbl:96"
+        },
+        {
+          "target": "8000-WRITE-REPORT",
+          "source": "pangaea/programs/HOLDEXT.cbl:97"
+        },
+        {
+          "target": "9000-CLOSE-FILES",
+          "source": "pangaea/programs/HOLDEXT.cbl:98"
+        }
+      ],
+      "reads": [
+        "WS-HOLDS-END-SW"
+      ],
+      "writes": [
+        "RETURN-CODE"
+      ]
+    },
+    {
+      "name": "1000-INITIALIZE",
+      "description": "OPEN THE FILES, WRITE THE HEADER AND READ THE FIRST HOLD.",
+      "source": "pangaea/programs/HOLDEXT.cbl:103",
+      "performs": [
+        {
+          "target": "9900-ABORT",
+          "source": "pangaea/programs/HOLDEXT.cbl:114"
+        },
+        {
+          "target": "1200-READ-HOLD",
+          "source": "pangaea/programs/HOLDEXT.cbl:122"
+        }
+      ],
+      "performedBy": [
+        "0000-MAIN"
+      ],
+      "reads": [
+        "WS-FILE-STATUSES",
+        "BC-BUSINESS-DATE",
+        "TRAN-RECORD"
+      ],
+      "writes": [
+        "RETURN-CODE",
+        "BANK-CONTROL-RECORD",
+        "WS-ABORT-MESSAGE",
+        "TRAN-RECORD",
+        "TR-REC-TYPE",
+        "TH-BUSINESS-DATE",
+        "TH-SOURCE",
+        "TH-FILE-SEQ",
+        "TRAN-OUT-RECORD"
+      ]
+    },
+    {
+      "name": "1200-READ-HOLD",
+      "source": "pangaea/programs/HOLDEXT.cbl:124",
+      "performedBy": [
+        "1000-INITIALIZE",
+        "2000-EXTRACT-HOLD"
+      ],
+      "reads": [
+        "WS-HOLD-COUNT"
+      ],
+      "writes": [
+        "HOLD-RECORD",
+        "WS-HOLDS-END-SW",
+        "WS-HOLD-COUNT"
+      ]
+    },
+    {
+      "name": "2000-EXTRACT-HOLD",
+      "description": "WRITE A HOLD STILL OPEN AS A TRANSACTION, AND ITS FEE AS ANOTHER. EVERY HOLD MUST BE OF THE BUSINESS DAY.",
+      "source": "pangaea/programs/HOLDEXT.cbl:134",
+      "performs": [
+        {
+          "target": "9900-ABORT",
+          "source": "pangaea/programs/HOLDEXT.cbl:137"
+        },
+        {
+          "target": "2900-WRITE-DETAIL",
+          "source": "pangaea/programs/HOLDEXT.cbl:155"
+        },
+        {
+          "target": "2900-WRITE-DETAIL",
+          "source": "pangaea/programs/HOLDEXT.cbl:161"
+        },
+        {
+          "target": "1200-READ-HOLD",
+          "source": "pangaea/programs/HOLDEXT.cbl:164"
+        }
+      ],
+      "performedBy": [
+        "0000-MAIN"
+      ],
+      "reads": [
+        "HD-BUSINESS-DATE",
+        "BC-BUSINESS-DATE",
+        "HD-STATUS",
+        "WS-REVERSED-COUNT",
+        "HD-HOLD-NO",
+        "HD-ACCT-NO",
+        "HD-TERMINAL",
+        "HD-KIND",
+        "HD-AMOUNT",
+        "HD-FEE"
+      ],
+      "writes": [
+        "WS-ABORT-MESSAGE",
+        "WS-REVERSED-COUNT",
+        "TRAN-RECORD",
+        "TR-REC-TYPE",
+        "WS-TI-HOLD-NO",
+        "TD-ACCT-NO",
+        "TD-DESCRIPTION",
+        "TD-COUNTER-ACCT-NO",
+        "TD-TRAN-CODE",
+        "TD-AMOUNT",
+        "WS-TI-PART"
+      ]
+    },
+    {
+      "name": "2900-WRITE-DETAIL",
+      "description": "WRITE A DETAIL AND ADD IT TO THE CONTROL TOTALS.",
+      "source": "pangaea/programs/HOLDEXT.cbl:167",
+      "performedBy": [
+        "2000-EXTRACT-HOLD"
+      ],
+      "reads": [
+        "WS-TRAN-ID",
+        "TRAN-RECORD",
+        "WS-DETAIL-COUNT",
+        "TD-AMOUNT",
+        "WS-AMOUNT-TOTAL",
+        "TD-ACCT-NO",
+        "WS-ACCT-HASH"
+      ],
+      "writes": [
+        "TD-TRAN-ID",
+        "TRAN-OUT-RECORD",
+        "WS-DETAIL-COUNT",
+        "WS-AMOUNT-TOTAL",
+        "WS-ACCT-HASH"
+      ]
+    },
+    {
+      "name": "3000-WRITE-TRAILER",
+      "source": "pangaea/programs/HOLDEXT.cbl:174",
+      "performedBy": [
+        "0000-MAIN"
+      ],
+      "reads": [
+        "WS-DETAIL-COUNT",
+        "WS-AMOUNT-TOTAL",
+        "WS-ACCT-HASH",
+        "TRAN-RECORD"
+      ],
+      "writes": [
+        "TRAN-RECORD",
+        "TR-REC-TYPE",
+        "TT-DETAIL-COUNT",
+        "TT-AMOUNT-TOTAL",
+        "TT-ACCT-HASH",
+        "TRAN-OUT-RECORD"
+      ]
+    },
+    {
+      "name": "8000-WRITE-REPORT",
+      "description": "WRITE THE EXTRACTION REPORT.",
+      "source": "pangaea/programs/HOLDEXT.cbl:183",
+      "performedBy": [
+        "0000-MAIN"
+      ],
+      "reads": [
+        "BC-BUSINESS-DATE",
+        "WS-HOLD-COUNT",
+        "WS-REPORT-COUNT-LINE",
+        "WS-REVERSED-COUNT",
+        "WS-DETAIL-COUNT",
+        "WS-AMOUNT-TOTAL",
+        "WS-REPORT-AMOUNT-LINE"
+      ],
+      "writes": [
+        "REPORT-LINE",
+        "WS-RC-LABEL",
+        "WS-RC-VALUE",
+        "WS-RA-LABEL",
+        "WS-RA-VALUE"
+      ]
+    },
+    {
+      "name": "9000-CLOSE-FILES",
+      "description": "CLOSE ALL FILES.",
+      "source": "pangaea/programs/HOLDEXT.cbl:205",
+      "performedBy": [
+        "0000-MAIN",
+        "9900-ABORT"
+      ]
+    },
+    {
+      "name": "9900-ABORT",
+      "description": "STOP THE RUN WITH RETURN CODE 16, SAYING WHY.",
+      "source": "pangaea/programs/HOLDEXT.cbl:209",
+      "performs": [
+        {
+          "target": "9000-CLOSE-FILES",
+          "source": "pangaea/programs/HOLDEXT.cbl:211"
+        }
+      ],
+      "performedBy": [
+        "1000-INITIALIZE",
+        "2000-EXTRACT-HOLD"
+      ],
+      "reads": [
+        "WS-ABORT-MESSAGE"
+      ],
+      "writes": [
+        "RETURN-CODE"
+      ]
+    }
+  ],
+  "lineage": [
+    {
+      "from": "0",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "0000-MAIN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:99"
+    },
+    {
+      "from": "16",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:108"
+    },
+    {
+      "from": "CONTROL-FILE",
+      "to": "BANK-CONTROL-RECORD",
+      "fromFile": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "READ",
+      "source": "pangaea/programs/HOLDEXT.cbl:111"
+    },
+    {
+      "from": "'NO BANK CONTROL RECORD'",
+      "to": "WS-ABORT-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:113"
+    },
+    {
+      "from": "SPACES",
+      "to": "TRAN-RECORD",
+      "fromLiteral": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:116"
+    },
+    {
+      "from": "condition TR-HEADER",
+      "to": "TR-REC-TYPE",
+      "fromLiteral": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "SET",
+      "source": "pangaea/programs/HOLDEXT.cbl:117"
+    },
+    {
+      "from": "BC-BUSINESS-DATE",
+      "to": "TH-BUSINESS-DATE",
+      "paragraph": "1000-INITIALIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:118"
+    },
+    {
+      "from": "condition TH-FROM-CARDS",
+      "to": "TH-SOURCE",
+      "fromLiteral": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "SET",
+      "source": "pangaea/programs/HOLDEXT.cbl:119"
+    },
+    {
+      "from": "1",
+      "to": "TH-FILE-SEQ",
+      "fromLiteral": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:120"
+    },
+    {
+      "from": "TRAN-RECORD",
+      "to": "TRAN-OUT-RECORD",
+      "paragraph": "1000-INITIALIZE",
+      "verb": "WRITE",
+      "source": "pangaea/programs/HOLDEXT.cbl:121"
+    },
+    {
+      "from": "TRAN-OUT-RECORD",
+      "to": "TRAN-OUT",
+      "toFile": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "WRITE",
+      "source": "pangaea/programs/HOLDEXT.cbl:121"
+    },
+    {
+      "from": "HOLD-FILE",
+      "to": "HOLD-RECORD",
+      "fromFile": true,
+      "paragraph": "1200-READ-HOLD",
+      "verb": "READ",
+      "source": "pangaea/programs/HOLDEXT.cbl:125"
+    },
+    {
+      "from": "condition END-OF-HOLDS",
+      "to": "WS-HOLDS-END-SW",
+      "fromLiteral": true,
+      "paragraph": "1200-READ-HOLD",
+      "verb": "SET",
+      "source": "pangaea/programs/HOLDEXT.cbl:127"
+    },
+    {
+      "from": "1",
+      "to": "WS-HOLD-COUNT",
+      "fromLiteral": true,
+      "paragraph": "1200-READ-HOLD",
+      "verb": "ADD",
+      "source": "pangaea/programs/HOLDEXT.cbl:129"
+    },
+    {
+      "from": "'A HOLD OF ANOTHER BUSINESS DAY'",
+      "to": "WS-ABORT-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "2000-EXTRACT-HOLD",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:136"
+    },
+    {
+      "from": "1",
+      "to": "WS-REVERSED-COUNT",
+      "fromLiteral": true,
+      "paragraph": "2000-EXTRACT-HOLD",
+      "verb": "ADD",
+      "source": "pangaea/programs/HOLDEXT.cbl:140"
+    },
+    {
+      "from": "SPACES",
+      "to": "TRAN-RECORD",
+      "fromLiteral": true,
+      "paragraph": "2000-EXTRACT-HOLD",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:142"
+    },
+    {
+      "from": "condition TR-DETAIL",
+      "to": "TR-REC-TYPE",
+      "fromLiteral": true,
+      "paragraph": "2000-EXTRACT-HOLD",
+      "verb": "SET",
+      "source": "pangaea/programs/HOLDEXT.cbl:143"
+    },
+    {
+      "from": "HD-HOLD-NO",
+      "to": "WS-TI-HOLD-NO",
+      "paragraph": "2000-EXTRACT-HOLD",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:144"
+    },
+    {
+      "from": "HD-ACCT-NO",
+      "to": "TD-ACCT-NO",
+      "paragraph": "2000-EXTRACT-HOLD",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:145"
+    },
+    {
+      "from": "HD-TERMINAL",
+      "to": "TD-DESCRIPTION",
+      "paragraph": "2000-EXTRACT-HOLD",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:146"
+    },
+    {
+      "from": "0",
+      "to": "TD-COUNTER-ACCT-NO",
+      "fromLiteral": true,
+      "paragraph": "2000-EXTRACT-HOLD",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:147"
+    },
+    {
+      "from": "condition TD-CARD-PURCHASE",
+      "to": "TD-TRAN-CODE",
+      "fromLiteral": true,
+      "paragraph": "2000-EXTRACT-HOLD",
+      "verb": "SET",
+      "source": "pangaea/programs/HOLDEXT.cbl:149"
+    },
+    {
+      "from": "condition TD-ATM-WITHDRAWAL",
+      "to": "TD-TRAN-CODE",
+      "fromLiteral": true,
+      "paragraph": "2000-EXTRACT-HOLD",
+      "verb": "SET",
+      "source": "pangaea/programs/HOLDEXT.cbl:151"
+    },
+    {
+      "from": "HD-AMOUNT",
+      "to": "TD-AMOUNT",
+      "paragraph": "2000-EXTRACT-HOLD",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:153"
+    },
+    {
+      "from": "1",
+      "to": "WS-TI-PART",
+      "fromLiteral": true,
+      "paragraph": "2000-EXTRACT-HOLD",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:154"
+    },
+    {
+      "from": "condition TD-ATM-FEE",
+      "to": "TD-TRAN-CODE",
+      "fromLiteral": true,
+      "paragraph": "2000-EXTRACT-HOLD",
+      "verb": "SET",
+      "source": "pangaea/programs/HOLDEXT.cbl:157"
+    },
+    {
+      "from": "HD-FEE",
+      "to": "TD-AMOUNT",
+      "paragraph": "2000-EXTRACT-HOLD",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:158"
+    },
+    {
+      "from": "'ATM FEE'",
+      "to": "TD-DESCRIPTION",
+      "fromLiteral": true,
+      "paragraph": "2000-EXTRACT-HOLD",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:159"
+    },
+    {
+      "from": "2",
+      "to": "WS-TI-PART",
+      "fromLiteral": true,
+      "paragraph": "2000-EXTRACT-HOLD",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:160"
+    },
+    {
+      "from": "WS-TRAN-ID",
+      "to": "TD-TRAN-ID",
+      "paragraph": "2900-WRITE-DETAIL",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:168"
+    },
+    {
+      "from": "TRAN-RECORD",
+      "to": "TRAN-OUT-RECORD",
+      "paragraph": "2900-WRITE-DETAIL",
+      "verb": "WRITE",
+      "source": "pangaea/programs/HOLDEXT.cbl:169"
+    },
+    {
+      "from": "TRAN-OUT-RECORD",
+      "to": "TRAN-OUT",
+      "toFile": true,
+      "paragraph": "2900-WRITE-DETAIL",
+      "verb": "WRITE",
+      "source": "pangaea/programs/HOLDEXT.cbl:169"
+    },
+    {
+      "from": "1",
+      "to": "WS-DETAIL-COUNT",
+      "fromLiteral": true,
+      "paragraph": "2900-WRITE-DETAIL",
+      "verb": "ADD",
+      "source": "pangaea/programs/HOLDEXT.cbl:170"
+    },
+    {
+      "from": "TD-AMOUNT",
+      "to": "WS-AMOUNT-TOTAL",
+      "paragraph": "2900-WRITE-DETAIL",
+      "verb": "ADD",
+      "source": "pangaea/programs/HOLDEXT.cbl:171"
+    },
+    {
+      "from": "TD-ACCT-NO",
+      "to": "WS-ACCT-HASH",
+      "paragraph": "2900-WRITE-DETAIL",
+      "verb": "ADD",
+      "source": "pangaea/programs/HOLDEXT.cbl:172"
+    },
+    {
+      "from": "SPACES",
+      "to": "TRAN-RECORD",
+      "fromLiteral": true,
+      "paragraph": "3000-WRITE-TRAILER",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:175"
+    },
+    {
+      "from": "condition TR-TRAILER",
+      "to": "TR-REC-TYPE",
+      "fromLiteral": true,
+      "paragraph": "3000-WRITE-TRAILER",
+      "verb": "SET",
+      "source": "pangaea/programs/HOLDEXT.cbl:176"
+    },
+    {
+      "from": "WS-DETAIL-COUNT",
+      "to": "TT-DETAIL-COUNT",
+      "paragraph": "3000-WRITE-TRAILER",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:177"
+    },
+    {
+      "from": "WS-AMOUNT-TOTAL",
+      "to": "TT-AMOUNT-TOTAL",
+      "paragraph": "3000-WRITE-TRAILER",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:178"
+    },
+    {
+      "from": "WS-ACCT-HASH",
+      "to": "TT-ACCT-HASH",
+      "paragraph": "3000-WRITE-TRAILER",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:179"
+    },
+    {
+      "from": "TRAN-RECORD",
+      "to": "TRAN-OUT-RECORD",
+      "paragraph": "3000-WRITE-TRAILER",
+      "verb": "WRITE",
+      "source": "pangaea/programs/HOLDEXT.cbl:180"
+    },
+    {
+      "from": "TRAN-OUT-RECORD",
+      "to": "TRAN-OUT",
+      "toFile": true,
+      "paragraph": "3000-WRITE-TRAILER",
+      "verb": "WRITE",
+      "source": "pangaea/programs/HOLDEXT.cbl:180"
+    },
+    {
+      "from": "SPACES",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:184"
+    },
+    {
+      "from": "'HOLDEXT  HOLDS FOR POSTING       BUSINESS DATE '",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "STRING",
+      "source": "pangaea/programs/HOLDEXT.cbl:185"
+    },
+    {
+      "from": "BC-BUSINESS-DATE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "STRING",
+      "source": "pangaea/programs/HOLDEXT.cbl:185"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/HOLDEXT.cbl:188"
+    },
+    {
+      "from": "SPACES",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:189"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/HOLDEXT.cbl:190"
+    },
+    {
+      "from": "'HOLDS READ'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:191"
+    },
+    {
+      "from": "WS-HOLD-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:192"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/HOLDEXT.cbl:193"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/HOLDEXT.cbl:193"
+    },
+    {
+      "from": "'REVERSED, LEFT OUT'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:194"
+    },
+    {
+      "from": "WS-REVERSED-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:195"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/HOLDEXT.cbl:196"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/HOLDEXT.cbl:196"
+    },
+    {
+      "from": "'TRANSACTIONS WRITTEN'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:197"
+    },
+    {
+      "from": "WS-DETAIL-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:198"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/HOLDEXT.cbl:199"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/HOLDEXT.cbl:199"
+    },
+    {
+      "from": "'AMOUNT TOTAL'",
+      "to": "WS-RA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:200"
+    },
+    {
+      "from": "WS-AMOUNT-TOTAL",
+      "to": "WS-RA-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:201"
+    },
+    {
+      "from": "WS-REPORT-AMOUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/HOLDEXT.cbl:202"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/HOLDEXT.cbl:202"
+    },
+    {
+      "from": "16",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "9900-ABORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/HOLDEXT.cbl:212"
+    }
+  ],
+  "outputs": [
+    {
+      "file": "TRAN-OUT",
+      "record": "TRAN-RECORD",
+      "fields": [
+        {
+          "name": "TR-REC-TYPE",
+          "start": 1,
+          "length": 1,
+          "origins": [
+            "literal condition TR-DETAIL",
+            "literal condition TR-HEADER",
+            "literal condition TR-TRAILER"
+          ]
+        },
+        {
+          "name": "TR-BODY",
+          "start": 2,
+          "length": 79,
+          "origins": [
+            "file CONTROL-FILE BC-BUSINESS-DATE",
+            "file HOLD-FILE HD-ACCT-NO",
+            "file HOLD-FILE HD-AMOUNT",
+            "file HOLD-FILE HD-FEE",
+            "file HOLD-FILE HD-HOLD-NO",
+            "file HOLD-FILE HD-TERMINAL",
+            "initial value of WS-ACCT-HASH",
+            "initial value of WS-AMOUNT-TOTAL",
+            "initial value of WS-DETAIL-COUNT",
+            "literal 'ATM FEE'",
+            "literal 0",
+            "literal 1",
+            "literal 2",
+            "literal condition TD-ATM-FEE",
+            "literal condition TD-ATM-WITHDRAWAL",
+            "literal condition TD-CARD-PURCHASE",
+            "literal condition TH-FROM-CARDS"
+          ]
+        },
+        {
+          "name": "TH-BUSINESS-DATE",
+          "start": 2,
+          "length": 8,
+          "origins": [
+            "file CONTROL-FILE BC-BUSINESS-DATE",
+            "file HOLD-FILE HD-HOLD-NO",
+            "initial value of WS-DETAIL-COUNT",
+            "literal 1"
+          ]
+        },
+        {
+          "name": "TH-SOURCE",
+          "start": 10,
+          "length": 8,
+          "origins": [
+            "file HOLD-FILE HD-ACCT-NO",
+            "file HOLD-FILE HD-AMOUNT",
+            "file HOLD-FILE HD-FEE",
+            "initial value of WS-ACCT-HASH",
+            "initial value of WS-AMOUNT-TOTAL",
+            "literal 1",
+            "literal 2",
+            "literal condition TH-FROM-CARDS"
+          ]
+        },
+        {
+          "name": "TH-FILE-SEQ",
+          "start": 18,
+          "length": 6,
+          "origins": [
+            "file HOLD-FILE HD-ACCT-NO",
+            "file HOLD-FILE HD-AMOUNT",
+            "file HOLD-FILE HD-FEE",
+            "initial value of WS-ACCT-HASH",
+            "initial value of WS-AMOUNT-TOTAL",
+            "literal 1",
+            "literal condition TD-ATM-FEE",
+            "literal condition TD-ATM-WITHDRAWAL",
+            "literal condition TD-CARD-PURCHASE",
+            "literal condition TH-FROM-CARDS"
+          ]
+        },
+        {
+          "name": "TD-TRAN-ID",
+          "start": 2,
+          "length": 10,
+          "origins": [
+            "file CONTROL-FILE BC-BUSINESS-DATE",
+            "file HOLD-FILE HD-ACCT-NO",
+            "file HOLD-FILE HD-AMOUNT",
+            "file HOLD-FILE HD-FEE",
+            "file HOLD-FILE HD-HOLD-NO",
+            "initial value of WS-ACCT-HASH",
+            "initial value of WS-AMOUNT-TOTAL",
+            "initial value of WS-DETAIL-COUNT",
+            "literal 1",
+            "literal 2",
+            "literal condition TH-FROM-CARDS"
+          ]
+        },
+        {
+          "name": "TD-ACCT-NO",
+          "start": 12,
+          "length": 10,
+          "origins": [
+            "file HOLD-FILE HD-ACCT-NO",
+            "file HOLD-FILE HD-AMOUNT",
+            "file HOLD-FILE HD-FEE",
+            "initial value of WS-ACCT-HASH",
+            "initial value of WS-AMOUNT-TOTAL",
+            "literal 1",
+            "literal condition TH-FROM-CARDS"
+          ]
+        },
+        {
+          "name": "TD-TRAN-CODE",
+          "start": 22,
+          "length": 2,
+          "origins": [
+            "file HOLD-FILE HD-ACCT-NO",
+            "file HOLD-FILE HD-AMOUNT",
+            "file HOLD-FILE HD-FEE",
+            "initial value of WS-ACCT-HASH",
+            "initial value of WS-AMOUNT-TOTAL",
+            "literal 1",
+            "literal condition TD-ATM-FEE",
+            "literal condition TD-ATM-WITHDRAWAL",
+            "literal condition TD-CARD-PURCHASE",
+            "literal condition TH-FROM-CARDS"
+          ]
+        },
+        {
+          "name": "TD-AMOUNT",
+          "start": 24,
+          "length": 11,
+          "origins": [
+            "file HOLD-FILE HD-ACCT-NO",
+            "file HOLD-FILE HD-AMOUNT",
+            "file HOLD-FILE HD-FEE",
+            "initial value of WS-ACCT-HASH",
+            "initial value of WS-AMOUNT-TOTAL",
+            "literal 1",
+            "literal condition TH-FROM-CARDS"
+          ]
+        },
+        {
+          "name": "TD-DESCRIPTION",
+          "start": 35,
+          "length": 20,
+          "origins": [
+            "file HOLD-FILE HD-ACCT-NO",
+            "file HOLD-FILE HD-AMOUNT",
+            "file HOLD-FILE HD-FEE",
+            "file HOLD-FILE HD-TERMINAL",
+            "initial value of WS-ACCT-HASH",
+            "initial value of WS-AMOUNT-TOTAL",
+            "literal 'ATM FEE'",
+            "literal 1",
+            "literal condition TH-FROM-CARDS"
+          ]
+        },
+        {
+          "name": "TD-COUNTER-ACCT-NO",
+          "start": 55,
+          "length": 10,
+          "origins": [
+            "literal 0"
+          ]
+        },
+        {
+          "name": "TT-DETAIL-COUNT",
+          "start": 2,
+          "length": 8,
+          "origins": [
+            "file CONTROL-FILE BC-BUSINESS-DATE",
+            "file HOLD-FILE HD-HOLD-NO",
+            "initial value of WS-DETAIL-COUNT",
+            "literal 1"
+          ]
+        },
+        {
+          "name": "TT-AMOUNT-TOTAL",
+          "start": 10,
+          "length": 15,
+          "origins": [
+            "file HOLD-FILE HD-ACCT-NO",
+            "file HOLD-FILE HD-AMOUNT",
+            "file HOLD-FILE HD-FEE",
+            "initial value of WS-ACCT-HASH",
+            "initial value of WS-AMOUNT-TOTAL",
+            "literal 1",
+            "literal 2",
+            "literal condition TD-ATM-FEE",
+            "literal condition TD-ATM-WITHDRAWAL",
+            "literal condition TD-CARD-PURCHASE",
+            "literal condition TH-FROM-CARDS"
+          ]
+        },
+        {
+          "name": "TT-ACCT-HASH",
+          "start": 25,
+          "length": 15,
+          "origins": [
+            "file HOLD-FILE HD-ACCT-NO",
+            "file HOLD-FILE HD-AMOUNT",
+            "file HOLD-FILE HD-FEE",
+            "file HOLD-FILE HD-TERMINAL",
+            "initial value of WS-ACCT-HASH",
+            "initial value of WS-AMOUNT-TOTAL",
+            "literal 'ATM FEE'",
+            "literal 1",
+            "literal condition TH-FROM-CARDS"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "REPORT-OUT",
+      "record": "WS-REPORT-AMOUNT-LINE",
+      "fields": [
+        {
+          "name": "WS-RA-LABEL",
+          "start": 1,
+          "length": 30,
+          "origins": [
+            "literal 'AMOUNT TOTAL'"
+          ]
+        },
+        {
+          "name": "WS-RA-VALUE",
+          "start": 31,
+          "length": 20,
+          "origins": [
+            "file HOLD-FILE HD-ACCT-NO",
+            "file HOLD-FILE HD-AMOUNT",
+            "file HOLD-FILE HD-FEE",
+            "initial value of WS-ACCT-HASH",
+            "initial value of WS-AMOUNT-TOTAL",
+            "literal 1",
+            "literal condition TH-FROM-CARDS"
+          ]
+        }
+      ]
+    }
+  ]
+}

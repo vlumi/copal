@@ -1,0 +1,366 @@
+{
+  "program": "HOLDEXT",
+  "tables": [
+    {
+      "paragraph": "1000-INITIALIZE",
+      "source": "pangaea/programs/HOLDEXT.cbl:103",
+      "conditions": [
+        "WS-FILE-STATUSES = ALL '0'",
+        "READ CONTROL-FILE AT END"
+      ],
+      "actions": [
+        "OPEN INPUT CONTROL-FILE HOLD-FILE OUTPUT TRAN-OUT REPORT-OUT",
+        "DISPLAY 'HOLDEXT: CANNOT OPEN FILES ' WS-FILE-STATUSES",
+        "MOVE 16 TO RETURN-CODE",
+        "STOP RUN",
+        "READ CONTROL-FILE",
+        "MOVE 'NO BANK CONTROL RECORD' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT",
+        "MOVE SPACES TO TRAN-RECORD",
+        "SET TR-HEADER TO TRUE",
+        "MOVE BC-BUSINESS-DATE TO TH-BUSINESS-DATE",
+        "SET TH-FROM-CARDS TO TRUE",
+        "MOVE 1 TO TH-FILE-SEQ",
+        "WRITE TRAN-OUT-RECORD FROM TRAN-RECORD",
+        "PERFORM 1200-READ-HOLD"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            4,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "1200-READ-HOLD",
+      "source": "pangaea/programs/HOLDEXT.cbl:124",
+      "conditions": [
+        "READ HOLD-FILE AT END"
+      ],
+      "actions": [
+        "READ HOLD-FILE",
+        "SET END-OF-HOLDS TO TRUE",
+        "ADD 1 TO WS-HOLD-COUNT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2000-EXTRACT-HOLD",
+      "source": "pangaea/programs/HOLDEXT.cbl:134",
+      "conditions": [
+        "HD-BUSINESS-DATE = BC-BUSINESS-DATE",
+        "HD-REVERSED",
+        "HD-PURCHASE",
+        "HD-FEE \u003e 0"
+      ],
+      "actions": [
+        "MOVE 'A HOLD OF ANOTHER BUSINESS DAY' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT",
+        "ADD 1 TO WS-REVERSED-COUNT",
+        "PERFORM 1200-READ-HOLD",
+        "MOVE SPACES TO TRAN-RECORD",
+        "SET TR-DETAIL TO TRUE",
+        "MOVE HD-HOLD-NO TO WS-TI-HOLD-NO",
+        "MOVE HD-ACCT-NO TO TD-ACCT-NO",
+        "MOVE HD-TERMINAL TO TD-DESCRIPTION",
+        "MOVE 0 TO TD-COUNTER-ACCT-NO",
+        "SET TD-CARD-PURCHASE TO TRUE",
+        "MOVE HD-AMOUNT TO TD-AMOUNT",
+        "MOVE 1 TO WS-TI-PART",
+        "PERFORM 2900-WRITE-DETAIL",
+        "SET TD-ATM-FEE TO TRUE",
+        "MOVE HD-FEE TO TD-AMOUNT",
+        "MOVE 'ATM FEE' TO TD-DESCRIPTION",
+        "MOVE 2 TO WS-TI-PART",
+        "SET TD-ATM-WITHDRAWAL TO TRUE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            13,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            18,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            13,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            18,
+            11,
+            12,
+            13,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            13,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            18,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            13,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            18,
+            11,
+            12,
+            13,
+            3
+          ]
+        }
+      ]
+    }
+  ]
+}

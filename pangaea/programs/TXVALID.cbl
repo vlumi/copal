@@ -2,12 +2,16 @@
       * TXVALID: VALIDATE THE DAY'S TRANSACTION FILE                   *
       *                                                                *
       * CHECKS THE FILE AS A WHOLE: A HEADER FOR TODAY'S BUSINESS      *
-      * DATE, THEN DETAILS, THEN A TRAILER WHOSE CONTROL TOTALS MATCH  *
-      * THE DETAILS. A FILE THAT FAILS THESE CHECKS IS NOT PROCESSED.  *
+      * DATE FROM A KNOWN SOURCE, THE BRANCHES OR THE CARDS, THEN      *
+      * DETAILS, THEN A TRAILER WHOSE CONTROL TOTALS MATCH THE         *
+      * DETAILS. A FILE THAT FAILS THESE CHECKS IS NOT PROCESSED.      *
       * CHECKS EACH DETAIL'S FIELDS AND WRITES IT EITHER TO THE VALID  *
-      * FILE OR TO THE REJECTS: THE ACCOUNT NUMBER, THE CODE, THE      *
-      * AMOUNT, AND FOR A TRANSFER THE ACCOUNT IT GOES TO. WHETHER     *
-      * THE ACCOUNTS EXIST IS LEFT TO POSTING, WHICH READS THE MASTER. *
+      * FILE OR TO THE REJECTS: THE ACCOUNT NUMBER, THE CODE, WHICH    *
+      * MUST BE ONE ITS SOURCE SENDS, THE AMOUNT, AND FOR A TRANSFER   *
+      * THE ACCOUNT IT GOES TO. WHETHER THE ACCOUNTS EXIST IS LEFT TO  *
+      * POSTING, WHICH READS THE MASTER. THE REJECTS ARE APPENDED TO,  *
+      * AS THE DAILY BATCH VALIDATES THE CARD FILE AFTER THE           *
+      * BRANCHES'.                                                     *
       *                                                                *
       * RETURN CODES: 0 ALL VALID, 4 SOME DETAILS REJECTED,            *
       *               12 FILE REJECTED, 16 I/O ERROR.                  *
@@ -19,6 +23,8 @@
       * 1996-04-15 PK  CR-0233 TRANSFERS MUST NAME ANOTHER ACCOUNT.    *
       * 1999-01-11 SL  Y2K: 8-DIGIT BUSINESS DATE FROM THE BANK        *
       *                CONTROL RECORD.                                 *
+      * 2003-05-19 MV  CR-0342 THE CARD FILE: ITS SOURCE AND CODES.    *
+      *                REJECTS APPENDED TO.                            *
       * 2004-09-20 PK  CR-0388 REJECT RECORDS OF UNKNOWN TYPE          *
       *                INSTEAD OF STOPPING THE RUN.                    *
       *================================================================*
@@ -40,7 +46,7 @@
            SELECT TRAN-OUT     ASSIGN TO TRANOUT
                ORGANIZATION IS SEQUENTIAL
                FILE STATUS IS WS-TRAN-OUT-STATUS.
-           SELECT REJECT-OUT   ASSIGN TO REJECTS
+           SELECT OPTIONAL REJECT-OUT ASSIGN TO REJECTS
                ORGANIZATION IS SEQUENTIAL
                FILE STATUS IS WS-REJECT-STATUS.
            SELECT REPORT-OUT   ASSIGN TO VALRPT
@@ -67,9 +73,13 @@
                88  TRAN-IN-EOF         VALUE '10'.
            05  WS-TRAN-OUT-STATUS      PIC XX.
            05  WS-REJECT-STATUS        PIC XX.
+               88  REJECTS-OPENED      VALUE '00' '05'.
            05  WS-REPORT-STATUS        PIC XX.
 
        01  WS-BUSINESS-DATE            PIC 9(8).
+       01  WS-SOURCE                   PIC X(8).
+           88  FROM-BRANCHES           VALUE 'BRANCHES'.
+           88  FROM-CARDS              VALUE 'CARDS'.
 
            COPY REJREC.
 
@@ -119,14 +129,16 @@
            END-EVALUATE
            STOP RUN.
 
-      * OPEN THE FILES AND READ THE BUSINESS DATE.
+      * OPEN THE FILES AND READ THE BUSINESS DATE. THE REJECTS ARE
+      * EXTENDED, AND CREATED IF NEW.
        1000-OPEN-FILES.
            OPEN INPUT  CONTROL-FILE TRAN-IN
-                OUTPUT TRAN-OUT REJECT-OUT REPORT-OUT
+                OUTPUT TRAN-OUT REPORT-OUT
+                EXTEND REJECT-OUT
            IF WS-CONTROL-STATUS NOT = '00'
               OR WS-TRAN-IN-STATUS NOT = '00'
               OR WS-TRAN-OUT-STATUS NOT = '00'
-              OR WS-REJECT-STATUS NOT = '00'
+              OR NOT REJECTS-OPENED
               OR WS-REPORT-STATUS NOT = '00'
                DISPLAY 'TXVALID: CANNOT OPEN FILES ' WS-FILE-STATUSES
                MOVE 16 TO RETURN-CODE
@@ -141,7 +153,8 @@
            MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE
            MOVE SPACES TO REJECT-RECORD.
 
-      * THE FIRST RECORD MUST BE THE HEADER FOR THE BUSINESS DATE.
+      * THE FIRST RECORD MUST BE THE HEADER FOR THE BUSINESS DATE, FROM
+      * A KNOWN SOURCE.
        2000-READ-HEADER.
            READ TRAN-IN
                AT END
@@ -155,7 +168,13 @@
                WHEN TH-BUSINESS-DATE NOT = WS-BUSINESS-DATE
                    MOVE 'HEADER IS NOT FOR THE BUSINESS DATE'
                        TO WS-FILE-ERROR
-           END-EVALUATE.
+               WHEN NOT TH-FROM-BRANCHES AND NOT TH-FROM-CARDS
+                   MOVE 'HEADER IS FROM AN UNKNOWN SOURCE'
+                       TO WS-FILE-ERROR
+           END-EVALUATE
+           IF FILE-IS-GOOD
+               MOVE TH-SOURCE TO WS-SOURCE
+           END-IF.
 
       * VALIDATE EACH RECORD UNTIL THE TRAILER.
        3000-READ-DETAILS.
@@ -196,7 +215,8 @@
                WHEN TD-ACCT-NO IS NOT NUMERIC
                    SET RJ-BAD-ACCOUNT TO TRUE
                    SET DETAIL-IS-REJECTED TO TRUE
-               WHEN NOT TD-KNOWN-CODE
+               WHEN FROM-BRANCHES AND NOT TD-KNOWN-CODE
+               WHEN FROM-CARDS AND NOT TD-CARD-CODE
                    SET RJ-BAD-CODE TO TRUE
                    SET DETAIL-IS-REJECTED TO TRUE
                WHEN TD-AMOUNT IS NOT NUMERIC

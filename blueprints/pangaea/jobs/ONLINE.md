@@ -7,21 +7,25 @@ AT A TIME, FROM THE OPENING OF THE BUSINESS DAY TO THE BATCH
 WINDOW. THE REQUESTS ARE THE JOB'S IN-STREAM DATA, WHICH THE
 ONLINE SERVER SUPPLIES FROM THE TERMINALS AS THEY COME, AND
 THE RESPONSES GO TO THE STEP'S OUTPUT, BACK TO THE SERVER.
+WHEN THE REQUESTS END, THE DAY'S HOLDS ARE EXTRACTED AS THE
+CARD FILE, FOR THE NIGHT'S BATCH TO POST.
 
 READS   BANK.CONTROL(0)
 UPDATES ACCT.ONLINE(0)   CARD.ONLINE(0)   HOLD.ONLINE(0)
+WRITES  TRAN.CARD(+1)
 
 THE NIGHT'S BATCH LOADS THE ONLINE FILES AND STARTS THE HOLD
 FILE, SO THE JOB CAN BE RUN AGAIN DURING THE DAY.
 ```
 
-Job [ONLINE.jcl](../../../pangaea/jobs/ONLINE.jcl): 1 steps.
+Job [ONLINE.jcl](../../../pangaea/jobs/ONLINE.jcl): 2 steps.
 
 ## Contents
 
 - [Network](#network)
 - [Steps](#steps)
   - [AUTH](#auth)
+  - [EXTRACT](#extract)
 - [Datasets](#datasets)
 - [Findings](#findings)
 
@@ -33,7 +37,8 @@ Job [ONLINE.jcl](../../../pangaea/jobs/ONLINE.jcl): 1 steps.
 
 | Step | Program | Reads | Writes | Bypassed by | Description | Source |
 | --- | --- | --- | --- | --- | --- | --- |
-| AUTH | [AUTHSRV](../programs/AUTHSRV.md) | BANK.CONTROL(0), ACCT.ONLINE(0), CARD.ONLINE(0), HOLD.ONLINE(0) | ACCT.ONLINE(0), CARD.ONLINE(0), HOLD.ONLINE(0) | | | [ONLINE.jcl:16](../../../pangaea/jobs/ONLINE.jcl#L16) |
+| AUTH | [AUTHSRV](../programs/AUTHSRV.md) | BANK.CONTROL(0), ACCT.ONLINE(0), CARD.ONLINE(0), HOLD.ONLINE(0) | ACCT.ONLINE(0), CARD.ONLINE(0), HOLD.ONLINE(0) | | | [ONLINE.jcl:19](../../../pangaea/jobs/ONLINE.jcl#L19) |
+| EXTRACT | [HOLDEXT](../programs/HOLDEXT.md) | BANK.CONTROL(0), HOLD.ONLINE(0) | TRAN.CARD(+1) | COND=(4,LT) | EXTRACT THE DAY'S HOLDS AS TRANSACTIONS FOR POSTING | [ONLINE.jcl:29](../../../pangaea/jobs/ONLINE.jcl#L29) |
 
 ### AUTH
 
@@ -46,16 +51,26 @@ Job [ONLINE.jcl](../../../pangaea/jobs/ONLINE.jcl): 1 steps.
 | AUTHRPT | job output | | REPORT-OUT | | write |
 | SYSIN | in-stream data | | | | read |
 
+### EXTRACT
+
+| DD | Dataset | DISP | File | Copybook | Use |
+| --- | --- | --- | --- | --- | --- |
+| BANKCTL | BANK.CONTROL(0) | SHR | CONTROL-FILE | [BANKCTL](../copybooks/BANKCTL.md) | read |
+| HOLDS | HOLD.ONLINE(0) | SHR | HOLD-FILE | [HOLDREC](../copybooks/HOLDREC.md) | read |
+| TRANOUT | TRAN.CARD(+1) | NEW | TRAN-OUT | [TRANREC](../copybooks/TRANREC.md) | write |
+| HOLDRPT | job output | | REPORT-OUT | | write |
+
 ## Datasets
 
 Each dataset the job names, the copybook that describes its records, from the programs that read or write it in any job, and the steps that write and read it.
 
 | Dataset | Copybook | Written by | Read by |
 | --- | --- | --- | --- |
-| BANK.CONTROL(0) | [BANKCTL](../copybooks/BANKCTL.md) | | AUTH |
+| BANK.CONTROL(0) | [BANKCTL](../copybooks/BANKCTL.md) | | AUTH, EXTRACT |
 | ACCT.ONLINE(0) | [ACCTONL](../copybooks/ACCTONL.md) | AUTH | AUTH |
 | CARD.ONLINE(0) | [CARDREC](../copybooks/CARDREC.md) | AUTH | AUTH |
-| HOLD.ONLINE(0) | [HOLDREC](../copybooks/HOLDREC.md) | AUTH | AUTH |
+| HOLD.ONLINE(0) | [HOLDREC](../copybooks/HOLDREC.md) | AUTH | AUTH, EXTRACT |
+| TRAN.CARD(+1) | [TRANREC](../copybooks/TRANREC.md) | EXTRACT | |
 
 ## Findings
 

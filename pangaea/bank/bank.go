@@ -6,6 +6,7 @@ package bank
 import (
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"slices"
@@ -25,23 +26,43 @@ var StartDate = generate.NewDate(2026, 9, 1)
 
 // Bank is a bank in a directory: its datasets, every generation of them,
 // under datasets/, and each day's job log and reports under sysout/DATE/,
-// those of the month-end job under sysout/DATE/MONTHLY/.
+// those of its other jobs under sysout/DATE/JOB/, and those of the job
+// that opened the bank under sysout/START/.
 type Bank struct {
-	Dir        string
-	Programs   string // the compiled COBOL programs
-	Copybooks  string
-	DailyJob   string
-	MonthlyJob string
+	Dir       string
+	Programs  string // the compiled COBOL programs
+	Copybooks string
+	Jobs      string // the job files: START, ONLINE, DAILY and MONTHLY
 }
 
-// Day is the outcome of one business day: the daily batch's steps, and on
-// the first business day of a month the month-end job's.
+// JobFiles lists the bank's job files.
+func (b Bank) JobFiles() []string {
+	var files []string
+	for _, name := range []string{"START", "ONLINE", "DAILY", "MONTHLY"} {
+		files = append(files, filepath.Join(b.Jobs, name+".jcl"))
+	}
+	return files
+}
+
+// Day is the outcome of one business day: the online day's steps, the
+// daily batch's, and on the first business day of a month the month-end
+// job's.
 type Day struct {
 	Date         generate.Date
 	Transactions int
+	Online       []runner.Result
 	Results      []runner.Result
 	MonthEnd     []runner.Result
 	Rejects      int
+}
+
+// jobs are the jobs the bank runs every business day.
+type jobs struct {
+	online, daily, monthly *jcl.Job
+}
+
+func (b Bank) job(name string) (*jcl.Job, error) {
+	return jcl.ParseFile(filepath.Join(b.Jobs, name+".jcl"))
 }
 
 const seedFile = "SEED"
@@ -50,8 +71,9 @@ const seedFile = "SEED"
 var ErrNoBank = errors.New("no bank here yet; reset one first")
 
 // Reset replaces the bank with a new one: about the given number of
-// accounts, generated from the seed, on the start date, with the rate
-// table and nothing accrued yet.
+// accounts and their cards, generated from the seed, on the start date,
+// with the rate table and nothing accrued yet, and opens it by running the
+// job that loads the online files for its first day.
 func (b Bank) Reset(seed uint64, accounts int) error {
 	if err := os.RemoveAll(b.Dir); err != nil {
 		return err
@@ -103,6 +125,13 @@ func (b Bank) Reset(seed uint64, accounts int) error {
 			return err
 		}
 	}
+	start, err := b.job("START")
+	if err != nil {
+		return err
+	}
+	if _, err := b.runJob(store, start, filepath.Join(b.Dir, "sysout", start.Name), nil); err != nil {
+		return err
+	}
 	return os.WriteFile(filepath.Join(b.Dir, seedFile), []byte(strconv.FormatUint(seed, 10)+"\n"), 0o644)
 }
 
@@ -117,16 +146,17 @@ func (b Bank) RunDays(n int, report func(Day)) error {
 	if err != nil {
 		return err
 	}
-	daily, err := jcl.ParseFile(b.DailyJob)
-	if err != nil {
-		return err
-	}
-	monthly, err := jcl.ParseFile(b.MonthlyJob)
-	if err != nil {
-		return err
+	var j jobs
+	for _, name := range []struct {
+		job  **jcl.Job
+		name string
+	}{{&j.online, "ONLINE"}, {&j.daily, "DAILY"}, {&j.monthly, "MONTHLY"}} {
+		if *name.job, err = b.job(name.name); err != nil {
+			return err
+		}
 	}
 	for range n {
-		day, err := b.runDay(g, daily, monthly)
+		day, err := b.runDay(g, j)
 		if err != nil {
 			return err
 		}
@@ -135,20 +165,21 @@ func (b Bank) RunDays(n int, report func(Day)) error {
 	return nil
 }
 
-// runDay runs a business day: the daily batch, and on the first business
-// day of a month the month-end job after it, as a scheduler would.
+// runDay runs a business day: the online day, the daily batch, and on the
+// first business day of a month the month-end job after it, as a
+// scheduler would. The online day has no card traffic yet.
 //
 // A business day goes through whole or not at all: if any of it fails,
 // every dataset it cataloged is deleted again, the generated inputs
 // included, and its job logs and reports move to sysout/DATE.failed, so
 // that the next run starts the same day afresh.
-func (b Bank) runDay(g *generate.Generator, daily, monthly *jcl.Job) (Day, error) {
+func (b Bank) runDay(g *generate.Generator, j jobs) (Day, error) {
 	store, err := dataset.Open(b.datasets())
 	if err != nil {
 		return Day{}, err
 	}
 	before := store.Names()
-	day, err := b.tryDay(g, store, daily, monthly)
+	day, err := b.tryDay(g, store, j)
 	if err != nil && !day.Date.IsZero() {
 		if backOutErr := b.backOut(store, before, day.Date); backOutErr != nil {
 			return day, errors.Join(err, backOutErr)
@@ -158,7 +189,7 @@ func (b Bank) runDay(g *generate.Generator, daily, monthly *jcl.Job) (Day, error
 	return day, err
 }
 
-func (b Bank) tryDay(g *generate.Generator, store *dataset.Store, daily, monthly *jcl.Job) (Day, error) {
+func (b Bank) tryDay(g *generate.Generator, store *dataset.Store, j jobs) (Day, error) {
 	date, err := b.businessDate(g, store)
 	if err != nil {
 		return Day{}, err
@@ -190,7 +221,10 @@ func (b Bank) tryDay(g *generate.Generator, store *dataset.Store, daily, monthly
 		return day, err
 	}
 
-	if day.Results, err = b.runJob(store, daily, b.sysout(date)); err != nil {
+	if day.Online, err = b.runJob(store, j.online, filepath.Join(b.sysout(date), j.online.Name), nil); err != nil {
+		return day, fmt.Errorf("%s: %w", date, err)
+	}
+	if day.Results, err = b.runJob(store, j.daily, b.sysout(date), nil); err != nil {
 		return day, fmt.Errorf("%s: %w", date, err)
 	}
 	rejects, err := store.Read(latest(store, "TRAN.REJECTS"))
@@ -199,7 +233,7 @@ func (b Bank) tryDay(g *generate.Generator, store *dataset.Store, daily, monthly
 	}
 	day.Rejects = len(rejects)
 	if date.FirstBusinessDayOfMonth() {
-		if day.MonthEnd, err = b.runJob(store, monthly, filepath.Join(b.sysout(date), monthly.Name)); err != nil {
+		if day.MonthEnd, err = b.runJob(store, j.monthly, filepath.Join(b.sysout(date), j.monthly.Name), nil); err != nil {
 			return day, fmt.Errorf("%s: %w", date, err)
 		}
 	}
@@ -228,10 +262,10 @@ func (b Bank) backOut(store *dataset.Store, before []string, date generate.Date)
 
 func (b Bank) failedSysout(date generate.Date) string { return b.sysout(date) + ".failed" }
 
-// runJob runs a job, which must go through: no step may end above RC 4,
-// be bypassed or abend.
-func (b Bank) runJob(store *dataset.Store, job *jcl.Job, sysout string) ([]runner.Result, error) {
-	r := runner.Runner{Programs: b.Programs, Datasets: store, Sysout: sysout}
+// runJob runs a job, with its in-stream data, which must go through: no
+// step may end above RC 4, be bypassed or abend.
+func (b Bank) runJob(store *dataset.Store, job *jcl.Job, sysout string, inStream io.Reader) ([]runner.Result, error) {
+	r := runner.Runner{Programs: b.Programs, Datasets: store, Sysout: sysout, InStream: inStream}
 	results, err := r.Run(job)
 	if err != nil {
 		return results, err

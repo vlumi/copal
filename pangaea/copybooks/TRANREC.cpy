@@ -15,6 +15,10 @@
       * CHARGES OVERDRAFT INTEREST (OD) AND THE MAINTENANCE FEE (MF).  *
       * THESE TOO ARE NEVER RECEIVED IN THE DAILY FILE.                *
       *                                                                *
+      * THE CARD FILE, FROM THE ONLINE DAY'S HOLDS, HAS THE SAME FORM  *
+      * AND ITS OWN SOURCE: CARD PURCHASES (CP), ATM WITHDRAWALS (AW)  *
+      * AND ATM FEES (AF), WHICH WERE AUTHORIZED WHEN THEY WERE MADE.  *
+      *                                                                *
       * MODIFICATION HISTORY                                           *
       * DATE       BY  CHANGE                                          *
       * 1987-03-12 JA  ORIGINAL VERSION.                               *
@@ -22,6 +26,7 @@
       * 1996-04-15 PK  CR-0233 TRANSFERS: COUNTER ACCOUNT, FROM THE    *
       *                FILLER.                                         *
       * 2001-09-03 TL  CR-0298 MONTH-END INTEREST AND FEE CODES.       *
+      * 2003-05-19 MV  CR-0342 THE CARD FILE AND ITS CODES.            *
       *================================================================*
        01  TRAN-RECORD.
            05  TR-REC-TYPE             PIC X.
@@ -32,6 +37,8 @@
            05  TR-HEADER-BODY REDEFINES TR-BODY.
                10  TH-BUSINESS-DATE    PIC 9(8).
                10  TH-SOURCE           PIC X(8).
+                   88  TH-FROM-BRANCHES VALUE 'BRANCHES'.
+                   88  TH-FROM-CARDS   VALUE 'CARDS'.
                10  TH-FILE-SEQ         PIC 9(6).
                10  FILLER              PIC X(57).
            05  TR-DETAIL-BODY REDEFINES TR-BODY.
@@ -47,7 +54,11 @@
                    88  TD-INTEREST     VALUE 'IN'.
                    88  TD-OVERDRAFT-INTEREST VALUE 'OD'.
                    88  TD-MAINTENANCE-FEE VALUE 'MF'.
+                   88  TD-CARD-PURCHASE VALUE 'CP'.
+                   88  TD-ATM-WITHDRAWAL VALUE 'AW'.
+                   88  TD-ATM-FEE      VALUE 'AF'.
                    88  TD-KNOWN-CODE   VALUE 'DP' 'WD' 'FE' 'TR'.
+                   88  TD-CARD-CODE    VALUE 'CP' 'AW' 'AF'.
                10  TD-AMOUNT           PIC 9(9)V99.
                10  TD-DESCRIPTION      PIC X(20).
                10  TD-COUNTER-ACCT-NO  PIC 9(10).

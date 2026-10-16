@@ -3,7 +3,7 @@
   "tables": [
     {
       "paragraph": "0000-MAIN",
-      "source": "pangaea/programs/TXPOST.cbl:158",
+      "source": "pangaea/programs/TXPOST.cbl:162",
       "conditions": [
         "WS-REJECT-COUNT \u003e 0"
       ],
@@ -50,7 +50,7 @@
     },
     {
       "paragraph": "1000-INITIALIZE",
-      "source": "pangaea/programs/TXPOST.cbl:175",
+      "source": "pangaea/programs/TXPOST.cbl:179",
       "conditions": [
         "WS-CONTROL-STATUS NOT = '00' OR WS-ACCT-IN-STATUS NOT = '00' OR WS-TRAN-IN-STATUS NOT = '00' OR WS-ACCT-OUT-STATUS NOT = '00' OR NOT AUDIT-OPENED OR NOT REJECTS-OPENED OR WS-LEGS-STATUS NOT = '00' OR WS-REPORT-STATUS NOT = '00'",
         "READ CONTROL-FILE AT END"
@@ -115,7 +115,7 @@
     },
     {
       "paragraph": "1200-READ-MASTER",
-      "source": "pangaea/programs/TXPOST.cbl:202",
+      "source": "pangaea/programs/TXPOST.cbl:206",
       "conditions": [
         "READ ACCT-IN AT END",
         "WS-MASTER-KEY \u003e WS-PREV-MASTER-KEY"
@@ -173,7 +173,7 @@
     },
     {
       "paragraph": "1300-READ-TRAN",
-      "source": "pangaea/programs/TXPOST.cbl:219",
+      "source": "pangaea/programs/TXPOST.cbl:223",
       "conditions": [
         "READ TRAN-IN AT END",
         "WS-TRAN-ORDER-KEY \u003e WS-PREV-TRAN-ORDER-KEY"
@@ -228,7 +228,7 @@
     },
     {
       "paragraph": "2000-MATCH",
-      "source": "pangaea/programs/TXPOST.cbl:237",
+      "source": "pangaea/programs/TXPOST.cbl:241",
       "conditions": [
         "WS-TRAN-KEY \u003c WS-MASTER-KEY",
         "WS-TRAN-KEY = WS-MASTER-KEY"
@@ -277,11 +277,12 @@
     },
     {
       "paragraph": "3000-APPLY-TRAN",
-      "source": "pangaea/programs/TXPOST.cbl:252",
+      "source": "pangaea/programs/TXPOST.cbl:256",
       "conditions": [
         "AM-CLOSED",
         "TD-DEPOSIT OR TD-TRANSFER-CREDIT OR TD-TRANSFER-RETURN OR TD-INTEREST",
-        "TD-FEE OR TD-OVERDRAFT-INTEREST OR TD-MAINTENANCE-FEE",
+        "TD-FEE OR TD-OVERDRAFT-INTEREST OR TD-MAINTENANCE-FEE OR TD-ATM-FEE",
+        "TD-CARD-PURCHASE OR TD-ATM-WITHDRAWAL",
         "AM-FROZEN",
         "TD-WITHDRAWAL OR TD-TRANSFER"
       ],
@@ -291,6 +292,7 @@
         "PERFORM 3900-REJECT-TRAN",
         "PERFORM 3100-POST-CREDIT",
         "PERFORM 3300-POST-FEE",
+        "PERFORM 3400-POST-AUTHORIZED",
         "SET RJ-FROZEN TO TRUE",
         "PERFORM 3200-POST-DEBIT"
       ],
@@ -298,6 +300,7 @@
         {
           "entries": [
             "Y",
+            "",
             "",
             "",
             "",
@@ -315,6 +318,7 @@
             "Y",
             "",
             "",
+            "",
             ""
           ],
           "actions": [
@@ -327,6 +331,7 @@
             "N",
             "N",
             "Y",
+            "",
             "",
             ""
           ],
@@ -341,11 +346,26 @@
             "N",
             "N",
             "Y",
+            "",
             ""
           ],
           "actions": [
             0,
-            5,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "N",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            6,
             2
           ]
         },
@@ -355,15 +375,17 @@
             "N",
             "N",
             "N",
+            "N",
             "Y"
           ],
           "actions": [
             0,
-            6
+            7
           ]
         },
         {
           "entries": [
+            "N",
             "N",
             "N",
             "N",
@@ -378,7 +400,7 @@
     },
     {
       "paragraph": "3200-POST-DEBIT",
-      "source": "pangaea/programs/TXPOST.cbl:285",
+      "source": "pangaea/programs/TXPOST.cbl:293",
       "conditions": [
         "WS-NEW-BALANCE \u003c WS-BALANCE-FLOOR",
         "TD-TRANSFER"
@@ -440,7 +462,7 @@
     },
     {
       "paragraph": "3500-WRITE-LEG",
-      "source": "pangaea/programs/TXPOST.cbl:312",
+      "source": "pangaea/programs/TXPOST.cbl:328",
       "conditions": [
         "TD-TRANSFER"
       ],
@@ -490,7 +512,7 @@
     },
     {
       "paragraph": "3900-REJECT-TRAN",
-      "source": "pangaea/programs/TXPOST.cbl:341",
+      "source": "pangaea/programs/TXPOST.cbl:357",
       "conditions": [
         "TD-TRANSFER-CREDIT"
       ],
@@ -529,7 +551,7 @@
     },
     {
       "paragraph": "5000-RECONCILE",
-      "source": "pangaea/programs/TXPOST.cbl:357",
+      "source": "pangaea/programs/TXPOST.cbl:373",
       "conditions": [
         "WS-EXPECTED-TOTAL NOT = WS-CLOSING-TOTAL OR WS-MASTERS-WRITTEN NOT = WS-MASTERS-READ"
       ],

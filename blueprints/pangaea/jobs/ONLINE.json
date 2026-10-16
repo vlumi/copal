@@ -8,9 +8,12 @@
     "WINDOW. THE REQUESTS ARE THE JOB'S IN-STREAM DATA, WHICH THE",
     "ONLINE SERVER SUPPLIES FROM THE TERMINALS AS THEY COME, AND",
     "THE RESPONSES GO TO THE STEP'S OUTPUT, BACK TO THE SERVER.",
+    "WHEN THE REQUESTS END, THE DAY'S HOLDS ARE EXTRACTED AS THE",
+    "CARD FILE, FOR THE NIGHT'S BATCH TO POST.",
     "",
     "READS   BANK.CONTROL(0)",
     "UPDATES ACCT.ONLINE(0)   CARD.ONLINE(0)   HOLD.ONLINE(0)",
+    "WRITES  TRAN.CARD(+1)",
     "",
     "THE NIGHT'S BATCH LOADS THE ONLINE FILES AND STARTS THE HOLD",
     "FILE, SO THE JOB CAN BE RUN AGAIN DURING THE DAY."
@@ -19,7 +22,7 @@
     {
       "step": "AUTH",
       "program": "AUTHSRV",
-      "source": "pangaea/jobs/ONLINE.jcl:16",
+      "source": "pangaea/jobs/ONLINE.jcl:19",
       "dds": [
         {
           "dd": "BANKCTL",
@@ -32,7 +35,7 @@
             "read"
           ],
           "copybook": "BANKCTL",
-          "source": "pangaea/jobs/ONLINE.jcl:17"
+          "source": "pangaea/jobs/ONLINE.jcl:20"
         },
         {
           "dd": "ACCTONL",
@@ -45,7 +48,7 @@
             "update"
           ],
           "copybook": "ACCTONL",
-          "source": "pangaea/jobs/ONLINE.jcl:18"
+          "source": "pangaea/jobs/ONLINE.jcl:21"
         },
         {
           "dd": "CARDONL",
@@ -58,7 +61,7 @@
             "update"
           ],
           "copybook": "CARDREC",
-          "source": "pangaea/jobs/ONLINE.jcl:19"
+          "source": "pangaea/jobs/ONLINE.jcl:22"
         },
         {
           "dd": "HOLDS",
@@ -71,7 +74,7 @@
             "update"
           ],
           "copybook": "HOLDREC",
-          "source": "pangaea/jobs/ONLINE.jcl:20"
+          "source": "pangaea/jobs/ONLINE.jcl:23"
         },
         {
           "dd": "AUTHRPT",
@@ -80,7 +83,7 @@
           "uses": [
             "write"
           ],
-          "source": "pangaea/jobs/ONLINE.jcl:21"
+          "source": "pangaea/jobs/ONLINE.jcl:24"
         },
         {
           "dd": "SYSIN",
@@ -88,7 +91,66 @@
           "uses": [
             "read"
           ],
-          "source": "pangaea/jobs/ONLINE.jcl:22"
+          "source": "pangaea/jobs/ONLINE.jcl:25"
+        }
+      ]
+    },
+    {
+      "step": "EXTRACT",
+      "program": "HOLDEXT",
+      "cond": "(4,LT)",
+      "description": [
+        "EXTRACT THE DAY'S HOLDS AS TRANSACTIONS FOR POSTING"
+      ],
+      "source": "pangaea/jobs/ONLINE.jcl:29",
+      "dds": [
+        {
+          "dd": "BANKCTL",
+          "datasets": [
+            "BANK.CONTROL(0)"
+          ],
+          "disp": "SHR",
+          "file": "CONTROL-FILE",
+          "uses": [
+            "read"
+          ],
+          "copybook": "BANKCTL",
+          "source": "pangaea/jobs/ONLINE.jcl:30"
+        },
+        {
+          "dd": "HOLDS",
+          "datasets": [
+            "HOLD.ONLINE(0)"
+          ],
+          "disp": "SHR",
+          "file": "HOLD-FILE",
+          "uses": [
+            "read"
+          ],
+          "copybook": "HOLDREC",
+          "source": "pangaea/jobs/ONLINE.jcl:31"
+        },
+        {
+          "dd": "TRANOUT",
+          "datasets": [
+            "TRAN.CARD(+1)"
+          ],
+          "disp": "NEW",
+          "file": "TRAN-OUT",
+          "uses": [
+            "write"
+          ],
+          "copybook": "TRANREC",
+          "source": "pangaea/jobs/ONLINE.jcl:32"
+        },
+        {
+          "dd": "HOLDRPT",
+          "sysout": true,
+          "file": "REPORT-OUT",
+          "uses": [
+            "write"
+          ],
+          "source": "pangaea/jobs/ONLINE.jcl:34"
         }
       ]
     }
@@ -98,7 +160,8 @@
       "dataset": "BANK.CONTROL(0)",
       "copybook": "BANKCTL",
       "readBy": [
-        "AUTH"
+        "AUTH",
+        "EXTRACT"
       ]
     },
     {
@@ -128,7 +191,15 @@
         "AUTH"
       ],
       "readBy": [
-        "AUTH"
+        "AUTH",
+        "EXTRACT"
+      ]
+    },
+    {
+      "dataset": "TRAN.CARD(+1)",
+      "copybook": "TRANREC",
+      "writtenBy": [
+        "EXTRACT"
       ]
     }
   ]

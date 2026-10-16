@@ -6,7 +6,7 @@ A small COBOL bank, the specimen Copal is developed against: a nightly batch, an
 
 - [copybooks/](copybooks/): record layouts, one copybook per record.
 - [programs/](programs/): the COBOL programs, fixed-format, compiled with GnuCOBOL 3.2 in IBM dialect.
-- [jobs/](jobs/): job files in a small subset of JCL, run by the Go runner in [runner/](runner/): the daily batch, the month-end job and the online day.
+- [jobs/](jobs/): job files in a small subset of JCL, run by the Go runner in [runner/](runner/): the daily batch, the month-end job, the online day, and the job that opens a new bank.
 - [testdata/](testdata/): fixtures, each an `input` directory of datasets to start from and a `golden` directory of the datasets, job log and reports a run produces.
 
 The Go packages around the COBOL are the bank's machine room, not the bank: [jcl/](../jcl/) parses job files (Copal reads them too, so it lives outside Pangaea), [dataset/](dataset/) keeps the datasets and their catalog, [runner/](runner/) runs jobs and [compile/](compile/) compiles the programs. [layouts/](layouts/) loads the record layouts Copal computes from the copybooks, [generate/](generate/) makes up customers and their business, and [bank/](bank/) runs the bank day after day, and [console/](console/) shows it in the browser. `cmd/pangaea` puts them on the command line.
@@ -15,11 +15,11 @@ The Go packages around the COBOL are the bank's machine room, not the bank: [jcl
 
 [DAILY.jcl](jobs/DAILY.jcl) runs one business day. A step runs only if no earlier step ended with a return code (RC) above 4.
 
-1. **TXVALID** checks the day's transaction file: a header for the business date in the bank control record, details, and a trailer whose detail count, amount total and account number hash match the details. A file that fails is rejected as a whole (RC 12). Details with a bad account number, transaction code, amount or transfer counter account go to the rejects (RC 4).
+1. **TXVALID** checks the day's transaction file: a header for the business date in the bank control record, details, and a trailer whose detail count, amount total and account number hash match the details. A file that fails is rejected as a whole (RC 12). Details with a bad account number, transaction code, amount or transfer counter account go to the rejects (RC 4). It then checks the card file the online day wrote the same way, and accepts from it only card and ATM codes; a card file of another day is rejected as a whole.
 2. **INTACCR** accrues interest for the calendar days since the last business day, on the balances that stood over them, at the rate table's rate for the account type and balance tier, or its debit rate below zero. Accruals are packed decimal to six decimals. When the days cross into a new month, the old month's interest becomes due, rounded to the cent.
 3. **MONCHG**, on the day a month closes, writes its interest credits, overdraft interest and the maintenance fee of open current accounts below 1,000.00 as transactions, in account order, and **TXPOST** posts them without a sort. On other days there are none, and TXPOST copies the master.
-4. **TXSORT** sorts the valid details into account number order.
-5. **TXPOST** matches them against the account master and writes a new master, an audit trail record per posting, and the transactions it could not post: unknown or closed accounts, withdrawals and transfers from frozen accounts or beyond the overdraft limit. It checks that the new master's balances equal the old ones plus what it posted.
+4. **TXSORT** sorts the valid details of both files into account number order.
+5. **TXPOST** matches them against the account master and writes a new master, an audit trail record per posting, and the transactions it could not post: unknown or closed accounts, withdrawals and transfers from frozen accounts or beyond the overdraft limit. Card purchases and ATM withdrawals were authorized when they were made, so they post whatever the balance. It checks that the new master's balances equal the old ones plus what it posted.
 6. **TXSORT** and **TXPOST** again, for the transfer credits: a transfer that posted debits its sender in step 5 and writes a credit for the receiving account, which posts here.
 7. **TXSORT** and **TXPOST** a third time, for the returns: a credit to an unknown or closed account goes back to its sender.
 8. **ACCTMNT** applies the branches' account maintenance requests, in account order, and writes the day's new master: it opens accounts, closes empty ones, freezes and unfreezes them, and changes overdraft limits, and rejects what the rules do not allow. It is the bank's oldest style of code, from 1988: `PERFORM ... THRU` ranges that jump to their exit paragraph with `GO TO` and run on from one paragraph into the next.
@@ -27,7 +27,7 @@ The Go packages around the COBOL are the bank's machine room, not the bank: [jcl
 10. **BANKDATE** writes the bank control record for the next business day, Monday to Friday.
 11. **CARDLOAD** loads the card master into the indexed online card file for that day, leaving out the cards expired by then.
 
-The day's inputs are the current generations, (0), of the bank control record, the account master, the accruals, the transaction file, the maintenance requests and the card master, and the rate table; it writes the next generations, (+1), of the control record, the master and the accruals, the day's audit trail and the rejects of both transactions and maintenance, and the online files for the next day. Everything in between is temporary. So a month's interest and fees are posted on the first business day of the next month, as the batch's first postings.
+The day's inputs are the current generations, (0), of the bank control record, the account master, the accruals, the transaction file, the card file, the maintenance requests and the card master, and the rate table; it writes the next generations, (+1), of the control record, the master and the accruals, the day's audit trail and the rejects of both transactions and maintenance, and the online files for the next day. Everything in between is temporary. So a month's interest and fees are posted on the first business day of the next month, as the batch's first postings.
 
 `make pangaea-daily` runs it on the fixture in `testdata/daily` and shows the reports; the fixture in `testdata/month-end` closes October and runs the month-end job after it.
 
@@ -49,11 +49,15 @@ The two programs share the transaction code table, [CODETAB](copybooks/CODETAB.c
 - **ATMWDL** approves a cash withdrawal in notes of 20 within the card's daily cash limit and the available balance, with a fee of 2.00 after four free withdrawals a month.
 - **ATMBAL** gives the balance and the available balance.
 
-An approval adds to the account's holds and the card's totals for the day, and AUTHSRV writes a hold record numbered by the day's authorization code. AUTHSRV alone opens the files, because two programs holding one indexed file open each keep their own view of it and lose each other's updates. The fixture in `testdata/online` runs a day of requests after the daily batch.
+An approval adds to the account's holds and the card's totals for the day, and AUTHSRV writes a hold record numbered by the day's authorization code. AUTHSRV alone opens the files, because two programs holding one indexed file open each keep their own view of it and lose each other's updates.
+
+When the requests end, at the start of the batch window, **HOLDEXT** extracts the holds still open as the card file, `TRAN.CARD`, in the form of the branches' transaction file: a card purchase or ATM withdrawal per hold, and an ATM fee after a withdrawal that had one. The night's batch posts it with the branches' transactions, and loads the online files afresh for the next day, its holds released and its accounts' balances posted.
+
+[START.jcl](jobs/START.jcl) opens a new bank by loading the online files for its first day. The fixture in `testdata/online` runs the whole cycle on the fixture bank: START, an online day of requests that exercises every rule, and the daily batch that posts them.
 
 ## The running bank
 
-`make bank-reset` makes a new bank in `pangaea/run/bank`: about three thousand accounts for two thousand customers, generated from a seed (`SEED=1`, `ACCOUNTS=3000` by default), on business day 2026-09-01. `make bank-days N=5` runs the next five business days: for each it generates the branches' transaction and maintenance files for the day and runs the daily batch on them, and on the first business day of a month the month-end job too.
+`make bank-reset` makes a new bank in `pangaea/run/bank`: about three thousand accounts for two thousand customers, generated from a seed (`SEED=1`, `ACCOUNTS=3000` by default), on business day 2026-09-01. `make bank-days N=5` runs the next five business days: for each it runs the online day, with no card traffic yet, generates the branches' transaction and maintenance files for the day and runs the daily batch on them, and on the first business day of a month the month-end job too. A reset runs START.
 
 Every generation stays cataloged in `pangaea/run/bank/datasets`, so the history of the master, the audit trail and the rejects is all there; each day's job log and reports are in `pangaea/run/bank/sysout/DATE`. The same seed always gives the same bank, day after day. A business day goes through whole or not at all: if a job of the day fails, the bank backs the day out, deleting every dataset it cataloged and moving its job logs and reports to `sysout/DATE.failed`, and the next run starts the same day afresh.
 
