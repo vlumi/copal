@@ -103,7 +103,9 @@ func (s *Store) Load(dsn string, r io.Reader) error {
 	return s.Catalog(dsn, lrecl)
 }
 
-// Unload writes a cataloged dataset as text, one record per line.
+// Unload writes a cataloged dataset as text, one record per line. Every byte
+// must be printable: Pangaea's records hold only display fields, so anything
+// else, such as the NULs of a field never moved to, is a program error.
 func (s *Store) Unload(dsn string, w io.Writer) error {
 	lrecl, ok := s.LRECL(dsn)
 	if !ok {
@@ -114,14 +116,18 @@ func (s *Store) Unload(dsn string, w io.Writer) error {
 		return err
 	}
 	for record := range slices.Chunk(data, lrecl) {
-		if bytes.IndexByte(record, '\n') >= 0 {
-			return fmt.Errorf("%s: a record contains a newline and cannot be unloaded as text", dsn)
+		if i := bytes.IndexFunc(record, notPrintable); i >= 0 {
+			return fmt.Errorf("%s: byte %d of record %q is not printable", dsn, i+1, record)
 		}
 		if _, err := fmt.Fprintf(w, "%s\n", record); err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+func notPrintable(r rune) bool {
+	return r < ' ' || r > '~'
 }
 
 // LoadFile loads a text file as the dataset named by the file name without
