@@ -208,6 +208,14 @@ func jobDiagram(dir string, job Job) diagram.Graph {
 	return JobGraph(job, JobNotes{Link: func(step Step) string { return sourceTarget(dir, step.Source) }})
 }
 
+// NetworkLegend says how to read a job's network.
+const NetworkLegend = "White boxes are steps, with the program each runs. Shaded, rounded ones are datasets, " +
+	"as the job names them: NAME(0) is a generation data group's current generation, NAME(+1) the next, which " +
+	"the job writes. A dashed outline, and a name starting with &&, mark a temporary dataset, which lives only " +
+	"while the job runs. A dataset is drawn next to each step that uses it, unless one step writes what another " +
+	"reads. Arrows run from the datasets a step reads to the step, and from the step to the datasets it writes; " +
+	"dotted ones from a step to the next where no dataset leads from one to the other."
+
 // JobNotes add to a job's diagram what a run of it did: a note after each
 // step's label, such as its return code, and after the label of each
 // dataset a DD names alone, such as its records; and the link of each
@@ -249,7 +257,7 @@ func JobGraph(job Job, notes JobNotes) diagram.Graph {
 			if notes.DD != nil && len(dd.Datasets) == 1 {
 				label = withNote(label, notes.DD(step, dd))
 			}
-			g.Nodes = append(g.Nodes, diagram.Node{ID: id, Label: label, Rounded: true})
+			g.Nodes = append(g.Nodes, diagram.Node{ID: id, Label: label, Data: true, Dashed: strings.HasPrefix(ds, "&&")})
 		}
 		return id
 	}
@@ -318,9 +326,7 @@ func jobMarkdown(dir string, job Job) string {
 	writeDescription(&b, job.Description)
 	fmt.Fprintf(&b, "Job %s: %d steps.\n", sourceLink(dir, job.Source, false), len(job.Steps))
 	fmt.Fprintf(&b, "\n## Network\n\n![The steps of %s and the datasets they read and write](%s.svg)\n", job.Name, job.Name)
-	b.WriteString("\nBoxes are steps, with the program each runs; rounded boxes are datasets, as the job names them. " +
-		"Arrows run from the datasets a step reads to the step, and from the step to the datasets it writes; " +
-		"dotted ones from a step to the next where no dataset leads from one to the other.\n")
+	b.WriteString("\n" + NetworkLegend + "\n")
 
 	b.WriteString("\n## Steps\n\n| Step | Program | Bypassed by | Description | Source |\n| --- | --- | --- | --- | --- |\n")
 	for _, step := range job.Steps {

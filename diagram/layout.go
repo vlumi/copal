@@ -21,14 +21,16 @@ type Graph struct {
 
 // Node is a box with a label. Title is shown on hover and Link is followed
 // on click, where the viewer supports it. An emphasized node is drawn with a
-// heavier border, a rounded one with round ends, as for data.
+// heavier border; a data node with round ends and a tinted fill, and a
+// dashed one with a dashed border.
 type Node struct {
 	ID       string
 	Label    string
 	Title    string
 	Link     string
 	Emphasis bool
-	Rounded  bool
+	Data     bool
+	Dashed   bool
 }
 
 // Edge is an arrow from one node to another, drawn in a style. Span is the

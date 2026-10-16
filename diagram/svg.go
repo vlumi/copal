@@ -8,6 +8,8 @@ import (
 const style = `<style>
 .box { fill: #ffffff; stroke: #57606a; stroke-width: 1 }
 .box.emphasis { stroke-width: 2.5 }
+.box.data { fill: #e8eef6; stroke: #8c959f }
+.box.dashed { stroke-dasharray: 4 3 }
 .label { fill: #1f2328 }
 .edge { fill: none; stroke: #8c959f; stroke-width: 1.2 }
 .edge.dashed { stroke-dasharray: 4 3 }
@@ -15,6 +17,7 @@ const style = `<style>
 .head { fill: #8c959f }
 @media (prefers-color-scheme: dark) {
   .box { fill: #161b22; stroke: #8b949e }
+  .box.data { fill: #1f2a3a; stroke: #6e7681 }
   .label { fill: #e6edf3 }
   .edge { stroke: #6e7681 }
   .head { fill: #6e7681 }
@@ -86,8 +89,13 @@ func (l *layout) writeEdge(b *strings.Builder, e routedEdge) {
 
 func (l *layout) writeNode(b *strings.Builder, s *slot, n Node) {
 	class := "box"
-	if n.Emphasis {
-		class += " emphasis"
+	for _, c := range []struct {
+		set  bool
+		name string
+	}{{n.Emphasis, "emphasis"}, {n.Data, "data"}, {n.Dashed, "dashed"}} {
+		if c.set {
+			class += " " + c.name
+		}
 	}
 	open, end := "<g>", "</g>"
 	if n.Link != "" {
@@ -98,7 +106,7 @@ func (l *layout) writeNode(b *strings.Builder, s *slot, n Node) {
 		fmt.Fprintf(b, "<title>%s</title>", label(n.Title))
 	}
 	top, radius := l.top(s), 4
-	if n.Rounded {
+	if n.Data {
 		radius = boxHeight / 2
 	}
 	fmt.Fprintf(b, `<rect class="%s" x="%d" y="%d" width="%d" height="%d" rx="%d"/>`, class, s.x, top, s.width, boxHeight, radius)
