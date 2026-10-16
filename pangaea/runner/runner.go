@@ -21,6 +21,12 @@ import (
 // JobLog is the file in the sysout directory that lists each step's outcome.
 const JobLog = "JOBLOG"
 
+// Messages is the file in the sysout directory that lists, for each step
+// that ran, the dataset each DD statement was bound to and the records it
+// held when the step ended, as a mainframe's job entry subsystem does in
+// its JESYSMSG.
+const Messages = "JESYSMSG"
+
 // Runner runs jobs against a dataset store.
 type Runner struct {
 	Programs string // directory of the compiled programs
@@ -79,7 +85,49 @@ func (r Runner) Run(job *jcl.Job) ([]Result, error) {
 	if err != nil {
 		return results, err
 	}
+	if err := os.WriteFile(filepath.Join(r.Sysout, Messages), []byte(run.messages.String()), 0o644); err != nil {
+		return results, err
+	}
 	return results, r.writeJobLog(job, results)
+}
+
+// recordAllocations writes a step's outcome to the messages, and each of
+// its DDs with the datasets it was bound to and their records.
+func (run *jobRun) recordAllocations(step jcl.Step, result Result) {
+	fmt.Fprintln(&run.messages, result)
+	for _, dd := range step.DDs {
+		name := dd.Name
+		switch {
+		case dd.Sysout:
+			fmt.Fprintf(&run.messages, "  %-8s SYSOUT\n", name)
+			continue
+		case dd.Dummy:
+			fmt.Fprintf(&run.messages, "  %-8s DUMMY\n", name)
+			continue
+		}
+		for _, d := range append([]jcl.DD{dd}, dd.Concatenated...) {
+			dsns := []string{run.dsn(d)}
+			if d.Disp == jcl.Shr || d.Disp == jcl.Old {
+				if inputs, err := run.inputs(d); err == nil {
+					dsns = inputs
+				}
+			}
+			for _, dsn := range dsns {
+				fmt.Fprintf(&run.messages, "  %-8s %-28s %s\n", name, dsn, run.records(dsn))
+				name = ""
+			}
+		}
+	}
+}
+
+// records says how many records a dataset holds.
+func (run *jobRun) records(dsn string) string {
+	lrecl, ok := run.Datasets.LRECL(dsn)
+	info, err := os.Stat(run.Datasets.Path(dsn))
+	if !ok || err != nil {
+		return "NOT CATALOGED"
+	}
+	return fmt.Sprintf("%d RECORDS", info.Size()/int64(lrecl))
 }
 
 // jobRun is the state of one run of a job: the newest generation of each
@@ -91,13 +139,16 @@ type jobRun struct {
 	newest    map[string]int
 	temporary []string
 	scratch   string
+	messages  strings.Builder
 }
 
 func (run *jobRun) steps(job *jcl.Job) ([]Result, error) {
 	var results []Result
 	for _, step := range job.Steps {
 		if abended(results) || bypassed(step, results) {
-			results = append(results, Result{Step: step.Name, Program: step.Program, Bypassed: true})
+			result := Result{Step: step.Name, Program: step.Program, Bypassed: true}
+			results = append(results, result)
+			fmt.Fprintln(&run.messages, result)
 			continue
 		}
 		result, err := run.runStep(step)
@@ -105,6 +156,7 @@ func (run *jobRun) steps(job *jcl.Job) ([]Result, error) {
 			return results, fmt.Errorf("step %s: %w", step.Name, err)
 		}
 		results = append(results, result)
+		run.recordAllocations(step, result)
 	}
 	return results, nil
 }
