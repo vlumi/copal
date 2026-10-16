@@ -23,12 +23,15 @@ type Server struct {
 
 	mu          sync.Mutex
 	day         *bank.OnlineDay
-	subscribers map[chan Authorization]bool
+	subscribers map[chan Event]bool
 }
 
-// Authorization is a request the server answered, and when.
-type Authorization struct {
+// Event is something that happened on the online channel: the online day
+// opened or closed, or, by default, a request was answered.
+type Event struct {
 	Time     time.Time
+	Opened   bool
+	Closed   bool
 	Request  Request
 	Response Response
 }
@@ -46,6 +49,7 @@ func (s *Server) Open() error {
 		return err
 	}
 	s.day = day
+	s.publish(Event{Time: s.Clock(), Opened: true})
 	return nil
 }
 
@@ -55,6 +59,9 @@ func (s *Server) Close() ([]runner.Result, error) {
 	s.mu.Lock()
 	day := s.day
 	s.day = nil
+	if day != nil {
+		s.publish(Event{Time: s.Clock(), Closed: true})
+	}
 	s.mu.Unlock()
 	if day == nil {
 		return nil, nil
@@ -93,19 +100,19 @@ func (s *Server) Authorize(r Request) (Response, error) {
 	if err != nil {
 		return Response{}, err
 	}
-	s.publish(Authorization{Time: now, Request: r, Response: response})
+	s.publish(Event{Time: now, Request: r, Response: response})
 	return response, nil
 }
 
-// Subscribe returns the authorizations answered from now on, until cancel
-// is called. A subscriber that falls behind misses some.
-func (s *Server) Subscribe() (authorizations <-chan Authorization, cancel func()) {
+// Subscribe returns the events from now on, until cancel is called. A
+// subscriber that falls behind misses some.
+func (s *Server) Subscribe() (events <-chan Event, cancel func()) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if s.subscribers == nil {
-		s.subscribers = map[chan Authorization]bool{}
+		s.subscribers = map[chan Event]bool{}
 	}
-	c := make(chan Authorization, 64)
+	c := make(chan Event, 64)
 	s.subscribers[c] = true
 	return c, func() {
 		s.mu.Lock()
@@ -117,10 +124,10 @@ func (s *Server) Subscribe() (authorizations <-chan Authorization, cancel func()
 	}
 }
 
-func (s *Server) publish(a Authorization) {
+func (s *Server) publish(e Event) {
 	for c := range s.subscribers {
 		select {
-		case c <- a:
+		case c <- e:
 		default:
 		}
 	}
@@ -166,7 +173,7 @@ func (s *Server) serve(request func(message) Request) http.HandlerFunc {
 		}
 		req := request(m)
 		card, err := strconv.ParseInt(m.Card, 10, 64)
-		if err != nil || len(m.Card) != 16 || len(req.Terminal) > 20 {
+		if err != nil || len(m.Card) != 16 || len(req.Terminal) > 20 || req.Amount < 0 {
 			writeJSON(w, http.StatusBadRequest, Response{Result: ResultInvalid, Message: "INVALID REQUEST"})
 			return
 		}

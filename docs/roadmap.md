@@ -75,7 +75,7 @@ The console gains a page per run: the job network with each step's return code a
 
 Done when: Pangaea has its ten or so programs, a month-end in the console, and a blueprint for every program and for the job network.
 
-## 7. The online channel: cards and ATMs
+## 7. The online channel: cards and ATMs (done)
 
 A bank that only has a batch is not a realistic bank. Customers pay by card and take cash from ATMs all day, and that online day is coupled to the night's batch in ways that make real core systems hard to replace: the online side writes what the batch reads, a balance means different things at different hours, and during the batch window the online side has to stand still. That coupling is exactly the kind of undocumented contract Copal is meant to surface.
 
@@ -85,9 +85,9 @@ A bank that only has a batch is not a realistic bank. Customers pay by card and 
 - A thin server around them does the HTTP and nothing else. It passes requests to a COBOL dispatcher that runs for the whole online day and calls the authorization programs, as a transaction monitor would.
 - The account master stays sequential. Each night the batch loads the new master into an indexed online account file keyed by account number, which authorizations read single accounts from. The card file is indexed by card number, loaded the same way from a sequential card master.
 - Authorizations do not update the master. They write holds to an indexed file keyed by account and hold number and add them to the online account's holds total, and the available balance is the balance plus the overdraft limit less the holds. Each card keeps its running totals for the day.
-- At end of day the holds are read in key order into a transaction file with header and trailer, the daily batch posts it, releases the holds, and resets the cards' daily totals.
+- At end of day the holds are read in key order into a transaction file with header and trailer, the daily batch posts it and loads the online files afresh, with no holds. The cards' totals are for the date they carry, and start over with a new day's first authorization.
 - During the batch window the API answers that the bank is closed.
-- A traffic simulator that makes card purchases and ATM withdrawals at a configurable rate, following the customers' generated habits, with live updates in the console (server-sent events) so balances and holds move while you watch.
+- A traffic simulator that makes card purchases and ATM withdrawals at a configurable rate, following each card's generated spending habit, with live updates in the console (server-sent events) so balances and holds move while you watch.
 
 Done when: with the simulator running, the console shows available balances dropping during the day and declines for cards over their limits, the API closes for the batch, and the next morning the card and ATM transactions appear in the master.
 

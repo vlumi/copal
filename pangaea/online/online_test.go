@@ -15,13 +15,13 @@ import (
 )
 
 func TestCents(t *testing.T) {
-	for text, want := range map[string]Cents{"12.34": 1234, "12.3": 1230, "12": 1200, "0.05": 5} {
+	for text, want := range map[string]Cents{"12.34": 1234, "12.3": 1230, "12": 1200, "0.05": 5, "-1.50": -150} {
 		var c Cents
 		if err := c.UnmarshalText([]byte(text)); err != nil || c != want {
 			t.Errorf("%s read as %d, %v; want %d", text, c, err, want)
 		}
 	}
-	for _, text := range []string{"", "-1.00", "1.234", "1,00", ".5"} {
+	for _, text := range []string{"", "--1.00", "-+1", "1.234", "1,00", ".5"} {
 		var c Cents
 		if err := c.UnmarshalText([]byte(text)); err == nil {
 			t.Errorf("%q read as %d", text, c)
@@ -76,7 +76,7 @@ func TestServer(t *testing.T) {
 	if err := s.Open(); err != nil {
 		t.Fatal(err)
 	}
-	authorizations, cancel := s.Subscribe()
+	events, cancel := s.Subscribe()
 	defer cancel()
 	_, before := post("/balance", `{"card":"`+card+`","atm":"ATM 1"}`)
 	if !before.Approved {
@@ -86,14 +86,21 @@ func TestServer(t *testing.T) {
 	if !bought.Approved || bought.AuthCode != "000001" || bought.Available != before.Available-150 {
 		t.Errorf("purchase of 1.50 with %s available: %+v", before.Available, bought)
 	}
-	if a := <-authorizations; a.Request.Function != Balance {
-		t.Errorf("first authorization published: %+v", a)
+	if e := <-events; e.Request.Function != Balance {
+		t.Errorf("first event published: %+v", e)
 	}
 	if status, r := post("/purchase", `{"card":"12","amount":"1.50"}`); status != http.StatusBadRequest || r.Result != ResultInvalid {
 		t.Errorf("a short card number: %d %+v", status, r)
 	}
+	if status, r := post("/purchase", `{"card":"`+card+`","amount":"-1.50"}`); status != http.StatusBadRequest || r.Result != ResultInvalid {
+		t.Errorf("a negative amount: %d %+v", status, r)
+	}
+	<-events
 	if _, err := s.Close(); err != nil {
 		t.Fatal(err)
+	}
+	if e := <-events; !e.Closed {
+		t.Errorf("event published on closing: %+v", e)
 	}
 	if status, _ := post("/purchase", `{"card":"`+card+`","amount":"1.50","merchant":"KIOSK"}`); status != http.StatusServiceUnavailable {
 		t.Errorf("after closing: %d", status)

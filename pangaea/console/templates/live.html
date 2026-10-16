@@ -1,0 +1,24 @@
+{{define "title"}}Online{{end}}
+{{define "content"}}
+{{with .View}}
+<h1>The online day</h1>
+<p id="status" class="{{if .Open}}ok{{else}}note{{end}}">{{if .Open}}Open for business date {{.Date}}{{else}}Closed: the batch runs next{{end}}</p>
+<dl class="facts">
+  <div><dt>Requests</dt><dd id="requests">0</dd></div>
+  <div><dt>Approved</dt><dd id="approved">0</dd></div>
+  <div><dt>Declined</dt><dd id="declined">0</dd></div>
+  <div><dt>Held</dt><dd id="held">0.00</dd></div>
+</dl>
+<p class="note">Card terminals and ATMs send JSON to <code>POST /api/purchase</code>, <code>/api/reversal</code>, <code>/api/withdrawal</code> and <code>/api/balance</code>; <code>make simulate</code> sends them generated traffic. Running a business day closes the online day for the batch, and opens the next one after it. This page shows what is answered while it is open.</p>
+<h2>Accounts</h2>
+<table id="accounts">
+  <thead><tr><th class="num">Account</th><th>Last request</th><th class="num">Balance</th><th class="num">Available</th></tr></thead>
+  <tbody></tbody>
+</table>
+<h2>Authorizations</h2>
+<table id="feed">
+  <thead><tr><th>Time</th><th>Request</th><th class="num">Card</th><th class="num">Account</th><th>Terminal</th><th class="num">Amount</th><th class="num">Fee</th><th>Result</th><th class="num">Available</th></tr></thead>
+  <tbody></tbody>
+</table>
+{{end}}
+{{end}}
