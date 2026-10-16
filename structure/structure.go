@@ -1,5 +1,6 @@
 // Package structure finds a program's procedural structure: its paragraphs
-// and sections, and which of them perform which.
+// and sections, and which of them perform which. A SORT performs its input
+// and output procedures, so they count as performed too.
 package structure
 
 import (
@@ -21,10 +22,11 @@ type Paragraph struct {
 }
 
 // Perform is a PERFORM of a paragraph or section, or of the range from
-// Target through Thru.
+// Target through Thru, or a SORT's input or output procedure.
 type Perform struct {
 	Target string
 	Thru   string
+	Sort   bool
 	Pos    cobol.Pos
 }
 
@@ -55,18 +57,31 @@ func Paragraphs(p *cobol.Program) ([]Paragraph, error) {
 	return paragraphs, nil
 }
 
-// findPerforms finds the PERFORM statements that name a procedure in index.
+// findPerforms finds the PERFORM statements that name a procedure in index,
+// and the input and output procedures of SORT statements.
 func findPerforms(body []cobol.Token, index map[string]int) ([]Perform, error) {
 	var performs []Perform
 	for i := 0; i+1 < len(body); i++ {
-		if !body[i].Is("PERFORM") || !known(index, body[i+1]) {
+		var perform Perform
+		switch {
+		case body[i].Is("PERFORM"):
+			perform = Perform{Pos: body[i].Pos}
+		case body[i].Is("PROCEDURE") && i > 0 && (body[i-1].Is("INPUT") || body[i-1].Is("OUTPUT")):
+			perform = Perform{Sort: true, Pos: body[i-1].Pos}
+			if body[i+1].Is("IS") {
+				i++
+			}
+		default:
 			continue
 		}
-		perform := Perform{Target: body[i+1].Text, Pos: body[i].Pos}
+		if i+1 >= len(body) || !known(index, body[i+1]) {
+			continue
+		}
+		perform.Target = body[i+1].Text
 		if i+3 < len(body) && (body[i+2].Is("THRU") || body[i+2].Is("THROUGH")) {
 			perform.Thru = body[i+3].Text
 			if !known(index, body[i+3]) {
-				return nil, fmt.Errorf("%s: PERFORM %s THRU %s: no such paragraph", body[i].Pos, perform.Target, perform.Thru)
+				return nil, fmt.Errorf("%s: %s THRU %s: no such paragraph", perform.Pos, perform.Target, perform.Thru)
 			}
 		}
 		performs = append(performs, perform)

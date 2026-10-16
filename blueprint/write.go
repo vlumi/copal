@@ -220,13 +220,17 @@ func fieldNotes(f Field) string {
 	return strings.Join(notes, "; ")
 }
 
-// performTargets lists the procedures performed, each once, in order.
+// performTargets lists the procedures performed, each once, in order, and
+// marks those a SORT performs.
 func performTargets(performs []Perform) []string {
 	var targets []string
 	for _, p := range performs {
 		target := p.Target
 		if p.Thru != "" {
 			target += " THRU " + p.Thru
+		}
+		if p.Sort {
+			target += " (SORT)"
 		}
 		if !slices.Contains(targets, target) {
 			targets = append(targets, target)
