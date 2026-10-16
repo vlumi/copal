@@ -20,7 +20,8 @@ type Graph struct {
 	Legend []Key // drawn in a box of its own, to the right at the top
 }
 
-// Node is a box with a label. Title is shown on hover and Link is followed
+// Node is a box with a label, of one line or several separated by \n; the
+// first of several is set in bold. Title is shown on hover and Link is followed
 // on click, where the viewer supports it. An emphasized node is drawn with a
 // heavier border; a data node with round ends and a tinted fill, and a
 // dashed one with a dashed border.
@@ -57,7 +58,8 @@ const (
 const (
 	charWidth  = 7
 	boxPadding = 10
-	boxHeight  = 26
+	boxHeight  = 26 // of a box with a one-line label
+	lineHeight = 14
 	layerGap   = 46
 	nodeGap    = 18
 	dummyWidth = 8
@@ -67,24 +69,28 @@ const (
 // slot is a box or, for an edge that spans several layers, a waypoint the
 // edge passes through on an intermediate layer.
 type slot struct {
-	node  int // index in Graph.Nodes, or -1 for a waypoint
-	layer int
-	order float64
-	x     int // left edge
-	width int
-	above []*slot // slots in the layer above with an edge to this one
-	below []*slot
+	node   int // index in Graph.Nodes, or -1 for a waypoint
+	layer  int
+	order  float64
+	x      int // left edge
+	width  int
+	height int     // a box's; a waypoint takes its layer's
+	above  []*slot // slots in the layer above with an edge to this one
+	below  []*slot
 }
 
 func (s *slot) center() int { return s.x + s.width/2 }
 
-// layout is the positioned graph.
+// layout is the positioned graph. A layer is as tall as its tallest box,
+// and the boxes in it are centered on it.
 type layout struct {
-	layers [][]*slot
-	nodes  []*slot
-	edges  []routedEdge
-	width  int
-	height int
+	layers      [][]*slot
+	layerTop    []int
+	layerHeight []int
+	nodes       []*slot
+	edges       []routedEdge
+	width       int
+	height      int
 }
 
 // routedEdge is an edge as a chain of slots, from top to bottom through any
@@ -242,7 +248,13 @@ func (l *layout) assignLayers(g Graph, edges []indexedEdge, order []int) {
 		}
 	}
 	for i, n := range g.Nodes {
-		s := &slot{node: i, layer: layer[i], order: float64(order[i]), width: len(n.Label)*charWidth + 2*boxPadding}
+		lines := strings.Split(n.Label, "\n")
+		longest := 0
+		for _, line := range lines {
+			longest = max(longest, len(line))
+		}
+		s := &slot{node: i, layer: layer[i], order: float64(order[i]), width: longest*charWidth + 2*boxPadding,
+			height: boxHeight + (len(lines)-1)*lineHeight}
 		l.nodes = append(l.nodes, s)
 		l.add(s)
 	}
@@ -374,7 +386,17 @@ func (l *layout) place() {
 			l.width = max(l.width, s.x+s.width+margin)
 		}
 	}
-	l.height = 2*margin + len(l.layers)*boxHeight + (len(l.layers)-1)*layerGap
+	top := margin
+	for _, layer := range l.layers {
+		height := boxHeight
+		for _, s := range layer {
+			height = max(height, s.height)
+		}
+		l.layerTop = append(l.layerTop, top)
+		l.layerHeight = append(l.layerHeight, height)
+		top += height + layerGap
+	}
+	l.height = top - layerGap + margin
 }
 
 // center moves each slot of a layer toward the mean center of its
@@ -414,7 +436,21 @@ func center(layer []*slot, neighbors func(*slot) []*slot) {
 	}
 }
 
-func (l *layout) top(s *slot) int { return margin + s.layer*(boxHeight+layerGap) }
+// top and bottom are where a box's top and bottom sides are, or where a
+// waypoint's line enters and leaves its layer.
+func (l *layout) top(s *slot) int {
+	if s.node < 0 {
+		return l.layerTop[s.layer]
+	}
+	return l.layerTop[s.layer] + (l.layerHeight[s.layer]-s.height)/2
+}
+
+func (l *layout) bottom(s *slot) int {
+	if s.node < 0 {
+		return l.layerTop[s.layer] + l.layerHeight[s.layer]
+	}
+	return l.top(s) + s.height
+}
 
 // port spreads the edges that leave or enter a box along its bottom or top
 // side, in the order of the boxes at their other end.

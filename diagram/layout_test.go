@@ -129,3 +129,26 @@ func TestLayoutSpansAndSources(t *testing.T) {
 		t.Errorf("IN at %d, after OUT at %d: not next to B, which it feeds", in.x, out.x)
 	}
 }
+
+// A layer is as tall as its tallest box, and shorter boxes are centered
+// on it.
+func TestLayoutMultilineLabels(t *testing.T) {
+	g := Graph{
+		Nodes: []Node{{ID: "A", Label: "A"}, {ID: "B", Label: "B\nprogram LONGNAME"}, {ID: "C", Label: "C"}},
+		Edges: []Edge{{From: "A", To: "B"}, {From: "A", To: "C"}},
+	}
+	l, err := newLayout(g)
+	if err != nil {
+		t.Fatal(err)
+	}
+	b, c := l.nodes[1], l.nodes[2]
+	if b.height != boxHeight+lineHeight || l.layerHeight[1] != b.height {
+		t.Errorf("B %d high, its layer %d, want %d", b.height, l.layerHeight[1], boxHeight+lineHeight)
+	}
+	if b.width != len("program LONGNAME")*charWidth+2*boxPadding {
+		t.Errorf("B %d wide, want its longest line's width", b.width)
+	}
+	if l.top(c)-l.top(b) != lineHeight/2 {
+		t.Errorf("C at %d, B at %d: C not centered on the layer", l.top(c), l.top(b))
+	}
+}
