@@ -1,0 +1,879 @@
+{
+  "program": "STMTPRT",
+  "tables": [
+    {
+      "paragraph": "0000-MAIN",
+      "source": "pangaea/programs/STMTPRT.cbl:208",
+      "conditions": [
+        "WS-CLOSED-MONTH-NUMBER = 0",
+        "SORT-RETURN = 0"
+      ],
+      "actions": [
+        "PERFORM 1000-INITIALIZE",
+        "SORT STMT-SORT ON ASCENDING KEY SR-ACCT-NO SR-DATE SR-SEQ INPUT PROCEDURE IS 2000-SELECT-POSTINGS OUTPUT PROCEDURE IS 3000-PRINT-STATEMENTS",
+        "MOVE 'SORT FAILED' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT",
+        "PERFORM 8000-WRITE-REPORT",
+        "PERFORM 9000-CLOSE-FILES",
+        "MOVE 0 TO RETURN-CODE",
+        "STOP RUN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            4,
+            5,
+            6,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "1000-INITIALIZE",
+      "source": "pangaea/programs/STMTPRT.cbl:226",
+      "conditions": [
+        "WS-FILE-STATUSES = ALL '0'",
+        "READ ACCR-IN AT END",
+        "WS-CM-MONTH = 12"
+      ],
+      "actions": [
+        "OPEN INPUT ACCR-IN ACCT-IN AUDIT-IN OUTPUT STMT-OUT REPORT-OUT",
+        "DISPLAY 'STMTPRT: CANNOT OPEN FILES ' WS-FILE-STATUSES",
+        "MOVE 16 TO RETURN-CODE",
+        "STOP RUN",
+        "MOVE 0 TO WS-CLOSED-MONTH-NUMBER",
+        "READ ACCR-IN",
+        "MOVE AC-DUE-MONTH TO WS-CLOSED-MONTH-NUMBER",
+        "MOVE WS-CM-YEAR TO WS-NM-YEAR",
+        "ADD 1 TO WS-NM-YEAR",
+        "MOVE 1 TO WS-NM-MONTH",
+        "COMPUTE WS-NM-MONTH = WS-CM-MONTH + 1"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            4,
+            5,
+            6,
+            7,
+            10
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            4,
+            5,
+            7,
+            8,
+            9
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            4,
+            5,
+            7,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2000-SELECT-POSTINGS",
+      "source": "pangaea/programs/STMTPRT.cbl:249",
+      "conditions": [
+        "WS-AUDIT-STATUS = '10'"
+      ],
+      "actions": [
+        "READ AUDIT-IN",
+        "PERFORM UNTIL WS-AUDIT-STATUS NOT = '00'",
+        "MOVE 'CANNOT READ THE AUDIT TRAILS' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2000-SELECT-POSTINGS",
+      "loop": "PERFORM UNTIL WS-AUDIT-STATUS NOT = '00'",
+      "source": "pangaea/programs/STMTPRT.cbl:251",
+      "conditions": [
+        "WS-POSTING-MONTH = WS-CLOSED-MONTH OR (WS-POSTING-MONTH = WS-NEXT-MONTH AND WS-MONTH-END-CODE)"
+      ],
+      "actions": [
+        "ADD 1 TO WS-SEQ",
+        "MOVE AU-BUSINESS-DATE(1:6) TO WS-POSTING-MONTH",
+        "MOVE AU-TRAN-CODE TO WS-POSTING-CODE",
+        "PERFORM 2100-RELEASE-POSTING",
+        "READ AUDIT-IN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "3000-PRINT-STATEMENTS",
+      "source": "pangaea/programs/STMTPRT.cbl:282",
+      "conditions": [
+        "POSTINGS-AT-END"
+      ],
+      "actions": [
+        "PERFORM 3100-RETURN-POSTING",
+        "PERFORM 3200-READ-MASTER",
+        "PERFORM UNTIL MASTER-AT-END",
+        "MOVE 'POSTINGS FOR NO ACCOUNT' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "3000-PRINT-STATEMENTS",
+      "loop": "PERFORM UNTIL MASTER-AT-END",
+      "source": "pangaea/programs/STMTPRT.cbl:285",
+      "conditions": [
+        "WS-POSTING-KEY \u003c AM-ACCT-NO"
+      ],
+      "actions": [
+        "MOVE 'POSTINGS FOR NO ACCOUNT' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT",
+        "PERFORM 3300-PRINT-STATEMENT",
+        "PERFORM 3200-READ-MASTER"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            2,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "3100-RETURN-POSTING",
+      "source": "pangaea/programs/STMTPRT.cbl:299",
+      "conditions": [
+        "RETURN STMT-SORT AT END"
+      ],
+      "actions": [
+        "RETURN STMT-SORT",
+        "SET POSTINGS-AT-END TO TRUE",
+        "MOVE HIGH-VALUES TO WS-POSTING-KEY",
+        "MOVE SR-ACCT-NO TO WS-POSTING-KEY"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "3200-READ-MASTER",
+      "source": "pangaea/programs/STMTPRT.cbl:309",
+      "conditions": [
+        "READ ACCT-IN AT END"
+      ],
+      "actions": [
+        "READ ACCT-IN",
+        "SET MASTER-AT-END TO TRUE",
+        "ADD 1 TO WS-ACCOUNT-COUNT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "3300-PRINT-STATEMENT",
+      "source": "pangaea/programs/STMTPRT.cbl:319",
+      "conditions": [
+        "AM-CLOSED AND AM-BALANCE = 0 AND WS-POSTING-KEY NOT = AM-ACCT-NO",
+        "WS-POSTING-KEY = AM-ACCT-NO"
+      ],
+      "actions": [
+        "EXIT PARAGRAPH",
+        "MOVE AM-BALANCE TO WS-OPENING",
+        "MOVE SR-BALANCE-BEFORE TO WS-OPENING",
+        "MOVE WS-OPENING TO WS-CLOSING",
+        "MOVE 0 TO WS-CREDITS WS-DEBITS",
+        "PERFORM 3400-PRINT-HEADING",
+        "PERFORM UNTIL WS-POSTING-KEY NOT = AM-ACCT-NO",
+        "PERFORM 3600-PRINT-CLOSING",
+        "ADD 1 TO WS-STATEMENT-COUNT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            1,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "3400-PRINT-HEADING",
+      "source": "pangaea/programs/STMTPRT.cbl:339",
+      "conditions": [
+        "AM-SAVINGS AND AM-FROZEN",
+        "AM-SAVINGS",
+        "AM-FROZEN"
+      ],
+      "actions": [
+        "WRITE STMT-LINE FROM WS-RULE-LINE",
+        "MOVE SPACES TO WS-TL-PERIOD",
+        "STRING 'STATEMENT FOR ' DELIMITED BY SIZE WS-MONTH-NAME(WS-CM-MONTH) DELIMITED BY SPACE ' ' WS-CM-YEAR DELIMITED BY SIZE INTO WS-TL-PERIOD",
+        "WRITE STMT-LINE FROM WS-TITLE-LINE",
+        "MOVE AM-ACCT-NO TO WS-AL-ACCT-NO",
+        "MOVE AM-SHORT-NAME TO WS-AL-NAME",
+        "MOVE 'SAVINGS ACCOUNT, FROZEN' TO WS-AL-KIND",
+        "WRITE STMT-LINE FROM WS-ACCOUNT-LINE",
+        "MOVE SPACES TO STMT-LINE",
+        "WRITE STMT-LINE",
+        "WRITE STMT-LINE FROM WS-HEADING-LINE",
+        "MOVE 'OPENING BALANCE' TO WS-BL-LABEL",
+        "MOVE WS-OPENING TO WS-BL-BALANCE",
+        "WRITE STMT-LINE FROM WS-BALANCE-LINE",
+        "MOVE 'SAVINGS ACCOUNT' TO WS-AL-KIND",
+        "MOVE 'CURRENT ACCOUNT, FROZEN' TO WS-AL-KIND",
+        "MOVE 'CURRENT ACCOUNT' TO WS-AL-KIND"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            14,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            15,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            16,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "3500-PRINT-POSTING",
+      "source": "pangaea/programs/STMTPRT.cbl:368",
+      "conditions": [
+        "ST-CODE(ST-CX) = SR-TRAN-CODE",
+        "SR-AMOUNT \u003c 0"
+      ],
+      "actions": [
+        "MOVE SR-DATE TO WS-DATE",
+        "MOVE WS-DATE-YEAR TO WS-PL-YEAR",
+        "MOVE WS-DATE-MONTH TO WS-PL-MONTH",
+        "MOVE WS-DATE-DAY TO WS-PL-DAY",
+        "MOVE SR-TRAN-ID TO WS-PL-TRAN-ID",
+        "SET ST-CX TO 1",
+        "SEARCH ST-CODE-ENTRY",
+        "MOVE ST-CODE-TEXT(ST-CX) TO WS-PL-DESCRIPTION",
+        "MOVE SR-AMOUNT TO WS-PL-AMOUNT",
+        "MOVE SR-BALANCE-AFTER TO WS-PL-BALANCE",
+        "WRITE STMT-LINE FROM WS-POSTING-LINE",
+        "SUBTRACT SR-AMOUNT FROM WS-DEBITS",
+        "MOVE SR-BALANCE-AFTER TO WS-CLOSING",
+        "ADD 1 TO WS-PRINTED-COUNT",
+        "ADD SR-AMOUNT TO WS-CREDITS",
+        "MOVE SR-TRAN-CODE TO WS-PL-DESCRIPTION"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            14,
+            12,
+            13
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            15,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            15,
+            8,
+            9,
+            10,
+            14,
+            12,
+            13
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "8000-WRITE-REPORT",
+      "source": "pangaea/programs/STMTPRT.cbl:407",
+      "conditions": [
+        "WS-CLOSED-MONTH-NUMBER = 0",
+        "WS-PRINTED-COUNT = WS-SELECTED-COUNT"
+      ],
+      "actions": [
+        "MOVE 'STMTPRT  MONTHLY STATEMENTS' TO REPORT-LINE",
+        "WRITE REPORT-LINE",
+        "MOVE SPACES TO REPORT-LINE",
+        "MOVE 'NO MONTH CLOSED' TO REPORT-LINE",
+        "EXIT PARAGRAPH",
+        "STRING 'MONTH CLOSED                  ' WS-CLOSED-MONTH DELIMITED BY SIZE INTO REPORT-LINE",
+        "MOVE 'ACCOUNTS READ' TO WS-RC-LABEL",
+        "MOVE WS-ACCOUNT-COUNT TO WS-RC-VALUE",
+        "WRITE REPORT-LINE FROM WS-REPORT-COUNT-LINE",
+        "MOVE 'STATEMENTS PRINTED' TO WS-RC-LABEL",
+        "MOVE WS-STATEMENT-COUNT TO WS-RC-VALUE",
+        "MOVE 'POSTINGS SELECTED' TO WS-RC-LABEL",
+        "MOVE WS-SELECTED-COUNT TO WS-RC-VALUE",
+        "MOVE 'POSTINGS PRINTED' TO WS-RC-LABEL",
+        "MOVE WS-PRINTED-COUNT TO WS-RC-VALUE",
+        "MOVE 'CREDITS' TO WS-RA-LABEL",
+        "MOVE WS-CREDIT-TOTAL TO WS-RA-VALUE",
+        "WRITE REPORT-LINE FROM WS-REPORT-AMOUNT-LINE",
+        "MOVE 'DEBITS' TO WS-RA-LABEL",
+        "MOVE WS-DEBIT-TOTAL TO WS-RA-VALUE",
+        "MOVE 'POSTINGS SELECTED BUT NOT PRINTED' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            1,
+            3,
+            1,
+            4,
+            2,
+            5,
+            1,
+            6,
+            7,
+            8,
+            9,
+            10,
+            8,
+            11,
+            12,
+            8,
+            13,
+            14,
+            8,
+            15,
+            16,
+            17,
+            18,
+            19,
+            17,
+            20,
+            21
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            1,
+            3,
+            1,
+            4,
+            2,
+            5,
+            1,
+            6,
+            7,
+            8,
+            9,
+            10,
+            8,
+            11,
+            12,
+            8,
+            13,
+            14,
+            8,
+            15,
+            16,
+            17,
+            18,
+            19,
+            17
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            1,
+            2,
+            5,
+            1,
+            6,
+            7,
+            8,
+            9,
+            10,
+            8,
+            11,
+            12,
+            8,
+            13,
+            14,
+            8,
+            15,
+            16,
+            17,
+            18,
+            19,
+            17,
+            20,
+            21
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            1,
+            2,
+            5,
+            1,
+            6,
+            7,
+            8,
+            9,
+            10,
+            8,
+            11,
+            12,
+            8,
+            13,
+            14,
+            8,
+            15,
+            16,
+            17,
+            18,
+            19,
+            17
+          ]
+        }
+      ]
+    }
+  ]
+}

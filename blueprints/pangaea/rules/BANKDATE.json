@@ -1,0 +1,72 @@
+{
+  "program": "BANKDATE",
+  "tables": [
+    {
+      "paragraph": "0000-MAIN",
+      "source": "pangaea/programs/BANKDATE.cbl:52",
+      "conditions": [
+        "WS-IN-STATUS NOT = '00' OR WS-OUT-STATUS NOT = '00'",
+        "READ CONTROL-IN AT END"
+      ],
+      "actions": [
+        "OPEN INPUT CONTROL-IN OUTPUT CONTROL-OUT",
+        "DISPLAY 'BANKDATE: CANNOT OPEN FILES ' WS-IN-STATUS ' ' WS-OUT-STATUS",
+        "MOVE 16 TO RETURN-CODE",
+        "STOP RUN",
+        "READ CONTROL-IN",
+        "DISPLAY 'BANKDATE: NO BANK CONTROL RECORD'",
+        "PERFORM 1000-NEXT-BUSINESS-DAY",
+        "WRITE CONTROL-OUT-RECORD FROM BANK-CONTROL-RECORD",
+        "CLOSE CONTROL-IN CONTROL-OUT",
+        "MOVE 0 TO RETURN-CODE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            4,
+            5,
+            2,
+            3,
+            6,
+            7,
+            8,
+            9,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            4,
+            6,
+            7,
+            8,
+            9,
+            3
+          ]
+        }
+      ]
+    }
+  ]
+}

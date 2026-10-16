@@ -22,7 +22,7 @@ DATE       BY  CHANGE
 2001-09-03 TL  CR-0298 ORIGINAL VERSION.
 ```
 
-Program [MONCHG.cbl](../../../pangaea/programs/MONCHG.cbl): 5 files, 10 paragraphs.
+Program [MONCHG.cbl](../../../pangaea/programs/MONCHG.cbl): 5 files, 10 paragraphs. Its business rules: [6 decision tables](../rules/MONCHG.md).
 
 - AUTHOR: T. LINDQVIST, BATCH SYSTEMS.
 - INSTALLATION: FIRST BANK OF PANGAEA, DATA CENTER.

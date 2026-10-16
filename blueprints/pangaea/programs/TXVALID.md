@@ -25,7 +25,7 @@ DATE       BY  CHANGE
                INSTEAD OF STOPPING THE RUN.
 ```
 
-Program [TXVALID.cbl](../../../pangaea/programs/TXVALID.cbl): 5 files, 10 paragraphs.
+Program [TXVALID.cbl](../../../pangaea/programs/TXVALID.cbl): 5 files, 10 paragraphs. Its business rules: [8 decision tables](../rules/TXVALID.md).
 
 - AUTHOR: J. ARKWRIGHT, BATCH SYSTEMS.
 - INSTALLATION: FIRST BANK OF PANGAEA, DATA CENTER.

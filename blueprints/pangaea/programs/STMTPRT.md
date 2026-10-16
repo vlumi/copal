@@ -26,7 +26,7 @@ DATE       BY  CHANGE
                WITH GLSUM.
 ```
 
-Program [STMTPRT.cbl](../../../pangaea/programs/STMTPRT.cbl): 6 files, 14 paragraphs.
+Program [STMTPRT.cbl](../../../pangaea/programs/STMTPRT.cbl): 6 files, 14 paragraphs. Its business rules: [12 decision tables](../rules/STMTPRT.md).
 
 - AUTHOR: T. LINDQVIST, BATCH SYSTEMS.
 - INSTALLATION: FIRST BANK OF PANGAEA, DATA CENTER.

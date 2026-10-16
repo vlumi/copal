@@ -1,0 +1,489 @@
+{
+  "program": "MONCHG",
+  "tables": [
+    {
+      "paragraph": "1000-INITIALIZE",
+      "source": "pangaea/programs/MONCHG.cbl:122",
+      "conditions": [
+        "WS-FILE-STATUSES = ALL '0'",
+        "READ CONTROL-FILE AT END"
+      ],
+      "actions": [
+        "OPEN INPUT CONTROL-FILE ACCT-IN ACCR-IN OUTPUT TRAN-OUT REPORT-OUT",
+        "DISPLAY 'MONCHG: CANNOT OPEN FILES ' WS-FILE-STATUSES",
+        "MOVE 16 TO RETURN-CODE",
+        "STOP RUN",
+        "READ CONTROL-FILE",
+        "MOVE 'NO BANK CONTROL RECORD' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT",
+        "MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE",
+        "MOVE SPACES TO TRAN-RECORD",
+        "PERFORM 1200-READ-ACCOUNT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            4,
+            7,
+            8,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "1200-READ-ACCOUNT",
+      "source": "pangaea/programs/MONCHG.cbl:140",
+      "conditions": [
+        "READ ACCT-IN AT END",
+        "READ ACCR-IN AT END",
+        "MASTER-AT-END AND ACCRUALS-AT-END",
+        "MASTER-AT-END OR ACCRUALS-AT-END OR AC-ACCT-NO NOT = AM-ACCT-NO"
+      ],
+      "actions": [
+        "READ ACCT-IN",
+        "SET MASTER-AT-END TO TRUE",
+        "READ ACCR-IN",
+        "SET ACCRUALS-AT-END TO TRUE",
+        "CONTINUE",
+        "MOVE 'ACCRUALS OUT OF STEP WITH THE MASTER' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            4
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            2,
+            4
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            2,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2000-CHARGE-ACCOUNT",
+      "source": "pangaea/programs/MONCHG.cbl:161",
+      "conditions": [
+        "AC-DUE-MONTH = 0"
+      ],
+      "actions": [
+        "MOVE AC-DUE-MONTH TO WS-CLOSED-MONTH",
+        "MOVE WS-CM-YYMM TO WS-TI-YYMM",
+        "PERFORM 2100-SETTLE-INTEREST",
+        "PERFORM 2200-CHARGE-FEE",
+        "PERFORM 1200-READ-ACCOUNT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2100-SETTLE-INTEREST",
+      "source": "pangaea/programs/MONCHG.cbl:172",
+      "conditions": [
+        "AC-DUE \u003e 0",
+        "AC-DUE \u003c 0"
+      ],
+      "actions": [
+        "SET TD-INTEREST TO TRUE",
+        "MOVE AC-DUE TO TD-AMOUNT",
+        "MOVE 'CREDIT INTEREST' TO TD-DESCRIPTION",
+        "PERFORM 2900-WRITE-TRAN",
+        "ADD 1 TO WS-INTEREST-COUNT",
+        "ADD TD-AMOUNT TO WS-INTEREST-TOTAL",
+        "SET TD-OVERDRAFT-INTEREST TO TRUE",
+        "COMPUTE TD-AMOUNT = 0 - AC-DUE",
+        "MOVE 'OVERDRAFT INTEREST' TO TD-DESCRIPTION",
+        "ADD 1 TO WS-OVERDRAFT-COUNT",
+        "ADD TD-AMOUNT TO WS-OVERDRAFT-TOTAL",
+        "CONTINUE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            6,
+            7,
+            8,
+            3,
+            9,
+            10
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            11
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2200-CHARGE-FEE",
+      "source": "pangaea/programs/MONCHG.cbl:194",
+      "conditions": [
+        "AM-ACCT-TYPE = 'C' AND AM-STATUS = 'O'",
+        "AM-BALANCE \u003c WS-FEE-WAIVER-BALANCE"
+      ],
+      "actions": [
+        "SET TD-MAINTENANCE-FEE TO TRUE",
+        "MOVE WS-MAINTENANCE-FEE TO TD-AMOUNT",
+        "MOVE 'MAINTENANCE FEE' TO TD-DESCRIPTION",
+        "PERFORM 2900-WRITE-TRAN",
+        "ADD 1 TO WS-FEE-COUNT",
+        "ADD TD-AMOUNT TO WS-FEE-TOTAL",
+        "ADD 1 TO WS-WAIVED-COUNT",
+        "CONTINUE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            ""
+          ],
+          "actions": [
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "8000-WRITE-REPORT",
+      "source": "pangaea/programs/MONCHG.cbl:220",
+      "conditions": [
+        "WS-CLOSED-MONTH = 0"
+      ],
+      "actions": [
+        "MOVE SPACES TO REPORT-LINE",
+        "STRING 'MONCHG   MONTH-END CHARGES       BUSINESS DATE ' WS-BUSINESS-DATE DELIMITED BY SIZE INTO REPORT-LINE",
+        "WRITE REPORT-LINE",
+        "MOVE 'NO MONTH CLOSED' TO REPORT-LINE",
+        "STRING 'MONTH CLOSED                  ' WS-CLOSED-MONTH DELIMITED BY SIZE INTO REPORT-LINE",
+        "MOVE 'INTEREST CREDITS' TO WS-RC-LABEL",
+        "MOVE WS-INTEREST-COUNT TO WS-RC-VALUE",
+        "WRITE REPORT-LINE FROM WS-REPORT-COUNT-LINE",
+        "MOVE 'INTEREST CREDITED' TO WS-RA-LABEL",
+        "MOVE WS-INTEREST-TOTAL TO WS-RA-VALUE",
+        "WRITE REPORT-LINE FROM WS-REPORT-AMOUNT-LINE",
+        "MOVE 'OVERDRAFT INTEREST CHARGES' TO WS-RC-LABEL",
+        "MOVE WS-OVERDRAFT-COUNT TO WS-RC-VALUE",
+        "MOVE 'OVERDRAFT INTEREST CHARGED' TO WS-RA-LABEL",
+        "MOVE WS-OVERDRAFT-TOTAL TO WS-RA-VALUE",
+        "MOVE 'MAINTENANCE FEES' TO WS-RC-LABEL",
+        "MOVE WS-FEE-COUNT TO WS-RC-VALUE",
+        "MOVE 'MAINTENANCE FEES CHARGED' TO WS-RA-LABEL",
+        "MOVE WS-FEE-TOTAL TO WS-RA-VALUE",
+        "MOVE 'MAINTENANCE FEES WAIVED' TO WS-RC-LABEL",
+        "MOVE WS-WAIVED-COUNT TO WS-RC-VALUE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            0,
+            2,
+            3,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            0,
+            2,
+            0,
+            4,
+            2,
+            0,
+            2,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            7,
+            13,
+            14,
+            10,
+            15,
+            16,
+            7,
+            17,
+            18,
+            10,
+            19,
+            20,
+            7
+          ]
+        }
+      ]
+    }
+  ]
+}

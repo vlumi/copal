@@ -17,7 +17,7 @@ DATE       BY  CHANGE
                INSTEAD OF THE CALENDAR TABLE.
 ```
 
-Program [BANKDATE.cbl](../../../pangaea/programs/BANKDATE.cbl): 2 files, 2 paragraphs.
+Program [BANKDATE.cbl](../../../pangaea/programs/BANKDATE.cbl): 2 files, 2 paragraphs. Its business rules: [1 decision tables](../rules/BANKDATE.md).
 
 - AUTHOR: J. ARKWRIGHT, BATCH SYSTEMS.
 - INSTALLATION: FIRST BANK OF PANGAEA, DATA CENTER.

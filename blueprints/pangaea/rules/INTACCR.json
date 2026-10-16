@@ -1,0 +1,716 @@
+{
+  "program": "INTACCR",
+  "tables": [
+    {
+      "paragraph": "0000-MAIN",
+      "source": "pangaea/programs/INTACCR.cbl:155",
+      "conditions": [
+        "WS-ACCRUAL-KEY = HIGH-VALUES"
+      ],
+      "actions": [
+        "PERFORM 1000-INITIALIZE",
+        "PERFORM 2000-ACCRUE-ACCOUNT UNTIL MASTER-AT-END",
+        "MOVE 'AN ACCRUAL FOR NO ACCOUNT' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT",
+        "PERFORM 8000-WRITE-REPORT",
+        "PERFORM 9000-CLOSE-FILES",
+        "MOVE 0 TO RETURN-CODE",
+        "STOP RUN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            4,
+            5,
+            6,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "1000-INITIALIZE",
+      "source": "pangaea/programs/INTACCR.cbl:169",
+      "conditions": [
+        "WS-FILE-STATUSES = ALL '0'",
+        "READ CONTROL-FILE AT END"
+      ],
+      "actions": [
+        "OPEN INPUT CONTROL-FILE RATE-FILE ACCT-IN ACCR-IN OUTPUT ACCR-OUT REPORT-OUT",
+        "DISPLAY 'INTACCR: CANNOT OPEN FILES ' WS-FILE-STATUSES",
+        "MOVE 16 TO RETURN-CODE",
+        "STOP RUN",
+        "READ CONTROL-FILE",
+        "MOVE 'NO BANK CONTROL RECORD' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT",
+        "MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE",
+        "COMPUTE WS-TODAY = FUNCTION INTEGER-OF-DATE(WS-BUSINESS-DATE)",
+        "PERFORM 1100-LOAD-RATES",
+        "PERFORM 1200-READ-MASTER",
+        "PERFORM 1300-READ-ACCRUAL"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            4,
+            7,
+            8,
+            9,
+            10,
+            11
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "1100-LOAD-RATES",
+      "source": "pangaea/programs/INTACCR.cbl:189",
+      "conditions": [
+        "WS-RATE-STATUS = '10'"
+      ],
+      "actions": [
+        "READ RATE-FILE",
+        "PERFORM UNTIL WS-RATE-STATUS NOT = '00'",
+        "MOVE 'CANNOT READ THE RATES' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "1100-LOAD-RATES",
+      "loop": "PERFORM UNTIL WS-RATE-STATUS NOT = '00'",
+      "source": "pangaea/programs/INTACCR.cbl:191",
+      "conditions": [
+        "WS-RATE-COUNT = 20"
+      ],
+      "actions": [
+        "MOVE 'MORE THAN 20 RATES' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT",
+        "ADD 1 TO WS-RATE-COUNT",
+        "MOVE RT-ACCT-TYPE TO WS-RT-ACCT-TYPE(WS-RATE-COUNT)",
+        "MOVE RT-KIND TO WS-RT-KIND(WS-RATE-COUNT)",
+        "MOVE RT-FLOOR TO WS-RT-FLOOR(WS-RATE-COUNT)",
+        "MOVE RT-ANNUAL-RATE TO WS-RT-ANNUAL-RATE(WS-RATE-COUNT)",
+        "READ RATE-FILE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "1200-READ-MASTER",
+      "source": "pangaea/programs/INTACCR.cbl:209",
+      "conditions": [
+        "READ ACCT-IN AT END"
+      ],
+      "actions": [
+        "READ ACCT-IN",
+        "SET MASTER-AT-END TO TRUE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "1300-READ-ACCRUAL",
+      "source": "pangaea/programs/INTACCR.cbl:216",
+      "conditions": [
+        "READ ACCR-IN AT END"
+      ],
+      "actions": [
+        "READ ACCR-IN",
+        "MOVE HIGH-VALUES TO WS-ACCRUAL-KEY",
+        "MOVE AI-ACCT-NO TO WS-ACCRUAL-KEY"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "1400-TAKE-ACCRUAL",
+      "source": "pangaea/programs/INTACCR.cbl:226",
+      "conditions": [
+        "WS-ACCRUAL-KEY = AM-ACCT-NO",
+        "WS-ACCRUAL-KEY \u003e AM-ACCT-NO"
+      ],
+      "actions": [
+        "MOVE ACCR-IN-RECORD TO ACCRUAL-RECORD",
+        "PERFORM 1300-READ-ACCRUAL",
+        "MOVE SPACES TO ACCRUAL-RECORD",
+        "MOVE AM-ACCT-NO TO AC-ACCT-NO",
+        "MOVE WS-BUSINESS-DATE TO AC-THROUGH-DATE",
+        "MOVE 0 TO AC-ACCRUED",
+        "ADD 1 TO WS-STARTED-COUNT",
+        "MOVE 'AN ACCRUAL FOR NO ACCOUNT' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            7,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2000-ACCRUE-ACCOUNT",
+      "source": "pangaea/programs/INTACCR.cbl:244",
+      "conditions": [
+        "WS-MONTH-START-DAY \u003e WS-TODAY"
+      ],
+      "actions": [
+        "PERFORM 1400-TAKE-ACCRUAL",
+        "PERFORM 2100-FIND-RATE",
+        "MOVE 0 TO AC-DUE AC-DUE-MONTH",
+        "COMPUTE WS-FROM-DAY = FUNCTION INTEGER-OF-DATE(AC-THROUGH-DATE)",
+        "PERFORM 2200-FIND-MONTH-START",
+        "COMPUTE WS-DAYS = WS-MONTH-START-DAY - WS-FROM-DAY",
+        "PERFORM 2300-ACCRUE-DAYS",
+        "PERFORM 2400-CLOSE-MONTH",
+        "MOVE WS-MONTH-START-DAY TO WS-FROM-DAY",
+        "COMPUTE WS-DAYS = WS-TODAY - WS-FROM-DAY",
+        "MOVE WS-BUSINESS-DATE TO AC-THROUGH-DATE",
+        "WRITE ACCR-OUT-RECORD FROM ACCRUAL-RECORD",
+        "ADD 1 TO WS-ACCOUNT-COUNT",
+        "PERFORM 1200-READ-MASTER"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            6,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            9,
+            6,
+            10,
+            11,
+            12,
+            13
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2100-FIND-RATE",
+      "source": "pangaea/programs/INTACCR.cbl:266",
+      "conditions": [
+        "RATE-FOUND"
+      ],
+      "actions": [
+        "MOVE 'N' TO WS-RATE-FOUND-SW",
+        "PERFORM VARYING WS-RX FROM 1 BY 1 UNTIL WS-RX \u003e WS-RATE-COUNT",
+        "MOVE 'NO RATE FOR AN ACCOUNT TYPE' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2100-FIND-RATE",
+      "loop": "PERFORM VARYING WS-RX FROM 1 BY 1 UNTIL WS-RX \u003e WS-RATE-COUNT",
+      "source": "pangaea/programs/INTACCR.cbl:268",
+      "conditions": [
+        "WS-RT-ACCT-TYPE(WS-RX) = AM-ACCT-TYPE",
+        "AM-BALANCE \u003c 0",
+        "WS-RT-DEBIT(WS-RX)",
+        "WS-RT-CREDIT(WS-RX) AND WS-RT-FLOOR(WS-RX) NOT \u003e AM-BALANCE AND (NOT RATE-FOUND OR WS-RT-FLOOR(WS-RX) \u003e WS-BEST-FLOOR)"
+      ],
+      "actions": [
+        "PERFORM 2110-TAKE-RATE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            ""
+          ],
+          "actions": null
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "",
+            "Y"
+          ],
+          "actions": [
+            0
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "",
+            "N"
+          ],
+          "actions": null
+        },
+        {
+          "entries": [
+            "N",
+            "",
+            "",
+            ""
+          ],
+          "actions": null
+        }
+      ]
+    },
+    {
+      "paragraph": "2200-FIND-MONTH-START",
+      "source": "pangaea/programs/INTACCR.cbl:297",
+      "conditions": [
+        "WS-TH-MONTH = 12"
+      ],
+      "actions": [
+        "MOVE AC-THROUGH-DATE TO WS-THROUGH-DATE",
+        "MOVE WS-TH-YEAR TO WS-MS-YEAR",
+        "ADD 1 TO WS-MS-YEAR",
+        "MOVE 1 TO WS-MS-MONTH",
+        "MOVE 1 TO WS-MS-DAY",
+        "COMPUTE WS-MONTH-START-DAY = FUNCTION INTEGER-OF-DATE(WS-MONTH-START-DATE)",
+        "COMPUTE WS-MS-MONTH = WS-TH-MONTH + 1"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            6,
+            4,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2300-ACCRUE-DAYS",
+      "source": "pangaea/programs/INTACCR.cbl:311",
+      "conditions": [
+        "WS-INCREMENT \u003c 0"
+      ],
+      "actions": [
+        "MULTIPLY AM-BALANCE BY WS-ACCOUNT-RATE GIVING WS-INTEREST-PRODUCT",
+        "MULTIPLY WS-DAYS BY WS-INTEREST-PRODUCT",
+        "DIVIDE WS-INTEREST-PRODUCT BY 365 GIVING WS-INCREMENT ROUNDED",
+        "ADD WS-INCREMENT TO AC-ACCRUED",
+        "ADD WS-INCREMENT TO WS-DEBIT-ACCRUED",
+        "ADD WS-INCREMENT TO WS-CREDIT-ACCRUED"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2400-CLOSE-MONTH",
+      "source": "pangaea/programs/INTACCR.cbl:326",
+      "conditions": [
+        "AC-DUE \u003c 0"
+      ],
+      "actions": [
+        "COMPUTE AC-DUE ROUNDED = AC-ACCRUED",
+        "SUBTRACT AC-DUE FROM AC-ACCRUED",
+        "MOVE WS-TH-YEAR TO WS-DM-YEAR",
+        "MOVE WS-TH-MONTH TO WS-DM-MONTH",
+        "MOVE WS-DUE-MONTH TO AC-DUE-MONTH",
+        "MOVE AC-DUE-MONTH TO WS-CLOSED-MONTH",
+        "ADD AC-DUE TO WS-DEBIT-DUE",
+        "ADD AC-DUE TO WS-CREDIT-DUE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "8000-WRITE-REPORT",
+      "source": "pangaea/programs/INTACCR.cbl:340",
+      "conditions": [
+        "WS-CLOSED-MONTH = 0"
+      ],
+      "actions": [
+        "MOVE SPACES TO REPORT-LINE",
+        "STRING 'INTACCR  INTEREST ACCRUAL        BUSINESS DATE ' WS-BUSINESS-DATE DELIMITED BY SIZE INTO REPORT-LINE",
+        "WRITE REPORT-LINE",
+        "MOVE 'RATES' TO WS-RC-LABEL",
+        "MOVE WS-RATE-COUNT TO WS-RC-VALUE",
+        "WRITE REPORT-LINE FROM WS-REPORT-COUNT-LINE",
+        "MOVE 'ACCOUNTS ACCRUED' TO WS-RC-LABEL",
+        "MOVE WS-ACCOUNT-COUNT TO WS-RC-VALUE",
+        "MOVE 'ACCRUALS STARTED' TO WS-RC-LABEL",
+        "MOVE WS-STARTED-COUNT TO WS-RC-VALUE",
+        "MOVE 'CREDIT INTEREST ACCRUED' TO WS-RA-LABEL",
+        "MOVE WS-CREDIT-ACCRUED TO WS-RA-VALUE",
+        "WRITE REPORT-LINE FROM WS-REPORT-AMOUNT-LINE",
+        "MOVE 'DEBIT INTEREST ACCRUED' TO WS-RA-LABEL",
+        "MOVE WS-DEBIT-ACCRUED TO WS-RA-VALUE",
+        "MOVE 'NO MONTH CLOSED' TO REPORT-LINE",
+        "STRING 'MONTH CLOSED                  ' WS-CLOSED-MONTH DELIMITED BY SIZE INTO REPORT-LINE",
+        "MOVE 'CREDIT INTEREST DUE' TO WS-RA-LABEL",
+        "MOVE WS-CREDIT-DUE TO WS-RA-VALUE",
+        "MOVE 'DEBIT INTEREST DUE' TO WS-RA-LABEL",
+        "MOVE WS-DEBIT-DUE TO WS-RA-VALUE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            5,
+            8,
+            9,
+            5,
+            10,
+            11,
+            12,
+            13,
+            14,
+            12,
+            0,
+            2,
+            15,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            5,
+            8,
+            9,
+            5,
+            10,
+            11,
+            12,
+            13,
+            14,
+            12,
+            0,
+            2,
+            0,
+            16,
+            2,
+            17,
+            18,
+            12,
+            19,
+            20,
+            12
+          ]
+        }
+      ]
+    }
+  ]
+}

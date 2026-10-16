@@ -1,0 +1,572 @@
+{
+  "program": "TXPOST",
+  "tables": [
+    {
+      "paragraph": "0000-MAIN",
+      "source": "pangaea/programs/TXPOST.cbl:158",
+      "conditions": [
+        "WS-REJECT-COUNT \u003e 0"
+      ],
+      "actions": [
+        "PERFORM 1000-INITIALIZE",
+        "PERFORM 2000-MATCH UNTIL WS-MASTER-KEY = HIGH-VALUES AND WS-TRAN-KEY = HIGH-VALUES",
+        "PERFORM 5000-RECONCILE",
+        "PERFORM 8000-WRITE-REPORT",
+        "PERFORM 9000-CLOSE-FILES",
+        "MOVE 4 TO RETURN-CODE",
+        "STOP RUN",
+        "MOVE 0 TO RETURN-CODE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            7,
+            6
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "1000-INITIALIZE",
+      "source": "pangaea/programs/TXPOST.cbl:175",
+      "conditions": [
+        "WS-CONTROL-STATUS NOT = '00' OR WS-ACCT-IN-STATUS NOT = '00' OR WS-TRAN-IN-STATUS NOT = '00' OR WS-ACCT-OUT-STATUS NOT = '00' OR NOT AUDIT-OPENED OR NOT REJECTS-OPENED OR WS-LEGS-STATUS NOT = '00' OR WS-REPORT-STATUS NOT = '00'",
+        "READ CONTROL-FILE AT END"
+      ],
+      "actions": [
+        "OPEN INPUT CONTROL-FILE ACCT-IN TRAN-IN OUTPUT ACCT-OUT LEGS-OUT REPORT-OUT EXTEND AUDIT-OUT REJECT-OUT",
+        "DISPLAY 'TXPOST: CANNOT OPEN FILES ' WS-FILE-STATUSES",
+        "MOVE 16 TO RETURN-CODE",
+        "STOP RUN",
+        "READ CONTROL-FILE",
+        "MOVE 'NO BANK CONTROL RECORD' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT",
+        "MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE",
+        "MOVE SPACES TO AUDIT-RECORD REJECT-RECORD",
+        "PERFORM 1200-READ-MASTER",
+        "PERFORM 1300-READ-TRAN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            4,
+            7,
+            8,
+            9,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "1200-READ-MASTER",
+      "source": "pangaea/programs/TXPOST.cbl:202",
+      "conditions": [
+        "READ ACCT-IN AT END",
+        "WS-MASTER-KEY \u003e WS-PREV-MASTER-KEY"
+      ],
+      "actions": [
+        "READ ACCT-IN",
+        "MOVE HIGH-VALUES TO WS-MASTER-KEY",
+        "MOVE AM-ACCT-NO TO WS-MASTER-KEY",
+        "MOVE 'MASTER NOT IN ACCOUNT ORDER' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT",
+        "MOVE WS-MASTER-KEY TO WS-PREV-MASTER-KEY",
+        "ADD 1 TO WS-MASTERS-READ",
+        "ADD AM-BALANCE TO WS-OPENING-TOTAL"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            2,
+            5,
+            6,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "1300-READ-TRAN",
+      "source": "pangaea/programs/TXPOST.cbl:219",
+      "conditions": [
+        "READ TRAN-IN AT END",
+        "WS-TRAN-ORDER-KEY \u003e WS-PREV-TRAN-ORDER-KEY"
+      ],
+      "actions": [
+        "READ TRAN-IN",
+        "MOVE HIGH-VALUES TO WS-TRAN-KEY",
+        "MOVE TD-ACCT-NO TO WS-TRAN-KEY WS-TOK-ACCT-NO",
+        "MOVE TD-TRAN-ID TO WS-TOK-TRAN-ID",
+        "MOVE 'TRANSACTIONS NOT IN ACCOUNT ORDER' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT",
+        "MOVE WS-TRAN-ORDER-KEY TO WS-PREV-TRAN-ORDER-KEY"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            6
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2000-MATCH",
+      "source": "pangaea/programs/TXPOST.cbl:237",
+      "conditions": [
+        "WS-TRAN-KEY \u003c WS-MASTER-KEY",
+        "WS-TRAN-KEY = WS-MASTER-KEY"
+      ],
+      "actions": [
+        "SET RJ-NO-ACCOUNT TO TRUE",
+        "PERFORM 3900-REJECT-TRAN",
+        "PERFORM 1300-READ-TRAN",
+        "PERFORM 3000-APPLY-TRAN",
+        "PERFORM 4000-WRITE-MASTER",
+        "PERFORM 1200-READ-MASTER"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            3,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            4,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "3000-APPLY-TRAN",
+      "source": "pangaea/programs/TXPOST.cbl:252",
+      "conditions": [
+        "AM-CLOSED",
+        "TD-DEPOSIT OR TD-TRANSFER-CREDIT OR TD-TRANSFER-RETURN OR TD-INTEREST",
+        "TD-FEE OR TD-OVERDRAFT-INTEREST OR TD-MAINTENANCE-FEE",
+        "AM-FROZEN",
+        "TD-WITHDRAWAL OR TD-TRANSFER"
+      ],
+      "actions": [
+        "MOVE AM-BALANCE TO WS-BALANCE-BEFORE",
+        "SET RJ-CLOSED TO TRUE",
+        "PERFORM 3900-REJECT-TRAN",
+        "PERFORM 3100-POST-CREDIT",
+        "PERFORM 3300-POST-FEE",
+        "SET RJ-FROZEN TO TRUE",
+        "PERFORM 3200-POST-DEBIT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            4
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            5,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "3200-POST-DEBIT",
+      "source": "pangaea/programs/TXPOST.cbl:285",
+      "conditions": [
+        "WS-NEW-BALANCE \u003c WS-BALANCE-FLOOR",
+        "TD-TRANSFER"
+      ],
+      "actions": [
+        "COMPUTE WS-NEW-BALANCE = AM-BALANCE - TD-AMOUNT",
+        "COMPUTE WS-BALANCE-FLOOR = 0 - AM-OVERDRAFT-LIMIT",
+        "SET RJ-NO-FUNDS TO TRUE",
+        "PERFORM 3900-REJECT-TRAN",
+        "MOVE WS-NEW-BALANCE TO AM-BALANCE",
+        "ADD TD-AMOUNT TO WS-DEBIT-TOTAL",
+        "COMPUTE WS-SIGNED-AMOUNT = 0 - TD-AMOUNT",
+        "PERFORM 3800-WRITE-AUDIT",
+        "PERFORM 3500-WRITE-LEG"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            4,
+            5,
+            6,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "3500-WRITE-LEG",
+      "source": "pangaea/programs/TXPOST.cbl:312",
+      "conditions": [
+        "TD-TRANSFER"
+      ],
+      "actions": [
+        "MOVE TRAN-RECORD TO WS-SAVED-TRAN",
+        "SET TD-TRANSFER-CREDIT TO TRUE",
+        "MOVE TD-ACCT-NO TO WS-LEG-ACCT-NO",
+        "MOVE TD-COUNTER-ACCT-NO TO TD-ACCT-NO",
+        "MOVE WS-LEG-ACCT-NO TO TD-COUNTER-ACCT-NO",
+        "WRITE LEGS-OUT-RECORD FROM TRAN-RECORD",
+        "ADD 1 TO WS-LEG-COUNT",
+        "MOVE WS-SAVED-TRAN TO TRAN-RECORD",
+        "SET TD-TRANSFER-RETURN TO TRUE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            8,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "3900-REJECT-TRAN",
+      "source": "pangaea/programs/TXPOST.cbl:341",
+      "conditions": [
+        "TD-TRANSFER-CREDIT"
+      ],
+      "actions": [
+        "MOVE 'TXPOST' TO RJ-PROGRAM",
+        "MOVE TRAN-RECORD TO RJ-TRAN",
+        "WRITE REJECT-OUT-RECORD FROM REJECT-RECORD",
+        "ADD 1 TO WS-REJECT-COUNT",
+        "PERFORM 3500-WRITE-LEG"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "5000-RECONCILE",
+      "source": "pangaea/programs/TXPOST.cbl:357",
+      "conditions": [
+        "WS-EXPECTED-TOTAL NOT = WS-CLOSING-TOTAL OR WS-MASTERS-WRITTEN NOT = WS-MASTERS-READ"
+      ],
+      "actions": [
+        "MOVE WS-OPENING-TOTAL TO WS-EXPECTED-TOTAL",
+        "ADD WS-CREDIT-TOTAL TO WS-EXPECTED-TOTAL",
+        "SUBTRACT WS-DEBIT-TOTAL FROM WS-EXPECTED-TOTAL",
+        "SUBTRACT WS-FEE-TOTAL FROM WS-EXPECTED-TOTAL",
+        "MOVE 'NEW MASTER OUT OF BALANCE' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ]
+    }
+  ]
+}

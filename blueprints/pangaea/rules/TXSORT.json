@@ -1,0 +1,42 @@
+{
+  "program": "TXSORT",
+  "tables": [
+    {
+      "paragraph": "0000-MAIN",
+      "source": "pangaea/programs/TXSORT.cbl:48",
+      "conditions": [
+        "SORT-RETURN = 0"
+      ],
+      "actions": [
+        "SORT SORT-WORK ON ASCENDING KEY SR-ACCT-NO SR-TRAN-ID USING TRAN-IN GIVING TRAN-OUT",
+        "DISPLAY 'TXSORT: SORT FAILED ' SORT-RETURN",
+        "MOVE 16 TO RETURN-CODE",
+        "STOP RUN",
+        "MOVE 0 TO RETURN-CODE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            4,
+            3
+          ]
+        }
+      ]
+    }
+  ]
+}

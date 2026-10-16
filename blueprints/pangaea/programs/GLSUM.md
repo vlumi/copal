@@ -25,7 +25,7 @@ DATE       BY  CHANGE
 2004-03-15 TL  CR-0390 ORIGINAL VERSION.
 ```
 
-Program [GLSUM.cbl](../../../pangaea/programs/GLSUM.cbl): 4 files, 9 paragraphs.
+Program [GLSUM.cbl](../../../pangaea/programs/GLSUM.cbl): 4 files, 9 paragraphs. Its business rules: [9 decision tables](../rules/GLSUM.md).
 
 - AUTHOR: T. LINDQVIST, BATCH SYSTEMS.
 - INSTALLATION: FIRST BANK OF PANGAEA, DATA CENTER.
