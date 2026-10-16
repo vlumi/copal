@@ -85,6 +85,9 @@ func (l *Ledger) jobRun(dir string) (JobRun, error) {
 		Step: func(s blueprint.Step) string { return outcomes[s.Name] },
 		DD: func(s blueprint.Step, dd blueprint.DD) string {
 			if n, ok := records[s.Name][dd.Name]; ok {
+				if n == 1 {
+					return "1 record"
+				}
 				return count(n) + " records"
 			}
 			return ""
