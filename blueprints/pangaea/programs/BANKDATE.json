@@ -1,0 +1,185 @@
+{
+  "program": "BANKDATE",
+  "source": "pangaea/programs/BANKDATE.cbl",
+  "description": [
+    "BANKDATE: ADVANCE THE BUSINESS DATE",
+    "",
+    "READS THE BANK CONTROL RECORD AND WRITES THE NEXT ONE, FOR",
+    "THE NEXT BUSINESS DAY: THE NEXT DAY FROM MONDAY TO FRIDAY.",
+    "THE LAST STEP OF THE DAILY BATCH, SO THAT THE NEXT RUN IS FOR",
+    "THE NEXT DAY ONLY IF THIS ONE WENT THROUGH.",
+    "",
+    "RETURN CODES: 0 ADVANCED, 16 NO CONTROL RECORD OR I/O.",
+    "",
+    "MODIFICATION HISTORY",
+    "DATE       BY  CHANGE",
+    "1987-03-12 JA  ORIGINAL VERSION.",
+    "1999-01-11 SL  Y2K: 8-DIGIT DATES, INTRINSIC DATE FUNCTIONS",
+    "               INSTEAD OF THE CALENDAR TABLE."
+  ],
+  "identification": [
+    {
+      "paragraph": "AUTHOR",
+      "text": "J. ARKWRIGHT, BATCH SYSTEMS."
+    },
+    {
+      "paragraph": "INSTALLATION",
+      "text": "FIRST BANK OF PANGAEA, DATA CENTER."
+    },
+    {
+      "paragraph": "DATE-WRITTEN",
+      "text": "1987-03-12."
+    }
+  ],
+  "files": [
+    {
+      "name": "CONTROL-IN",
+      "kind": "FD",
+      "assign": "BANKIN",
+      "organization": "SEQUENTIAL",
+      "status": "WS-IN-STATUS",
+      "records": [
+        "BANK-CONTROL-RECORD"
+      ],
+      "source": "pangaea/programs/BANKDATE.cbl:26"
+    },
+    {
+      "name": "CONTROL-OUT",
+      "kind": "FD",
+      "assign": "BANKOUT",
+      "organization": "SEQUENTIAL",
+      "status": "WS-OUT-STATUS",
+      "records": [
+        "CONTROL-OUT-RECORD"
+      ],
+      "source": "pangaea/programs/BANKDATE.cbl:29"
+    }
+  ],
+  "records": [
+    {
+      "section": "file",
+      "file": "CONTROL-IN",
+      "copybook": "BANKCTL",
+      "level": 1,
+      "name": "BANK-CONTROL-RECORD",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "description": "BANKCTL: BANK CONTROL RECORD, ONE PER FILE THE BUSINESS DATE THE BATCH RUNS FOR, NEVER THE CLOCK.",
+      "source": "pangaea/copybooks/BANKCTL.cpy:5",
+      "fields": [
+        {
+          "level": 5,
+          "name": "BC-BUSINESS-DATE",
+          "start": 1,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/BANKCTL.cpy:6"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 9,
+          "length": 72,
+          "picture": "X(72)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/BANKCTL.cpy:7"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "CONTROL-OUT",
+      "level": 1,
+      "name": "CONTROL-OUT-RECORD",
+      "start": 1,
+      "length": 80,
+      "picture": "X(80)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "source": "pangaea/programs/BANKDATE.cbl:38"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-IN-STATUS",
+      "start": 1,
+      "length": 2,
+      "picture": "XX",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "source": "pangaea/programs/BANKDATE.cbl:41"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-OUT-STATUS",
+      "start": 1,
+      "length": 2,
+      "picture": "XX",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "source": "pangaea/programs/BANKDATE.cbl:42"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-DAY-NUMBER",
+      "start": 1,
+      "length": 7,
+      "picture": "9(7)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "digits": 7,
+      "description": "DAY NUMBERS COUNT FROM 1601-01-01, A MONDAY, SO A DAY NUMBER MODULO 7 IS 1 ON MONDAYS, 6 ON SATURDAYS AND 0 ON SUNDAYS.",
+      "source": "pangaea/programs/BANKDATE.cbl:46"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-WEEKDAY",
+      "start": 1,
+      "length": 1,
+      "picture": "9",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "digits": 1,
+      "conditions": [
+        {
+          "name": "WEEKEND",
+          "values": [
+            "6",
+            "0"
+          ],
+          "source": "pangaea/programs/BANKDATE.cbl:48"
+        }
+      ],
+      "source": "pangaea/programs/BANKDATE.cbl:47"
+    }
+  ],
+  "paragraphs": [
+    {
+      "name": "0000-MAIN",
+      "description": "READ TODAY'S CONTROL RECORD AND WRITE THE NEXT BUSINESS DAY'S.",
+      "source": "pangaea/programs/BANKDATE.cbl:52",
+      "performs": [
+        {
+          "target": "1000-NEXT-BUSINESS-DAY",
+          "source": "pangaea/programs/BANKDATE.cbl:67"
+        }
+      ]
+    },
+    {
+      "name": "1000-NEXT-BUSINESS-DAY",
+      "description": "MOVE THE BUSINESS DATE TO THE NEXT DAY THAT IS NOT A WEEKEND.",
+      "source": "pangaea/programs/BANKDATE.cbl:74",
+      "performedBy": [
+        "0000-MAIN"
+      ]
+    }
+  ]
+}

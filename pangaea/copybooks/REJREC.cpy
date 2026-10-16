@@ -7,6 +7,7 @@
            05  RJ-PROGRAM              PIC X(8).
            05  RJ-REASON               PIC X(4).
                88  RJ-BAD-ACCOUNT      VALUE 'ACCT'.
+               88  RJ-BAD-COUNTER      VALUE 'CTRA'.
                88  RJ-BAD-CODE         VALUE 'CODE'.
                88  RJ-BAD-AMOUNT       VALUE 'AMNT'.
                88  RJ-BAD-TYPE         VALUE 'TYPE'.

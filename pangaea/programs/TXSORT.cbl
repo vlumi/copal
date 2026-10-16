@@ -1,9 +1,11 @@
       *================================================================*
-      * TXSORT: SORT THE VALID TRANSACTIONS FOR POSTING                *
+      * TXSORT: SORT TRANSACTIONS FOR POSTING                          *
       *                                                                *
       * POSTING MATCHES TRANSACTIONS AGAINST THE ACCOUNT MASTER, SO    *
       * IT NEEDS THEM IN ACCOUNT NUMBER ORDER. WITHIN AN ACCOUNT THEY  *
-      * KEEP THE ORDER OF THEIR TRANSACTION IDS.                       *
+      * KEEP THE ORDER OF THEIR TRANSACTION IDS. THE DAILY BATCH SORTS *
+      * THE VALID TRANSACTIONS, THEN THE TRANSFER CREDITS, THEN THE    *
+      * RETURNED TRANSFERS.                                            *
       *                                                                *
       * RETURN CODES: 0 SORTED, 16 SORT FAILED.                        *
       *                                                                *

@@ -5,10 +5,18 @@
       * THE TRAILER CARRIES THE SENDER'S CONTROL TOTALS: THE DETAIL    *
       * COUNT, THE SUM OF AMOUNTS AND THE SUM OF ACCOUNT NUMBERS.      *
       *                                                                *
+      * A TRANSFER (TR) NAMES THE ACCOUNT IT GOES TO. POSTING SPLITS   *
+      * IT IN TWO: THE DEBIT ON THE SENDING ACCOUNT, THEN A TRANSFER   *
+      * CREDIT (TC) ON THE RECEIVING ONE. A CREDIT THAT CANNOT POST    *
+      * GOES BACK AS A RETURNED TRANSFER (RT). TC AND RT ARE MADE BY   *
+      * POSTING, NEVER RECEIVED IN THE DAILY FILE.                     *
+      *                                                                *
       * MODIFICATION HISTORY                                           *
       * DATE       BY  CHANGE                                          *
       * 1987-03-12 JA  ORIGINAL VERSION.                               *
       * 1991-06-03 PK  CR-0117 ACCOUNT NUMBER HASH IN THE TRAILER.     *
+      * 1996-04-15 PK  CR-0233 TRANSFERS: COUNTER ACCOUNT, FROM THE    *
+      *                FILLER.                                         *
       *================================================================*
        01  TRAN-RECORD.
            05  TR-REC-TYPE             PIC X.
@@ -28,10 +36,14 @@
                    88  TD-DEPOSIT      VALUE 'DP'.
                    88  TD-WITHDRAWAL   VALUE 'WD'.
                    88  TD-FEE          VALUE 'FE'.
-                   88  TD-KNOWN-CODE   VALUE 'DP' 'WD' 'FE'.
+                   88  TD-TRANSFER     VALUE 'TR'.
+                   88  TD-TRANSFER-CREDIT VALUE 'TC'.
+                   88  TD-TRANSFER-RETURN VALUE 'RT'.
+                   88  TD-KNOWN-CODE   VALUE 'DP' 'WD' 'FE' 'TR'.
                10  TD-AMOUNT           PIC 9(9)V99.
                10  TD-DESCRIPTION      PIC X(20).
-               10  FILLER              PIC X(26).
+               10  TD-COUNTER-ACCT-NO  PIC 9(10).
+               10  FILLER              PIC X(16).
            05  TR-TRAILER-BODY REDEFINES TR-BODY.
                10  TT-DETAIL-COUNT     PIC 9(8).
                10  TT-AMOUNT-TOTAL     PIC 9(13)V99.

@@ -5,8 +5,9 @@
       * DATE, THEN DETAILS, THEN A TRAILER WHOSE CONTROL TOTALS MATCH  *
       * THE DETAILS. A FILE THAT FAILS THESE CHECKS IS NOT PROCESSED.  *
       * CHECKS EACH DETAIL'S FIELDS AND WRITES IT EITHER TO THE VALID  *
-      * FILE OR TO THE REJECTS. WHETHER THE ACCOUNT EXISTS IS LEFT TO  *
-      * POSTING, WHICH READS THE MASTER.                               *
+      * FILE OR TO THE REJECTS: THE ACCOUNT NUMBER, THE CODE, THE      *
+      * AMOUNT, AND FOR A TRANSFER THE ACCOUNT IT GOES TO. WHETHER     *
+      * THE ACCOUNTS EXIST IS LEFT TO POSTING, WHICH READS THE MASTER. *
       *                                                                *
       * RETURN CODES: 0 ALL VALID, 4 SOME DETAILS REJECTED,            *
       *               12 FILE REJECTED, 16 I/O ERROR.                  *
@@ -15,6 +16,7 @@
       * DATE       BY  CHANGE                                          *
       * 1987-03-12 JA  ORIGINAL VERSION.                               *
       * 1991-06-03 PK  CR-0117 ACCOUNT NUMBER HASH IN THE TRAILER.     *
+      * 1996-04-15 PK  CR-0233 TRANSFERS MUST NAME ANOTHER ACCOUNT.    *
       * 1999-01-11 SL  Y2K: 8-DIGIT BUSINESS DATE FROM THE BANK        *
       *                CONTROL RECORD.                                 *
       * 2004-09-20 PK  CR-0388 REJECT RECORDS OF UNKNOWN TYPE          *
@@ -200,6 +202,11 @@
                WHEN TD-AMOUNT IS NOT NUMERIC
                  OR TD-AMOUNT = ZERO
                    SET RJ-BAD-AMOUNT TO TRUE
+                   SET DETAIL-IS-REJECTED TO TRUE
+               WHEN TD-TRANSFER
+                AND (TD-COUNTER-ACCT-NO IS NOT NUMERIC
+                  OR TD-COUNTER-ACCT-NO = TD-ACCT-NO)
+                   SET RJ-BAD-COUNTER TO TRUE
                    SET DETAIL-IS-REJECTED TO TRUE
            END-EVALUATE
            IF DETAIL-IS-VALID
