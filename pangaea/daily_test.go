@@ -8,10 +8,12 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/vlumi/copal/blueprint"
 	"github.com/vlumi/copal/internal/golden"
 	"github.com/vlumi/copal/jcl"
 	"github.com/vlumi/copal/pangaea/compile"
 	"github.com/vlumi/copal/pangaea/dataset"
+	"github.com/vlumi/copal/pangaea/fixture"
 	"github.com/vlumi/copal/pangaea/runner"
 )
 
@@ -26,37 +28,38 @@ func TestDaily(t *testing.T) {
 	if _, err := compile.Programs("programs", "copybooks", programs); err != nil {
 		t.Fatal(err)
 	}
+	codec := newCodec(t)
 	fixtures, err := filepath.Glob("testdata/*/input")
 	if err != nil {
 		t.Fatal(err)
 	}
 	for _, input := range fixtures {
-		fixture := filepath.Dir(input)
-		t.Run(filepath.Base(fixture), func(t *testing.T) {
-			runFixture(t, programs, fixture)
+		dir := filepath.Dir(input)
+		t.Run(filepath.Base(dir), func(t *testing.T) {
+			runFixture(t, codec, programs, dir)
 		})
 	}
 }
 
-func runFixture(t *testing.T, programs, fixture string) {
+func runFixture(t *testing.T, codec *fixture.Codec, programs, fixtureDir string) {
 	dir := t.TempDir()
 	store, err := dataset.Open(filepath.Join(dir, "datasets"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	inputs, err := filepath.Glob(filepath.Join(fixture, "input", "*.txt"))
+	inputs, err := filepath.Glob(filepath.Join(fixtureDir, "input", "*"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	for _, input := range inputs {
-		if err := store.LoadFile(input); err != nil {
+		if err := codec.LoadFile(store, input); err != nil {
 			t.Fatal(err)
 		}
 	}
 	loaded := store.Names()
 
 	sysout := filepath.Join(dir, "sysout")
-	for i, job := range fixtureJobs(t, fixture) {
+	for i, job := range fixtureJobs(t, fixtureDir) {
 		r := runner.Runner{Programs: programs, Datasets: store, Sysout: sysout}
 		if i > 0 {
 			r.Sysout = filepath.Join(sysout, job)
@@ -67,22 +70,42 @@ func runFixture(t *testing.T, programs, fixture string) {
 	}
 
 	created := filepath.Join(dir, "created")
-	if err := store.UnloadAll(created); err != nil {
+	if err := codec.UnloadAll(store, created); err != nil {
 		t.Fatal(err)
 	}
 	for _, dsn := range loaded {
-		if err := os.Remove(filepath.Join(created, dsn+".txt")); err != nil {
-			t.Fatal(err)
+		for _, ext := range []string{".txt", fixture.FieldsExtension} {
+			if err := os.Remove(filepath.Join(created, dsn+ext)); err != nil && !errors.Is(err, os.ErrNotExist) {
+				t.Fatal(err)
+			}
 		}
 	}
-	golden.CompareDir(t, created, filepath.Join(fixture, "golden", "datasets"))
-	golden.CompareDir(t, sysout, filepath.Join(fixture, "golden", "sysout"))
+	golden.CompareDir(t, created, filepath.Join(fixtureDir, "golden", "datasets"))
+	golden.CompareDir(t, sysout, filepath.Join(fixtureDir, "golden", "sysout"))
+}
+
+// newCodec reads Pangaea's programs and jobs with Copal, to write the
+// datasets with packed decimal fields field by field.
+func newCodec(t *testing.T) *fixture.Codec {
+	paths, err := filepath.Glob("programs/*.cbl")
+	if err != nil {
+		t.Fatal(err)
+	}
+	system, err := blueprint.Analyze(append(paths, "jobs/DAILY.jcl", "jobs/MONTHLY.jcl"), "copybooks")
+	if err != nil {
+		t.Fatal(err)
+	}
+	codec, err := fixture.NewCodec(system, "copybooks")
+	if err != nil {
+		t.Fatal(err)
+	}
+	return codec
 }
 
 // fixtureJobs lists the jobs a fixture runs: those in its JOBS file, or
 // the daily batch alone.
-func fixtureJobs(t *testing.T, fixture string) []string {
-	data, err := os.ReadFile(filepath.Join(fixture, "JOBS"))
+func fixtureJobs(t *testing.T, dir string) []string {
+	data, err := os.ReadFile(filepath.Join(dir, "JOBS"))
 	if errors.Is(err, os.ErrNotExist) {
 		return []string{"DAILY"}
 	} else if err != nil {
