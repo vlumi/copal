@@ -17,9 +17,9 @@ Copal reads legacy COBOL batch systems and produces design blueprints from them:
 
 ## Commits and pull requests
 
-- Incremental, honest history: each commit is one coherent step, by concern, that builds and passes on its own. No huge blobs, no fix-up churn ("fix typo in previous commit"); squash locally before pushing.
-- Commit messages describe the step, not the process.
-- Every concrete chunk of work is a branch and a pull request against `main`, sized by concern, rebased on `main` before pushing. Rewriting and force-pushing an open PR branch to keep its history clean is fine; `main` is never rewritten and never committed to directly.
+- The history reads as what actually happened. Commits are granular: each one an atomic change, or a few closely related ones, that builds and passes on its own. No squashing. Something found later, a missed case or a mistake in an earlier commit, gets its own commit saying what it fixes, rather than being folded back into history.
+- Commit messages describe the change, not the process.
+- A pull request groups the commits of one functional change. Every chunk of work is a branch and a pull request against `main`, started from current `main`. Pushed commits are not rewritten: no amending, squashing or force-pushing. `main` is never rewritten and never committed to directly.
 - Run `make ci` before opening or updating a pull request and only push when it passes; a change to Markdown alone needs none.
 - Merge commits only, so the by-concern commits stay visible on `main`; branches are deleted on merge. While the repository is private, GitHub's free plan allows neither auto-merge nor branch protection, so merge with `gh pr merge --merge` once the local `make ci` has passed. When the repository goes public, enable auto-merge, protect `main` with the hosted CI job as a required check, and merge with `gh pr merge --auto --merge`, which then waits for it.
 
