@@ -43,22 +43,24 @@ Program [TXVALID.cbl](../../../pangaea/programs/TXVALID.cbl): 5 files, 10 paragr
 
 ## Flow
 
-![The paragraphs of TXVALID and the PERFORMs between them](TXVALID.svg)
+![The paragraphs of TXVALID and how control moves between them](TXVALID.svg)
+
+Solid arrows are PERFORMs, dashed ones GO TOs, and dotted ones control running on into the next paragraph inside a PERFORM THRU range.
 
 ## Paragraphs
 
-| Paragraph | Description | Source | Performs | Performed by |
-| --- | --- | --- | --- | --- |
-| 0000-MAIN | VALIDATE THE FILE AND SET THE RETURN CODE. | [TXVALID.cbl:101](../../../pangaea/programs/TXVALID.cbl#L101) | 1000-OPEN-FILES, 2000-READ-HEADER, 3000-READ-DETAILS, 4000-CHECK-TRAILER, 8000-WRITE-REPORT, 9000-CLOSE-FILES | |
-| 1000-OPEN-FILES | OPEN THE FILES AND READ THE BUSINESS DATE. | [TXVALID.cbl:123](../../../pangaea/programs/TXVALID.cbl#L123) | | 0000-MAIN |
-| 2000-READ-HEADER | THE FIRST RECORD MUST BE THE HEADER FOR THE BUSINESS DATE. | [TXVALID.cbl:145](../../../pangaea/programs/TXVALID.cbl#L145) | | 0000-MAIN |
-| 3000-READ-DETAILS | VALIDATE EACH RECORD UNTIL THE TRAILER. | [TXVALID.cbl:161](../../../pangaea/programs/TXVALID.cbl#L161) | 3100-READ-NEXT, 3200-VALIDATE-DETAIL, 3300-REJECT-RECORD | 0000-MAIN |
-| 3100-READ-NEXT | READ ONE RECORD. THE FILE MUST NOT END BEFORE ITS TRAILER. | [TXVALID.cbl:179](../../../pangaea/programs/TXVALID.cbl#L179) | | 3000-READ-DETAILS |
-| 3200-VALIDATE-DETAIL | ADD A DETAIL TO THE TOTALS, THEN CHECK ITS FIELDS. | [TXVALID.cbl:186](../../../pangaea/programs/TXVALID.cbl#L186) | 3300-REJECT-RECORD | 3000-READ-DETAILS |
-| 3300-REJECT-RECORD | WRITE THE RECORD TO THE REJECTS WITH ITS REASON. | [TXVALID.cbl:220](../../../pangaea/programs/TXVALID.cbl#L220) | | 3000-READ-DETAILS, 3200-VALIDATE-DETAIL |
-| 4000-CHECK-TRAILER | THE TRAILER MUST MATCH THE TOTALS, AND END THE FILE. | [TXVALID.cbl:227](../../../pangaea/programs/TXVALID.cbl#L227) | | 0000-MAIN |
-| 8000-WRITE-REPORT | WRITE THE VALIDATION REPORT. | [TXVALID.cbl:248](../../../pangaea/programs/TXVALID.cbl#L248) | | 0000-MAIN |
-| 9000-CLOSE-FILES | CLOSE ALL FILES. | [TXVALID.cbl:280](../../../pangaea/programs/TXVALID.cbl#L280) | | 0000-MAIN |
+| Paragraph | Description | Source | Performs | Goes to | Performed by | Reached by |
+| --- | --- | --- | --- | --- | --- | --- |
+| 0000-MAIN | VALIDATE THE FILE AND SET THE RETURN CODE. | [TXVALID.cbl:101](../../../pangaea/programs/TXVALID.cbl#L101) | 1000-OPEN-FILES, 2000-READ-HEADER, 3000-READ-DETAILS, 4000-CHECK-TRAILER, 8000-WRITE-REPORT, 9000-CLOSE-FILES | | | |
+| 1000-OPEN-FILES | OPEN THE FILES AND READ THE BUSINESS DATE. | [TXVALID.cbl:123](../../../pangaea/programs/TXVALID.cbl#L123) | | | 0000-MAIN | |
+| 2000-READ-HEADER | THE FIRST RECORD MUST BE THE HEADER FOR THE BUSINESS DATE. | [TXVALID.cbl:145](../../../pangaea/programs/TXVALID.cbl#L145) | | | 0000-MAIN | |
+| 3000-READ-DETAILS | VALIDATE EACH RECORD UNTIL THE TRAILER. | [TXVALID.cbl:161](../../../pangaea/programs/TXVALID.cbl#L161) | 3100-READ-NEXT, 3200-VALIDATE-DETAIL, 3300-REJECT-RECORD | | 0000-MAIN | |
+| 3100-READ-NEXT | READ ONE RECORD. THE FILE MUST NOT END BEFORE ITS TRAILER. | [TXVALID.cbl:179](../../../pangaea/programs/TXVALID.cbl#L179) | | | 3000-READ-DETAILS | |
+| 3200-VALIDATE-DETAIL | ADD A DETAIL TO THE TOTALS, THEN CHECK ITS FIELDS. | [TXVALID.cbl:186](../../../pangaea/programs/TXVALID.cbl#L186) | 3300-REJECT-RECORD | | 3000-READ-DETAILS | |
+| 3300-REJECT-RECORD | WRITE THE RECORD TO THE REJECTS WITH ITS REASON. | [TXVALID.cbl:220](../../../pangaea/programs/TXVALID.cbl#L220) | | | 3000-READ-DETAILS, 3200-VALIDATE-DETAIL | |
+| 4000-CHECK-TRAILER | THE TRAILER MUST MATCH THE TOTALS, AND END THE FILE. | [TXVALID.cbl:227](../../../pangaea/programs/TXVALID.cbl#L227) | | | 0000-MAIN | |
+| 8000-WRITE-REPORT | WRITE THE VALIDATION REPORT. | [TXVALID.cbl:248](../../../pangaea/programs/TXVALID.cbl#L248) | | | 0000-MAIN | |
+| 9000-CLOSE-FILES | CLOSE ALL FILES. | [TXVALID.cbl:280](../../../pangaea/programs/TXVALID.cbl#L280) | | | 0000-MAIN | |
 
 ## Records
 

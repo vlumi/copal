@@ -55,7 +55,7 @@ The hard part of moving a COBOL core system to anything newer is rarely the tran
 ## Debt
 
 - Fixtures and golden files hold records as text, and a record with packed decimal (`COMP-3`) fields as one line of hex. That round-trips, but a diff of it reads poorly; fields decoded through Copal's record layouts would read better.
-- `structure` finds `PERFORM` statements by scanning a paragraph's tokens. Data flow needs real statement parsing, and `structure` should move onto it then. `PERFORM ... THRU` is recorded but its range is not expanded, so the paragraphs inside a range do not list who performs them.
+- `structure` finds `PERFORM` and `GO TO` statements by scanning a paragraph's tokens, and decides whether a paragraph runs on into the next from its last sentence's tokens: it ends unconditionally only in `GO TO`, `STOP RUN`, `GOBACK` or `EXIT PROGRAM` outside any condition, so an `IF` whose branches both jump still counts as running on. Data flow needs real statement parsing, and `structure` should move onto it then.
 - A business day whose batch fails leaves the generations its steps wrote cataloged, and the bank's next run counts from them. The bank's history, and with it the console, assumes every day went through; a failed day needs a restart procedure that removes them.
 
 ## Toolchain

@@ -1186,6 +1186,13 @@
           "source": "pangaea/programs/ACCTMNT.cbl:170"
         }
       ],
+      "goTos": [
+        {
+          "target": "1200-EXIT",
+          "source": "pangaea/programs/ACCTMNT.cbl:166"
+        }
+      ],
+      "fallsInto": "1200-EXIT",
       "performedBy": [
         "1000-INITIALIZE",
         "2000-NEXT-ACCOUNT"
@@ -1193,7 +1200,14 @@
     },
     {
       "name": "1200-EXIT",
-      "source": "pangaea/programs/ACCTMNT.cbl:173"
+      "source": "pangaea/programs/ACCTMNT.cbl:173",
+      "performedBy": [
+        "1000-INITIALIZE",
+        "2000-NEXT-ACCOUNT"
+      ],
+      "reachedBy": [
+        "1200-READ-MASTER"
+      ]
     },
     {
       "name": "1300-READ-REQUEST",
@@ -1205,6 +1219,13 @@
           "source": "pangaea/programs/ACCTMNT.cbl:186"
         }
       ],
+      "goTos": [
+        {
+          "target": "1300-EXIT",
+          "source": "pangaea/programs/ACCTMNT.cbl:181"
+        }
+      ],
+      "fallsInto": "1300-EXIT",
       "performedBy": [
         "1000-INITIALIZE",
         "2100-APPLY-REQUESTS"
@@ -1212,7 +1233,14 @@
     },
     {
       "name": "1300-EXIT",
-      "source": "pangaea/programs/ACCTMNT.cbl:189"
+      "source": "pangaea/programs/ACCTMNT.cbl:189",
+      "performedBy": [
+        "1000-INITIALIZE",
+        "2100-APPLY-REQUESTS"
+      ],
+      "reachedBy": [
+        "1300-READ-REQUEST"
+      ]
     },
     {
       "name": "2000-NEXT-ACCOUNT",
@@ -1225,6 +1253,7 @@
           "source": "pangaea/programs/ACCTMNT.cbl:204"
         }
       ],
+      "fallsInto": "2100-APPLY-REQUESTS",
       "performedBy": [
         "0000-MAIN"
       ]
@@ -1244,58 +1273,233 @@
           "thru": "1300-EXIT",
           "source": "pangaea/programs/ACCTMNT.cbl:211"
         }
+      ],
+      "goTos": [
+        {
+          "target": "2800-WRITE-HELD",
+          "source": "pangaea/programs/ACCTMNT.cbl:209"
+        },
+        {
+          "target": "2100-APPLY-REQUESTS",
+          "source": "pangaea/programs/ACCTMNT.cbl:212"
+        }
+      ],
+      "performedBy": [
+        "0000-MAIN"
+      ],
+      "reachedBy": [
+        "2000-NEXT-ACCOUNT",
+        "2100-APPLY-REQUESTS"
       ]
     },
     {
       "name": "2200-APPLY-REQUEST",
       "description": "APPLY ONE REQUEST BY ITS TYPE.",
       "source": "pangaea/programs/ACCTMNT.cbl:215",
+      "goTos": [
+        {
+          "target": "2210-OPEN",
+          "source": "pangaea/programs/ACCTMNT.cbl:217"
+        },
+        {
+          "target": "2290-REJECT",
+          "source": "pangaea/programs/ACCTMNT.cbl:220"
+        },
+        {
+          "target": "2290-REJECT",
+          "source": "pangaea/programs/ACCTMNT.cbl:223"
+        },
+        {
+          "target": "2220-CLOSE",
+          "source": "pangaea/programs/ACCTMNT.cbl:225"
+        },
+        {
+          "target": "2230-FREEZE",
+          "source": "pangaea/programs/ACCTMNT.cbl:227"
+        },
+        {
+          "target": "2240-UNFREEZE",
+          "source": "pangaea/programs/ACCTMNT.cbl:229"
+        },
+        {
+          "target": "2250-LIMIT",
+          "source": "pangaea/programs/ACCTMNT.cbl:231"
+        },
+        {
+          "target": "2290-REJECT",
+          "source": "pangaea/programs/ACCTMNT.cbl:233"
+        }
+      ],
       "performedBy": [
+        "0000-MAIN",
         "2100-APPLY-REQUESTS"
       ]
     },
     {
       "name": "2210-OPEN",
       "description": "OPEN A NEW ACCOUNT, EMPTY, FROM TODAY.",
-      "source": "pangaea/programs/ACCTMNT.cbl:236"
+      "source": "pangaea/programs/ACCTMNT.cbl:236",
+      "goTos": [
+        {
+          "target": "2290-REJECT",
+          "source": "pangaea/programs/ACCTMNT.cbl:239"
+        },
+        {
+          "target": "2299-EXIT",
+          "source": "pangaea/programs/ACCTMNT.cbl:253"
+        }
+      ],
+      "performedBy": [
+        "0000-MAIN",
+        "2100-APPLY-REQUESTS"
+      ],
+      "reachedBy": [
+        "2200-APPLY-REQUEST"
+      ]
     },
     {
       "name": "2220-CLOSE",
       "description": "CLOSE AN ACCOUNT, IF IT IS EMPTY.",
-      "source": "pangaea/programs/ACCTMNT.cbl:256"
+      "source": "pangaea/programs/ACCTMNT.cbl:256",
+      "goTos": [
+        {
+          "target": "2290-REJECT",
+          "source": "pangaea/programs/ACCTMNT.cbl:259"
+        },
+        {
+          "target": "2299-EXIT",
+          "source": "pangaea/programs/ACCTMNT.cbl:263"
+        }
+      ],
+      "performedBy": [
+        "0000-MAIN",
+        "2100-APPLY-REQUESTS"
+      ],
+      "reachedBy": [
+        "2200-APPLY-REQUEST"
+      ]
     },
     {
       "name": "2230-FREEZE",
       "description": "FREEZE AN OPEN ACCOUNT.",
-      "source": "pangaea/programs/ACCTMNT.cbl:266"
+      "source": "pangaea/programs/ACCTMNT.cbl:266",
+      "goTos": [
+        {
+          "target": "2290-REJECT",
+          "source": "pangaea/programs/ACCTMNT.cbl:269"
+        },
+        {
+          "target": "2299-EXIT",
+          "source": "pangaea/programs/ACCTMNT.cbl:272"
+        }
+      ],
+      "performedBy": [
+        "0000-MAIN",
+        "2100-APPLY-REQUESTS"
+      ],
+      "reachedBy": [
+        "2200-APPLY-REQUEST"
+      ]
     },
     {
       "name": "2240-UNFREEZE",
       "description": "UNFREEZE A FROZEN ACCOUNT.",
-      "source": "pangaea/programs/ACCTMNT.cbl:275"
+      "source": "pangaea/programs/ACCTMNT.cbl:275",
+      "goTos": [
+        {
+          "target": "2290-REJECT",
+          "source": "pangaea/programs/ACCTMNT.cbl:278"
+        },
+        {
+          "target": "2299-EXIT",
+          "source": "pangaea/programs/ACCTMNT.cbl:281"
+        }
+      ],
+      "performedBy": [
+        "0000-MAIN",
+        "2100-APPLY-REQUESTS"
+      ],
+      "reachedBy": [
+        "2200-APPLY-REQUEST"
+      ]
     },
     {
       "name": "2250-LIMIT",
       "description": "CHANGE A CURRENT ACCOUNT'S OVERDRAFT LIMIT.",
-      "source": "pangaea/programs/ACCTMNT.cbl:284"
+      "source": "pangaea/programs/ACCTMNT.cbl:284",
+      "goTos": [
+        {
+          "target": "2290-REJECT",
+          "source": "pangaea/programs/ACCTMNT.cbl:287"
+        },
+        {
+          "target": "2299-EXIT",
+          "source": "pangaea/programs/ACCTMNT.cbl:290"
+        }
+      ],
+      "performedBy": [
+        "0000-MAIN",
+        "2100-APPLY-REQUESTS"
+      ],
+      "reachedBy": [
+        "2200-APPLY-REQUEST"
+      ]
     },
     {
       "name": "2290-REJECT",
       "description": "WRITE THE REQUEST TO THE REJECTS WITH ITS REASON.",
-      "source": "pangaea/programs/ACCTMNT.cbl:293"
+      "source": "pangaea/programs/ACCTMNT.cbl:293",
+      "fallsInto": "2299-EXIT",
+      "performedBy": [
+        "0000-MAIN",
+        "2100-APPLY-REQUESTS"
+      ],
+      "reachedBy": [
+        "2200-APPLY-REQUEST",
+        "2210-OPEN",
+        "2220-CLOSE",
+        "2230-FREEZE",
+        "2240-UNFREEZE",
+        "2250-LIMIT"
+      ]
     },
     {
       "name": "2299-EXIT",
-      "source": "pangaea/programs/ACCTMNT.cbl:298"
+      "source": "pangaea/programs/ACCTMNT.cbl:298",
+      "performedBy": [
+        "0000-MAIN",
+        "2100-APPLY-REQUESTS"
+      ],
+      "reachedBy": [
+        "2210-OPEN",
+        "2220-CLOSE",
+        "2230-FREEZE",
+        "2240-UNFREEZE",
+        "2250-LIMIT",
+        "2290-REJECT"
+      ]
     },
     {
       "name": "2800-WRITE-HELD",
       "description": "WRITE THE HELD ACCOUNT, ITS REQUESTS APPLIED, TO THE NEW MASTER.",
-      "source": "pangaea/programs/ACCTMNT.cbl:302"
+      "source": "pangaea/programs/ACCTMNT.cbl:302",
+      "fallsInto": "2999-EXIT",
+      "performedBy": [
+        "0000-MAIN"
+      ],
+      "reachedBy": [
+        "2100-APPLY-REQUESTS"
+      ]
     },
     {
       "name": "2999-EXIT",
-      "source": "pangaea/programs/ACCTMNT.cbl:307"
+      "source": "pangaea/programs/ACCTMNT.cbl:307",
+      "performedBy": [
+        "0000-MAIN"
+      ],
+      "reachedBy": [
+        "2800-WRITE-HELD"
+      ]
     },
     {
       "name": "8000-WRITE-REPORT",
