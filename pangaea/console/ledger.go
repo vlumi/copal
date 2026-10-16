@@ -7,46 +7,18 @@ package console
 
 import (
 	"fmt"
-	"path/filepath"
 	"strings"
 
 	"github.com/vlumi/copal/blueprint"
 	"github.com/vlumi/copal/pangaea/dataset"
+	"github.com/vlumi/copal/pangaea/layouts"
 	"github.com/vlumi/copal/record"
 )
-
-// Layouts are the records the console reads.
-type Layouts struct {
-	Master, Tran, Audit, Reject, Maint *record.Layout
-}
-
-// LoadLayouts reads the layouts from Pangaea's copybooks.
-func LoadLayouts(copybookDir string) (*Layouts, error) {
-	var l Layouts
-	for _, c := range []struct {
-		target   **record.Layout
-		copybook string
-		name     string
-	}{
-		{&l.Master, "ACCTMAST", "ACCT-MASTER-RECORD"},
-		{&l.Tran, "TRANREC", "TRAN-RECORD"},
-		{&l.Audit, "AUDITREC", "AUDIT-RECORD"},
-		{&l.Reject, "REJREC", "REJECT-RECORD"},
-		{&l.Maint, "MAINTREC", "MAINT-REQUEST"},
-	} {
-		layout, err := record.FromCopybook(filepath.Join(copybookDir, c.copybook+".cpy"), []string{copybookDir}, c.name)
-		if err != nil {
-			return nil, err
-		}
-		*c.target = layout
-	}
-	return &l, nil
-}
 
 // Ledger reads the bank's datasets through the layouts, and its jobs' runs
 // with the jobs' blueprints.
 type Ledger struct {
-	Layouts *Layouts
+	Layouts *layouts.Layouts
 	Store   *dataset.Store
 	Jobs    []blueprint.Job
 }

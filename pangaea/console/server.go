@@ -16,6 +16,7 @@ import (
 
 	"github.com/vlumi/copal/blueprint"
 	"github.com/vlumi/copal/pangaea/bank"
+	"github.com/vlumi/copal/pangaea/layouts"
 )
 
 //go:embed templates static
@@ -28,7 +29,7 @@ const shown = 200
 // programs and jobs.
 type Server struct {
 	bank       bank.Bank
-	layouts    *Layouts
+	layouts    *layouts.Layouts
 	system     *blueprint.System
 	blueprints string
 	pages      map[string]*template.Template
@@ -41,11 +42,11 @@ type Server struct {
 // bank's programs and jobs, whose blueprints are in the blueprints
 // directory.
 func New(b bank.Bank, system *blueprint.System, blueprints string) (*Server, error) {
-	layouts, err := LoadLayouts(b.Copybooks)
+	bankLayouts, err := layouts.Load(b.Copybooks)
 	if err != nil {
 		return nil, err
 	}
-	s := &Server{bank: b, layouts: layouts, system: system, blueprints: blueprints, pages: map[string]*template.Template{}}
+	s := &Server{bank: b, layouts: bankLayouts, system: system, blueprints: blueprints, pages: map[string]*template.Template{}}
 	funcs := template.FuncMap{"money": money, "count": count, "date": date}
 	for _, page := range []string{"overview", "nobank", "accounts", "account", "day", "compare", "error"} {
 		t, err := template.New("").Funcs(funcs).ParseFS(files, "templates/base.html", "templates/"+page+".html")

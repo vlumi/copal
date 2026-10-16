@@ -7,49 +7,15 @@ package generate
 import (
 	"fmt"
 	"math/rand/v2"
-	"path/filepath"
 	"slices"
 
+	"github.com/vlumi/copal/pangaea/layouts"
 	"github.com/vlumi/copal/record"
 )
 
-// Layouts are the record layouts the generator reads and writes through.
-type Layouts struct {
-	Master  *record.Layout
-	Tran    *record.Layout
-	Control *record.Layout
-	Rate    *record.Layout
-	Accrual *record.Layout
-	Maint   *record.Layout
-}
-
-// LoadLayouts reads the layouts from Pangaea's copybooks.
-func LoadLayouts(copybookDir string) (*Layouts, error) {
-	var l Layouts
-	for _, c := range []struct {
-		target   **record.Layout
-		copybook string
-		name     string
-	}{
-		{&l.Master, "ACCTMAST", "ACCT-MASTER-RECORD"},
-		{&l.Tran, "TRANREC", "TRAN-RECORD"},
-		{&l.Control, "BANKCTL", "BANK-CONTROL-RECORD"},
-		{&l.Rate, "RATEREC", "RATE-RECORD"},
-		{&l.Accrual, "ACCRREC", "ACCRUAL-RECORD"},
-		{&l.Maint, "MAINTREC", "MAINT-REQUEST"},
-	} {
-		layout, err := record.FromCopybook(filepath.Join(copybookDir, c.copybook+".cpy"), []string{copybookDir}, c.name)
-		if err != nil {
-			return nil, err
-		}
-		*c.target = layout
-	}
-	return &l, nil
-}
-
 // Generator makes up the bank's records for one seed.
 type Generator struct {
-	Layouts *Layouts
+	Layouts *layouts.Layouts
 	Seed    uint64
 }
 
