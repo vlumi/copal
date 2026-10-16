@@ -38,18 +38,18 @@ Done when: `make blueprints` regenerates them and a change to a copybook shows u
 
 Done when: every program blueprint opens with the program's own description and shows its paragraph diagram.
 
-## 4. A living bank
+## 4. A living bank (done)
 
 Pangaea stops being a fixture and becomes a running bank.
 
-- A seeded data generator: about two thousand customers and three thousand accounts (current and savings, a few closed or frozen), and for each business day a few thousand transactions with realistic shapes: payday deposits, rent and utility debits, transfers between customers, the occasional overdraft, and a percent or two that the validator has to reject.
-- A business calendar. The bank has a current business date of its own, never the wall clock, so every run is reproducible: day N from seed S is always the same.
-- The bank's state lives under `pangaea/run/` (ignored by git): the current master, the business date, and one snapshot per closed day.
-- Make targets: `bank-reset` regenerates the starting point from the seed, `bank-day` generates the day's transactions and runs the daily batch, `bank-days N` runs several in a row.
+- Transfers, posted in legs: the debit on the sender, then a second sort and post for the credit on the receiver, and a third for credits that cannot post and go back. The same two programs run three times in one job.
+- Generation data groups in the runner, so every day's master, control record, audit trail and rejects stay cataloged as a history, and temporary datasets for everything in between.
+- A business calendar. The bank has a business date of its own, never the wall clock, and BANKDATE moves it to the next weekday as the batch's last step, so every run is reproducible: day N from seed S is always the same.
+- A seeded data generator: about two thousand customers and three thousand accounts (current and savings, a few closed or frozen), and for each business day the branches' transaction file: salaries on the 25th, rent on the first business day of the month, savings after payday, cash, deposits, transfers between customers, fees, and a few percent that validation or posting rejects.
+- The generator reads and writes records through the layouts Copal computes from the copybooks, with no record format written out by hand.
+- The bank's state lives under `pangaea/run/bank` (ignored by git). `make bank-reset` regenerates the starting point from a seed, `make bank-days N=5` runs the next five business days.
 
-The hand-written fixture stays as the CI golden set; the generated bank is for watching, and its determinism is checked by a test that runs a few days twice and compares.
-
-Done when: `make bank-reset bank-days N=5` leaves five closed business days with snapshots, the same every time.
+The hand-written fixtures stay as the CI golden set; the generated bank is for watching, and a test runs three days in two banks from the same seed and compares them byte for byte.
 
 ## 5. The bank console
 

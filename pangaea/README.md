@@ -9,7 +9,7 @@ A small COBOL batch bank, the specimen Copal is developed against. Fiction writt
 - [jobs/](jobs/): job files in a small subset of JCL, run by the Go runner in [runner/](runner/).
 - [testdata/](testdata/): fixtures, each an `input` directory of datasets to start from and a `golden` directory of the datasets, job log and reports a run produces.
 
-The Go packages around the COBOL are the bank's machine room, not the bank: [jcl/](jcl/) parses job files, [dataset/](dataset/) keeps the datasets and their catalog, [runner/](runner/) runs jobs and [compile/](compile/) compiles the programs. `cmd/pangaea` puts them on the command line.
+The Go packages around the COBOL are the bank's machine room, not the bank: [jcl/](jcl/) parses job files, [dataset/](dataset/) keeps the datasets and their catalog, [runner/](runner/) runs jobs and [compile/](compile/) compiles the programs. [generate/](generate/) makes up customers and their business, and [bank/](bank/) runs the bank day after day. `cmd/pangaea` puts them on the command line.
 
 ## The daily batch
 
@@ -25,6 +25,14 @@ The Go packages around the COBOL are the bank's machine room, not the bank: [jcl
 The day's inputs are the current generations, (0), of the bank control record, the account master and the transaction file; it writes the next generations, (+1), of the control record and the master, and the day's audit trail and rejects. Everything in between is temporary.
 
 `make pangaea-daily` runs it on the fixture in `testdata/daily` and shows the reports. `make test` runs it on every fixture and compares with the golden files; `make pangaea-golden` rewrites them after a deliberate change.
+
+## The running bank
+
+`make bank-reset` makes a new bank in `pangaea/run/bank`: about three thousand accounts for two thousand customers, generated from a seed (`SEED=1`, `ACCOUNTS=3000` by default), on business day 2026-09-01. `make bank-days N=5` runs the next five business days: for each it generates the branches' transaction file for the day and runs the daily batch on it.
+
+Every generation stays cataloged in `pangaea/run/bank/datasets`, so the history of the master, the audit trail and the rejects is all there; each day's job log and reports are in `pangaea/run/bank/sysout/DATE`. The same seed always gives the same bank, day after day.
+
+The generator ([generate/](generate/)) reads and writes records through the layouts Copal computes from the copybooks, so it never hand-codes a record format. Customers have habits that follow from the seed: a salary on the 25th, rent on the first business day of the month, savings after payday, cash, deposits and transfers to other customers. Branches make the odd mistake, and customers sometimes try to spend money they do not have, so a few percent of each day ends up in the rejects.
 
 ## Conventions
 
