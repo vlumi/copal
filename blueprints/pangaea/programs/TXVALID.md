@@ -39,6 +39,10 @@ Program [TXVALID.cbl](../../../pangaea/programs/TXVALID.cbl): 5 files, 10 paragr
 | REJECT-OUT | FD | REJECTS | SEQUENTIAL | WS-REJECT-STATUS | REJECT-OUT-RECORD |
 | REPORT-OUT | FD | VALRPT | LINE SEQUENTIAL | WS-REPORT-STATUS | REPORT-LINE |
 
+## Flow
+
+![The paragraphs of TXVALID and the PERFORMs between them](TXVALID.svg)
+
 ## Paragraphs
 
 | Paragraph | Description | Source | Performs | Performed by |
