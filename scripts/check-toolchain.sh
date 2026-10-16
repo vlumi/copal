@@ -32,5 +32,6 @@ check_command() {
 check_cobc
 check_command go "https://go.dev/dl/"
 check_command npx "Node.js, for markdownlint"
+check_command golangci-lint "https://golangci-lint.run/docs/welcome/install/"
 
 exit $status

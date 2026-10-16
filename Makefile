@@ -14,9 +14,17 @@ toolchain:  ## Check that the build tools are installed
 lint-md:  ## Lint the Markdown files
 	@$(MARKDOWNLINT) "**/*.md" "!CLAUDE.md"
 
+.PHONY: lint-go
+lint-go:  ## Lint the Go code and check its formatting
+	golangci-lint run ./...
+
+.PHONY: test
+test:  ## Run the tests
+	go test ./...
+
 .PHONY: pangaea-build
 pangaea-build:  ## Compile Pangaea's COBOL programs
 	go run ./cmd/pangaea build
 
 .PHONY: ci
-ci: toolchain lint-md  ## Full local CI
+ci: toolchain lint-md lint-go test  ## Full local CI
