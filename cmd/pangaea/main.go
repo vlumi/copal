@@ -7,10 +7,12 @@
 //	pangaea reset   reset the running bank to a generated starting point
 //	pangaea days    run the running bank's next business days
 //	pangaea online  serve the running bank's online day until interrupted
+//	pangaea simulate send card traffic to the online day until interrupted
 //	pangaea console serve the bank console, a web window onto the running bank
 package main
 
 import (
+	"context"
 	"errors"
 	"flag"
 	"fmt"
@@ -30,6 +32,7 @@ import (
 	"github.com/vlumi/copal/pangaea/layouts"
 	"github.com/vlumi/copal/pangaea/online"
 	"github.com/vlumi/copal/pangaea/runner"
+	"github.com/vlumi/copal/pangaea/simulate"
 )
 
 const usage = `usage:
@@ -40,6 +43,7 @@ const usage = `usage:
   pangaea reset [-bank dir] [-seed n] [-accounts n]
   pangaea days [-bank dir] [-n days]
   pangaea online [-bank dir] [-addr host:port]
+  pangaea simulate [-bank dir] [-api url] [-rate n] [-seed n]
   pangaea console [-bank dir] [-addr host:port] [-src dir] [-blueprints dir]
 `
 
@@ -49,14 +53,15 @@ func main() {
 		os.Exit(2)
 	}
 	commands := map[string]func([]string) error{
-		"build":   build,
-		"load":    load,
-		"unload":  unload,
-		"run":     run,
-		"reset":   reset,
-		"days":    days,
-		"online":  serveOnline,
-		"console": serveConsole,
+		"build":    build,
+		"load":     load,
+		"unload":   unload,
+		"run":      run,
+		"reset":    reset,
+		"days":     days,
+		"online":   serveOnline,
+		"simulate": simulateTraffic,
+		"console":  serveConsole,
 	}
 	command, ok := commands[os.Args[1]]
 	if !ok {
@@ -197,6 +202,35 @@ func serveOnline(args []string) error {
 		}
 		return err
 	})
+}
+
+// simulateTraffic sends made-up card traffic to the online channel until
+// interrupted, printing every request and its response.
+func simulateTraffic(args []string) error {
+	flags, b := bankFlags("simulate")
+	api := flags.String("api", "http://localhost:8080/api", "the online channel's API")
+	rate := flags.Float64("rate", 5, "requests a second")
+	seed := flags.Uint64("seed", 1, "seed the traffic is made up from")
+	_ = flags.Parse(args)
+	if *rate <= 0 {
+		return fmt.Errorf("rate %v: more than none a second", *rate)
+	}
+	bankLayouts, err := layouts.Load(b.Copybooks)
+	if err != nil {
+		return err
+	}
+	store, err := b.Datasets()
+	if err != nil {
+		return err
+	}
+	s, err := simulate.New(*api, store, bankLayouts, *seed)
+	if err != nil {
+		return err
+	}
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+	fmt.Printf("sending %v requests a second to %s; interrupt to stop\n", *rate, *api)
+	return s.Run(ctx, *rate, func(r simulate.Request) { fmt.Println(r) })
 }
 
 func serveConsole(args []string) error {

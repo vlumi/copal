@@ -58,6 +58,12 @@ ONLINE_ADDR ?= localhost:8081
 online: pangaea-build  ## Serve the bank's online day until interrupted (ONLINE_ADDR)
 	go run ./cmd/pangaea online -addr $(ONLINE_ADDR)
 
+RATE ?= 5
+
+.PHONY: simulate
+simulate:  ## Send card traffic to the console's online channel until interrupted (RATE)
+	go run ./cmd/pangaea simulate -api http://$(ADDR)/api -rate $(RATE)
+
 .PHONY: blueprints
 blueprints:  ## Regenerate Pangaea's blueprints with Copal
 	rm -rf blueprints/pangaea
