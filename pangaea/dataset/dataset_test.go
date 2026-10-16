@@ -84,6 +84,42 @@ func TestCatalog(t *testing.T) {
 	}
 }
 
+// An indexed dataset is cataloged as written, survives reopening, and
+// has no text form.
+func TestCatalogIndexed(t *testing.T) {
+	dir := t.TempDir()
+	s, err := Open(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(s.Path("ACCT.ONLINE"), []byte("not whole records"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := s.CatalogIndexed("ACCT.ONLINE", 300); err != nil {
+		t.Fatal(err)
+	}
+	if err := s.Load("ACCT.MASTER", strings.NewReader("0001\n")); err != nil {
+		t.Fatal(err)
+	}
+	reopened, err := Open(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if lrecl, _ := reopened.LRECL("ACCT.ONLINE"); lrecl != 300 || !reopened.Indexed("ACCT.ONLINE") || reopened.Indexed("ACCT.MASTER") {
+		t.Errorf("ACCT.ONLINE LRECL %d, indexed %v; ACCT.MASTER indexed %v", lrecl, reopened.Indexed("ACCT.ONLINE"), reopened.Indexed("ACCT.MASTER"))
+	}
+	if _, err := reopened.Read("ACCT.ONLINE"); err == nil {
+		t.Error("read an indexed dataset as records")
+	}
+	out := t.TempDir()
+	if err := reopened.UnloadAll(out); err != nil {
+		t.Fatal(err)
+	}
+	if entries, _ := os.ReadDir(out); len(entries) != 1 || entries[0].Name() != "ACCT.MASTER.txt" {
+		t.Errorf("unloaded %v, want only ACCT.MASTER.txt", entries)
+	}
+}
+
 func TestGenerations(t *testing.T) {
 	s, err := Open(t.TempDir())
 	if err != nil {
