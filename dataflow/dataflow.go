@@ -20,6 +20,7 @@ import (
 type Flow struct {
 	Paragraphs []Paragraph
 	Lineage    []Edge
+	storage    *storage
 }
 
 // Paragraph is a paragraph's reads and writes, each item once, in the
@@ -32,10 +33,14 @@ type Paragraph struct {
 
 // Edge is one statement moving a value from one item into another. From
 // is a file for the records a READ or RETURN fills, and To a file for the
-// record a WRITE or RELEASE sends to it.
+// record a WRITE or RELEASE sends to it. From is a literal, as written,
+// for a value the statement gives itself, such as MOVE 'TXPOST' TO
+// RJ-PROGRAM or SET TD-INTEREST TO TRUE, written as "condition
+// TD-INTEREST".
 type Edge struct {
 	From, To         string
 	FromFile, ToFile bool
+	FromLiteral      bool
 	Paragraph        string
 	Verb             string
 	Pos              cobol.Pos
@@ -44,7 +49,7 @@ type Edge struct {
 // Analyze finds the program's data flow, given its records laid out.
 func Analyze(p *cobol.Program, records *layout.ProgramRecords) Flow {
 	names := newNames(records)
-	var flow Flow
+	flow := Flow{storage: newStorage(records)}
 	for _, para := range p.Paragraphs {
 		pf := Paragraph{Name: para.Name}
 		cobol.Walk(para.Statements, func(s cobol.Statement) {
@@ -163,17 +168,21 @@ func (n *names) edges(paragraph string, s cobol.Statement) []Edge {
 	var edges []Edge
 	add := func(e Edge) {
 		e.Paragraph, e.Verb, e.Pos = paragraph, s.Verb, s.Pos
-		if e.FromFile || e.ToFile || e.From != e.To {
+		if e.FromFile || e.ToFile || e.FromLiteral || e.From != e.To {
 			edges = append(edges, e)
 		}
 	}
-	var sources []string
+	var sources []Edge
 	for _, op := range s.Reads {
-		if op.Name != "" {
-			sources = append(sources, n.item(op.Name))
-		} else {
+		switch {
+		case op.Name != "":
+			sources = append(sources, Edge{From: n.item(op.Name)})
+		case len(op.Refs) == 0:
+			sources = append(sources, Edge{From: op.Text, FromLiteral: true})
+		}
+		if op.Name == "" {
 			for _, ref := range op.Refs {
-				sources = append(sources, n.item(ref))
+				sources = append(sources, Edge{From: n.item(ref)})
 			}
 		}
 	}
@@ -181,8 +190,12 @@ func (n *names) edges(paragraph string, s cobol.Statement) []Edge {
 		if target.Name == "" {
 			continue
 		}
+		if s.Verb == "SET" && len(s.Reads) == 0 {
+			add(Edge{From: "condition " + target.Name, FromLiteral: true, To: n.item(target.Name)})
+		}
 		for _, source := range sources {
-			add(Edge{From: source, To: n.item(target.Name)})
+			source.To = n.item(target.Name)
+			add(source)
 		}
 	}
 	switch s.Verb {
