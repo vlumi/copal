@@ -198,13 +198,15 @@ func writeLayout(b *strings.Builder, dir string, record Field) {
 }
 
 // row writes one table row; an empty cell is a single space.
+// row writes a Markdown table row. A | in a cell, as in a COBOL literal,
+// is escaped, even inside code: tables split cells on it everywhere.
 func row(cells ...string) string {
 	var b strings.Builder
 	for _, cell := range cells {
 		if cell == "" {
 			b.WriteString("| ")
 		} else {
-			b.WriteString("| " + cell + " ")
+			b.WriteString("| " + strings.ReplaceAll(cell, "|", `\|`) + " ")
 		}
 	}
 	b.WriteString("|\n")
