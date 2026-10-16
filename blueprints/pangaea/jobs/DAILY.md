@@ -182,7 +182,7 @@ Job [DAILY.jcl](../../../pangaea/jobs/DAILY.jcl): 13 steps.
 | --- | --- | --- | --- | --- | --- |
 | BANKCTL | BANK.CONTROL(0) | SHR | CONTROL-FILE | [BANKCTL](../copybooks/BANKCTL.md) | read |
 | ACCTIN | ACCT.MASTER(+1) | SHR | ACCT-IN | [ACCTMAST](../copybooks/ACCTMAST.md) | read |
-| ACCTOUT | ACCT.ONLINE(+1) | NEW | ONLINE-OUT | [ACCTONL](../copybooks/ACCTONL.md) | write |
+| ACCTOUT | ACCT.ONLINE(+1) (indexed) | NEW | ONLINE-OUT | [ACCTONL](../copybooks/ACCTONL.md) | write |
 | LOADRPT | job output | | REPORT-OUT | | write |
 
 ### NEXTDAY

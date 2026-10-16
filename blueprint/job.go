@@ -50,6 +50,7 @@ type DD struct {
 	Name     string   `json:"dd"`
 	Datasets []string `json:"datasets,omitempty"`
 	Disp     string   `json:"disp,omitempty"`
+	Indexed  bool     `json:"indexed,omitempty"` // RECORG=KS
 	Sysout   bool     `json:"sysout,omitempty"`
 	Dummy    bool     `json:"dummy,omitempty"`
 	File     string   `json:"file,omitempty"`
@@ -197,7 +198,7 @@ func describeDatasets(jobs []Job) {
 }
 
 func newDD(path string, d jcl.DD) DD {
-	dd := DD{Name: d.Name, Disp: string(d.Disp), Sysout: d.Sysout, Dummy: d.Dummy, Source: fmt.Sprintf("%s:%d", path, d.Line)}
+	dd := DD{Name: d.Name, Disp: string(d.Disp), Indexed: d.Indexed, Sysout: d.Sysout, Dummy: d.Dummy, Source: fmt.Sprintf("%s:%d", path, d.Line)}
 	for _, member := range append([]jcl.DD{d}, d.Concatenated...) {
 		if member.DSN != "" {
 			dd.Datasets = append(dd.Datasets, datasetName(member))
@@ -221,8 +222,8 @@ func datasetName(d jcl.DD) string {
 }
 
 // bind finds the program's file assigned to the DD and how the program
-// uses it, and reports a DD no file is assigned to and a use its
-// disposition does not allow.
+// uses it, and reports a DD no file is assigned to, a use its disposition
+// does not allow, and a new dataset organized otherwise than the file.
 func bind(dd *DD, step string, p Program) []string {
 	i := slices.IndexFunc(p.Files, func(f File) bool { return f.Assign == dd.Name })
 	if i < 0 {
@@ -236,6 +237,14 @@ func bind(dd *DD, step string, p Program) []string {
 	}
 	if len(dd.Datasets) == 0 {
 		return nil
+	}
+	if indexed := f.Organization == "INDEXED"; dd.Disp == "NEW" && indexed != dd.Indexed {
+		organization := "a sequential dataset"
+		if dd.Indexed {
+			organization = "an indexed dataset, RECORG=KS"
+		}
+		return []string{fmt.Sprintf("Step %s: %s's file %s is %s, but DD %s creates %s.",
+			step, p.Name, f.Name, f.Organization, dd.Name, organization)}
 	}
 	switch {
 	case dd.writes() && (dd.Disp == "SHR" || dd.Disp == ""):
@@ -511,6 +520,8 @@ func jobMarkdown(dir string, job Job) string {
 				datasets = "job output"
 			case dd.Dummy:
 				datasets = "dummy"
+			case dd.Indexed:
+				datasets += " (indexed)"
 			}
 			b.WriteString(row(dd.Name, datasets, dd.Disp, dd.File, copybookLink(dd.Copybook), strings.Join(dd.Uses, ", ")))
 		}
