@@ -53,6 +53,7 @@ type DD struct {
 	Indexed  bool     `json:"indexed,omitempty"` // RECORG=KS
 	Sysout   bool     `json:"sysout,omitempty"`
 	Dummy    bool     `json:"dummy,omitempty"`
+	InStream bool     `json:"inStream,omitempty"` // DD *
 	File     string   `json:"file,omitempty"`
 	Uses     []string `json:"uses,omitempty"`
 	// Copybook is the copybook of the record the program declares for the
@@ -198,7 +199,7 @@ func describeDatasets(jobs []Job) {
 }
 
 func newDD(path string, d jcl.DD) DD {
-	dd := DD{Name: d.Name, Disp: string(d.Disp), Indexed: d.Indexed, Sysout: d.Sysout, Dummy: d.Dummy, Source: fmt.Sprintf("%s:%d", path, d.Line)}
+	dd := DD{Name: d.Name, Disp: string(d.Disp), Indexed: d.Indexed, Sysout: d.Sysout, Dummy: d.Dummy, InStream: d.InStream, Source: fmt.Sprintf("%s:%d", path, d.Line)}
 	for _, member := range append([]jcl.DD{d}, d.Concatenated...) {
 		if member.DSN != "" {
 			dd.Datasets = append(dd.Datasets, datasetName(member))
@@ -225,6 +226,10 @@ func datasetName(d jcl.DD) string {
 // uses it, and reports a DD no file is assigned to, a use its disposition
 // does not allow, and a new dataset organized otherwise than the file.
 func bind(dd *DD, step string, p Program) []string {
+	if dd.Name == "SYSIN" && p.ReadsSysin {
+		dd.Uses = []string{useRead}
+		return nil
+	}
 	i := slices.IndexFunc(p.Files, func(f File) bool { return f.Assign == dd.Name })
 	if i < 0 {
 		return []string{fmt.Sprintf("Step %s binds DD %s, which %s assigns no file to.", step, dd.Name, p.Name)}
@@ -272,7 +277,7 @@ func fileCopybook(p Program, f File) string {
 	}
 	for _, e := range p.Lineage {
 		switch {
-		case (e.Verb == "WRITE" || e.Verb == "RELEASE") && slices.Contains(f.Records, e.To) && copybooks[e.From] != "":
+		case (e.Verb == "WRITE" || e.Verb == "REWRITE" || e.Verb == "RELEASE") && slices.Contains(f.Records, e.To) && copybooks[e.From] != "":
 			return copybooks[e.From]
 		case (e.Verb == "READ" || e.Verb == "RETURN") && slices.Contains(f.Records, e.From) && copybooks[e.To] != "":
 			return copybooks[e.To]
@@ -281,8 +286,9 @@ func fileCopybook(p Program, f File) string {
 	return ""
 }
 
-// unbound reports the program's files that the step binds no DD to. A
-// sort's work file needs none.
+// unbound reports the program's files that the step binds no DD to, and
+// a SYSIN it binds none to for a program that ACCEPTs. A sort's work file
+// needs none.
 func unbound(step Step, p Program) []string {
 	var findings []string
 	for _, f := range p.Files {
@@ -290,6 +296,9 @@ func unbound(step Step, p Program) []string {
 			continue
 		}
 		findings = append(findings, fmt.Sprintf("Step %s binds no DD %s for %s's file %s.", step.Name, f.Assign, p.Name, f.Name))
+	}
+	if p.ReadsSysin && !slices.ContainsFunc(step.DDs, func(dd DD) bool { return dd.Name == "SYSIN" }) {
+		findings = append(findings, fmt.Sprintf("Step %s binds no DD SYSIN for what %s ACCEPTs.", step.Name, p.Name))
 	}
 	return findings
 }
@@ -520,6 +529,8 @@ func jobMarkdown(dir string, job Job) string {
 				datasets = "job output"
 			case dd.Dummy:
 				datasets = "dummy"
+			case dd.InStream:
+				datasets = "in-stream data"
 			case dd.Indexed:
 				datasets += " (indexed)"
 			}

@@ -1,12 +1,12 @@
 # The First Bank of Pangaea
 
-A small COBOL batch bank, the specimen Copal is developed against. Fiction written for this project.
+A small COBOL bank, the specimen Copal is developed against: a nightly batch, and an online day of card and ATM authorizations. Fiction written for this project.
 
 ## Layout
 
 - [copybooks/](copybooks/): record layouts, one copybook per record.
 - [programs/](programs/): the COBOL programs, fixed-format, compiled with GnuCOBOL 3.2 in IBM dialect.
-- [jobs/](jobs/): job files in a small subset of JCL, run by the Go runner in [runner/](runner/): the daily batch and the month-end job.
+- [jobs/](jobs/): job files in a small subset of JCL, run by the Go runner in [runner/](runner/): the daily batch, the month-end job and the online day.
 - [testdata/](testdata/): fixtures, each an `input` directory of datasets to start from and a `golden` directory of the datasets, job log and reports a run produces.
 
 The Go packages around the COBOL are the bank's machine room, not the bank: [jcl/](../jcl/) parses job files (Copal reads them too, so it lives outside Pangaea), [dataset/](dataset/) keeps the datasets and their catalog, [runner/](runner/) runs jobs and [compile/](compile/) compiles the programs. [layouts/](layouts/) loads the record layouts Copal computes from the copybooks, [generate/](generate/) makes up customers and their business, and [bank/](bank/) runs the bank day after day, and [console/](console/) shows it in the browser. `cmd/pangaea` puts them on the command line.
@@ -23,9 +23,11 @@ The Go packages around the COBOL are the bank's machine room, not the bank: [jcl
 6. **TXSORT** and **TXPOST** again, for the transfer credits: a transfer that posted debits its sender in step 5 and writes a credit for the receiving account, which posts here.
 7. **TXSORT** and **TXPOST** a third time, for the returns: a credit to an unknown or closed account goes back to its sender.
 8. **ACCTMNT** applies the branches' account maintenance requests, in account order, and writes the day's new master: it opens accounts, closes empty ones, freezes and unfreezes them, and changes overdraft limits, and rejects what the rules do not allow. It is the bank's oldest style of code, from 1988: `PERFORM ... THRU` ranges that jump to their exit paragraph with `GO TO` and run on from one paragraph into the next.
-9. **BANKDATE** writes the bank control record for the next business day, Monday to Friday.
+9. **ACCTLOAD** loads the new master into the indexed online account file for the next business day, leaving out closed accounts, and starts that day's hold file, empty.
+10. **BANKDATE** writes the bank control record for the next business day, Monday to Friday.
+11. **CARDLOAD** loads the card master into the indexed online card file for that day, leaving out the cards expired by then.
 
-The day's inputs are the current generations, (0), of the bank control record, the account master, the accruals, the transaction file and the maintenance requests, and the rate table; it writes the next generations, (+1), of the control record, the master and the accruals, and the day's audit trail and the rejects of both transactions and maintenance. Everything in between is temporary. So a month's interest and fees are posted on the first business day of the next month, as the batch's first postings.
+The day's inputs are the current generations, (0), of the bank control record, the account master, the accruals, the transaction file, the maintenance requests and the card master, and the rate table; it writes the next generations, (+1), of the control record, the master and the accruals, the day's audit trail and the rejects of both transactions and maintenance, and the online files for the next day. Everything in between is temporary. So a month's interest and fees are posted on the first business day of the next month, as the batch's first postings.
 
 `make pangaea-daily` runs it on the fixture in `testdata/daily` and shows the reports; the fixture in `testdata/month-end` closes October and runs the month-end job after it.
 
@@ -37,6 +39,17 @@ The day's inputs are the current generations, (0), of the bank control record, t
 2. **GLSUM** summarizes the month for the general ledger in double entry: every posting moves customer deposits on one side and, on the other, the ledger account the code table names for its transaction code: cash, fee or interest income, interest expense, or transfers in transit. It writes the month's debits and credits per ledger account to `GL.SUMMARY`, and ends with RC 4 if transfers in transit do not net to zero, which would mean a transfer leg went missing.
 
 The two programs share the transaction code table, [CODETAB](copybooks/CODETAB.cpy), each copying it with a prefix of its own: `COPY CODETAB REPLACING ==:P:== BY ==ST==`. `make test` runs it on every fixture and compares with the golden files; `make pangaea-golden` rewrites them after a deliberate change.
+
+## The online day
+
+[ONLINE.jcl](jobs/ONLINE.jcl) runs between two nightly batches. **AUTHSRV** reads authorization requests from card terminals and ATMs on SYSIN, the job's in-stream data, one at a time, and writes a response for each, as a transaction monitor would. It reads the card, its account and for a reversal the hold from the online files the night's batch loaded, and calls the program for the request, which decides through its LINKAGE SECTION and touches no files:
+
+- **AUTHPUR** approves a card purchase if the card is active, the account open, the day's purchases within the card's daily limit and the amount within the available balance: the balance plus the overdraft limit less what is already held.
+- **AUTHREV** reverses a purchase of the same card that is still held.
+- **ATMWDL** approves a cash withdrawal in notes of 20 within the card's daily cash limit and the available balance, with a fee of 2.00 after four free withdrawals a month.
+- **ATMBAL** gives the balance and the available balance.
+
+An approval adds to the account's holds and the card's totals for the day, and AUTHSRV writes a hold record numbered by the day's authorization code. AUTHSRV alone opens the files, because two programs holding one indexed file open each keep their own view of it and lose each other's updates. The fixture in `testdata/online` runs a day of requests after the daily batch.
 
 ## The running bank
 

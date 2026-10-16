@@ -261,3 +261,16 @@ func TestRunIndexed(t *testing.T) {
 		t.Error("concatenated an indexed dataset")
 	}
 }
+
+// A step's SYSIN DD * reads the job's in-stream data as standard input.
+func TestRunInStream(t *testing.T) {
+	r := newRunner(t, map[string]string{"ECHO": `cat`})
+	r.InStream = strings.NewReader("REQUEST\n")
+	if _, err := r.Run(parse(t, "//J JOB\n//S EXEC PGM=ECHO\n//SYSIN DD *\n")); err != nil {
+		t.Fatal(err)
+	}
+	assertFile(t, filepath.Join(r.Sysout, "S.STDOUT"), "REQUEST\n")
+	if _, err := r.Run(parse(t, "//J JOB\n//S EXEC PGM=ECHO\n//CARDS DD *\n")); err == nil {
+		t.Error("ran a step with in-stream data on CARDS")
+	}
+}

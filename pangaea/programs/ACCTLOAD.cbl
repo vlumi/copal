@@ -3,10 +3,11 @@
       *                                                                *
       * WRITES THE NEW ACCOUNT MASTER'S ACCOUNTS TO A NEW INDEXED      *
       * ONLINE ACCOUNT FILE, FOR THE CARD AND ATM AUTHORIZATIONS OF    *
-      * THE NEXT BUSINESS DAY, WITH NO HOLDS. CLOSED ACCOUNTS ARE LEFT *
-      * OUT, SO THAT AUTHORIZATIONS FIND NO SUCH ACCOUNT. THE MASTER   *
-      * IS IN ACCOUNT NUMBER ORDER, SO THE FILE IS WRITTEN IN KEY      *
-      * ORDER, SEQUENTIALLY.                                           *
+      * THE NEXT BUSINESS DAY, WITH NO HOLDS, AND STARTS THE DAY'S     *
+      * HOLD FILE, EMPTY. CLOSED ACCOUNTS ARE LEFT OUT, SO THAT        *
+      * AUTHORIZATIONS FIND NO SUCH ACCOUNT. THE MASTER IS IN ACCOUNT  *
+      * NUMBER ORDER, SO THE FILE IS WRITTEN IN KEY ORDER,             *
+      * SEQUENTIALLY.                                                  *
       *                                                                *
       * RETURN CODES: 0 LOADED, 16 MASTER OUT OF ORDER OR I/O.         *
       *                                                                *
@@ -34,6 +35,11 @@
                ACCESS MODE IS SEQUENTIAL
                RECORD KEY IS AO-ACCT-NO
                FILE STATUS IS WS-ONLINE-STATUS.
+           SELECT HOLD-OUT     ASSIGN TO HOLDOUT
+               ORGANIZATION IS INDEXED
+               ACCESS MODE IS SEQUENTIAL
+               RECORD KEY IS HD-KEY
+               FILE STATUS IS WS-HOLD-STATUS.
            SELECT REPORT-OUT   ASSIGN TO LOADRPT
                ORGANIZATION IS LINE SEQUENTIAL
                FILE STATUS IS WS-REPORT-STATUS.
@@ -46,6 +52,8 @@
            COPY ACCTMAST.
        FD  ONLINE-OUT.
            COPY ACCTONL.
+       FD  HOLD-OUT.
+           COPY HOLDREC.
        FD  REPORT-OUT.
        01  REPORT-LINE                 PIC X(80).
 
@@ -54,6 +62,7 @@
            05  WS-CONTROL-STATUS       PIC XX.
            05  WS-ACCT-IN-STATUS       PIC XX.
            05  WS-ONLINE-STATUS        PIC XX.
+           05  WS-HOLD-STATUS          PIC XX.
            05  WS-REPORT-STATUS        PIC XX.
 
        01  WS-BUSINESS-DATE            PIC 9(8).
@@ -86,10 +95,11 @@
            MOVE 0 TO RETURN-CODE
            STOP RUN.
 
-      * OPEN THE FILES AND READ THE FIRST ACCOUNT.
+      * OPEN THE FILES AND READ THE FIRST ACCOUNT. THE HOLD FILE IS
+      * OPENED ONLY TO START IT.
        1000-INITIALIZE.
            OPEN INPUT  CONTROL-FILE ACCT-IN
-                OUTPUT ONLINE-OUT REPORT-OUT
+                OUTPUT ONLINE-OUT HOLD-OUT REPORT-OUT
            IF WS-FILE-STATUSES NOT = ALL '0'
                DISPLAY 'ACCTLOAD: CANNOT OPEN FILES ' WS-FILE-STATUSES
                MOVE 16 TO RETURN-CODE
@@ -166,7 +176,7 @@
 
       * CLOSE ALL FILES.
        9000-CLOSE-FILES.
-           CLOSE CONTROL-FILE ACCT-IN ONLINE-OUT REPORT-OUT.
+           CLOSE CONTROL-FILE ACCT-IN ONLINE-OUT HOLD-OUT REPORT-OUT.
 
       * STOP THE RUN WITH RETURN CODE 16, SAYING WHY.
        9900-ABORT.

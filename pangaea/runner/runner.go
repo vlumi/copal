@@ -8,6 +8,7 @@ package runner
 import (
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -32,6 +33,9 @@ type Runner struct {
 	Programs string // directory of the compiled programs
 	Datasets *dataset.Store
 	Sysout   string // directory for the job log, reports and program output
+	// InStream is the job's in-stream data, which a step's SYSIN DD * gives
+	// its program as standard input, where ACCEPT reads.
+	InStream io.Reader
 }
 
 // Result is the outcome of one step.
@@ -96,6 +100,9 @@ func (run *jobRun) recordAllocations(step jcl.Step, result Result) {
 			continue
 		case dd.Dummy:
 			fmt.Fprintf(&run.messages, "  %-8s DUMMY\n", name)
+			continue
+		case dd.InStream:
+			fmt.Fprintf(&run.messages, "  %-8s IN-STREAM\n", name)
 			continue
 		}
 		for _, d := range append([]jcl.DD{dd}, dd.Concatenated...) {
@@ -190,6 +197,10 @@ func (run *jobRun) runStep(step jcl.Step) (Result, error) {
 	}
 	cmd := exec.Command(filepath.Join(run.Programs, step.Program))
 	cmd.Env = append(os.Environ(), env...)
+	cmd.Env = append(cmd.Env, "COB_LIBRARY_PATH="+run.Programs)
+	if slices.ContainsFunc(step.DDs, func(dd jcl.DD) bool { return dd.InStream }) {
+		cmd.Stdin = run.InStream
+	}
 	cmd.Stdout = output
 	cmd.Stderr = output
 	runErr := cmd.Run()
@@ -222,10 +233,17 @@ func (run *jobRun) dsn(dd jcl.DD) string {
 }
 
 // allocate checks the step's datasets and returns the environment that binds
-// each DD name to its file, the way GnuCOBOL resolves ASSIGN names.
+// each DD name to its file, the way GnuCOBOL resolves ASSIGN names. In-stream
+// data is bound to no file, only to SYSIN, the program's standard input.
 func (run *jobRun) allocate(step jcl.Step) ([]string, error) {
 	var env []string
 	for _, dd := range step.DDs {
+		if dd.InStream {
+			if dd.Name != "SYSIN" {
+				return nil, fmt.Errorf("DD %s: in-stream data is read only as SYSIN", dd.Name)
+			}
+			continue
+		}
 		path, err := run.allocateDD(step, dd)
 		if err != nil {
 			return nil, fmt.Errorf("DD %s: %w", dd.Name, err)

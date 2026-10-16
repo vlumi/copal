@@ -34,6 +34,8 @@ type Program struct {
 	Files          []File           `json:"files"`
 	Records        []Record         `json:"records"`
 	Paragraphs     []Paragraph      `json:"paragraphs"`
+	// ReadsSysin is set for a program that ACCEPTs from the job's SYSIN.
+	ReadsSysin bool `json:"readsSysin,omitempty"`
 	// Using are the linkage items the program is passed when called.
 	Using    []string  `json:"using,omitempty"`
 	Calls    []Call    `json:"calls,omitempty"`
@@ -249,6 +251,7 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 	}
 	program.Using = p.Using
 	program.Calls = programCalls(p)
+	program.ReadsSysin = readsSysin(p)
 
 	paragraphs, err := structure.Paragraphs(p)
 	if err != nil {
@@ -267,6 +270,16 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 	program.Outputs = outputs(program, flow)
 	program.Rules = newRules(program.Name, rules.Tables(p))
 	return program, nil
+}
+
+func readsSysin(p *cobol.Program) bool {
+	reads := false
+	for _, para := range p.Paragraphs {
+		cobol.Walk(para.Statements, func(s cobol.Statement) {
+			reads = reads || s.Verb == "ACCEPT" && s.Device == ""
+		})
+	}
+	return reads
 }
 
 func describeFile(p *cobol.Program, fd cobol.FileDescription) (File, error) {

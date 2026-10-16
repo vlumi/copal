@@ -1,0 +1,132 @@
+{
+  "program": "AUTHREV",
+  "tables": [
+    {
+      "paragraph": "0000-MAIN",
+      "source": "pangaea/programs/AUTHREV.cbl:37",
+      "conditions": [
+        "HD-CARD-NO = CR-CARD-NO",
+        "HD-PURCHASE",
+        "HD-REVERSED"
+      ],
+      "actions": [
+        "SET RS-NO-SUCH-AUTH TO TRUE",
+        "MOVE 'AUTHORIZATION OF ANOTHER CARD' TO RS-MESSAGE",
+        "GOBACK",
+        "SET RS-INVALID-REQUEST TO TRUE",
+        "MOVE 'ONLY PURCHASES ARE REVERSED' TO RS-MESSAGE",
+        "MOVE 'ALREADY REVERSED' TO RS-MESSAGE",
+        "PERFORM 2000-APPROVE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            ""
+          ],
+          "actions": [
+            3,
+            4,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            5,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            6,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2000-APPROVE",
+      "source": "pangaea/programs/AUTHREV.cbl:55",
+      "conditions": [
+        "CR-TOTALS-DATE = HD-BUSINESS-DATE"
+      ],
+      "actions": [
+        "SUBTRACT HD-AMOUNT FROM AO-HOLDS",
+        "SUBTRACT HD-AMOUNT FROM CR-DAY-PURCHASES",
+        "SET HD-REVERSED TO TRUE",
+        "SET RS-APPROVED TO TRUE",
+        "MOVE 'REVERSED' TO RS-MESSAGE",
+        "MOVE HD-HOLD-NO TO RS-AUTH-CODE",
+        "MOVE HD-AMOUNT TO RS-AMOUNT",
+        "MOVE 0 TO RS-FEE",
+        "MOVE AO-BALANCE TO RS-BALANCE",
+        "ADD AO-BALANCE AO-OVERDRAFT-LIMIT GIVING WS-AVAILABLE",
+        "SUBTRACT AO-HOLDS FROM WS-AVAILABLE",
+        "MOVE WS-AVAILABLE TO RS-AVAILABLE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -12,7 +12,7 @@ DATE       BY  CHANGE
 2003-05-19 MV  CR-0342 ORIGINAL VERSION.
 ```
 
-Copybook [ACCTONL.cpy](../../../pangaea/copybooks/ACCTONL.cpy), used by [ACCTLOAD](../programs/ACCTLOAD.md).
+Copybook [ACCTONL.cpy](../../../pangaea/copybooks/ACCTONL.cpy), used by [ACCTLOAD](../programs/ACCTLOAD.md), [ATMBAL](../programs/ATMBAL.md), [ATMWDL](../programs/ATMWDL.md), [AUTHPUR](../programs/AUTHPUR.md), [AUTHREV](../programs/AUTHREV.md), [AUTHSRV](../programs/AUTHSRV.md).
 
 ## ACCT-ONLINE-RECORD
 

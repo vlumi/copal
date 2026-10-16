@@ -14,7 +14,7 @@
     "        CARD.MASTER(0)",
     "WRITES  BANK.CONTROL(+1) ACCT.MASTER(+1) ACCT.ACCRUAL(+1)",
     "        TRAN.AUDIT(+1)   TRAN.REJECTS(+1) MAINT.REJECTS(+1)",
-    "        ACCT.ONLINE(+1)  CARD.ONLINE(+1)",
+    "        ACCT.ONLINE(+1)  CARD.ONLINE(+1)  HOLD.ONLINE(+1)",
     "",
     "A STEP RUNS ONLY IF NO EARLIER STEP ENDED WITH RC ABOVE 4, SO",
     "A RUN THAT FAILS LEAVES THE BUSINESS DATE WHERE IT WAS."
@@ -867,9 +867,10 @@
       "cond": "(4,LT)",
       "description": [
         "LOAD THE NEW MASTER INTO THE ONLINE ACCOUNT FILE, WHICH THE",
-        "CARD AND ATM AUTHORIZATIONS READ DURING THE NEXT BUSINESS DAY"
+        "CARD AND ATM AUTHORIZATIONS READ DURING THE NEXT BUSINESS DAY,",
+        "AND START THAT DAY'S HOLD FILE"
       ],
-      "source": "pangaea/jobs/DAILY.jcl:131",
+      "source": "pangaea/jobs/DAILY.jcl:132",
       "dds": [
         {
           "dd": "BANKCTL",
@@ -882,7 +883,7 @@
             "read"
           ],
           "copybook": "BANKCTL",
-          "source": "pangaea/jobs/DAILY.jcl:132"
+          "source": "pangaea/jobs/DAILY.jcl:133"
         },
         {
           "dd": "ACCTIN",
@@ -895,7 +896,7 @@
             "read"
           ],
           "copybook": "ACCTMAST",
-          "source": "pangaea/jobs/DAILY.jcl:133"
+          "source": "pangaea/jobs/DAILY.jcl:134"
         },
         {
           "dd": "ACCTOUT",
@@ -909,7 +910,21 @@
             "write"
           ],
           "copybook": "ACCTONL",
-          "source": "pangaea/jobs/DAILY.jcl:134"
+          "source": "pangaea/jobs/DAILY.jcl:135"
+        },
+        {
+          "dd": "HOLDOUT",
+          "datasets": [
+            "HOLD.ONLINE(+1)"
+          ],
+          "disp": "NEW",
+          "indexed": true,
+          "file": "HOLD-OUT",
+          "uses": [
+            "write"
+          ],
+          "copybook": "HOLDREC",
+          "source": "pangaea/jobs/DAILY.jcl:137"
         },
         {
           "dd": "LOADRPT",
@@ -918,7 +933,7 @@
           "uses": [
             "write"
           ],
-          "source": "pangaea/jobs/DAILY.jcl:136"
+          "source": "pangaea/jobs/DAILY.jcl:139"
         }
       ]
     },
@@ -929,7 +944,7 @@
       "description": [
         "MOVE TO THE NEXT BUSINESS DAY"
       ],
-      "source": "pangaea/jobs/DAILY.jcl:140",
+      "source": "pangaea/jobs/DAILY.jcl:143",
       "dds": [
         {
           "dd": "BANKIN",
@@ -942,7 +957,7 @@
             "read"
           ],
           "copybook": "BANKCTL",
-          "source": "pangaea/jobs/DAILY.jcl:141"
+          "source": "pangaea/jobs/DAILY.jcl:144"
         },
         {
           "dd": "BANKOUT",
@@ -955,7 +970,7 @@
             "write"
           ],
           "copybook": "BANKCTL",
-          "source": "pangaea/jobs/DAILY.jcl:142"
+          "source": "pangaea/jobs/DAILY.jcl:145"
         }
       ]
     },
@@ -967,7 +982,7 @@
         "LOAD THE CARDS INTO THE ONLINE CARD FILE FOR THE NEXT BUSINESS",
         "DAY, LEAVING OUT THOSE THAT HAVE EXPIRED BY THEN"
       ],
-      "source": "pangaea/jobs/DAILY.jcl:148",
+      "source": "pangaea/jobs/DAILY.jcl:151",
       "dds": [
         {
           "dd": "BANKCTL",
@@ -980,7 +995,7 @@
             "read"
           ],
           "copybook": "BANKCTL",
-          "source": "pangaea/jobs/DAILY.jcl:149"
+          "source": "pangaea/jobs/DAILY.jcl:152"
         },
         {
           "dd": "CARDIN",
@@ -993,7 +1008,7 @@
             "read"
           ],
           "copybook": "CARDREC",
-          "source": "pangaea/jobs/DAILY.jcl:150"
+          "source": "pangaea/jobs/DAILY.jcl:153"
         },
         {
           "dd": "CARDOUT",
@@ -1007,7 +1022,7 @@
             "write"
           ],
           "copybook": "CARDREC",
-          "source": "pangaea/jobs/DAILY.jcl:151"
+          "source": "pangaea/jobs/DAILY.jcl:154"
         },
         {
           "dd": "LOADRPT",
@@ -1016,7 +1031,7 @@
           "uses": [
             "write"
           ],
-          "source": "pangaea/jobs/DAILY.jcl:153"
+          "source": "pangaea/jobs/DAILY.jcl:156"
         }
       ]
     }
@@ -1236,6 +1251,13 @@
     {
       "dataset": "ACCT.ONLINE(+1)",
       "copybook": "ACCTONL",
+      "writtenBy": [
+        "LOAD"
+      ]
+    },
+    {
+      "dataset": "HOLD.ONLINE(+1)",
+      "copybook": "HOLDREC",
       "writtenBy": [
         "LOAD"
       ]

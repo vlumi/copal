@@ -26,7 +26,7 @@ func TestAnalyze(t *testing.T) {
 	}
 	want := []string{
 		"MAIN-PARA reads IN-CODE IN-AMOUNT WS-TOTAL WS-COUNT writes IN-RECORD WS-TOTAL WS-COUNT",
-		"WRITE-PARA reads WS-TOTAL WS-COUNT WS-LINE writes WS-LINE-TOTAL IN-CODE OUT-RECORD",
+		"WRITE-PARA reads WS-TOTAL WS-COUNT WS-LINE writes WS-LINE-TOTAL IN-CODE OUT-RECORD IN-RECORD",
 	}
 	if !slices.Equal(got, want) {
 		t.Errorf("paragraphs\n%q\nwant\n%q", got, want)
@@ -54,6 +54,7 @@ func TestAnalyze(t *testing.T) {
 		"SET literal condition IN-DEPOSIT -> IN-CODE in WRITE-PARA",
 		"WRITE WS-LINE -> OUT-RECORD in WRITE-PARA",
 		"WRITE OUT-RECORD -> file OUT-FILE in WRITE-PARA",
+		"REWRITE IN-RECORD -> file IN-FILE in WRITE-PARA",
 	}
 	if !slices.Equal(got, want) {
 		t.Errorf("lineage\n%q\nwant\n%q", got, want)

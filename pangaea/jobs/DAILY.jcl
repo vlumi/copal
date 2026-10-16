@@ -12,7 +12,7 @@
 //*         CARD.MASTER(0)                                         *
 //* WRITES  BANK.CONTROL(+1) ACCT.MASTER(+1) ACCT.ACCRUAL(+1)      *
 //*         TRAN.AUDIT(+1)   TRAN.REJECTS(+1) MAINT.REJECTS(+1)    *
-//*         ACCT.ONLINE(+1)  CARD.ONLINE(+1)                       *
+//*         ACCT.ONLINE(+1)  CARD.ONLINE(+1)  HOLD.ONLINE(+1)      *
 //*                                                                *
 //* A STEP RUNS ONLY IF NO EARLIER STEP ENDED WITH RC ABOVE 4, SO  *
 //* A RUN THAT FAILS LEAVES THE BUSINESS DATE WHERE IT WAS.        *
@@ -126,12 +126,15 @@
 //MNTRPT   DD SYSOUT=*
 //*----------------------------------------------------------------*
 //* LOAD THE NEW MASTER INTO THE ONLINE ACCOUNT FILE, WHICH THE    *
-//* CARD AND ATM AUTHORIZATIONS READ DURING THE NEXT BUSINESS DAY  *
+//* CARD AND ATM AUTHORIZATIONS READ DURING THE NEXT BUSINESS DAY, *
+//* AND START THAT DAY'S HOLD FILE                                 *
 //*----------------------------------------------------------------*
 //LOAD     EXEC PGM=ACCTLOAD,COND=(4,LT)
 //BANKCTL  DD DSN=BANK.CONTROL(0),DISP=SHR
 //ACCTIN   DD DSN=ACCT.MASTER(+1),DISP=SHR
 //ACCTOUT  DD DSN=ACCT.ONLINE(+1),DISP=NEW,
+//            RECORG=KS,LRECL=100
+//HOLDOUT  DD DSN=HOLD.ONLINE(+1),DISP=NEW,
 //            RECORG=KS,LRECL=100
 //LOADRPT  DD SYSOUT=*
 //*----------------------------------------------------------------*
