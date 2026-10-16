@@ -17,11 +17,11 @@ import (
 	"os"
 	"strings"
 
+	"github.com/vlumi/copal/jcl"
 	"github.com/vlumi/copal/pangaea/bank"
 	"github.com/vlumi/copal/pangaea/compile"
 	"github.com/vlumi/copal/pangaea/console"
 	"github.com/vlumi/copal/pangaea/dataset"
-	"github.com/vlumi/copal/pangaea/jcl"
 	"github.com/vlumi/copal/pangaea/runner"
 )
 
