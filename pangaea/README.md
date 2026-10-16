@@ -9,7 +9,7 @@ A small COBOL batch bank, the specimen Copal is developed against. Fiction writt
 - [jobs/](jobs/): job files in a small subset of JCL, run by the Go runner in [runner/](runner/): the daily batch and the month-end job.
 - [testdata/](testdata/): fixtures, each an `input` directory of datasets to start from and a `golden` directory of the datasets, job log and reports a run produces.
 
-The Go packages around the COBOL are the bank's machine room, not the bank: [jcl/](../jcl/) parses job files (Copal reads them too, so it lives outside Pangaea), [dataset/](dataset/) keeps the datasets and their catalog, [runner/](runner/) runs jobs and [compile/](compile/) compiles the programs. [generate/](generate/) makes up customers and their business, and [bank/](bank/) runs the bank day after day, and [console/](console/) shows it in the browser. `cmd/pangaea` puts them on the command line.
+The Go packages around the COBOL are the bank's machine room, not the bank: [jcl/](../jcl/) parses job files (Copal reads them too, so it lives outside Pangaea), [dataset/](dataset/) keeps the datasets and their catalog, [runner/](runner/) runs jobs and [compile/](compile/) compiles the programs. [layouts/](layouts/) loads the record layouts Copal computes from the copybooks, [generate/](generate/) makes up customers and their business, and [bank/](bank/) runs the bank day after day, and [console/](console/) shows it in the browser. `cmd/pangaea` puts them on the command line.
 
 ## The daily batch
 

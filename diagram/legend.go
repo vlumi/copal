@@ -69,7 +69,7 @@ func writeLegend(b *strings.Builder, keys []Key, x, y int) {
 		if k.node == nil && k.style == nil {
 			textX = left
 		}
-		fmt.Fprintf(b, `<text class="label" x="%d" y="%d">%s</text>`+"\n", textX, middle+4, label(k.text))
+		fmt.Fprintf(b, `<text class="label" x="%d" y="%d">%s</text>`+"\n", textX, middle+4, escape(k.text))
 	}
 	b.WriteString("</g>\n")
 }

@@ -1,9 +1,7 @@
 package blueprint
 
 import (
-	"bytes"
 	"fmt"
-	"os"
 	"slices"
 	"strings"
 
@@ -84,13 +82,9 @@ func (dd DD) writes() bool {
 }
 
 func analyzeJob(path string, programs []Program) (Job, error) {
-	data, err := os.ReadFile(path)
+	parsed, err := jcl.ParseFile(path)
 	if err != nil {
 		return Job{}, err
-	}
-	parsed, err := jcl.Parse(bytes.NewReader(data))
-	if err != nil {
-		return Job{}, fmt.Errorf("%s: %w", path, err)
 	}
 	job := Job{Name: parsed.Name, Source: path, Description: cobol.CommentText(parsed.Comment)}
 	for _, s := range parsed.Steps {
@@ -326,15 +320,8 @@ func temporaryFindings(job Job) []string {
 	return findings
 }
 
-// jobDiagram is the graph of a job's steps and the datasets between them:
-// an arrow from each dataset a step reads to the step, and from the step
-// to each dataset it writes, and a dotted one from each step to the next
-// where no dataset leads from one to the other.
-// A dataset that one step writes and another reads is drawn once, between
-// them; one the job only reads is drawn above each step that reads it, and
-// one it only writes below each step that writes it, so that the flow
-// through the job is not lost among arrows from far away. The job's output
-// and dummy DDs are left out.
+// jobDiagram is a job's network as its blueprint draws it, linking steps
+// and datasets to the blueprints of their programs and copybooks.
 func jobDiagram(job Job) diagram.Graph {
 	return JobGraph(job, JobNotes{
 		ProgramLink:  func(name string) string { return "../programs/" + name + ".md" },
@@ -364,9 +351,18 @@ type JobNotes struct {
 	CopybookLink func(string) string
 }
 
-// JobGraph is the graph of a job's network, as in its blueprint, with the
-// notes added. A step shows its program, and a dataset the copybook that
-// describes its records, when it is known.
+// JobGraph is the graph of a job's steps and the datasets between them,
+// with the notes added: an arrow from each dataset a step reads to the
+// step, and from the step to each dataset it writes, and a dotted one from
+// each step to the next where no dataset leads from one to the other. A
+// step shows its program, and a dataset the copybook that describes its
+// records, when it is known.
+//
+// A dataset that one step writes and another reads is drawn once, between
+// them; one the job only reads is drawn above each step that reads it, and
+// one it only writes below each step that writes it, so that the flow
+// through the job is not lost among arrows from far away. The job's output
+// and dummy DDs are left out.
 func JobGraph(job Job, notes JobNotes) diagram.Graph {
 	copybooks := map[string]string{}
 	for _, d := range job.Datasets {

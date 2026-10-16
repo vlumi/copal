@@ -111,11 +111,11 @@ func (l *layout) writeNode(b *strings.Builder, s *slot, n Node) {
 	}
 	open, end := "<g>", "</g>"
 	if n.Link != "" {
-		open, end = fmt.Sprintf(`<a href="%s">`, label(n.Link)), "</a>"
+		open, end = fmt.Sprintf(`<a href="%s">`, escape(n.Link)), "</a>"
 	}
 	b.WriteString(open)
 	if n.Title != "" {
-		fmt.Fprintf(b, "<title>%s</title>", label(n.Title))
+		fmt.Fprintf(b, "<title>%s</title>", escape(n.Title))
 	}
 	top, radius := l.top(s), 4
 	if n.Data {
@@ -128,7 +128,7 @@ func (l *layout) writeNode(b *strings.Builder, s *slot, n Node) {
 		if i == 0 && len(lines) > 1 {
 			class += " first"
 		}
-		fmt.Fprintf(b, `<text class="%s" x="%d" y="%d" text-anchor="middle">%s</text>`, class, s.center(), top+boxHeight/2+4+i*lineHeight, label(line))
+		fmt.Fprintf(b, `<text class="%s" x="%d" y="%d" text-anchor="middle">%s</text>`, class, s.center(), top+boxHeight/2+4+i*lineHeight, escape(line))
 	}
 	b.WriteString(end + "\n")
 }

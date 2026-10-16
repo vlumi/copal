@@ -4,7 +4,6 @@
 package bank
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"os"
@@ -16,6 +15,7 @@ import (
 	"github.com/vlumi/copal/jcl"
 	"github.com/vlumi/copal/pangaea/dataset"
 	"github.com/vlumi/copal/pangaea/generate"
+	"github.com/vlumi/copal/pangaea/layouts"
 	"github.com/vlumi/copal/pangaea/runner"
 	"github.com/vlumi/copal/record"
 )
@@ -112,11 +112,11 @@ func (b Bank) RunDays(n int, report func(Day)) error {
 	if err != nil {
 		return err
 	}
-	daily, err := parseJob(b.DailyJob)
+	daily, err := jcl.ParseFile(b.DailyJob)
 	if err != nil {
 		return err
 	}
-	monthly, err := parseJob(b.MonthlyJob)
+	monthly, err := jcl.ParseFile(b.MonthlyJob)
 	if err != nil {
 		return err
 	}
@@ -275,21 +275,9 @@ func (b Bank) seed() (uint64, error) {
 }
 
 func (b Bank) generator(seed uint64) (*generate.Generator, error) {
-	layouts, err := generate.LoadLayouts(b.Copybooks)
+	bankLayouts, err := layouts.Load(b.Copybooks)
 	if err != nil {
 		return nil, err
 	}
-	return &generate.Generator{Layouts: layouts, Seed: seed}, nil
-}
-
-func parseJob(path string) (*jcl.Job, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-	job, err := jcl.Parse(bytes.NewReader(data))
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", path, err)
-	}
-	return job, nil
+	return &generate.Generator{Layouts: bankLayouts, Seed: seed}, nil
 }

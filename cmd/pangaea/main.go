@@ -10,7 +10,6 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
 	"net/http"
@@ -115,7 +114,7 @@ func run(args []string) error {
 	if flags.NArg() != 1 {
 		return fmt.Errorf("run needs one job file")
 	}
-	job, err := parseJob(flags.Arg(0))
+	job, err := jcl.ParseFile(flags.Arg(0))
 	if err != nil {
 		return err
 	}
@@ -129,18 +128,6 @@ func run(args []string) error {
 		fmt.Println(result)
 	}
 	return err
-}
-
-func parseJob(path string) (*jcl.Job, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-	job, err := jcl.Parse(bytes.NewReader(data))
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", path, err)
-	}
-	return job, nil
 }
 
 func bankFlags(name string) (*flag.FlagSet, *bank.Bank) {

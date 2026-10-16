@@ -1,7 +1,6 @@
 package pangaea_test
 
 import (
-	"bytes"
 	"errors"
 	"os"
 	"path/filepath"
@@ -64,7 +63,11 @@ func runFixture(t *testing.T, codec *fixture.Codec, programs, fixtureDir string)
 		if i > 0 {
 			r.Sysout = filepath.Join(sysout, job)
 		}
-		if _, err := r.Run(parseJob(t, filepath.Join("jobs", job+".jcl"))); err != nil {
+		parsed, err := jcl.ParseFile(filepath.Join("jobs", job+".jcl"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := r.Run(parsed); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -112,17 +115,4 @@ func fixtureJobs(t *testing.T, dir string) []string {
 		t.Fatal(err)
 	}
 	return strings.Fields(string(data))
-}
-
-func parseJob(t *testing.T, path string) *jcl.Job {
-	t.Helper()
-	data, err := os.ReadFile(path)
-	if err != nil {
-		t.Fatal(err)
-	}
-	job, err := jcl.Parse(bytes.NewReader(data))
-	if err != nil {
-		t.Fatal(err)
-	}
-	return job
 }

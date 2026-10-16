@@ -41,12 +41,9 @@ type Edge struct {
 	Pos              cobol.Pos
 }
 
-// Analyze finds the program's data flow.
-func Analyze(p *cobol.Program) (Flow, error) {
-	names, err := newNames(p)
-	if err != nil {
-		return Flow{}, err
-	}
+// Analyze finds the program's data flow, given its records laid out.
+func Analyze(p *cobol.Program, records *layout.ProgramRecords) Flow {
+	names := newNames(records)
 	var flow Flow
 	for _, para := range p.Paragraphs {
 		pf := Paragraph{Name: para.Name}
@@ -62,7 +59,7 @@ func Analyze(p *cobol.Program) (Flow, error) {
 		})
 		flow.Paragraphs = append(flow.Paragraphs, pf)
 	}
-	return flow, nil
+	return flow
 }
 
 func addOnce(names *[]string, name string) {
@@ -79,25 +76,16 @@ type names struct {
 	files      map[string]string   // record to file
 }
 
-func newNames(p *cobol.Program) (*names, error) {
+func newNames(records *layout.ProgramRecords) *names {
 	n := &names{conditions: map[string]string{}, records: map[string][]string{}, files: map[string]string{}}
-	var all []*layout.Field
-	for _, fd := range p.FileSection {
-		records, err := layout.Records(fd.Entries)
-		if err != nil {
-			return nil, err
+	all := records.WorkingStorage
+	for _, f := range records.Files {
+		for _, r := range f.Records {
+			n.records[f.File] = append(n.records[f.File], r.Name)
+			n.files[r.Name] = f.File
 		}
-		for _, r := range records {
-			n.records[fd.Name] = append(n.records[fd.Name], r.Name)
-			n.files[r.Name] = fd.Name
-		}
-		all = append(all, records...)
+		all = append(all, f.Records...)
 	}
-	records, err := layout.Records(p.WorkingStorage)
-	if err != nil {
-		return nil, err
-	}
-	all = append(all, records...)
 	var index func(f *layout.Field)
 	index = func(f *layout.Field) {
 		for _, c := range f.Conditions {
@@ -110,7 +98,7 @@ func newNames(p *cobol.Program) (*names, error) {
 	for _, r := range all {
 		index(r)
 	}
-	return n, nil
+	return n
 }
 
 // item is the data item a name stands for.

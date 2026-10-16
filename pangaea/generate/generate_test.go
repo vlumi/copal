@@ -4,15 +4,17 @@ import (
 	"slices"
 	"testing"
 	"time"
+
+	"github.com/vlumi/copal/pangaea/layouts"
 )
 
 func generator(t *testing.T) *Generator {
 	t.Helper()
-	layouts, err := LoadLayouts("../copybooks")
+	l, err := layouts.Load("../copybooks")
 	if err != nil {
 		t.Fatal(err)
 	}
-	return &Generator{Layouts: layouts, Seed: 42}
+	return &Generator{Layouts: l, Seed: 42}
 }
 
 func TestCalendar(t *testing.T) {
