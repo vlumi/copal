@@ -12,7 +12,7 @@ DATE       BY  CHANGE
 1999-01-11 SL  Y2K: 8-DIGIT DATES.
 ```
 
-Copybook [ACCTMAST.cpy](../../../pangaea/copybooks/ACCTMAST.cpy), used by [ACCTMNT](../programs/ACCTMNT.md), [INTACCR](../programs/INTACCR.md), [MONCHG](../programs/MONCHG.md), [STMTPRT](../programs/STMTPRT.md), [TXPOST](../programs/TXPOST.md).
+Copybook [ACCTMAST.cpy](../../../pangaea/copybooks/ACCTMAST.cpy), used by [ACCTLOAD](../programs/ACCTLOAD.md), [ACCTMNT](../programs/ACCTMNT.md), [INTACCR](../programs/INTACCR.md), [MONCHG](../programs/MONCHG.md), [STMTPRT](../programs/STMTPRT.md), [TXPOST](../programs/TXPOST.md).
 
 ## ACCT-MASTER-RECORD
 

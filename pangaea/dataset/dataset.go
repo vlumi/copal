@@ -2,6 +2,11 @@
 // without delimiters, as on a mainframe, named by their dataset name and
 // listed with their record length in a catalog.
 //
+// An indexed dataset, a key-sequenced dataset on a mainframe, is the file
+// GnuCOBOL's indexed file handler keeps, a Berkeley DB database. Only
+// programs read and write it, so it has no text form; the catalog lists it
+// as KS.
+//
 // Fixtures and golden files hold the same records as text, one per line,
 // so that they read and diff well. A record with bytes that are not
 // printable, such as packed decimal fields, is written in hex the way
@@ -28,7 +33,13 @@ const catalogFile = "CATALOG"
 // Store is a directory of datasets and the catalog that lists them.
 type Store struct {
 	dir     string
-	catalog map[string]int
+	catalog map[string]entry
+}
+
+// entry is a dataset's record length and whether it is indexed.
+type entry struct {
+	lrecl   int
+	indexed bool
 }
 
 // Open opens the store in dir, creating it if needed.
@@ -36,7 +47,7 @@ func Open(dir string) (*Store, error) {
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return nil, err
 	}
-	s := &Store{dir: dir, catalog: map[string]int{}}
+	s := &Store{dir: dir, catalog: map[string]entry{}}
 	return s, s.readCatalog()
 }
 
@@ -47,8 +58,13 @@ func (s *Store) Path(dsn string) string {
 
 // LRECL is the record length of a cataloged dataset.
 func (s *Store) LRECL(dsn string) (int, bool) {
-	lrecl, ok := s.catalog[dsn]
-	return lrecl, ok
+	e, ok := s.catalog[dsn]
+	return e.lrecl, ok
+}
+
+// Indexed tells whether a cataloged dataset is indexed.
+func (s *Store) Indexed(dsn string) bool {
+	return s.catalog[dsn].indexed
 }
 
 // Names lists the cataloged datasets in order.
@@ -120,7 +136,18 @@ func (s *Store) Catalog(dsn string, lrecl int) error {
 	} else if info.Size()%int64(lrecl) != 0 {
 		return fmt.Errorf("%s: %d bytes is not a whole number of %d-byte records", dsn, info.Size(), lrecl)
 	}
-	s.catalog[dsn] = lrecl
+	s.catalog[dsn] = entry{lrecl: lrecl}
+	return s.writeCatalog()
+}
+
+// CatalogIndexed records an indexed dataset that a program has written. A
+// program that never opened it leaves no file, as a mainframe leaves a
+// cluster defined but never loaded, which cannot be opened for input.
+func (s *Store) CatalogIndexed(dsn string, lrecl int) error {
+	if lrecl < 1 {
+		return fmt.Errorf("%s: a record length of %d", dsn, lrecl)
+	}
+	s.catalog[dsn] = entry{lrecl: lrecl, indexed: true}
 	return s.writeCatalog()
 }
 
@@ -142,8 +169,11 @@ func (s *Store) Write(dsn string, lrecl int, records [][]byte) error {
 // Read returns the records of a cataloged dataset.
 func (s *Store) Read(dsn string) ([][]byte, error) {
 	lrecl, ok := s.LRECL(dsn)
-	if !ok {
+	switch {
+	case !ok:
 		return nil, fmt.Errorf("%s: not cataloged", dsn)
+	case s.Indexed(dsn):
+		return nil, fmt.Errorf("%s: indexed, read only by programs", dsn)
 	}
 	data, err := os.ReadFile(s.Path(dsn))
 	if err != nil {
@@ -234,12 +264,16 @@ func (s *Store) LoadFile(path string) error {
 	return s.Load(strings.TrimSuffix(filepath.Base(path), ".txt"), bytes.NewReader(data))
 }
 
-// UnloadAll writes every cataloged dataset to outDir as DSN.txt.
+// UnloadAll writes every cataloged dataset but the indexed ones to outDir
+// as DSN.txt.
 func (s *Store) UnloadAll(outDir string) error {
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		return err
 	}
 	for _, dsn := range s.Names() {
+		if s.Indexed(dsn) {
+			continue
+		}
 		if err := s.unloadFile(dsn, filepath.Join(outDir, dsn+".txt")); err != nil {
 			return err
 		}
@@ -267,12 +301,15 @@ func (s *Store) readCatalog() error {
 		return err
 	}
 	for line := range strings.Lines(string(data)) {
-		dsn, lrecl, ok := strings.Cut(strings.TrimSpace(line), " ")
-		n, err := strconv.Atoi(lrecl)
-		if !ok || err != nil || n < 1 {
+		fields := strings.Fields(line)
+		if len(fields) < 2 || len(fields) > 3 || len(fields) == 3 && fields[2] != "KS" {
 			return fmt.Errorf("catalog: bad entry %q", line)
 		}
-		s.catalog[dsn] = n
+		n, err := strconv.Atoi(fields[1])
+		if err != nil || n < 1 {
+			return fmt.Errorf("catalog: bad entry %q", line)
+		}
+		s.catalog[fields[0]] = entry{lrecl: n, indexed: len(fields) == 3}
 	}
 	return nil
 }
@@ -280,7 +317,12 @@ func (s *Store) readCatalog() error {
 func (s *Store) writeCatalog() error {
 	var b strings.Builder
 	for _, dsn := range s.Names() {
-		fmt.Fprintf(&b, "%s %d\n", dsn, s.catalog[dsn])
+		e := s.catalog[dsn]
+		fmt.Fprintf(&b, "%s %d", dsn, e.lrecl)
+		if e.indexed {
+			b.WriteString(" KS")
+		}
+		b.WriteString("\n")
 	}
 	return os.WriteFile(filepath.Join(s.dir, catalogFile), []byte(b.String()), 0o644)
 }

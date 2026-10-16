@@ -34,8 +34,12 @@ type Program struct {
 	Files          []File           `json:"files"`
 	Records        []Record         `json:"records"`
 	Paragraphs     []Paragraph      `json:"paragraphs"`
-	Lineage        []Lineage        `json:"lineage,omitempty"`
-	Outputs        []Output         `json:"outputs,omitempty"`
+	// Using are the linkage items the program is passed when called.
+	Using    []string  `json:"using,omitempty"`
+	Calls    []Call    `json:"calls,omitempty"`
+	CalledBy []string  `json:"calledBy,omitempty"`
+	Lineage  []Lineage `json:"lineage,omitempty"`
+	Outputs  []Output  `json:"outputs,omitempty"`
 	// Rules are the program's decision tables, a blueprint of their own.
 	Rules Rules `json:"-"`
 }
@@ -67,6 +71,8 @@ type File struct {
 	Kind         string   `json:"kind"`
 	Assign       string   `json:"assign"`
 	Organization string   `json:"organization"`
+	Access       string   `json:"access,omitempty"` // RANDOM or DYNAMIC; empty for SEQUENTIAL
+	RecordKey    string   `json:"recordKey,omitempty"`
 	Status       string   `json:"status,omitempty"`
 	Opened       []string `json:"opened,omitempty"`
 	Records      []string `json:"records"`
@@ -74,7 +80,7 @@ type File struct {
 }
 
 // Record is a level-01 or level-77 item and the fields under it. Section is
-// "file" or "working-storage" in a program, empty in a copybook.
+// "file", "working-storage" or "linkage" in a program, empty in a copybook.
 type Record struct {
 	Section  string `json:"section,omitempty"`
 	File     string `json:"file,omitempty"`
@@ -173,6 +179,7 @@ func Analyze(paths []string, copybookDir string) (*System, error) {
 		s.Programs = append(s.Programs, program)
 	}
 	slices.SortFunc(s.Programs, func(a, b Program) int { return strings.Compare(a.Name, b.Name) })
+	linkCalls(s.Programs)
 	var copybookPaths []string
 	for _, ext := range cobol.CopybookExtensions {
 		paths, err := filepath.Glob(filepath.Join(copybookDir, "*"+ext))
@@ -237,6 +244,11 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 	for _, r := range laidOut.WorkingStorage {
 		program.Records = append(program.Records, newRecord(r, "working-storage", "", path))
 	}
+	for _, r := range laidOut.Linkage {
+		program.Records = append(program.Records, newRecord(r, "linkage", "", path))
+	}
+	program.Using = p.Using
+	program.Calls = programCalls(p)
 
 	paragraphs, err := structure.Paragraphs(p)
 	if err != nil {
@@ -263,14 +275,19 @@ func describeFile(p *cobol.Program, fd cobol.FileDescription) (File, error) {
 		return File{}, fmt.Errorf("%s: %s %s has no SELECT", fd.Pos, fd.Kind, fd.Name)
 	}
 	selected := p.Files[i]
-	return File{
+	f := File{
 		Name:         fd.Name,
 		Kind:         fd.Kind,
 		Assign:       selected.Assign,
 		Organization: selected.Organization,
+		RecordKey:    selected.RecordKey,
 		Status:       selected.Status,
 		Source:       selected.Pos.String(),
-	}, nil
+	}
+	if selected.Access != "SEQUENTIAL" {
+		f.Access = selected.Access
+	}
+	return f, nil
 }
 
 // newRecord converts a record layout. A record defined in a copybook names

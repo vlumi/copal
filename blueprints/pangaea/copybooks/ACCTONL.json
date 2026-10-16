@@ -1,0 +1,174 @@
+{
+  "copybook": "ACCTONL",
+  "source": "pangaea/copybooks/ACCTONL.cpy",
+  "description": [
+    "ACCTONL: ONLINE ACCOUNT RECORD, 100 BYTES",
+    "INDEXED BY ACCOUNT NUMBER. LOADED FROM THE MASTER EACH NIGHT",
+    "BY ACCTLOAD; DURING THE DAY THE AUTHORIZATIONS ADD WHAT THEY",
+    "APPROVE TO THE HOLDS, AND THE AVAILABLE BALANCE IS THE",
+    "BALANCE PLUS THE OVERDRAFT LIMIT LESS THE HOLDS.",
+    "",
+    "MODIFICATION HISTORY",
+    "DATE       BY  CHANGE",
+    "2003-05-19 MV  CR-0342 ORIGINAL VERSION."
+  ],
+  "records": [
+    {
+      "level": 1,
+      "name": "ACCT-ONLINE-RECORD",
+      "start": 1,
+      "length": 100,
+      "category": "group",
+      "source": "pangaea/copybooks/ACCTONL.cpy:12",
+      "fields": [
+        {
+          "level": 5,
+          "name": "AO-ACCT-NO",
+          "start": 1,
+          "length": 10,
+          "picture": "9(10)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 10,
+          "source": "pangaea/copybooks/ACCTONL.cpy:13"
+        },
+        {
+          "level": 5,
+          "name": "AO-CUST-NO",
+          "start": 11,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/ACCTONL.cpy:14"
+        },
+        {
+          "level": 5,
+          "name": "AO-SHORT-NAME",
+          "start": 19,
+          "length": 20,
+          "picture": "X(20)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/ACCTONL.cpy:15"
+        },
+        {
+          "level": 5,
+          "name": "AO-ACCT-TYPE",
+          "start": 39,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "conditions": [
+            {
+              "name": "AO-CURRENT",
+              "values": [
+                "'C'"
+              ],
+              "source": "pangaea/copybooks/ACCTONL.cpy:17"
+            },
+            {
+              "name": "AO-SAVINGS",
+              "values": [
+                "'S'"
+              ],
+              "source": "pangaea/copybooks/ACCTONL.cpy:18"
+            }
+          ],
+          "source": "pangaea/copybooks/ACCTONL.cpy:16"
+        },
+        {
+          "level": 5,
+          "name": "AO-STATUS",
+          "start": 40,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "conditions": [
+            {
+              "name": "AO-OPEN",
+              "values": [
+                "'O'"
+              ],
+              "source": "pangaea/copybooks/ACCTONL.cpy:20"
+            },
+            {
+              "name": "AO-FROZEN",
+              "values": [
+                "'F'"
+              ],
+              "source": "pangaea/copybooks/ACCTONL.cpy:21"
+            }
+          ],
+          "source": "pangaea/copybooks/ACCTONL.cpy:19"
+        },
+        {
+          "level": 5,
+          "name": "AO-BALANCE",
+          "start": 41,
+          "length": 13,
+          "picture": "S9(11)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 13,
+          "scale": 2,
+          "signed": true,
+          "description": "THE BALANCE AT THE END OF THE BUSINESS DAY IT WAS LOADED ON.",
+          "source": "pangaea/copybooks/ACCTONL.cpy:23"
+        },
+        {
+          "level": 5,
+          "name": "AO-OVERDRAFT-LIMIT",
+          "start": 54,
+          "length": 9,
+          "picture": "9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 9,
+          "scale": 2,
+          "source": "pangaea/copybooks/ACCTONL.cpy:24"
+        },
+        {
+          "level": 5,
+          "name": "AO-HOLDS",
+          "start": 63,
+          "length": 13,
+          "picture": "S9(11)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 13,
+          "scale": 2,
+          "signed": true,
+          "source": "pangaea/copybooks/ACCTONL.cpy:25"
+        },
+        {
+          "level": 5,
+          "name": "AO-AS-OF-DATE",
+          "start": 76,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/ACCTONL.cpy:26"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 84,
+          "length": 17,
+          "picture": "X(17)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/ACCTONL.cpy:27"
+        }
+      ]
+    }
+  ],
+  "usedBy": [
+    "ACCTLOAD"
+  ]
+}

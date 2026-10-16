@@ -24,6 +24,7 @@ func TestReadLogs(t *testing.T) {
 //OUT DD DSN=C,DISP=NEW,DCB=(RECFM=FB,LRECL=2)
 //RPT DD SYSOUT=*
 //NONE DD DUMMY
+//KSDS DD DSN=K,DISP=NEW,RECORG=KS,LRECL=2
 //S2 EXEC PGM=COPY,COND=(4,LE)
 //IN DD DSN=C,DISP=SHR
 //OUT DD DSN=D,DISP=NEW,DCB=(RECFM=FB,LRECL=2)
@@ -49,6 +50,7 @@ func TestReadLogs(t *testing.T) {
 		{Step: "S1", DD: "OUT", Dataset: "C", Records: 3, Cataloged: true},
 		{Step: "S1", DD: "RPT", Sysout: true},
 		{Step: "S1", DD: "NONE", Dummy: true},
+		{Step: "S1", DD: "KSDS", Dataset: "K", Cataloged: true, Indexed: true},
 	}
 	if !reflect.DeepEqual(allocations, want) {
 		t.Errorf("allocations\n%+v\nwant\n%+v", allocations, want)

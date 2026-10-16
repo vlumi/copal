@@ -23,8 +23,8 @@ const JobLog = "JOBLOG"
 
 // Messages is the file in the sysout directory that lists, for each step
 // that ran, the dataset each DD statement was bound to and the records it
-// held when the step ended, as a mainframe's job entry subsystem does in
-// its JESYSMSG.
+// held when the step ended, or INDEXED for an indexed dataset, as a
+// mainframe's job entry subsystem does in its JESYSMSG.
 const Messages = "JESYSMSG"
 
 // Runner runs jobs against a dataset store.
@@ -113,9 +113,12 @@ func (run *jobRun) recordAllocations(step jcl.Step, result Result) {
 	}
 }
 
-// records says how many records a dataset holds.
+// records says how many records a dataset holds, or that it is indexed.
 func (run *jobRun) records(dsn string) string {
 	lrecl, ok := run.Datasets.LRECL(dsn)
+	if ok && run.Datasets.Indexed(dsn) {
+		return "INDEXED"
+	}
 	info, err := os.Stat(run.Datasets.Path(dsn))
 	if !ok || err != nil {
 		return "NOT CATALOGED"
@@ -298,6 +301,9 @@ func (run *jobRun) concatenate(name string, dsns []string) (string, error) {
 	lrecl, _ := run.Datasets.LRECL(dsns[0])
 	var data []byte
 	for _, dsn := range dsns {
+		if run.Datasets.Indexed(dsn) {
+			return "", fmt.Errorf("%s is indexed and cannot be read with other datasets", dsn)
+		}
 		if n, _ := run.Datasets.LRECL(dsn); n != lrecl {
 			return "", fmt.Errorf("%s has records of %d bytes, %s of %d", dsn, n, dsns[0], lrecl)
 		}
@@ -317,7 +323,8 @@ func (run *jobRun) concatenate(name string, dsns []string) (string, error) {
 	return path, os.WriteFile(path, data, 0o644)
 }
 
-// catalogWritten catalogs the datasets the step created or appended to.
+// catalogWritten catalogs the datasets the step created or appended to,
+// as indexed if the DD or the catalog says so.
 func (run *jobRun) catalogWritten(step jcl.Step) error {
 	for _, dd := range step.DDs {
 		if dd.Disp != jcl.New && dd.Disp != jcl.Mod {
@@ -331,7 +338,11 @@ func (run *jobRun) catalogWritten(step jcl.Step) error {
 				run.temporary = append(run.temporary, dsn)
 			}
 		}
-		if err := run.Datasets.Catalog(dsn, lrecl); err != nil {
+		catalog := run.Datasets.Catalog
+		if dd.Indexed || run.Datasets.Indexed(dsn) {
+			catalog = run.Datasets.CatalogIndexed
+		}
+		if err := catalog(dsn, lrecl); err != nil {
 			return err
 		}
 	}

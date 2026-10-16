@@ -82,14 +82,12 @@ A bank that only has a batch is not a realistic bank. Customers pay by card and 
 - A card file: cards linked to accounts, with status (active, blocked, expired) and daily limits for purchases and for cash.
 - An authorization API over HTTP for two kinds of terminal. Card purchases: authorize and reverse. ATMs: cash withdrawal and balance enquiry.
 - The authorization rules live in COBOL, as called programs in the style of online transactions, so Copal reads them like the rest of the bank: card status, available balance, overdraft limit, the daily purchase and cash limits, and an ATM fee for withdrawals beyond the free ones each month.
-- A thin server around them does the HTTP and nothing else.
-- The account master becomes an indexed file keyed by account number: the daily batch still reads it in key order, authorizations read single accounts by key. The card file is indexed by card number.
-- Authorizations do not update the master. They write holds to an indexed file keyed by account and hold number, and the available balance is the master balance minus open holds. Each card keeps its running totals for the day.
+- A thin server around them does the HTTP and nothing else. It passes requests to a COBOL dispatcher that runs for the whole online day and calls the authorization programs, as a transaction monitor would.
+- The account master stays sequential. Each night the batch loads the new master into an indexed online account file keyed by account number, which authorizations read single accounts from. The card file is indexed by card number, loaded the same way from a sequential card master.
+- Authorizations do not update the master. They write holds to an indexed file keyed by account and hold number and add them to the online account's holds total, and the available balance is the balance plus the overdraft limit less the holds. Each card keeps its running totals for the day.
 - At end of day the holds are read in key order into a transaction file with header and trailer, the daily batch posts it, releases the holds, and resets the cards' daily totals.
 - During the batch window the API answers that the bank is closed.
 - A traffic simulator that makes card purchases and ATM withdrawals at a configurable rate, following the customers' generated habits, with live updates in the console (server-sent events) so balances and holds move while you watch.
-
-Open decision for this milestone: how the server calls COBOL (a process per request, or libcob in-process).
 
 Done when: with the simulator running, the console shows available balances dropping during the day and declines for cards over their limits, the API closes for the batch, and the next morning the card and ATM transactions appear in the master.
 

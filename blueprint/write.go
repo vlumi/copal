@@ -130,7 +130,14 @@ func programMarkdown(dir string, p Program) string {
 
 	b.WriteString("\n## Files\n\n| File | Kind | Assigned to | Organization | Status field | Opened | Records |\n| --- | --- | --- | --- | --- | --- | --- |\n")
 	for _, f := range p.Files {
-		b.WriteString(row(f.Name, f.Kind, f.Assign, f.Organization, f.Status, strings.Join(f.Opened, ", "), strings.Join(f.Records, ", ")))
+		organization := f.Organization
+		if f.RecordKey != "" {
+			organization += ", key " + f.RecordKey
+		}
+		if f.Access != "" {
+			organization += ", " + f.Access + " access"
+		}
+		b.WriteString(row(f.Name, f.Kind, f.Assign, organization, f.Status, strings.Join(f.Opened, ", "), strings.Join(f.Records, ", ")))
 	}
 
 	fmt.Fprintf(&b, "\n## Flow\n\n![The paragraphs of %s and how control moves between them](%s.svg)\n", p.Name, p.Name)
@@ -143,6 +150,7 @@ func programMarkdown(dir string, p Program) string {
 			strings.Join(para.PerformedBy, ", "), strings.Join(para.ReachedBy, ", ")))
 	}
 
+	writeCalls(&b, dir, p)
 	writeDataFlow(&b, dir, p)
 	writeOrigins(&b, p)
 
@@ -150,8 +158,11 @@ func programMarkdown(dir string, p Program) string {
 	for _, r := range p.Records {
 		fmt.Fprintf(&b, "\n### %s\n\n", r.Name)
 		where := "Working storage"
-		if r.File != "" {
+		switch {
+		case r.File != "":
 			where = "File " + r.File
+		case r.Section == "linkage":
+			where = "Linkage"
 		}
 		if r.Copybook != "" {
 			fmt.Fprintf(&b, "%s. %d bytes, layout in copybook [%s](../copybooks/%s.md).\n", where, r.Length, r.Copybook, r.Copybook)

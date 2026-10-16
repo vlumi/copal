@@ -5,7 +5,7 @@ BANKCTL: BANK CONTROL RECORD, ONE PER FILE
 THE BUSINESS DATE THE BATCH RUNS FOR, NEVER THE CLOCK.
 ```
 
-Copybook [BANKCTL.cpy](../../../pangaea/copybooks/BANKCTL.cpy), used by [ACCTMNT](../programs/ACCTMNT.md), [BANKDATE](../programs/BANKDATE.md), [INTACCR](../programs/INTACCR.md), [MONCHG](../programs/MONCHG.md), [TXPOST](../programs/TXPOST.md), [TXVALID](../programs/TXVALID.md).
+Copybook [BANKCTL.cpy](../../../pangaea/copybooks/BANKCTL.cpy), used by [ACCTLOAD](../programs/ACCTLOAD.md), [ACCTMNT](../programs/ACCTMNT.md), [BANKDATE](../programs/BANKDATE.md), [INTACCR](../programs/INTACCR.md), [MONCHG](../programs/MONCHG.md), [TXPOST](../programs/TXPOST.md), [TXVALID](../programs/TXVALID.md).
 
 ## BANK-CONTROL-RECORD
 

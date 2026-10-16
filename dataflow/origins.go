@@ -49,10 +49,6 @@ type storage struct {
 
 func newStorage(records *layout.ProgramRecords) *storage {
 	s := &storage{places: map[string]place{}, items: map[string][]string{}}
-	all := records.WorkingStorage
-	for _, f := range records.Files {
-		all = append(all, f.Records...)
-	}
 	seen := map[string]int{}
 	var walk func(record string, f *layout.Field)
 	walk = func(record string, f *layout.Field) {
@@ -63,7 +59,7 @@ func newStorage(records *layout.ProgramRecords) *storage {
 			walk(record, child)
 		}
 	}
-	for _, r := range all {
+	for _, r := range records.All() {
 		walk(r.Name, r)
 	}
 	for name, n := range seen {

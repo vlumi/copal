@@ -1,0 +1,196 @@
+{
+  "program": "ACCTLOAD",
+  "tables": [
+    {
+      "paragraph": "1000-INITIALIZE",
+      "source": "pangaea/programs/ACCTLOAD.cbl:90",
+      "conditions": [
+        "WS-FILE-STATUSES = ALL '0'",
+        "READ CONTROL-FILE AT END"
+      ],
+      "actions": [
+        "OPEN INPUT CONTROL-FILE ACCT-IN OUTPUT ONLINE-OUT REPORT-OUT",
+        "DISPLAY 'ACCTLOAD: CANNOT OPEN FILES ' WS-FILE-STATUSES",
+        "MOVE 16 TO RETURN-CODE",
+        "STOP RUN",
+        "READ CONTROL-FILE",
+        "MOVE 'NO BANK CONTROL RECORD' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT",
+        "MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE",
+        "PERFORM 1200-READ-ACCOUNT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            4,
+            7,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "1200-READ-ACCOUNT",
+      "source": "pangaea/programs/ACCTLOAD.cbl:106",
+      "conditions": [
+        "READ ACCT-IN AT END"
+      ],
+      "actions": [
+        "READ ACCT-IN",
+        "SET MASTER-AT-END TO TRUE",
+        "ADD 1 TO WS-READ-COUNT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2000-LOAD-ACCOUNT",
+      "source": "pangaea/programs/ACCTLOAD.cbl:115",
+      "conditions": [
+        "AM-CLOSED"
+      ],
+      "actions": [
+        "ADD 1 TO WS-CLOSED-COUNT",
+        "PERFORM 1200-READ-ACCOUNT",
+        "PERFORM 2100-WRITE-ONLINE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            2,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2100-WRITE-ONLINE",
+      "source": "pangaea/programs/ACCTLOAD.cbl:123",
+      "conditions": [
+        "WRITE ACCT-ONLINE-RECORD INVALID KEY"
+      ],
+      "actions": [
+        "MOVE SPACES TO ACCT-ONLINE-RECORD",
+        "MOVE AM-ACCT-NO TO AO-ACCT-NO",
+        "MOVE AM-CUST-NO TO AO-CUST-NO",
+        "MOVE AM-SHORT-NAME TO AO-SHORT-NAME",
+        "MOVE AM-ACCT-TYPE TO AO-ACCT-TYPE",
+        "MOVE AM-STATUS TO AO-STATUS",
+        "MOVE AM-BALANCE TO AO-BALANCE",
+        "MOVE AM-OVERDRAFT-LIMIT TO AO-OVERDRAFT-LIMIT",
+        "MOVE 0 TO AO-HOLDS",
+        "MOVE WS-BUSINESS-DATE TO AO-AS-OF-DATE",
+        "WRITE ACCT-ONLINE-RECORD",
+        "MOVE 'MASTER NOT IN ACCOUNT NUMBER ORDER' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT",
+        "ADD 1 TO WS-LOADED-COUNT",
+        "ADD AM-BALANCE TO WS-LOADED-BALANCE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            13,
+            14
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -13,6 +13,7 @@ func TestJobFindings(t *testing.T) {
 		{Name: "OUT-FILE", Kind: "FD", Assign: "OUT", Opened: []string{"OUTPUT"}},
 		{Name: "LOG-FILE", Kind: "FD", Assign: "LOG", Opened: []string{"EXTEND"}},
 		{Name: "WORK", Kind: "SD", Assign: "SORTWK"},
+		{Name: "KEYED-FILE", Kind: "FD", Assign: "KEYED", Organization: "INDEXED", Opened: []string{"OUTPUT"}},
 	}}
 	job, err := analyzeJob("testdata/BROKEN.jcl", []Program{program})
 	if err != nil {
@@ -24,6 +25,7 @@ func TestJobFindings(t *testing.T) {
 		"Step FIRST binds DD EXTRA, which COPY assigns no file to.",
 		"Step FIRST binds no DD LOG for COPY's file LOG-FILE.",
 		"Step SECOND: COPY appends to DD LOG, which is not DISP=MOD.",
+		"Step SECOND: COPY's file KEYED-FILE is INDEXED, but DD KEYED creates a sequential dataset.",
 		"Step THIRD runs NOPE, which is not among the programs analyzed.",
 		"Step SECOND reads &&U before any step writes it.",
 		"&&T is written and never read.",
