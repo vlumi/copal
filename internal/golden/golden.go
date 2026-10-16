@@ -4,6 +4,7 @@ package golden
 import (
 	"bytes"
 	"flag"
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -17,7 +18,13 @@ var update = flag.Bool("update", false, "rewrite the golden files")
 // gotDir instead.
 func CompareDir(t *testing.T, gotDir, goldenDir string) {
 	t.Helper()
-	got := readTree(t, gotDir)
+	CompareFiles(t, readTree(t, gotDir), goldenDir)
+}
+
+// CompareFiles checks that goldenDir holds exactly the given files, keyed
+// by their path in it. With -update it writes them there instead.
+func CompareFiles(t *testing.T, got map[string][]byte, goldenDir string) {
+	t.Helper()
 	if *update {
 		write(t, goldenDir, got)
 		return
@@ -29,7 +36,7 @@ func CompareDir(t *testing.T, gotDir, goldenDir string) {
 		case !ok:
 			t.Errorf("%s: not in %s", name, goldenDir)
 		case !bytes.Equal(data, golden):
-			t.Errorf("%s differs from %s:\n%s", name, goldenDir, data)
+			t.Errorf("%s differs from %s: %s", name, goldenDir, firstDifference(data, golden))
 		}
 	}
 	for name := range want {
@@ -37,6 +44,24 @@ func CompareDir(t *testing.T, gotDir, goldenDir string) {
 			t.Errorf("%s: in %s but not generated", name, goldenDir)
 		}
 	}
+}
+
+// firstDifference describes the first line where got and want differ.
+func firstDifference(got, want []byte) string {
+	gotLines, wantLines := bytes.Split(got, []byte("\n")), bytes.Split(want, []byte("\n"))
+	for i := range max(len(gotLines), len(wantLines)) {
+		var g, w []byte
+		if i < len(gotLines) {
+			g = gotLines[i]
+		}
+		if i < len(wantLines) {
+			w = wantLines[i]
+		}
+		if !bytes.Equal(g, w) {
+			return fmt.Sprintf("line %d\n got: %q\nwant: %q", i+1, g, w)
+		}
+	}
+	return "same lines, different bytes"
 }
 
 func readTree(t *testing.T, dir string) map[string][]byte {
