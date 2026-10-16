@@ -1,0 +1,47 @@
+{{define "title"}}Compare{{end}}
+{{define "content"}}
+{{with .View}}
+<h1>From {{.From.Date}} to {{.To.Date}}</h1>
+<form method="get" action="/compare" class="search">
+  <label>From the opening of <select name="from">{{range .Openings}}<option{{if eq .Date.String $.View.From.Date.String}} selected{{end}}>{{.Date}}</option>{{end}}</select></label>
+  <label>to the opening of <select name="to">{{range .Openings}}<option{{if eq .Date.String $.View.To.Date.String}} selected{{end}}>{{.Date}}</option>{{end}}</select></label>
+  <button>Compare</button>
+</form>
+<table>
+  <thead><tr><th></th><th>Master</th><th class="num">Accounts</th><th class="num">Balances</th></tr></thead>
+  <tbody>
+  <tr><td>Before</td><td><code>{{.From.Master}}</code></td><td class="num">{{count .Before.Accounts}}</td><td class="num">{{money .Before.Total}}</td></tr>
+  <tr><td>After</td><td><code>{{.To.Master}}</code></td><td class="num">{{count .After.Accounts}}</td><td class="num">{{money .After.Total}}</td></tr>
+  <tr><td>Posted</td><td>{{count .Postings}} postings in the audit trails</td><td></td><td class="num">{{money .Posted}}</td></tr>
+  </tbody>
+</table>
+{{if .Reconciled}}<p class="ok">Reconciled: the balances moved by exactly what was posted.</p>{{else}}<p class="error">Not reconciled: the balances and the postings differ.</p>{{end}}
+{{if .Opened}}
+<h2>Opened ({{len .Opened}})</h2>
+<ul>{{range .Opened}}<li>{{template "account-link" .No}} {{.Name}}</li>{{end}}</ul>
+{{end}}
+{{if .StatusChanges}}
+<h2>Status changes ({{len .StatusChanges}})</h2>
+<table>
+  <thead><tr><th class="num">Account</th><th>Name</th><th>Before</th><th>After</th></tr></thead>
+  <tbody>
+  {{range .StatusChanges}}<tr><td class="num">{{template "account-link" .After.No}}</td><td>{{.After.Name}}</td><td>{{.Before.Status}}</td><td>{{.After.Status}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{end}}
+<h2>Balances moved ({{count (len .Changes)}} accounts)</h2>
+{{if .Changes}}
+<details open>
+  <summary>Largest moves first</summary>
+<table>
+  <thead><tr><th class="num">Account</th><th>Name</th><th class="num">Before</th><th class="num">After</th><th class="num">Change</th></tr></thead>
+  <tbody>
+  {{range .Changes}}<tr><td class="num">{{template "account-link" .After.No}}</td><td>{{.After.Name}}</td><td class="num">{{money .Before.Balance}}</td><td class="num">{{money .After.Balance}}</td><td class="num{{if lt .Delta 0}} debit{{end}}">{{money .Delta}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+</details>
+{{else}}<p>None.</p>{{end}}
+{{end}}
+{{end}}

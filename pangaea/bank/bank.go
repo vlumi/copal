@@ -40,6 +40,9 @@ type Day struct {
 
 const seedFile = "SEED"
 
+// ErrNoBank is for a directory where no bank has been reset yet.
+var ErrNoBank = errors.New("no bank here yet; reset one first")
+
 // Reset replaces the bank with a new one: about the given number of
 // accounts, generated from the seed, on the start date.
 func (b Bank) Reset(seed uint64, accounts int) error {
@@ -166,7 +169,7 @@ func (b Bank) datasets() string { return filepath.Join(b.Dir, "datasets") }
 func (b Bank) seed() (uint64, error) {
 	data, err := os.ReadFile(filepath.Join(b.Dir, seedFile))
 	if errors.Is(err, os.ErrNotExist) {
-		return 0, fmt.Errorf("%s: no bank here yet; reset one first", b.Dir)
+		return 0, fmt.Errorf("%s: %w", b.Dir, ErrNoBank)
 	} else if err != nil {
 		return 0, err
 	}

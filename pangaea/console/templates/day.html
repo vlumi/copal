@@ -1,0 +1,51 @@
+{{define "title"}}{{.View.Day.Date}}{{end}}
+{{define "content"}}
+{{with .View}}
+<h1>Business day {{.Day.Date}}</h1>
+<p><a href="/compare?from={{.Day.Date}}&amp;to={{.Next}}">What the day changed in the master</a></p>
+<h2>Job</h2>
+<table>
+  <thead><tr><th>Step</th><th>Program</th><th>Outcome</th></tr></thead>
+  <tbody>
+  {{range .Steps}}<tr><td>{{.Name}}</td><td>{{.Program}}</td><td>{{.Outcome}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+<h2>Control totals</h2>
+<p class="note">The transaction file's trailer, from the branches, against what its details add up to.</p>
+<table>
+  <thead><tr><th></th><th class="num">Details</th><th class="num">Amount total</th><th class="num">Account number hash</th></tr></thead>
+  <tbody>
+  <tr><td>Trailer</td><td class="num">{{.File.Trailer.Count}}</td><td class="num">{{money .File.Trailer.Amount}}</td><td class="num">{{.File.Trailer.Hash}}</td></tr>
+  <tr><td>Details</td><td class="num">{{.Computed.Count}}</td><td class="num">{{money .Computed.Amount}}</td><td class="num">{{.Computed.Hash}}</td></tr>
+  </tbody>
+</table>
+<h2>Rejects ({{len .Rejects}})</h2>
+{{if .Rejects}}
+<table>
+  <thead><tr><th>Step</th><th>Reason</th><th class="num">Transaction</th><th class="num">Account</th><th>Code</th><th class="num">Amount</th><th>Description</th><th class="num">Counter account</th></tr></thead>
+  <tbody>
+  {{range .Rejects}}<tr><td>{{.Program}}</td><td>{{.Reason}}</td><td class="num">{{.Tran.ID}}</td><td class="num">{{template "account-link" .Tran.Account}}</td><td>{{.Tran.Code}}</td><td class="num">{{money .Tran.Amount}}</td><td>{{.Tran.Description}}</td><td class="num">{{if .Tran.Counter}}{{template "account-link" .Tran.Counter}}{{end}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{else}}<p>None.</p>{{end}}
+<h2>Reports</h2>
+{{range .Reports}}
+<details>
+  <summary><code>{{.Name}}</code></summary>
+  <pre>{{.Text}}</pre>
+</details>
+{{end}}
+<h2>Audit trail ({{count (len .Postings)}} postings)</h2>
+<details>
+  <summary><code>{{.Day.Audit}}</code></summary>
+  {{template "postings" .Postings}}
+</details>
+<h2>Transaction file ({{count (len .File.Details)}} details)</h2>
+<details>
+  <summary><code>{{.Day.Transactions}}</code>, file {{.File.FileSeq}} from {{.File.Source}} for {{date .File.Date}}</summary>
+  {{template "transactions" .File.Details}}
+</details>
+{{end}}
+{{end}}

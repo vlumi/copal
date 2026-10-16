@@ -1,0 +1,34 @@
+{{define "title"}}Account {{.View.Account.No}}{{end}}
+{{define "content"}}
+{{with .View}}
+<h1>Account {{.Account.No}}: {{.Account.Name}}</h1>
+<dl class="facts">
+  <div><dt>Balance</dt><dd{{if lt .Account.Balance 0}} class="debit"{{end}}>{{money .Account.Balance}}</dd></div>
+  <div><dt>Overdraft limit</dt><dd>{{money .Account.Limit}}</dd></div>
+  <div><dt>Customer</dt><dd><a href="/accounts?q={{.Account.Customer}}">{{.Account.Customer}}</a></dd></div>
+  <div><dt>Postings</dt><dd>{{len .Postings}}</dd></div>
+  <div><dt>Rejects</dt><dd>{{len .Rejects}}</dd></div>
+</dl>
+<h2>Master record</h2>
+<p class="note">The record as the master holds it, read field by field through the layout Copal computes from the ACCTMAST copybook.</p>
+<table>
+  <thead><tr><th>Field</th><th class="num">Position</th><th class="num">Length</th><th>Picture</th><th>Bytes</th><th>Value</th></tr></thead>
+  <tbody>
+  {{range .Fields}}<tr><td><code>{{.Field.Name}}</code></td><td class="num">{{.Field.Start}}</td><td class="num">{{.Field.Length}}</td><td><code>{{.Field.Picture}}</code></td><td><code class="raw">{{.Raw}}</code></td><td>{{.Value}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+<h2>Postings</h2>
+{{if .Postings}}{{template "postings" .Postings}}{{else}}<p>None since the reset.</p>{{end}}
+<h2>Rejects</h2>
+{{if .Rejects}}
+<table>
+  <thead><tr><th>Date</th><th>Step</th><th>Reason</th><th class="num">Transaction</th><th>Code</th><th class="num">Amount</th><th>Description</th><th class="num">Counter account</th></tr></thead>
+  <tbody>
+  {{range .Rejects}}<tr><td><a href="/days/{{.Date}}">{{.Date}}</a></td><td>{{.Program}}</td><td>{{.Reason}}</td><td class="num">{{.Tran.ID}}</td><td>{{.Tran.Code}}</td><td class="num">{{money .Tran.Amount}}</td><td>{{.Tran.Description}}</td><td class="num">{{if .Tran.Counter}}{{template "account-link" .Tran.Counter}}{{end}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{else}}<p>None since the reset.</p>{{end}}
+{{end}}
+{{end}}

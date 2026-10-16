@@ -74,4 +74,7 @@ func (b Bank) History() (History, error) {
 	return h, nil
 }
 
+// Datasets opens the bank's dataset store.
+func (b Bank) Datasets() (*dataset.Store, error) { return dataset.Open(b.datasets()) }
+
 func (b Bank) sysout(date generate.Date) string { return filepath.Join(b.Dir, "sysout", date.String()) }

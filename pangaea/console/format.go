@@ -26,6 +26,9 @@ func money(cents int64) string {
 	return grouped(whole) + "." + fraction
 }
 
+// count writes a number with thousands separators.
+func count(n int) string { return grouped(strconv.Itoa(n)) }
+
 func grouped(digits string) string {
 	sign := ""
 	if rest, ok := strings.CutPrefix(digits, "-"); ok {
@@ -39,4 +42,10 @@ func grouped(digits string) string {
 		b.WriteRune(c)
 	}
 	return sign + b.String()
+}
+
+// date writes a yyyymmdd number as yyyy-mm-dd.
+func date(n int64) string {
+	s := fmt.Sprintf("%08d", n)
+	return s[:4] + "-" + s[4:6] + "-" + s[6:]
 }
