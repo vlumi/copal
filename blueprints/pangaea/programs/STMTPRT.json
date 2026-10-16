@@ -2737,6 +2737,38 @@
   ],
   "lineage": [
     {
+      "from": "'SORT FAILED'",
+      "to": "WS-ABORT-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "0000-MAIN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:216"
+    },
+    {
+      "from": "0",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "0000-MAIN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:222"
+    },
+    {
+      "from": "16",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:231"
+    },
+    {
+      "from": "0",
+      "to": "WS-CLOSED-MONTH-NUMBER",
+      "fromLiteral": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:234"
+    },
+    {
       "from": "ACCR-IN",
       "to": "ACCRUAL-RECORD",
       "fromFile": true,
@@ -2759,6 +2791,22 @@
       "source": "pangaea/programs/STMTPRT.cbl:239"
     },
     {
+      "from": "1",
+      "to": "WS-NM-YEAR",
+      "fromLiteral": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "ADD",
+      "source": "pangaea/programs/STMTPRT.cbl:241"
+    },
+    {
+      "from": "1",
+      "to": "WS-NM-MONTH",
+      "fromLiteral": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:242"
+    },
+    {
       "from": "WS-CM-MONTH",
       "to": "WS-NM-MONTH",
       "paragraph": "1000-INITIALIZE",
@@ -2772,6 +2820,14 @@
       "paragraph": "2000-SELECT-POSTINGS",
       "verb": "READ",
       "source": "pangaea/programs/STMTPRT.cbl:250"
+    },
+    {
+      "from": "1",
+      "to": "WS-SEQ",
+      "fromLiteral": true,
+      "paragraph": "2000-SELECT-POSTINGS",
+      "verb": "ADD",
+      "source": "pangaea/programs/STMTPRT.cbl:252"
     },
     {
       "from": "AU-BUSINESS-DATE",
@@ -2794,6 +2850,14 @@
       "paragraph": "2000-SELECT-POSTINGS",
       "verb": "READ",
       "source": "pangaea/programs/STMTPRT.cbl:260"
+    },
+    {
+      "from": "'CANNOT READ THE AUDIT TRAILS'",
+      "to": "WS-ABORT-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "2000-SELECT-POSTINGS",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:263"
     },
     {
       "from": "AU-ACCT-NO",
@@ -2860,12 +2924,52 @@
       "source": "pangaea/programs/STMTPRT.cbl:277"
     },
     {
+      "from": "1",
+      "to": "WS-SELECTED-COUNT",
+      "fromLiteral": true,
+      "paragraph": "2100-RELEASE-POSTING",
+      "verb": "ADD",
+      "source": "pangaea/programs/STMTPRT.cbl:278"
+    },
+    {
+      "from": "'POSTINGS FOR NO ACCOUNT'",
+      "to": "WS-ABORT-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "3000-PRINT-STATEMENTS",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:287"
+    },
+    {
+      "from": "'POSTINGS FOR NO ACCOUNT'",
+      "to": "WS-ABORT-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "3000-PRINT-STATEMENTS",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:294"
+    },
+    {
       "from": "STMT-SORT",
       "to": "SORT-RECORD",
       "fromFile": true,
       "paragraph": "3100-RETURN-POSTING",
       "verb": "RETURN",
       "source": "pangaea/programs/STMTPRT.cbl:300"
+    },
+    {
+      "from": "condition POSTINGS-AT-END",
+      "to": "WS-POSTING-END-SW",
+      "fromLiteral": true,
+      "paragraph": "3100-RETURN-POSTING",
+      "verb": "SET",
+      "source": "pangaea/programs/STMTPRT.cbl:302"
+    },
+    {
+      "from": "HIGH-VALUES",
+      "to": "WS-POSTING-KEY",
+      "fromLiteral": true,
+      "paragraph": "3100-RETURN-POSTING",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:303"
     },
     {
       "from": "SR-ACCT-NO",
@@ -2881,6 +2985,22 @@
       "paragraph": "3200-READ-MASTER",
       "verb": "READ",
       "source": "pangaea/programs/STMTPRT.cbl:310"
+    },
+    {
+      "from": "condition MASTER-AT-END",
+      "to": "WS-MASTER-END-SW",
+      "fromLiteral": true,
+      "paragraph": "3200-READ-MASTER",
+      "verb": "SET",
+      "source": "pangaea/programs/STMTPRT.cbl:312"
+    },
+    {
+      "from": "1",
+      "to": "WS-ACCOUNT-COUNT",
+      "fromLiteral": true,
+      "paragraph": "3200-READ-MASTER",
+      "verb": "ADD",
+      "source": "pangaea/programs/STMTPRT.cbl:314"
     },
     {
       "from": "AM-BALANCE",
@@ -2904,6 +3024,30 @@
       "source": "pangaea/programs/STMTPRT.cbl:328"
     },
     {
+      "from": "0",
+      "to": "WS-CREDITS",
+      "fromLiteral": true,
+      "paragraph": "3300-PRINT-STATEMENT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:329"
+    },
+    {
+      "from": "0",
+      "to": "WS-DEBITS",
+      "fromLiteral": true,
+      "paragraph": "3300-PRINT-STATEMENT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:329"
+    },
+    {
+      "from": "1",
+      "to": "WS-STATEMENT-COUNT",
+      "fromLiteral": true,
+      "paragraph": "3300-PRINT-STATEMENT",
+      "verb": "ADD",
+      "source": "pangaea/programs/STMTPRT.cbl:336"
+    },
+    {
       "from": "WS-RULE-LINE",
       "to": "STMT-LINE",
       "paragraph": "3400-PRINT-HEADING",
@@ -2919,8 +3063,40 @@
       "source": "pangaea/programs/STMTPRT.cbl:340"
     },
     {
+      "from": "SPACES",
+      "to": "WS-TL-PERIOD",
+      "fromLiteral": true,
+      "paragraph": "3400-PRINT-HEADING",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:341"
+    },
+    {
+      "from": "'STATEMENT FOR '",
+      "to": "WS-TL-PERIOD",
+      "fromLiteral": true,
+      "paragraph": "3400-PRINT-HEADING",
+      "verb": "STRING",
+      "source": "pangaea/programs/STMTPRT.cbl:342"
+    },
+    {
       "from": "WS-MONTH-NAME",
       "to": "WS-TL-PERIOD",
+      "paragraph": "3400-PRINT-HEADING",
+      "verb": "STRING",
+      "source": "pangaea/programs/STMTPRT.cbl:342"
+    },
+    {
+      "from": "SPACE",
+      "to": "WS-TL-PERIOD",
+      "fromLiteral": true,
+      "paragraph": "3400-PRINT-HEADING",
+      "verb": "STRING",
+      "source": "pangaea/programs/STMTPRT.cbl:342"
+    },
+    {
+      "from": "' '",
+      "to": "WS-TL-PERIOD",
+      "fromLiteral": true,
       "paragraph": "3400-PRINT-HEADING",
       "verb": "STRING",
       "source": "pangaea/programs/STMTPRT.cbl:342"
@@ -2962,6 +3138,38 @@
       "source": "pangaea/programs/STMTPRT.cbl:348"
     },
     {
+      "from": "'SAVINGS ACCOUNT, FROZEN'",
+      "to": "WS-AL-KIND",
+      "fromLiteral": true,
+      "paragraph": "3400-PRINT-HEADING",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:351"
+    },
+    {
+      "from": "'SAVINGS ACCOUNT'",
+      "to": "WS-AL-KIND",
+      "fromLiteral": true,
+      "paragraph": "3400-PRINT-HEADING",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:353"
+    },
+    {
+      "from": "'CURRENT ACCOUNT, FROZEN'",
+      "to": "WS-AL-KIND",
+      "fromLiteral": true,
+      "paragraph": "3400-PRINT-HEADING",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:355"
+    },
+    {
+      "from": "'CURRENT ACCOUNT'",
+      "to": "WS-AL-KIND",
+      "fromLiteral": true,
+      "paragraph": "3400-PRINT-HEADING",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:357"
+    },
+    {
       "from": "WS-ACCOUNT-LINE",
       "to": "STMT-LINE",
       "paragraph": "3400-PRINT-HEADING",
@@ -2975,6 +3183,14 @@
       "paragraph": "3400-PRINT-HEADING",
       "verb": "WRITE",
       "source": "pangaea/programs/STMTPRT.cbl:359"
+    },
+    {
+      "from": "SPACES",
+      "to": "STMT-LINE",
+      "fromLiteral": true,
+      "paragraph": "3400-PRINT-HEADING",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:360"
     },
     {
       "from": "STMT-LINE",
@@ -2998,6 +3214,14 @@
       "paragraph": "3400-PRINT-HEADING",
       "verb": "WRITE",
       "source": "pangaea/programs/STMTPRT.cbl:362"
+    },
+    {
+      "from": "'OPENING BALANCE'",
+      "to": "WS-BL-LABEL",
+      "fromLiteral": true,
+      "paragraph": "3400-PRINT-HEADING",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:363"
     },
     {
       "from": "WS-OPENING",
@@ -3055,6 +3279,14 @@
       "paragraph": "3500-PRINT-POSTING",
       "verb": "MOVE",
       "source": "pangaea/programs/STMTPRT.cbl:373"
+    },
+    {
+      "from": "1",
+      "to": "ST-CX",
+      "fromLiteral": true,
+      "paragraph": "3500-PRINT-POSTING",
+      "verb": "SET",
+      "source": "pangaea/programs/STMTPRT.cbl:374"
     },
     {
       "from": "SR-TRAN-CODE",
@@ -3121,6 +3353,22 @@
       "source": "pangaea/programs/STMTPRT.cbl:389"
     },
     {
+      "from": "1",
+      "to": "WS-PRINTED-COUNT",
+      "fromLiteral": true,
+      "paragraph": "3500-PRINT-POSTING",
+      "verb": "ADD",
+      "source": "pangaea/programs/STMTPRT.cbl:390"
+    },
+    {
+      "from": "'CLOSING BALANCE'",
+      "to": "WS-BL-LABEL",
+      "fromLiteral": true,
+      "paragraph": "3600-PRINT-CLOSING",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:394"
+    },
+    {
       "from": "WS-CLOSING",
       "to": "WS-BL-BALANCE",
       "paragraph": "3600-PRINT-CLOSING",
@@ -3172,6 +3420,14 @@
       "source": "pangaea/programs/STMTPRT.cbl:399"
     },
     {
+      "from": "SPACES",
+      "to": "STMT-LINE",
+      "fromLiteral": true,
+      "paragraph": "3600-PRINT-CLOSING",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:400"
+    },
+    {
       "from": "STMT-LINE",
       "to": "STMT-OUT",
       "toFile": true,
@@ -3194,12 +3450,28 @@
       "source": "pangaea/programs/STMTPRT.cbl:403"
     },
     {
+      "from": "'STMTPRT  MONTHLY STATEMENTS'",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:408"
+    },
+    {
       "from": "REPORT-LINE",
       "to": "REPORT-OUT",
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
       "source": "pangaea/programs/STMTPRT.cbl:409"
+    },
+    {
+      "from": "SPACES",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:410"
     },
     {
       "from": "REPORT-LINE",
@@ -3210,12 +3482,36 @@
       "source": "pangaea/programs/STMTPRT.cbl:411"
     },
     {
+      "from": "'NO MONTH CLOSED'",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:413"
+    },
+    {
       "from": "REPORT-LINE",
       "to": "REPORT-OUT",
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
       "source": "pangaea/programs/STMTPRT.cbl:414"
+    },
+    {
+      "from": "SPACES",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:417"
+    },
+    {
+      "from": "'MONTH CLOSED                  '",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "STRING",
+      "source": "pangaea/programs/STMTPRT.cbl:418"
     },
     {
       "from": "WS-CLOSED-MONTH",
@@ -3231,6 +3527,14 @@
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
       "source": "pangaea/programs/STMTPRT.cbl:420"
+    },
+    {
+      "from": "'ACCOUNTS READ'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:421"
     },
     {
       "from": "WS-ACCOUNT-COUNT",
@@ -3255,6 +3559,14 @@
       "source": "pangaea/programs/STMTPRT.cbl:423"
     },
     {
+      "from": "'STATEMENTS PRINTED'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:424"
+    },
+    {
       "from": "WS-STATEMENT-COUNT",
       "to": "WS-RC-VALUE",
       "paragraph": "8000-WRITE-REPORT",
@@ -3275,6 +3587,14 @@
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
       "source": "pangaea/programs/STMTPRT.cbl:426"
+    },
+    {
+      "from": "'POSTINGS SELECTED'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:427"
     },
     {
       "from": "WS-SELECTED-COUNT",
@@ -3299,6 +3619,14 @@
       "source": "pangaea/programs/STMTPRT.cbl:429"
     },
     {
+      "from": "'POSTINGS PRINTED'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:430"
+    },
+    {
       "from": "WS-PRINTED-COUNT",
       "to": "WS-RC-VALUE",
       "paragraph": "8000-WRITE-REPORT",
@@ -3319,6 +3647,14 @@
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
       "source": "pangaea/programs/STMTPRT.cbl:432"
+    },
+    {
+      "from": "'CREDITS'",
+      "to": "WS-RA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:433"
     },
     {
       "from": "WS-CREDIT-TOTAL",
@@ -3343,6 +3679,14 @@
       "source": "pangaea/programs/STMTPRT.cbl:435"
     },
     {
+      "from": "'DEBITS'",
+      "to": "WS-RA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:436"
+    },
+    {
       "from": "WS-DEBIT-TOTAL",
       "to": "WS-RA-VALUE",
       "paragraph": "8000-WRITE-REPORT",
@@ -3363,6 +3707,156 @@
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
       "source": "pangaea/programs/STMTPRT.cbl:438"
+    },
+    {
+      "from": "'POSTINGS SELECTED BUT NOT PRINTED'",
+      "to": "WS-ABORT-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:440"
+    },
+    {
+      "from": "16",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "9900-ABORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/STMTPRT.cbl:453"
+    }
+  ],
+  "outputs": [
+    {
+      "file": "STMT-SORT",
+      "record": "SORT-RECORD",
+      "fields": [
+        {
+          "name": "SR-ACCT-NO",
+          "start": 1,
+          "length": 10,
+          "origins": [
+            "file AUDIT-IN AU-ACCT-NO",
+            "file STMT-SORT SR-ACCT-NO"
+          ]
+        },
+        {
+          "name": "SR-DATE",
+          "start": 11,
+          "length": 8,
+          "origins": [
+            "file AUDIT-IN AU-BUSINESS-DATE",
+            "file STMT-SORT SR-DATE"
+          ]
+        },
+        {
+          "name": "SR-SEQ",
+          "start": 19,
+          "length": 8,
+          "origins": [
+            "file STMT-SORT SR-SEQ",
+            "initial value of WS-SEQ",
+            "literal 1"
+          ]
+        },
+        {
+          "name": "SR-TRAN-ID",
+          "start": 27,
+          "length": 10,
+          "origins": [
+            "file AUDIT-IN AU-TRAN-ID",
+            "file STMT-SORT SR-TRAN-ID"
+          ]
+        },
+        {
+          "name": "SR-TRAN-CODE",
+          "start": 37,
+          "length": 2,
+          "origins": [
+            "file AUDIT-IN AU-TRAN-CODE",
+            "file STMT-SORT SR-TRAN-CODE"
+          ]
+        },
+        {
+          "name": "SR-AMOUNT",
+          "start": 39,
+          "length": 11,
+          "origins": [
+            "file AUDIT-IN AU-AMOUNT",
+            "file STMT-SORT SR-AMOUNT"
+          ]
+        },
+        {
+          "name": "SR-BALANCE-BEFORE",
+          "start": 50,
+          "length": 13,
+          "origins": [
+            "file AUDIT-IN AU-BALANCE-BEFORE",
+            "file STMT-SORT SR-BALANCE-BEFORE"
+          ]
+        },
+        {
+          "name": "SR-BALANCE-AFTER",
+          "start": 63,
+          "length": 13,
+          "origins": [
+            "file AUDIT-IN AU-BALANCE-AFTER",
+            "file STMT-SORT SR-BALANCE-AFTER"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "STMT-OUT",
+      "record": "WS-SUM-LINE",
+      "fields": [
+        {
+          "name": "WS-SL-CREDITS",
+          "start": 21,
+          "length": 17,
+          "origins": [
+            "file AUDIT-IN AU-AMOUNT",
+            "file STMT-SORT SR-AMOUNT",
+            "literal 0"
+          ]
+        },
+        {
+          "name": "WS-SL-DEBITS",
+          "start": 49,
+          "length": 17,
+          "origins": [
+            "file AUDIT-IN AU-AMOUNT",
+            "file STMT-SORT SR-AMOUNT",
+            "literal 0"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "REPORT-OUT",
+      "record": "WS-REPORT-AMOUNT-LINE",
+      "fields": [
+        {
+          "name": "WS-RA-LABEL",
+          "start": 1,
+          "length": 30,
+          "origins": [
+            "literal 'CREDITS'",
+            "literal 'DEBITS'"
+          ]
+        },
+        {
+          "name": "WS-RA-VALUE",
+          "start": 31,
+          "length": 21,
+          "origins": [
+            "file AUDIT-IN AU-AMOUNT",
+            "file STMT-SORT SR-AMOUNT",
+            "initial value of WS-CREDIT-TOTAL",
+            "initial value of WS-DEBIT-TOTAL",
+            "literal 0"
+          ]
+        }
+      ]
     }
   ]
 }

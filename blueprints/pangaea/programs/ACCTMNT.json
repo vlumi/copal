@@ -1748,6 +1748,38 @@
   ],
   "lineage": [
     {
+      "from": "'NEW MASTER OUT OF BALANCE'",
+      "to": "WS-ABORT-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "0000-MAIN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:134"
+    },
+    {
+      "from": "4",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "0000-MAIN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:139"
+    },
+    {
+      "from": "0",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "0000-MAIN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:141"
+    },
+    {
+      "from": "16",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:150"
+    },
+    {
       "from": "CONTROL-FILE",
       "to": "BANK-CONTROL-RECORD",
       "fromFile": true,
@@ -1756,11 +1788,27 @@
       "source": "pangaea/programs/ACCTMNT.cbl:152"
     },
     {
+      "from": "'NO BANK CONTROL RECORD'",
+      "to": "WS-ABORT-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:154"
+    },
+    {
       "from": "BC-BUSINESS-DATE",
       "to": "WS-BUSINESS-DATE",
       "paragraph": "1000-INITIALIZE",
       "verb": "MOVE",
       "source": "pangaea/programs/ACCTMNT.cbl:156"
+    },
+    {
+      "from": "SPACES",
+      "to": "REJECT-RECORD",
+      "fromLiteral": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:157"
     },
     {
       "from": "ACCT-IN",
@@ -1771,11 +1819,27 @@
       "source": "pangaea/programs/ACCTMNT.cbl:163"
     },
     {
+      "from": "HIGH-VALUES",
+      "to": "WS-MASTER-KEY",
+      "fromLiteral": true,
+      "paragraph": "1200-READ-MASTER",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:165"
+    },
+    {
       "from": "AI-ACCT-NO",
       "to": "WS-MASTER-KEY",
       "paragraph": "1200-READ-MASTER",
       "verb": "MOVE",
       "source": "pangaea/programs/ACCTMNT.cbl:167"
+    },
+    {
+      "from": "'MASTER NOT IN ACCOUNT ORDER'",
+      "to": "WS-ABORT-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "1200-READ-MASTER",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:169"
     },
     {
       "from": "WS-MASTER-KEY",
@@ -1785,12 +1849,28 @@
       "source": "pangaea/programs/ACCTMNT.cbl:171"
     },
     {
+      "from": "1",
+      "to": "WS-MASTERS-READ",
+      "fromLiteral": true,
+      "paragraph": "1200-READ-MASTER",
+      "verb": "ADD",
+      "source": "pangaea/programs/ACCTMNT.cbl:172"
+    },
+    {
       "from": "MAINT-IN",
       "to": "MAINT-REQUEST",
       "fromFile": true,
       "paragraph": "1300-READ-REQUEST",
       "verb": "READ",
       "source": "pangaea/programs/ACCTMNT.cbl:178"
+    },
+    {
+      "from": "HIGH-VALUES",
+      "to": "WS-REQUEST-KEY",
+      "fromLiteral": true,
+      "paragraph": "1300-READ-REQUEST",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:180"
     },
     {
       "from": "MR-ACCT-NO",
@@ -1814,11 +1894,27 @@
       "source": "pangaea/programs/ACCTMNT.cbl:183"
     },
     {
+      "from": "'REQUESTS NOT IN ACCOUNT ORDER'",
+      "to": "WS-ABORT-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "1300-READ-REQUEST",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:185"
+    },
+    {
       "from": "WS-REQUEST-ORDER-KEY",
       "to": "WS-PREV-REQUEST-ORDER-KEY",
       "paragraph": "1300-READ-REQUEST",
       "verb": "MOVE",
       "source": "pangaea/programs/ACCTMNT.cbl:187"
+    },
+    {
+      "from": "1",
+      "to": "WS-REQUEST-COUNT",
+      "fromLiteral": true,
+      "paragraph": "1300-READ-REQUEST",
+      "verb": "ADD",
+      "source": "pangaea/programs/ACCTMNT.cbl:188"
     },
     {
       "from": "WS-MASTER-KEY",
@@ -1835,6 +1931,14 @@
       "source": "pangaea/programs/ACCTMNT.cbl:198"
     },
     {
+      "from": "condition NOTHING-HELD",
+      "to": "WS-HELD-SW",
+      "fromLiteral": true,
+      "paragraph": "2000-NEXT-ACCOUNT",
+      "verb": "SET",
+      "source": "pangaea/programs/ACCTMNT.cbl:199"
+    },
+    {
       "from": "ACCT-IN-RECORD",
       "to": "ACCT-MASTER-RECORD",
       "paragraph": "2000-NEXT-ACCOUNT",
@@ -1847,6 +1951,54 @@
       "paragraph": "2000-NEXT-ACCOUNT",
       "verb": "ADD",
       "source": "pangaea/programs/ACCTMNT.cbl:202"
+    },
+    {
+      "from": "condition ACCOUNT-HELD",
+      "to": "WS-HELD-SW",
+      "fromLiteral": true,
+      "paragraph": "2000-NEXT-ACCOUNT",
+      "verb": "SET",
+      "source": "pangaea/programs/ACCTMNT.cbl:203"
+    },
+    {
+      "from": "condition RJ-NO-ACCOUNT",
+      "to": "RJ-REASON",
+      "fromLiteral": true,
+      "paragraph": "2200-APPLY-REQUEST",
+      "verb": "SET",
+      "source": "pangaea/programs/ACCTMNT.cbl:219"
+    },
+    {
+      "from": "condition RJ-CLOSED",
+      "to": "RJ-REASON",
+      "fromLiteral": true,
+      "paragraph": "2200-APPLY-REQUEST",
+      "verb": "SET",
+      "source": "pangaea/programs/ACCTMNT.cbl:222"
+    },
+    {
+      "from": "condition RJ-BAD-TYPE",
+      "to": "RJ-REASON",
+      "fromLiteral": true,
+      "paragraph": "2200-APPLY-REQUEST",
+      "verb": "SET",
+      "source": "pangaea/programs/ACCTMNT.cbl:232"
+    },
+    {
+      "from": "condition RJ-EXISTS",
+      "to": "RJ-REASON",
+      "fromLiteral": true,
+      "paragraph": "2210-OPEN",
+      "verb": "SET",
+      "source": "pangaea/programs/ACCTMNT.cbl:238"
+    },
+    {
+      "from": "SPACES",
+      "to": "ACCT-MASTER-RECORD",
+      "fromLiteral": true,
+      "paragraph": "2210-OPEN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:240"
     },
     {
       "from": "MR-ACCT-NO",
@@ -1877,6 +2029,14 @@
       "source": "pangaea/programs/ACCTMNT.cbl:244"
     },
     {
+      "from": "condition AM-OPEN",
+      "to": "AM-STATUS",
+      "fromLiteral": true,
+      "paragraph": "2210-OPEN",
+      "verb": "SET",
+      "source": "pangaea/programs/ACCTMNT.cbl:245"
+    },
+    {
       "from": "WS-BUSINESS-DATE",
       "to": "AM-OPEN-DATE",
       "paragraph": "2210-OPEN",
@@ -1891,6 +2051,14 @@
       "source": "pangaea/programs/ACCTMNT.cbl:246"
     },
     {
+      "from": "0",
+      "to": "AM-BALANCE",
+      "fromLiteral": true,
+      "paragraph": "2210-OPEN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:247"
+    },
+    {
       "from": "MR-OVERDRAFT-LIMIT",
       "to": "AM-OVERDRAFT-LIMIT",
       "paragraph": "2210-OPEN",
@@ -1898,11 +2066,139 @@
       "source": "pangaea/programs/ACCTMNT.cbl:248"
     },
     {
+      "from": "0",
+      "to": "AM-OVERDRAFT-LIMIT",
+      "fromLiteral": true,
+      "paragraph": "2210-OPEN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:250"
+    },
+    {
+      "from": "condition ACCOUNT-HELD",
+      "to": "WS-HELD-SW",
+      "fromLiteral": true,
+      "paragraph": "2210-OPEN",
+      "verb": "SET",
+      "source": "pangaea/programs/ACCTMNT.cbl:251"
+    },
+    {
+      "from": "1",
+      "to": "WS-OPENED-COUNT",
+      "fromLiteral": true,
+      "paragraph": "2210-OPEN",
+      "verb": "ADD",
+      "source": "pangaea/programs/ACCTMNT.cbl:252"
+    },
+    {
+      "from": "condition RJ-HAS-BALANCE",
+      "to": "RJ-REASON",
+      "fromLiteral": true,
+      "paragraph": "2220-CLOSE",
+      "verb": "SET",
+      "source": "pangaea/programs/ACCTMNT.cbl:258"
+    },
+    {
+      "from": "condition AM-CLOSED",
+      "to": "AM-STATUS",
+      "fromLiteral": true,
+      "paragraph": "2220-CLOSE",
+      "verb": "SET",
+      "source": "pangaea/programs/ACCTMNT.cbl:260"
+    },
+    {
+      "from": "0",
+      "to": "AM-OVERDRAFT-LIMIT",
+      "fromLiteral": true,
+      "paragraph": "2220-CLOSE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:261"
+    },
+    {
+      "from": "1",
+      "to": "WS-CLOSED-COUNT",
+      "fromLiteral": true,
+      "paragraph": "2220-CLOSE",
+      "verb": "ADD",
+      "source": "pangaea/programs/ACCTMNT.cbl:262"
+    },
+    {
+      "from": "condition RJ-BAD-STATUS",
+      "to": "RJ-REASON",
+      "fromLiteral": true,
+      "paragraph": "2230-FREEZE",
+      "verb": "SET",
+      "source": "pangaea/programs/ACCTMNT.cbl:268"
+    },
+    {
+      "from": "condition AM-FROZEN",
+      "to": "AM-STATUS",
+      "fromLiteral": true,
+      "paragraph": "2230-FREEZE",
+      "verb": "SET",
+      "source": "pangaea/programs/ACCTMNT.cbl:270"
+    },
+    {
+      "from": "1",
+      "to": "WS-FROZEN-COUNT",
+      "fromLiteral": true,
+      "paragraph": "2230-FREEZE",
+      "verb": "ADD",
+      "source": "pangaea/programs/ACCTMNT.cbl:271"
+    },
+    {
+      "from": "condition RJ-BAD-STATUS",
+      "to": "RJ-REASON",
+      "fromLiteral": true,
+      "paragraph": "2240-UNFREEZE",
+      "verb": "SET",
+      "source": "pangaea/programs/ACCTMNT.cbl:277"
+    },
+    {
+      "from": "condition AM-OPEN",
+      "to": "AM-STATUS",
+      "fromLiteral": true,
+      "paragraph": "2240-UNFREEZE",
+      "verb": "SET",
+      "source": "pangaea/programs/ACCTMNT.cbl:279"
+    },
+    {
+      "from": "1",
+      "to": "WS-UNFROZEN-COUNT",
+      "fromLiteral": true,
+      "paragraph": "2240-UNFREEZE",
+      "verb": "ADD",
+      "source": "pangaea/programs/ACCTMNT.cbl:280"
+    },
+    {
+      "from": "condition RJ-BAD-TYPE",
+      "to": "RJ-REASON",
+      "fromLiteral": true,
+      "paragraph": "2250-LIMIT",
+      "verb": "SET",
+      "source": "pangaea/programs/ACCTMNT.cbl:286"
+    },
+    {
       "from": "MR-OVERDRAFT-LIMIT",
       "to": "AM-OVERDRAFT-LIMIT",
       "paragraph": "2250-LIMIT",
       "verb": "MOVE",
       "source": "pangaea/programs/ACCTMNT.cbl:288"
+    },
+    {
+      "from": "1",
+      "to": "WS-LIMIT-COUNT",
+      "fromLiteral": true,
+      "paragraph": "2250-LIMIT",
+      "verb": "ADD",
+      "source": "pangaea/programs/ACCTMNT.cbl:289"
+    },
+    {
+      "from": "'ACCTMNT'",
+      "to": "RJ-PROGRAM",
+      "fromLiteral": true,
+      "paragraph": "2290-REJECT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:294"
     },
     {
       "from": "MAINT-REQUEST",
@@ -1927,6 +2223,14 @@
       "source": "pangaea/programs/ACCTMNT.cbl:296"
     },
     {
+      "from": "1",
+      "to": "WS-REJECT-COUNT",
+      "fromLiteral": true,
+      "paragraph": "2290-REJECT",
+      "verb": "ADD",
+      "source": "pangaea/programs/ACCTMNT.cbl:297"
+    },
+    {
       "from": "ACCT-MASTER-RECORD",
       "to": "ACCT-OUT-RECORD",
       "paragraph": "2800-WRITE-HELD",
@@ -1942,11 +2246,35 @@
       "source": "pangaea/programs/ACCTMNT.cbl:304"
     },
     {
+      "from": "1",
+      "to": "WS-MASTERS-WRITTEN",
+      "fromLiteral": true,
+      "paragraph": "2800-WRITE-HELD",
+      "verb": "ADD",
+      "source": "pangaea/programs/ACCTMNT.cbl:305"
+    },
+    {
       "from": "AM-BALANCE",
       "to": "WS-BALANCES-OUT",
       "paragraph": "2800-WRITE-HELD",
       "verb": "ADD",
       "source": "pangaea/programs/ACCTMNT.cbl:306"
+    },
+    {
+      "from": "SPACES",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:312"
+    },
+    {
+      "from": "'ACCTMNT  ACCOUNT MAINTENANCE     BUSINESS DATE '",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "STRING",
+      "source": "pangaea/programs/ACCTMNT.cbl:313"
     },
     {
       "from": "WS-BUSINESS-DATE",
@@ -1964,12 +2292,28 @@
       "source": "pangaea/programs/ACCTMNT.cbl:316"
     },
     {
+      "from": "SPACES",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:317"
+    },
+    {
       "from": "REPORT-LINE",
       "to": "REPORT-OUT",
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
       "source": "pangaea/programs/ACCTMNT.cbl:318"
+    },
+    {
+      "from": "'ACCOUNTS READ'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:319"
     },
     {
       "from": "WS-MASTERS-READ",
@@ -1994,6 +2338,14 @@
       "source": "pangaea/programs/ACCTMNT.cbl:321"
     },
     {
+      "from": "'ACCOUNTS WRITTEN'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:322"
+    },
+    {
       "from": "WS-MASTERS-WRITTEN",
       "to": "WS-RC-VALUE",
       "paragraph": "8000-WRITE-REPORT",
@@ -2014,6 +2366,14 @@
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
       "source": "pangaea/programs/ACCTMNT.cbl:324"
+    },
+    {
+      "from": "'REQUESTS READ'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:325"
     },
     {
       "from": "WS-REQUEST-COUNT",
@@ -2038,6 +2398,14 @@
       "source": "pangaea/programs/ACCTMNT.cbl:327"
     },
     {
+      "from": "'ACCOUNTS OPENED'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:328"
+    },
+    {
       "from": "WS-OPENED-COUNT",
       "to": "WS-RC-VALUE",
       "paragraph": "8000-WRITE-REPORT",
@@ -2058,6 +2426,14 @@
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
       "source": "pangaea/programs/ACCTMNT.cbl:330"
+    },
+    {
+      "from": "'ACCOUNTS CLOSED'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:331"
     },
     {
       "from": "WS-CLOSED-COUNT",
@@ -2082,6 +2458,14 @@
       "source": "pangaea/programs/ACCTMNT.cbl:333"
     },
     {
+      "from": "'ACCOUNTS FROZEN'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:334"
+    },
+    {
       "from": "WS-FROZEN-COUNT",
       "to": "WS-RC-VALUE",
       "paragraph": "8000-WRITE-REPORT",
@@ -2102,6 +2486,14 @@
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
       "source": "pangaea/programs/ACCTMNT.cbl:336"
+    },
+    {
+      "from": "'ACCOUNTS UNFROZEN'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:337"
     },
     {
       "from": "WS-UNFROZEN-COUNT",
@@ -2126,6 +2518,14 @@
       "source": "pangaea/programs/ACCTMNT.cbl:339"
     },
     {
+      "from": "'OVERDRAFT LIMITS CHANGED'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:340"
+    },
+    {
       "from": "WS-LIMIT-COUNT",
       "to": "WS-RC-VALUE",
       "paragraph": "8000-WRITE-REPORT",
@@ -2146,6 +2546,14 @@
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
       "source": "pangaea/programs/ACCTMNT.cbl:342"
+    },
+    {
+      "from": "'REQUESTS REJECTED'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:343"
     },
     {
       "from": "WS-REJECT-COUNT",
@@ -2170,12 +2578,28 @@
       "source": "pangaea/programs/ACCTMNT.cbl:345"
     },
     {
+      "from": "SPACES",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:346"
+    },
+    {
       "from": "REPORT-LINE",
       "to": "REPORT-OUT",
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
       "source": "pangaea/programs/ACCTMNT.cbl:347"
+    },
+    {
+      "from": "'BALANCES'",
+      "to": "WS-RA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:348"
     },
     {
       "from": "WS-BALANCES-OUT",
@@ -2200,6 +2624,14 @@
       "source": "pangaea/programs/ACCTMNT.cbl:350"
     },
     {
+      "from": "SPACES",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:351"
+    },
+    {
       "from": "REPORT-LINE",
       "to": "REPORT-OUT",
       "toFile": true,
@@ -2208,12 +2640,179 @@
       "source": "pangaea/programs/ACCTMNT.cbl:352"
     },
     {
+      "from": "'NEW MASTER IN BALANCE'",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:353"
+    },
+    {
       "from": "REPORT-LINE",
       "to": "REPORT-OUT",
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
       "source": "pangaea/programs/ACCTMNT.cbl:354"
+    },
+    {
+      "from": "16",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "9900-ABORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:365"
+    }
+  ],
+  "outputs": [
+    {
+      "file": "REJECT-OUT",
+      "record": "REJECT-RECORD",
+      "fields": [
+        {
+          "name": "RJ-PROGRAM",
+          "start": 1,
+          "length": 8,
+          "origins": [
+            "literal 'ACCTMNT'"
+          ]
+        },
+        {
+          "name": "RJ-REASON",
+          "start": 9,
+          "length": 4,
+          "origins": [
+            "literal condition RJ-BAD-STATUS",
+            "literal condition RJ-BAD-TYPE",
+            "literal condition RJ-CLOSED",
+            "literal condition RJ-EXISTS",
+            "literal condition RJ-HAS-BALANCE",
+            "literal condition RJ-NO-ACCOUNT"
+          ]
+        },
+        {
+          "name": "RJ-TRAN",
+          "start": 13,
+          "length": 80,
+          "origins": [
+            "file MAINT-IN MAINT-REQUEST"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "ACCT-OUT",
+      "record": "ACCT-MASTER-RECORD",
+      "fields": [
+        {
+          "name": "AM-ACCT-NO",
+          "start": 1,
+          "length": 10,
+          "origins": [
+            "file ACCT-IN AI-ACCT-NO",
+            "file MAINT-IN MR-ACCT-NO"
+          ]
+        },
+        {
+          "name": "AM-CUST-NO",
+          "start": 11,
+          "length": 8,
+          "origins": [
+            "file ACCT-IN ACCT-IN-RECORD",
+            "file MAINT-IN MR-CUST-NO"
+          ]
+        },
+        {
+          "name": "AM-SHORT-NAME",
+          "start": 19,
+          "length": 20,
+          "origins": [
+            "file ACCT-IN ACCT-IN-RECORD",
+            "file MAINT-IN MR-SHORT-NAME"
+          ]
+        },
+        {
+          "name": "AM-ACCT-TYPE",
+          "start": 39,
+          "length": 1,
+          "origins": [
+            "file ACCT-IN ACCT-IN-RECORD",
+            "file MAINT-IN MR-ACCT-TYPE"
+          ]
+        },
+        {
+          "name": "AM-STATUS",
+          "start": 40,
+          "length": 1,
+          "origins": [
+            "file ACCT-IN ACCT-IN-RECORD",
+            "literal condition AM-CLOSED",
+            "literal condition AM-FROZEN",
+            "literal condition AM-OPEN"
+          ]
+        },
+        {
+          "name": "AM-OPEN-DATE",
+          "start": 41,
+          "length": 8,
+          "origins": [
+            "file ACCT-IN ACCT-IN-RECORD",
+            "file CONTROL-FILE BC-BUSINESS-DATE"
+          ]
+        },
+        {
+          "name": "AM-LAST-ACTIVITY-DATE",
+          "start": 49,
+          "length": 8,
+          "origins": [
+            "file ACCT-IN ACCT-IN-RECORD",
+            "file CONTROL-FILE BC-BUSINESS-DATE"
+          ]
+        },
+        {
+          "name": "AM-BALANCE",
+          "start": 57,
+          "length": 13,
+          "origins": [
+            "file ACCT-IN ACCT-IN-RECORD",
+            "literal 0"
+          ]
+        },
+        {
+          "name": "AM-OVERDRAFT-LIMIT",
+          "start": 70,
+          "length": 9,
+          "origins": [
+            "file ACCT-IN ACCT-IN-RECORD",
+            "file MAINT-IN MR-OVERDRAFT-LIMIT",
+            "literal 0"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "REPORT-OUT",
+      "record": "WS-REPORT-AMOUNT-LINE",
+      "fields": [
+        {
+          "name": "WS-RA-LABEL",
+          "start": 1,
+          "length": 30,
+          "origins": [
+            "literal 'BALANCES'"
+          ]
+        },
+        {
+          "name": "WS-RA-VALUE",
+          "start": 31,
+          "length": 21,
+          "origins": [
+            "file ACCT-IN ACCT-IN-RECORD",
+            "initial value of WS-BALANCES-OUT",
+            "literal 0"
+          ]
+        }
+      ]
     }
   ]
 }

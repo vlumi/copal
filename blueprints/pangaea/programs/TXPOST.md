@@ -63,6 +63,7 @@ Program [TXPOST.cbl](../../../pangaea/programs/TXPOST.cbl): 8 files, 17 paragrap
   - [Into LEGS-OUT-RECORD](#into-legs-out-record)
   - [Into REPORT-LINE](#into-report-line)
   - [Into WS-BUSINESS-DATE](#into-ws-business-date)
+  - [Into WS-ABORT-MESSAGE](#into-ws-abort-message)
   - [Into WS-MASTER-KEY](#into-ws-master-key)
   - [Into WS-TRAN-KEY](#into-ws-tran-key)
   - [Into WS-PREV-MASTER-KEY](#into-ws-prev-master-key)
@@ -77,6 +78,13 @@ Program [TXPOST.cbl](../../../pangaea/programs/TXPOST.cbl): 8 files, 17 paragrap
   - [Into WS-REPORT-COUNT-LINE](#into-ws-report-count-line)
   - [Into WS-REPORT-AMOUNT-LINE](#into-ws-report-amount-line)
   - [Into files](#into-files)
+  - [Into other data items](#into-other-data-items)
+- [Field origins](#field-origins)
+  - [File LEGS-OUT](#file-legs-out)
+  - [File AUDIT-OUT](#file-audit-out)
+  - [File REJECT-OUT](#file-reject-out)
+  - [File ACCT-OUT](#file-acct-out)
+  - [File REPORT-OUT](#file-report-out)
 - [Records](#records)
   - [BANK-CONTROL-RECORD](#bank-control-record)
   - [ACCT-MASTER-RECORD](#acct-master-record)
@@ -196,6 +204,8 @@ Record [TRAN-RECORD](#tran-record), from copybook [TRANREC](../copybooks/TRANREC
 | --- | --- | --- | --- | --- |
 | TD-ACCT-NO | [TD-COUNTER-ACCT-NO](#tran-record "in TRAN-RECORD") | MOVE | 3500-WRITE-LEG | [TXPOST.cbl:320](../../../pangaea/programs/TXPOST.cbl#L320) |
 | TD-COUNTER-ACCT-NO | [WS-LEG-ACCT-NO](#ws-leg-acct-no) | MOVE | 3500-WRITE-LEG | [TXPOST.cbl:321](../../../pangaea/programs/TXPOST.cbl#L321) |
+| TD-TRAN-CODE | literal condition TD-TRANSFER-CREDIT | SET | 3500-WRITE-LEG | [TXPOST.cbl:315](../../../pangaea/programs/TXPOST.cbl#L315) |
+| TD-TRAN-CODE | literal condition TD-TRANSFER-RETURN | SET | 3500-WRITE-LEG | [TXPOST.cbl:317](../../../pangaea/programs/TXPOST.cbl#L317) |
 | TRAN-RECORD | file TRAN-IN | READ | 1300-READ-TRAN | [TXPOST.cbl:220](../../../pangaea/programs/TXPOST.cbl#L220) |
 | TRAN-RECORD | [WS-SAVED-TRAN](#ws-saved-tran) | MOVE | 3500-WRITE-LEG | [TXPOST.cbl:324](../../../pangaea/programs/TXPOST.cbl#L324) |
 
@@ -237,17 +247,23 @@ Record [REPORT-LINE](#report-line).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| REPORT-LINE | literal SPACES | MOVE | 8000-WRITE-REPORT | [TXPOST.cbl:370](../../../pangaea/programs/TXPOST.cbl#L370) |
+| REPORT-LINE | literal 'TXPOST   TRANSACTION POSTING     BUSINESS DATE ' | STRING | 8000-WRITE-REPORT | [TXPOST.cbl:371](../../../pangaea/programs/TXPOST.cbl#L371) |
 | REPORT-LINE | [WS-BUSINESS-DATE](#ws-business-date) | STRING | 8000-WRITE-REPORT | [TXPOST.cbl:371](../../../pangaea/programs/TXPOST.cbl#L371) |
+| REPORT-LINE | literal SPACES | MOVE | 8000-WRITE-REPORT | [TXPOST.cbl:375](../../../pangaea/programs/TXPOST.cbl#L375) |
 | REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [TXPOST.cbl:379](../../../pangaea/programs/TXPOST.cbl#L379) |
 | REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [TXPOST.cbl:382](../../../pangaea/programs/TXPOST.cbl#L382) |
 | REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [TXPOST.cbl:385](../../../pangaea/programs/TXPOST.cbl#L385) |
 | REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [TXPOST.cbl:388](../../../pangaea/programs/TXPOST.cbl#L388) |
 | REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [TXPOST.cbl:391](../../../pangaea/programs/TXPOST.cbl#L391) |
+| REPORT-LINE | literal SPACES | MOVE | 8000-WRITE-REPORT | [TXPOST.cbl:392](../../../pangaea/programs/TXPOST.cbl#L392) |
 | REPORT-LINE | [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line) | WRITE | 8000-WRITE-REPORT | [TXPOST.cbl:396](../../../pangaea/programs/TXPOST.cbl#L396) |
 | REPORT-LINE | [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line) | WRITE | 8000-WRITE-REPORT | [TXPOST.cbl:399](../../../pangaea/programs/TXPOST.cbl#L399) |
 | REPORT-LINE | [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line) | WRITE | 8000-WRITE-REPORT | [TXPOST.cbl:402](../../../pangaea/programs/TXPOST.cbl#L402) |
 | REPORT-LINE | [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line) | WRITE | 8000-WRITE-REPORT | [TXPOST.cbl:405](../../../pangaea/programs/TXPOST.cbl#L405) |
 | REPORT-LINE | [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line) | WRITE | 8000-WRITE-REPORT | [TXPOST.cbl:408](../../../pangaea/programs/TXPOST.cbl#L408) |
+| REPORT-LINE | literal SPACES | MOVE | 8000-WRITE-REPORT | [TXPOST.cbl:409](../../../pangaea/programs/TXPOST.cbl#L409) |
+| REPORT-LINE | literal 'NEW MASTER IN BALANCE' | MOVE | 8000-WRITE-REPORT | [TXPOST.cbl:411](../../../pangaea/programs/TXPOST.cbl#L411) |
 
 ### Into WS-BUSINESS-DATE
 
@@ -257,12 +273,24 @@ Record [WS-BUSINESS-DATE](#ws-business-date).
 | --- | --- | --- | --- | --- |
 | WS-BUSINESS-DATE | [BC-BUSINESS-DATE](#bank-control-record "in BANK-CONTROL-RECORD") | MOVE | 1000-INITIALIZE | [TXPOST.cbl:196](../../../pangaea/programs/TXPOST.cbl#L196) |
 
+### Into WS-ABORT-MESSAGE
+
+Record [WS-ABORT-MESSAGE](#ws-abort-message).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-ABORT-MESSAGE | literal 'NO BANK CONTROL RECORD' | MOVE | 1000-INITIALIZE | [TXPOST.cbl:193](../../../pangaea/programs/TXPOST.cbl#L193) |
+| WS-ABORT-MESSAGE | literal 'MASTER NOT IN ACCOUNT ORDER' | MOVE | 1200-READ-MASTER | [TXPOST.cbl:209](../../../pangaea/programs/TXPOST.cbl#L209) |
+| WS-ABORT-MESSAGE | literal 'TRANSACTIONS NOT IN ACCOUNT ORDER' | MOVE | 1300-READ-TRAN | [TXPOST.cbl:227](../../../pangaea/programs/TXPOST.cbl#L227) |
+| WS-ABORT-MESSAGE | literal 'NEW MASTER OUT OF BALANCE' | MOVE | 5000-RECONCILE | [TXPOST.cbl:364](../../../pangaea/programs/TXPOST.cbl#L364) |
+
 ### Into WS-MASTER-KEY
 
 Record [WS-MASTER-KEY](#ws-master-key).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-MASTER-KEY | literal HIGH-VALUES | MOVE | 1200-READ-MASTER | [TXPOST.cbl:205](../../../pangaea/programs/TXPOST.cbl#L205) |
 | WS-MASTER-KEY | [AM-ACCT-NO](#acct-master-record "in ACCT-MASTER-RECORD") | MOVE | 1200-READ-MASTER | [TXPOST.cbl:207](../../../pangaea/programs/TXPOST.cbl#L207) |
 
 ### Into WS-TRAN-KEY
@@ -271,6 +299,7 @@ Record [WS-TRAN-KEY](#ws-tran-key).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-TRAN-KEY | literal HIGH-VALUES | MOVE | 1300-READ-TRAN | [TXPOST.cbl:222](../../../pangaea/programs/TXPOST.cbl#L222) |
 | WS-TRAN-KEY | [TD-ACCT-NO](#tran-record "in TRAN-RECORD") | MOVE | 1300-READ-TRAN | [TXPOST.cbl:224](../../../pangaea/programs/TXPOST.cbl#L224) |
 
 ### Into WS-PREV-MASTER-KEY
@@ -342,7 +371,12 @@ Record [WS-TOTALS](#ws-totals).
 | WS-EXPECTED-TOTAL | [WS-DEBIT-TOTAL](#ws-totals "in WS-TOTALS") | SUBTRACT | 5000-RECONCILE | [TXPOST.cbl:360](../../../pangaea/programs/TXPOST.cbl#L360) |
 | WS-EXPECTED-TOTAL | [WS-FEE-TOTAL](#ws-totals "in WS-TOTALS") | SUBTRACT | 5000-RECONCILE | [TXPOST.cbl:361](../../../pangaea/programs/TXPOST.cbl#L361) |
 | WS-FEE-TOTAL | [TD-AMOUNT](#tran-record "in TRAN-RECORD") | ADD | 3300-POST-FEE | [TXPOST.cbl:305](../../../pangaea/programs/TXPOST.cbl#L305) |
+| WS-LEG-COUNT | literal 1 | ADD | 3500-WRITE-LEG | [TXPOST.cbl:323](../../../pangaea/programs/TXPOST.cbl#L323) |
+| WS-MASTERS-READ | literal 1 | ADD | 1200-READ-MASTER | [TXPOST.cbl:214](../../../pangaea/programs/TXPOST.cbl#L214) |
+| WS-MASTERS-WRITTEN | literal 1 | ADD | 4000-WRITE-MASTER | [TXPOST.cbl:353](../../../pangaea/programs/TXPOST.cbl#L353) |
 | WS-OPENING-TOTAL | [AM-BALANCE](#acct-master-record "in ACCT-MASTER-RECORD") | ADD | 1200-READ-MASTER | [TXPOST.cbl:215](../../../pangaea/programs/TXPOST.cbl#L215) |
+| WS-POSTED-COUNT | literal 1 | ADD | 3800-WRITE-AUDIT | [TXPOST.cbl:337](../../../pangaea/programs/TXPOST.cbl#L337) |
+| WS-REJECT-COUNT | literal 1 | ADD | 3900-REJECT-TRAN | [TXPOST.cbl:345](../../../pangaea/programs/TXPOST.cbl#L345) |
 
 ### Into AUDIT-RECORD
 
@@ -357,6 +391,7 @@ Record [AUDIT-RECORD](#audit-record), from copybook [AUDITREC](../copybooks/AUDI
 | AU-BUSINESS-DATE | [WS-BUSINESS-DATE](#ws-business-date) | MOVE | 3800-WRITE-AUDIT | [TXPOST.cbl:328](../../../pangaea/programs/TXPOST.cbl#L328) |
 | AU-TRAN-CODE | [TD-TRAN-CODE](#tran-record "in TRAN-RECORD") | MOVE | 3800-WRITE-AUDIT | [TXPOST.cbl:332](../../../pangaea/programs/TXPOST.cbl#L332) |
 | AU-TRAN-ID | [TD-TRAN-ID](#tran-record "in TRAN-RECORD") | MOVE | 3800-WRITE-AUDIT | [TXPOST.cbl:330](../../../pangaea/programs/TXPOST.cbl#L330) |
+| AUDIT-RECORD | literal SPACES | MOVE | 1000-INITIALIZE | [TXPOST.cbl:197](../../../pangaea/programs/TXPOST.cbl#L197) |
 
 ### Into REJECT-RECORD
 
@@ -364,6 +399,12 @@ Record [REJECT-RECORD](#reject-record), from copybook [REJREC](../copybooks/REJR
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| REJECT-RECORD | literal SPACES | MOVE | 1000-INITIALIZE | [TXPOST.cbl:197](../../../pangaea/programs/TXPOST.cbl#L197) |
+| RJ-PROGRAM | literal 'TXPOST' | MOVE | 3900-REJECT-TRAN | [TXPOST.cbl:342](../../../pangaea/programs/TXPOST.cbl#L342) |
+| RJ-REASON | literal condition RJ-NO-ACCOUNT | SET | 2000-MATCH | [TXPOST.cbl:240](../../../pangaea/programs/TXPOST.cbl#L240) |
+| RJ-REASON | literal condition RJ-CLOSED | SET | 3000-APPLY-TRAN | [TXPOST.cbl:256](../../../pangaea/programs/TXPOST.cbl#L256) |
+| RJ-REASON | literal condition RJ-FROZEN | SET | 3000-APPLY-TRAN | [TXPOST.cbl:268](../../../pangaea/programs/TXPOST.cbl#L268) |
+| RJ-REASON | literal condition RJ-NO-FUNDS | SET | 3200-POST-DEBIT | [TXPOST.cbl:289](../../../pangaea/programs/TXPOST.cbl#L289) |
 | RJ-TRAN | [TRAN-RECORD](#tran-record) | MOVE | 3900-REJECT-TRAN | [TXPOST.cbl:343](../../../pangaea/programs/TXPOST.cbl#L343) |
 
 ### Into WS-REPORT-COUNT-LINE
@@ -372,6 +413,11 @@ Record [WS-REPORT-COUNT-LINE](#ws-report-count-line).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-RC-LABEL | literal 'ACCOUNTS READ' | MOVE | 8000-WRITE-REPORT | [TXPOST.cbl:377](../../../pangaea/programs/TXPOST.cbl#L377) |
+| WS-RC-LABEL | literal 'ACCOUNTS WRITTEN' | MOVE | 8000-WRITE-REPORT | [TXPOST.cbl:380](../../../pangaea/programs/TXPOST.cbl#L380) |
+| WS-RC-LABEL | literal 'TRANSACTIONS POSTED' | MOVE | 8000-WRITE-REPORT | [TXPOST.cbl:383](../../../pangaea/programs/TXPOST.cbl#L383) |
+| WS-RC-LABEL | literal 'TRANSACTIONS REJECTED' | MOVE | 8000-WRITE-REPORT | [TXPOST.cbl:386](../../../pangaea/programs/TXPOST.cbl#L386) |
+| WS-RC-LABEL | literal 'TRANSFER LEGS WRITTEN' | MOVE | 8000-WRITE-REPORT | [TXPOST.cbl:389](../../../pangaea/programs/TXPOST.cbl#L389) |
 | WS-RC-VALUE | [WS-MASTERS-READ](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [TXPOST.cbl:378](../../../pangaea/programs/TXPOST.cbl#L378) |
 | WS-RC-VALUE | [WS-MASTERS-WRITTEN](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [TXPOST.cbl:381](../../../pangaea/programs/TXPOST.cbl#L381) |
 | WS-RC-VALUE | [WS-POSTED-COUNT](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [TXPOST.cbl:384](../../../pangaea/programs/TXPOST.cbl#L384) |
@@ -384,6 +430,11 @@ Record [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-RA-LABEL | literal 'OPENING BALANCES' | MOVE | 8000-WRITE-REPORT | [TXPOST.cbl:394](../../../pangaea/programs/TXPOST.cbl#L394) |
+| WS-RA-LABEL | literal 'CREDITS' | MOVE | 8000-WRITE-REPORT | [TXPOST.cbl:397](../../../pangaea/programs/TXPOST.cbl#L397) |
+| WS-RA-LABEL | literal 'DEBITS' | MOVE | 8000-WRITE-REPORT | [TXPOST.cbl:400](../../../pangaea/programs/TXPOST.cbl#L400) |
+| WS-RA-LABEL | literal 'FEES' | MOVE | 8000-WRITE-REPORT | [TXPOST.cbl:403](../../../pangaea/programs/TXPOST.cbl#L403) |
+| WS-RA-LABEL | literal 'CLOSING BALANCES' | MOVE | 8000-WRITE-REPORT | [TXPOST.cbl:406](../../../pangaea/programs/TXPOST.cbl#L406) |
 | WS-RA-VALUE | [WS-OPENING-TOTAL](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [TXPOST.cbl:395](../../../pangaea/programs/TXPOST.cbl#L395) |
 | WS-RA-VALUE | [WS-CREDIT-TOTAL](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [TXPOST.cbl:398](../../../pangaea/programs/TXPOST.cbl#L398) |
 | WS-RA-VALUE | [WS-DEBIT-TOTAL](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [TXPOST.cbl:401](../../../pangaea/programs/TXPOST.cbl#L401) |
@@ -415,6 +466,91 @@ Records written to files.
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [TXPOST.cbl:408](../../../pangaea/programs/TXPOST.cbl#L408) |
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [TXPOST.cbl:410](../../../pangaea/programs/TXPOST.cbl#L410) |
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [TXPOST.cbl:412](../../../pangaea/programs/TXPOST.cbl#L412) |
+
+### Into other data items
+
+Data items the program does not declare, such as special registers and index names.
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| RETURN-CODE | literal 4 | MOVE | 0000-MAIN | [TXPOST.cbl:167](../../../pangaea/programs/TXPOST.cbl#L167) |
+| RETURN-CODE | literal 0 | MOVE | 0000-MAIN | [TXPOST.cbl:169](../../../pangaea/programs/TXPOST.cbl#L169) |
+| RETURN-CODE | literal 16 | MOVE | 1000-INITIALIZE | [TXPOST.cbl:188](../../../pangaea/programs/TXPOST.cbl#L188) |
+| RETURN-CODE | literal 16 | MOVE | 9900-ABORT | [TXPOST.cbl:423](../../../pangaea/programs/TXPOST.cbl#L423) |
+
+## Field origins
+
+Where the values of each field the program writes to a file come from: the fields of the files it reads, literals, and initial values, followed through every statement that moves a value, and through groups and redefinitions by the bytes they share.
+
+### File LEGS-OUT
+
+Written from [TRAN-RECORD](#tran-record).
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| TR-REC-TYPE | 1 | file TRAN-IN TR-REC-TYPE |
+| TR-BODY | 2-80 | file TRAN-IN TD-ACCT-NO; file TRAN-IN TD-COUNTER-ACCT-NO; file TRAN-IN TR-BODY; literal condition TD-TRANSFER-CREDIT; literal condition TD-TRANSFER-RETURN |
+| TH-BUSINESS-DATE | 2-9 | file TRAN-IN TH-BUSINESS-DATE |
+| TH-SOURCE | 10-17 | file TRAN-IN TD-COUNTER-ACCT-NO; file TRAN-IN TH-SOURCE |
+| TH-FILE-SEQ | 18-23 | file TRAN-IN TD-COUNTER-ACCT-NO; file TRAN-IN TH-FILE-SEQ; literal condition TD-TRANSFER-CREDIT; literal condition TD-TRANSFER-RETURN |
+| TD-TRAN-ID | 2-11 | file TRAN-IN TD-TRAN-ID |
+| TD-ACCT-NO | 12-21 | file TRAN-IN TD-ACCT-NO; file TRAN-IN TD-COUNTER-ACCT-NO |
+| TD-TRAN-CODE | 22-23 | file TRAN-IN TD-TRAN-CODE; literal condition TD-TRANSFER-CREDIT; literal condition TD-TRANSFER-RETURN |
+| TD-AMOUNT | 24-34 | file TRAN-IN TD-AMOUNT |
+| TD-DESCRIPTION | 35-54 | file TRAN-IN TD-DESCRIPTION |
+| TD-COUNTER-ACCT-NO | 55-64 | file TRAN-IN TD-ACCT-NO; file TRAN-IN TD-COUNTER-ACCT-NO |
+| TT-DETAIL-COUNT | 2-9 | file TRAN-IN TH-BUSINESS-DATE |
+| TT-AMOUNT-TOTAL | 10-24 | file TRAN-IN TD-ACCT-NO; file TRAN-IN TD-COUNTER-ACCT-NO; file TRAN-IN TT-AMOUNT-TOTAL; literal condition TD-TRANSFER-CREDIT; literal condition TD-TRANSFER-RETURN |
+| TT-ACCT-HASH | 25-39 | file TRAN-IN TT-ACCT-HASH |
+
+### File AUDIT-OUT
+
+Written from [AUDIT-RECORD](#audit-record).
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| AU-BUSINESS-DATE | 1-8 | file CONTROL-FILE BC-BUSINESS-DATE |
+| AU-TRAN-ID | 9-18 | file TRAN-IN TD-TRAN-ID |
+| AU-ACCT-NO | 19-28 | file TRAN-IN TD-ACCT-NO; file TRAN-IN TD-COUNTER-ACCT-NO |
+| AU-TRAN-CODE | 29-30 | file TRAN-IN TD-TRAN-CODE; literal condition TD-TRANSFER-CREDIT; literal condition TD-TRANSFER-RETURN |
+| AU-AMOUNT | 31-41 | file TRAN-IN TD-AMOUNT |
+| AU-BALANCE-BEFORE | 42-54 | file ACCT-IN AM-BALANCE; file TRAN-IN TD-AMOUNT |
+| AU-BALANCE-AFTER | 55-67 | file ACCT-IN AM-BALANCE; file TRAN-IN TD-AMOUNT |
+
+### File REJECT-OUT
+
+Written from [REJECT-RECORD](#reject-record).
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| RJ-PROGRAM | 1-8 | literal 'TXPOST' |
+| RJ-REASON | 9-12 | literal condition RJ-CLOSED; literal condition RJ-FROZEN; literal condition RJ-NO-ACCOUNT; literal condition RJ-NO-FUNDS |
+| RJ-TRAN | 13-92 | file TRAN-IN TD-ACCT-NO; file TRAN-IN TD-COUNTER-ACCT-NO; file TRAN-IN TRAN-RECORD; literal condition TD-TRANSFER-CREDIT; literal condition TD-TRANSFER-RETURN |
+
+### File ACCT-OUT
+
+Written from [ACCT-MASTER-RECORD](#acct-master-record).
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| AM-ACCT-NO | 1-10 | file ACCT-IN AM-ACCT-NO |
+| AM-CUST-NO | 11-18 | file ACCT-IN AM-CUST-NO |
+| AM-SHORT-NAME | 19-38 | file ACCT-IN AM-SHORT-NAME |
+| AM-ACCT-TYPE | 39 | file ACCT-IN AM-ACCT-TYPE |
+| AM-STATUS | 40 | file ACCT-IN AM-STATUS |
+| AM-OPEN-DATE | 41-48 | file ACCT-IN AM-OPEN-DATE |
+| AM-LAST-ACTIVITY-DATE | 49-56 | file ACCT-IN AM-LAST-ACTIVITY-DATE; file CONTROL-FILE BC-BUSINESS-DATE |
+| AM-BALANCE | 57-69 | file ACCT-IN AM-BALANCE; file TRAN-IN TD-AMOUNT |
+| AM-OVERDRAFT-LIMIT | 70-78 | file ACCT-IN AM-OVERDRAFT-LIMIT |
+
+### File REPORT-OUT
+
+Written from [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| WS-RA-LABEL | 1-30 | literal 'CLOSING BALANCES'; literal 'CREDITS'; literal 'DEBITS'; literal 'FEES'; literal 'OPENING BALANCES' |
+| WS-RA-VALUE | 31-51 | file ACCT-IN AM-BALANCE; file TRAN-IN TD-AMOUNT; initial value of WS-CLOSING-TOTAL; initial value of WS-CREDIT-TOTAL; initial value of WS-DEBIT-TOTAL; initial value of WS-FEE-TOTAL; initial value of WS-OPENING-TOTAL |
 
 ## Records
 

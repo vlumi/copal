@@ -1479,6 +1479,22 @@
   ],
   "lineage": [
     {
+      "from": "0",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "0000-MAIN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:117"
+    },
+    {
+      "from": "16",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:127"
+    },
+    {
       "from": "CONTROL-FILE",
       "to": "BANK-CONTROL-RECORD",
       "fromFile": true,
@@ -1487,11 +1503,27 @@
       "source": "pangaea/programs/MONCHG.cbl:130"
     },
     {
+      "from": "'NO BANK CONTROL RECORD'",
+      "to": "WS-ABORT-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:132"
+    },
+    {
       "from": "BC-BUSINESS-DATE",
       "to": "WS-BUSINESS-DATE",
       "paragraph": "1000-INITIALIZE",
       "verb": "MOVE",
       "source": "pangaea/programs/MONCHG.cbl:135"
+    },
+    {
+      "from": "SPACES",
+      "to": "TRAN-RECORD",
+      "fromLiteral": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:136"
     },
     {
       "from": "ACCT-IN",
@@ -1502,12 +1534,36 @@
       "source": "pangaea/programs/MONCHG.cbl:141"
     },
     {
+      "from": "condition MASTER-AT-END",
+      "to": "WS-MASTER-END-SW",
+      "fromLiteral": true,
+      "paragraph": "1200-READ-ACCOUNT",
+      "verb": "SET",
+      "source": "pangaea/programs/MONCHG.cbl:143"
+    },
+    {
       "from": "ACCR-IN",
       "to": "ACCRUAL-RECORD",
       "fromFile": true,
       "paragraph": "1200-READ-ACCOUNT",
       "verb": "READ",
       "source": "pangaea/programs/MONCHG.cbl:145"
+    },
+    {
+      "from": "condition ACCRUALS-AT-END",
+      "to": "WS-ACCRUAL-END-SW",
+      "fromLiteral": true,
+      "paragraph": "1200-READ-ACCOUNT",
+      "verb": "SET",
+      "source": "pangaea/programs/MONCHG.cbl:147"
+    },
+    {
+      "from": "'ACCRUALS OUT OF STEP WITH THE MASTER'",
+      "to": "WS-ABORT-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "1200-READ-ACCOUNT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:154"
     },
     {
       "from": "AC-DUE-MONTH",
@@ -1524,11 +1580,35 @@
       "source": "pangaea/programs/MONCHG.cbl:164"
     },
     {
+      "from": "condition TD-INTEREST",
+      "to": "TD-TRAN-CODE",
+      "fromLiteral": true,
+      "paragraph": "2100-SETTLE-INTEREST",
+      "verb": "SET",
+      "source": "pangaea/programs/MONCHG.cbl:175"
+    },
+    {
       "from": "AC-DUE",
       "to": "TD-AMOUNT",
       "paragraph": "2100-SETTLE-INTEREST",
       "verb": "MOVE",
       "source": "pangaea/programs/MONCHG.cbl:176"
+    },
+    {
+      "from": "'CREDIT INTEREST'",
+      "to": "TD-DESCRIPTION",
+      "fromLiteral": true,
+      "paragraph": "2100-SETTLE-INTEREST",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:177"
+    },
+    {
+      "from": "1",
+      "to": "WS-INTEREST-COUNT",
+      "fromLiteral": true,
+      "paragraph": "2100-SETTLE-INTEREST",
+      "verb": "ADD",
+      "source": "pangaea/programs/MONCHG.cbl:179"
     },
     {
       "from": "TD-AMOUNT",
@@ -1538,11 +1618,35 @@
       "source": "pangaea/programs/MONCHG.cbl:180"
     },
     {
+      "from": "condition TD-OVERDRAFT-INTEREST",
+      "to": "TD-TRAN-CODE",
+      "fromLiteral": true,
+      "paragraph": "2100-SETTLE-INTEREST",
+      "verb": "SET",
+      "source": "pangaea/programs/MONCHG.cbl:182"
+    },
+    {
       "from": "AC-DUE",
       "to": "TD-AMOUNT",
       "paragraph": "2100-SETTLE-INTEREST",
       "verb": "COMPUTE",
       "source": "pangaea/programs/MONCHG.cbl:183"
+    },
+    {
+      "from": "'OVERDRAFT INTEREST'",
+      "to": "TD-DESCRIPTION",
+      "fromLiteral": true,
+      "paragraph": "2100-SETTLE-INTEREST",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:184"
+    },
+    {
+      "from": "1",
+      "to": "WS-OVERDRAFT-COUNT",
+      "fromLiteral": true,
+      "paragraph": "2100-SETTLE-INTEREST",
+      "verb": "ADD",
+      "source": "pangaea/programs/MONCHG.cbl:186"
     },
     {
       "from": "TD-AMOUNT",
@@ -1552,6 +1656,14 @@
       "source": "pangaea/programs/MONCHG.cbl:187"
     },
     {
+      "from": "condition TD-MAINTENANCE-FEE",
+      "to": "TD-TRAN-CODE",
+      "fromLiteral": true,
+      "paragraph": "2200-CHARGE-FEE",
+      "verb": "SET",
+      "source": "pangaea/programs/MONCHG.cbl:198"
+    },
+    {
       "from": "WS-MAINTENANCE-FEE",
       "to": "TD-AMOUNT",
       "paragraph": "2200-CHARGE-FEE",
@@ -1559,11 +1671,51 @@
       "source": "pangaea/programs/MONCHG.cbl:199"
     },
     {
+      "from": "'MAINTENANCE FEE'",
+      "to": "TD-DESCRIPTION",
+      "fromLiteral": true,
+      "paragraph": "2200-CHARGE-FEE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:200"
+    },
+    {
+      "from": "1",
+      "to": "WS-FEE-COUNT",
+      "fromLiteral": true,
+      "paragraph": "2200-CHARGE-FEE",
+      "verb": "ADD",
+      "source": "pangaea/programs/MONCHG.cbl:202"
+    },
+    {
       "from": "TD-AMOUNT",
       "to": "WS-FEE-TOTAL",
       "paragraph": "2200-CHARGE-FEE",
       "verb": "ADD",
       "source": "pangaea/programs/MONCHG.cbl:203"
+    },
+    {
+      "from": "1",
+      "to": "WS-WAIVED-COUNT",
+      "fromLiteral": true,
+      "paragraph": "2200-CHARGE-FEE",
+      "verb": "ADD",
+      "source": "pangaea/programs/MONCHG.cbl:205"
+    },
+    {
+      "from": "condition TR-DETAIL",
+      "to": "TR-REC-TYPE",
+      "fromLiteral": true,
+      "paragraph": "2900-WRITE-TRAN",
+      "verb": "SET",
+      "source": "pangaea/programs/MONCHG.cbl:213"
+    },
+    {
+      "from": "1",
+      "to": "WS-TI-SEQ",
+      "fromLiteral": true,
+      "paragraph": "2900-WRITE-TRAN",
+      "verb": "ADD",
+      "source": "pangaea/programs/MONCHG.cbl:214"
     },
     {
       "from": "WS-TRAN-ID",
@@ -1595,6 +1747,22 @@
       "source": "pangaea/programs/MONCHG.cbl:217"
     },
     {
+      "from": "SPACES",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:221"
+    },
+    {
+      "from": "'MONCHG   MONTH-END CHARGES       BUSINESS DATE '",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "STRING",
+      "source": "pangaea/programs/MONCHG.cbl:222"
+    },
+    {
       "from": "WS-BUSINESS-DATE",
       "to": "REPORT-LINE",
       "paragraph": "8000-WRITE-REPORT",
@@ -1610,6 +1778,14 @@
       "source": "pangaea/programs/MONCHG.cbl:225"
     },
     {
+      "from": "SPACES",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:226"
+    },
+    {
       "from": "REPORT-LINE",
       "to": "REPORT-OUT",
       "toFile": true,
@@ -1618,12 +1794,36 @@
       "source": "pangaea/programs/MONCHG.cbl:227"
     },
     {
+      "from": "'NO MONTH CLOSED'",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:229"
+    },
+    {
       "from": "REPORT-LINE",
       "to": "REPORT-OUT",
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
       "source": "pangaea/programs/MONCHG.cbl:230"
+    },
+    {
+      "from": "SPACES",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:232"
+    },
+    {
+      "from": "'MONTH CLOSED                  '",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "STRING",
+      "source": "pangaea/programs/MONCHG.cbl:233"
     },
     {
       "from": "WS-CLOSED-MONTH",
@@ -1641,12 +1841,28 @@
       "source": "pangaea/programs/MONCHG.cbl:235"
     },
     {
+      "from": "SPACES",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:236"
+    },
+    {
       "from": "REPORT-LINE",
       "to": "REPORT-OUT",
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
       "source": "pangaea/programs/MONCHG.cbl:237"
+    },
+    {
+      "from": "'INTEREST CREDITS'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:238"
     },
     {
       "from": "WS-INTEREST-COUNT",
@@ -1671,6 +1887,14 @@
       "source": "pangaea/programs/MONCHG.cbl:240"
     },
     {
+      "from": "'INTEREST CREDITED'",
+      "to": "WS-RA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:241"
+    },
+    {
       "from": "WS-INTEREST-TOTAL",
       "to": "WS-RA-VALUE",
       "paragraph": "8000-WRITE-REPORT",
@@ -1691,6 +1915,14 @@
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
       "source": "pangaea/programs/MONCHG.cbl:243"
+    },
+    {
+      "from": "'OVERDRAFT INTEREST CHARGES'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:244"
     },
     {
       "from": "WS-OVERDRAFT-COUNT",
@@ -1715,6 +1947,14 @@
       "source": "pangaea/programs/MONCHG.cbl:246"
     },
     {
+      "from": "'OVERDRAFT INTEREST CHARGED'",
+      "to": "WS-RA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:247"
+    },
+    {
       "from": "WS-OVERDRAFT-TOTAL",
       "to": "WS-RA-VALUE",
       "paragraph": "8000-WRITE-REPORT",
@@ -1735,6 +1975,14 @@
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
       "source": "pangaea/programs/MONCHG.cbl:249"
+    },
+    {
+      "from": "'MAINTENANCE FEES'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:250"
     },
     {
       "from": "WS-FEE-COUNT",
@@ -1759,6 +2007,14 @@
       "source": "pangaea/programs/MONCHG.cbl:252"
     },
     {
+      "from": "'MAINTENANCE FEES CHARGED'",
+      "to": "WS-RA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:253"
+    },
+    {
       "from": "WS-FEE-TOTAL",
       "to": "WS-RA-VALUE",
       "paragraph": "8000-WRITE-REPORT",
@@ -1781,6 +2037,14 @@
       "source": "pangaea/programs/MONCHG.cbl:255"
     },
     {
+      "from": "'MAINTENANCE FEES WAIVED'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:256"
+    },
+    {
       "from": "WS-WAIVED-COUNT",
       "to": "WS-RC-VALUE",
       "paragraph": "8000-WRITE-REPORT",
@@ -1801,6 +2065,193 @@
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
       "source": "pangaea/programs/MONCHG.cbl:258"
+    },
+    {
+      "from": "16",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "9900-ABORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:269"
+    }
+  ],
+  "outputs": [
+    {
+      "file": "TRAN-OUT",
+      "record": "TRAN-RECORD",
+      "fields": [
+        {
+          "name": "TR-REC-TYPE",
+          "start": 1,
+          "length": 1,
+          "origins": [
+            "literal condition TR-DETAIL"
+          ]
+        },
+        {
+          "name": "TR-BODY",
+          "start": 2,
+          "length": 79,
+          "origins": [
+            "file ACCR-IN AC-DUE",
+            "file ACCT-IN AM-ACCT-NO",
+            "initial value of WS-MAINTENANCE-FEE",
+            "literal 'CREDIT INTEREST'",
+            "literal 'MAINTENANCE FEE'",
+            "literal 'OVERDRAFT INTEREST'",
+            "literal 1",
+            "literal condition TD-INTEREST",
+            "literal condition TD-MAINTENANCE-FEE",
+            "literal condition TD-OVERDRAFT-INTEREST"
+          ]
+        },
+        {
+          "name": "TH-BUSINESS-DATE",
+          "start": 2,
+          "length": 8,
+          "origins": [
+            "literal 1"
+          ]
+        },
+        {
+          "name": "TH-SOURCE",
+          "start": 10,
+          "length": 8,
+          "origins": [
+            "file ACCT-IN AM-ACCT-NO",
+            "initial value of WS-TI-SEQ",
+            "literal 1"
+          ]
+        },
+        {
+          "name": "TH-FILE-SEQ",
+          "start": 18,
+          "length": 6,
+          "origins": [
+            "file ACCT-IN AM-ACCT-NO",
+            "literal condition TD-INTEREST",
+            "literal condition TD-MAINTENANCE-FEE",
+            "literal condition TD-OVERDRAFT-INTEREST"
+          ]
+        },
+        {
+          "name": "TD-TRAN-ID",
+          "start": 2,
+          "length": 10,
+          "origins": [
+            "literal 1"
+          ]
+        },
+        {
+          "name": "TD-ACCT-NO",
+          "start": 12,
+          "length": 10,
+          "origins": [
+            "file ACCT-IN AM-ACCT-NO"
+          ]
+        },
+        {
+          "name": "TD-TRAN-CODE",
+          "start": 22,
+          "length": 2,
+          "origins": [
+            "literal condition TD-INTEREST",
+            "literal condition TD-MAINTENANCE-FEE",
+            "literal condition TD-OVERDRAFT-INTEREST"
+          ]
+        },
+        {
+          "name": "TD-AMOUNT",
+          "start": 24,
+          "length": 11,
+          "origins": [
+            "file ACCR-IN AC-DUE",
+            "initial value of WS-MAINTENANCE-FEE"
+          ]
+        },
+        {
+          "name": "TD-DESCRIPTION",
+          "start": 35,
+          "length": 20,
+          "origins": [
+            "literal 'CREDIT INTEREST'",
+            "literal 'MAINTENANCE FEE'",
+            "literal 'OVERDRAFT INTEREST'"
+          ]
+        },
+        {
+          "name": "TD-COUNTER-ACCT-NO",
+          "start": 55,
+          "length": 10,
+          "origins": [
+            "literal SPACES"
+          ]
+        },
+        {
+          "name": "TT-DETAIL-COUNT",
+          "start": 2,
+          "length": 8,
+          "origins": [
+            "literal 1"
+          ]
+        },
+        {
+          "name": "TT-AMOUNT-TOTAL",
+          "start": 10,
+          "length": 15,
+          "origins": [
+            "file ACCR-IN AC-DUE",
+            "file ACCT-IN AM-ACCT-NO",
+            "initial value of WS-MAINTENANCE-FEE",
+            "initial value of WS-TI-SEQ",
+            "literal 1",
+            "literal condition TD-INTEREST",
+            "literal condition TD-MAINTENANCE-FEE",
+            "literal condition TD-OVERDRAFT-INTEREST"
+          ]
+        },
+        {
+          "name": "TT-ACCT-HASH",
+          "start": 25,
+          "length": 15,
+          "origins": [
+            "file ACCR-IN AC-DUE",
+            "initial value of WS-MAINTENANCE-FEE",
+            "literal 'CREDIT INTEREST'",
+            "literal 'MAINTENANCE FEE'",
+            "literal 'OVERDRAFT INTEREST'"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "REPORT-OUT",
+      "record": "WS-REPORT-COUNT-LINE",
+      "fields": [
+        {
+          "name": "WS-RC-LABEL",
+          "start": 1,
+          "length": 30,
+          "origins": [
+            "literal 'INTEREST CREDITS'",
+            "literal 'MAINTENANCE FEES WAIVED'",
+            "literal 'MAINTENANCE FEES'",
+            "literal 'OVERDRAFT INTEREST CHARGES'"
+          ]
+        },
+        {
+          "name": "WS-RC-VALUE",
+          "start": 31,
+          "length": 10,
+          "origins": [
+            "initial value of WS-FEE-COUNT",
+            "initial value of WS-INTEREST-COUNT",
+            "initial value of WS-OVERDRAFT-COUNT",
+            "initial value of WS-WAIVED-COUNT",
+            "literal 1"
+          ]
+        }
+      ]
     }
   ]
 }

@@ -210,12 +210,28 @@
   ],
   "lineage": [
     {
+      "from": "16",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "0000-MAIN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/BANKDATE.cbl:58"
+    },
+    {
       "from": "CONTROL-IN",
       "to": "BANK-CONTROL-RECORD",
       "fromFile": true,
       "paragraph": "0000-MAIN",
       "verb": "READ",
       "source": "pangaea/programs/BANKDATE.cbl:61"
+    },
+    {
+      "from": "16",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "0000-MAIN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/BANKDATE.cbl:64"
     },
     {
       "from": "BANK-CONTROL-RECORD",
@@ -233,6 +249,14 @@
       "source": "pangaea/programs/BANKDATE.cbl:68"
     },
     {
+      "from": "0",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "0000-MAIN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/BANKDATE.cbl:70"
+    },
+    {
       "from": "BC-BUSINESS-DATE",
       "to": "WS-DAY-NUMBER",
       "paragraph": "1000-NEXT-BUSINESS-DAY",
@@ -240,11 +264,27 @@
       "source": "pangaea/programs/BANKDATE.cbl:75"
     },
     {
+      "from": "1",
+      "to": "WS-DAY-NUMBER",
+      "fromLiteral": true,
+      "paragraph": "1000-NEXT-BUSINESS-DAY",
+      "verb": "ADD",
+      "source": "pangaea/programs/BANKDATE.cbl:77"
+    },
+    {
       "from": "WS-DAY-NUMBER",
       "to": "WS-WEEKDAY",
       "paragraph": "1000-NEXT-BUSINESS-DAY",
       "verb": "COMPUTE",
       "source": "pangaea/programs/BANKDATE.cbl:78"
+    },
+    {
+      "from": "1",
+      "to": "WS-DAY-NUMBER",
+      "fromLiteral": true,
+      "paragraph": "1000-NEXT-BUSINESS-DAY",
+      "verb": "ADD",
+      "source": "pangaea/programs/BANKDATE.cbl:80"
     },
     {
       "from": "WS-DAY-NUMBER",
@@ -259,6 +299,23 @@
       "paragraph": "1000-NEXT-BUSINESS-DAY",
       "verb": "COMPUTE",
       "source": "pangaea/programs/BANKDATE.cbl:83"
+    }
+  ],
+  "outputs": [
+    {
+      "file": "CONTROL-OUT",
+      "record": "BANK-CONTROL-RECORD",
+      "fields": [
+        {
+          "name": "BC-BUSINESS-DATE",
+          "start": 1,
+          "length": 8,
+          "origins": [
+            "file CONTROL-IN BC-BUSINESS-DATE",
+            "literal 1"
+          ]
+        }
+      ]
     }
   ]
 }

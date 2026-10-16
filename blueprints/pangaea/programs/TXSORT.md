@@ -30,6 +30,8 @@ Program [TXSORT.cbl](../../../pangaea/programs/TXSORT.cbl): 3 files, 1 paragraph
 - [Flow](#flow)
 - [Paragraphs](#paragraphs)
 - [Data flow](#data-flow)
+- [Lineage](#lineage)
+  - [Into other data items](#into-other-data-items)
 - [Records](#records)
   - [TRAN-IN-RECORD](#tran-in-record)
   - [TRAN-OUT-RECORD](#tran-out-record)
@@ -58,6 +60,19 @@ Program [TXSORT.cbl](../../../pangaea/programs/TXSORT.cbl): 3 files, 1 paragraph
 | Paragraph | Reads | Writes |
 | --- | --- | --- |
 | 0000-MAIN | SR-ACCT-NO, SR-TRAN-ID, SORT-RETURN | RETURN-CODE |
+
+## Lineage
+
+Where each data item's values come from, grouped by the record they go into. A data item links to the record it belongs to.
+
+### Into other data items
+
+Data items the program does not declare, such as special registers and index names.
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| RETURN-CODE | literal 16 | MOVE | 0000-MAIN | [TXSORT.cbl:55](../../../pangaea/programs/TXSORT.cbl#L55) |
+| RETURN-CODE | literal 0 | MOVE | 0000-MAIN | [TXSORT.cbl:57](../../../pangaea/programs/TXSORT.cbl#L57) |
 
 ## Records
 

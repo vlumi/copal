@@ -46,10 +46,14 @@ Program [INTACCR.cbl](../../../pangaea/programs/INTACCR.cbl): 6 files, 15 paragr
   - [Into ACCR-OUT-RECORD](#into-accr-out-record)
   - [Into REPORT-LINE](#into-report-line)
   - [Into WS-BUSINESS-DATE](#into-ws-business-date)
+  - [Into WS-ABORT-MESSAGE](#into-ws-abort-message)
+  - [Into WS-END-SWITCHES](#into-ws-end-switches)
   - [Into WS-ACCRUAL-KEY](#into-ws-accrual-key)
   - [Into ACCRUAL-RECORD](#into-accrual-record)
+  - [Into WS-RATE-COUNT](#into-ws-rate-count)
   - [Into WS-RATE-TABLE](#into-ws-rate-table)
   - [Into WS-ACCOUNT-RATE](#into-ws-account-rate)
+  - [Into WS-RATE-FOUND-SW](#into-ws-rate-found-sw)
   - [Into WS-BEST-FLOOR](#into-ws-best-floor)
   - [Into WS-TODAY](#into-ws-today)
   - [Into WS-FROM-DAY](#into-ws-from-day)
@@ -64,6 +68,10 @@ Program [INTACCR.cbl](../../../pangaea/programs/INTACCR.cbl): 6 files, 15 paragr
   - [Into WS-REPORT-COUNT-LINE](#into-ws-report-count-line)
   - [Into WS-REPORT-AMOUNT-LINE](#into-ws-report-amount-line)
   - [Into files](#into-files)
+  - [Into other data items](#into-other-data-items)
+- [Field origins](#field-origins)
+  - [File ACCR-OUT](#file-accr-out)
+  - [File REPORT-OUT](#file-report-out)
 - [Records](#records)
   - [BANK-CONTROL-RECORD](#bank-control-record)
   - [RATE-RECORD](#rate-record)
@@ -203,12 +211,19 @@ Record [REPORT-LINE](#report-line).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| REPORT-LINE | literal SPACES | MOVE | 8000-WRITE-REPORT | [INTACCR.cbl:341](../../../pangaea/programs/INTACCR.cbl#L341) |
+| REPORT-LINE | literal 'INTACCR  INTEREST ACCRUAL        BUSINESS DATE ' | STRING | 8000-WRITE-REPORT | [INTACCR.cbl:342](../../../pangaea/programs/INTACCR.cbl#L342) |
 | REPORT-LINE | [WS-BUSINESS-DATE](#ws-business-date) | STRING | 8000-WRITE-REPORT | [INTACCR.cbl:342](../../../pangaea/programs/INTACCR.cbl#L342) |
+| REPORT-LINE | literal SPACES | MOVE | 8000-WRITE-REPORT | [INTACCR.cbl:346](../../../pangaea/programs/INTACCR.cbl#L346) |
 | REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [INTACCR.cbl:350](../../../pangaea/programs/INTACCR.cbl#L350) |
 | REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [INTACCR.cbl:353](../../../pangaea/programs/INTACCR.cbl#L353) |
 | REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [INTACCR.cbl:356](../../../pangaea/programs/INTACCR.cbl#L356) |
 | REPORT-LINE | [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line) | WRITE | 8000-WRITE-REPORT | [INTACCR.cbl:359](../../../pangaea/programs/INTACCR.cbl#L359) |
 | REPORT-LINE | [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line) | WRITE | 8000-WRITE-REPORT | [INTACCR.cbl:362](../../../pangaea/programs/INTACCR.cbl#L362) |
+| REPORT-LINE | literal SPACES | MOVE | 8000-WRITE-REPORT | [INTACCR.cbl:363](../../../pangaea/programs/INTACCR.cbl#L363) |
+| REPORT-LINE | literal 'NO MONTH CLOSED' | MOVE | 8000-WRITE-REPORT | [INTACCR.cbl:366](../../../pangaea/programs/INTACCR.cbl#L366) |
+| REPORT-LINE | literal SPACES | MOVE | 8000-WRITE-REPORT | [INTACCR.cbl:369](../../../pangaea/programs/INTACCR.cbl#L369) |
+| REPORT-LINE | literal 'MONTH CLOSED                  ' | STRING | 8000-WRITE-REPORT | [INTACCR.cbl:370](../../../pangaea/programs/INTACCR.cbl#L370) |
 | REPORT-LINE | [WS-CLOSED-MONTH](#ws-totals "in WS-TOTALS") | STRING | 8000-WRITE-REPORT | [INTACCR.cbl:370](../../../pangaea/programs/INTACCR.cbl#L370) |
 | REPORT-LINE | [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line) | WRITE | 8000-WRITE-REPORT | [INTACCR.cbl:375](../../../pangaea/programs/INTACCR.cbl#L375) |
 | REPORT-LINE | [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line) | WRITE | 8000-WRITE-REPORT | [INTACCR.cbl:378](../../../pangaea/programs/INTACCR.cbl#L378) |
@@ -221,12 +236,34 @@ Record [WS-BUSINESS-DATE](#ws-business-date).
 | --- | --- | --- | --- | --- |
 | WS-BUSINESS-DATE | [BC-BUSINESS-DATE](#bank-control-record "in BANK-CONTROL-RECORD") | MOVE | 1000-INITIALIZE | [INTACCR.cbl:182](../../../pangaea/programs/INTACCR.cbl#L182) |
 
+### Into WS-ABORT-MESSAGE
+
+Record [WS-ABORT-MESSAGE](#ws-abort-message).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-ABORT-MESSAGE | literal 'AN ACCRUAL FOR NO ACCOUNT' | MOVE | 0000-MAIN | [INTACCR.cbl:160](../../../pangaea/programs/INTACCR.cbl#L160) |
+| WS-ABORT-MESSAGE | literal 'NO BANK CONTROL RECORD' | MOVE | 1000-INITIALIZE | [INTACCR.cbl:179](../../../pangaea/programs/INTACCR.cbl#L179) |
+| WS-ABORT-MESSAGE | literal 'MORE THAN 20 RATES' | MOVE | 1100-LOAD-RATES | [INTACCR.cbl:193](../../../pangaea/programs/INTACCR.cbl#L193) |
+| WS-ABORT-MESSAGE | literal 'CANNOT READ THE RATES' | MOVE | 1100-LOAD-RATES | [INTACCR.cbl:204](../../../pangaea/programs/INTACCR.cbl#L204) |
+| WS-ABORT-MESSAGE | literal 'AN ACCRUAL FOR NO ACCOUNT' | MOVE | 1400-TAKE-ACCRUAL | [INTACCR.cbl:238](../../../pangaea/programs/INTACCR.cbl#L238) |
+| WS-ABORT-MESSAGE | literal 'NO RATE FOR AN ACCOUNT TYPE' | MOVE | 2100-FIND-RATE | [INTACCR.cbl:286](../../../pangaea/programs/INTACCR.cbl#L286) |
+
+### Into WS-END-SWITCHES
+
+Record [WS-END-SWITCHES](#ws-end-switches).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-MASTER-END-SW | literal condition MASTER-AT-END | SET | 1200-READ-MASTER | [INTACCR.cbl:212](../../../pangaea/programs/INTACCR.cbl#L212) |
+
 ### Into WS-ACCRUAL-KEY
 
 Record [WS-ACCRUAL-KEY](#ws-accrual-key).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-ACCRUAL-KEY | literal HIGH-VALUES | MOVE | 1300-READ-ACCRUAL | [INTACCR.cbl:219](../../../pangaea/programs/INTACCR.cbl#L219) |
 | WS-ACCRUAL-KEY | [AI-ACCT-NO](#accr-in-record "in ACCR-IN-RECORD") | MOVE | 1300-READ-ACCRUAL | [INTACCR.cbl:221](../../../pangaea/programs/INTACCR.cbl#L221) |
 
 ### Into ACCRUAL-RECORD
@@ -235,14 +272,26 @@ Record [ACCRUAL-RECORD](#accrual-record), from copybook [ACCRREC](../copybooks/A
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| AC-ACCRUED | literal 0 | MOVE | 1400-TAKE-ACCRUAL | [INTACCR.cbl:235](../../../pangaea/programs/INTACCR.cbl#L235) |
 | AC-ACCRUED | [WS-INCREMENT](#ws-increment) | ADD | 2300-ACCRUE-DAYS | [INTACCR.cbl:317](../../../pangaea/programs/INTACCR.cbl#L317) |
 | AC-ACCRUED | [AC-DUE](#accrual-record "in ACCRUAL-RECORD") | SUBTRACT | 2400-CLOSE-MONTH | [INTACCR.cbl:328](../../../pangaea/programs/INTACCR.cbl#L328) |
 | AC-ACCT-NO | [AM-ACCT-NO](#acct-master-record "in ACCT-MASTER-RECORD") | MOVE | 1400-TAKE-ACCRUAL | [INTACCR.cbl:233](../../../pangaea/programs/INTACCR.cbl#L233) |
+| AC-DUE | literal 0 | MOVE | 2000-ACCRUE-ACCOUNT | [INTACCR.cbl:247](../../../pangaea/programs/INTACCR.cbl#L247) |
 | AC-DUE | [AC-ACCRUED](#accrual-record "in ACCRUAL-RECORD") | COMPUTE | 2400-CLOSE-MONTH | [INTACCR.cbl:327](../../../pangaea/programs/INTACCR.cbl#L327) |
+| AC-DUE-MONTH | literal 0 | MOVE | 2000-ACCRUE-ACCOUNT | [INTACCR.cbl:247](../../../pangaea/programs/INTACCR.cbl#L247) |
 | AC-DUE-MONTH | [WS-DUE-MONTH](#ws-due-month) | MOVE | 2400-CLOSE-MONTH | [INTACCR.cbl:331](../../../pangaea/programs/INTACCR.cbl#L331) |
 | AC-THROUGH-DATE | [WS-BUSINESS-DATE](#ws-business-date) | MOVE | 1400-TAKE-ACCRUAL | [INTACCR.cbl:234](../../../pangaea/programs/INTACCR.cbl#L234) |
 | AC-THROUGH-DATE | [WS-BUSINESS-DATE](#ws-business-date) | MOVE | 2000-ACCRUE-ACCOUNT | [INTACCR.cbl:259](../../../pangaea/programs/INTACCR.cbl#L259) |
 | ACCRUAL-RECORD | [ACCR-IN-RECORD](#accr-in-record) | MOVE | 1400-TAKE-ACCRUAL | [INTACCR.cbl:229](../../../pangaea/programs/INTACCR.cbl#L229) |
+| ACCRUAL-RECORD | literal SPACES | MOVE | 1400-TAKE-ACCRUAL | [INTACCR.cbl:232](../../../pangaea/programs/INTACCR.cbl#L232) |
+
+### Into WS-RATE-COUNT
+
+Record [WS-RATE-COUNT](#ws-rate-count).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-RATE-COUNT | literal 1 | ADD | 1100-LOAD-RATES | [INTACCR.cbl:196](../../../pangaea/programs/INTACCR.cbl#L196) |
 
 ### Into WS-RATE-TABLE
 
@@ -262,6 +311,15 @@ Record [WS-ACCOUNT-RATE](#ws-account-rate).
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
 | WS-ACCOUNT-RATE | [WS-RT-ANNUAL-RATE](#ws-rate-table "in WS-RATE-TABLE") | MOVE | 2110-TAKE-RATE | [INTACCR.cbl:293](../../../pangaea/programs/INTACCR.cbl#L293) |
+
+### Into WS-RATE-FOUND-SW
+
+Record [WS-RATE-FOUND-SW](#ws-rate-found-sw).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-RATE-FOUND-SW | literal 'N' | MOVE | 2100-FIND-RATE | [INTACCR.cbl:267](../../../pangaea/programs/INTACCR.cbl#L267) |
+| WS-RATE-FOUND-SW | literal condition RATE-FOUND | SET | 2110-TAKE-RATE | [INTACCR.cbl:292](../../../pangaea/programs/INTACCR.cbl#L292) |
 
 ### Into WS-BEST-FLOOR
 
@@ -321,8 +379,11 @@ Record [WS-MONTH-START](#ws-month-start).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-MS-DAY | literal 1 | MOVE | 2200-FIND-MONTH-START | [INTACCR.cbl:306](../../../pangaea/programs/INTACCR.cbl#L306) |
+| WS-MS-MONTH | literal 1 | MOVE | 2200-FIND-MONTH-START | [INTACCR.cbl:302](../../../pangaea/programs/INTACCR.cbl#L302) |
 | WS-MS-MONTH | [WS-TH-MONTH](#ws-through-date "in WS-THROUGH-DATE") | COMPUTE | 2200-FIND-MONTH-START | [INTACCR.cbl:304](../../../pangaea/programs/INTACCR.cbl#L304) |
 | WS-MS-YEAR | [WS-TH-YEAR](#ws-through-date "in WS-THROUGH-DATE") | MOVE | 2200-FIND-MONTH-START | [INTACCR.cbl:299](../../../pangaea/programs/INTACCR.cbl#L299) |
+| WS-MS-YEAR | literal 1 | ADD | 2200-FIND-MONTH-START | [INTACCR.cbl:301](../../../pangaea/programs/INTACCR.cbl#L301) |
 
 ### Into WS-INTEREST-PRODUCT
 
@@ -341,6 +402,7 @@ Record [WS-INCREMENT](#ws-increment).
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
 | WS-INCREMENT | [WS-INTEREST-PRODUCT](#ws-interest-product) | DIVIDE | 2300-ACCRUE-DAYS | [INTACCR.cbl:315](../../../pangaea/programs/INTACCR.cbl#L315) |
+| WS-INCREMENT | literal 365 | DIVIDE | 2300-ACCRUE-DAYS | [INTACCR.cbl:315](../../../pangaea/programs/INTACCR.cbl#L315) |
 
 ### Into WS-DUE-MONTH
 
@@ -357,11 +419,13 @@ Record [WS-TOTALS](#ws-totals).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-ACCOUNT-COUNT | literal 1 | ADD | 2000-ACCRUE-ACCOUNT | [INTACCR.cbl:261](../../../pangaea/programs/INTACCR.cbl#L261) |
 | WS-CLOSED-MONTH | [AC-DUE-MONTH](#accrual-record "in ACCRUAL-RECORD") | MOVE | 2400-CLOSE-MONTH | [INTACCR.cbl:332](../../../pangaea/programs/INTACCR.cbl#L332) |
 | WS-CREDIT-ACCRUED | [WS-INCREMENT](#ws-increment) | ADD | 2300-ACCRUE-DAYS | [INTACCR.cbl:321](../../../pangaea/programs/INTACCR.cbl#L321) |
 | WS-CREDIT-DUE | [AC-DUE](#accrual-record "in ACCRUAL-RECORD") | ADD | 2400-CLOSE-MONTH | [INTACCR.cbl:336](../../../pangaea/programs/INTACCR.cbl#L336) |
 | WS-DEBIT-ACCRUED | [WS-INCREMENT](#ws-increment) | ADD | 2300-ACCRUE-DAYS | [INTACCR.cbl:319](../../../pangaea/programs/INTACCR.cbl#L319) |
 | WS-DEBIT-DUE | [AC-DUE](#accrual-record "in ACCRUAL-RECORD") | ADD | 2400-CLOSE-MONTH | [INTACCR.cbl:334](../../../pangaea/programs/INTACCR.cbl#L334) |
+| WS-STARTED-COUNT | literal 1 | ADD | 1400-TAKE-ACCRUAL | [INTACCR.cbl:236](../../../pangaea/programs/INTACCR.cbl#L236) |
 
 ### Into WS-REPORT-COUNT-LINE
 
@@ -369,6 +433,9 @@ Record [WS-REPORT-COUNT-LINE](#ws-report-count-line).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-RC-LABEL | literal 'RATES' | MOVE | 8000-WRITE-REPORT | [INTACCR.cbl:348](../../../pangaea/programs/INTACCR.cbl#L348) |
+| WS-RC-LABEL | literal 'ACCOUNTS ACCRUED' | MOVE | 8000-WRITE-REPORT | [INTACCR.cbl:351](../../../pangaea/programs/INTACCR.cbl#L351) |
+| WS-RC-LABEL | literal 'ACCRUALS STARTED' | MOVE | 8000-WRITE-REPORT | [INTACCR.cbl:354](../../../pangaea/programs/INTACCR.cbl#L354) |
 | WS-RC-VALUE | [WS-RATE-COUNT](#ws-rate-count) | MOVE | 8000-WRITE-REPORT | [INTACCR.cbl:349](../../../pangaea/programs/INTACCR.cbl#L349) |
 | WS-RC-VALUE | [WS-ACCOUNT-COUNT](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [INTACCR.cbl:352](../../../pangaea/programs/INTACCR.cbl#L352) |
 | WS-RC-VALUE | [WS-STARTED-COUNT](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [INTACCR.cbl:355](../../../pangaea/programs/INTACCR.cbl#L355) |
@@ -379,6 +446,10 @@ Record [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-RA-LABEL | literal 'CREDIT INTEREST ACCRUED' | MOVE | 8000-WRITE-REPORT | [INTACCR.cbl:357](../../../pangaea/programs/INTACCR.cbl#L357) |
+| WS-RA-LABEL | literal 'DEBIT INTEREST ACCRUED' | MOVE | 8000-WRITE-REPORT | [INTACCR.cbl:360](../../../pangaea/programs/INTACCR.cbl#L360) |
+| WS-RA-LABEL | literal 'CREDIT INTEREST DUE' | MOVE | 8000-WRITE-REPORT | [INTACCR.cbl:373](../../../pangaea/programs/INTACCR.cbl#L373) |
+| WS-RA-LABEL | literal 'DEBIT INTEREST DUE' | MOVE | 8000-WRITE-REPORT | [INTACCR.cbl:376](../../../pangaea/programs/INTACCR.cbl#L376) |
 | WS-RA-VALUE | [WS-CREDIT-ACCRUED](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [INTACCR.cbl:358](../../../pangaea/programs/INTACCR.cbl#L358) |
 | WS-RA-VALUE | [WS-DEBIT-ACCRUED](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [INTACCR.cbl:361](../../../pangaea/programs/INTACCR.cbl#L361) |
 | WS-RA-VALUE | [WS-CREDIT-DUE](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [INTACCR.cbl:374](../../../pangaea/programs/INTACCR.cbl#L374) |
@@ -403,6 +474,41 @@ Records written to files.
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [INTACCR.cbl:372](../../../pangaea/programs/INTACCR.cbl#L372) |
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [INTACCR.cbl:375](../../../pangaea/programs/INTACCR.cbl#L375) |
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [INTACCR.cbl:378](../../../pangaea/programs/INTACCR.cbl#L378) |
+
+### Into other data items
+
+Data items the program does not declare, such as special registers and index names.
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| RETURN-CODE | literal 0 | MOVE | 0000-MAIN | [INTACCR.cbl:165](../../../pangaea/programs/INTACCR.cbl#L165) |
+| RETURN-CODE | literal 16 | MOVE | 1000-INITIALIZE | [INTACCR.cbl:174](../../../pangaea/programs/INTACCR.cbl#L174) |
+| RETURN-CODE | literal 16 | MOVE | 9900-ABORT | [INTACCR.cbl:390](../../../pangaea/programs/INTACCR.cbl#L390) |
+
+## Field origins
+
+Where the values of each field the program writes to a file come from: the fields of the files it reads, literals, and initial values, followed through every statement that moves a value, and through groups and redefinitions by the bytes they share.
+
+### File ACCR-OUT
+
+Written from [ACCRUAL-RECORD](#accrual-record).
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| AC-ACCT-NO | 1-10 | file ACCR-IN AI-ACCT-NO; file ACCT-IN AM-ACCT-NO |
+| AC-THROUGH-DATE | 11-18 | file ACCR-IN ACCR-IN-RECORD; file CONTROL-FILE BC-BUSINESS-DATE |
+| AC-ACCRUED | 19-25 | file ACCR-IN ACCR-IN-RECORD; file ACCT-IN AM-BALANCE; file CONTROL-FILE BC-BUSINESS-DATE; file RATE-FILE RT-ANNUAL-RATE; literal 0; literal 365 |
+| AC-DUE | 26-30 | file ACCR-IN ACCR-IN-RECORD; file ACCT-IN AM-BALANCE; file CONTROL-FILE BC-BUSINESS-DATE; file RATE-FILE RT-ANNUAL-RATE; literal 0; literal 365 |
+| AC-DUE-MONTH | 31-36 | file ACCR-IN ACCR-IN-RECORD; file CONTROL-FILE BC-BUSINESS-DATE; literal 0 |
+
+### File REPORT-OUT
+
+Written from [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| WS-RA-LABEL | 1-30 | literal 'CREDIT INTEREST ACCRUED'; literal 'CREDIT INTEREST DUE'; literal 'DEBIT INTEREST ACCRUED'; literal 'DEBIT INTEREST DUE' |
+| WS-RA-VALUE | 31-49 | file ACCR-IN ACCR-IN-RECORD; file ACCT-IN AM-BALANCE; file CONTROL-FILE BC-BUSINESS-DATE; file RATE-FILE RT-ANNUAL-RATE; initial value of WS-CREDIT-ACCRUED; initial value of WS-CREDIT-DUE; initial value of WS-DEBIT-ACCRUED; initial value of WS-DEBIT-DUE; literal 0; literal 365 |
 
 ## Records
 
