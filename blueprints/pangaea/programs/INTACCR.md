@@ -32,6 +32,46 @@ Program [INTACCR.cbl](../../../pangaea/programs/INTACCR.cbl): 6 files, 15 paragr
 - INSTALLATION: FIRST BANK OF PANGAEA, DATA CENTER.
 - DATE-WRITTEN: 2001-09-03.
 
+## Contents
+
+- [Files](#files)
+- [Flow](#flow)
+- [Paragraphs](#paragraphs)
+- [Data flow](#data-flow)
+- [Lineage](#lineage)
+- [Records](#records)
+  - [BANK-CONTROL-RECORD](#bank-control-record)
+  - [RATE-RECORD](#rate-record)
+  - [ACCT-MASTER-RECORD](#acct-master-record)
+  - [ACCR-IN-RECORD](#accr-in-record)
+  - [ACCR-OUT-RECORD](#accr-out-record)
+  - [REPORT-LINE](#report-line)
+  - [WS-FILE-STATUSES](#ws-file-statuses)
+  - [WS-BUSINESS-DATE](#ws-business-date)
+  - [WS-ABORT-MESSAGE](#ws-abort-message)
+  - [WS-END-SWITCHES](#ws-end-switches)
+  - [WS-ACCRUAL-KEY](#ws-accrual-key)
+  - [ACCRUAL-RECORD](#accrual-record)
+  - [WS-RATE-COUNT](#ws-rate-count)
+  - [WS-RATE-TABLE](#ws-rate-table)
+  - [WS-RX](#ws-rx)
+  - [WS-ACCOUNT-RATE](#ws-account-rate)
+  - [WS-RATE-FOUND-SW](#ws-rate-found-sw)
+  - [WS-BEST-FLOOR](#ws-best-floor)
+  - [WS-TODAY](#ws-today)
+  - [WS-FROM-DAY](#ws-from-day)
+  - [WS-MONTH-START-DAY](#ws-month-start-day)
+  - [WS-DAYS](#ws-days)
+  - [WS-THROUGH-DATE](#ws-through-date)
+  - [WS-MONTH-START](#ws-month-start)
+  - [WS-MONTH-START-DATE](#ws-month-start-date)
+  - [WS-INTEREST-PRODUCT](#ws-interest-product)
+  - [WS-INCREMENT](#ws-increment)
+  - [WS-DUE-MONTH](#ws-due-month)
+  - [WS-TOTALS](#ws-totals)
+  - [WS-REPORT-COUNT-LINE](#ws-report-count-line)
+  - [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line)
+
 ## Files
 
 | File | Kind | Assigned to | Organization | Status field | Opened | Records |

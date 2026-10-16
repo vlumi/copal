@@ -32,6 +32,48 @@ Program [STMTPRT.cbl](../../../pangaea/programs/STMTPRT.cbl): 6 files, 14 paragr
 - INSTALLATION: FIRST BANK OF PANGAEA, DATA CENTER.
 - DATE-WRITTEN: 2001-09-03.
 
+## Contents
+
+- [Files](#files)
+- [Flow](#flow)
+- [Paragraphs](#paragraphs)
+- [Data flow](#data-flow)
+- [Lineage](#lineage)
+- [Records](#records)
+  - [ACCRUAL-RECORD](#accrual-record)
+  - [ACCT-MASTER-RECORD](#acct-master-record)
+  - [AUDIT-RECORD](#audit-record)
+  - [STMT-LINE](#stmt-line)
+  - [REPORT-LINE](#report-line)
+  - [SORT-RECORD](#sort-record)
+  - [WS-FILE-STATUSES](#ws-file-statuses)
+  - [WS-ABORT-MESSAGE](#ws-abort-message)
+  - [WS-SWITCHES](#ws-switches)
+  - [WS-CLOSED-MONTH](#ws-closed-month)
+  - [WS-CLOSED-MONTH-NUMBER](#ws-closed-month-number)
+  - [WS-NEXT-MONTH](#ws-next-month)
+  - [WS-POSTING-MONTH](#ws-posting-month)
+  - [WS-POSTING-CODE](#ws-posting-code)
+  - [WS-POSTING-KEY](#ws-posting-key)
+  - [WS-SEQ](#ws-seq)
+  - [WS-MONTH-NAME-VALUES](#ws-month-name-values)
+  - [WS-MONTH-NAMES](#ws-month-names)
+  - [ST-CODE-VALUES](#st-code-values)
+  - [ST-CODE-TABLE](#st-code-table)
+  - [WS-STATEMENT](#ws-statement)
+  - [WS-TOTALS](#ws-totals)
+  - [WS-RULE-LINE](#ws-rule-line)
+  - [WS-TITLE-LINE](#ws-title-line)
+  - [WS-ACCOUNT-LINE](#ws-account-line)
+  - [WS-HEADING-LINE](#ws-heading-line)
+  - [WS-DATE](#ws-date)
+  - [WS-DATE-PARTS](#ws-date-parts)
+  - [WS-POSTING-LINE](#ws-posting-line)
+  - [WS-BALANCE-LINE](#ws-balance-line)
+  - [WS-SUM-LINE](#ws-sum-line)
+  - [WS-REPORT-COUNT-LINE](#ws-report-count-line)
+  - [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line)
+
 ## Files
 
 | File | Kind | Assigned to | Organization | Status field | Opened | Records |

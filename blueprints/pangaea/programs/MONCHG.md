@@ -28,6 +28,33 @@ Program [MONCHG.cbl](../../../pangaea/programs/MONCHG.cbl): 5 files, 10 paragrap
 - INSTALLATION: FIRST BANK OF PANGAEA, DATA CENTER.
 - DATE-WRITTEN: 2001-09-03.
 
+## Contents
+
+- [Files](#files)
+- [Flow](#flow)
+- [Paragraphs](#paragraphs)
+- [Data flow](#data-flow)
+- [Lineage](#lineage)
+- [Records](#records)
+  - [BANK-CONTROL-RECORD](#bank-control-record)
+  - [ACCT-MASTER-RECORD](#acct-master-record)
+  - [ACCRUAL-RECORD](#accrual-record)
+  - [TRAN-OUT-RECORD](#tran-out-record)
+  - [REPORT-LINE](#report-line)
+  - [WS-FILE-STATUSES](#ws-file-statuses)
+  - [WS-BUSINESS-DATE](#ws-business-date)
+  - [WS-ABORT-MESSAGE](#ws-abort-message)
+  - [WS-END-SWITCHES](#ws-end-switches)
+  - [WS-MAINTENANCE-FEE](#ws-maintenance-fee)
+  - [WS-FEE-WAIVER-BALANCE](#ws-fee-waiver-balance)
+  - [WS-CLOSED-MONTH](#ws-closed-month)
+  - [WS-CLOSED-MONTH-PARTS](#ws-closed-month-parts)
+  - [WS-TRAN-ID](#ws-tran-id)
+  - [TRAN-RECORD](#tran-record)
+  - [WS-TOTALS](#ws-totals)
+  - [WS-REPORT-COUNT-LINE](#ws-report-count-line)
+  - [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line)
+
 ## Files
 
 | File | Kind | Assigned to | Organization | Status field | Opened | Records |

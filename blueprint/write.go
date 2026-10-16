@@ -73,7 +73,7 @@ func renderBoth[T any](files map[string][]byte, dir, sub, name string, blueprint
 		return err
 	}
 	files[filepath.Join(sub, name+".json")] = append(data, '\n')
-	files[filepath.Join(sub, name+".md")] = []byte(markdown(filepath.Join(dir, sub), blueprint))
+	files[filepath.Join(sub, name+".md")] = []byte(withContents(markdown(filepath.Join(dir, sub), blueprint)))
 	return nil
 }
 

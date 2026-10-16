@@ -34,6 +34,36 @@ Program [ACCTMNT.cbl](../../../pangaea/programs/ACCTMNT.cbl): 6 files, 21 paragr
 - INSTALLATION: FIRST BANK OF PANGAEA, DATA CENTER.
 - DATE-WRITTEN: 1988-05-09.
 
+## Contents
+
+- [Files](#files)
+- [Flow](#flow)
+- [Paragraphs](#paragraphs)
+- [Data flow](#data-flow)
+- [Lineage](#lineage)
+- [Records](#records)
+  - [BANK-CONTROL-RECORD](#bank-control-record)
+  - [ACCT-IN-RECORD](#acct-in-record)
+  - [MAINT-REQUEST](#maint-request)
+  - [ACCT-OUT-RECORD](#acct-out-record)
+  - [REJECT-OUT-RECORD](#reject-out-record)
+  - [REPORT-LINE](#report-line)
+  - [WS-FILE-STATUSES](#ws-file-statuses)
+  - [WS-BUSINESS-DATE](#ws-business-date)
+  - [WS-ABORT-MESSAGE](#ws-abort-message)
+  - [WS-MASTER-KEY](#ws-master-key)
+  - [WS-REQUEST-KEY](#ws-request-key)
+  - [WS-ACTIVE-KEY](#ws-active-key)
+  - [WS-PREV-MASTER-KEY](#ws-prev-master-key)
+  - [WS-REQUEST-ORDER-KEY](#ws-request-order-key)
+  - [WS-PREV-REQUEST-ORDER-KEY](#ws-prev-request-order-key)
+  - [WS-HELD-SW](#ws-held-sw)
+  - [ACCT-MASTER-RECORD](#acct-master-record)
+  - [REJECT-RECORD](#reject-record)
+  - [WS-TOTALS](#ws-totals)
+  - [WS-REPORT-COUNT-LINE](#ws-report-count-line)
+  - [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line)
+
 ## Files
 
 | File | Kind | Assigned to | Organization | Status field | Opened | Records |

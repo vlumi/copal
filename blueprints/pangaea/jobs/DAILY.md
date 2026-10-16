@@ -18,6 +18,24 @@ A RUN THAT FAILS LEAVES THE BUSINESS DATE WHERE IT WAS.
 
 Job [DAILY.jcl](../../../pangaea/jobs/DAILY.jcl): 12 steps.
 
+## Contents
+
+- [Network](#network)
+- [Steps](#steps)
+  - [VALID](#valid)
+  - [ACCRUE](#accrue)
+  - [CHARGE](#charge)
+  - [POSTMO](#postmo)
+  - [SORT](#sort)
+  - [POST](#post)
+  - [SORTCR](#sortcr)
+  - [POSTCR](#postcr)
+  - [SORTRT](#sortrt)
+  - [POSTRT](#postrt)
+  - [MAINT](#maint)
+  - [NEXTDAY](#nextday)
+- [Findings](#findings)
+
 ## Network
 
 ![The steps of DAILY and the datasets they read and write](DAILY.svg)

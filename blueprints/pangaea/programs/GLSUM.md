@@ -31,6 +31,39 @@ Program [GLSUM.cbl](../../../pangaea/programs/GLSUM.cbl): 4 files, 9 paragraphs.
 - INSTALLATION: FIRST BANK OF PANGAEA, DATA CENTER.
 - DATE-WRITTEN: 2004-03-15.
 
+## Contents
+
+- [Files](#files)
+- [Flow](#flow)
+- [Paragraphs](#paragraphs)
+- [Data flow](#data-flow)
+- [Lineage](#lineage)
+- [Records](#records)
+  - [ACCRUAL-RECORD](#accrual-record)
+  - [AUDIT-RECORD](#audit-record)
+  - [GL-SUMMARY-RECORD](#gl-summary-record)
+  - [REPORT-LINE](#report-line)
+  - [WS-FILE-STATUSES](#ws-file-statuses)
+  - [WS-ABORT-MESSAGE](#ws-abort-message)
+  - [WS-CLOSED-MONTH](#ws-closed-month)
+  - [WS-CLOSED-MONTH-NUMBER](#ws-closed-month-number)
+  - [WS-NEXT-MONTH](#ws-next-month)
+  - [WS-POSTING-MONTH](#ws-posting-month)
+  - [WS-POSTING-CODE](#ws-posting-code)
+  - [GS-CODE-VALUES](#gs-code-values)
+  - [GS-CODE-TABLE](#gs-code-table)
+  - [WS-LEDGER-VALUES](#ws-ledger-values)
+  - [WS-LEDGER](#ws-ledger)
+  - [WS-LEDGER-TOTALS](#ws-ledger-totals)
+  - [WS-DEPOSITS-ACCOUNT](#ws-deposits-account)
+  - [WS-TRANSIT-ACCOUNT](#ws-transit-account)
+  - [WS-POSTING](#ws-posting)
+  - [WS-TOTALS](#ws-totals)
+  - [WS-HEADING-LINE](#ws-heading-line)
+  - [WS-LEDGER-LINE](#ws-ledger-line)
+  - [WS-REPORT-COUNT-LINE](#ws-report-count-line)
+  - [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line)
+
 ## Files
 
 | File | Kind | Assigned to | Organization | Status field | Opened | Records |

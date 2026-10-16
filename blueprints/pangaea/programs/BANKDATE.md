@@ -23,6 +23,21 @@ Program [BANKDATE.cbl](../../../pangaea/programs/BANKDATE.cbl): 2 files, 2 parag
 - INSTALLATION: FIRST BANK OF PANGAEA, DATA CENTER.
 - DATE-WRITTEN: 1987-03-12.
 
+## Contents
+
+- [Files](#files)
+- [Flow](#flow)
+- [Paragraphs](#paragraphs)
+- [Data flow](#data-flow)
+- [Lineage](#lineage)
+- [Records](#records)
+  - [BANK-CONTROL-RECORD](#bank-control-record)
+  - [CONTROL-OUT-RECORD](#control-out-record)
+  - [WS-IN-STATUS](#ws-in-status)
+  - [WS-OUT-STATUS](#ws-out-status)
+  - [WS-DAY-NUMBER](#ws-day-number)
+  - [WS-WEEKDAY](#ws-weekday)
+
 ## Files
 
 | File | Kind | Assigned to | Organization | Status field | Opened | Records |

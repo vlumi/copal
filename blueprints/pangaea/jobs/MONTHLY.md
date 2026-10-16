@@ -13,6 +13,14 @@ WRITES  GL.SUMMARY(+1)
 
 Job [MONTHLY.jcl](../../../pangaea/jobs/MONTHLY.jcl): 2 steps.
 
+## Contents
+
+- [Network](#network)
+- [Steps](#steps)
+  - [STMT](#stmt)
+  - [LEDGER](#ledger)
+- [Findings](#findings)
+
 ## Network
 
 ![The steps of MONTHLY and the datasets they read and write](MONTHLY.svg)
