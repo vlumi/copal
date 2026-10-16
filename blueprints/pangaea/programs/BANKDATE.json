@@ -177,6 +177,16 @@
           "target": "1000-NEXT-BUSINESS-DAY",
           "source": "pangaea/programs/BANKDATE.cbl:67"
         }
+      ],
+      "reads": [
+        "WS-IN-STATUS",
+        "WS-OUT-STATUS",
+        "BANK-CONTROL-RECORD"
+      ],
+      "writes": [
+        "RETURN-CODE",
+        "BANK-CONTROL-RECORD",
+        "CONTROL-OUT-RECORD"
       ]
     },
     {
@@ -185,7 +195,70 @@
       "source": "pangaea/programs/BANKDATE.cbl:74",
       "performedBy": [
         "0000-MAIN"
+      ],
+      "reads": [
+        "BC-BUSINESS-DATE",
+        "WS-DAY-NUMBER",
+        "WS-WEEKDAY"
+      ],
+      "writes": [
+        "WS-DAY-NUMBER",
+        "WS-WEEKDAY",
+        "BC-BUSINESS-DATE"
       ]
+    }
+  ],
+  "lineage": [
+    {
+      "from": "CONTROL-IN",
+      "to": "BANK-CONTROL-RECORD",
+      "fromFile": true,
+      "paragraph": "0000-MAIN",
+      "verb": "READ",
+      "source": "pangaea/programs/BANKDATE.cbl:61"
+    },
+    {
+      "from": "BANK-CONTROL-RECORD",
+      "to": "CONTROL-OUT-RECORD",
+      "paragraph": "0000-MAIN",
+      "verb": "WRITE",
+      "source": "pangaea/programs/BANKDATE.cbl:68"
+    },
+    {
+      "from": "CONTROL-OUT-RECORD",
+      "to": "CONTROL-OUT",
+      "toFile": true,
+      "paragraph": "0000-MAIN",
+      "verb": "WRITE",
+      "source": "pangaea/programs/BANKDATE.cbl:68"
+    },
+    {
+      "from": "BC-BUSINESS-DATE",
+      "to": "WS-DAY-NUMBER",
+      "paragraph": "1000-NEXT-BUSINESS-DAY",
+      "verb": "COMPUTE",
+      "source": "pangaea/programs/BANKDATE.cbl:75"
+    },
+    {
+      "from": "WS-DAY-NUMBER",
+      "to": "WS-WEEKDAY",
+      "paragraph": "1000-NEXT-BUSINESS-DAY",
+      "verb": "COMPUTE",
+      "source": "pangaea/programs/BANKDATE.cbl:78"
+    },
+    {
+      "from": "WS-DAY-NUMBER",
+      "to": "WS-WEEKDAY",
+      "paragraph": "1000-NEXT-BUSINESS-DAY",
+      "verb": "COMPUTE",
+      "source": "pangaea/programs/BANKDATE.cbl:81"
+    },
+    {
+      "from": "WS-DAY-NUMBER",
+      "to": "BC-BUSINESS-DATE",
+      "paragraph": "1000-NEXT-BUSINESS-DAY",
+      "verb": "COMPUTE",
+      "source": "pangaea/programs/BANKDATE.cbl:83"
     }
   ]
 }

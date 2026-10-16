@@ -1716,6 +1716,13 @@
           "target": "9000-CLOSE-FILES",
           "source": "pangaea/programs/GLSUM.cbl:163"
         }
+      ],
+      "reads": [
+        "WS-CLOSED-MONTH-NUMBER",
+        "WS-TRANSIT-NET"
+      ],
+      "writes": [
+        "RETURN-CODE"
       ]
     },
     {
@@ -1724,6 +1731,24 @@
       "source": "pangaea/programs/GLSUM.cbl:173",
       "performedBy": [
         "0000-MAIN"
+      ],
+      "reads": [
+        "WS-FILE-STATUSES",
+        "AC-DUE-MONTH",
+        "WS-CM-YEAR",
+        "WS-CM-MONTH",
+        "WS-NM-YEAR",
+        "WS-TX"
+      ],
+      "writes": [
+        "RETURN-CODE",
+        "WS-CLOSED-MONTH-NUMBER",
+        "ACCRUAL-RECORD",
+        "WS-NM-YEAR",
+        "WS-NM-MONTH",
+        "WS-TX",
+        "WS-LT-DEBITS",
+        "WS-LT-CREDITS"
       ]
     },
     {
@@ -1742,6 +1767,21 @@
       ],
       "performedBy": [
         "0000-MAIN"
+      ],
+      "reads": [
+        "WS-AUDIT-STATUS",
+        "AU-BUSINESS-DATE",
+        "AU-TRAN-CODE",
+        "WS-POSTING-MONTH",
+        "WS-CLOSED-MONTH",
+        "WS-NEXT-MONTH",
+        "WS-POSTING-CODE"
+      ],
+      "writes": [
+        "AUDIT-RECORD",
+        "WS-POSTING-MONTH",
+        "WS-POSTING-CODE",
+        "WS-ABORT-MESSAGE"
       ]
     },
     {
@@ -1764,6 +1804,33 @@
       ],
       "performedBy": [
         "2000-POST-MONTH"
+      ],
+      "reads": [
+        "GS-CODE-ENTRY",
+        "GS-CODE",
+        "GS-CX",
+        "AU-TRAN-CODE",
+        "AU-AMOUNT",
+        "WS-DEPOSITS-ACCOUNT",
+        "GS-CODE-GL-ACCOUNT",
+        "WS-DEBIT-ACCOUNT",
+        "WS-AMOUNT",
+        "WS-LT-DEBITS",
+        "WS-TX",
+        "WS-CREDIT-ACCOUNT",
+        "WS-LT-CREDITS",
+        "WS-POSTING-COUNT"
+      ],
+      "writes": [
+        "GS-CX",
+        "WS-ABORT-MESSAGE",
+        "WS-AMOUNT",
+        "WS-DEBIT-ACCOUNT",
+        "WS-CREDIT-ACCOUNT",
+        "WS-WANTED-ACCOUNT",
+        "WS-LT-DEBITS",
+        "WS-LT-CREDITS",
+        "WS-POSTING-COUNT"
       ]
     },
     {
@@ -1778,6 +1845,17 @@
       ],
       "performedBy": [
         "2100-POST-TO-LEDGER"
+      ],
+      "reads": [
+        "WS-LEDGER-ENTRY",
+        "WS-LE-ACCOUNT",
+        "WS-LX",
+        "WS-WANTED-ACCOUNT"
+      ],
+      "writes": [
+        "WS-LX",
+        "WS-ABORT-MESSAGE",
+        "WS-TX"
       ]
     },
     {
@@ -1792,6 +1870,34 @@
       ],
       "performedBy": [
         "0000-MAIN"
+      ],
+      "reads": [
+        "WS-LX",
+        "WS-CLOSED-MONTH-NUMBER",
+        "WS-LE-ACCOUNT",
+        "WS-LE-NAME",
+        "WS-LT-DEBITS",
+        "WS-TX",
+        "WS-LT-CREDITS",
+        "WS-DEBIT-TOTAL",
+        "WS-CREDIT-TOTAL",
+        "WS-DEPOSITS-ACCOUNT",
+        "WS-TRANSIT-ACCOUNT"
+      ],
+      "writes": [
+        "WS-LX",
+        "WS-TX",
+        "GL-SUMMARY-RECORD",
+        "GL-MONTH",
+        "GL-ACCOUNT",
+        "GL-ACCOUNT-NAME",
+        "GL-DEBITS",
+        "GL-CREDITS",
+        "WS-DEBIT-TOTAL",
+        "WS-CREDIT-TOTAL",
+        "WS-DEPOSITS-CHANGE",
+        "WS-TRANSIT-NET",
+        "WS-ABORT-MESSAGE"
       ]
     },
     {
@@ -1800,6 +1906,38 @@
       "source": "pangaea/programs/GLSUM.cbl:284",
       "performedBy": [
         "0000-MAIN"
+      ],
+      "reads": [
+        "WS-CLOSED-MONTH-NUMBER",
+        "WS-CLOSED-MONTH",
+        "WS-POSTING-COUNT",
+        "WS-REPORT-COUNT-LINE",
+        "WS-HEADING-LINE",
+        "WS-LX",
+        "WS-LE-ACCOUNT",
+        "WS-LE-NAME",
+        "WS-LT-DEBITS",
+        "WS-TX",
+        "WS-LT-CREDITS",
+        "WS-LEDGER-LINE",
+        "WS-DEBIT-TOTAL",
+        "WS-CREDIT-TOTAL",
+        "WS-DEPOSITS-CHANGE",
+        "WS-REPORT-AMOUNT-LINE",
+        "WS-TRANSIT-NET"
+      ],
+      "writes": [
+        "REPORT-LINE",
+        "WS-RC-LABEL",
+        "WS-RC-VALUE",
+        "WS-LX",
+        "WS-TX",
+        "WS-LL-ACCOUNT",
+        "WS-LL-NAME",
+        "WS-LL-DEBITS",
+        "WS-LL-CREDITS",
+        "WS-RA-LABEL",
+        "WS-RA-VALUE"
       ]
     },
     {
@@ -1826,7 +1964,502 @@
         "2100-POST-TO-LEDGER",
         "2200-FIND-ACCOUNT",
         "3000-WRITE-LEDGER"
+      ],
+      "reads": [
+        "WS-ABORT-MESSAGE"
+      ],
+      "writes": [
+        "RETURN-CODE"
       ]
+    }
+  ],
+  "lineage": [
+    {
+      "from": "ACCR-IN",
+      "to": "ACCRUAL-RECORD",
+      "fromFile": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "READ",
+      "source": "pangaea/programs/GLSUM.cbl:182"
+    },
+    {
+      "from": "AC-DUE-MONTH",
+      "to": "WS-CLOSED-MONTH-NUMBER",
+      "paragraph": "1000-INITIALIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/GLSUM.cbl:184"
+    },
+    {
+      "from": "WS-CM-YEAR",
+      "to": "WS-NM-YEAR",
+      "paragraph": "1000-INITIALIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/GLSUM.cbl:186"
+    },
+    {
+      "from": "WS-CM-MONTH",
+      "to": "WS-NM-MONTH",
+      "paragraph": "1000-INITIALIZE",
+      "verb": "COMPUTE",
+      "source": "pangaea/programs/GLSUM.cbl:191"
+    },
+    {
+      "from": "AUDIT-IN",
+      "to": "AUDIT-RECORD",
+      "fromFile": true,
+      "paragraph": "2000-POST-MONTH",
+      "verb": "READ",
+      "source": "pangaea/programs/GLSUM.cbl:200"
+    },
+    {
+      "from": "AU-BUSINESS-DATE",
+      "to": "WS-POSTING-MONTH",
+      "paragraph": "2000-POST-MONTH",
+      "verb": "MOVE",
+      "source": "pangaea/programs/GLSUM.cbl:202"
+    },
+    {
+      "from": "AU-TRAN-CODE",
+      "to": "WS-POSTING-CODE",
+      "paragraph": "2000-POST-MONTH",
+      "verb": "MOVE",
+      "source": "pangaea/programs/GLSUM.cbl:203"
+    },
+    {
+      "from": "AUDIT-IN",
+      "to": "AUDIT-RECORD",
+      "fromFile": true,
+      "paragraph": "2000-POST-MONTH",
+      "verb": "READ",
+      "source": "pangaea/programs/GLSUM.cbl:209"
+    },
+    {
+      "from": "AU-AMOUNT",
+      "to": "WS-AMOUNT",
+      "paragraph": "2100-POST-TO-LEDGER",
+      "verb": "COMPUTE",
+      "source": "pangaea/programs/GLSUM.cbl:228"
+    },
+    {
+      "from": "WS-DEPOSITS-ACCOUNT",
+      "to": "WS-DEBIT-ACCOUNT",
+      "paragraph": "2100-POST-TO-LEDGER",
+      "verb": "MOVE",
+      "source": "pangaea/programs/GLSUM.cbl:229"
+    },
+    {
+      "from": "GS-CODE-GL-ACCOUNT",
+      "to": "WS-CREDIT-ACCOUNT",
+      "paragraph": "2100-POST-TO-LEDGER",
+      "verb": "MOVE",
+      "source": "pangaea/programs/GLSUM.cbl:230"
+    },
+    {
+      "from": "AU-AMOUNT",
+      "to": "WS-AMOUNT",
+      "paragraph": "2100-POST-TO-LEDGER",
+      "verb": "MOVE",
+      "source": "pangaea/programs/GLSUM.cbl:232"
+    },
+    {
+      "from": "GS-CODE-GL-ACCOUNT",
+      "to": "WS-DEBIT-ACCOUNT",
+      "paragraph": "2100-POST-TO-LEDGER",
+      "verb": "MOVE",
+      "source": "pangaea/programs/GLSUM.cbl:233"
+    },
+    {
+      "from": "WS-DEPOSITS-ACCOUNT",
+      "to": "WS-CREDIT-ACCOUNT",
+      "paragraph": "2100-POST-TO-LEDGER",
+      "verb": "MOVE",
+      "source": "pangaea/programs/GLSUM.cbl:234"
+    },
+    {
+      "from": "WS-DEBIT-ACCOUNT",
+      "to": "WS-WANTED-ACCOUNT",
+      "paragraph": "2100-POST-TO-LEDGER",
+      "verb": "MOVE",
+      "source": "pangaea/programs/GLSUM.cbl:236"
+    },
+    {
+      "from": "WS-AMOUNT",
+      "to": "WS-LT-DEBITS",
+      "paragraph": "2100-POST-TO-LEDGER",
+      "verb": "ADD",
+      "source": "pangaea/programs/GLSUM.cbl:238"
+    },
+    {
+      "from": "WS-CREDIT-ACCOUNT",
+      "to": "WS-WANTED-ACCOUNT",
+      "paragraph": "2100-POST-TO-LEDGER",
+      "verb": "MOVE",
+      "source": "pangaea/programs/GLSUM.cbl:239"
+    },
+    {
+      "from": "WS-AMOUNT",
+      "to": "WS-LT-CREDITS",
+      "paragraph": "2100-POST-TO-LEDGER",
+      "verb": "ADD",
+      "source": "pangaea/programs/GLSUM.cbl:241"
+    },
+    {
+      "from": "WS-LX",
+      "to": "WS-TX",
+      "paragraph": "2200-FIND-ACCOUNT",
+      "verb": "SET",
+      "source": "pangaea/programs/GLSUM.cbl:252"
+    },
+    {
+      "from": "WS-LX",
+      "to": "WS-TX",
+      "paragraph": "3000-WRITE-LEDGER",
+      "verb": "SET",
+      "source": "pangaea/programs/GLSUM.cbl:259"
+    },
+    {
+      "from": "WS-CLOSED-MONTH-NUMBER",
+      "to": "GL-MONTH",
+      "paragraph": "3000-WRITE-LEDGER",
+      "verb": "MOVE",
+      "source": "pangaea/programs/GLSUM.cbl:261"
+    },
+    {
+      "from": "WS-LE-ACCOUNT",
+      "to": "GL-ACCOUNT",
+      "paragraph": "3000-WRITE-LEDGER",
+      "verb": "MOVE",
+      "source": "pangaea/programs/GLSUM.cbl:262"
+    },
+    {
+      "from": "WS-LE-NAME",
+      "to": "GL-ACCOUNT-NAME",
+      "paragraph": "3000-WRITE-LEDGER",
+      "verb": "MOVE",
+      "source": "pangaea/programs/GLSUM.cbl:263"
+    },
+    {
+      "from": "WS-LT-DEBITS",
+      "to": "GL-DEBITS",
+      "paragraph": "3000-WRITE-LEDGER",
+      "verb": "MOVE",
+      "source": "pangaea/programs/GLSUM.cbl:264"
+    },
+    {
+      "from": "WS-LT-CREDITS",
+      "to": "GL-CREDITS",
+      "paragraph": "3000-WRITE-LEDGER",
+      "verb": "MOVE",
+      "source": "pangaea/programs/GLSUM.cbl:265"
+    },
+    {
+      "from": "GL-SUMMARY-RECORD",
+      "to": "GL-OUT",
+      "toFile": true,
+      "paragraph": "3000-WRITE-LEDGER",
+      "verb": "WRITE",
+      "source": "pangaea/programs/GLSUM.cbl:266"
+    },
+    {
+      "from": "WS-LT-DEBITS",
+      "to": "WS-DEBIT-TOTAL",
+      "paragraph": "3000-WRITE-LEDGER",
+      "verb": "ADD",
+      "source": "pangaea/programs/GLSUM.cbl:267"
+    },
+    {
+      "from": "WS-LT-CREDITS",
+      "to": "WS-CREDIT-TOTAL",
+      "paragraph": "3000-WRITE-LEDGER",
+      "verb": "ADD",
+      "source": "pangaea/programs/GLSUM.cbl:268"
+    },
+    {
+      "from": "WS-LT-CREDITS",
+      "to": "WS-DEPOSITS-CHANGE",
+      "paragraph": "3000-WRITE-LEDGER",
+      "verb": "COMPUTE",
+      "source": "pangaea/programs/GLSUM.cbl:271"
+    },
+    {
+      "from": "WS-TX",
+      "to": "WS-DEPOSITS-CHANGE",
+      "paragraph": "3000-WRITE-LEDGER",
+      "verb": "COMPUTE",
+      "source": "pangaea/programs/GLSUM.cbl:271"
+    },
+    {
+      "from": "WS-LT-DEBITS",
+      "to": "WS-DEPOSITS-CHANGE",
+      "paragraph": "3000-WRITE-LEDGER",
+      "verb": "COMPUTE",
+      "source": "pangaea/programs/GLSUM.cbl:271"
+    },
+    {
+      "from": "WS-TX",
+      "to": "WS-DEPOSITS-CHANGE",
+      "paragraph": "3000-WRITE-LEDGER",
+      "verb": "COMPUTE",
+      "source": "pangaea/programs/GLSUM.cbl:271"
+    },
+    {
+      "from": "WS-LT-DEBITS",
+      "to": "WS-TRANSIT-NET",
+      "paragraph": "3000-WRITE-LEDGER",
+      "verb": "COMPUTE",
+      "source": "pangaea/programs/GLSUM.cbl:274"
+    },
+    {
+      "from": "WS-TX",
+      "to": "WS-TRANSIT-NET",
+      "paragraph": "3000-WRITE-LEDGER",
+      "verb": "COMPUTE",
+      "source": "pangaea/programs/GLSUM.cbl:274"
+    },
+    {
+      "from": "WS-LT-CREDITS",
+      "to": "WS-TRANSIT-NET",
+      "paragraph": "3000-WRITE-LEDGER",
+      "verb": "COMPUTE",
+      "source": "pangaea/programs/GLSUM.cbl:274"
+    },
+    {
+      "from": "WS-TX",
+      "to": "WS-TRANSIT-NET",
+      "paragraph": "3000-WRITE-LEDGER",
+      "verb": "COMPUTE",
+      "source": "pangaea/programs/GLSUM.cbl:274"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/GLSUM.cbl:286"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/GLSUM.cbl:288"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/GLSUM.cbl:291"
+    },
+    {
+      "from": "WS-CLOSED-MONTH",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "STRING",
+      "source": "pangaea/programs/GLSUM.cbl:295"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/GLSUM.cbl:297"
+    },
+    {
+      "from": "WS-POSTING-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/GLSUM.cbl:299"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/GLSUM.cbl:300"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/GLSUM.cbl:300"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/GLSUM.cbl:302"
+    },
+    {
+      "from": "WS-HEADING-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/GLSUM.cbl:303"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/GLSUM.cbl:303"
+    },
+    {
+      "from": "WS-LX",
+      "to": "WS-TX",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "SET",
+      "source": "pangaea/programs/GLSUM.cbl:305"
+    },
+    {
+      "from": "WS-LE-ACCOUNT",
+      "to": "WS-LL-ACCOUNT",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/GLSUM.cbl:306"
+    },
+    {
+      "from": "WS-LE-NAME",
+      "to": "WS-LL-NAME",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/GLSUM.cbl:307"
+    },
+    {
+      "from": "WS-LT-DEBITS",
+      "to": "WS-LL-DEBITS",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/GLSUM.cbl:308"
+    },
+    {
+      "from": "WS-LT-CREDITS",
+      "to": "WS-LL-CREDITS",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/GLSUM.cbl:309"
+    },
+    {
+      "from": "WS-LEDGER-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/GLSUM.cbl:310"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/GLSUM.cbl:310"
+    },
+    {
+      "from": "WS-DEBIT-TOTAL",
+      "to": "WS-LL-DEBITS",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/GLSUM.cbl:314"
+    },
+    {
+      "from": "WS-CREDIT-TOTAL",
+      "to": "WS-LL-CREDITS",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/GLSUM.cbl:315"
+    },
+    {
+      "from": "WS-LEDGER-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/GLSUM.cbl:316"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/GLSUM.cbl:316"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/GLSUM.cbl:318"
+    },
+    {
+      "from": "WS-DEPOSITS-CHANGE",
+      "to": "WS-RA-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/GLSUM.cbl:320"
+    },
+    {
+      "from": "WS-REPORT-AMOUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/GLSUM.cbl:321"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/GLSUM.cbl:321"
+    },
+    {
+      "from": "WS-TRANSIT-NET",
+      "to": "WS-RA-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/GLSUM.cbl:323"
+    },
+    {
+      "from": "WS-REPORT-AMOUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/GLSUM.cbl:324"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/GLSUM.cbl:324"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/GLSUM.cbl:326"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/GLSUM.cbl:333"
     }
   ]
 }

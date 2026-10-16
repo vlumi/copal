@@ -981,6 +981,13 @@
           "target": "9000-CLOSE-FILES",
           "source": "pangaea/programs/TXVALID.cbl:111"
         }
+      ],
+      "reads": [
+        "WS-FILE-ERROR",
+        "WS-REJECT-COUNT"
+      ],
+      "writes": [
+        "RETURN-CODE"
       ]
     },
     {
@@ -989,6 +996,21 @@
       "source": "pangaea/programs/TXVALID.cbl:123",
       "performedBy": [
         "0000-MAIN"
+      ],
+      "reads": [
+        "WS-CONTROL-STATUS",
+        "WS-TRAN-IN-STATUS",
+        "WS-TRAN-OUT-STATUS",
+        "WS-REJECT-STATUS",
+        "WS-REPORT-STATUS",
+        "WS-FILE-STATUSES",
+        "BC-BUSINESS-DATE"
+      ],
+      "writes": [
+        "RETURN-CODE",
+        "BANK-CONTROL-RECORD",
+        "WS-BUSINESS-DATE",
+        "REJECT-RECORD"
       ]
     },
     {
@@ -997,6 +1019,16 @@
       "source": "pangaea/programs/TXVALID.cbl:145",
       "performedBy": [
         "0000-MAIN"
+      ],
+      "reads": [
+        "WS-FILE-ERROR",
+        "TR-REC-TYPE",
+        "TH-BUSINESS-DATE",
+        "WS-BUSINESS-DATE"
+      ],
+      "writes": [
+        "TRAN-RECORD",
+        "WS-FILE-ERROR"
       ]
     },
     {
@@ -1023,6 +1055,14 @@
       ],
       "performedBy": [
         "0000-MAIN"
+      ],
+      "reads": [
+        "TR-REC-TYPE",
+        "WS-FILE-ERROR"
+      ],
+      "writes": [
+        "WS-FILE-ERROR",
+        "RJ-REASON"
       ]
     },
     {
@@ -1031,6 +1071,10 @@
       "source": "pangaea/programs/TXVALID.cbl:179",
       "performedBy": [
         "3000-READ-DETAILS"
+      ],
+      "writes": [
+        "TRAN-RECORD",
+        "WS-FILE-ERROR"
       ]
     },
     {
@@ -1045,6 +1089,27 @@
       ],
       "performedBy": [
         "3000-READ-DETAILS"
+      ],
+      "reads": [
+        "WS-DETAIL-COUNT",
+        "TD-AMOUNT",
+        "WS-AMOUNT-TOTAL",
+        "TD-ACCT-NO",
+        "WS-ACCT-HASH",
+        "TD-TRAN-CODE",
+        "TD-COUNTER-ACCT-NO",
+        "WS-DETAIL-STATE",
+        "TRAN-RECORD",
+        "WS-VALID-COUNT"
+      ],
+      "writes": [
+        "WS-DETAIL-COUNT",
+        "WS-AMOUNT-TOTAL",
+        "WS-ACCT-HASH",
+        "WS-DETAIL-STATE",
+        "RJ-REASON",
+        "TRAN-OUT-RECORD",
+        "WS-VALID-COUNT"
       ]
     },
     {
@@ -1054,6 +1119,17 @@
       "performedBy": [
         "3000-READ-DETAILS",
         "3200-VALIDATE-DETAIL"
+      ],
+      "reads": [
+        "TRAN-RECORD",
+        "REJECT-RECORD",
+        "WS-REJECT-COUNT"
+      ],
+      "writes": [
+        "RJ-PROGRAM",
+        "RJ-TRAN",
+        "REJECT-OUT-RECORD",
+        "WS-REJECT-COUNT"
       ]
     },
     {
@@ -1062,6 +1138,19 @@
       "source": "pangaea/programs/TXVALID.cbl:227",
       "performedBy": [
         "0000-MAIN"
+      ],
+      "reads": [
+        "TT-DETAIL-COUNT",
+        "WS-DETAIL-COUNT",
+        "TT-AMOUNT-TOTAL",
+        "WS-AMOUNT-TOTAL",
+        "TT-ACCT-HASH",
+        "WS-ACCT-HASH",
+        "WS-FILE-ERROR"
+      ],
+      "writes": [
+        "WS-FILE-ERROR",
+        "TRAN-RECORD"
       ]
     },
     {
@@ -1070,6 +1159,23 @@
       "source": "pangaea/programs/TXVALID.cbl:248",
       "performedBy": [
         "0000-MAIN"
+      ],
+      "reads": [
+        "WS-BUSINESS-DATE",
+        "WS-DETAIL-COUNT",
+        "WS-REPORT-COUNT-LINE",
+        "WS-VALID-COUNT",
+        "WS-REJECT-COUNT",
+        "WS-AMOUNT-TOTAL",
+        "WS-REPORT-AMOUNT-LINE",
+        "WS-FILE-ERROR"
+      ],
+      "writes": [
+        "REPORT-LINE",
+        "WS-RC-LABEL",
+        "WS-RC-VALUE",
+        "WS-RA-LABEL",
+        "WS-RA-VALUE"
       ]
     },
     {
@@ -1079,6 +1185,232 @@
       "performedBy": [
         "0000-MAIN"
       ]
+    }
+  ],
+  "lineage": [
+    {
+      "from": "CONTROL-FILE",
+      "to": "BANK-CONTROL-RECORD",
+      "fromFile": true,
+      "paragraph": "1000-OPEN-FILES",
+      "verb": "READ",
+      "source": "pangaea/programs/TXVALID.cbl:135"
+    },
+    {
+      "from": "BC-BUSINESS-DATE",
+      "to": "WS-BUSINESS-DATE",
+      "paragraph": "1000-OPEN-FILES",
+      "verb": "MOVE",
+      "source": "pangaea/programs/TXVALID.cbl:141"
+    },
+    {
+      "from": "TRAN-IN",
+      "to": "TRAN-RECORD",
+      "fromFile": true,
+      "paragraph": "2000-READ-HEADER",
+      "verb": "READ",
+      "source": "pangaea/programs/TXVALID.cbl:146"
+    },
+    {
+      "from": "TRAN-IN",
+      "to": "TRAN-RECORD",
+      "fromFile": true,
+      "paragraph": "3100-READ-NEXT",
+      "verb": "READ",
+      "source": "pangaea/programs/TXVALID.cbl:180"
+    },
+    {
+      "from": "TD-AMOUNT",
+      "to": "WS-AMOUNT-TOTAL",
+      "paragraph": "3200-VALIDATE-DETAIL",
+      "verb": "ADD",
+      "source": "pangaea/programs/TXVALID.cbl:189"
+    },
+    {
+      "from": "TD-ACCT-NO",
+      "to": "WS-ACCT-HASH",
+      "paragraph": "3200-VALIDATE-DETAIL",
+      "verb": "ADD",
+      "source": "pangaea/programs/TXVALID.cbl:192"
+    },
+    {
+      "from": "TRAN-RECORD",
+      "to": "TRAN-OUT-RECORD",
+      "paragraph": "3200-VALIDATE-DETAIL",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXVALID.cbl:213"
+    },
+    {
+      "from": "TRAN-OUT-RECORD",
+      "to": "TRAN-OUT",
+      "toFile": true,
+      "paragraph": "3200-VALIDATE-DETAIL",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXVALID.cbl:213"
+    },
+    {
+      "from": "TRAN-RECORD",
+      "to": "RJ-TRAN",
+      "paragraph": "3300-REJECT-RECORD",
+      "verb": "MOVE",
+      "source": "pangaea/programs/TXVALID.cbl:222"
+    },
+    {
+      "from": "REJECT-RECORD",
+      "to": "REJECT-OUT-RECORD",
+      "paragraph": "3300-REJECT-RECORD",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXVALID.cbl:223"
+    },
+    {
+      "from": "REJECT-OUT-RECORD",
+      "to": "REJECT-OUT",
+      "toFile": true,
+      "paragraph": "3300-REJECT-RECORD",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXVALID.cbl:223"
+    },
+    {
+      "from": "TRAN-IN",
+      "to": "TRAN-RECORD",
+      "fromFile": true,
+      "paragraph": "4000-CHECK-TRAILER",
+      "verb": "READ",
+      "source": "pangaea/programs/TXVALID.cbl:240"
+    },
+    {
+      "from": "WS-BUSINESS-DATE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "STRING",
+      "source": "pangaea/programs/TXVALID.cbl:250"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXVALID.cbl:253"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXVALID.cbl:255"
+    },
+    {
+      "from": "WS-DETAIL-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/TXVALID.cbl:257"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXVALID.cbl:258"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXVALID.cbl:258"
+    },
+    {
+      "from": "WS-VALID-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/TXVALID.cbl:260"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXVALID.cbl:261"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXVALID.cbl:261"
+    },
+    {
+      "from": "WS-REJECT-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/TXVALID.cbl:263"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXVALID.cbl:264"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXVALID.cbl:264"
+    },
+    {
+      "from": "WS-AMOUNT-TOTAL",
+      "to": "WS-RA-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/TXVALID.cbl:266"
+    },
+    {
+      "from": "WS-REPORT-AMOUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXVALID.cbl:267"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXVALID.cbl:267"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXVALID.cbl:269"
+    },
+    {
+      "from": "WS-FILE-ERROR",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "STRING",
+      "source": "pangaea/programs/TXVALID.cbl:274"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXVALID.cbl:277"
     }
   ]
 }

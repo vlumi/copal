@@ -1232,6 +1232,13 @@
           "target": "9000-CLOSE-FILES",
           "source": "pangaea/programs/MONCHG.cbl:116"
         }
+      ],
+      "reads": [
+        "WS-MASTER-END-SW",
+        "WS-ACCRUAL-END-SW"
+      ],
+      "writes": [
+        "RETURN-CODE"
       ]
     },
     {
@@ -1250,6 +1257,17 @@
       ],
       "performedBy": [
         "0000-MAIN"
+      ],
+      "reads": [
+        "WS-FILE-STATUSES",
+        "BC-BUSINESS-DATE"
+      ],
+      "writes": [
+        "RETURN-CODE",
+        "BANK-CONTROL-RECORD",
+        "WS-ABORT-MESSAGE",
+        "WS-BUSINESS-DATE",
+        "TRAN-RECORD"
       ]
     },
     {
@@ -1265,6 +1283,19 @@
       "performedBy": [
         "1000-INITIALIZE",
         "2000-CHARGE-ACCOUNT"
+      ],
+      "reads": [
+        "WS-MASTER-END-SW",
+        "WS-ACCRUAL-END-SW",
+        "AC-ACCT-NO",
+        "AM-ACCT-NO"
+      ],
+      "writes": [
+        "ACCT-MASTER-RECORD",
+        "WS-MASTER-END-SW",
+        "ACCRUAL-RECORD",
+        "WS-ACCRUAL-END-SW",
+        "WS-ABORT-MESSAGE"
       ]
     },
     {
@@ -1287,6 +1318,14 @@
       ],
       "performedBy": [
         "0000-MAIN"
+      ],
+      "reads": [
+        "AC-DUE-MONTH",
+        "WS-CM-YYMM"
+      ],
+      "writes": [
+        "WS-CLOSED-MONTH",
+        "WS-TI-YYMM"
       ]
     },
     {
@@ -1305,6 +1344,23 @@
       ],
       "performedBy": [
         "2000-CHARGE-ACCOUNT"
+      ],
+      "reads": [
+        "AC-DUE",
+        "WS-INTEREST-COUNT",
+        "TD-AMOUNT",
+        "WS-INTEREST-TOTAL",
+        "WS-OVERDRAFT-COUNT",
+        "WS-OVERDRAFT-TOTAL"
+      ],
+      "writes": [
+        "TD-TRAN-CODE",
+        "TD-AMOUNT",
+        "TD-DESCRIPTION",
+        "WS-INTEREST-COUNT",
+        "WS-INTEREST-TOTAL",
+        "WS-OVERDRAFT-COUNT",
+        "WS-OVERDRAFT-TOTAL"
       ]
     },
     {
@@ -1319,6 +1375,25 @@
       ],
       "performedBy": [
         "2000-CHARGE-ACCOUNT"
+      ],
+      "reads": [
+        "AM-ACCT-TYPE",
+        "AM-STATUS",
+        "AM-BALANCE",
+        "WS-FEE-WAIVER-BALANCE",
+        "WS-MAINTENANCE-FEE",
+        "WS-FEE-COUNT",
+        "TD-AMOUNT",
+        "WS-FEE-TOTAL",
+        "WS-WAIVED-COUNT"
+      ],
+      "writes": [
+        "TD-TRAN-CODE",
+        "TD-AMOUNT",
+        "TD-DESCRIPTION",
+        "WS-FEE-COUNT",
+        "WS-FEE-TOTAL",
+        "WS-WAIVED-COUNT"
       ]
     },
     {
@@ -1328,6 +1403,19 @@
       "performedBy": [
         "2100-SETTLE-INTEREST",
         "2200-CHARGE-FEE"
+      ],
+      "reads": [
+        "WS-TI-SEQ",
+        "WS-TRAN-ID",
+        "AM-ACCT-NO",
+        "TRAN-RECORD"
+      ],
+      "writes": [
+        "TR-REC-TYPE",
+        "WS-TI-SEQ",
+        "TD-TRAN-ID",
+        "TD-ACCT-NO",
+        "TRAN-OUT-RECORD"
       ]
     },
     {
@@ -1336,6 +1424,26 @@
       "source": "pangaea/programs/MONCHG.cbl:220",
       "performedBy": [
         "0000-MAIN"
+      ],
+      "reads": [
+        "WS-BUSINESS-DATE",
+        "WS-CLOSED-MONTH",
+        "WS-INTEREST-COUNT",
+        "WS-REPORT-COUNT-LINE",
+        "WS-INTEREST-TOTAL",
+        "WS-REPORT-AMOUNT-LINE",
+        "WS-OVERDRAFT-COUNT",
+        "WS-OVERDRAFT-TOTAL",
+        "WS-FEE-COUNT",
+        "WS-FEE-TOTAL",
+        "WS-WAIVED-COUNT"
+      ],
+      "writes": [
+        "REPORT-LINE",
+        "WS-RC-LABEL",
+        "WS-RC-VALUE",
+        "WS-RA-LABEL",
+        "WS-RA-VALUE"
       ]
     },
     {
@@ -1360,7 +1468,339 @@
       "performedBy": [
         "1000-INITIALIZE",
         "1200-READ-ACCOUNT"
+      ],
+      "reads": [
+        "WS-ABORT-MESSAGE"
+      ],
+      "writes": [
+        "RETURN-CODE"
       ]
+    }
+  ],
+  "lineage": [
+    {
+      "from": "CONTROL-FILE",
+      "to": "BANK-CONTROL-RECORD",
+      "fromFile": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "READ",
+      "source": "pangaea/programs/MONCHG.cbl:130"
+    },
+    {
+      "from": "BC-BUSINESS-DATE",
+      "to": "WS-BUSINESS-DATE",
+      "paragraph": "1000-INITIALIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:135"
+    },
+    {
+      "from": "ACCT-IN",
+      "to": "ACCT-MASTER-RECORD",
+      "fromFile": true,
+      "paragraph": "1200-READ-ACCOUNT",
+      "verb": "READ",
+      "source": "pangaea/programs/MONCHG.cbl:141"
+    },
+    {
+      "from": "ACCR-IN",
+      "to": "ACCRUAL-RECORD",
+      "fromFile": true,
+      "paragraph": "1200-READ-ACCOUNT",
+      "verb": "READ",
+      "source": "pangaea/programs/MONCHG.cbl:145"
+    },
+    {
+      "from": "AC-DUE-MONTH",
+      "to": "WS-CLOSED-MONTH",
+      "paragraph": "2000-CHARGE-ACCOUNT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:163"
+    },
+    {
+      "from": "WS-CM-YYMM",
+      "to": "WS-TI-YYMM",
+      "paragraph": "2000-CHARGE-ACCOUNT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:164"
+    },
+    {
+      "from": "AC-DUE",
+      "to": "TD-AMOUNT",
+      "paragraph": "2100-SETTLE-INTEREST",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:176"
+    },
+    {
+      "from": "TD-AMOUNT",
+      "to": "WS-INTEREST-TOTAL",
+      "paragraph": "2100-SETTLE-INTEREST",
+      "verb": "ADD",
+      "source": "pangaea/programs/MONCHG.cbl:180"
+    },
+    {
+      "from": "AC-DUE",
+      "to": "TD-AMOUNT",
+      "paragraph": "2100-SETTLE-INTEREST",
+      "verb": "COMPUTE",
+      "source": "pangaea/programs/MONCHG.cbl:183"
+    },
+    {
+      "from": "TD-AMOUNT",
+      "to": "WS-OVERDRAFT-TOTAL",
+      "paragraph": "2100-SETTLE-INTEREST",
+      "verb": "ADD",
+      "source": "pangaea/programs/MONCHG.cbl:187"
+    },
+    {
+      "from": "WS-MAINTENANCE-FEE",
+      "to": "TD-AMOUNT",
+      "paragraph": "2200-CHARGE-FEE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:199"
+    },
+    {
+      "from": "TD-AMOUNT",
+      "to": "WS-FEE-TOTAL",
+      "paragraph": "2200-CHARGE-FEE",
+      "verb": "ADD",
+      "source": "pangaea/programs/MONCHG.cbl:203"
+    },
+    {
+      "from": "WS-TRAN-ID",
+      "to": "TD-TRAN-ID",
+      "paragraph": "2900-WRITE-TRAN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:215"
+    },
+    {
+      "from": "AM-ACCT-NO",
+      "to": "TD-ACCT-NO",
+      "paragraph": "2900-WRITE-TRAN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:216"
+    },
+    {
+      "from": "TRAN-RECORD",
+      "to": "TRAN-OUT-RECORD",
+      "paragraph": "2900-WRITE-TRAN",
+      "verb": "WRITE",
+      "source": "pangaea/programs/MONCHG.cbl:217"
+    },
+    {
+      "from": "TRAN-OUT-RECORD",
+      "to": "TRAN-OUT",
+      "toFile": true,
+      "paragraph": "2900-WRITE-TRAN",
+      "verb": "WRITE",
+      "source": "pangaea/programs/MONCHG.cbl:217"
+    },
+    {
+      "from": "WS-BUSINESS-DATE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "STRING",
+      "source": "pangaea/programs/MONCHG.cbl:222"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/MONCHG.cbl:225"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/MONCHG.cbl:227"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/MONCHG.cbl:230"
+    },
+    {
+      "from": "WS-CLOSED-MONTH",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "STRING",
+      "source": "pangaea/programs/MONCHG.cbl:233"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/MONCHG.cbl:235"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/MONCHG.cbl:237"
+    },
+    {
+      "from": "WS-INTEREST-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:239"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/MONCHG.cbl:240"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/MONCHG.cbl:240"
+    },
+    {
+      "from": "WS-INTEREST-TOTAL",
+      "to": "WS-RA-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:242"
+    },
+    {
+      "from": "WS-REPORT-AMOUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/MONCHG.cbl:243"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/MONCHG.cbl:243"
+    },
+    {
+      "from": "WS-OVERDRAFT-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:245"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/MONCHG.cbl:246"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/MONCHG.cbl:246"
+    },
+    {
+      "from": "WS-OVERDRAFT-TOTAL",
+      "to": "WS-RA-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:248"
+    },
+    {
+      "from": "WS-REPORT-AMOUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/MONCHG.cbl:249"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/MONCHG.cbl:249"
+    },
+    {
+      "from": "WS-FEE-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:251"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/MONCHG.cbl:252"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/MONCHG.cbl:252"
+    },
+    {
+      "from": "WS-FEE-TOTAL",
+      "to": "WS-RA-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:254"
+    },
+    {
+      "from": "WS-REPORT-AMOUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/MONCHG.cbl:255"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/MONCHG.cbl:255"
+    },
+    {
+      "from": "WS-WAIVED-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/MONCHG.cbl:257"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/MONCHG.cbl:258"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/MONCHG.cbl:258"
     }
   ]
 }
