@@ -173,7 +173,7 @@ func (s *Server) serve(request func(message) Request) http.HandlerFunc {
 		}
 		req := request(m)
 		card, err := strconv.ParseInt(m.Card, 10, 64)
-		if err != nil || len(m.Card) != 16 || len(req.Terminal) > 20 {
+		if err != nil || len(m.Card) != 16 || len(req.Terminal) > 20 || req.Amount < 0 {
 			writeJSON(w, http.StatusBadRequest, Response{Result: ResultInvalid, Message: "INVALID REQUEST"})
 			return
 		}

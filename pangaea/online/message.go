@@ -114,15 +114,19 @@ func (c Cents) String() string {
 // MarshalText writes the amount as 12.34.
 func (c Cents) MarshalText() ([]byte, error) { return []byte(c.String()), nil }
 
-// UnmarshalText reads an amount written as 12.34, 12.3 or 12.
+// UnmarshalText reads an amount written as 12.34, 12.3, 12 or -12.34.
 func (c *Cents) UnmarshalText(text []byte) error {
-	units, fraction, _ := strings.Cut(string(text), ".")
-	if len(fraction) > 2 || units == "" || strings.HasPrefix(units, "-") {
+	digits, negative := strings.CutPrefix(string(text), "-")
+	units, fraction, _ := strings.Cut(digits, ".")
+	if len(fraction) > 2 || units == "" || strings.ContainsAny(units, "+-") {
 		return fmt.Errorf("amount %q is not units and cents", text)
 	}
 	n, err := strconv.ParseInt(units+(fraction + "00")[:2], 10, 64)
 	if err != nil {
 		return fmt.Errorf("amount %q is not units and cents", text)
+	}
+	if negative {
+		n = -n
 	}
 	*c = Cents(n)
 	return nil
@@ -135,13 +139,7 @@ func parseEdited(text string) (Cents, error) {
 	if text == "" {
 		return 0, nil
 	}
-	negative := strings.HasPrefix(text, "-")
 	var c Cents
-	if err := c.UnmarshalText([]byte(strings.TrimPrefix(text, "-"))); err != nil {
-		return 0, err
-	}
-	if negative {
-		c = -c
-	}
-	return c, nil
+	err := c.UnmarshalText([]byte(text))
+	return c, err
 }
