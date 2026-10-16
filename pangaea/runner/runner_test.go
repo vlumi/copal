@@ -204,3 +204,39 @@ func TestRunRejectsAppendWithoutRecordLength(t *testing.T) {
 		t.Error("appended to a dataset that does not exist without a DCB")
 	}
 }
+
+// A group named by its base reads every generation it had when the job
+// started, newest first; a concatenation reads its datasets one after the
+// other.
+func TestRunConcatenatesGenerations(t *testing.T) {
+	r := newRunner(t, map[string]string{
+		"WRITE": `printf C > "$DD_OUT"`,
+		"READ":  `cat "$DD_IN" > "$DD_COPY"`,
+	})
+	for dsn, text := range map[string]string{"LOG.G0001V00": "A\n", "LOG.G0002V00": "B\n", "EXTRA": "D\n"} {
+		if err := r.Datasets.Load(dsn, strings.NewReader(text)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	job := parse(t, `//J JOB
+//S1 EXEC PGM=WRITE
+//OUT DD DSN=LOG(+1),DISP=NEW,DCB=(RECFM=FB,LRECL=1)
+//S2 EXEC PGM=READ
+//IN DD DSN=LOG,DISP=SHR
+// DD DSN=LOG(+1),DISP=SHR
+// DD DSN=EXTRA,DISP=SHR
+//COPY DD DSN=COPY,DISP=NEW,DCB=(RECFM=FB,LRECL=1)
+`)
+	if _, err := r.Run(job); err != nil {
+		t.Fatal(err)
+	}
+	assertFile(t, r.Datasets.Path("COPY"), "BACD")
+
+	if err := r.Datasets.Load("WIDE", strings.NewReader("WW\n")); err != nil {
+		t.Fatal(err)
+	}
+	mixed := parse(t, "//J JOB\n//S EXEC PGM=READ\n//IN DD DSN=EXTRA,DISP=SHR\n// DD DSN=WIDE,DISP=SHR\n//COPY DD DUMMY\n")
+	if _, err := r.Run(mixed); err == nil {
+		t.Error("concatenated datasets of different record lengths")
+	}
+}

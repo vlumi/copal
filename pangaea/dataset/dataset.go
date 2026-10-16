@@ -67,20 +67,31 @@ func GenerationName(base string, n int) string {
 	return fmt.Sprintf("%s.G%04dV00", base, n)
 }
 
-// LatestGeneration is the number of the newest cataloged generation of a
-// generation data group, or 0 if it has none.
-func (s *Store) LatestGeneration(base string) int {
-	latest := 0
+// Generations lists the numbers of a generation data group's cataloged
+// generations, oldest first.
+func (s *Store) Generations(base string) []int {
+	var generations []int
 	for dsn := range s.catalog {
 		suffix, ok := strings.CutPrefix(dsn, base+".G")
 		if !ok || !strings.HasSuffix(suffix, "V00") {
 			continue
 		}
 		if n, err := strconv.Atoi(strings.TrimSuffix(suffix, "V00")); err == nil {
-			latest = max(latest, n)
+			generations = append(generations, n)
 		}
 	}
-	return latest
+	slices.Sort(generations)
+	return generations
+}
+
+// LatestGeneration is the number of the newest cataloged generation of a
+// generation data group, or 0 if it has none.
+func (s *Store) LatestGeneration(base string) int {
+	generations := s.Generations(base)
+	if len(generations) == 0 {
+		return 0
+	}
+	return generations[len(generations)-1]
 }
 
 // Delete removes a dataset and its catalog entry.
