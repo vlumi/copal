@@ -36,6 +36,10 @@ type Runner struct {
 	// InStream is the job's in-stream data, which a step's SYSIN DD * gives
 	// its program as standard input, where ACCEPT reads.
 	InStream io.Reader
+	// Output, if set, receives what the program that reads the in-stream
+	// data writes to standard output, as it writes it, besides the step's
+	// output file.
+	Output io.Writer
 }
 
 // Result is the outcome of one step.
@@ -198,11 +202,14 @@ func (run *jobRun) runStep(step jcl.Step) (Result, error) {
 	cmd := exec.Command(filepath.Join(run.Programs, step.Program))
 	cmd.Env = append(os.Environ(), env...)
 	cmd.Env = append(cmd.Env, "COB_LIBRARY_PATH="+run.Programs)
-	if slices.ContainsFunc(step.DDs, func(dd jcl.DD) bool { return dd.InStream }) {
-		cmd.Stdin = run.InStream
-	}
 	cmd.Stdout = output
 	cmd.Stderr = output
+	if slices.ContainsFunc(step.DDs, func(dd jcl.DD) bool { return dd.InStream }) {
+		cmd.Stdin = run.InStream
+		if run.Output != nil {
+			cmd.Stdout = io.MultiWriter(output, run.Output)
+		}
+	}
 	runErr := cmd.Run()
 	if err := closeOutput(output); err != nil {
 		return result, err

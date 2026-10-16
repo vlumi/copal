@@ -270,6 +270,14 @@ func TestRunInStream(t *testing.T) {
 		t.Fatal(err)
 	}
 	assertFile(t, filepath.Join(r.Sysout, "S.STDOUT"), "REQUEST\n")
+	var output strings.Builder
+	r.InStream, r.Output = strings.NewReader("AGAIN\n"), &output
+	if _, err := r.Run(parse(t, "//J JOB\n//S EXEC PGM=ECHO\n//SYSIN DD *\n")); err != nil {
+		t.Fatal(err)
+	}
+	if output.String() != "AGAIN\n" {
+		t.Errorf("output %q, want the program's", output.String())
+	}
 	if _, err := r.Run(parse(t, "//J JOB\n//S EXEC PGM=ECHO\n//CARDS DD *\n")); err == nil {
 		t.Error("ran a step with in-stream data on CARDS")
 	}
