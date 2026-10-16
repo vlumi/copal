@@ -15,5 +15,3 @@ Copal does not translate COBOL into anything. It produces the understanding a tr
 Copal is young amber: resin that has hardened but not quite fossilized, and the traditional base of varnish for old wood. Said aloud, it is not far from COBOL.
 
 Pangaea is the single supercontinent of the age of the dinosaurs, before it broke into the continents of today. A monolith, waiting to be split.
-
-In Estonian, amber is *merevaik*, which to a Finnish ear sounds like *meri-vaikku*, sea earwax. That is also a fair description of what accumulates in a forty-year-old batch system.
