@@ -1,0 +1,1820 @@
+{
+  "program": "GLSUM",
+  "source": "pangaea/programs/GLSUM.cbl",
+  "description": [
+    "GLSUM: SUMMARIZE THE MONTH FOR THE GENERAL LEDGER",
+    "",
+    "ON THE FIRST BUSINESS DAY OF A MONTH, AFTER THE DAILY BATCH,",
+    "POSTS EVERY POSTING OF THE MONTH THAT CLOSED TO THE GENERAL",
+    "LEDGER, AS STMTPRT PICKS THEM: ONE SIDE TO CUSTOMER DEPOSITS,",
+    "THE OTHER TO THE ACCOUNT THE CODE TABLE NAMES FOR ITS",
+    "TRANSACTION CODE. A CREDIT TO A CUSTOMER CREDITS DEPOSITS, A",
+    "DEBIT DEBITS THEM. WRITES EACH LEDGER ACCOUNT'S DEBITS AND",
+    "CREDITS FOR THE MONTH, AND REPORTS THEM.",
+    "",
+    "EVERY TRANSFER'S LEGS POST ON ONE DAY, SO TRANSFERS IN TRANSIT",
+    "MUST NET TO ZERO OVER A MONTH. IF THEY DO NOT, A LEG WENT",
+    "MISSING, AND THE RUN ENDS WITH RETURN CODE 4.",
+    "",
+    "RETURN CODES: 0 SUMMARIZED OR NO MONTH CLOSED,",
+    "              4 TRANSFERS IN TRANSIT DO NOT NET TO ZERO,",
+    "              16 AN UNKNOWN CODE OR ACCOUNT, OUT OF BALANCE,",
+    "              OR I/O.",
+    "",
+    "MODIFICATION HISTORY",
+    "DATE       BY  CHANGE",
+    "2004-03-15 TL  CR-0390 ORIGINAL VERSION."
+  ],
+  "identification": [
+    {
+      "paragraph": "AUTHOR",
+      "text": "T. LINDQVIST, BATCH SYSTEMS."
+    },
+    {
+      "paragraph": "INSTALLATION",
+      "text": "FIRST BANK OF PANGAEA, DATA CENTER."
+    },
+    {
+      "paragraph": "DATE-WRITTEN",
+      "text": "2004-03-15."
+    }
+  ],
+  "files": [
+    {
+      "name": "ACCR-IN",
+      "kind": "FD",
+      "assign": "ACCRIN",
+      "organization": "SEQUENTIAL",
+      "status": "WS-ACCR-IN-STATUS",
+      "records": [
+        "ACCRUAL-RECORD"
+      ],
+      "source": "pangaea/programs/GLSUM.cbl:34"
+    },
+    {
+      "name": "AUDIT-IN",
+      "kind": "FD",
+      "assign": "AUDIT",
+      "organization": "SEQUENTIAL",
+      "status": "WS-AUDIT-STATUS",
+      "records": [
+        "AUDIT-RECORD"
+      ],
+      "source": "pangaea/programs/GLSUM.cbl:37"
+    },
+    {
+      "name": "GL-OUT",
+      "kind": "FD",
+      "assign": "GLOUT",
+      "organization": "SEQUENTIAL",
+      "status": "WS-GL-STATUS",
+      "records": [
+        "GL-SUMMARY-RECORD"
+      ],
+      "source": "pangaea/programs/GLSUM.cbl:40"
+    },
+    {
+      "name": "REPORT-OUT",
+      "kind": "FD",
+      "assign": "GLRPT",
+      "organization": "LINE SEQUENTIAL",
+      "status": "WS-REPORT-STATUS",
+      "records": [
+        "REPORT-LINE"
+      ],
+      "source": "pangaea/programs/GLSUM.cbl:43"
+    }
+  ],
+  "records": [
+    {
+      "section": "file",
+      "file": "ACCR-IN",
+      "copybook": "ACCRREC",
+      "level": 1,
+      "name": "ACCRUAL-RECORD",
+      "start": 1,
+      "length": 40,
+      "category": "group",
+      "description": "ACCRREC: INTEREST ACCRUAL RECORD, 40 BYTES ONE PER ACCOUNT, IN ACCOUNT NUMBER ORDER LIKE THE MASTER. INTEREST IS ACCRUED FOR EVERY CALENDAR DAY BEFORE THE THROUGH DATE, TO SIX DECIMALS, AND IS NEGATIVE FOR AN OVERDRAWN BALANCE. WHEN A MONTH CLOSES, ITS INTEREST BECOMES DUE, ROUNDED TO THE CENT; THE FRACTION STAYS ACCRUED. THE DUE MONTH IS ZERO ON THE DAYS NO MONTH CLOSES. MODIFICATION HISTORY DATE       BY  CHANGE 2001-09-03 TL  CR-0298 ORIGINAL VERSION.",
+      "source": "pangaea/copybooks/ACCRREC.cpy:14",
+      "fields": [
+        {
+          "level": 5,
+          "name": "AC-ACCT-NO",
+          "start": 1,
+          "length": 10,
+          "picture": "9(10)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 10,
+          "source": "pangaea/copybooks/ACCRREC.cpy:15"
+        },
+        {
+          "level": 5,
+          "name": "AC-THROUGH-DATE",
+          "start": 11,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/ACCRREC.cpy:16"
+        },
+        {
+          "level": 5,
+          "name": "AC-ACCRUED",
+          "start": 19,
+          "length": 7,
+          "picture": "S9(7)V9(6)",
+          "usage": "COMP-3",
+          "category": "numeric",
+          "digits": 13,
+          "scale": 6,
+          "signed": true,
+          "source": "pangaea/copybooks/ACCRREC.cpy:17"
+        },
+        {
+          "level": 5,
+          "name": "AC-DUE",
+          "start": 26,
+          "length": 5,
+          "picture": "S9(7)V99",
+          "usage": "COMP-3",
+          "category": "numeric",
+          "digits": 9,
+          "scale": 2,
+          "signed": true,
+          "source": "pangaea/copybooks/ACCRREC.cpy:18"
+        },
+        {
+          "level": 5,
+          "name": "AC-DUE-MONTH",
+          "start": 31,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 6,
+          "source": "pangaea/copybooks/ACCRREC.cpy:19"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 37,
+          "length": 4,
+          "picture": "X(4)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/ACCRREC.cpy:20"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "AUDIT-IN",
+      "copybook": "AUDITREC",
+      "level": 1,
+      "name": "AUDIT-RECORD",
+      "start": 1,
+      "length": 100,
+      "category": "group",
+      "description": "AUDITREC: AUDIT TRAIL RECORD, 100 BYTES, ONE PER POSTING THE AMOUNT IS SIGNED: CREDITS POSITIVE, DEBITS NEGATIVE.",
+      "source": "pangaea/copybooks/AUDITREC.cpy:5",
+      "fields": [
+        {
+          "level": 5,
+          "name": "AU-BUSINESS-DATE",
+          "start": 1,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/AUDITREC.cpy:6"
+        },
+        {
+          "level": 5,
+          "name": "AU-TRAN-ID",
+          "start": 9,
+          "length": 10,
+          "picture": "9(10)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 10,
+          "source": "pangaea/copybooks/AUDITREC.cpy:7"
+        },
+        {
+          "level": 5,
+          "name": "AU-ACCT-NO",
+          "start": 19,
+          "length": 10,
+          "picture": "9(10)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 10,
+          "source": "pangaea/copybooks/AUDITREC.cpy:8"
+        },
+        {
+          "level": 5,
+          "name": "AU-TRAN-CODE",
+          "start": 29,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/AUDITREC.cpy:9"
+        },
+        {
+          "level": 5,
+          "name": "AU-AMOUNT",
+          "start": 31,
+          "length": 11,
+          "picture": "S9(9)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 11,
+          "scale": 2,
+          "signed": true,
+          "source": "pangaea/copybooks/AUDITREC.cpy:10"
+        },
+        {
+          "level": 5,
+          "name": "AU-BALANCE-BEFORE",
+          "start": 42,
+          "length": 13,
+          "picture": "S9(11)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 13,
+          "scale": 2,
+          "signed": true,
+          "source": "pangaea/copybooks/AUDITREC.cpy:11"
+        },
+        {
+          "level": 5,
+          "name": "AU-BALANCE-AFTER",
+          "start": 55,
+          "length": 13,
+          "picture": "S9(11)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 13,
+          "scale": 2,
+          "signed": true,
+          "source": "pangaea/copybooks/AUDITREC.cpy:12"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 68,
+          "length": 33,
+          "picture": "X(33)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/AUDITREC.cpy:13"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "GL-OUT",
+      "copybook": "GLREC",
+      "level": 1,
+      "name": "GL-SUMMARY-RECORD",
+      "start": 1,
+      "length": 60,
+      "category": "group",
+      "description": "GLREC: GENERAL LEDGER SUMMARY RECORD, 60 BYTES ONE PER GENERAL LEDGER ACCOUNT, FOR A MONTH: THE DEBITS AND CREDITS THE MONTH'S POSTINGS MADE TO IT. MODIFICATION HISTORY DATE       BY  CHANGE 2004-03-15 TL  CR-0390 ORIGINAL VERSION.",
+      "source": "pangaea/copybooks/GLREC.cpy:10",
+      "fields": [
+        {
+          "level": 5,
+          "name": "GL-MONTH",
+          "start": 1,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 6,
+          "source": "pangaea/copybooks/GLREC.cpy:11"
+        },
+        {
+          "level": 5,
+          "name": "GL-ACCOUNT",
+          "start": 7,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 4,
+          "source": "pangaea/copybooks/GLREC.cpy:12"
+        },
+        {
+          "level": 5,
+          "name": "GL-ACCOUNT-NAME",
+          "start": 11,
+          "length": 24,
+          "picture": "X(24)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/GLREC.cpy:13"
+        },
+        {
+          "level": 5,
+          "name": "GL-DEBITS",
+          "start": 35,
+          "length": 8,
+          "picture": "S9(13)V99",
+          "usage": "COMP-3",
+          "category": "numeric",
+          "digits": 15,
+          "scale": 2,
+          "signed": true,
+          "source": "pangaea/copybooks/GLREC.cpy:14"
+        },
+        {
+          "level": 5,
+          "name": "GL-CREDITS",
+          "start": 43,
+          "length": 8,
+          "picture": "S9(13)V99",
+          "usage": "COMP-3",
+          "category": "numeric",
+          "digits": 15,
+          "scale": 2,
+          "signed": true,
+          "source": "pangaea/copybooks/GLREC.cpy:15"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 51,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/GLREC.cpy:16"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "REPORT-OUT",
+      "level": 1,
+      "name": "REPORT-LINE",
+      "start": 1,
+      "length": 80,
+      "picture": "X(80)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "source": "pangaea/programs/GLSUM.cbl:56"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-FILE-STATUSES",
+      "start": 1,
+      "length": 8,
+      "category": "group",
+      "source": "pangaea/programs/GLSUM.cbl:59",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-ACCR-IN-STATUS",
+          "start": 1,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/GLSUM.cbl:60"
+        },
+        {
+          "level": 5,
+          "name": "WS-AUDIT-STATUS",
+          "start": 3,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/GLSUM.cbl:61"
+        },
+        {
+          "level": 5,
+          "name": "WS-GL-STATUS",
+          "start": 5,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/GLSUM.cbl:62"
+        },
+        {
+          "level": 5,
+          "name": "WS-REPORT-STATUS",
+          "start": 7,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/GLSUM.cbl:63"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ABORT-MESSAGE",
+      "start": 1,
+      "length": 40,
+      "picture": "X(40)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "source": "pangaea/programs/GLSUM.cbl:65"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-CLOSED-MONTH",
+      "start": 1,
+      "length": 6,
+      "category": "group",
+      "description": "THE MONTH THAT CLOSED AND THE ONE AFTER IT, AS IN STMTPRT.",
+      "source": "pangaea/programs/GLSUM.cbl:68",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-CM-YEAR",
+          "start": 1,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 4,
+          "source": "pangaea/programs/GLSUM.cbl:69"
+        },
+        {
+          "level": 5,
+          "name": "WS-CM-MONTH",
+          "start": 5,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 2,
+          "source": "pangaea/programs/GLSUM.cbl:70"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-CLOSED-MONTH-NUMBER",
+      "start": 1,
+      "length": 6,
+      "picture": "9(6)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "digits": 6,
+      "redefines": "WS-CLOSED-MONTH",
+      "source": "pangaea/programs/GLSUM.cbl:71"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-NEXT-MONTH",
+      "start": 1,
+      "length": 6,
+      "category": "group",
+      "source": "pangaea/programs/GLSUM.cbl:73",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-NM-YEAR",
+          "start": 1,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 4,
+          "source": "pangaea/programs/GLSUM.cbl:74"
+        },
+        {
+          "level": 5,
+          "name": "WS-NM-MONTH",
+          "start": 5,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 2,
+          "source": "pangaea/programs/GLSUM.cbl:75"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-POSTING-MONTH",
+      "start": 1,
+      "length": 6,
+      "picture": "X(6)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "source": "pangaea/programs/GLSUM.cbl:76"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-POSTING-CODE",
+      "start": 1,
+      "length": 2,
+      "picture": "XX",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "conditions": [
+        {
+          "name": "WS-MONTH-END-CODE",
+          "values": [
+            "'IN'",
+            "'OD'",
+            "'MF'"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:78"
+        }
+      ],
+      "source": "pangaea/programs/GLSUM.cbl:77"
+    },
+    {
+      "section": "working-storage",
+      "copybook": "CODETAB",
+      "level": 1,
+      "name": "GS-CODE-VALUES",
+      "start": 1,
+      "length": 234,
+      "category": "group",
+      "description": "CODETAB: TRANSACTION CODE TABLE FOR EACH TRANSACTION CODE, WHAT A STATEMENT CALLS IT AND THE GENERAL LEDGER ACCOUNT ITS POSTINGS MEET ON THE OTHER SIDE OF CUSTOMER DEPOSITS. COPIED WITH THE PROGRAM'S OWN PREFIX FOR THE :P: TAGS: COPY CODETAB REPLACING ==:P:== BY ==ST==. MODIFICATION HISTORY DATE       BY  CHANGE 2004-03-15 TL  CR-0390 ORIGINAL VERSION, FROM STMTPRT, FOR THE GENERAL LEDGER SUMMARY.",
+      "source": "pangaea/copybooks/CODETAB.cpy:13",
+      "fields": [
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 1,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'DP'"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:14"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 3,
+          "length": 20,
+          "picture": "X(20)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'DEPOSIT'"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:15"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 23,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 4,
+          "values": [
+            "1000"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:17"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 27,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'WD'"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:18"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 29,
+          "length": 20,
+          "picture": "X(20)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'WITHDRAWAL'"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:19"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 49,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 4,
+          "values": [
+            "1000"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:21"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 53,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'FE'"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:22"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 55,
+          "length": 20,
+          "picture": "X(20)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'FEE'"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:23"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 75,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 4,
+          "values": [
+            "4100"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:25"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 79,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'TR'"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:26"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 81,
+          "length": 20,
+          "picture": "X(20)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'TRANSFER OUT'"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:27"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 101,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 4,
+          "values": [
+            "2900"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:29"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 105,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'TC'"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:30"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 107,
+          "length": 20,
+          "picture": "X(20)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'TRANSFER IN'"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:31"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 127,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 4,
+          "values": [
+            "2900"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:33"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 131,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'RT'"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:34"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 133,
+          "length": 20,
+          "picture": "X(20)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'TRANSFER RETURNED'"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:35"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 153,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 4,
+          "values": [
+            "2900"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:37"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 157,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'IN'"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:38"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 159,
+          "length": 20,
+          "picture": "X(20)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'CREDIT INTEREST'"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:39"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 179,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 4,
+          "values": [
+            "5000"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:41"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 183,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'OD'"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:42"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 185,
+          "length": 20,
+          "picture": "X(20)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'OVERDRAFT INTEREST'"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:43"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 205,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 4,
+          "values": [
+            "4000"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:45"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 209,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'MF'"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:46"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 211,
+          "length": 20,
+          "picture": "X(20)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'MAINTENANCE FEE'"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:47"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 231,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 4,
+          "values": [
+            "4100"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:49"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "copybook": "CODETAB",
+      "level": 1,
+      "name": "GS-CODE-TABLE",
+      "start": 1,
+      "length": 234,
+      "category": "group",
+      "redefines": "GS-CODE-VALUES",
+      "source": "pangaea/copybooks/CODETAB.cpy:50",
+      "fields": [
+        {
+          "level": 5,
+          "name": "GS-CODE-ENTRY",
+          "start": 1,
+          "length": 26,
+          "category": "group",
+          "occurs": 9,
+          "indexedBy": [
+            "GS-CX"
+          ],
+          "source": "pangaea/copybooks/CODETAB.cpy:51",
+          "fields": [
+            {
+              "level": 10,
+              "name": "GS-CODE",
+              "start": 1,
+              "length": 2,
+              "picture": "XX",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "source": "pangaea/copybooks/CODETAB.cpy:53"
+            },
+            {
+              "level": 10,
+              "name": "GS-CODE-TEXT",
+              "start": 3,
+              "length": 20,
+              "picture": "X(20)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "source": "pangaea/copybooks/CODETAB.cpy:54"
+            },
+            {
+              "level": 10,
+              "name": "GS-CODE-GL-ACCOUNT",
+              "start": 23,
+              "length": 4,
+              "picture": "9(4)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "digits": 4,
+              "source": "pangaea/copybooks/CODETAB.cpy:55"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-LEDGER-VALUES",
+      "start": 1,
+      "length": 168,
+      "category": "group",
+      "description": "THE LEDGER ACCOUNTS, AND WHAT THE MONTH POSTED TO EACH.",
+      "source": "pangaea/programs/GLSUM.cbl:84",
+      "fields": [
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 1,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 4,
+          "values": [
+            "1000"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:85"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 5,
+          "length": 24,
+          "picture": "X(24)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'CASH'"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:86"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 29,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 4,
+          "values": [
+            "2000"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:87"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 33,
+          "length": 24,
+          "picture": "X(24)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'CUSTOMER DEPOSITS'"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:88"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 57,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 4,
+          "values": [
+            "2900"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:90"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 61,
+          "length": 24,
+          "picture": "X(24)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'TRANSFERS IN TRANSIT'"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:91"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 85,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 4,
+          "values": [
+            "4000"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:93"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 89,
+          "length": 24,
+          "picture": "X(24)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'INTEREST INCOME'"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:94"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 113,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 4,
+          "values": [
+            "4100"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:96"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 117,
+          "length": 24,
+          "picture": "X(24)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'FEE INCOME'"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:97"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 141,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 4,
+          "values": [
+            "5000"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:99"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 145,
+          "length": 24,
+          "picture": "X(24)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'INTEREST EXPENSE'"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:100"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-LEDGER",
+      "start": 1,
+      "length": 168,
+      "category": "group",
+      "redefines": "WS-LEDGER-VALUES",
+      "source": "pangaea/programs/GLSUM.cbl:102",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-LEDGER-ENTRY",
+          "start": 1,
+          "length": 28,
+          "category": "group",
+          "occurs": 6,
+          "indexedBy": [
+            "WS-LX"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:103",
+          "fields": [
+            {
+              "level": 10,
+              "name": "WS-LE-ACCOUNT",
+              "start": 1,
+              "length": 4,
+              "picture": "9(4)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "digits": 4,
+              "source": "pangaea/programs/GLSUM.cbl:105"
+            },
+            {
+              "level": 10,
+              "name": "WS-LE-NAME",
+              "start": 5,
+              "length": 24,
+              "picture": "X(24)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "source": "pangaea/programs/GLSUM.cbl:106"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-LEDGER-TOTALS",
+      "start": 1,
+      "length": 96,
+      "category": "group",
+      "source": "pangaea/programs/GLSUM.cbl:107",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-LEDGER-TOTAL",
+          "start": 1,
+          "length": 16,
+          "category": "group",
+          "occurs": 6,
+          "indexedBy": [
+            "WS-TX"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:108",
+          "fields": [
+            {
+              "level": 10,
+              "name": "WS-LT-DEBITS",
+              "start": 1,
+              "length": 8,
+              "picture": "S9(13)V99",
+              "usage": "COMP-3",
+              "category": "numeric",
+              "digits": 15,
+              "scale": 2,
+              "signed": true,
+              "source": "pangaea/programs/GLSUM.cbl:110"
+            },
+            {
+              "level": 10,
+              "name": "WS-LT-CREDITS",
+              "start": 9,
+              "length": 8,
+              "picture": "S9(13)V99",
+              "usage": "COMP-3",
+              "category": "numeric",
+              "digits": 15,
+              "scale": 2,
+              "signed": true,
+              "source": "pangaea/programs/GLSUM.cbl:111"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-DEPOSITS-ACCOUNT",
+      "start": 1,
+      "length": 4,
+      "picture": "9(4)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "digits": 4,
+      "values": [
+        "2000"
+      ],
+      "source": "pangaea/programs/GLSUM.cbl:113"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-TRANSIT-ACCOUNT",
+      "start": 1,
+      "length": 4,
+      "picture": "9(4)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "digits": 4,
+      "values": [
+        "2900"
+      ],
+      "source": "pangaea/programs/GLSUM.cbl:114"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-POSTING",
+      "start": 1,
+      "length": 23,
+      "category": "group",
+      "source": "pangaea/programs/GLSUM.cbl:115",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-AMOUNT",
+          "start": 1,
+          "length": 11,
+          "picture": "S9(9)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 11,
+          "scale": 2,
+          "signed": true,
+          "source": "pangaea/programs/GLSUM.cbl:116"
+        },
+        {
+          "level": 5,
+          "name": "WS-DEBIT-ACCOUNT",
+          "start": 12,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 4,
+          "source": "pangaea/programs/GLSUM.cbl:117"
+        },
+        {
+          "level": 5,
+          "name": "WS-CREDIT-ACCOUNT",
+          "start": 16,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 4,
+          "source": "pangaea/programs/GLSUM.cbl:118"
+        },
+        {
+          "level": 5,
+          "name": "WS-WANTED-ACCOUNT",
+          "start": 20,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 4,
+          "source": "pangaea/programs/GLSUM.cbl:119"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-TOTALS",
+      "start": 1,
+      "length": 68,
+      "category": "group",
+      "source": "pangaea/programs/GLSUM.cbl:121",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-POSTING-COUNT",
+          "start": 1,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:122"
+        },
+        {
+          "level": 5,
+          "name": "WS-DEBIT-TOTAL",
+          "start": 9,
+          "length": 15,
+          "picture": "S9(13)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 15,
+          "scale": 2,
+          "signed": true,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:123"
+        },
+        {
+          "level": 5,
+          "name": "WS-CREDIT-TOTAL",
+          "start": 24,
+          "length": 15,
+          "picture": "S9(13)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 15,
+          "scale": 2,
+          "signed": true,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:124"
+        },
+        {
+          "level": 5,
+          "name": "WS-DEPOSITS-CHANGE",
+          "start": 39,
+          "length": 15,
+          "picture": "S9(13)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 15,
+          "scale": 2,
+          "signed": true,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:125"
+        },
+        {
+          "level": 5,
+          "name": "WS-TRANSIT-NET",
+          "start": 54,
+          "length": 15,
+          "picture": "S9(13)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 15,
+          "scale": 2,
+          "signed": true,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:126"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-HEADING-LINE",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "source": "pangaea/programs/GLSUM.cbl:128",
+      "fields": [
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 1,
+          "length": 30,
+          "picture": "X(30)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'ACCOUNT'"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:129"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 31,
+          "length": 18,
+          "picture": "X(18)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'            DEBITS'"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:130"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 49,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "SPACES"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:132"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 51,
+          "length": 18,
+          "picture": "X(18)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'           CREDITS'"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:133"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 69,
+          "length": 12,
+          "picture": "X(12)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "SPACES"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:135"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-LEDGER-LINE",
+      "start": 1,
+      "length": 82,
+      "category": "group",
+      "source": "pangaea/programs/GLSUM.cbl:136",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-LL-ACCOUNT",
+          "start": 1,
+          "length": 4,
+          "picture": "X(4)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/GLSUM.cbl:137"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 5,
+          "length": 1,
+          "picture": "X(1)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "SPACES"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:138"
+        },
+        {
+          "level": 5,
+          "name": "WS-LL-NAME",
+          "start": 6,
+          "length": 25,
+          "picture": "X(25)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/GLSUM.cbl:139"
+        },
+        {
+          "level": 5,
+          "name": "WS-LL-DEBITS",
+          "start": 31,
+          "length": 20,
+          "picture": "Z,ZZZ,ZZZ,ZZZ,ZZ9.99",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "source": "pangaea/programs/GLSUM.cbl:140"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 51,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "SPACES"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:141"
+        },
+        {
+          "level": 5,
+          "name": "WS-LL-CREDITS",
+          "start": 53,
+          "length": 20,
+          "picture": "Z,ZZZ,ZZZ,ZZZ,ZZ9.99",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "source": "pangaea/programs/GLSUM.cbl:142"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 73,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "SPACES"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:143"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REPORT-COUNT-LINE",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "source": "pangaea/programs/GLSUM.cbl:144",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-RC-LABEL",
+          "start": 1,
+          "length": 30,
+          "picture": "X(30)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/GLSUM.cbl:145"
+        },
+        {
+          "level": 5,
+          "name": "WS-RC-VALUE",
+          "start": 31,
+          "length": 10,
+          "picture": "ZZ,ZZZ,ZZ9",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "source": "pangaea/programs/GLSUM.cbl:146"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 41,
+          "length": 40,
+          "picture": "X(40)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "SPACES"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:147"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REPORT-AMOUNT-LINE",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "source": "pangaea/programs/GLSUM.cbl:148",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-RA-LABEL",
+          "start": 1,
+          "length": 30,
+          "picture": "X(30)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/GLSUM.cbl:149"
+        },
+        {
+          "level": 5,
+          "name": "WS-RA-VALUE",
+          "start": 31,
+          "length": 21,
+          "picture": "Z,ZZZ,ZZZ,ZZZ,ZZ9.99-",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "source": "pangaea/programs/GLSUM.cbl:150"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 52,
+          "length": 29,
+          "picture": "X(29)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "SPACES"
+          ],
+          "source": "pangaea/programs/GLSUM.cbl:151"
+        }
+      ]
+    }
+  ],
+  "paragraphs": [
+    {
+      "name": "0000-MAIN",
+      "description": "FIND THE MONTH THAT CLOSED, IF ONE DID, POST ITS POSTINGS TO THE LEDGER AND WRITE THE SUMMARY.",
+      "source": "pangaea/programs/GLSUM.cbl:156",
+      "performs": [
+        {
+          "target": "1000-INITIALIZE",
+          "source": "pangaea/programs/GLSUM.cbl:157"
+        },
+        {
+          "target": "2000-POST-MONTH",
+          "source": "pangaea/programs/GLSUM.cbl:159"
+        },
+        {
+          "target": "3000-WRITE-LEDGER",
+          "source": "pangaea/programs/GLSUM.cbl:160"
+        },
+        {
+          "target": "8000-WRITE-REPORT",
+          "source": "pangaea/programs/GLSUM.cbl:162"
+        },
+        {
+          "target": "9000-CLOSE-FILES",
+          "source": "pangaea/programs/GLSUM.cbl:163"
+        }
+      ]
+    },
+    {
+      "name": "1000-INITIALIZE",
+      "description": "OPEN THE FILES, TAKE THE CLOSED MONTH FROM THE ACCRUALS AND START THE LEDGER AT ZERO.",
+      "source": "pangaea/programs/GLSUM.cbl:173",
+      "performedBy": [
+        "0000-MAIN"
+      ]
+    },
+    {
+      "name": "2000-POST-MONTH",
+      "description": "POST THE POSTINGS OF THE CLOSED MONTH, AND THE INTEREST AND FEES POSTED FOR IT ON THE FIRST BUSINESS DAY OF THE NEXT.",
+      "source": "pangaea/programs/GLSUM.cbl:199",
+      "performs": [
+        {
+          "target": "2100-POST-TO-LEDGER",
+          "source": "pangaea/programs/GLSUM.cbl:207"
+        },
+        {
+          "target": "9900-ABORT",
+          "source": "pangaea/programs/GLSUM.cbl:213"
+        }
+      ],
+      "performedBy": [
+        "0000-MAIN"
+      ]
+    },
+    {
+      "name": "2100-POST-TO-LEDGER",
+      "description": "POST ONE POSTING: DEPOSITS ON THE CUSTOMER'S SIDE, THE CODE'S LEDGER ACCOUNT ON THE OTHER.",
+      "source": "pangaea/programs/GLSUM.cbl:218",
+      "performs": [
+        {
+          "target": "9900-ABORT",
+          "source": "pangaea/programs/GLSUM.cbl:223"
+        },
+        {
+          "target": "2200-FIND-ACCOUNT",
+          "source": "pangaea/programs/GLSUM.cbl:237"
+        },
+        {
+          "target": "2200-FIND-ACCOUNT",
+          "source": "pangaea/programs/GLSUM.cbl:240"
+        }
+      ],
+      "performedBy": [
+        "2000-POST-MONTH"
+      ]
+    },
+    {
+      "name": "2200-FIND-ACCOUNT",
+      "description": "FIND THE WANTED LEDGER ACCOUNT, AND POINT AT ITS TOTALS.",
+      "source": "pangaea/programs/GLSUM.cbl:245",
+      "performs": [
+        {
+          "target": "9900-ABORT",
+          "source": "pangaea/programs/GLSUM.cbl:250"
+        }
+      ],
+      "performedBy": [
+        "2100-POST-TO-LEDGER"
+      ]
+    },
+    {
+      "name": "3000-WRITE-LEDGER",
+      "description": "WRITE A SUMMARY RECORD FOR EACH LEDGER ACCOUNT, AND CHECK THAT THE LEDGER BALANCES.",
+      "source": "pangaea/programs/GLSUM.cbl:257",
+      "performs": [
+        {
+          "target": "9900-ABORT",
+          "source": "pangaea/programs/GLSUM.cbl:280"
+        }
+      ],
+      "performedBy": [
+        "0000-MAIN"
+      ]
+    },
+    {
+      "name": "8000-WRITE-REPORT",
+      "description": "WRITE THE GENERAL LEDGER REPORT.",
+      "source": "pangaea/programs/GLSUM.cbl:284",
+      "performedBy": [
+        "0000-MAIN"
+      ]
+    },
+    {
+      "name": "9000-CLOSE-FILES",
+      "description": "CLOSE ALL FILES.",
+      "source": "pangaea/programs/GLSUM.cbl:336",
+      "performedBy": [
+        "0000-MAIN",
+        "9900-ABORT"
+      ]
+    },
+    {
+      "name": "9900-ABORT",
+      "description": "STOP THE RUN WITH RETURN CODE 16, SAYING WHY.",
+      "source": "pangaea/programs/GLSUM.cbl:340",
+      "performs": [
+        {
+          "target": "9000-CLOSE-FILES",
+          "source": "pangaea/programs/GLSUM.cbl:342"
+        }
+      ],
+      "performedBy": [
+        "2000-POST-MONTH",
+        "2100-POST-TO-LEDGER",
+        "2200-FIND-ACCOUNT",
+        "3000-WRITE-LEDGER"
+      ]
+    }
+  ]
+}

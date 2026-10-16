@@ -30,7 +30,12 @@ The day's inputs are the current generations, (0), of the bank control record, t
 
 ## The month-end job
 
-[MONTHLY.jcl](jobs/MONTHLY.jcl) runs on the first business day of every month, after the daily batch has posted the closed month's interest and fees; the bank's scheduler starts it, as an operations team's would. **STMTPRT** prints a statement for every account: the opening balance, the month's postings in the order they posted, the interest and fees posted for the month, and the closing balance. It reads every audit trail at once, the whole generation data group, picks the month's postings in a `SORT` input procedure, and prints in the output procedure against the master the month closed with. `make test` runs it on every fixture and compares with the golden files; `make pangaea-golden` rewrites them after a deliberate change.
+[MONTHLY.jcl](jobs/MONTHLY.jcl) runs on the first business day of every month, after the daily batch has posted the closed month's interest and fees; the bank's scheduler starts it, as an operations team's would. Both of its programs read every audit trail at once, the whole generation data group, and pick the closed month's postings, and the interest and fees posted for it, by the same rule.
+
+1. **STMTPRT** prints a statement for every account: the opening balance, the month's postings in the order they posted, the interest and fees posted for the month, and the closing balance. It picks the postings in a `SORT` input procedure and prints in the output procedure against the master the month closed with.
+2. **GLSUM** summarizes the month for the general ledger in double entry: every posting moves customer deposits on one side and, on the other, the ledger account the code table names for its transaction code: cash, fee or interest income, interest expense, or transfers in transit. It writes the month's debits and credits per ledger account to `GL.SUMMARY`, and ends with RC 4 if transfers in transit do not net to zero, which would mean a transfer leg went missing.
+
+The two programs share the transaction code table, [CODETAB](copybooks/CODETAB.cpy), each copying it with a prefix of its own: `COPY CODETAB REPLACING ==:P:== BY ==ST==`. `make test` runs it on every fixture and compares with the golden files; `make pangaea-golden` rewrites them after a deliberate change.
 
 ## The running bank
 
