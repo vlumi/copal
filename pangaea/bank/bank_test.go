@@ -5,6 +5,8 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"slices"
+	"strings"
 	"testing"
 
 	"github.com/vlumi/copal/pangaea/compile"
@@ -97,4 +99,74 @@ func readTree(t *testing.T, dir string) map[string][]byte {
 		t.Fatal(err)
 	}
 	return files
+}
+
+// TestFailedDayIsBackedOut runs a day whose posting fails, and checks that
+// the bank backs it out whole, then runs it again and ends up as a bank
+// whose day never failed.
+func TestFailedDayIsBackedOut(t *testing.T) {
+	programs := t.TempDir()
+	if _, err := compile.Programs("../programs", "../copybooks", programs); err != nil {
+		t.Fatal(err)
+	}
+	newBank := func(programs string) Bank {
+		b := Bank{Dir: t.TempDir(), Programs: programs, Copybooks: "../copybooks", DailyJob: "../jobs/DAILY.jcl", MonthlyJob: "../jobs/MONTHLY.jcl"}
+		if err := b.Reset(7, 300); err != nil {
+			t.Fatal(err)
+		}
+		return b
+	}
+	steady := newBank(programs)
+	if err := steady.RunDays(2, func(Day) {}); err != nil {
+		t.Fatal(err)
+	}
+
+	broken := t.TempDir()
+	if err := os.CopyFS(broken, os.DirFS(programs)); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(broken, "TXPOST"), []byte("#!/bin/sh\nexit 16\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	b := newBank(programs)
+	if err := b.RunDays(1, func(Day) {}); err != nil {
+		t.Fatal(err)
+	}
+	store, err := b.Datasets()
+	if err != nil {
+		t.Fatal(err)
+	}
+	before := store.Names()
+	b.Programs = broken
+	if err := b.RunDays(1, func(Day) {}); err == nil {
+		t.Fatal("a day whose posting fails went through")
+	}
+	if store, err = b.Datasets(); err != nil {
+		t.Fatal(err)
+	}
+	if after := store.Names(); !slices.Equal(after, before) {
+		t.Errorf("after the failed day the catalog holds %q, want %q", after, before)
+	}
+	if _, err := os.Stat(filepath.Join(b.Dir, "sysout", "2026-09-02.failed", "JOBLOG")); err != nil {
+		t.Errorf("the failed day's job log was not kept: %v", err)
+	}
+
+	b.Programs = programs
+	if err := b.RunDays(1, func(Day) {}); err != nil {
+		t.Fatal(err)
+	}
+	want, got := readTree(t, steady.Dir), readTree(t, b.Dir)
+	for name := range got {
+		if strings.HasPrefix(name, filepath.Join("sysout", "2026-09-02.failed")) {
+			delete(got, name)
+		}
+	}
+	if len(got) != len(want) {
+		t.Fatalf("%d files after the rerun, %d in the bank that never failed", len(got), len(want))
+	}
+	for name, data := range want {
+		if !bytes.Equal(data, got[name]) {
+			t.Errorf("%s differs from the bank that never failed", name)
+		}
+	}
 }

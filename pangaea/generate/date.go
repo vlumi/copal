@@ -29,6 +29,9 @@ func (d Date) Number() int64 {
 
 func (d Date) String() string { return d.t.Format("2006-01-02") }
 
+// IsZero reports whether d is the zero Date, no date at all.
+func (d Date) IsZero() bool { return d.t.IsZero() }
+
 // Day is the day of the month.
 func (d Date) Day() int { return d.t.Day() }
 

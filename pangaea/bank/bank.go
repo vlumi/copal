@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -131,41 +132,59 @@ func (b Bank) RunDays(n int, report func(Day)) error {
 
 // runDay runs a business day: the daily batch, and on the first business
 // day of a month the month-end job after it, as a scheduler would.
+//
+// A business day goes through whole or not at all: if any of it fails,
+// every dataset it cataloged is deleted again, the generated inputs
+// included, and its job logs and reports move to sysout/DATE.failed, so
+// that the next run starts the same day afresh.
 func (b Bank) runDay(g *generate.Generator, daily, monthly *jcl.Job) (Day, error) {
 	store, err := dataset.Open(b.datasets())
 	if err != nil {
 		return Day{}, err
 	}
+	before := store.Names()
+	day, err := b.tryDay(g, store, daily, monthly)
+	if err != nil && !day.Date.IsZero() {
+		if backOutErr := b.backOut(store, before, day.Date); backOutErr != nil {
+			return day, errors.Join(err, backOutErr)
+		}
+		err = fmt.Errorf("%w; the day was backed out, its job logs are in %s", err, b.failedSysout(day.Date))
+	}
+	return day, err
+}
+
+func (b Bank) tryDay(g *generate.Generator, store *dataset.Store, daily, monthly *jcl.Job) (Day, error) {
 	date, err := b.businessDate(g, store)
 	if err != nil {
 		return Day{}, err
 	}
+	day := Day{Date: date}
 	master, err := store.Read(latest(store, "ACCT.MASTER"))
 	if err != nil {
-		return Day{}, err
+		return day, err
 	}
 	accounts, err := g.ReadAccounts(master)
 	if err != nil {
-		return Day{}, err
+		return day, err
 	}
 	fileSeq := store.LatestGeneration("TRAN.DAILY") + 1
 	file, err := g.Day(date, int64(fileSeq), accounts)
 	if err != nil {
-		return Day{}, err
+		return day, err
 	}
 	if err := store.Write(dataset.GenerationName("TRAN.DAILY", fileSeq), g.Layouts.Tran.Length, file); err != nil {
-		return Day{}, err
+		return day, err
 	}
+	day.Transactions = len(file) - 2
 	requests, err := g.Maintenance(date, accounts)
 	if err != nil {
-		return Day{}, err
+		return day, err
 	}
 	maint := dataset.GenerationName("ACCT.MAINT", store.LatestGeneration("ACCT.MAINT")+1)
 	if err := store.Write(maint, g.Layouts.Maint.Length, requests); err != nil {
-		return Day{}, err
+		return day, err
 	}
 
-	day := Day{Date: date, Transactions: len(file) - 2}
 	if day.Results, err = b.runJob(store, daily, b.sysout(date)); err != nil {
 		return day, fmt.Errorf("%s: %w", date, err)
 	}
@@ -181,6 +200,28 @@ func (b Bank) runDay(g *generate.Generator, daily, monthly *jcl.Job) (Day, error
 	}
 	return day, nil
 }
+
+// backOut deletes the datasets cataloged since before, and moves the day's
+// job logs and reports aside.
+func (b Bank) backOut(store *dataset.Store, before []string, date generate.Date) error {
+	for _, dsn := range store.Names() {
+		if !slices.Contains(before, dsn) {
+			if err := store.Delete(dsn); err != nil {
+				return err
+			}
+		}
+	}
+	failed := b.failedSysout(date)
+	if err := os.RemoveAll(failed); err != nil {
+		return err
+	}
+	if err := os.Rename(b.sysout(date), failed); err != nil && !errors.Is(err, os.ErrNotExist) {
+		return err
+	}
+	return nil
+}
+
+func (b Bank) failedSysout(date generate.Date) string { return b.sysout(date) + ".failed" }
 
 // runJob runs a job, which must go through: no step may end above RC 4,
 // be bypassed or abend.
