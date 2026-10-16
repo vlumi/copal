@@ -31,6 +31,28 @@ Program [TXVALID.cbl](../../../pangaea/programs/TXVALID.cbl): 5 files, 10 paragr
 - INSTALLATION: FIRST BANK OF PANGAEA, DATA CENTER.
 - DATE-WRITTEN: 1987-03-12.
 
+## Contents
+
+- [Files](#files)
+- [Flow](#flow)
+- [Paragraphs](#paragraphs)
+- [Data flow](#data-flow)
+- [Lineage](#lineage)
+- [Records](#records)
+  - [BANK-CONTROL-RECORD](#bank-control-record)
+  - [TRAN-RECORD](#tran-record)
+  - [TRAN-OUT-RECORD](#tran-out-record)
+  - [REJECT-OUT-RECORD](#reject-out-record)
+  - [REPORT-LINE](#report-line)
+  - [WS-FILE-STATUSES](#ws-file-statuses)
+  - [WS-BUSINESS-DATE](#ws-business-date)
+  - [REJECT-RECORD](#reject-record)
+  - [WS-FILE-ERROR](#ws-file-error)
+  - [WS-DETAIL-STATE](#ws-detail-state)
+  - [WS-TOTALS](#ws-totals)
+  - [WS-REPORT-COUNT-LINE](#ws-report-count-line)
+  - [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line)
+
 ## Files
 
 | File | Kind | Assigned to | Organization | Status field | Opened | Records |

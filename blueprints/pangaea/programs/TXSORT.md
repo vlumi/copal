@@ -24,6 +24,17 @@ Program [TXSORT.cbl](../../../pangaea/programs/TXSORT.cbl): 3 files, 1 paragraph
 - INSTALLATION: FIRST BANK OF PANGAEA, DATA CENTER.
 - DATE-WRITTEN: 1987-03-12.
 
+## Contents
+
+- [Files](#files)
+- [Flow](#flow)
+- [Paragraphs](#paragraphs)
+- [Data flow](#data-flow)
+- [Records](#records)
+  - [TRAN-IN-RECORD](#tran-in-record)
+  - [TRAN-OUT-RECORD](#tran-out-record)
+  - [SORT-RECORD](#sort-record)
+
 ## Files
 
 | File | Kind | Assigned to | Organization | Status field | Opened | Records |

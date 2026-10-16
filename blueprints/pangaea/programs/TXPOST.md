@@ -47,6 +47,39 @@ Program [TXPOST.cbl](../../../pangaea/programs/TXPOST.cbl): 8 files, 17 paragrap
 - INSTALLATION: FIRST BANK OF PANGAEA, DATA CENTER.
 - DATE-WRITTEN: 1987-04-02.
 
+## Contents
+
+- [Files](#files)
+- [Flow](#flow)
+- [Paragraphs](#paragraphs)
+- [Data flow](#data-flow)
+- [Lineage](#lineage)
+- [Records](#records)
+  - [BANK-CONTROL-RECORD](#bank-control-record)
+  - [ACCT-MASTER-RECORD](#acct-master-record)
+  - [TRAN-RECORD](#tran-record)
+  - [ACCT-OUT-RECORD](#acct-out-record)
+  - [AUDIT-OUT-RECORD](#audit-out-record)
+  - [REJECT-OUT-RECORD](#reject-out-record)
+  - [LEGS-OUT-RECORD](#legs-out-record)
+  - [REPORT-LINE](#report-line)
+  - [WS-FILE-STATUSES](#ws-file-statuses)
+  - [WS-BUSINESS-DATE](#ws-business-date)
+  - [WS-ABORT-MESSAGE](#ws-abort-message)
+  - [WS-MASTER-KEY](#ws-master-key)
+  - [WS-TRAN-KEY](#ws-tran-key)
+  - [WS-PREV-MASTER-KEY](#ws-prev-master-key)
+  - [WS-TRAN-ORDER-KEY](#ws-tran-order-key)
+  - [WS-PREV-TRAN-ORDER-KEY](#ws-prev-tran-order-key)
+  - [WS-POSTING](#ws-posting)
+  - [WS-SAVED-TRAN](#ws-saved-tran)
+  - [WS-LEG-ACCT-NO](#ws-leg-acct-no)
+  - [WS-TOTALS](#ws-totals)
+  - [AUDIT-RECORD](#audit-record)
+  - [REJECT-RECORD](#reject-record)
+  - [WS-REPORT-COUNT-LINE](#ws-report-count-line)
+  - [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line)
+
 ## Files
 
 | File | Kind | Assigned to | Organization | Status field | Opened | Records |
