@@ -46,6 +46,10 @@ Program [TXPOST.cbl](../../../pangaea/programs/TXPOST.cbl): 7 files, 16 paragrap
 | REJECT-OUT | FD | REJECTS | SEQUENTIAL | WS-REJECT-STATUS | REJECT-OUT-RECORD |
 | REPORT-OUT | FD | POSTRPT | LINE SEQUENTIAL | WS-REPORT-STATUS | REPORT-LINE |
 
+## Flow
+
+![The paragraphs of TXPOST and the PERFORMs between them](TXPOST.svg)
+
 ## Paragraphs
 
 | Paragraph | Description | Source | Performs | Performed by |

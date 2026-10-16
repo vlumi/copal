@@ -30,6 +30,10 @@ Program [TXSORT.cbl](../../../pangaea/programs/TXSORT.cbl): 3 files, 1 paragraph
 | TRAN-OUT | FD | TRANOUT | SEQUENTIAL | | TRAN-OUT-RECORD |
 | SORT-WORK | SD | SORTWK | SEQUENTIAL | | SORT-RECORD |
 
+## Flow
+
+![The paragraphs of TXSORT and the PERFORMs between them](TXSORT.svg)
+
 ## Paragraphs
 
 | Paragraph | Description | Source | Performs | Performed by |

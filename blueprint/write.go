@@ -11,7 +11,8 @@ import (
 )
 
 // Render returns the system's blueprints as files by path: an index in
-// README.md, and programs/NAME and copybooks/NAME as .md and .json. Links
+// README.md, programs/NAME and copybooks/NAME as .md and .json, and each
+// program's paragraph diagram as programs/NAME.svg. Links
 // to the source are relative to dir, where the blueprints are to be
 // written, so the source paths must be relative to the same working
 // directory as dir.
@@ -21,6 +22,11 @@ func (s *System) Render(dir, title string) (map[string][]byte, error) {
 		if err := renderBoth(files, dir, "programs", p.Name, p, programMarkdown); err != nil {
 			return nil, err
 		}
+		svg, err := flowDiagram(filepath.Join(dir, "programs"), p).SVG()
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", p.Name, err)
+		}
+		files[filepath.Join("programs", p.Name+".svg")] = svg
 	}
 	for _, c := range s.Copybooks {
 		if err := renderBoth(files, dir, "copybooks", c.Name, c, copybookMarkdown); err != nil {
@@ -96,6 +102,8 @@ func programMarkdown(dir string, p Program) string {
 	for _, f := range p.Files {
 		b.WriteString(row(f.Name, f.Kind, f.Assign, f.Organization, f.Status, strings.Join(f.Records, ", ")))
 	}
+
+	fmt.Fprintf(&b, "\n## Flow\n\n![The paragraphs of %s and the PERFORMs between them](%s.svg)\n", p.Name, p.Name)
 
 	b.WriteString("\n## Paragraphs\n\n| Paragraph | Description | Source | Performs | Performed by |\n| --- | --- | --- | --- | --- |\n")
 	for _, para := range p.Paragraphs {
@@ -240,16 +248,24 @@ func programLinks(names []string, prefix string) string {
 // is the file name and line; otherwise the file name.
 func sourceLink(dir, source string, line bool) string {
 	path, lineNo, hasLine := strings.Cut(source, ":")
+	text := filepath.Base(path)
+	if hasLine && line {
+		text += ":" + lineNo
+	}
+	return fmt.Sprintf("[%s](%s)", text, sourceTarget(dir, source))
+}
+
+// sourceTarget is the relative URL of a source reference, with the line as
+// a fragment.
+func sourceTarget(dir, source string) string {
+	path, lineNo, hasLine := strings.Cut(source, ":")
 	target, err := filepath.Rel(dir, path)
 	if err != nil {
 		target = path
 	}
-	text := filepath.Base(path)
+	target = filepath.ToSlash(target)
 	if hasLine {
 		target += "#L" + lineNo
-		if line {
-			text += ":" + lineNo
-		}
 	}
-	return fmt.Sprintf("[%s](%s)", text, filepath.ToSlash(target))
+	return target
 }
