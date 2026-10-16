@@ -4,6 +4,8 @@
 //	pangaea load    load text files, one record per line, as datasets
 //	pangaea unload  write every cataloged dataset as text
 //	pangaea run     run a job
+//	pangaea reset   reset the running bank to a generated starting point
+//	pangaea days    run the running bank's next business days
 package main
 
 import (
@@ -13,6 +15,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/vlumi/copal/pangaea/bank"
 	"github.com/vlumi/copal/pangaea/compile"
 	"github.com/vlumi/copal/pangaea/dataset"
 	"github.com/vlumi/copal/pangaea/jcl"
@@ -24,6 +27,8 @@ const usage = `usage:
   pangaea load -datasets dir file.txt...
   pangaea unload -datasets dir outdir
   pangaea run -datasets dir -sysout dir [-programs dir] job.jcl
+  pangaea reset [-bank dir] [-seed n] [-accounts n]
+  pangaea days [-bank dir] [-n days]
 `
 
 func main() {
@@ -36,6 +41,8 @@ func main() {
 		"load":   load,
 		"unload": unload,
 		"run":    run,
+		"reset":  reset,
+		"days":   days,
 	}
 	command, ok := commands[os.Args[1]]
 	if !ok {
@@ -127,4 +134,37 @@ func parseJob(path string) (*jcl.Job, error) {
 		return nil, fmt.Errorf("%s: %w", path, err)
 	}
 	return job, nil
+}
+
+func bankFlags(name string) (*flag.FlagSet, *bank.Bank) {
+	flags := flag.NewFlagSet(name, flag.ExitOnError)
+	b := &bank.Bank{Copybooks: "pangaea/copybooks", DailyJob: "pangaea/jobs/DAILY.jcl"}
+	flags.StringVar(&b.Dir, "bank", "pangaea/run/bank", "directory of the running bank")
+	flags.StringVar(&b.Programs, "programs", "pangaea/build", "directory of the compiled programs")
+	return flags, b
+}
+
+func reset(args []string) error {
+	flags, b := bankFlags("reset")
+	seed := flags.Uint64("seed", 1, "seed the bank is generated from")
+	accounts := flags.Int("accounts", 3000, "number of accounts, about")
+	_ = flags.Parse(args)
+	if err := b.Reset(*seed, *accounts); err != nil {
+		return err
+	}
+	fmt.Printf("bank reset in %s: seed %d, about %d accounts, first business day %s\n", b.Dir, *seed, *accounts, bank.StartDate)
+	return nil
+}
+
+func days(args []string) error {
+	flags, b := bankFlags("days")
+	n := flags.Int("n", 1, "number of business days to run")
+	_ = flags.Parse(args)
+	return b.RunDays(*n, func(d bank.Day) {
+		rc := 0
+		for _, r := range d.Results {
+			rc = max(rc, r.RC)
+		}
+		fmt.Printf("%s  %5d transactions  %4d rejects  RC=%04d\n", d.Date, d.Transactions, d.Rejects, rc)
+	})
 }

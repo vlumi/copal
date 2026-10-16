@@ -34,6 +34,18 @@ pangaea-daily:  ## Run the daily batch on the fixture and show its reports
 pangaea-golden:  ## Rewrite Pangaea's golden outputs from a run on the fixture
 	go test ./pangaea -run TestDaily -update
 
+SEED ?= 1
+ACCOUNTS ?= 3000
+N ?= 1
+
+.PHONY: bank-reset
+bank-reset:  ## Reset the running bank to a generated start (SEED, ACCOUNTS)
+	go run ./cmd/pangaea reset -seed $(SEED) -accounts $(ACCOUNTS)
+
+.PHONY: bank-days
+bank-days: pangaea-build  ## Run the bank's next N business days
+	go run ./cmd/pangaea days -n $(N)
+
 .PHONY: blueprints
 blueprints:  ## Regenerate Pangaea's blueprints with Copal
 	rm -rf blueprints/pangaea
