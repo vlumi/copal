@@ -55,7 +55,6 @@ The hard part of moving a COBOL core system to anything newer is rarely the tran
 ## Debt
 
 - Fixtures and golden files hold records as text, and a record with packed decimal (`COMP-3`) fields as one line of hex. That round-trips, but a diff of it reads poorly; fields decoded through Copal's record layouts would read better.
-- A business day whose batch fails leaves the generations its steps wrote cataloged, and the bank's next run counts from them. The bank's history, and with it the console, assumes every day went through; a failed day needs a restart procedure that removes them.
 - Data flow names items as written: a value moved into a field and then written out through its group, or through a field that redefines it, has no lineage edge between the two. Following values through overlapping fields needs the layouts' positions.
 
 ## Toolchain
