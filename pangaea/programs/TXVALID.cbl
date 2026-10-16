@@ -10,9 +10,21 @@
       *                                                                *
       * RETURN CODES: 0 ALL VALID, 4 SOME DETAILS REJECTED,            *
       *               12 FILE REJECTED, 16 I/O ERROR.                  *
+      *                                                                *
+      * MODIFICATION HISTORY                                           *
+      * DATE       BY  CHANGE                                          *
+      * 1987-03-12 JA  ORIGINAL VERSION.                               *
+      * 1991-06-03 PK  CR-0117 ACCOUNT NUMBER HASH IN THE TRAILER.     *
+      * 1999-01-11 SL  Y2K: 8-DIGIT BUSINESS DATE FROM THE BANK        *
+      *                CONTROL RECORD.                                 *
+      * 2004-09-20 PK  CR-0388 REJECT RECORDS OF UNKNOWN TYPE          *
+      *                INSTEAD OF STOPPING THE RUN.                    *
       *================================================================*
        IDENTIFICATION DIVISION.
        PROGRAM-ID. TXVALID.
+       AUTHOR. J. ARKWRIGHT, BATCH SYSTEMS.
+       INSTALLATION. FIRST BANK OF PANGAEA, DATA CENTRE.
+       DATE-WRITTEN. 1987-03-12.
 
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
@@ -83,6 +95,7 @@
            05  FILLER                  PIC X(30)      VALUE SPACES.
 
        PROCEDURE DIVISION.
+      * VALIDATE THE FILE AND SET THE RETURN CODE.
        0000-MAIN.
            PERFORM 1000-OPEN-FILES
            PERFORM 2000-READ-HEADER
@@ -104,6 +117,7 @@
            END-EVALUATE
            STOP RUN.
 
+      * OPEN THE FILES AND READ THE BUSINESS DATE.
        1000-OPEN-FILES.
            OPEN INPUT  CONTROL-FILE TRAN-IN
                 OUTPUT TRAN-OUT REJECT-OUT REPORT-OUT
@@ -125,6 +139,7 @@
            MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE
            MOVE SPACES TO REJECT-RECORD.
 
+      * THE FIRST RECORD MUST BE THE HEADER FOR THE BUSINESS DATE.
        2000-READ-HEADER.
            READ TRAN-IN
                AT END
@@ -140,6 +155,7 @@
                        TO WS-FILE-ERROR
            END-EVALUATE.
 
+      * VALIDATE EACH RECORD UNTIL THE TRAILER.
        3000-READ-DETAILS.
            PERFORM 3100-READ-NEXT
            PERFORM UNTIL TR-TRAILER OR NOT FILE-IS-GOOD
@@ -157,12 +173,14 @@
                END-IF
            END-PERFORM.
 
+      * READ ONE RECORD. THE FILE MUST NOT END BEFORE ITS TRAILER.
        3100-READ-NEXT.
            READ TRAN-IN
                AT END
                    MOVE 'NO TRAILER' TO WS-FILE-ERROR
            END-READ.
 
+      * ADD A DETAIL TO THE TOTALS, THEN CHECK ITS FIELDS.
        3200-VALIDATE-DETAIL.
            ADD 1 TO WS-DETAIL-COUNT
            IF TD-AMOUNT IS NUMERIC
@@ -191,12 +209,14 @@
                PERFORM 3300-REJECT-RECORD
            END-IF.
 
+      * WRITE THE RECORD TO THE REJECTS WITH ITS REASON.
        3300-REJECT-RECORD.
            MOVE 'TXVALID' TO RJ-PROGRAM
            MOVE TRAN-RECORD TO RJ-TRAN
            WRITE REJECT-OUT-RECORD FROM REJECT-RECORD
            ADD 1 TO WS-REJECT-COUNT.
 
+      * THE TRAILER MUST MATCH THE TOTALS, AND END THE FILE.
        4000-CHECK-TRAILER.
            EVALUATE TRUE
                WHEN TT-DETAIL-COUNT NOT = WS-DETAIL-COUNT
@@ -217,6 +237,7 @@
                END-READ
            END-IF.
 
+      * WRITE THE VALIDATION REPORT.
        8000-WRITE-REPORT.
            MOVE SPACES TO REPORT-LINE
            STRING 'TXVALID  TRANSACTION VALIDATION  BUSINESS DATE '
@@ -248,5 +269,6 @@
            END-IF
            WRITE REPORT-LINE.
 
+      * CLOSE ALL FILES.
        9000-CLOSE-FILES.
            CLOSE CONTROL-FILE TRAN-IN TRAN-OUT REJECT-OUT REPORT-OUT.
