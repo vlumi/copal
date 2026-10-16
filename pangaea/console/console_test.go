@@ -37,6 +37,11 @@ func TestConsole(t *testing.T) {
 	}
 	server := httptest.NewServer(c.Handler())
 	defer server.Close()
+	defer func() {
+		if err := c.Close(); err != nil {
+			t.Error(err)
+		}
+	}()
 	client := server.Client()
 	client.CheckRedirect = func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }
 
@@ -49,7 +54,16 @@ func TestConsole(t *testing.T) {
 	get(t, server.URL+"/", http.StatusOK, `href="/days/2026-09-02"`, "RC=0004")
 	get(t, server.URL+"/days/2026-09-02", http.StatusOK, "TRAN.AUDIT.G0002V00", "VALID.VALRPT", "POST.POSTRPT",
 		"Job DAILY", "<svg", ">program ACCTMNT<", "/blueprints/programs/ACCTMNT.md", "/blueprints/copybooks/ACCTMAST.md", " records<")
-	get(t, server.URL+"/days/2026-09-01", http.StatusOK, "Job MONTHLY", "STMT.STMTRPT")
+	get(t, server.URL+"/days/2026-09-01", http.StatusOK, "Job MONTHLY", "STMT.STMTRPT", "Job ONLINE", "EXTRACT.HOLDRPT")
+	get(t, server.URL+"/live", http.StatusOK, "Open for business date 2026-09-03")
+	resp, err := client.Post(server.URL+"/api/balance", "application/json", strings.NewReader(`{"card":"9100000000099999","atm":"ATM 1"}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if body, _ := io.ReadAll(resp.Body); !strings.Contains(string(body), `"result":"14"`) {
+		t.Errorf("the online channel answered %s for an unknown card", body)
+	}
+	_ = resp.Body.Close()
 	get(t, server.URL+"/days/2026-09-02/sysout/JOBLOG", http.StatusOK, "JOB DAILY")
 	get(t, server.URL+"/days/2026-09-01/sysout/MONTHLY/JOBLOG", http.StatusOK, "JOB MONTHLY")
 	get(t, server.URL+"/days/2026-09-02/sysout/../SEED", http.StatusNotFound)
@@ -74,7 +88,7 @@ func TestConsole(t *testing.T) {
 	}
 	foreign.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	foreign.Header.Set("Sec-Fetch-Site", "cross-site")
-	resp, err := client.Do(foreign)
+	resp, err = client.Do(foreign)
 	if err != nil {
 		t.Fatal(err)
 	}

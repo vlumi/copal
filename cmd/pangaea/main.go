@@ -189,23 +189,14 @@ func serveOnline(args []string) error {
 	if err := s.Open(); err != nil {
 		return err
 	}
-	server := &http.Server{Addr: *addr, Handler: s.Handler(), ReadHeaderTimeout: 10 * time.Second}
-	interrupted := make(chan os.Signal, 1)
-	signal.Notify(interrupted, os.Interrupt)
-	go func() {
-		<-interrupted
-		_ = server.Close()
-	}()
 	fmt.Printf("the online day is open at http://%s/; interrupt to close it\n", *addr)
-	if err := server.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
-		_, _ = s.Close()
+	return serveUntilInterrupted(*addr, s.Handler(), func() error {
+		results, err := s.Close()
+		for _, r := range results {
+			fmt.Println(r)
+		}
 		return err
-	}
-	results, err := s.Close()
-	for _, r := range results {
-		fmt.Println(r)
-	}
-	return err
+	})
 }
 
 func serveConsole(args []string) error {
@@ -226,6 +217,25 @@ func serveConsole(args []string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("the bank console is at http://%s/\n", *addr)
-	return http.ListenAndServe(*addr, c.Handler())
+	if err := c.Open(); err != nil {
+		return err
+	}
+	fmt.Printf("the bank console is at http://%s/, the online channel at http://%s/api/; interrupt to close it\n", *addr, *addr)
+	return serveUntilInterrupted(*addr, c.Handler(), c.Close)
+}
+
+// serveUntilInterrupted serves until an interrupt, and then calls done.
+func serveUntilInterrupted(addr string, handler http.Handler, done func() error) error {
+	server := &http.Server{Addr: addr, Handler: handler, ReadHeaderTimeout: 10 * time.Second}
+	interrupted := make(chan os.Signal, 1)
+	signal.Notify(interrupted, os.Interrupt)
+	go func() {
+		<-interrupted
+		_ = server.Close()
+	}()
+	err := server.ListenAndServe()
+	if doneErr := done(); err == nil || errors.Is(err, http.ErrServerClosed) {
+		err = doneErr
+	}
+	return err
 }

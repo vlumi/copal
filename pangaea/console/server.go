@@ -13,10 +13,12 @@ import (
 	"slices"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/vlumi/copal/blueprint"
 	"github.com/vlumi/copal/pangaea/bank"
 	"github.com/vlumi/copal/pangaea/layouts"
+	"github.com/vlumi/copal/pangaea/online"
 )
 
 //go:embed templates static
@@ -26,12 +28,13 @@ var files embed.FS
 const shown = 200
 
 // Server serves the console for one bank, with the blueprints of its
-// programs and jobs.
+// programs and jobs, and the bank's online channel.
 type Server struct {
 	bank       bank.Bank
 	layouts    *layouts.Layouts
 	system     *blueprint.System
 	blueprints string
+	online     *online.Server
 	pages      map[string]*template.Template
 	// busy is locked while the bank runs or resets, and read-locked while
 	// a page reads its files.
@@ -46,9 +49,10 @@ func New(b bank.Bank, system *blueprint.System, blueprints string) (*Server, err
 	if err != nil {
 		return nil, err
 	}
-	s := &Server{bank: b, layouts: bankLayouts, system: system, blueprints: blueprints, pages: map[string]*template.Template{}}
+	s := &Server{bank: b, layouts: bankLayouts, system: system, blueprints: blueprints, pages: map[string]*template.Template{},
+		online: &online.Server{Bank: b, Layouts: bankLayouts, Clock: time.Now}}
 	funcs := template.FuncMap{"money": money, "count": count, "date": date}
-	for _, page := range []string{"overview", "nobank", "accounts", "account", "day", "compare", "error"} {
+	for _, page := range []string{"overview", "nobank", "accounts", "account", "day", "compare", "live", "error"} {
 		t, err := template.New("").Funcs(funcs).ParseFS(files, "templates/base.html", "templates/"+page+".html")
 		if err != nil {
 			return nil, err
@@ -73,7 +77,26 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /compare", s.view("compare", s.compare))
 	mux.HandleFunc("POST /reset", s.reset)
 	mux.HandleFunc("POST /run", s.run)
+	mux.HandleFunc("GET /live", s.view("live", s.live))
+	mux.HandleFunc("GET /live/events", s.events)
+	mux.Handle("/api/", http.StripPrefix("/api", s.online.Handler()))
 	return http.NewCrossOriginProtection().Handler(mux)
+}
+
+// Open opens the online day of the bank's business date, unless its
+// online day has run and its batch is next, or there is no bank.
+func (s *Server) Open() error {
+	err := s.online.Open()
+	if errors.Is(err, bank.ErrOnlineDayRun) || errors.Is(err, bank.ErrNoBank) {
+		return nil
+	}
+	return err
+}
+
+// Close closes the online day, if one is open.
+func (s *Server) Close() error {
+	_, err := s.online.Close()
+	return err
 }
 
 // page is what every template gets: the bank's history for the header, and
@@ -204,7 +227,13 @@ func (s *Server) reset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.busy.Lock()
-	err = s.bank.Reset(seed, accounts)
+	err = s.Close()
+	if err == nil {
+		err = s.bank.Reset(seed, accounts)
+	}
+	if err == nil {
+		err = s.Open()
+	}
 	s.busy.Unlock()
 	if err != nil {
 		s.fail(w, err)
@@ -230,14 +259,21 @@ func (s *Server) run(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/compare?"+url.Values{"from": {from}, "to": {to}}.Encode(), http.StatusSeeOther)
 }
 
-// runDays runs n business days and returns the openings before and after
-// them.
+// runDays closes the online day for the batch window, runs n business
+// days, and opens the online day of the next; it returns the openings
+// before and after them.
 func (s *Server) runDays(n int) (from, to string, err error) {
 	before, err := s.bank.History()
 	if err != nil {
 		return "", "", err
 	}
+	if err := s.Close(); err != nil {
+		return "", "", err
+	}
 	if err := s.bank.RunDays(n, func(bank.Day) {}); err != nil {
+		return "", "", err
+	}
+	if err := s.Open(); err != nil {
 		return "", "", err
 	}
 	after, err := s.bank.History()
