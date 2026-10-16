@@ -91,13 +91,16 @@ func (s *storage) at(record string, start, length int) string {
 // statement that moves a value into it or into bytes it shares, a group it
 // is in, a field of it or a field that redefines it, and on through what
 // those statements move from, to the files, literals and initial values
-// at the start. A group moved into a group is followed field by field.
+// at the start. A group moved into a group, or anything moved into an item
+// of its own length, is followed byte for byte. A literal moved into a
+// whole group around the item, such as MOVE SPACES TO A-RECORD, only
+// clears it, and counts only for an item with no other origin.
 func (f Flow) Origins(item string) []Origin {
 	start, ok := f.storage.places[item]
 	if !ok {
 		return nil
 	}
-	found := map[Origin]bool{}
+	found, clearing := map[Origin]bool{}, map[Origin]bool{}
 	visited := map[place]bool{}
 	queue := []place{start}
 	for len(queue) > 0 {
@@ -119,6 +122,8 @@ func (f Flow) Origins(item string) []Origin {
 			switch {
 			case e.FromFile:
 				found[Origin{File: e.From, Item: name}] = true
+			case e.FromLiteral && to.group && to.length > here.length:
+				clearing[Origin{Literal: e.From}] = true
 			case e.FromLiteral:
 				found[Origin{Literal: e.From}] = true
 			default:
@@ -127,6 +132,9 @@ func (f Flow) Origins(item string) []Origin {
 				}
 			}
 		}
+	}
+	if len(found) == 0 {
+		found = clearing
 	}
 	origins := make([]Origin, 0, len(found))
 	for o := range found {
@@ -137,10 +145,10 @@ func (f Flow) Origins(item string) []Origin {
 }
 
 // follow maps bytes of a statement's target back to its source: the same
-// bytes, by offset, when a group is moved into a group, and the whole
-// source otherwise.
+// bytes, by offset, when a group is moved into a group or an item into one
+// of its own length, and the whole source otherwise.
 func follow(here, to, from place) place {
-	if !to.group || !from.group {
+	if (!to.group || !from.group) && to.length != from.length {
 		return from
 	}
 	start := max(here.start, to.start)

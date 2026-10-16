@@ -35,6 +35,9 @@ Program [BANKDATE.cbl](../../../pangaea/programs/BANKDATE.cbl): 2 files, 2 parag
   - [Into WS-DAY-NUMBER](#into-ws-day-number)
   - [Into WS-WEEKDAY](#into-ws-weekday)
   - [Into files](#into-files)
+  - [Into other data items](#into-other-data-items)
+- [Field origins](#field-origins)
+  - [File CONTROL-OUT](#file-control-out)
 - [Records](#records)
   - [BANK-CONTROL-RECORD](#bank-control-record)
   - [CONTROL-OUT-RECORD](#control-out-record)
@@ -96,6 +99,8 @@ Record [WS-DAY-NUMBER](#ws-day-number).
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
 | WS-DAY-NUMBER | [BC-BUSINESS-DATE](#bank-control-record "in BANK-CONTROL-RECORD") | COMPUTE | 1000-NEXT-BUSINESS-DAY | [BANKDATE.cbl:75](../../../pangaea/programs/BANKDATE.cbl#L75) |
+| WS-DAY-NUMBER | literal 1 | ADD | 1000-NEXT-BUSINESS-DAY | [BANKDATE.cbl:77](../../../pangaea/programs/BANKDATE.cbl#L77) |
+| WS-DAY-NUMBER | literal 1 | ADD | 1000-NEXT-BUSINESS-DAY | [BANKDATE.cbl:80](../../../pangaea/programs/BANKDATE.cbl#L80) |
 
 ### Into WS-WEEKDAY
 
@@ -113,6 +118,28 @@ Records written to files.
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
 | file CONTROL-OUT | [CONTROL-OUT-RECORD](#control-out-record) | WRITE | 0000-MAIN | [BANKDATE.cbl:68](../../../pangaea/programs/BANKDATE.cbl#L68) |
+
+### Into other data items
+
+Data items the program does not declare, such as special registers and index names.
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| RETURN-CODE | literal 16 | MOVE | 0000-MAIN | [BANKDATE.cbl:58](../../../pangaea/programs/BANKDATE.cbl#L58) |
+| RETURN-CODE | literal 16 | MOVE | 0000-MAIN | [BANKDATE.cbl:64](../../../pangaea/programs/BANKDATE.cbl#L64) |
+| RETURN-CODE | literal 0 | MOVE | 0000-MAIN | [BANKDATE.cbl:70](../../../pangaea/programs/BANKDATE.cbl#L70) |
+
+## Field origins
+
+Where the values of each field the program writes to a file come from: the fields of the files it reads, literals, and initial values, followed through every statement that moves a value, and through groups and redefinitions by the bytes they share.
+
+### File CONTROL-OUT
+
+Written from [BANK-CONTROL-RECORD](#bank-control-record).
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| BC-BUSINESS-DATE | 1-8 | file CONTROL-IN BC-BUSINESS-DATE; literal 1 |
 
 ## Records
 

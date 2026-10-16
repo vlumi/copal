@@ -35,6 +35,7 @@ type Program struct {
 	Records        []Record         `json:"records"`
 	Paragraphs     []Paragraph      `json:"paragraphs"`
 	Lineage        []Lineage        `json:"lineage,omitempty"`
+	Outputs        []Output         `json:"outputs,omitempty"`
 	// Rules are the program's decision tables, a blueprint of their own.
 	Rules Rules `json:"-"`
 }
@@ -42,13 +43,14 @@ type Program struct {
 // Lineage is one statement moving a value from one data item, or a file,
 // into another, or into a file.
 type Lineage struct {
-	From      string `json:"from"`
-	To        string `json:"to"`
-	FromFile  bool   `json:"fromFile,omitempty"`
-	ToFile    bool   `json:"toFile,omitempty"`
-	Paragraph string `json:"paragraph"`
-	Verb      string `json:"verb"`
-	Source    string `json:"source"`
+	From        string `json:"from"`
+	To          string `json:"to"`
+	FromFile    bool   `json:"fromFile,omitempty"`
+	FromLiteral bool   `json:"fromLiteral,omitempty"`
+	ToFile      bool   `json:"toFile,omitempty"`
+	Paragraph   string `json:"paragraph"`
+	Verb        string `json:"verb"`
+	Source      string `json:"source"`
 }
 
 // Identification is an identification paragraph such as AUTHOR.
@@ -248,8 +250,9 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 	}
 	for _, e := range flow.Lineage {
 		program.Lineage = append(program.Lineage, Lineage{From: e.From, To: e.To, FromFile: e.FromFile, ToFile: e.ToFile,
-			Paragraph: e.Paragraph, Verb: e.Verb, Source: e.Pos.String()})
+			FromLiteral: e.FromLiteral, Paragraph: e.Paragraph, Verb: e.Verb, Source: e.Pos.String()})
 	}
+	program.Outputs = outputs(program, flow)
 	program.Rules = newRules(program.Name, rules.Tables(p))
 	return program, nil
 }

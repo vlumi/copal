@@ -45,10 +45,17 @@ Program [TXVALID.cbl](../../../pangaea/programs/TXVALID.cbl): 5 files, 10 paragr
   - [Into REPORT-LINE](#into-report-line)
   - [Into WS-BUSINESS-DATE](#into-ws-business-date)
   - [Into REJECT-RECORD](#into-reject-record)
+  - [Into WS-FILE-ERROR](#into-ws-file-error)
+  - [Into WS-DETAIL-STATE](#into-ws-detail-state)
   - [Into WS-TOTALS](#into-ws-totals)
   - [Into WS-REPORT-COUNT-LINE](#into-ws-report-count-line)
   - [Into WS-REPORT-AMOUNT-LINE](#into-ws-report-amount-line)
   - [Into files](#into-files)
+  - [Into other data items](#into-other-data-items)
+- [Field origins](#field-origins)
+  - [File TRAN-OUT](#file-tran-out)
+  - [File REJECT-OUT](#file-reject-out)
+  - [File REPORT-OUT](#file-report-out)
 - [Records](#records)
   - [BANK-CONTROL-RECORD](#bank-control-record)
   - [TRAN-RECORD](#tran-record)
@@ -152,11 +159,18 @@ Record [REPORT-LINE](#report-line).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| REPORT-LINE | literal SPACES | MOVE | 8000-WRITE-REPORT | [TXVALID.cbl:249](../../../pangaea/programs/TXVALID.cbl#L249) |
+| REPORT-LINE | literal 'TXVALID  TRANSACTION VALIDATION  BUSINESS DATE ' | STRING | 8000-WRITE-REPORT | [TXVALID.cbl:250](../../../pangaea/programs/TXVALID.cbl#L250) |
 | REPORT-LINE | [WS-BUSINESS-DATE](#ws-business-date) | STRING | 8000-WRITE-REPORT | [TXVALID.cbl:250](../../../pangaea/programs/TXVALID.cbl#L250) |
+| REPORT-LINE | literal SPACES | MOVE | 8000-WRITE-REPORT | [TXVALID.cbl:254](../../../pangaea/programs/TXVALID.cbl#L254) |
 | REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [TXVALID.cbl:258](../../../pangaea/programs/TXVALID.cbl#L258) |
 | REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [TXVALID.cbl:261](../../../pangaea/programs/TXVALID.cbl#L261) |
 | REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [TXVALID.cbl:264](../../../pangaea/programs/TXVALID.cbl#L264) |
 | REPORT-LINE | [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line) | WRITE | 8000-WRITE-REPORT | [TXVALID.cbl:267](../../../pangaea/programs/TXVALID.cbl#L267) |
+| REPORT-LINE | literal SPACES | MOVE | 8000-WRITE-REPORT | [TXVALID.cbl:268](../../../pangaea/programs/TXVALID.cbl#L268) |
+| REPORT-LINE | literal SPACES | MOVE | 8000-WRITE-REPORT | [TXVALID.cbl:270](../../../pangaea/programs/TXVALID.cbl#L270) |
+| REPORT-LINE | literal 'FILE ACCEPTED' | MOVE | 8000-WRITE-REPORT | [TXVALID.cbl:272](../../../pangaea/programs/TXVALID.cbl#L272) |
+| REPORT-LINE | literal 'FILE REJECTED: ' | STRING | 8000-WRITE-REPORT | [TXVALID.cbl:274](../../../pangaea/programs/TXVALID.cbl#L274) |
 | REPORT-LINE | [WS-FILE-ERROR](#ws-file-error) | STRING | 8000-WRITE-REPORT | [TXVALID.cbl:274](../../../pangaea/programs/TXVALID.cbl#L274) |
 
 ### Into WS-BUSINESS-DATE
@@ -173,7 +187,42 @@ Record [REJECT-RECORD](#reject-record), from copybook [REJREC](../copybooks/REJR
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| REJECT-RECORD | literal SPACES | MOVE | 1000-OPEN-FILES | [TXVALID.cbl:142](../../../pangaea/programs/TXVALID.cbl#L142) |
+| RJ-PROGRAM | literal 'TXVALID' | MOVE | 3300-REJECT-RECORD | [TXVALID.cbl:221](../../../pangaea/programs/TXVALID.cbl#L221) |
+| RJ-REASON | literal 'TYPE' | MOVE | 3000-READ-DETAILS | [TXVALID.cbl:170](../../../pangaea/programs/TXVALID.cbl#L170) |
+| RJ-REASON | literal condition RJ-BAD-ACCOUNT | SET | 3200-VALIDATE-DETAIL | [TXVALID.cbl:197](../../../pangaea/programs/TXVALID.cbl#L197) |
+| RJ-REASON | literal condition RJ-BAD-CODE | SET | 3200-VALIDATE-DETAIL | [TXVALID.cbl:200](../../../pangaea/programs/TXVALID.cbl#L200) |
+| RJ-REASON | literal condition RJ-BAD-AMOUNT | SET | 3200-VALIDATE-DETAIL | [TXVALID.cbl:204](../../../pangaea/programs/TXVALID.cbl#L204) |
+| RJ-REASON | literal condition RJ-BAD-COUNTER | SET | 3200-VALIDATE-DETAIL | [TXVALID.cbl:209](../../../pangaea/programs/TXVALID.cbl#L209) |
 | RJ-TRAN | [TRAN-RECORD](#tran-record) | MOVE | 3300-REJECT-RECORD | [TXVALID.cbl:222](../../../pangaea/programs/TXVALID.cbl#L222) |
+
+### Into WS-FILE-ERROR
+
+Record [WS-FILE-ERROR](#ws-file-error).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-FILE-ERROR | literal 'EMPTY FILE' | MOVE | 2000-READ-HEADER | [TXVALID.cbl:148](../../../pangaea/programs/TXVALID.cbl#L148) |
+| WS-FILE-ERROR | literal 'FIRST RECORD IS NOT A HEADER' | MOVE | 2000-READ-HEADER | [TXVALID.cbl:154](../../../pangaea/programs/TXVALID.cbl#L154) |
+| WS-FILE-ERROR | literal 'HEADER IS NOT FOR THE BUSINESS DATE' | MOVE | 2000-READ-HEADER | [TXVALID.cbl:156](../../../pangaea/programs/TXVALID.cbl#L156) |
+| WS-FILE-ERROR | literal 'SECOND HEADER' | MOVE | 3000-READ-DETAILS | [TXVALID.cbl:168](../../../pangaea/programs/TXVALID.cbl#L168) |
+| WS-FILE-ERROR | literal 'NO TRAILER' | MOVE | 3100-READ-NEXT | [TXVALID.cbl:182](../../../pangaea/programs/TXVALID.cbl#L182) |
+| WS-FILE-ERROR | literal 'TRAILER DETAIL COUNT DIFFERS' | MOVE | 4000-CHECK-TRAILER | [TXVALID.cbl:230](../../../pangaea/programs/TXVALID.cbl#L230) |
+| WS-FILE-ERROR | literal 'TRAILER AMOUNT TOTAL DIFFERS' | MOVE | 4000-CHECK-TRAILER | [TXVALID.cbl:233](../../../pangaea/programs/TXVALID.cbl#L233) |
+| WS-FILE-ERROR | literal 'TRAILER ACCOUNT HASH DIFFERS' | MOVE | 4000-CHECK-TRAILER | [TXVALID.cbl:236](../../../pangaea/programs/TXVALID.cbl#L236) |
+| WS-FILE-ERROR | literal 'RECORDS AFTER THE TRAILER' | MOVE | 4000-CHECK-TRAILER | [TXVALID.cbl:242](../../../pangaea/programs/TXVALID.cbl#L242) |
+
+### Into WS-DETAIL-STATE
+
+Record [WS-DETAIL-STATE](#ws-detail-state).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-DETAIL-STATE | literal condition DETAIL-IS-VALID | SET | 3200-VALIDATE-DETAIL | [TXVALID.cbl:194](../../../pangaea/programs/TXVALID.cbl#L194) |
+| WS-DETAIL-STATE | literal condition DETAIL-IS-REJECTED | SET | 3200-VALIDATE-DETAIL | [TXVALID.cbl:198](../../../pangaea/programs/TXVALID.cbl#L198) |
+| WS-DETAIL-STATE | literal condition DETAIL-IS-REJECTED | SET | 3200-VALIDATE-DETAIL | [TXVALID.cbl:201](../../../pangaea/programs/TXVALID.cbl#L201) |
+| WS-DETAIL-STATE | literal condition DETAIL-IS-REJECTED | SET | 3200-VALIDATE-DETAIL | [TXVALID.cbl:205](../../../pangaea/programs/TXVALID.cbl#L205) |
+| WS-DETAIL-STATE | literal condition DETAIL-IS-REJECTED | SET | 3200-VALIDATE-DETAIL | [TXVALID.cbl:210](../../../pangaea/programs/TXVALID.cbl#L210) |
 
 ### Into WS-TOTALS
 
@@ -183,6 +232,9 @@ Record [WS-TOTALS](#ws-totals).
 | --- | --- | --- | --- | --- |
 | WS-ACCT-HASH | [TD-ACCT-NO](#tran-record "in TRAN-RECORD") | ADD | 3200-VALIDATE-DETAIL | [TXVALID.cbl:192](../../../pangaea/programs/TXVALID.cbl#L192) |
 | WS-AMOUNT-TOTAL | [TD-AMOUNT](#tran-record "in TRAN-RECORD") | ADD | 3200-VALIDATE-DETAIL | [TXVALID.cbl:189](../../../pangaea/programs/TXVALID.cbl#L189) |
+| WS-DETAIL-COUNT | literal 1 | ADD | 3200-VALIDATE-DETAIL | [TXVALID.cbl:187](../../../pangaea/programs/TXVALID.cbl#L187) |
+| WS-REJECT-COUNT | literal 1 | ADD | 3300-REJECT-RECORD | [TXVALID.cbl:224](../../../pangaea/programs/TXVALID.cbl#L224) |
+| WS-VALID-COUNT | literal 1 | ADD | 3200-VALIDATE-DETAIL | [TXVALID.cbl:214](../../../pangaea/programs/TXVALID.cbl#L214) |
 
 ### Into WS-REPORT-COUNT-LINE
 
@@ -190,6 +242,9 @@ Record [WS-REPORT-COUNT-LINE](#ws-report-count-line).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-RC-LABEL | literal 'DETAILS READ' | MOVE | 8000-WRITE-REPORT | [TXVALID.cbl:256](../../../pangaea/programs/TXVALID.cbl#L256) |
+| WS-RC-LABEL | literal 'DETAILS VALID' | MOVE | 8000-WRITE-REPORT | [TXVALID.cbl:259](../../../pangaea/programs/TXVALID.cbl#L259) |
+| WS-RC-LABEL | literal 'RECORDS REJECTED' | MOVE | 8000-WRITE-REPORT | [TXVALID.cbl:262](../../../pangaea/programs/TXVALID.cbl#L262) |
 | WS-RC-VALUE | [WS-DETAIL-COUNT](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [TXVALID.cbl:257](../../../pangaea/programs/TXVALID.cbl#L257) |
 | WS-RC-VALUE | [WS-VALID-COUNT](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [TXVALID.cbl:260](../../../pangaea/programs/TXVALID.cbl#L260) |
 | WS-RC-VALUE | [WS-REJECT-COUNT](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [TXVALID.cbl:263](../../../pangaea/programs/TXVALID.cbl#L263) |
@@ -200,6 +255,7 @@ Record [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-RA-LABEL | literal 'AMOUNT TOTAL' | MOVE | 8000-WRITE-REPORT | [TXVALID.cbl:265](../../../pangaea/programs/TXVALID.cbl#L265) |
 | WS-RA-VALUE | [WS-AMOUNT-TOTAL](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [TXVALID.cbl:266](../../../pangaea/programs/TXVALID.cbl#L266) |
 
 ### Into files
@@ -218,6 +274,62 @@ Records written to files.
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [TXVALID.cbl:269](../../../pangaea/programs/TXVALID.cbl#L269) |
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [TXVALID.cbl:277](../../../pangaea/programs/TXVALID.cbl#L277) |
 | file TRAN-OUT | [TRAN-OUT-RECORD](#tran-out-record) | WRITE | 3200-VALIDATE-DETAIL | [TXVALID.cbl:213](../../../pangaea/programs/TXVALID.cbl#L213) |
+
+### Into other data items
+
+Data items the program does not declare, such as special registers and index names.
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| RETURN-CODE | literal 12 | MOVE | 0000-MAIN | [TXVALID.cbl:114](../../../pangaea/programs/TXVALID.cbl#L114) |
+| RETURN-CODE | literal 4 | MOVE | 0000-MAIN | [TXVALID.cbl:116](../../../pangaea/programs/TXVALID.cbl#L116) |
+| RETURN-CODE | literal 0 | MOVE | 0000-MAIN | [TXVALID.cbl:118](../../../pangaea/programs/TXVALID.cbl#L118) |
+| RETURN-CODE | literal 16 | MOVE | 1000-OPEN-FILES | [TXVALID.cbl:132](../../../pangaea/programs/TXVALID.cbl#L132) |
+| RETURN-CODE | literal 16 | MOVE | 1000-OPEN-FILES | [TXVALID.cbl:138](../../../pangaea/programs/TXVALID.cbl#L138) |
+
+## Field origins
+
+Where the values of each field the program writes to a file come from: the fields of the files it reads, literals, and initial values, followed through every statement that moves a value, and through groups and redefinitions by the bytes they share.
+
+### File TRAN-OUT
+
+Written from [TRAN-RECORD](#tran-record).
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| TR-REC-TYPE | 1 | file TRAN-IN TR-REC-TYPE |
+| TR-BODY | 2-80 | file TRAN-IN TR-BODY |
+| TH-BUSINESS-DATE | 2-9 | file TRAN-IN TH-BUSINESS-DATE |
+| TH-SOURCE | 10-17 | file TRAN-IN TH-SOURCE |
+| TH-FILE-SEQ | 18-23 | file TRAN-IN TH-FILE-SEQ |
+| TD-TRAN-ID | 2-11 | file TRAN-IN TD-TRAN-ID |
+| TD-ACCT-NO | 12-21 | file TRAN-IN TD-ACCT-NO |
+| TD-TRAN-CODE | 22-23 | file TRAN-IN TD-TRAN-CODE |
+| TD-AMOUNT | 24-34 | file TRAN-IN TD-AMOUNT |
+| TD-DESCRIPTION | 35-54 | file TRAN-IN TD-DESCRIPTION |
+| TD-COUNTER-ACCT-NO | 55-64 | file TRAN-IN TD-COUNTER-ACCT-NO |
+| TT-DETAIL-COUNT | 2-9 | file TRAN-IN TH-BUSINESS-DATE |
+| TT-AMOUNT-TOTAL | 10-24 | file TRAN-IN TT-AMOUNT-TOTAL |
+| TT-ACCT-HASH | 25-39 | file TRAN-IN TT-ACCT-HASH |
+
+### File REJECT-OUT
+
+Written from [REJECT-RECORD](#reject-record).
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| RJ-PROGRAM | 1-8 | literal 'TXVALID' |
+| RJ-REASON | 9-12 | literal 'TYPE'; literal condition RJ-BAD-ACCOUNT; literal condition RJ-BAD-AMOUNT; literal condition RJ-BAD-CODE; literal condition RJ-BAD-COUNTER |
+| RJ-TRAN | 13-92 | file TRAN-IN TRAN-RECORD |
+
+### File REPORT-OUT
+
+Written from [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| WS-RA-LABEL | 1-30 | literal 'AMOUNT TOTAL' |
+| WS-RA-VALUE | 31-50 | file TRAN-IN TD-AMOUNT; initial value of WS-AMOUNT-TOTAL |
 
 ## Records
 

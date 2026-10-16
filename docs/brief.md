@@ -54,7 +54,7 @@ The hard part of moving a COBOL core system to anything newer is rarely the tran
 
 ## Debt
 
-- Data flow names items as written: a value moved into a field and then written out through its group, or through a field that redefines it, has no lineage edge between the two. Following values through overlapping fields needs the layouts' positions.
+- Field origins ignore the order of statements: a value that every path overwrites before the record is written still counts as an origin, as does a field of a record redefined for another record type. Order-aware tracing needs the control flow between statements, which the statement parser and the structure analysis now make possible.
 
 ## Toolchain
 

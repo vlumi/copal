@@ -45,11 +45,14 @@ Program [STMTPRT.cbl](../../../pangaea/programs/STMTPRT.cbl): 6 files, 14 paragr
   - [Into STMT-LINE](#into-stmt-line)
   - [Into REPORT-LINE](#into-report-line)
   - [Into SORT-RECORD](#into-sort-record)
+  - [Into WS-ABORT-MESSAGE](#into-ws-abort-message)
+  - [Into WS-SWITCHES](#into-ws-switches)
   - [Into WS-CLOSED-MONTH-NUMBER](#into-ws-closed-month-number)
   - [Into WS-NEXT-MONTH](#into-ws-next-month)
   - [Into WS-POSTING-MONTH](#into-ws-posting-month)
   - [Into WS-POSTING-CODE](#into-ws-posting-code)
   - [Into WS-POSTING-KEY](#into-ws-posting-key)
+  - [Into WS-SEQ](#into-ws-seq)
   - [Into WS-STATEMENT](#into-ws-statement)
   - [Into WS-TOTALS](#into-ws-totals)
   - [Into WS-TITLE-LINE](#into-ws-title-line)
@@ -61,6 +64,11 @@ Program [STMTPRT.cbl](../../../pangaea/programs/STMTPRT.cbl): 6 files, 14 paragr
   - [Into WS-REPORT-COUNT-LINE](#into-ws-report-count-line)
   - [Into WS-REPORT-AMOUNT-LINE](#into-ws-report-amount-line)
   - [Into files](#into-files)
+  - [Into other data items](#into-other-data-items)
+- [Field origins](#field-origins)
+  - [File STMT-SORT](#file-stmt-sort)
+  - [File STMT-OUT](#file-stmt-out)
+  - [File REPORT-OUT](#file-report-out)
 - [Records](#records)
   - [ACCRUAL-RECORD](#accrual-record)
   - [ACCT-MASTER-RECORD](#acct-master-record)
@@ -187,11 +195,13 @@ Record [STMT-LINE](#stmt-line).
 | STMT-LINE | [WS-RULE-LINE](#ws-rule-line) | WRITE | 3400-PRINT-HEADING | [STMTPRT.cbl:340](../../../pangaea/programs/STMTPRT.cbl#L340) |
 | STMT-LINE | [WS-TITLE-LINE](#ws-title-line) | WRITE | 3400-PRINT-HEADING | [STMTPRT.cbl:346](../../../pangaea/programs/STMTPRT.cbl#L346) |
 | STMT-LINE | [WS-ACCOUNT-LINE](#ws-account-line) | WRITE | 3400-PRINT-HEADING | [STMTPRT.cbl:359](../../../pangaea/programs/STMTPRT.cbl#L359) |
+| STMT-LINE | literal SPACES | MOVE | 3400-PRINT-HEADING | [STMTPRT.cbl:360](../../../pangaea/programs/STMTPRT.cbl#L360) |
 | STMT-LINE | [WS-HEADING-LINE](#ws-heading-line) | WRITE | 3400-PRINT-HEADING | [STMTPRT.cbl:362](../../../pangaea/programs/STMTPRT.cbl#L362) |
 | STMT-LINE | [WS-BALANCE-LINE](#ws-balance-line) | WRITE | 3400-PRINT-HEADING | [STMTPRT.cbl:365](../../../pangaea/programs/STMTPRT.cbl#L365) |
 | STMT-LINE | [WS-POSTING-LINE](#ws-posting-line) | WRITE | 3500-PRINT-POSTING | [STMTPRT.cbl:383](../../../pangaea/programs/STMTPRT.cbl#L383) |
 | STMT-LINE | [WS-BALANCE-LINE](#ws-balance-line) | WRITE | 3600-PRINT-CLOSING | [STMTPRT.cbl:396](../../../pangaea/programs/STMTPRT.cbl#L396) |
 | STMT-LINE | [WS-SUM-LINE](#ws-sum-line) | WRITE | 3600-PRINT-CLOSING | [STMTPRT.cbl:399](../../../pangaea/programs/STMTPRT.cbl#L399) |
+| STMT-LINE | literal SPACES | MOVE | 3600-PRINT-CLOSING | [STMTPRT.cbl:400](../../../pangaea/programs/STMTPRT.cbl#L400) |
 
 ### Into REPORT-LINE
 
@@ -199,6 +209,11 @@ Record [REPORT-LINE](#report-line).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| REPORT-LINE | literal 'STMTPRT  MONTHLY STATEMENTS' | MOVE | 8000-WRITE-REPORT | [STMTPRT.cbl:408](../../../pangaea/programs/STMTPRT.cbl#L408) |
+| REPORT-LINE | literal SPACES | MOVE | 8000-WRITE-REPORT | [STMTPRT.cbl:410](../../../pangaea/programs/STMTPRT.cbl#L410) |
+| REPORT-LINE | literal 'NO MONTH CLOSED' | MOVE | 8000-WRITE-REPORT | [STMTPRT.cbl:413](../../../pangaea/programs/STMTPRT.cbl#L413) |
+| REPORT-LINE | literal SPACES | MOVE | 8000-WRITE-REPORT | [STMTPRT.cbl:417](../../../pangaea/programs/STMTPRT.cbl#L417) |
+| REPORT-LINE | literal 'MONTH CLOSED                  ' | STRING | 8000-WRITE-REPORT | [STMTPRT.cbl:418](../../../pangaea/programs/STMTPRT.cbl#L418) |
 | REPORT-LINE | [WS-CLOSED-MONTH](#ws-closed-month) | STRING | 8000-WRITE-REPORT | [STMTPRT.cbl:418](../../../pangaea/programs/STMTPRT.cbl#L418) |
 | REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [STMTPRT.cbl:423](../../../pangaea/programs/STMTPRT.cbl#L423) |
 | REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [STMTPRT.cbl:426](../../../pangaea/programs/STMTPRT.cbl#L426) |
@@ -223,12 +238,34 @@ Record [SORT-RECORD](#sort-record).
 | SR-TRAN-CODE | [AU-TRAN-CODE](#audit-record "in AUDIT-RECORD") | MOVE | 2100-RELEASE-POSTING | [STMTPRT.cbl:273](../../../pangaea/programs/STMTPRT.cbl#L273) |
 | SR-TRAN-ID | [AU-TRAN-ID](#audit-record "in AUDIT-RECORD") | MOVE | 2100-RELEASE-POSTING | [STMTPRT.cbl:272](../../../pangaea/programs/STMTPRT.cbl#L272) |
 
+### Into WS-ABORT-MESSAGE
+
+Record [WS-ABORT-MESSAGE](#ws-abort-message).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-ABORT-MESSAGE | literal 'SORT FAILED' | MOVE | 0000-MAIN | [STMTPRT.cbl:216](../../../pangaea/programs/STMTPRT.cbl#L216) |
+| WS-ABORT-MESSAGE | literal 'CANNOT READ THE AUDIT TRAILS' | MOVE | 2000-SELECT-POSTINGS | [STMTPRT.cbl:263](../../../pangaea/programs/STMTPRT.cbl#L263) |
+| WS-ABORT-MESSAGE | literal 'POSTINGS FOR NO ACCOUNT' | MOVE | 3000-PRINT-STATEMENTS | [STMTPRT.cbl:287](../../../pangaea/programs/STMTPRT.cbl#L287) |
+| WS-ABORT-MESSAGE | literal 'POSTINGS FOR NO ACCOUNT' | MOVE | 3000-PRINT-STATEMENTS | [STMTPRT.cbl:294](../../../pangaea/programs/STMTPRT.cbl#L294) |
+| WS-ABORT-MESSAGE | literal 'POSTINGS SELECTED BUT NOT PRINTED' | MOVE | 8000-WRITE-REPORT | [STMTPRT.cbl:440](../../../pangaea/programs/STMTPRT.cbl#L440) |
+
+### Into WS-SWITCHES
+
+Record [WS-SWITCHES](#ws-switches).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-MASTER-END-SW | literal condition MASTER-AT-END | SET | 3200-READ-MASTER | [STMTPRT.cbl:312](../../../pangaea/programs/STMTPRT.cbl#L312) |
+| WS-POSTING-END-SW | literal condition POSTINGS-AT-END | SET | 3100-RETURN-POSTING | [STMTPRT.cbl:302](../../../pangaea/programs/STMTPRT.cbl#L302) |
+
 ### Into WS-CLOSED-MONTH-NUMBER
 
 Record [WS-CLOSED-MONTH-NUMBER](#ws-closed-month-number).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-CLOSED-MONTH-NUMBER | literal 0 | MOVE | 1000-INITIALIZE | [STMTPRT.cbl:234](../../../pangaea/programs/STMTPRT.cbl#L234) |
 | WS-CLOSED-MONTH-NUMBER | [AC-DUE-MONTH](#accrual-record "in ACCRUAL-RECORD") | MOVE | 1000-INITIALIZE | [STMTPRT.cbl:237](../../../pangaea/programs/STMTPRT.cbl#L237) |
 
 ### Into WS-NEXT-MONTH
@@ -237,8 +274,10 @@ Record [WS-NEXT-MONTH](#ws-next-month).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-NM-MONTH | literal 1 | MOVE | 1000-INITIALIZE | [STMTPRT.cbl:242](../../../pangaea/programs/STMTPRT.cbl#L242) |
 | WS-NM-MONTH | [WS-CM-MONTH](#ws-closed-month "in WS-CLOSED-MONTH") | COMPUTE | 1000-INITIALIZE | [STMTPRT.cbl:244](../../../pangaea/programs/STMTPRT.cbl#L244) |
 | WS-NM-YEAR | [WS-CM-YEAR](#ws-closed-month "in WS-CLOSED-MONTH") | MOVE | 1000-INITIALIZE | [STMTPRT.cbl:239](../../../pangaea/programs/STMTPRT.cbl#L239) |
+| WS-NM-YEAR | literal 1 | ADD | 1000-INITIALIZE | [STMTPRT.cbl:241](../../../pangaea/programs/STMTPRT.cbl#L241) |
 
 ### Into WS-POSTING-MONTH
 
@@ -262,7 +301,16 @@ Record [WS-POSTING-KEY](#ws-posting-key).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-POSTING-KEY | literal HIGH-VALUES | MOVE | 3100-RETURN-POSTING | [STMTPRT.cbl:303](../../../pangaea/programs/STMTPRT.cbl#L303) |
 | WS-POSTING-KEY | [SR-ACCT-NO](#sort-record "in SORT-RECORD") | MOVE | 3100-RETURN-POSTING | [STMTPRT.cbl:305](../../../pangaea/programs/STMTPRT.cbl#L305) |
+
+### Into WS-SEQ
+
+Record [WS-SEQ](#ws-seq).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-SEQ | literal 1 | ADD | 2000-SELECT-POSTINGS | [STMTPRT.cbl:252](../../../pangaea/programs/STMTPRT.cbl#L252) |
 
 ### Into WS-STATEMENT
 
@@ -272,7 +320,9 @@ Record [WS-STATEMENT](#ws-statement).
 | --- | --- | --- | --- | --- |
 | WS-CLOSING | [WS-OPENING](#ws-statement "in WS-STATEMENT") | MOVE | 3300-PRINT-STATEMENT | [STMTPRT.cbl:328](../../../pangaea/programs/STMTPRT.cbl#L328) |
 | WS-CLOSING | [SR-BALANCE-AFTER](#sort-record "in SORT-RECORD") | MOVE | 3500-PRINT-POSTING | [STMTPRT.cbl:389](../../../pangaea/programs/STMTPRT.cbl#L389) |
+| WS-CREDITS | literal 0 | MOVE | 3300-PRINT-STATEMENT | [STMTPRT.cbl:329](../../../pangaea/programs/STMTPRT.cbl#L329) |
 | WS-CREDITS | [SR-AMOUNT](#sort-record "in SORT-RECORD") | ADD | 3500-PRINT-POSTING | [STMTPRT.cbl:387](../../../pangaea/programs/STMTPRT.cbl#L387) |
+| WS-DEBITS | literal 0 | MOVE | 3300-PRINT-STATEMENT | [STMTPRT.cbl:329](../../../pangaea/programs/STMTPRT.cbl#L329) |
 | WS-DEBITS | [SR-AMOUNT](#sort-record "in SORT-RECORD") | SUBTRACT | 3500-PRINT-POSTING | [STMTPRT.cbl:385](../../../pangaea/programs/STMTPRT.cbl#L385) |
 | WS-OPENING | [AM-BALANCE](#acct-master-record "in ACCT-MASTER-RECORD") | MOVE | 3300-PRINT-STATEMENT | [STMTPRT.cbl:324](../../../pangaea/programs/STMTPRT.cbl#L324) |
 | WS-OPENING | [SR-BALANCE-BEFORE](#sort-record "in SORT-RECORD") | MOVE | 3300-PRINT-STATEMENT | [STMTPRT.cbl:326](../../../pangaea/programs/STMTPRT.cbl#L326) |
@@ -283,8 +333,12 @@ Record [WS-TOTALS](#ws-totals).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-ACCOUNT-COUNT | literal 1 | ADD | 3200-READ-MASTER | [STMTPRT.cbl:314](../../../pangaea/programs/STMTPRT.cbl#L314) |
 | WS-CREDIT-TOTAL | [WS-CREDITS](#ws-statement "in WS-STATEMENT") | ADD | 3600-PRINT-CLOSING | [STMTPRT.cbl:402](../../../pangaea/programs/STMTPRT.cbl#L402) |
 | WS-DEBIT-TOTAL | [WS-DEBITS](#ws-statement "in WS-STATEMENT") | ADD | 3600-PRINT-CLOSING | [STMTPRT.cbl:403](../../../pangaea/programs/STMTPRT.cbl#L403) |
+| WS-PRINTED-COUNT | literal 1 | ADD | 3500-PRINT-POSTING | [STMTPRT.cbl:390](../../../pangaea/programs/STMTPRT.cbl#L390) |
+| WS-SELECTED-COUNT | literal 1 | ADD | 2100-RELEASE-POSTING | [STMTPRT.cbl:278](../../../pangaea/programs/STMTPRT.cbl#L278) |
+| WS-STATEMENT-COUNT | literal 1 | ADD | 3300-PRINT-STATEMENT | [STMTPRT.cbl:336](../../../pangaea/programs/STMTPRT.cbl#L336) |
 
 ### Into WS-TITLE-LINE
 
@@ -292,7 +346,11 @@ Record [WS-TITLE-LINE](#ws-title-line).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-TL-PERIOD | literal SPACES | MOVE | 3400-PRINT-HEADING | [STMTPRT.cbl:341](../../../pangaea/programs/STMTPRT.cbl#L341) |
+| WS-TL-PERIOD | literal 'STATEMENT FOR ' | STRING | 3400-PRINT-HEADING | [STMTPRT.cbl:342](../../../pangaea/programs/STMTPRT.cbl#L342) |
 | WS-TL-PERIOD | [WS-MONTH-NAME](#ws-month-names "in WS-MONTH-NAMES") | STRING | 3400-PRINT-HEADING | [STMTPRT.cbl:342](../../../pangaea/programs/STMTPRT.cbl#L342) |
+| WS-TL-PERIOD | literal SPACE | STRING | 3400-PRINT-HEADING | [STMTPRT.cbl:342](../../../pangaea/programs/STMTPRT.cbl#L342) |
+| WS-TL-PERIOD | literal ' ' | STRING | 3400-PRINT-HEADING | [STMTPRT.cbl:342](../../../pangaea/programs/STMTPRT.cbl#L342) |
 | WS-TL-PERIOD | [WS-CM-YEAR](#ws-closed-month "in WS-CLOSED-MONTH") | STRING | 3400-PRINT-HEADING | [STMTPRT.cbl:342](../../../pangaea/programs/STMTPRT.cbl#L342) |
 
 ### Into WS-ACCOUNT-LINE
@@ -302,6 +360,10 @@ Record [WS-ACCOUNT-LINE](#ws-account-line).
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
 | WS-AL-ACCT-NO | [AM-ACCT-NO](#acct-master-record "in ACCT-MASTER-RECORD") | MOVE | 3400-PRINT-HEADING | [STMTPRT.cbl:347](../../../pangaea/programs/STMTPRT.cbl#L347) |
+| WS-AL-KIND | literal 'SAVINGS ACCOUNT, FROZEN' | MOVE | 3400-PRINT-HEADING | [STMTPRT.cbl:351](../../../pangaea/programs/STMTPRT.cbl#L351) |
+| WS-AL-KIND | literal 'SAVINGS ACCOUNT' | MOVE | 3400-PRINT-HEADING | [STMTPRT.cbl:353](../../../pangaea/programs/STMTPRT.cbl#L353) |
+| WS-AL-KIND | literal 'CURRENT ACCOUNT, FROZEN' | MOVE | 3400-PRINT-HEADING | [STMTPRT.cbl:355](../../../pangaea/programs/STMTPRT.cbl#L355) |
+| WS-AL-KIND | literal 'CURRENT ACCOUNT' | MOVE | 3400-PRINT-HEADING | [STMTPRT.cbl:357](../../../pangaea/programs/STMTPRT.cbl#L357) |
 | WS-AL-NAME | [AM-SHORT-NAME](#acct-master-record "in ACCT-MASTER-RECORD") | MOVE | 3400-PRINT-HEADING | [STMTPRT.cbl:348](../../../pangaea/programs/STMTPRT.cbl#L348) |
 
 ### Into WS-DATE
@@ -335,6 +397,8 @@ Record [WS-BALANCE-LINE](#ws-balance-line).
 | --- | --- | --- | --- | --- |
 | WS-BL-BALANCE | [WS-OPENING](#ws-statement "in WS-STATEMENT") | MOVE | 3400-PRINT-HEADING | [STMTPRT.cbl:364](../../../pangaea/programs/STMTPRT.cbl#L364) |
 | WS-BL-BALANCE | [WS-CLOSING](#ws-statement "in WS-STATEMENT") | MOVE | 3600-PRINT-CLOSING | [STMTPRT.cbl:395](../../../pangaea/programs/STMTPRT.cbl#L395) |
+| WS-BL-LABEL | literal 'OPENING BALANCE' | MOVE | 3400-PRINT-HEADING | [STMTPRT.cbl:363](../../../pangaea/programs/STMTPRT.cbl#L363) |
+| WS-BL-LABEL | literal 'CLOSING BALANCE' | MOVE | 3600-PRINT-CLOSING | [STMTPRT.cbl:394](../../../pangaea/programs/STMTPRT.cbl#L394) |
 
 ### Into WS-SUM-LINE
 
@@ -351,6 +415,10 @@ Record [WS-REPORT-COUNT-LINE](#ws-report-count-line).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-RC-LABEL | literal 'ACCOUNTS READ' | MOVE | 8000-WRITE-REPORT | [STMTPRT.cbl:421](../../../pangaea/programs/STMTPRT.cbl#L421) |
+| WS-RC-LABEL | literal 'STATEMENTS PRINTED' | MOVE | 8000-WRITE-REPORT | [STMTPRT.cbl:424](../../../pangaea/programs/STMTPRT.cbl#L424) |
+| WS-RC-LABEL | literal 'POSTINGS SELECTED' | MOVE | 8000-WRITE-REPORT | [STMTPRT.cbl:427](../../../pangaea/programs/STMTPRT.cbl#L427) |
+| WS-RC-LABEL | literal 'POSTINGS PRINTED' | MOVE | 8000-WRITE-REPORT | [STMTPRT.cbl:430](../../../pangaea/programs/STMTPRT.cbl#L430) |
 | WS-RC-VALUE | [WS-ACCOUNT-COUNT](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [STMTPRT.cbl:422](../../../pangaea/programs/STMTPRT.cbl#L422) |
 | WS-RC-VALUE | [WS-STATEMENT-COUNT](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [STMTPRT.cbl:425](../../../pangaea/programs/STMTPRT.cbl#L425) |
 | WS-RC-VALUE | [WS-SELECTED-COUNT](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [STMTPRT.cbl:428](../../../pangaea/programs/STMTPRT.cbl#L428) |
@@ -362,6 +430,8 @@ Record [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-RA-LABEL | literal 'CREDITS' | MOVE | 8000-WRITE-REPORT | [STMTPRT.cbl:433](../../../pangaea/programs/STMTPRT.cbl#L433) |
+| WS-RA-LABEL | literal 'DEBITS' | MOVE | 8000-WRITE-REPORT | [STMTPRT.cbl:436](../../../pangaea/programs/STMTPRT.cbl#L436) |
 | WS-RA-VALUE | [WS-CREDIT-TOTAL](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [STMTPRT.cbl:434](../../../pangaea/programs/STMTPRT.cbl#L434) |
 | WS-RA-VALUE | [WS-DEBIT-TOTAL](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [STMTPRT.cbl:437](../../../pangaea/programs/STMTPRT.cbl#L437) |
 
@@ -392,6 +462,54 @@ Records written to files.
 | file STMT-OUT | [STMT-LINE](#stmt-line) | WRITE | 3600-PRINT-CLOSING | [STMTPRT.cbl:399](../../../pangaea/programs/STMTPRT.cbl#L399) |
 | file STMT-OUT | [STMT-LINE](#stmt-line) | WRITE | 3600-PRINT-CLOSING | [STMTPRT.cbl:401](../../../pangaea/programs/STMTPRT.cbl#L401) |
 | file STMT-SORT | [SORT-RECORD](#sort-record) | RELEASE | 2100-RELEASE-POSTING | [STMTPRT.cbl:277](../../../pangaea/programs/STMTPRT.cbl#L277) |
+
+### Into other data items
+
+Data items the program does not declare, such as special registers and index names.
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| RETURN-CODE | literal 0 | MOVE | 0000-MAIN | [STMTPRT.cbl:222](../../../pangaea/programs/STMTPRT.cbl#L222) |
+| RETURN-CODE | literal 16 | MOVE | 1000-INITIALIZE | [STMTPRT.cbl:231](../../../pangaea/programs/STMTPRT.cbl#L231) |
+| RETURN-CODE | literal 16 | MOVE | 9900-ABORT | [STMTPRT.cbl:453](../../../pangaea/programs/STMTPRT.cbl#L453) |
+| ST-CX | literal 1 | SET | 3500-PRINT-POSTING | [STMTPRT.cbl:374](../../../pangaea/programs/STMTPRT.cbl#L374) |
+
+## Field origins
+
+Where the values of each field the program writes to a file come from: the fields of the files it reads, literals, and initial values, followed through every statement that moves a value, and through groups and redefinitions by the bytes they share.
+
+### File STMT-SORT
+
+Written from [SORT-RECORD](#sort-record).
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| SR-ACCT-NO | 1-10 | file AUDIT-IN AU-ACCT-NO; file STMT-SORT SR-ACCT-NO |
+| SR-DATE | 11-18 | file AUDIT-IN AU-BUSINESS-DATE; file STMT-SORT SR-DATE |
+| SR-SEQ | 19-26 | file STMT-SORT SR-SEQ; initial value of WS-SEQ; literal 1 |
+| SR-TRAN-ID | 27-36 | file AUDIT-IN AU-TRAN-ID; file STMT-SORT SR-TRAN-ID |
+| SR-TRAN-CODE | 37-38 | file AUDIT-IN AU-TRAN-CODE; file STMT-SORT SR-TRAN-CODE |
+| SR-AMOUNT | 39-49 | file AUDIT-IN AU-AMOUNT; file STMT-SORT SR-AMOUNT |
+| SR-BALANCE-BEFORE | 50-62 | file AUDIT-IN AU-BALANCE-BEFORE; file STMT-SORT SR-BALANCE-BEFORE |
+| SR-BALANCE-AFTER | 63-75 | file AUDIT-IN AU-BALANCE-AFTER; file STMT-SORT SR-BALANCE-AFTER |
+
+### File STMT-OUT
+
+Written from [WS-SUM-LINE](#ws-sum-line).
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| WS-SL-CREDITS | 21-37 | file AUDIT-IN AU-AMOUNT; file STMT-SORT SR-AMOUNT; literal 0 |
+| WS-SL-DEBITS | 49-65 | file AUDIT-IN AU-AMOUNT; file STMT-SORT SR-AMOUNT; literal 0 |
+
+### File REPORT-OUT
+
+Written from [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| WS-RA-LABEL | 1-30 | literal 'CREDITS'; literal 'DEBITS' |
+| WS-RA-VALUE | 31-51 | file AUDIT-IN AU-AMOUNT; file STMT-SORT SR-AMOUNT; initial value of WS-CREDIT-TOTAL; initial value of WS-DEBIT-TOTAL; literal 0 |
 
 ## Records
 

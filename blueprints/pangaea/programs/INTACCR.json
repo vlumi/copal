@@ -1688,12 +1688,44 @@
   ],
   "lineage": [
     {
+      "from": "'AN ACCRUAL FOR NO ACCOUNT'",
+      "to": "WS-ABORT-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "0000-MAIN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:160"
+    },
+    {
+      "from": "0",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "0000-MAIN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:165"
+    },
+    {
+      "from": "16",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:174"
+    },
+    {
       "from": "CONTROL-FILE",
       "to": "BANK-CONTROL-RECORD",
       "fromFile": true,
       "paragraph": "1000-INITIALIZE",
       "verb": "READ",
       "source": "pangaea/programs/INTACCR.cbl:177"
+    },
+    {
+      "from": "'NO BANK CONTROL RECORD'",
+      "to": "WS-ABORT-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:179"
     },
     {
       "from": "BC-BUSINESS-DATE",
@@ -1716,6 +1748,22 @@
       "paragraph": "1100-LOAD-RATES",
       "verb": "READ",
       "source": "pangaea/programs/INTACCR.cbl:190"
+    },
+    {
+      "from": "'MORE THAN 20 RATES'",
+      "to": "WS-ABORT-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "1100-LOAD-RATES",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:193"
+    },
+    {
+      "from": "1",
+      "to": "WS-RATE-COUNT",
+      "fromLiteral": true,
+      "paragraph": "1100-LOAD-RATES",
+      "verb": "ADD",
+      "source": "pangaea/programs/INTACCR.cbl:196"
     },
     {
       "from": "RT-ACCT-TYPE",
@@ -1754,6 +1802,14 @@
       "source": "pangaea/programs/INTACCR.cbl:201"
     },
     {
+      "from": "'CANNOT READ THE RATES'",
+      "to": "WS-ABORT-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "1100-LOAD-RATES",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:204"
+    },
+    {
       "from": "ACCT-IN",
       "to": "ACCT-MASTER-RECORD",
       "fromFile": true,
@@ -1762,12 +1818,28 @@
       "source": "pangaea/programs/INTACCR.cbl:210"
     },
     {
+      "from": "condition MASTER-AT-END",
+      "to": "WS-MASTER-END-SW",
+      "fromLiteral": true,
+      "paragraph": "1200-READ-MASTER",
+      "verb": "SET",
+      "source": "pangaea/programs/INTACCR.cbl:212"
+    },
+    {
       "from": "ACCR-IN",
       "to": "ACCR-IN-RECORD",
       "fromFile": true,
       "paragraph": "1300-READ-ACCRUAL",
       "verb": "READ",
       "source": "pangaea/programs/INTACCR.cbl:217"
+    },
+    {
+      "from": "HIGH-VALUES",
+      "to": "WS-ACCRUAL-KEY",
+      "fromLiteral": true,
+      "paragraph": "1300-READ-ACCRUAL",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:219"
     },
     {
       "from": "AI-ACCT-NO",
@@ -1784,6 +1856,14 @@
       "source": "pangaea/programs/INTACCR.cbl:229"
     },
     {
+      "from": "SPACES",
+      "to": "ACCRUAL-RECORD",
+      "fromLiteral": true,
+      "paragraph": "1400-TAKE-ACCRUAL",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:232"
+    },
+    {
       "from": "AM-ACCT-NO",
       "to": "AC-ACCT-NO",
       "paragraph": "1400-TAKE-ACCRUAL",
@@ -1796,6 +1876,46 @@
       "paragraph": "1400-TAKE-ACCRUAL",
       "verb": "MOVE",
       "source": "pangaea/programs/INTACCR.cbl:234"
+    },
+    {
+      "from": "0",
+      "to": "AC-ACCRUED",
+      "fromLiteral": true,
+      "paragraph": "1400-TAKE-ACCRUAL",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:235"
+    },
+    {
+      "from": "1",
+      "to": "WS-STARTED-COUNT",
+      "fromLiteral": true,
+      "paragraph": "1400-TAKE-ACCRUAL",
+      "verb": "ADD",
+      "source": "pangaea/programs/INTACCR.cbl:236"
+    },
+    {
+      "from": "'AN ACCRUAL FOR NO ACCOUNT'",
+      "to": "WS-ABORT-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "1400-TAKE-ACCRUAL",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:238"
+    },
+    {
+      "from": "0",
+      "to": "AC-DUE",
+      "fromLiteral": true,
+      "paragraph": "2000-ACCRUE-ACCOUNT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:247"
+    },
+    {
+      "from": "0",
+      "to": "AC-DUE-MONTH",
+      "fromLiteral": true,
+      "paragraph": "2000-ACCRUE-ACCOUNT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:247"
     },
     {
       "from": "AC-THROUGH-DATE",
@@ -1862,6 +1982,38 @@
       "source": "pangaea/programs/INTACCR.cbl:260"
     },
     {
+      "from": "1",
+      "to": "WS-ACCOUNT-COUNT",
+      "fromLiteral": true,
+      "paragraph": "2000-ACCRUE-ACCOUNT",
+      "verb": "ADD",
+      "source": "pangaea/programs/INTACCR.cbl:261"
+    },
+    {
+      "from": "'N'",
+      "to": "WS-RATE-FOUND-SW",
+      "fromLiteral": true,
+      "paragraph": "2100-FIND-RATE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:267"
+    },
+    {
+      "from": "'NO RATE FOR AN ACCOUNT TYPE'",
+      "to": "WS-ABORT-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "2100-FIND-RATE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:286"
+    },
+    {
+      "from": "condition RATE-FOUND",
+      "to": "WS-RATE-FOUND-SW",
+      "fromLiteral": true,
+      "paragraph": "2110-TAKE-RATE",
+      "verb": "SET",
+      "source": "pangaea/programs/INTACCR.cbl:292"
+    },
+    {
       "from": "WS-RT-ANNUAL-RATE",
       "to": "WS-ACCOUNT-RATE",
       "paragraph": "2110-TAKE-RATE",
@@ -1890,11 +2042,35 @@
       "source": "pangaea/programs/INTACCR.cbl:299"
     },
     {
+      "from": "1",
+      "to": "WS-MS-YEAR",
+      "fromLiteral": true,
+      "paragraph": "2200-FIND-MONTH-START",
+      "verb": "ADD",
+      "source": "pangaea/programs/INTACCR.cbl:301"
+    },
+    {
+      "from": "1",
+      "to": "WS-MS-MONTH",
+      "fromLiteral": true,
+      "paragraph": "2200-FIND-MONTH-START",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:302"
+    },
+    {
       "from": "WS-TH-MONTH",
       "to": "WS-MS-MONTH",
       "paragraph": "2200-FIND-MONTH-START",
       "verb": "COMPUTE",
       "source": "pangaea/programs/INTACCR.cbl:304"
+    },
+    {
+      "from": "1",
+      "to": "WS-MS-DAY",
+      "fromLiteral": true,
+      "paragraph": "2200-FIND-MONTH-START",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:306"
     },
     {
       "from": "WS-MONTH-START-DATE",
@@ -1927,6 +2103,14 @@
     {
       "from": "WS-INTEREST-PRODUCT",
       "to": "WS-INCREMENT",
+      "paragraph": "2300-ACCRUE-DAYS",
+      "verb": "DIVIDE",
+      "source": "pangaea/programs/INTACCR.cbl:315"
+    },
+    {
+      "from": "365",
+      "to": "WS-INCREMENT",
+      "fromLiteral": true,
       "paragraph": "2300-ACCRUE-DAYS",
       "verb": "DIVIDE",
       "source": "pangaea/programs/INTACCR.cbl:315"
@@ -2009,6 +2193,22 @@
       "source": "pangaea/programs/INTACCR.cbl:336"
     },
     {
+      "from": "SPACES",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:341"
+    },
+    {
+      "from": "'INTACCR  INTEREST ACCRUAL        BUSINESS DATE '",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "STRING",
+      "source": "pangaea/programs/INTACCR.cbl:342"
+    },
+    {
       "from": "WS-BUSINESS-DATE",
       "to": "REPORT-LINE",
       "paragraph": "8000-WRITE-REPORT",
@@ -2024,12 +2224,28 @@
       "source": "pangaea/programs/INTACCR.cbl:345"
     },
     {
+      "from": "SPACES",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:346"
+    },
+    {
       "from": "REPORT-LINE",
       "to": "REPORT-OUT",
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
       "source": "pangaea/programs/INTACCR.cbl:347"
+    },
+    {
+      "from": "'RATES'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:348"
     },
     {
       "from": "WS-RATE-COUNT",
@@ -2054,6 +2270,14 @@
       "source": "pangaea/programs/INTACCR.cbl:350"
     },
     {
+      "from": "'ACCOUNTS ACCRUED'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:351"
+    },
+    {
       "from": "WS-ACCOUNT-COUNT",
       "to": "WS-RC-VALUE",
       "paragraph": "8000-WRITE-REPORT",
@@ -2074,6 +2298,14 @@
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
       "source": "pangaea/programs/INTACCR.cbl:353"
+    },
+    {
+      "from": "'ACCRUALS STARTED'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:354"
     },
     {
       "from": "WS-STARTED-COUNT",
@@ -2098,6 +2330,14 @@
       "source": "pangaea/programs/INTACCR.cbl:356"
     },
     {
+      "from": "'CREDIT INTEREST ACCRUED'",
+      "to": "WS-RA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:357"
+    },
+    {
       "from": "WS-CREDIT-ACCRUED",
       "to": "WS-RA-VALUE",
       "paragraph": "8000-WRITE-REPORT",
@@ -2118,6 +2358,14 @@
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
       "source": "pangaea/programs/INTACCR.cbl:359"
+    },
+    {
+      "from": "'DEBIT INTEREST ACCRUED'",
+      "to": "WS-RA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:360"
     },
     {
       "from": "WS-DEBIT-ACCRUED",
@@ -2142,6 +2390,14 @@
       "source": "pangaea/programs/INTACCR.cbl:362"
     },
     {
+      "from": "SPACES",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:363"
+    },
+    {
       "from": "REPORT-LINE",
       "to": "REPORT-OUT",
       "toFile": true,
@@ -2150,12 +2406,36 @@
       "source": "pangaea/programs/INTACCR.cbl:364"
     },
     {
+      "from": "'NO MONTH CLOSED'",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:366"
+    },
+    {
       "from": "REPORT-LINE",
       "to": "REPORT-OUT",
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
       "source": "pangaea/programs/INTACCR.cbl:367"
+    },
+    {
+      "from": "SPACES",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:369"
+    },
+    {
+      "from": "'MONTH CLOSED                  '",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "STRING",
+      "source": "pangaea/programs/INTACCR.cbl:370"
     },
     {
       "from": "WS-CLOSED-MONTH",
@@ -2171,6 +2451,14 @@
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
       "source": "pangaea/programs/INTACCR.cbl:372"
+    },
+    {
+      "from": "'CREDIT INTEREST DUE'",
+      "to": "WS-RA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:373"
     },
     {
       "from": "WS-CREDIT-DUE",
@@ -2195,6 +2483,14 @@
       "source": "pangaea/programs/INTACCR.cbl:375"
     },
     {
+      "from": "'DEBIT INTEREST DUE'",
+      "to": "WS-RA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:376"
+    },
+    {
       "from": "WS-DEBIT-DUE",
       "to": "WS-RA-VALUE",
       "paragraph": "8000-WRITE-REPORT",
@@ -2215,6 +2511,110 @@
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
       "source": "pangaea/programs/INTACCR.cbl:378"
+    },
+    {
+      "from": "16",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "9900-ABORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:390"
+    }
+  ],
+  "outputs": [
+    {
+      "file": "ACCR-OUT",
+      "record": "ACCRUAL-RECORD",
+      "fields": [
+        {
+          "name": "AC-ACCT-NO",
+          "start": 1,
+          "length": 10,
+          "origins": [
+            "file ACCR-IN AI-ACCT-NO",
+            "file ACCT-IN AM-ACCT-NO"
+          ]
+        },
+        {
+          "name": "AC-THROUGH-DATE",
+          "start": 11,
+          "length": 8,
+          "origins": [
+            "file ACCR-IN ACCR-IN-RECORD",
+            "file CONTROL-FILE BC-BUSINESS-DATE"
+          ]
+        },
+        {
+          "name": "AC-ACCRUED",
+          "start": 19,
+          "length": 7,
+          "origins": [
+            "file ACCR-IN ACCR-IN-RECORD",
+            "file ACCT-IN AM-BALANCE",
+            "file CONTROL-FILE BC-BUSINESS-DATE",
+            "file RATE-FILE RT-ANNUAL-RATE",
+            "literal 0",
+            "literal 365"
+          ]
+        },
+        {
+          "name": "AC-DUE",
+          "start": 26,
+          "length": 5,
+          "origins": [
+            "file ACCR-IN ACCR-IN-RECORD",
+            "file ACCT-IN AM-BALANCE",
+            "file CONTROL-FILE BC-BUSINESS-DATE",
+            "file RATE-FILE RT-ANNUAL-RATE",
+            "literal 0",
+            "literal 365"
+          ]
+        },
+        {
+          "name": "AC-DUE-MONTH",
+          "start": 31,
+          "length": 6,
+          "origins": [
+            "file ACCR-IN ACCR-IN-RECORD",
+            "file CONTROL-FILE BC-BUSINESS-DATE",
+            "literal 0"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "REPORT-OUT",
+      "record": "WS-REPORT-AMOUNT-LINE",
+      "fields": [
+        {
+          "name": "WS-RA-LABEL",
+          "start": 1,
+          "length": 30,
+          "origins": [
+            "literal 'CREDIT INTEREST ACCRUED'",
+            "literal 'CREDIT INTEREST DUE'",
+            "literal 'DEBIT INTEREST ACCRUED'",
+            "literal 'DEBIT INTEREST DUE'"
+          ]
+        },
+        {
+          "name": "WS-RA-VALUE",
+          "start": 31,
+          "length": 19,
+          "origins": [
+            "file ACCR-IN ACCR-IN-RECORD",
+            "file ACCT-IN AM-BALANCE",
+            "file CONTROL-FILE BC-BUSINESS-DATE",
+            "file RATE-FILE RT-ANNUAL-RATE",
+            "initial value of WS-CREDIT-ACCRUED",
+            "initial value of WS-CREDIT-DUE",
+            "initial value of WS-DEBIT-ACCRUED",
+            "initial value of WS-DEBIT-DUE",
+            "literal 0",
+            "literal 365"
+          ]
+        }
+      ]
     }
   ]
 }

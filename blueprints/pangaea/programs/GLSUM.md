@@ -42,6 +42,7 @@ Program [GLSUM.cbl](../../../pangaea/programs/GLSUM.cbl): 4 files, 9 paragraphs.
   - [Into AUDIT-RECORD](#into-audit-record)
   - [Into GL-SUMMARY-RECORD](#into-gl-summary-record)
   - [Into REPORT-LINE](#into-report-line)
+  - [Into WS-ABORT-MESSAGE](#into-ws-abort-message)
   - [Into WS-CLOSED-MONTH-NUMBER](#into-ws-closed-month-number)
   - [Into WS-NEXT-MONTH](#into-ws-next-month)
   - [Into WS-POSTING-MONTH](#into-ws-posting-month)
@@ -54,6 +55,9 @@ Program [GLSUM.cbl](../../../pangaea/programs/GLSUM.cbl): 4 files, 9 paragraphs.
   - [Into WS-REPORT-AMOUNT-LINE](#into-ws-report-amount-line)
   - [Into files](#into-files)
   - [Into other data items](#into-other-data-items)
+- [Field origins](#field-origins)
+  - [File GL-OUT](#file-gl-out)
+  - [File REPORT-OUT](#file-report-out)
 - [Records](#records)
   - [ACCRUAL-RECORD](#accrual-record)
   - [AUDIT-RECORD](#audit-record)
@@ -153,6 +157,7 @@ Record [GL-SUMMARY-RECORD](#gl-summary-record), from copybook [GLREC](../copyboo
 | GL-CREDITS | [WS-LT-CREDITS](#ws-ledger-totals "in WS-LEDGER-TOTALS") | MOVE | 3000-WRITE-LEDGER | [GLSUM.cbl:265](../../../pangaea/programs/GLSUM.cbl#L265) |
 | GL-DEBITS | [WS-LT-DEBITS](#ws-ledger-totals "in WS-LEDGER-TOTALS") | MOVE | 3000-WRITE-LEDGER | [GLSUM.cbl:264](../../../pangaea/programs/GLSUM.cbl#L264) |
 | GL-MONTH | [WS-CLOSED-MONTH-NUMBER](#ws-closed-month-number) | MOVE | 3000-WRITE-LEDGER | [GLSUM.cbl:261](../../../pangaea/programs/GLSUM.cbl#L261) |
+| GL-SUMMARY-RECORD | literal SPACES | MOVE | 3000-WRITE-LEDGER | [GLSUM.cbl:260](../../../pangaea/programs/GLSUM.cbl#L260) |
 
 ### Into REPORT-LINE
 
@@ -160,13 +165,34 @@ Record [REPORT-LINE](#report-line).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| REPORT-LINE | literal 'GLSUM    GENERAL LEDGER SUMMARY' | MOVE | 8000-WRITE-REPORT | [GLSUM.cbl:285](../../../pangaea/programs/GLSUM.cbl#L285) |
+| REPORT-LINE | literal SPACES | MOVE | 8000-WRITE-REPORT | [GLSUM.cbl:287](../../../pangaea/programs/GLSUM.cbl#L287) |
+| REPORT-LINE | literal 'NO MONTH CLOSED' | MOVE | 8000-WRITE-REPORT | [GLSUM.cbl:290](../../../pangaea/programs/GLSUM.cbl#L290) |
+| REPORT-LINE | literal SPACES | MOVE | 8000-WRITE-REPORT | [GLSUM.cbl:294](../../../pangaea/programs/GLSUM.cbl#L294) |
+| REPORT-LINE | literal 'MONTH CLOSED                  ' | STRING | 8000-WRITE-REPORT | [GLSUM.cbl:295](../../../pangaea/programs/GLSUM.cbl#L295) |
 | REPORT-LINE | [WS-CLOSED-MONTH](#ws-closed-month) | STRING | 8000-WRITE-REPORT | [GLSUM.cbl:295](../../../pangaea/programs/GLSUM.cbl#L295) |
 | REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [GLSUM.cbl:300](../../../pangaea/programs/GLSUM.cbl#L300) |
+| REPORT-LINE | literal SPACES | MOVE | 8000-WRITE-REPORT | [GLSUM.cbl:301](../../../pangaea/programs/GLSUM.cbl#L301) |
 | REPORT-LINE | [WS-HEADING-LINE](#ws-heading-line) | WRITE | 8000-WRITE-REPORT | [GLSUM.cbl:303](../../../pangaea/programs/GLSUM.cbl#L303) |
 | REPORT-LINE | [WS-LEDGER-LINE](#ws-ledger-line) | WRITE | 8000-WRITE-REPORT | [GLSUM.cbl:310](../../../pangaea/programs/GLSUM.cbl#L310) |
 | REPORT-LINE | [WS-LEDGER-LINE](#ws-ledger-line) | WRITE | 8000-WRITE-REPORT | [GLSUM.cbl:316](../../../pangaea/programs/GLSUM.cbl#L316) |
+| REPORT-LINE | literal SPACES | MOVE | 8000-WRITE-REPORT | [GLSUM.cbl:317](../../../pangaea/programs/GLSUM.cbl#L317) |
 | REPORT-LINE | [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line) | WRITE | 8000-WRITE-REPORT | [GLSUM.cbl:321](../../../pangaea/programs/GLSUM.cbl#L321) |
 | REPORT-LINE | [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line) | WRITE | 8000-WRITE-REPORT | [GLSUM.cbl:324](../../../pangaea/programs/GLSUM.cbl#L324) |
+| REPORT-LINE | literal SPACES | MOVE | 8000-WRITE-REPORT | [GLSUM.cbl:325](../../../pangaea/programs/GLSUM.cbl#L325) |
+| REPORT-LINE | literal 'LEDGER IN BALANCE' | MOVE | 8000-WRITE-REPORT | [GLSUM.cbl:328](../../../pangaea/programs/GLSUM.cbl#L328) |
+| REPORT-LINE | literal 'TRANSFERS IN TRANSIT DO NOT NET TO ZERO' | MOVE | 8000-WRITE-REPORT | [GLSUM.cbl:330](../../../pangaea/programs/GLSUM.cbl#L330) |
+
+### Into WS-ABORT-MESSAGE
+
+Record [WS-ABORT-MESSAGE](#ws-abort-message).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-ABORT-MESSAGE | literal 'CANNOT READ THE AUDIT TRAILS' | MOVE | 2000-POST-MONTH | [GLSUM.cbl:212](../../../pangaea/programs/GLSUM.cbl#L212) |
+| WS-ABORT-MESSAGE | literal 'UNKNOWN TRANSACTION CODE' | MOVE | 2100-POST-TO-LEDGER | [GLSUM.cbl:222](../../../pangaea/programs/GLSUM.cbl#L222) |
+| WS-ABORT-MESSAGE | literal 'UNKNOWN LEDGER ACCOUNT' | MOVE | 2200-FIND-ACCOUNT | [GLSUM.cbl:249](../../../pangaea/programs/GLSUM.cbl#L249) |
+| WS-ABORT-MESSAGE | literal 'LEDGER OUT OF BALANCE' | MOVE | 3000-WRITE-LEDGER | [GLSUM.cbl:279](../../../pangaea/programs/GLSUM.cbl#L279) |
 
 ### Into WS-CLOSED-MONTH-NUMBER
 
@@ -174,6 +200,7 @@ Record [WS-CLOSED-MONTH-NUMBER](#ws-closed-month-number).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-CLOSED-MONTH-NUMBER | literal 0 | MOVE | 1000-INITIALIZE | [GLSUM.cbl:181](../../../pangaea/programs/GLSUM.cbl#L181) |
 | WS-CLOSED-MONTH-NUMBER | [AC-DUE-MONTH](#accrual-record "in ACCRUAL-RECORD") | MOVE | 1000-INITIALIZE | [GLSUM.cbl:184](../../../pangaea/programs/GLSUM.cbl#L184) |
 
 ### Into WS-NEXT-MONTH
@@ -182,8 +209,10 @@ Record [WS-NEXT-MONTH](#ws-next-month).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-NM-MONTH | literal 1 | MOVE | 1000-INITIALIZE | [GLSUM.cbl:189](../../../pangaea/programs/GLSUM.cbl#L189) |
 | WS-NM-MONTH | [WS-CM-MONTH](#ws-closed-month "in WS-CLOSED-MONTH") | COMPUTE | 1000-INITIALIZE | [GLSUM.cbl:191](../../../pangaea/programs/GLSUM.cbl#L191) |
 | WS-NM-YEAR | [WS-CM-YEAR](#ws-closed-month "in WS-CLOSED-MONTH") | MOVE | 1000-INITIALIZE | [GLSUM.cbl:186](../../../pangaea/programs/GLSUM.cbl#L186) |
+| WS-NM-YEAR | literal 1 | ADD | 1000-INITIALIZE | [GLSUM.cbl:188](../../../pangaea/programs/GLSUM.cbl#L188) |
 
 ### Into WS-POSTING-MONTH
 
@@ -207,7 +236,9 @@ Record [WS-LEDGER-TOTALS](#ws-ledger-totals).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-LT-CREDITS | literal 0 | MOVE | 1000-INITIALIZE | [GLSUM.cbl:194](../../../pangaea/programs/GLSUM.cbl#L194) |
 | WS-LT-CREDITS | [WS-AMOUNT](#ws-posting "in WS-POSTING") | ADD | 2100-POST-TO-LEDGER | [GLSUM.cbl:241](../../../pangaea/programs/GLSUM.cbl#L241) |
+| WS-LT-DEBITS | literal 0 | MOVE | 1000-INITIALIZE | [GLSUM.cbl:194](../../../pangaea/programs/GLSUM.cbl#L194) |
 | WS-LT-DEBITS | [WS-AMOUNT](#ws-posting "in WS-POSTING") | ADD | 2100-POST-TO-LEDGER | [GLSUM.cbl:238](../../../pangaea/programs/GLSUM.cbl#L238) |
 
 ### Into WS-POSTING
@@ -237,6 +268,7 @@ Record [WS-TOTALS](#ws-totals).
 | WS-DEPOSITS-CHANGE | WS-TX | COMPUTE | 3000-WRITE-LEDGER | [GLSUM.cbl:271](../../../pangaea/programs/GLSUM.cbl#L271) |
 | WS-DEPOSITS-CHANGE | [WS-LT-DEBITS](#ws-ledger-totals "in WS-LEDGER-TOTALS") | COMPUTE | 3000-WRITE-LEDGER | [GLSUM.cbl:271](../../../pangaea/programs/GLSUM.cbl#L271) |
 | WS-DEPOSITS-CHANGE | WS-TX | COMPUTE | 3000-WRITE-LEDGER | [GLSUM.cbl:271](../../../pangaea/programs/GLSUM.cbl#L271) |
+| WS-POSTING-COUNT | literal 1 | ADD | 2100-POST-TO-LEDGER | [GLSUM.cbl:242](../../../pangaea/programs/GLSUM.cbl#L242) |
 | WS-TRANSIT-NET | [WS-LT-DEBITS](#ws-ledger-totals "in WS-LEDGER-TOTALS") | COMPUTE | 3000-WRITE-LEDGER | [GLSUM.cbl:274](../../../pangaea/programs/GLSUM.cbl#L274) |
 | WS-TRANSIT-NET | WS-TX | COMPUTE | 3000-WRITE-LEDGER | [GLSUM.cbl:274](../../../pangaea/programs/GLSUM.cbl#L274) |
 | WS-TRANSIT-NET | [WS-LT-CREDITS](#ws-ledger-totals "in WS-LEDGER-TOTALS") | COMPUTE | 3000-WRITE-LEDGER | [GLSUM.cbl:274](../../../pangaea/programs/GLSUM.cbl#L274) |
@@ -249,11 +281,13 @@ Record [WS-LEDGER-LINE](#ws-ledger-line).
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
 | WS-LL-ACCOUNT | [WS-LE-ACCOUNT](#ws-ledger "in WS-LEDGER") | MOVE | 8000-WRITE-REPORT | [GLSUM.cbl:306](../../../pangaea/programs/GLSUM.cbl#L306) |
+| WS-LL-ACCOUNT | literal SPACES | MOVE | 8000-WRITE-REPORT | [GLSUM.cbl:312](../../../pangaea/programs/GLSUM.cbl#L312) |
 | WS-LL-CREDITS | [WS-LT-CREDITS](#ws-ledger-totals "in WS-LEDGER-TOTALS") | MOVE | 8000-WRITE-REPORT | [GLSUM.cbl:309](../../../pangaea/programs/GLSUM.cbl#L309) |
 | WS-LL-CREDITS | [WS-CREDIT-TOTAL](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [GLSUM.cbl:315](../../../pangaea/programs/GLSUM.cbl#L315) |
 | WS-LL-DEBITS | [WS-LT-DEBITS](#ws-ledger-totals "in WS-LEDGER-TOTALS") | MOVE | 8000-WRITE-REPORT | [GLSUM.cbl:308](../../../pangaea/programs/GLSUM.cbl#L308) |
 | WS-LL-DEBITS | [WS-DEBIT-TOTAL](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [GLSUM.cbl:314](../../../pangaea/programs/GLSUM.cbl#L314) |
 | WS-LL-NAME | [WS-LE-NAME](#ws-ledger "in WS-LEDGER") | MOVE | 8000-WRITE-REPORT | [GLSUM.cbl:307](../../../pangaea/programs/GLSUM.cbl#L307) |
+| WS-LL-NAME | literal 'TOTAL' | MOVE | 8000-WRITE-REPORT | [GLSUM.cbl:313](../../../pangaea/programs/GLSUM.cbl#L313) |
 
 ### Into WS-REPORT-COUNT-LINE
 
@@ -261,6 +295,7 @@ Record [WS-REPORT-COUNT-LINE](#ws-report-count-line).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-RC-LABEL | literal 'POSTINGS' | MOVE | 8000-WRITE-REPORT | [GLSUM.cbl:298](../../../pangaea/programs/GLSUM.cbl#L298) |
 | WS-RC-VALUE | [WS-POSTING-COUNT](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [GLSUM.cbl:299](../../../pangaea/programs/GLSUM.cbl#L299) |
 
 ### Into WS-REPORT-AMOUNT-LINE
@@ -269,6 +304,8 @@ Record [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-RA-LABEL | literal 'CUSTOMER DEPOSITS CHANGE' | MOVE | 8000-WRITE-REPORT | [GLSUM.cbl:319](../../../pangaea/programs/GLSUM.cbl#L319) |
+| WS-RA-LABEL | literal 'TRANSFERS IN TRANSIT NET' | MOVE | 8000-WRITE-REPORT | [GLSUM.cbl:322](../../../pangaea/programs/GLSUM.cbl#L322) |
 | WS-RA-VALUE | [WS-DEPOSITS-CHANGE](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [GLSUM.cbl:320](../../../pangaea/programs/GLSUM.cbl#L320) |
 | WS-RA-VALUE | [WS-TRANSIT-NET](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [GLSUM.cbl:323](../../../pangaea/programs/GLSUM.cbl#L323) |
 
@@ -300,9 +337,40 @@ Data items the program does not declare, such as special registers and index nam
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| GS-CX | literal 1 | SET | 2100-POST-TO-LEDGER | [GLSUM.cbl:219](../../../pangaea/programs/GLSUM.cbl#L219) |
+| RETURN-CODE | literal 4 | MOVE | 0000-MAIN | [GLSUM.cbl:165](../../../pangaea/programs/GLSUM.cbl#L165) |
+| RETURN-CODE | literal 0 | MOVE | 0000-MAIN | [GLSUM.cbl:167](../../../pangaea/programs/GLSUM.cbl#L167) |
+| RETURN-CODE | literal 16 | MOVE | 1000-INITIALIZE | [GLSUM.cbl:178](../../../pangaea/programs/GLSUM.cbl#L178) |
+| RETURN-CODE | literal 16 | MOVE | 9900-ABORT | [GLSUM.cbl:343](../../../pangaea/programs/GLSUM.cbl#L343) |
+| WS-LX | literal 1 | SET | 2200-FIND-ACCOUNT | [GLSUM.cbl:246](../../../pangaea/programs/GLSUM.cbl#L246) |
 | WS-TX | WS-LX | SET | 2200-FIND-ACCOUNT | [GLSUM.cbl:252](../../../pangaea/programs/GLSUM.cbl#L252) |
 | WS-TX | WS-LX | SET | 3000-WRITE-LEDGER | [GLSUM.cbl:259](../../../pangaea/programs/GLSUM.cbl#L259) |
 | WS-TX | WS-LX | SET | 8000-WRITE-REPORT | [GLSUM.cbl:305](../../../pangaea/programs/GLSUM.cbl#L305) |
+
+## Field origins
+
+Where the values of each field the program writes to a file come from: the fields of the files it reads, literals, and initial values, followed through every statement that moves a value, and through groups and redefinitions by the bytes they share.
+
+### File GL-OUT
+
+Written from [GL-SUMMARY-RECORD](#gl-summary-record).
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| GL-MONTH | 1-6 | file ACCR-IN AC-DUE-MONTH; literal 0 |
+| GL-ACCOUNT | 7-10 | literal SPACES |
+| GL-ACCOUNT-NAME | 11-34 | literal SPACES |
+| GL-DEBITS | 35-42 | file AUDIT-IN AU-AMOUNT; literal 0 |
+| GL-CREDITS | 43-50 | file AUDIT-IN AU-AMOUNT; literal 0 |
+
+### File REPORT-OUT
+
+Written from [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| WS-RA-LABEL | 1-30 | literal 'CUSTOMER DEPOSITS CHANGE'; literal 'TRANSFERS IN TRANSIT NET' |
+| WS-RA-VALUE | 31-51 | file AUDIT-IN AU-AMOUNT; initial value of WS-DEPOSITS-CHANGE; initial value of WS-TRANSIT-NET; literal 0 |
 
 ## Records
 

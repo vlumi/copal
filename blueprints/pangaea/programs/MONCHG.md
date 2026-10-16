@@ -41,6 +41,8 @@ Program [MONCHG.cbl](../../../pangaea/programs/MONCHG.cbl): 5 files, 10 paragrap
   - [Into TRAN-OUT-RECORD](#into-tran-out-record)
   - [Into REPORT-LINE](#into-report-line)
   - [Into WS-BUSINESS-DATE](#into-ws-business-date)
+  - [Into WS-ABORT-MESSAGE](#into-ws-abort-message)
+  - [Into WS-END-SWITCHES](#into-ws-end-switches)
   - [Into WS-CLOSED-MONTH](#into-ws-closed-month)
   - [Into WS-TRAN-ID](#into-ws-tran-id)
   - [Into TRAN-RECORD](#into-tran-record)
@@ -48,6 +50,10 @@ Program [MONCHG.cbl](../../../pangaea/programs/MONCHG.cbl): 5 files, 10 paragrap
   - [Into WS-REPORT-COUNT-LINE](#into-ws-report-count-line)
   - [Into WS-REPORT-AMOUNT-LINE](#into-ws-report-amount-line)
   - [Into files](#into-files)
+  - [Into other data items](#into-other-data-items)
+- [Field origins](#field-origins)
+  - [File TRAN-OUT](#file-tran-out)
+  - [File REPORT-OUT](#file-report-out)
 - [Records](#records)
   - [BANK-CONTROL-RECORD](#bank-control-record)
   - [ACCT-MASTER-RECORD](#acct-master-record)
@@ -154,8 +160,15 @@ Record [REPORT-LINE](#report-line).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| REPORT-LINE | literal SPACES | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:221](../../../pangaea/programs/MONCHG.cbl#L221) |
+| REPORT-LINE | literal 'MONCHG   MONTH-END CHARGES       BUSINESS DATE ' | STRING | 8000-WRITE-REPORT | [MONCHG.cbl:222](../../../pangaea/programs/MONCHG.cbl#L222) |
 | REPORT-LINE | [WS-BUSINESS-DATE](#ws-business-date) | STRING | 8000-WRITE-REPORT | [MONCHG.cbl:222](../../../pangaea/programs/MONCHG.cbl#L222) |
+| REPORT-LINE | literal SPACES | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:226](../../../pangaea/programs/MONCHG.cbl#L226) |
+| REPORT-LINE | literal 'NO MONTH CLOSED' | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:229](../../../pangaea/programs/MONCHG.cbl#L229) |
+| REPORT-LINE | literal SPACES | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:232](../../../pangaea/programs/MONCHG.cbl#L232) |
+| REPORT-LINE | literal 'MONTH CLOSED                  ' | STRING | 8000-WRITE-REPORT | [MONCHG.cbl:233](../../../pangaea/programs/MONCHG.cbl#L233) |
 | REPORT-LINE | [WS-CLOSED-MONTH](#ws-closed-month) | STRING | 8000-WRITE-REPORT | [MONCHG.cbl:233](../../../pangaea/programs/MONCHG.cbl#L233) |
+| REPORT-LINE | literal SPACES | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:236](../../../pangaea/programs/MONCHG.cbl#L236) |
 | REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:240](../../../pangaea/programs/MONCHG.cbl#L240) |
 | REPORT-LINE | [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:243](../../../pangaea/programs/MONCHG.cbl#L243) |
 | REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:246](../../../pangaea/programs/MONCHG.cbl#L246) |
@@ -172,6 +185,24 @@ Record [WS-BUSINESS-DATE](#ws-business-date).
 | --- | --- | --- | --- | --- |
 | WS-BUSINESS-DATE | [BC-BUSINESS-DATE](#bank-control-record "in BANK-CONTROL-RECORD") | MOVE | 1000-INITIALIZE | [MONCHG.cbl:135](../../../pangaea/programs/MONCHG.cbl#L135) |
 
+### Into WS-ABORT-MESSAGE
+
+Record [WS-ABORT-MESSAGE](#ws-abort-message).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-ABORT-MESSAGE | literal 'NO BANK CONTROL RECORD' | MOVE | 1000-INITIALIZE | [MONCHG.cbl:132](../../../pangaea/programs/MONCHG.cbl#L132) |
+| WS-ABORT-MESSAGE | literal 'ACCRUALS OUT OF STEP WITH THE MASTER' | MOVE | 1200-READ-ACCOUNT | [MONCHG.cbl:154](../../../pangaea/programs/MONCHG.cbl#L154) |
+
+### Into WS-END-SWITCHES
+
+Record [WS-END-SWITCHES](#ws-end-switches).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-ACCRUAL-END-SW | literal condition ACCRUALS-AT-END | SET | 1200-READ-ACCOUNT | [MONCHG.cbl:147](../../../pangaea/programs/MONCHG.cbl#L147) |
+| WS-MASTER-END-SW | literal condition MASTER-AT-END | SET | 1200-READ-ACCOUNT | [MONCHG.cbl:143](../../../pangaea/programs/MONCHG.cbl#L143) |
+
 ### Into WS-CLOSED-MONTH
 
 Record [WS-CLOSED-MONTH](#ws-closed-month).
@@ -186,6 +217,7 @@ Record [WS-TRAN-ID](#ws-tran-id).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-TI-SEQ | literal 1 | ADD | 2900-WRITE-TRAN | [MONCHG.cbl:214](../../../pangaea/programs/MONCHG.cbl#L214) |
 | WS-TI-YYMM | [WS-CM-YYMM](#ws-closed-month-parts "in WS-CLOSED-MONTH-PARTS") | MOVE | 2000-CHARGE-ACCOUNT | [MONCHG.cbl:164](../../../pangaea/programs/MONCHG.cbl#L164) |
 
 ### Into TRAN-RECORD
@@ -198,7 +230,15 @@ Record [TRAN-RECORD](#tran-record), from copybook [TRANREC](../copybooks/TRANREC
 | TD-AMOUNT | [AC-DUE](#accrual-record "in ACCRUAL-RECORD") | MOVE | 2100-SETTLE-INTEREST | [MONCHG.cbl:176](../../../pangaea/programs/MONCHG.cbl#L176) |
 | TD-AMOUNT | [AC-DUE](#accrual-record "in ACCRUAL-RECORD") | COMPUTE | 2100-SETTLE-INTEREST | [MONCHG.cbl:183](../../../pangaea/programs/MONCHG.cbl#L183) |
 | TD-AMOUNT | [WS-MAINTENANCE-FEE](#ws-maintenance-fee) | MOVE | 2200-CHARGE-FEE | [MONCHG.cbl:199](../../../pangaea/programs/MONCHG.cbl#L199) |
+| TD-DESCRIPTION | literal 'CREDIT INTEREST' | MOVE | 2100-SETTLE-INTEREST | [MONCHG.cbl:177](../../../pangaea/programs/MONCHG.cbl#L177) |
+| TD-DESCRIPTION | literal 'OVERDRAFT INTEREST' | MOVE | 2100-SETTLE-INTEREST | [MONCHG.cbl:184](../../../pangaea/programs/MONCHG.cbl#L184) |
+| TD-DESCRIPTION | literal 'MAINTENANCE FEE' | MOVE | 2200-CHARGE-FEE | [MONCHG.cbl:200](../../../pangaea/programs/MONCHG.cbl#L200) |
+| TD-TRAN-CODE | literal condition TD-INTEREST | SET | 2100-SETTLE-INTEREST | [MONCHG.cbl:175](../../../pangaea/programs/MONCHG.cbl#L175) |
+| TD-TRAN-CODE | literal condition TD-OVERDRAFT-INTEREST | SET | 2100-SETTLE-INTEREST | [MONCHG.cbl:182](../../../pangaea/programs/MONCHG.cbl#L182) |
+| TD-TRAN-CODE | literal condition TD-MAINTENANCE-FEE | SET | 2200-CHARGE-FEE | [MONCHG.cbl:198](../../../pangaea/programs/MONCHG.cbl#L198) |
 | TD-TRAN-ID | [WS-TRAN-ID](#ws-tran-id) | MOVE | 2900-WRITE-TRAN | [MONCHG.cbl:215](../../../pangaea/programs/MONCHG.cbl#L215) |
+| TR-REC-TYPE | literal condition TR-DETAIL | SET | 2900-WRITE-TRAN | [MONCHG.cbl:213](../../../pangaea/programs/MONCHG.cbl#L213) |
+| TRAN-RECORD | literal SPACES | MOVE | 1000-INITIALIZE | [MONCHG.cbl:136](../../../pangaea/programs/MONCHG.cbl#L136) |
 
 ### Into WS-TOTALS
 
@@ -206,9 +246,13 @@ Record [WS-TOTALS](#ws-totals).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-FEE-COUNT | literal 1 | ADD | 2200-CHARGE-FEE | [MONCHG.cbl:202](../../../pangaea/programs/MONCHG.cbl#L202) |
 | WS-FEE-TOTAL | [TD-AMOUNT](#tran-record "in TRAN-RECORD") | ADD | 2200-CHARGE-FEE | [MONCHG.cbl:203](../../../pangaea/programs/MONCHG.cbl#L203) |
+| WS-INTEREST-COUNT | literal 1 | ADD | 2100-SETTLE-INTEREST | [MONCHG.cbl:179](../../../pangaea/programs/MONCHG.cbl#L179) |
 | WS-INTEREST-TOTAL | [TD-AMOUNT](#tran-record "in TRAN-RECORD") | ADD | 2100-SETTLE-INTEREST | [MONCHG.cbl:180](../../../pangaea/programs/MONCHG.cbl#L180) |
+| WS-OVERDRAFT-COUNT | literal 1 | ADD | 2100-SETTLE-INTEREST | [MONCHG.cbl:186](../../../pangaea/programs/MONCHG.cbl#L186) |
 | WS-OVERDRAFT-TOTAL | [TD-AMOUNT](#tran-record "in TRAN-RECORD") | ADD | 2100-SETTLE-INTEREST | [MONCHG.cbl:187](../../../pangaea/programs/MONCHG.cbl#L187) |
+| WS-WAIVED-COUNT | literal 1 | ADD | 2200-CHARGE-FEE | [MONCHG.cbl:205](../../../pangaea/programs/MONCHG.cbl#L205) |
 
 ### Into WS-REPORT-COUNT-LINE
 
@@ -216,6 +260,10 @@ Record [WS-REPORT-COUNT-LINE](#ws-report-count-line).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-RC-LABEL | literal 'INTEREST CREDITS' | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:238](../../../pangaea/programs/MONCHG.cbl#L238) |
+| WS-RC-LABEL | literal 'OVERDRAFT INTEREST CHARGES' | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:244](../../../pangaea/programs/MONCHG.cbl#L244) |
+| WS-RC-LABEL | literal 'MAINTENANCE FEES' | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:250](../../../pangaea/programs/MONCHG.cbl#L250) |
+| WS-RC-LABEL | literal 'MAINTENANCE FEES WAIVED' | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:256](../../../pangaea/programs/MONCHG.cbl#L256) |
 | WS-RC-VALUE | [WS-INTEREST-COUNT](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:239](../../../pangaea/programs/MONCHG.cbl#L239) |
 | WS-RC-VALUE | [WS-OVERDRAFT-COUNT](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:245](../../../pangaea/programs/MONCHG.cbl#L245) |
 | WS-RC-VALUE | [WS-FEE-COUNT](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:251](../../../pangaea/programs/MONCHG.cbl#L251) |
@@ -227,6 +275,9 @@ Record [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| WS-RA-LABEL | literal 'INTEREST CREDITED' | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:241](../../../pangaea/programs/MONCHG.cbl#L241) |
+| WS-RA-LABEL | literal 'OVERDRAFT INTEREST CHARGED' | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:247](../../../pangaea/programs/MONCHG.cbl#L247) |
+| WS-RA-LABEL | literal 'MAINTENANCE FEES CHARGED' | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:253](../../../pangaea/programs/MONCHG.cbl#L253) |
 | WS-RA-VALUE | [WS-INTEREST-TOTAL](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:242](../../../pangaea/programs/MONCHG.cbl#L242) |
 | WS-RA-VALUE | [WS-OVERDRAFT-TOTAL](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:248](../../../pangaea/programs/MONCHG.cbl#L248) |
 | WS-RA-VALUE | [WS-FEE-TOTAL](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:254](../../../pangaea/programs/MONCHG.cbl#L254) |
@@ -250,6 +301,50 @@ Records written to files.
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:255](../../../pangaea/programs/MONCHG.cbl#L255) |
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:258](../../../pangaea/programs/MONCHG.cbl#L258) |
 | file TRAN-OUT | [TRAN-OUT-RECORD](#tran-out-record) | WRITE | 2900-WRITE-TRAN | [MONCHG.cbl:217](../../../pangaea/programs/MONCHG.cbl#L217) |
+
+### Into other data items
+
+Data items the program does not declare, such as special registers and index names.
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| RETURN-CODE | literal 0 | MOVE | 0000-MAIN | [MONCHG.cbl:117](../../../pangaea/programs/MONCHG.cbl#L117) |
+| RETURN-CODE | literal 16 | MOVE | 1000-INITIALIZE | [MONCHG.cbl:127](../../../pangaea/programs/MONCHG.cbl#L127) |
+| RETURN-CODE | literal 16 | MOVE | 9900-ABORT | [MONCHG.cbl:269](../../../pangaea/programs/MONCHG.cbl#L269) |
+
+## Field origins
+
+Where the values of each field the program writes to a file come from: the fields of the files it reads, literals, and initial values, followed through every statement that moves a value, and through groups and redefinitions by the bytes they share.
+
+### File TRAN-OUT
+
+Written from [TRAN-RECORD](#tran-record).
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| TR-REC-TYPE | 1 | literal condition TR-DETAIL |
+| TR-BODY | 2-80 | file ACCR-IN AC-DUE; file ACCT-IN AM-ACCT-NO; initial value of WS-MAINTENANCE-FEE; literal 'CREDIT INTEREST'; literal 'MAINTENANCE FEE'; literal 'OVERDRAFT INTEREST'; literal 1; literal condition TD-INTEREST; literal condition TD-MAINTENANCE-FEE; literal condition TD-OVERDRAFT-INTEREST |
+| TH-BUSINESS-DATE | 2-9 | literal 1 |
+| TH-SOURCE | 10-17 | file ACCT-IN AM-ACCT-NO; initial value of WS-TI-SEQ; literal 1 |
+| TH-FILE-SEQ | 18-23 | file ACCT-IN AM-ACCT-NO; literal condition TD-INTEREST; literal condition TD-MAINTENANCE-FEE; literal condition TD-OVERDRAFT-INTEREST |
+| TD-TRAN-ID | 2-11 | literal 1 |
+| TD-ACCT-NO | 12-21 | file ACCT-IN AM-ACCT-NO |
+| TD-TRAN-CODE | 22-23 | literal condition TD-INTEREST; literal condition TD-MAINTENANCE-FEE; literal condition TD-OVERDRAFT-INTEREST |
+| TD-AMOUNT | 24-34 | file ACCR-IN AC-DUE; initial value of WS-MAINTENANCE-FEE |
+| TD-DESCRIPTION | 35-54 | literal 'CREDIT INTEREST'; literal 'MAINTENANCE FEE'; literal 'OVERDRAFT INTEREST' |
+| TD-COUNTER-ACCT-NO | 55-64 | literal SPACES |
+| TT-DETAIL-COUNT | 2-9 | literal 1 |
+| TT-AMOUNT-TOTAL | 10-24 | file ACCR-IN AC-DUE; file ACCT-IN AM-ACCT-NO; initial value of WS-MAINTENANCE-FEE; initial value of WS-TI-SEQ; literal 1; literal condition TD-INTEREST; literal condition TD-MAINTENANCE-FEE; literal condition TD-OVERDRAFT-INTEREST |
+| TT-ACCT-HASH | 25-39 | file ACCR-IN AC-DUE; initial value of WS-MAINTENANCE-FEE; literal 'CREDIT INTEREST'; literal 'MAINTENANCE FEE'; literal 'OVERDRAFT INTEREST' |
+
+### File REPORT-OUT
+
+Written from [WS-REPORT-COUNT-LINE](#ws-report-count-line).
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| WS-RC-LABEL | 1-30 | literal 'INTEREST CREDITS'; literal 'MAINTENANCE FEES WAIVED'; literal 'MAINTENANCE FEES'; literal 'OVERDRAFT INTEREST CHARGES' |
+| WS-RC-VALUE | 31-40 | initial value of WS-FEE-COUNT; initial value of WS-INTEREST-COUNT; initial value of WS-OVERDRAFT-COUNT; initial value of WS-WAIVED-COUNT; literal 1 |
 
 ## Records
 

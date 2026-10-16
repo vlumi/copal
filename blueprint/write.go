@@ -144,6 +144,7 @@ func programMarkdown(dir string, p Program) string {
 	}
 
 	writeDataFlow(&b, dir, p)
+	writeOrigins(&b, p)
 
 	b.WriteString("\n## Records\n")
 	for _, r := range p.Records {
@@ -295,7 +296,7 @@ func writeDataFlow(b *strings.Builder, dir string, p Program) {
 			if e.ToFile {
 				to = "file " + to
 			}
-			b.WriteString(row(to, lineageItem(e.From, e.FromFile, records), e.Verb, e.Paragraph, sourceLink(dir, e.Source, true)))
+			b.WriteString(row(to, lineageItem(e, records), e.Verb, e.Paragraph, sourceLink(dir, e.Source, true)))
 		}
 	}
 }
@@ -345,9 +346,13 @@ func groupLineage(p Program, records map[string]Record) []lineageGroup {
 // lineageItem writes where a value comes from: a file, or a data item
 // linked to the record it belongs to, with the record's name on hover when
 // the item is a field of it.
-func lineageItem(name string, file bool, records map[string]Record) string {
-	if file {
+func lineageItem(e Lineage, records map[string]Record) string {
+	name := e.From
+	switch {
+	case e.FromFile:
 		return "file " + name
+	case e.FromLiteral:
+		return "literal " + name
 	}
 	r, ok := records[name]
 	switch {
