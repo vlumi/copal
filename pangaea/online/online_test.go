@@ -76,7 +76,7 @@ func TestServer(t *testing.T) {
 	if err := s.Open(); err != nil {
 		t.Fatal(err)
 	}
-	authorizations, cancel := s.Subscribe()
+	events, cancel := s.Subscribe()
 	defer cancel()
 	_, before := post("/balance", `{"card":"`+card+`","atm":"ATM 1"}`)
 	if !before.Approved {
@@ -86,14 +86,18 @@ func TestServer(t *testing.T) {
 	if !bought.Approved || bought.AuthCode != "000001" || bought.Available != before.Available-150 {
 		t.Errorf("purchase of 1.50 with %s available: %+v", before.Available, bought)
 	}
-	if a := <-authorizations; a.Request.Function != Balance {
-		t.Errorf("first authorization published: %+v", a)
+	if e := <-events; e.Request.Function != Balance {
+		t.Errorf("first event published: %+v", e)
 	}
 	if status, r := post("/purchase", `{"card":"12","amount":"1.50"}`); status != http.StatusBadRequest || r.Result != ResultInvalid {
 		t.Errorf("a short card number: %d %+v", status, r)
 	}
+	<-events
 	if _, err := s.Close(); err != nil {
 		t.Fatal(err)
+	}
+	if e := <-events; !e.Closed {
+		t.Errorf("event published on closing: %+v", e)
 	}
 	if status, _ := post("/purchase", `{"card":"`+card+`","amount":"1.50","merchant":"KIOSK"}`); status != http.StatusServiceUnavailable {
 		t.Errorf("after closing: %d", status)
