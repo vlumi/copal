@@ -72,6 +72,7 @@ type Field struct {
 	Occurs      int         `json:"occurs,omitempty"`
 	OccursMin   int         `json:"occursMin,omitempty"`
 	DependingOn string      `json:"dependingOn,omitempty"`
+	IndexedBy   []string    `json:"indexedBy,omitempty"`
 	Redefines   string      `json:"redefines,omitempty"`
 	Values      []string    `json:"values,omitempty"`
 	Description string      `json:"description,omitempty"`
@@ -222,6 +223,7 @@ func newField(f *layout.Field) Field {
 		Occurs:      f.Occurs,
 		OccursMin:   f.OccursMin,
 		DependingOn: f.DependingOn,
+		IndexedBy:   f.IndexedBy,
 		Redefines:   f.Redefines,
 		Values:      f.Values,
 		Description: oneLine(f.Comment),

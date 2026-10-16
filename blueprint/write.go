@@ -211,6 +211,9 @@ func fieldNotes(f Field) string {
 	case f.Occurs > 0:
 		notes = append(notes, fmt.Sprintf("OCCURS %d", f.Occurs))
 	}
+	if len(f.IndexedBy) > 0 {
+		notes = append(notes, "INDEXED BY "+strings.Join(f.IndexedBy, ", "))
+	}
 	if len(f.Values) > 0 {
 		notes = append(notes, "VALUE "+strings.Join(f.Values, ", "))
 	}
