@@ -63,7 +63,7 @@ A small web UI that shows the bank's state and how each batch changed it.
 
 Done when: you can reset the bank, run a day from the browser, and see the master change.
 
-## 6. Pangaea grows, Copal follows
+## 6. Pangaea grows, Copal follows (done)
 
 Pangaea reaches the size in the brief, a step at a time, each step with Copal reading it:
 
@@ -71,7 +71,7 @@ Pangaea reaches the size in the brief, a step at a time, each step with Copal re
 - The nasties (done): `REDEFINES`, `OCCURS` and `OCCURS DEPENDING ON`, level-88 conditions, `COPY ... REPLACING`, a job that only works because its input comes in master order, and account maintenance in 1988 style, with `PERFORM THRU` ranges, `GO TO`s and fall-through, which Copal follows into its diagrams.
 - Copal (done): file I/O joined with the job network into one graph, drawn as SVG, a statement parser, data flow per paragraph and field lineage within a program, and business rules as decision tables.
 
-The console gains a page per run: the job network with each step's return code and record counts, and links from steps to the blueprints of their programs.
+The console gains a page per run: the job network with each step's return code and record counts, and links from steps to the blueprints of their programs (done).
 
 Done when: Pangaea has its ten or so programs, a month-end in the console, and a blueprint for every program and for the job network.
 

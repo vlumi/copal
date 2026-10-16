@@ -52,7 +52,7 @@ The generator ([generate/](generate/)) reads and writes records through the layo
 
 - the bank today: its business date, accounts and balances, and every day it has run, with each day's worst return code;
 - accounts, searched by account number, customer number or name, and for each account its master record field by field, every posting and every reject since the reset;
-- each business day: the job's steps, the transaction file's control totals against its details, the rejects, the reports, the audit trail and the transaction file;
+- each business day: every job it ran, the daily batch and on the first business day of a month the month-end job, each drawn as Copal draws its network, with every step's return code and every dataset's records, and with its reports; then the transaction file's control totals against its details, the rejects of transactions and of maintenance requests, the audit trail and the transaction file;
 - what changed between any two days' openings: balances, status changes and new accounts, reconciled against the postings in the audit trails in between.
 
 It reads every record through the layouts Copal computes from the copybooks, the same way the generator writes them. Its buttons reset the bank and run business days by calling the same code as `make bank-reset` and `make bank-days`; the console itself never writes the bank's files.
@@ -67,3 +67,4 @@ It reads every record through the layouts Copal computes from the copybooks, the
 - A program knows its files by DD name (`ASSIGN TO TRANIN`); the runner binds each DD to its dataset through the `DD_TRANIN` environment variable.
 - Programs never read the clock. The business date comes from the bank control record.
 - Return codes: 0 fine, 4 warnings such as rejected records, 12 input rejected, 16 the program could not do its job.
+- Each job writes its job log, `JOBLOG`, with every step's return code, and allocation messages, `JESYSMSG`, with the dataset each DD statement was bound to and the records it held when the step ended.
