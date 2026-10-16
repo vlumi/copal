@@ -13,7 +13,7 @@ The Go packages around the COBOL are the bank's machine room, not the bank: [jcl
 
 ## The daily batch
 
-[DAILY.jcl](jobs/DAILY.jcl) runs three steps, each only if no earlier step ended with a return code above 4:
+[DAILY.jcl](jobs/DAILY.jcl) runs three steps, each only if no earlier step ended with a return code (RC) above 4:
 
 1. **TXVALID** checks the day's transaction file: a header for the business date in the bank control record, details, and a trailer whose detail count, amount total and account number hash match the details. A file that fails is rejected as a whole (RC 12). Details with a bad account number, transaction code or amount go to the rejects (RC 4).
 2. **TXSORT** sorts the valid details into account number order.
