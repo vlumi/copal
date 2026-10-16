@@ -58,6 +58,8 @@ The hard part of moving a COBOL core system to anything newer is rarely the tran
 ## Debt
 
 - Fixtures and golden files hold records as text, which works only while every field is display. `COMP-3` arrives with month-end, and those datasets need another representation: hex, or fields decoded through Copal's record layouts.
+- `structure` finds `PERFORM` statements by scanning a paragraph's tokens. Data flow needs real statement parsing, and `structure` should move onto it then. `PERFORM ... THRU` is recorded but its range is not expanded, so the paragraphs inside a range do not list who performs them.
+- The lexer drops comments, so blueprints cannot show the description a copybook or program carries in its header comment. Keeping comment lines attached to the next token would allow it.
 
 ## Toolchain
 

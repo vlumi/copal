@@ -34,5 +34,10 @@ pangaea-daily:  ## Run the daily batch on the fixture and show its reports
 pangaea-golden:  ## Rewrite Pangaea's golden outputs from a run on the fixture
 	go test ./pangaea -run TestDaily -update
 
+.PHONY: blueprints
+blueprints:  ## Regenerate Pangaea's blueprints with Copal
+	rm -rf blueprints/pangaea
+	go run ./cmd/copal -copybooks pangaea/copybooks -out blueprints/pangaea -title pangaea pangaea/programs/*.cbl
+
 .PHONY: ci
 ci: toolchain lint-md lint-go test  ## Full local CI

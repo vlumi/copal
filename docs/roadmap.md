@@ -21,7 +21,7 @@ Done when: a pushed branch shows a green build.
 
 Done when: `make pangaea-daily` runs the batch on the fixture and `make ci` compares the outputs with the golden ones.
 
-## 3. Copal: layouts and structure
+## 3. Copal: layouts and structure (done)
 
 - Fixed-format reading: sequence area, indicator column, comments and continuation lines, `COPY` expansion.
 - Record layouts: level, name, offset, length, `PIC`, usage, redefinitions, as data (JSON) and as a Markdown table.
