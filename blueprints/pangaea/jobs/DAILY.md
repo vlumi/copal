@@ -72,7 +72,7 @@ Job [DAILY.jcl](../../../pangaea/jobs/DAILY.jcl): 14 steps.
 | BANKCTL | BANK.CONTROL(0) | SHR | CONTROL-FILE | [BANKCTL](../copybooks/BANKCTL.md) | read |
 | TRANIN | TRAN.DAILY(0) | SHR | TRAN-IN | [TRANREC](../copybooks/TRANREC.md) | read |
 | TRANOUT | &&VALID | NEW | TRAN-OUT | [TRANREC](../copybooks/TRANREC.md) | write |
-| REJECTS | TRAN.REJECTS(+1) | NEW | REJECT-OUT | [REJREC](../copybooks/REJREC.md) | write |
+| REJECTS | TRAN.REJECTS(+1) | NEW | REJECT-OUT | [REJREC](../copybooks/REJREC.md) | append |
 | VALRPT | job output | | REPORT-OUT | | write |
 
 ### ACCRUE
@@ -242,4 +242,4 @@ Each dataset the job names, the copybook that describes its records, from the pr
 
 ## Findings
 
-None: every DD is assigned a file, every file a DD, and every disposition fits its use.
+- Step VALID: TXVALID appends to DD REJECTS, which is not DISP=MOD.

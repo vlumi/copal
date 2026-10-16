@@ -47,8 +47,20 @@
            05  FILLER                  PIC X(20)
                                        VALUE 'MAINTENANCE FEE'.
            05  FILLER                  PIC 9(4)       VALUE 4100.
+           05  FILLER                  PIC XX         VALUE 'CP'.
+           05  FILLER                  PIC X(20)
+                                       VALUE 'CARD PURCHASE'.
+           05  FILLER                  PIC 9(4)       VALUE 2100.
+           05  FILLER                  PIC XX         VALUE 'AW'.
+           05  FILLER                  PIC X(20)
+                                       VALUE 'ATM WITHDRAWAL'.
+           05  FILLER                  PIC 9(4)       VALUE 1000.
+           05  FILLER                  PIC XX         VALUE 'AF'.
+           05  FILLER                  PIC X(20)
+                                       VALUE 'ATM FEE'.
+           05  FILLER                  PIC 9(4)       VALUE 4100.
        01  :P:-CODE-TABLE REDEFINES :P:-CODE-VALUES.
-           05  :P:-CODE-ENTRY          OCCURS 9 TIMES
+           05  :P:-CODE-ENTRY          OCCURS 12 TIMES
                                        INDEXED BY :P:-CX.
                10  :P:-CODE            PIC XX.
                10  :P:-CODE-TEXT       PIC X(20).

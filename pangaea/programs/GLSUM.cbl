@@ -81,12 +81,16 @@
            COPY CODETAB REPLACING ==:P:== BY ==GS==.
 
       * THE LEDGER ACCOUNTS, AND WHAT THE MONTH POSTED TO EACH.
+       01  WS-LEDGER-COUNT             PIC 9          VALUE 7.
        01  WS-LEDGER-VALUES.
            05  FILLER                  PIC 9(4)       VALUE 1000.
            05  FILLER                  PIC X(24)      VALUE 'CASH'.
            05  FILLER                  PIC 9(4)       VALUE 2000.
            05  FILLER                  PIC X(24)
                                        VALUE 'CUSTOMER DEPOSITS'.
+           05  FILLER                  PIC 9(4)       VALUE 2100.
+           05  FILLER                  PIC X(24)
+                                       VALUE 'CARD SETTLEMENT'.
            05  FILLER                  PIC 9(4)       VALUE 2900.
            05  FILLER                  PIC X(24)
                                        VALUE 'TRANSFERS IN TRANSIT'.
@@ -100,12 +104,12 @@
            05  FILLER                  PIC X(24)
                                        VALUE 'INTEREST EXPENSE'.
        01  WS-LEDGER REDEFINES WS-LEDGER-VALUES.
-           05  WS-LEDGER-ENTRY         OCCURS 6 TIMES
+           05  WS-LEDGER-ENTRY         OCCURS 7 TIMES
                                        INDEXED BY WS-LX.
                10  WS-LE-ACCOUNT       PIC 9(4).
                10  WS-LE-NAME          PIC X(24).
        01  WS-LEDGER-TOTALS.
-           05  WS-LEDGER-TOTAL         OCCURS 6 TIMES
+           05  WS-LEDGER-TOTAL         OCCURS 7 TIMES
                                        INDEXED BY WS-TX.
                10  WS-LT-DEBITS        PIC S9(13)V99  COMP-3.
                10  WS-LT-CREDITS       PIC S9(13)V99  COMP-3.
@@ -190,7 +194,8 @@
            ELSE
                COMPUTE WS-NM-MONTH = WS-CM-MONTH + 1
            END-IF
-           PERFORM VARYING WS-TX FROM 1 BY 1 UNTIL WS-TX > 6
+           PERFORM VARYING WS-TX FROM 1 BY 1
+                   UNTIL WS-TX > WS-LEDGER-COUNT
                MOVE 0 TO WS-LT-DEBITS(WS-TX) WS-LT-CREDITS(WS-TX)
            END-PERFORM.
 
@@ -255,7 +260,8 @@
       * WRITE A SUMMARY RECORD FOR EACH LEDGER ACCOUNT, AND CHECK THAT
       * THE LEDGER BALANCES.
        3000-WRITE-LEDGER.
-           PERFORM VARYING WS-LX FROM 1 BY 1 UNTIL WS-LX > 6
+           PERFORM VARYING WS-LX FROM 1 BY 1
+                   UNTIL WS-LX > WS-LEDGER-COUNT
                SET WS-TX TO WS-LX
                MOVE SPACES TO GL-SUMMARY-RECORD
                MOVE WS-CLOSED-MONTH-NUMBER TO GL-MONTH
@@ -301,7 +307,8 @@
            MOVE SPACES TO REPORT-LINE
            WRITE REPORT-LINE
            WRITE REPORT-LINE FROM WS-HEADING-LINE
-           PERFORM VARYING WS-LX FROM 1 BY 1 UNTIL WS-LX > 6
+           PERFORM VARYING WS-LX FROM 1 BY 1
+                   UNTIL WS-LX > WS-LEDGER-COUNT
                SET WS-TX TO WS-LX
                MOVE WS-LE-ACCOUNT(WS-LX) TO WS-LL-ACCOUNT
                MOVE WS-LE-NAME(WS-LX) TO WS-LL-NAME

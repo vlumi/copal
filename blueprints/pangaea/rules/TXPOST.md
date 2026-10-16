@@ -29,7 +29,7 @@ The business rules of [TXPOST](../programs/TXPOST.md), paragraph by paragraph: e
 | → `STOP RUN` | 7 | 7 |
 | → `MOVE 0 TO RETURN-CODE` | | 6 |
 
-Source: [TXPOST.cbl:158](../../../pangaea/programs/TXPOST.cbl#L158).
+Source: [TXPOST.cbl:162](../../../pangaea/programs/TXPOST.cbl#L162).
 
 ## 1000-INITIALIZE
 
@@ -49,7 +49,7 @@ Source: [TXPOST.cbl:158](../../../pangaea/programs/TXPOST.cbl#L158).
 | → `PERFORM 1200-READ-MASTER` | | 7 | 5 |
 | → `PERFORM 1300-READ-TRAN` | | 8 | 6 |
 
-Source: [TXPOST.cbl:175](../../../pangaea/programs/TXPOST.cbl#L175).
+Source: [TXPOST.cbl:179](../../../pangaea/programs/TXPOST.cbl#L179).
 
 ## 1200-READ-MASTER
 
@@ -66,7 +66,7 @@ Source: [TXPOST.cbl:175](../../../pangaea/programs/TXPOST.cbl#L175).
 | → `ADD 1 TO WS-MASTERS-READ` | | 6 | 4 |
 | → `ADD AM-BALANCE TO WS-OPENING-TOTAL` | | 7 | 5 |
 
-Source: [TXPOST.cbl:202](../../../pangaea/programs/TXPOST.cbl#L202).
+Source: [TXPOST.cbl:206](../../../pangaea/programs/TXPOST.cbl#L206).
 
 ## 1300-READ-TRAN
 
@@ -82,7 +82,7 @@ Source: [TXPOST.cbl:202](../../../pangaea/programs/TXPOST.cbl#L202).
 | → `PERFORM 9900-ABORT` | | 5 | |
 | → `MOVE WS-TRAN-ORDER-KEY TO WS-PREV-TRAN-ORDER-KEY` | | 6 | 4 |
 
-Source: [TXPOST.cbl:219](../../../pangaea/programs/TXPOST.cbl#L219).
+Source: [TXPOST.cbl:223](../../../pangaea/programs/TXPOST.cbl#L223).
 
 ## 2000-MATCH
 
@@ -97,26 +97,28 @@ Source: [TXPOST.cbl:219](../../../pangaea/programs/TXPOST.cbl#L219).
 | → `PERFORM 4000-WRITE-MASTER` | | | 1 |
 | → `PERFORM 1200-READ-MASTER` | | | 2 |
 
-Source: [TXPOST.cbl:237](../../../pangaea/programs/TXPOST.cbl#L237).
+Source: [TXPOST.cbl:241](../../../pangaea/programs/TXPOST.cbl#L241).
 
 ## 3000-APPLY-TRAN
 
-| | 1 | 2 | 3 | 4 | 5 | 6 |
-| --- | :-: | :-: | :-: | :-: | :-: | :-: |
-| `AM-CLOSED` | Y | N | N | N | N | N |
-| `TD-DEPOSIT OR TD-TRANSFER-CREDIT OR TD-TRANSFER-RETURN OR TD-INTEREST` | | Y | N | N | N | N |
-| `TD-FEE OR TD-OVERDRAFT-INTEREST OR TD-MAINTENANCE-FEE` | | | Y | N | N | N |
-| `AM-FROZEN` | | | | Y | N | N |
-| `TD-WITHDRAWAL OR TD-TRANSFER` | | | | | Y | N |
-| → `MOVE AM-BALANCE TO WS-BALANCE-BEFORE` | 1 | 1 | 1 | 1 | 1 | 1 |
-| → `SET RJ-CLOSED TO TRUE` | 2 | | | | | |
-| → `PERFORM 3900-REJECT-TRAN` | 3 | | | 3 | | |
-| → `PERFORM 3100-POST-CREDIT` | | 2 | | | | |
-| → `PERFORM 3300-POST-FEE` | | | 2 | | | |
-| → `SET RJ-FROZEN TO TRUE` | | | | 2 | | |
-| → `PERFORM 3200-POST-DEBIT` | | | | | 2 | |
+| | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+| --- | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| `AM-CLOSED` | Y | N | N | N | N | N | N |
+| `TD-DEPOSIT OR TD-TRANSFER-CREDIT OR TD-TRANSFER-RETURN OR TD-INTEREST` | | Y | N | N | N | N | N |
+| `TD-FEE OR TD-OVERDRAFT-INTEREST OR TD-MAINTENANCE-FEE OR TD-ATM-FEE` | | | Y | N | N | N | N |
+| `TD-CARD-PURCHASE OR TD-ATM-WITHDRAWAL` | | | | Y | N | N | N |
+| `AM-FROZEN` | | | | | Y | N | N |
+| `TD-WITHDRAWAL OR TD-TRANSFER` | | | | | | Y | N |
+| → `MOVE AM-BALANCE TO WS-BALANCE-BEFORE` | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+| → `SET RJ-CLOSED TO TRUE` | 2 | | | | | | |
+| → `PERFORM 3900-REJECT-TRAN` | 3 | | | | 3 | | |
+| → `PERFORM 3100-POST-CREDIT` | | 2 | | | | | |
+| → `PERFORM 3300-POST-FEE` | | | 2 | | | | |
+| → `PERFORM 3400-POST-AUTHORIZED` | | | | 2 | | | |
+| → `SET RJ-FROZEN TO TRUE` | | | | | 2 | | |
+| → `PERFORM 3200-POST-DEBIT` | | | | | | 2 | |
 
-Source: [TXPOST.cbl:252](../../../pangaea/programs/TXPOST.cbl#L252).
+Source: [TXPOST.cbl:256](../../../pangaea/programs/TXPOST.cbl#L256).
 
 ## 3200-POST-DEBIT
 
@@ -134,7 +136,7 @@ Source: [TXPOST.cbl:252](../../../pangaea/programs/TXPOST.cbl#L252).
 | → `PERFORM 3800-WRITE-AUDIT` | | 6 | 6 |
 | → `PERFORM 3500-WRITE-LEG` | | 7 | |
 
-Source: [TXPOST.cbl:285](../../../pangaea/programs/TXPOST.cbl#L285).
+Source: [TXPOST.cbl:293](../../../pangaea/programs/TXPOST.cbl#L293).
 
 ## 3500-WRITE-LEG
 
@@ -151,7 +153,7 @@ Source: [TXPOST.cbl:285](../../../pangaea/programs/TXPOST.cbl#L285).
 | → `MOVE WS-SAVED-TRAN TO TRAN-RECORD` | 8 | 8 |
 | → `SET TD-TRANSFER-RETURN TO TRUE` | | 2 |
 
-Source: [TXPOST.cbl:312](../../../pangaea/programs/TXPOST.cbl#L312).
+Source: [TXPOST.cbl:328](../../../pangaea/programs/TXPOST.cbl#L328).
 
 ## 3900-REJECT-TRAN
 
@@ -164,7 +166,7 @@ Source: [TXPOST.cbl:312](../../../pangaea/programs/TXPOST.cbl#L312).
 | → `ADD 1 TO WS-REJECT-COUNT` | 4 | 4 |
 | → `PERFORM 3500-WRITE-LEG` | 5 | |
 
-Source: [TXPOST.cbl:341](../../../pangaea/programs/TXPOST.cbl#L341).
+Source: [TXPOST.cbl:357](../../../pangaea/programs/TXPOST.cbl#L357).
 
 ## 5000-RECONCILE
 
@@ -178,4 +180,4 @@ Source: [TXPOST.cbl:341](../../../pangaea/programs/TXPOST.cbl#L341).
 | → `MOVE 'NEW MASTER OUT OF BALANCE' TO WS-ABORT-MESSAGE` | 5 | |
 | → `PERFORM 9900-ABORT` | 6 | |
 
-Source: [TXPOST.cbl:357](../../../pangaea/programs/TXPOST.cbl#L357).
+Source: [TXPOST.cbl:373](../../../pangaea/programs/TXPOST.cbl#L373).

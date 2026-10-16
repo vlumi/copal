@@ -17,11 +17,11 @@ Copybook [CODETAB.cpy](../../../pangaea/copybooks/CODETAB.cpy), used by [GLSUM](
 
 ## :P:-CODE-VALUES
 
-234 bytes.
+312 bytes.
 
 | Level | Field | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | :P:-CODE-VALUES | 1 | 234 | | | | [CODETAB.cpy:13](../../../pangaea/copybooks/CODETAB.cpy#L13) |
+| 01 | :P:-CODE-VALUES | 1 | 312 | | | | [CODETAB.cpy:13](../../../pangaea/copybooks/CODETAB.cpy#L13) |
 | 05 | FILLER | 1 | 2 | XX | | VALUE 'DP' | [CODETAB.cpy:14](../../../pangaea/copybooks/CODETAB.cpy#L14) |
 | 05 | FILLER | 3 | 20 | X(20) | | VALUE 'DEPOSIT' | [CODETAB.cpy:15](../../../pangaea/copybooks/CODETAB.cpy#L15) |
 | 05 | FILLER | 23 | 4 | 9(4) | | VALUE 1000 | [CODETAB.cpy:17](../../../pangaea/copybooks/CODETAB.cpy#L17) |
@@ -49,15 +49,24 @@ Copybook [CODETAB.cpy](../../../pangaea/copybooks/CODETAB.cpy), used by [GLSUM](
 | 05 | FILLER | 209 | 2 | XX | | VALUE 'MF' | [CODETAB.cpy:46](../../../pangaea/copybooks/CODETAB.cpy#L46) |
 | 05 | FILLER | 211 | 20 | X(20) | | VALUE 'MAINTENANCE FEE' | [CODETAB.cpy:47](../../../pangaea/copybooks/CODETAB.cpy#L47) |
 | 05 | FILLER | 231 | 4 | 9(4) | | VALUE 4100 | [CODETAB.cpy:49](../../../pangaea/copybooks/CODETAB.cpy#L49) |
+| 05 | FILLER | 235 | 2 | XX | | VALUE 'CP' | [CODETAB.cpy:50](../../../pangaea/copybooks/CODETAB.cpy#L50) |
+| 05 | FILLER | 237 | 20 | X(20) | | VALUE 'CARD PURCHASE' | [CODETAB.cpy:51](../../../pangaea/copybooks/CODETAB.cpy#L51) |
+| 05 | FILLER | 257 | 4 | 9(4) | | VALUE 2100 | [CODETAB.cpy:53](../../../pangaea/copybooks/CODETAB.cpy#L53) |
+| 05 | FILLER | 261 | 2 | XX | | VALUE 'AW' | [CODETAB.cpy:54](../../../pangaea/copybooks/CODETAB.cpy#L54) |
+| 05 | FILLER | 263 | 20 | X(20) | | VALUE 'ATM WITHDRAWAL' | [CODETAB.cpy:55](../../../pangaea/copybooks/CODETAB.cpy#L55) |
+| 05 | FILLER | 283 | 4 | 9(4) | | VALUE 1000 | [CODETAB.cpy:57](../../../pangaea/copybooks/CODETAB.cpy#L57) |
+| 05 | FILLER | 287 | 2 | XX | | VALUE 'AF' | [CODETAB.cpy:58](../../../pangaea/copybooks/CODETAB.cpy#L58) |
+| 05 | FILLER | 289 | 20 | X(20) | | VALUE 'ATM FEE' | [CODETAB.cpy:59](../../../pangaea/copybooks/CODETAB.cpy#L59) |
+| 05 | FILLER | 309 | 4 | 9(4) | | VALUE 4100 | [CODETAB.cpy:61](../../../pangaea/copybooks/CODETAB.cpy#L61) |
 
 ## :P:-CODE-TABLE
 
-234 bytes.
+312 bytes.
 
 | Level | Field | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | :P:-CODE-TABLE | 1 | 234 | | | REDEFINES :P:-CODE-VALUES | [CODETAB.cpy:50](../../../pangaea/copybooks/CODETAB.cpy#L50) |
-| 05 | :P:-CODE-ENTRY | 1 | 26 | | | OCCURS 9; INDEXED BY :P:-CX | [CODETAB.cpy:51](../../../pangaea/copybooks/CODETAB.cpy#L51) |
-| 10 | :P:-CODE | 1 | 2 | XX | | | [CODETAB.cpy:53](../../../pangaea/copybooks/CODETAB.cpy#L53) |
-| 10 | :P:-CODE-TEXT | 3 | 20 | X(20) | | | [CODETAB.cpy:54](../../../pangaea/copybooks/CODETAB.cpy#L54) |
-| 10 | :P:-CODE-GL-ACCOUNT | 23 | 4 | 9(4) | | | [CODETAB.cpy:55](../../../pangaea/copybooks/CODETAB.cpy#L55) |
+| 01 | :P:-CODE-TABLE | 1 | 312 | | | REDEFINES :P:-CODE-VALUES | [CODETAB.cpy:62](../../../pangaea/copybooks/CODETAB.cpy#L62) |
+| 05 | :P:-CODE-ENTRY | 1 | 26 | | | OCCURS 12; INDEXED BY :P:-CX | [CODETAB.cpy:63](../../../pangaea/copybooks/CODETAB.cpy#L63) |
+| 10 | :P:-CODE | 1 | 2 | XX | | | [CODETAB.cpy:65](../../../pangaea/copybooks/CODETAB.cpy#L65) |
+| 10 | :P:-CODE-TEXT | 3 | 20 | X(20) | | | [CODETAB.cpy:66](../../../pangaea/copybooks/CODETAB.cpy#L66) |
+| 10 | :P:-CODE-GL-ACCOUNT | 23 | 4 | 9(4) | | | [CODETAB.cpy:67](../../../pangaea/copybooks/CODETAB.cpy#L67) |

@@ -682,11 +682,11 @@ Working storage. 108 bytes.
 
 ### ST-CODE-VALUES
 
-Working storage. 234 bytes, layout in copybook [CODETAB](../copybooks/CODETAB.md).
+Working storage. 312 bytes, layout in copybook [CODETAB](../copybooks/CODETAB.md).
 
 ### ST-CODE-TABLE
 
-Working storage. 234 bytes, layout in copybook [CODETAB](../copybooks/CODETAB.md).
+Working storage. 312 bytes, layout in copybook [CODETAB](../copybooks/CODETAB.md).
 
 ### WS-STATEMENT
 

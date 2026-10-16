@@ -3,7 +3,7 @@
   "tables": [
     {
       "paragraph": "0000-MAIN",
-      "source": "pangaea/programs/GLSUM.cbl:156",
+      "source": "pangaea/programs/GLSUM.cbl:160",
       "conditions": [
         "WS-CLOSED-MONTH-NUMBER = 0",
         "WS-TRANSIT-NET = 0"
@@ -79,7 +79,7 @@
     },
     {
       "paragraph": "1000-INITIALIZE",
-      "source": "pangaea/programs/GLSUM.cbl:173",
+      "source": "pangaea/programs/GLSUM.cbl:177",
       "conditions": [
         "WS-FILE-STATUSES = ALL '0'",
         "READ ACCR-IN AT END",
@@ -96,7 +96,7 @@
         "MOVE WS-CM-YEAR TO WS-NM-YEAR",
         "ADD 1 TO WS-NM-YEAR",
         "MOVE 1 TO WS-NM-MONTH",
-        "PERFORM VARYING WS-TX FROM 1 BY 1 UNTIL WS-TX \u003e 6",
+        "PERFORM VARYING WS-TX FROM 1 BY 1 UNTIL WS-TX \u003e WS-LEDGER-COUNT",
         "COMPUTE WS-NM-MONTH = WS-CM-MONTH + 1"
       ],
       "rules": [
@@ -181,7 +181,7 @@
     },
     {
       "paragraph": "2000-POST-MONTH",
-      "source": "pangaea/programs/GLSUM.cbl:199",
+      "source": "pangaea/programs/GLSUM.cbl:204",
       "conditions": [
         "WS-AUDIT-STATUS = '10'"
       ],
@@ -217,7 +217,7 @@
     {
       "paragraph": "2000-POST-MONTH",
       "loop": "PERFORM UNTIL WS-AUDIT-STATUS NOT = '00'",
-      "source": "pangaea/programs/GLSUM.cbl:201",
+      "source": "pangaea/programs/GLSUM.cbl:206",
       "conditions": [
         "WS-POSTING-MONTH = WS-CLOSED-MONTH OR (WS-POSTING-MONTH = WS-NEXT-MONTH AND WS-MONTH-END-CODE)"
       ],
@@ -253,7 +253,7 @@
     },
     {
       "paragraph": "2100-POST-TO-LEDGER",
-      "source": "pangaea/programs/GLSUM.cbl:218",
+      "source": "pangaea/programs/GLSUM.cbl:223",
       "conditions": [
         "GS-CODE(GS-CX) = AU-TRAN-CODE",
         "AU-AMOUNT \u003c 0"
@@ -368,7 +368,7 @@
     },
     {
       "paragraph": "2200-FIND-ACCOUNT",
-      "source": "pangaea/programs/GLSUM.cbl:245",
+      "source": "pangaea/programs/GLSUM.cbl:250",
       "conditions": [
         "WS-LE-ACCOUNT(WS-LX) = WS-WANTED-ACCOUNT"
       ],
@@ -405,12 +405,12 @@
     },
     {
       "paragraph": "3000-WRITE-LEDGER",
-      "source": "pangaea/programs/GLSUM.cbl:257",
+      "source": "pangaea/programs/GLSUM.cbl:262",
       "conditions": [
         "WS-DEBIT-TOTAL = WS-CREDIT-TOTAL"
       ],
       "actions": [
-        "PERFORM VARYING WS-LX FROM 1 BY 1 UNTIL WS-LX \u003e 6",
+        "PERFORM VARYING WS-LX FROM 1 BY 1 UNTIL WS-LX \u003e WS-LEDGER-COUNT",
         "MOVE 'LEDGER OUT OF BALANCE' TO WS-ABORT-MESSAGE",
         "PERFORM 9900-ABORT"
       ],
@@ -437,8 +437,8 @@
     },
     {
       "paragraph": "3000-WRITE-LEDGER",
-      "loop": "PERFORM VARYING WS-LX FROM 1 BY 1 UNTIL WS-LX \u003e 6",
-      "source": "pangaea/programs/GLSUM.cbl:258",
+      "loop": "PERFORM VARYING WS-LX FROM 1 BY 1 UNTIL WS-LX \u003e WS-LEDGER-COUNT",
+      "source": "pangaea/programs/GLSUM.cbl:263",
       "conditions": [
         "WS-LE-ACCOUNT(WS-LX) = WS-DEPOSITS-ACCOUNT",
         "WS-LE-ACCOUNT(WS-LX) = WS-TRANSIT-ACCOUNT"
@@ -518,7 +518,7 @@
     },
     {
       "paragraph": "8000-WRITE-REPORT",
-      "source": "pangaea/programs/GLSUM.cbl:284",
+      "source": "pangaea/programs/GLSUM.cbl:290",
       "conditions": [
         "WS-CLOSED-MONTH-NUMBER = 0",
         "WS-TRANSIT-NET = 0"
@@ -534,7 +534,7 @@
         "MOVE WS-POSTING-COUNT TO WS-RC-VALUE",
         "WRITE REPORT-LINE FROM WS-REPORT-COUNT-LINE",
         "WRITE REPORT-LINE FROM WS-HEADING-LINE",
-        "PERFORM VARYING WS-LX FROM 1 BY 1 UNTIL WS-LX \u003e 6",
+        "PERFORM VARYING WS-LX FROM 1 BY 1 UNTIL WS-LX \u003e WS-LEDGER-COUNT",
         "MOVE SPACES TO WS-LL-ACCOUNT",
         "MOVE 'TOTAL' TO WS-LL-NAME",
         "MOVE WS-DEBIT-TOTAL TO WS-LL-DEBITS",

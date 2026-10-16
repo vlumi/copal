@@ -30,15 +30,15 @@ The business rules of [TXVALID](../programs/TXVALID.md), paragraph by paragraph:
 | → `MOVE 0 TO RETURN-CODE` | | 7 | |
 | → `MOVE 12 TO RETURN-CODE` | | | 5 |
 
-Source: [TXVALID.cbl:101](../../../pangaea/programs/TXVALID.cbl#L101).
+Source: [TXVALID.cbl:111](../../../pangaea/programs/TXVALID.cbl#L111).
 
 ## 1000-OPEN-FILES
 
 | | 1 | 2 | 3 |
 | --- | :-: | :-: | :-: |
-| `WS-CONTROL-STATUS NOT = '00' OR WS-TRAN-IN-STATUS NOT = '00' OR WS-TRAN-OUT-STATUS NOT = '00' OR WS-REJECT-STATUS NOT = '00' OR WS-REPORT-STATUS NOT = '00'` | Y | N | N |
+| `WS-CONTROL-STATUS NOT = '00' OR WS-TRAN-IN-STATUS NOT = '00' OR WS-TRAN-OUT-STATUS NOT = '00' OR NOT REJECTS-OPENED OR WS-REPORT-STATUS NOT = '00'` | Y | N | N |
 | `READ CONTROL-FILE AT END` | | Y | N |
-| → `OPEN INPUT CONTROL-FILE TRAN-IN OUTPUT TRAN-OUT REJECT-OUT REPORT-OUT` | 1 | 1 | 1 |
+| → `OPEN INPUT CONTROL-FILE TRAN-IN OUTPUT TRAN-OUT REPORT-OUT EXTEND REJECT-OUT` | 1 | 1 | 1 |
 | → `DISPLAY 'TXVALID: CANNOT OPEN FILES ' WS-FILE-STATUSES` | 2 | | |
 | → `MOVE 16 TO RETURN-CODE` | 3 | 4 | |
 | → `STOP RUN` | 4 | 5 | |
@@ -47,23 +47,26 @@ Source: [TXVALID.cbl:101](../../../pangaea/programs/TXVALID.cbl#L101).
 | → `MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE` | | | 3 |
 | → `MOVE SPACES TO REJECT-RECORD` | | | 4 |
 
-Source: [TXVALID.cbl:123](../../../pangaea/programs/TXVALID.cbl#L123).
+Source: [TXVALID.cbl:134](../../../pangaea/programs/TXVALID.cbl#L134).
 
 ## 2000-READ-HEADER
 
-| | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
-| --- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| `READ TRAN-IN AT END` | Y | Y | Y | Y | N | N | N | N |
-| `FILE-IS-GOOD` | N | Y | Y | Y | N | Y | Y | Y |
-| `TR-HEADER` | | N | Y | Y | | N | Y | Y |
-| `TH-BUSINESS-DATE = WS-BUSINESS-DATE` | | | N | Y | | | N | Y |
-| → `READ TRAN-IN` | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
-| → `MOVE 'EMPTY FILE' TO WS-FILE-ERROR` | 2 | 2 | 2 | 2 | | | | |
-| → `CONTINUE` | 3 | | | | 2 | | | |
-| → `MOVE 'FIRST RECORD IS NOT A HEADER' TO WS-FILE-ERROR` | | 3 | | | | 2 | | |
-| → `MOVE 'HEADER IS NOT FOR THE BUSINESS DATE' TO WS-FILE-ERROR` | | | 3 | | | | 2 | |
+| | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+| --- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| `READ TRAN-IN AT END` | Y | Y | Y | Y | Y | N | N | N | N | N |
+| `FILE-IS-GOOD` | N | Y | Y | Y | Y | N | Y | Y | Y | Y |
+| `TR-HEADER` | | N | Y | Y | Y | | N | Y | Y | Y |
+| `TH-BUSINESS-DATE = WS-BUSINESS-DATE` | | | N | Y | Y | | | N | Y | Y |
+| `NOT TH-FROM-BRANCHES AND NOT TH-FROM-CARDS` | | | | Y | N | | | | Y | N |
+| → `READ TRAN-IN` | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+| → `MOVE 'EMPTY FILE' TO WS-FILE-ERROR` | 2 | 2 | 2 | 2 | 2 | | | | | |
+| → `CONTINUE` | 3 | | | | | 2 | | | | |
+| → `MOVE 'FIRST RECORD IS NOT A HEADER' TO WS-FILE-ERROR` | | 3 | | | | | 2 | | | |
+| → `MOVE TH-SOURCE TO WS-SOURCE` | | 4 | 4 | 4 | 3 | | 3 | 3 | 3 | 2 |
+| → `MOVE 'HEADER IS NOT FOR THE BUSINESS DATE' TO WS-FILE-ERROR` | | | 3 | | | | | 2 | | |
+| → `MOVE 'HEADER IS FROM AN UNKNOWN SOURCE' TO WS-FILE-ERROR` | | | | 3 | | | | | 2 | |
 
-Source: [TXVALID.cbl:145](../../../pangaea/programs/TXVALID.cbl#L145).
+Source: [TXVALID.cbl:158](../../../pangaea/programs/TXVALID.cbl#L158).
 
 ## 3000-READ-DETAILS, in its loop
 
@@ -80,7 +83,7 @@ Each pass of `PERFORM UNTIL TR-TRAILER OR NOT FILE-IS-GOOD`.
 | → `MOVE 'TYPE' TO RJ-REASON` | | | | | 1 | 1 |
 | → `PERFORM 3300-REJECT-RECORD` | | | | | 2 | 2 |
 
-Source: [TXVALID.cbl:163](../../../pangaea/programs/TXVALID.cbl#L163).
+Source: [TXVALID.cbl:182](../../../pangaea/programs/TXVALID.cbl#L182).
 
 ## 3100-READ-NEXT
 
@@ -90,7 +93,7 @@ Source: [TXVALID.cbl:163](../../../pangaea/programs/TXVALID.cbl#L163).
 | → `READ TRAN-IN` | 1 | 1 |
 | → `MOVE 'NO TRAILER' TO WS-FILE-ERROR` | 2 | |
 
-Source: [TXVALID.cbl:179](../../../pangaea/programs/TXVALID.cbl#L179).
+Source: [TXVALID.cbl:198](../../../pangaea/programs/TXVALID.cbl#L198).
 
 ## 3200-VALIDATE-DETAIL
 
@@ -98,7 +101,7 @@ Source: [TXVALID.cbl:179](../../../pangaea/programs/TXVALID.cbl#L179).
 | --- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
 | `TD-AMOUNT IS NUMERIC` | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | N | N | N | N | N | N | N | N | N | N |
 | `TD-ACCT-NO IS NUMERIC` | Y | Y | Y | Y | Y | Y | Y | Y | N | N | Y | Y | Y | Y | Y | Y | Y | Y | N | N |
-| `TD-KNOWN-CODE` | N | N | Y | Y | Y | Y | Y | Y | | | N | N | Y | Y | Y | Y | Y | Y | | |
+| `(FROM-BRANCHES AND NOT TD-KNOWN-CODE) OR (FROM-CARDS AND NOT TD-CARD-CODE)` | Y | Y | N | N | N | N | N | N | | | Y | Y | N | N | N | N | N | N | | |
 | `DETAIL-IS-VALID` | Y | N | Y | N | Y | N | Y | N | Y | N | Y | N | Y | N | Y | N | Y | N | Y | N |
 | `TD-AMOUNT IS NOT NUMERIC OR TD-AMOUNT = ZERO` | | | Y | Y | N | N | N | N | | | | | Y | Y | N | N | N | N | | |
 | `TD-TRANSFER AND (TD-COUNTER-ACCT-NO IS NOT NUMERIC OR TD-COUNTER-ACCT-NO = TD-ACCT-NO)` | | | | | Y | Y | N | N | | | | | | | Y | Y | N | N | | |
@@ -115,7 +118,7 @@ Source: [TXVALID.cbl:179](../../../pangaea/programs/TXVALID.cbl#L179).
 | → `SET RJ-BAD-COUNTER TO TRUE` | | | | | 5 | 5 | | | | | | | | | 4 | 4 | | | | |
 | → `SET RJ-BAD-ACCOUNT TO TRUE` | | | | | | | | | 4 | 4 | | | | | | | | | 3 | 3 |
 
-Source: [TXVALID.cbl:186](../../../pangaea/programs/TXVALID.cbl#L186).
+Source: [TXVALID.cbl:205](../../../pangaea/programs/TXVALID.cbl#L205).
 
 ## 4000-CHECK-TRAILER
 
@@ -132,7 +135,7 @@ Source: [TXVALID.cbl:186](../../../pangaea/programs/TXVALID.cbl#L186).
 | → `MOVE 'TRAILER AMOUNT TOTAL DIFFERS' TO WS-FILE-ERROR` | | | | 1 | 1 | 1 | | | | | | |
 | → `MOVE 'TRAILER ACCOUNT HASH DIFFERS' TO WS-FILE-ERROR` | | | | | | | 1 | 1 | 1 | | | |
 
-Source: [TXVALID.cbl:227](../../../pangaea/programs/TXVALID.cbl#L227).
+Source: [TXVALID.cbl:247](../../../pangaea/programs/TXVALID.cbl#L247).
 
 ## 8000-WRITE-REPORT
 
@@ -155,4 +158,4 @@ Source: [TXVALID.cbl:227](../../../pangaea/programs/TXVALID.cbl#L227).
 | → `MOVE 'FILE ACCEPTED' TO REPORT-LINE` | 21 | |
 | → `STRING 'FILE REJECTED: ' WS-FILE-ERROR DELIMITED BY SIZE INTO REPORT-LINE` | | 21 |
 
-Source: [TXVALID.cbl:248](../../../pangaea/programs/TXVALID.cbl#L248).
+Source: [TXVALID.cbl:268](../../../pangaea/programs/TXVALID.cbl#L268).

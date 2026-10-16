@@ -18,13 +18,18 @@
     "CHARGES OVERDRAFT INTEREST (OD) AND THE MAINTENANCE FEE (MF).",
     "THESE TOO ARE NEVER RECEIVED IN THE DAILY FILE.",
     "",
+    "THE CARD FILE, FROM THE ONLINE DAY'S HOLDS, HAS THE SAME FORM",
+    "AND ITS OWN SOURCE: CARD PURCHASES (CP), ATM WITHDRAWALS (AW)",
+    "AND ATM FEES (AF), WHICH WERE AUTHORIZED WHEN THEY WERE MADE.",
+    "",
     "MODIFICATION HISTORY",
     "DATE       BY  CHANGE",
     "1987-03-12 JA  ORIGINAL VERSION.",
     "1991-06-03 PK  CR-0117 ACCOUNT NUMBER HASH IN THE TRAILER.",
     "1996-04-15 PK  CR-0233 TRANSFERS: COUNTER ACCOUNT, FROM THE",
     "               FILLER.",
-    "2001-09-03 TL  CR-0298 MONTH-END INTEREST AND FEE CODES."
+    "2001-09-03 TL  CR-0298 MONTH-END INTEREST AND FEE CODES.",
+    "2003-05-19 MV  CR-0342 THE CARD FILE AND ITS CODES."
   ],
   "records": [
     {
@@ -33,7 +38,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
-      "source": "pangaea/copybooks/TRANREC.cpy:26",
+      "source": "pangaea/copybooks/TRANREC.cpy:31",
       "fields": [
         {
           "level": 5,
@@ -49,24 +54,24 @@
               "values": [
                 "'H'"
               ],
-              "source": "pangaea/copybooks/TRANREC.cpy:28"
+              "source": "pangaea/copybooks/TRANREC.cpy:33"
             },
             {
               "name": "TR-DETAIL",
               "values": [
                 "'D'"
               ],
-              "source": "pangaea/copybooks/TRANREC.cpy:29"
+              "source": "pangaea/copybooks/TRANREC.cpy:34"
             },
             {
               "name": "TR-TRAILER",
               "values": [
                 "'T'"
               ],
-              "source": "pangaea/copybooks/TRANREC.cpy:30"
+              "source": "pangaea/copybooks/TRANREC.cpy:35"
             }
           ],
-          "source": "pangaea/copybooks/TRANREC.cpy:27"
+          "source": "pangaea/copybooks/TRANREC.cpy:32"
         },
         {
           "level": 5,
@@ -76,7 +81,7 @@
           "picture": "X(79)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/copybooks/TRANREC.cpy:31"
+          "source": "pangaea/copybooks/TRANREC.cpy:36"
         },
         {
           "level": 5,
@@ -85,7 +90,7 @@
           "length": 79,
           "category": "group",
           "redefines": "TR-BODY",
-          "source": "pangaea/copybooks/TRANREC.cpy:32",
+          "source": "pangaea/copybooks/TRANREC.cpy:37",
           "fields": [
             {
               "level": 10,
@@ -96,7 +101,7 @@
               "usage": "DISPLAY",
               "category": "numeric",
               "digits": 8,
-              "source": "pangaea/copybooks/TRANREC.cpy:33"
+              "source": "pangaea/copybooks/TRANREC.cpy:38"
             },
             {
               "level": 10,
@@ -106,7 +111,23 @@
               "picture": "X(8)",
               "usage": "DISPLAY",
               "category": "alphanumeric",
-              "source": "pangaea/copybooks/TRANREC.cpy:34"
+              "conditions": [
+                {
+                  "name": "TH-FROM-BRANCHES",
+                  "values": [
+                    "'BRANCHES'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:40"
+                },
+                {
+                  "name": "TH-FROM-CARDS",
+                  "values": [
+                    "'CARDS'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:41"
+                }
+              ],
+              "source": "pangaea/copybooks/TRANREC.cpy:39"
             },
             {
               "level": 10,
@@ -117,7 +138,7 @@
               "usage": "DISPLAY",
               "category": "numeric",
               "digits": 6,
-              "source": "pangaea/copybooks/TRANREC.cpy:35"
+              "source": "pangaea/copybooks/TRANREC.cpy:42"
             },
             {
               "level": 10,
@@ -127,7 +148,7 @@
               "picture": "X(57)",
               "usage": "DISPLAY",
               "category": "alphanumeric",
-              "source": "pangaea/copybooks/TRANREC.cpy:36"
+              "source": "pangaea/copybooks/TRANREC.cpy:43"
             }
           ]
         },
@@ -138,7 +159,7 @@
           "length": 79,
           "category": "group",
           "redefines": "TR-BODY",
-          "source": "pangaea/copybooks/TRANREC.cpy:37",
+          "source": "pangaea/copybooks/TRANREC.cpy:44",
           "fields": [
             {
               "level": 10,
@@ -149,7 +170,7 @@
               "usage": "DISPLAY",
               "category": "numeric",
               "digits": 10,
-              "source": "pangaea/copybooks/TRANREC.cpy:38"
+              "source": "pangaea/copybooks/TRANREC.cpy:45"
             },
             {
               "level": 10,
@@ -160,7 +181,7 @@
               "usage": "DISPLAY",
               "category": "numeric",
               "digits": 10,
-              "source": "pangaea/copybooks/TRANREC.cpy:39"
+              "source": "pangaea/copybooks/TRANREC.cpy:46"
             },
             {
               "level": 10,
@@ -176,63 +197,84 @@
                   "values": [
                     "'DP'"
                   ],
-                  "source": "pangaea/copybooks/TRANREC.cpy:41"
+                  "source": "pangaea/copybooks/TRANREC.cpy:48"
                 },
                 {
                   "name": "TD-WITHDRAWAL",
                   "values": [
                     "'WD'"
                   ],
-                  "source": "pangaea/copybooks/TRANREC.cpy:42"
+                  "source": "pangaea/copybooks/TRANREC.cpy:49"
                 },
                 {
                   "name": "TD-FEE",
                   "values": [
                     "'FE'"
                   ],
-                  "source": "pangaea/copybooks/TRANREC.cpy:43"
+                  "source": "pangaea/copybooks/TRANREC.cpy:50"
                 },
                 {
                   "name": "TD-TRANSFER",
                   "values": [
                     "'TR'"
                   ],
-                  "source": "pangaea/copybooks/TRANREC.cpy:44"
+                  "source": "pangaea/copybooks/TRANREC.cpy:51"
                 },
                 {
                   "name": "TD-TRANSFER-CREDIT",
                   "values": [
                     "'TC'"
                   ],
-                  "source": "pangaea/copybooks/TRANREC.cpy:45"
+                  "source": "pangaea/copybooks/TRANREC.cpy:52"
                 },
                 {
                   "name": "TD-TRANSFER-RETURN",
                   "values": [
                     "'RT'"
                   ],
-                  "source": "pangaea/copybooks/TRANREC.cpy:46"
+                  "source": "pangaea/copybooks/TRANREC.cpy:53"
                 },
                 {
                   "name": "TD-INTEREST",
                   "values": [
                     "'IN'"
                   ],
-                  "source": "pangaea/copybooks/TRANREC.cpy:47"
+                  "source": "pangaea/copybooks/TRANREC.cpy:54"
                 },
                 {
                   "name": "TD-OVERDRAFT-INTEREST",
                   "values": [
                     "'OD'"
                   ],
-                  "source": "pangaea/copybooks/TRANREC.cpy:48"
+                  "source": "pangaea/copybooks/TRANREC.cpy:55"
                 },
                 {
                   "name": "TD-MAINTENANCE-FEE",
                   "values": [
                     "'MF'"
                   ],
-                  "source": "pangaea/copybooks/TRANREC.cpy:49"
+                  "source": "pangaea/copybooks/TRANREC.cpy:56"
+                },
+                {
+                  "name": "TD-CARD-PURCHASE",
+                  "values": [
+                    "'CP'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:57"
+                },
+                {
+                  "name": "TD-ATM-WITHDRAWAL",
+                  "values": [
+                    "'AW'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:58"
+                },
+                {
+                  "name": "TD-ATM-FEE",
+                  "values": [
+                    "'AF'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:59"
                 },
                 {
                   "name": "TD-KNOWN-CODE",
@@ -242,10 +284,19 @@
                     "'FE'",
                     "'TR'"
                   ],
-                  "source": "pangaea/copybooks/TRANREC.cpy:50"
+                  "source": "pangaea/copybooks/TRANREC.cpy:60"
+                },
+                {
+                  "name": "TD-CARD-CODE",
+                  "values": [
+                    "'CP'",
+                    "'AW'",
+                    "'AF'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:61"
                 }
               ],
-              "source": "pangaea/copybooks/TRANREC.cpy:40"
+              "source": "pangaea/copybooks/TRANREC.cpy:47"
             },
             {
               "level": 10,
@@ -257,7 +308,7 @@
               "category": "numeric",
               "digits": 11,
               "scale": 2,
-              "source": "pangaea/copybooks/TRANREC.cpy:51"
+              "source": "pangaea/copybooks/TRANREC.cpy:62"
             },
             {
               "level": 10,
@@ -267,7 +318,7 @@
               "picture": "X(20)",
               "usage": "DISPLAY",
               "category": "alphanumeric",
-              "source": "pangaea/copybooks/TRANREC.cpy:52"
+              "source": "pangaea/copybooks/TRANREC.cpy:63"
             },
             {
               "level": 10,
@@ -278,7 +329,7 @@
               "usage": "DISPLAY",
               "category": "numeric",
               "digits": 10,
-              "source": "pangaea/copybooks/TRANREC.cpy:53"
+              "source": "pangaea/copybooks/TRANREC.cpy:64"
             },
             {
               "level": 10,
@@ -288,7 +339,7 @@
               "picture": "X(16)",
               "usage": "DISPLAY",
               "category": "alphanumeric",
-              "source": "pangaea/copybooks/TRANREC.cpy:54"
+              "source": "pangaea/copybooks/TRANREC.cpy:65"
             }
           ]
         },
@@ -299,7 +350,7 @@
           "length": 79,
           "category": "group",
           "redefines": "TR-BODY",
-          "source": "pangaea/copybooks/TRANREC.cpy:55",
+          "source": "pangaea/copybooks/TRANREC.cpy:66",
           "fields": [
             {
               "level": 10,
@@ -310,7 +361,7 @@
               "usage": "DISPLAY",
               "category": "numeric",
               "digits": 8,
-              "source": "pangaea/copybooks/TRANREC.cpy:56"
+              "source": "pangaea/copybooks/TRANREC.cpy:67"
             },
             {
               "level": 10,
@@ -322,7 +373,7 @@
               "category": "numeric",
               "digits": 15,
               "scale": 2,
-              "source": "pangaea/copybooks/TRANREC.cpy:57"
+              "source": "pangaea/copybooks/TRANREC.cpy:68"
             },
             {
               "level": 10,
@@ -333,7 +384,7 @@
               "usage": "DISPLAY",
               "category": "numeric",
               "digits": 15,
-              "source": "pangaea/copybooks/TRANREC.cpy:58"
+              "source": "pangaea/copybooks/TRANREC.cpy:69"
             },
             {
               "level": 10,
@@ -343,7 +394,7 @@
               "picture": "X(41)",
               "usage": "DISPLAY",
               "category": "alphanumeric",
-              "source": "pangaea/copybooks/TRANREC.cpy:59"
+              "source": "pangaea/copybooks/TRANREC.cpy:70"
             }
           ]
         }

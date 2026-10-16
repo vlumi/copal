@@ -22,8 +22,10 @@
     "POST TO A FROZEN ACCOUNT, WITHDRAWALS AND TRANSFERS DO NOT. A",
     "DEBIT MAY TAKE THE BALANCE DOWN TO THE OVERDRAFT LIMIT, NO",
     "FURTHER. A FEE ALWAYS POSTS, EVEN PAST THE LIMIT. INTEREST",
-    "POSTS AS A CREDIT, OVERDRAFT INTEREST AND MAINTENANCE FEES AS",
-    "FEES.",
+    "POSTS AS A CREDIT, OVERDRAFT INTEREST, MAINTENANCE FEES AND",
+    "ATM FEES AS FEES. CARD PURCHASES AND ATM WITHDRAWALS WERE",
+    "AUTHORIZED WHEN THEY WERE MADE, AND POST AS DEBITS WHATEVER",
+    "THE BALANCE, EVEN TO AN ACCOUNT FROZEN SINCE.",
     "",
     "RETURN CODES: 0 ALL POSTED, 4 SOME REJECTED,",
     "              16 INPUT OUT OF ORDER, OUT OF BALANCE OR I/O.",
@@ -35,6 +37,8 @@
     "1996-04-15 PK  CR-0233 TRANSFERS, POSTED IN LEGS OVER THREE",
     "               RUNS. AUDIT AND REJECTS ARE APPENDED TO.",
     "1999-01-11 SL  Y2K: 8-DIGIT DATES IN THE AUDIT TRAIL.",
+    "2003-05-19 MV  CR-0342 CARD AND ATM TRANSACTIONS, AUTHORIZED",
+    "               ONLINE, POST WHATEVER THE BALANCE.",
     "2003-05-26 MV  CR-0352 FEES POST EVEN PAST THE OVERDRAFT",
     "               LIMIT.",
     "2001-09-03 TL  CR-0298 MONTH-END INTEREST AND FEES.",
@@ -68,7 +72,7 @@
       "records": [
         "BANK-CONTROL-RECORD"
       ],
-      "source": "pangaea/programs/TXPOST.cbl:50"
+      "source": "pangaea/programs/TXPOST.cbl:54"
     },
     {
       "name": "ACCT-IN",
@@ -82,7 +86,7 @@
       "records": [
         "ACCT-MASTER-RECORD"
       ],
-      "source": "pangaea/programs/TXPOST.cbl:53"
+      "source": "pangaea/programs/TXPOST.cbl:57"
     },
     {
       "name": "TRAN-IN",
@@ -96,7 +100,7 @@
       "records": [
         "TRAN-RECORD"
       ],
-      "source": "pangaea/programs/TXPOST.cbl:56"
+      "source": "pangaea/programs/TXPOST.cbl:60"
     },
     {
       "name": "ACCT-OUT",
@@ -110,7 +114,7 @@
       "records": [
         "ACCT-OUT-RECORD"
       ],
-      "source": "pangaea/programs/TXPOST.cbl:59"
+      "source": "pangaea/programs/TXPOST.cbl:63"
     },
     {
       "name": "AUDIT-OUT",
@@ -124,7 +128,7 @@
       "records": [
         "AUDIT-OUT-RECORD"
       ],
-      "source": "pangaea/programs/TXPOST.cbl:62"
+      "source": "pangaea/programs/TXPOST.cbl:66"
     },
     {
       "name": "REJECT-OUT",
@@ -138,7 +142,7 @@
       "records": [
         "REJECT-OUT-RECORD"
       ],
-      "source": "pangaea/programs/TXPOST.cbl:65"
+      "source": "pangaea/programs/TXPOST.cbl:69"
     },
     {
       "name": "LEGS-OUT",
@@ -152,7 +156,7 @@
       "records": [
         "LEGS-OUT-RECORD"
       ],
-      "source": "pangaea/programs/TXPOST.cbl:68"
+      "source": "pangaea/programs/TXPOST.cbl:72"
     },
     {
       "name": "REPORT-OUT",
@@ -166,7 +170,7 @@
       "records": [
         "REPORT-LINE"
       ],
-      "source": "pangaea/programs/TXPOST.cbl:71"
+      "source": "pangaea/programs/TXPOST.cbl:75"
     }
   ],
   "records": [
@@ -376,8 +380,8 @@
       "start": 1,
       "length": 80,
       "category": "group",
-      "description": "TRANREC: DAILY TRANSACTION FILE RECORD, 80 BYTES ONE HEADER, THE DETAILS, ONE TRAILER, TOLD APART BY THE RECORD TYPE. THE BODY IS REDEFINED FOR EACH RECORD TYPE. THE TRAILER CARRIES THE SENDER'S CONTROL TOTALS: THE DETAIL COUNT, THE SUM OF AMOUNTS AND THE SUM OF ACCOUNT NUMBERS. A TRANSFER (TR) NAMES THE ACCOUNT IT GOES TO. POSTING SPLITS IT IN TWO: THE DEBIT ON THE SENDING ACCOUNT, THEN A TRANSFER CREDIT (TC) ON THE RECEIVING ONE. A CREDIT THAT CANNOT POST GOES BACK AS A RETURNED TRANSFER (RT). TC AND RT ARE MADE BY POSTING, NEVER RECEIVED IN THE DAILY FILE. WHEN A MONTH CLOSES, THE BANK CREDITS ITS INTEREST (IN), CHARGES OVERDRAFT INTEREST (OD) AND THE MAINTENANCE FEE (MF). THESE TOO ARE NEVER RECEIVED IN THE DAILY FILE. MODIFICATION HISTORY DATE       BY  CHANGE 1987-03-12 JA  ORIGINAL VERSION. 1991-06-03 PK  CR-0117 ACCOUNT NUMBER HASH IN THE TRAILER. 1996-04-15 PK  CR-0233 TRANSFERS: COUNTER ACCOUNT, FROM THE FILLER. 2001-09-03 TL  CR-0298 MONTH-END INTEREST AND FEE CODES.",
-      "source": "pangaea/copybooks/TRANREC.cpy:26",
+      "description": "TRANREC: DAILY TRANSACTION FILE RECORD, 80 BYTES ONE HEADER, THE DETAILS, ONE TRAILER, TOLD APART BY THE RECORD TYPE. THE BODY IS REDEFINED FOR EACH RECORD TYPE. THE TRAILER CARRIES THE SENDER'S CONTROL TOTALS: THE DETAIL COUNT, THE SUM OF AMOUNTS AND THE SUM OF ACCOUNT NUMBERS. A TRANSFER (TR) NAMES THE ACCOUNT IT GOES TO. POSTING SPLITS IT IN TWO: THE DEBIT ON THE SENDING ACCOUNT, THEN A TRANSFER CREDIT (TC) ON THE RECEIVING ONE. A CREDIT THAT CANNOT POST GOES BACK AS A RETURNED TRANSFER (RT). TC AND RT ARE MADE BY POSTING, NEVER RECEIVED IN THE DAILY FILE. WHEN A MONTH CLOSES, THE BANK CREDITS ITS INTEREST (IN), CHARGES OVERDRAFT INTEREST (OD) AND THE MAINTENANCE FEE (MF). THESE TOO ARE NEVER RECEIVED IN THE DAILY FILE. THE CARD FILE, FROM THE ONLINE DAY'S HOLDS, HAS THE SAME FORM AND ITS OWN SOURCE: CARD PURCHASES (CP), ATM WITHDRAWALS (AW) AND ATM FEES (AF), WHICH WERE AUTHORIZED WHEN THEY WERE MADE. MODIFICATION HISTORY DATE       BY  CHANGE 1987-03-12 JA  ORIGINAL VERSION. 1991-06-03 PK  CR-0117 ACCOUNT NUMBER HASH IN THE TRAILER. 1996-04-15 PK  CR-0233 TRANSFERS: COUNTER ACCOUNT, FROM THE FILLER. 2001-09-03 TL  CR-0298 MONTH-END INTEREST AND FEE CODES. 2003-05-19 MV  CR-0342 THE CARD FILE AND ITS CODES.",
+      "source": "pangaea/copybooks/TRANREC.cpy:31",
       "fields": [
         {
           "level": 5,
@@ -393,24 +397,24 @@
               "values": [
                 "'H'"
               ],
-              "source": "pangaea/copybooks/TRANREC.cpy:28"
+              "source": "pangaea/copybooks/TRANREC.cpy:33"
             },
             {
               "name": "TR-DETAIL",
               "values": [
                 "'D'"
               ],
-              "source": "pangaea/copybooks/TRANREC.cpy:29"
+              "source": "pangaea/copybooks/TRANREC.cpy:34"
             },
             {
               "name": "TR-TRAILER",
               "values": [
                 "'T'"
               ],
-              "source": "pangaea/copybooks/TRANREC.cpy:30"
+              "source": "pangaea/copybooks/TRANREC.cpy:35"
             }
           ],
-          "source": "pangaea/copybooks/TRANREC.cpy:27"
+          "source": "pangaea/copybooks/TRANREC.cpy:32"
         },
         {
           "level": 5,
@@ -420,7 +424,7 @@
           "picture": "X(79)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/copybooks/TRANREC.cpy:31"
+          "source": "pangaea/copybooks/TRANREC.cpy:36"
         },
         {
           "level": 5,
@@ -429,7 +433,7 @@
           "length": 79,
           "category": "group",
           "redefines": "TR-BODY",
-          "source": "pangaea/copybooks/TRANREC.cpy:32",
+          "source": "pangaea/copybooks/TRANREC.cpy:37",
           "fields": [
             {
               "level": 10,
@@ -440,7 +444,7 @@
               "usage": "DISPLAY",
               "category": "numeric",
               "digits": 8,
-              "source": "pangaea/copybooks/TRANREC.cpy:33"
+              "source": "pangaea/copybooks/TRANREC.cpy:38"
             },
             {
               "level": 10,
@@ -450,7 +454,23 @@
               "picture": "X(8)",
               "usage": "DISPLAY",
               "category": "alphanumeric",
-              "source": "pangaea/copybooks/TRANREC.cpy:34"
+              "conditions": [
+                {
+                  "name": "TH-FROM-BRANCHES",
+                  "values": [
+                    "'BRANCHES'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:40"
+                },
+                {
+                  "name": "TH-FROM-CARDS",
+                  "values": [
+                    "'CARDS'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:41"
+                }
+              ],
+              "source": "pangaea/copybooks/TRANREC.cpy:39"
             },
             {
               "level": 10,
@@ -461,7 +481,7 @@
               "usage": "DISPLAY",
               "category": "numeric",
               "digits": 6,
-              "source": "pangaea/copybooks/TRANREC.cpy:35"
+              "source": "pangaea/copybooks/TRANREC.cpy:42"
             },
             {
               "level": 10,
@@ -471,7 +491,7 @@
               "picture": "X(57)",
               "usage": "DISPLAY",
               "category": "alphanumeric",
-              "source": "pangaea/copybooks/TRANREC.cpy:36"
+              "source": "pangaea/copybooks/TRANREC.cpy:43"
             }
           ]
         },
@@ -482,7 +502,7 @@
           "length": 79,
           "category": "group",
           "redefines": "TR-BODY",
-          "source": "pangaea/copybooks/TRANREC.cpy:37",
+          "source": "pangaea/copybooks/TRANREC.cpy:44",
           "fields": [
             {
               "level": 10,
@@ -493,7 +513,7 @@
               "usage": "DISPLAY",
               "category": "numeric",
               "digits": 10,
-              "source": "pangaea/copybooks/TRANREC.cpy:38"
+              "source": "pangaea/copybooks/TRANREC.cpy:45"
             },
             {
               "level": 10,
@@ -504,7 +524,7 @@
               "usage": "DISPLAY",
               "category": "numeric",
               "digits": 10,
-              "source": "pangaea/copybooks/TRANREC.cpy:39"
+              "source": "pangaea/copybooks/TRANREC.cpy:46"
             },
             {
               "level": 10,
@@ -520,63 +540,84 @@
                   "values": [
                     "'DP'"
                   ],
-                  "source": "pangaea/copybooks/TRANREC.cpy:41"
+                  "source": "pangaea/copybooks/TRANREC.cpy:48"
                 },
                 {
                   "name": "TD-WITHDRAWAL",
                   "values": [
                     "'WD'"
                   ],
-                  "source": "pangaea/copybooks/TRANREC.cpy:42"
+                  "source": "pangaea/copybooks/TRANREC.cpy:49"
                 },
                 {
                   "name": "TD-FEE",
                   "values": [
                     "'FE'"
                   ],
-                  "source": "pangaea/copybooks/TRANREC.cpy:43"
+                  "source": "pangaea/copybooks/TRANREC.cpy:50"
                 },
                 {
                   "name": "TD-TRANSFER",
                   "values": [
                     "'TR'"
                   ],
-                  "source": "pangaea/copybooks/TRANREC.cpy:44"
+                  "source": "pangaea/copybooks/TRANREC.cpy:51"
                 },
                 {
                   "name": "TD-TRANSFER-CREDIT",
                   "values": [
                     "'TC'"
                   ],
-                  "source": "pangaea/copybooks/TRANREC.cpy:45"
+                  "source": "pangaea/copybooks/TRANREC.cpy:52"
                 },
                 {
                   "name": "TD-TRANSFER-RETURN",
                   "values": [
                     "'RT'"
                   ],
-                  "source": "pangaea/copybooks/TRANREC.cpy:46"
+                  "source": "pangaea/copybooks/TRANREC.cpy:53"
                 },
                 {
                   "name": "TD-INTEREST",
                   "values": [
                     "'IN'"
                   ],
-                  "source": "pangaea/copybooks/TRANREC.cpy:47"
+                  "source": "pangaea/copybooks/TRANREC.cpy:54"
                 },
                 {
                   "name": "TD-OVERDRAFT-INTEREST",
                   "values": [
                     "'OD'"
                   ],
-                  "source": "pangaea/copybooks/TRANREC.cpy:48"
+                  "source": "pangaea/copybooks/TRANREC.cpy:55"
                 },
                 {
                   "name": "TD-MAINTENANCE-FEE",
                   "values": [
                     "'MF'"
                   ],
-                  "source": "pangaea/copybooks/TRANREC.cpy:49"
+                  "source": "pangaea/copybooks/TRANREC.cpy:56"
+                },
+                {
+                  "name": "TD-CARD-PURCHASE",
+                  "values": [
+                    "'CP'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:57"
+                },
+                {
+                  "name": "TD-ATM-WITHDRAWAL",
+                  "values": [
+                    "'AW'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:58"
+                },
+                {
+                  "name": "TD-ATM-FEE",
+                  "values": [
+                    "'AF'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:59"
                 },
                 {
                   "name": "TD-KNOWN-CODE",
@@ -586,10 +627,19 @@
                     "'FE'",
                     "'TR'"
                   ],
-                  "source": "pangaea/copybooks/TRANREC.cpy:50"
+                  "source": "pangaea/copybooks/TRANREC.cpy:60"
+                },
+                {
+                  "name": "TD-CARD-CODE",
+                  "values": [
+                    "'CP'",
+                    "'AW'",
+                    "'AF'"
+                  ],
+                  "source": "pangaea/copybooks/TRANREC.cpy:61"
                 }
               ],
-              "source": "pangaea/copybooks/TRANREC.cpy:40"
+              "source": "pangaea/copybooks/TRANREC.cpy:47"
             },
             {
               "level": 10,
@@ -601,7 +651,7 @@
               "category": "numeric",
               "digits": 11,
               "scale": 2,
-              "source": "pangaea/copybooks/TRANREC.cpy:51"
+              "source": "pangaea/copybooks/TRANREC.cpy:62"
             },
             {
               "level": 10,
@@ -611,7 +661,7 @@
               "picture": "X(20)",
               "usage": "DISPLAY",
               "category": "alphanumeric",
-              "source": "pangaea/copybooks/TRANREC.cpy:52"
+              "source": "pangaea/copybooks/TRANREC.cpy:63"
             },
             {
               "level": 10,
@@ -622,7 +672,7 @@
               "usage": "DISPLAY",
               "category": "numeric",
               "digits": 10,
-              "source": "pangaea/copybooks/TRANREC.cpy:53"
+              "source": "pangaea/copybooks/TRANREC.cpy:64"
             },
             {
               "level": 10,
@@ -632,7 +682,7 @@
               "picture": "X(16)",
               "usage": "DISPLAY",
               "category": "alphanumeric",
-              "source": "pangaea/copybooks/TRANREC.cpy:54"
+              "source": "pangaea/copybooks/TRANREC.cpy:65"
             }
           ]
         },
@@ -643,7 +693,7 @@
           "length": 79,
           "category": "group",
           "redefines": "TR-BODY",
-          "source": "pangaea/copybooks/TRANREC.cpy:55",
+          "source": "pangaea/copybooks/TRANREC.cpy:66",
           "fields": [
             {
               "level": 10,
@@ -654,7 +704,7 @@
               "usage": "DISPLAY",
               "category": "numeric",
               "digits": 8,
-              "source": "pangaea/copybooks/TRANREC.cpy:56"
+              "source": "pangaea/copybooks/TRANREC.cpy:67"
             },
             {
               "level": 10,
@@ -666,7 +716,7 @@
               "category": "numeric",
               "digits": 15,
               "scale": 2,
-              "source": "pangaea/copybooks/TRANREC.cpy:57"
+              "source": "pangaea/copybooks/TRANREC.cpy:68"
             },
             {
               "level": 10,
@@ -677,7 +727,7 @@
               "usage": "DISPLAY",
               "category": "numeric",
               "digits": 15,
-              "source": "pangaea/copybooks/TRANREC.cpy:58"
+              "source": "pangaea/copybooks/TRANREC.cpy:69"
             },
             {
               "level": 10,
@@ -687,7 +737,7 @@
               "picture": "X(41)",
               "usage": "DISPLAY",
               "category": "alphanumeric",
-              "source": "pangaea/copybooks/TRANREC.cpy:59"
+              "source": "pangaea/copybooks/TRANREC.cpy:70"
             }
           ]
         }
@@ -703,7 +753,7 @@
       "picture": "X(100)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
-      "source": "pangaea/programs/TXPOST.cbl:84"
+      "source": "pangaea/programs/TXPOST.cbl:88"
     },
     {
       "section": "file",
@@ -715,7 +765,7 @@
       "picture": "X(100)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
-      "source": "pangaea/programs/TXPOST.cbl:86"
+      "source": "pangaea/programs/TXPOST.cbl:90"
     },
     {
       "section": "file",
@@ -727,7 +777,7 @@
       "picture": "X(100)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
-      "source": "pangaea/programs/TXPOST.cbl:88"
+      "source": "pangaea/programs/TXPOST.cbl:92"
     },
     {
       "section": "file",
@@ -739,7 +789,7 @@
       "picture": "X(80)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
-      "source": "pangaea/programs/TXPOST.cbl:90"
+      "source": "pangaea/programs/TXPOST.cbl:94"
     },
     {
       "section": "file",
@@ -751,7 +801,7 @@
       "picture": "X(80)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
-      "source": "pangaea/programs/TXPOST.cbl:92"
+      "source": "pangaea/programs/TXPOST.cbl:96"
     },
     {
       "section": "working-storage",
@@ -760,7 +810,7 @@
       "start": 1,
       "length": 16,
       "category": "group",
-      "source": "pangaea/programs/TXPOST.cbl:95",
+      "source": "pangaea/programs/TXPOST.cbl:99",
       "fields": [
         {
           "level": 5,
@@ -770,7 +820,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/programs/TXPOST.cbl:96"
+          "source": "pangaea/programs/TXPOST.cbl:100"
         },
         {
           "level": 5,
@@ -780,7 +830,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/programs/TXPOST.cbl:97"
+          "source": "pangaea/programs/TXPOST.cbl:101"
         },
         {
           "level": 5,
@@ -790,7 +840,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/programs/TXPOST.cbl:98"
+          "source": "pangaea/programs/TXPOST.cbl:102"
         },
         {
           "level": 5,
@@ -800,7 +850,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/programs/TXPOST.cbl:99"
+          "source": "pangaea/programs/TXPOST.cbl:103"
         },
         {
           "level": 5,
@@ -817,10 +867,10 @@
                 "'00'",
                 "'05'"
               ],
-              "source": "pangaea/programs/TXPOST.cbl:101"
+              "source": "pangaea/programs/TXPOST.cbl:105"
             }
           ],
-          "source": "pangaea/programs/TXPOST.cbl:100"
+          "source": "pangaea/programs/TXPOST.cbl:104"
         },
         {
           "level": 5,
@@ -837,10 +887,10 @@
                 "'00'",
                 "'05'"
               ],
-              "source": "pangaea/programs/TXPOST.cbl:103"
+              "source": "pangaea/programs/TXPOST.cbl:107"
             }
           ],
-          "source": "pangaea/programs/TXPOST.cbl:102"
+          "source": "pangaea/programs/TXPOST.cbl:106"
         },
         {
           "level": 5,
@@ -850,7 +900,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/programs/TXPOST.cbl:104"
+          "source": "pangaea/programs/TXPOST.cbl:108"
         },
         {
           "level": 5,
@@ -860,7 +910,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/programs/TXPOST.cbl:105"
+          "source": "pangaea/programs/TXPOST.cbl:109"
         }
       ]
     },
@@ -874,7 +924,7 @@
       "usage": "DISPLAY",
       "category": "numeric",
       "digits": 8,
-      "source": "pangaea/programs/TXPOST.cbl:107"
+      "source": "pangaea/programs/TXPOST.cbl:111"
     },
     {
       "section": "working-storage",
@@ -885,7 +935,7 @@
       "picture": "X(40)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
-      "source": "pangaea/programs/TXPOST.cbl:108"
+      "source": "pangaea/programs/TXPOST.cbl:112"
     },
     {
       "section": "working-storage",
@@ -897,7 +947,7 @@
       "usage": "DISPLAY",
       "category": "alphanumeric",
       "description": "MATCH KEYS: HIGH-VALUES ONCE A FILE IS AT ITS END.",
-      "source": "pangaea/programs/TXPOST.cbl:111"
+      "source": "pangaea/programs/TXPOST.cbl:115"
     },
     {
       "section": "working-storage",
@@ -908,7 +958,7 @@
       "picture": "X(10)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
-      "source": "pangaea/programs/TXPOST.cbl:112"
+      "source": "pangaea/programs/TXPOST.cbl:116"
     },
     {
       "section": "working-storage",
@@ -922,7 +972,7 @@
       "values": [
         "LOW-VALUES"
       ],
-      "source": "pangaea/programs/TXPOST.cbl:113"
+      "source": "pangaea/programs/TXPOST.cbl:117"
     },
     {
       "section": "working-storage",
@@ -931,7 +981,7 @@
       "start": 1,
       "length": 20,
       "category": "group",
-      "source": "pangaea/programs/TXPOST.cbl:114",
+      "source": "pangaea/programs/TXPOST.cbl:118",
       "fields": [
         {
           "level": 5,
@@ -941,7 +991,7 @@
           "picture": "X(10)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/programs/TXPOST.cbl:115"
+          "source": "pangaea/programs/TXPOST.cbl:119"
         },
         {
           "level": 5,
@@ -951,7 +1001,7 @@
           "picture": "X(10)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/programs/TXPOST.cbl:116"
+          "source": "pangaea/programs/TXPOST.cbl:120"
         }
       ]
     },
@@ -967,7 +1017,7 @@
       "values": [
         "LOW-VALUES"
       ],
-      "source": "pangaea/programs/TXPOST.cbl:117"
+      "source": "pangaea/programs/TXPOST.cbl:121"
     },
     {
       "section": "working-storage",
@@ -976,7 +1026,7 @@
       "start": 1,
       "length": 50,
       "category": "group",
-      "source": "pangaea/programs/TXPOST.cbl:119",
+      "source": "pangaea/programs/TXPOST.cbl:123",
       "fields": [
         {
           "level": 5,
@@ -989,7 +1039,7 @@
           "digits": 13,
           "scale": 2,
           "signed": true,
-          "source": "pangaea/programs/TXPOST.cbl:120"
+          "source": "pangaea/programs/TXPOST.cbl:124"
         },
         {
           "level": 5,
@@ -1002,7 +1052,7 @@
           "digits": 13,
           "scale": 2,
           "signed": true,
-          "source": "pangaea/programs/TXPOST.cbl:121"
+          "source": "pangaea/programs/TXPOST.cbl:125"
         },
         {
           "level": 5,
@@ -1015,7 +1065,7 @@
           "digits": 13,
           "scale": 2,
           "signed": true,
-          "source": "pangaea/programs/TXPOST.cbl:122"
+          "source": "pangaea/programs/TXPOST.cbl:126"
         },
         {
           "level": 5,
@@ -1028,7 +1078,7 @@
           "digits": 11,
           "scale": 2,
           "signed": true,
-          "source": "pangaea/programs/TXPOST.cbl:123"
+          "source": "pangaea/programs/TXPOST.cbl:127"
         }
       ]
     },
@@ -1042,7 +1092,7 @@
       "usage": "DISPLAY",
       "category": "alphanumeric",
       "description": "A LEG IS WRITTEN FROM THE TRANSACTION RECORD ITSELF, TURNED AROUND; THE TRANSACTION IS SAVED HERE AND PUT BACK AFTER.",
-      "source": "pangaea/programs/TXPOST.cbl:127"
+      "source": "pangaea/programs/TXPOST.cbl:131"
     },
     {
       "section": "working-storage",
@@ -1054,7 +1104,7 @@
       "usage": "DISPLAY",
       "category": "numeric",
       "digits": 10,
-      "source": "pangaea/programs/TXPOST.cbl:128"
+      "source": "pangaea/programs/TXPOST.cbl:132"
     },
     {
       "section": "working-storage",
@@ -1063,7 +1113,7 @@
       "start": 1,
       "length": 130,
       "category": "group",
-      "source": "pangaea/programs/TXPOST.cbl:130",
+      "source": "pangaea/programs/TXPOST.cbl:134",
       "fields": [
         {
           "level": 5,
@@ -1077,7 +1127,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/TXPOST.cbl:131"
+          "source": "pangaea/programs/TXPOST.cbl:135"
         },
         {
           "level": 5,
@@ -1091,7 +1141,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/TXPOST.cbl:132"
+          "source": "pangaea/programs/TXPOST.cbl:136"
         },
         {
           "level": 5,
@@ -1105,7 +1155,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/TXPOST.cbl:133"
+          "source": "pangaea/programs/TXPOST.cbl:137"
         },
         {
           "level": 5,
@@ -1119,7 +1169,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/TXPOST.cbl:134"
+          "source": "pangaea/programs/TXPOST.cbl:138"
         },
         {
           "level": 5,
@@ -1133,7 +1183,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/TXPOST.cbl:135"
+          "source": "pangaea/programs/TXPOST.cbl:139"
         },
         {
           "level": 5,
@@ -1149,7 +1199,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/TXPOST.cbl:136"
+          "source": "pangaea/programs/TXPOST.cbl:140"
         },
         {
           "level": 5,
@@ -1164,7 +1214,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/TXPOST.cbl:137"
+          "source": "pangaea/programs/TXPOST.cbl:141"
         },
         {
           "level": 5,
@@ -1179,7 +1229,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/TXPOST.cbl:138"
+          "source": "pangaea/programs/TXPOST.cbl:142"
         },
         {
           "level": 5,
@@ -1194,7 +1244,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/TXPOST.cbl:139"
+          "source": "pangaea/programs/TXPOST.cbl:143"
         },
         {
           "level": 5,
@@ -1210,7 +1260,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/TXPOST.cbl:140"
+          "source": "pangaea/programs/TXPOST.cbl:144"
         },
         {
           "level": 5,
@@ -1226,7 +1276,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/TXPOST.cbl:141"
+          "source": "pangaea/programs/TXPOST.cbl:145"
         }
       ]
     },
@@ -1481,7 +1531,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
-      "source": "pangaea/programs/TXPOST.cbl:147",
+      "source": "pangaea/programs/TXPOST.cbl:151",
       "fields": [
         {
           "level": 5,
@@ -1491,7 +1541,7 @@
           "picture": "X(30)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/programs/TXPOST.cbl:148"
+          "source": "pangaea/programs/TXPOST.cbl:152"
         },
         {
           "level": 5,
@@ -1501,7 +1551,7 @@
           "picture": "ZZ,ZZZ,ZZ9",
           "usage": "DISPLAY",
           "category": "numeric-edited",
-          "source": "pangaea/programs/TXPOST.cbl:149"
+          "source": "pangaea/programs/TXPOST.cbl:153"
         },
         {
           "level": 5,
@@ -1514,7 +1564,7 @@
           "values": [
             "SPACES"
           ],
-          "source": "pangaea/programs/TXPOST.cbl:150"
+          "source": "pangaea/programs/TXPOST.cbl:154"
         }
       ]
     },
@@ -1525,7 +1575,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
-      "source": "pangaea/programs/TXPOST.cbl:151",
+      "source": "pangaea/programs/TXPOST.cbl:155",
       "fields": [
         {
           "level": 5,
@@ -1535,7 +1585,7 @@
           "picture": "X(30)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/programs/TXPOST.cbl:152"
+          "source": "pangaea/programs/TXPOST.cbl:156"
         },
         {
           "level": 5,
@@ -1545,7 +1595,7 @@
           "picture": "Z,ZZZ,ZZZ,ZZZ,ZZ9.99-",
           "usage": "DISPLAY",
           "category": "numeric-edited",
-          "source": "pangaea/programs/TXPOST.cbl:153"
+          "source": "pangaea/programs/TXPOST.cbl:157"
         },
         {
           "level": 5,
@@ -1558,7 +1608,7 @@
           "values": [
             "SPACES"
           ],
-          "source": "pangaea/programs/TXPOST.cbl:154"
+          "source": "pangaea/programs/TXPOST.cbl:158"
         }
       ]
     }
@@ -1567,27 +1617,27 @@
     {
       "name": "0000-MAIN",
       "description": "MATCH UNTIL BOTH FILES END, THEN RECONCILE AND REPORT.",
-      "source": "pangaea/programs/TXPOST.cbl:158",
+      "source": "pangaea/programs/TXPOST.cbl:162",
       "performs": [
         {
           "target": "1000-INITIALIZE",
-          "source": "pangaea/programs/TXPOST.cbl:159"
-        },
-        {
-          "target": "2000-MATCH",
-          "source": "pangaea/programs/TXPOST.cbl:160"
-        },
-        {
-          "target": "5000-RECONCILE",
           "source": "pangaea/programs/TXPOST.cbl:163"
         },
         {
-          "target": "8000-WRITE-REPORT",
+          "target": "2000-MATCH",
           "source": "pangaea/programs/TXPOST.cbl:164"
         },
         {
+          "target": "5000-RECONCILE",
+          "source": "pangaea/programs/TXPOST.cbl:167"
+        },
+        {
+          "target": "8000-WRITE-REPORT",
+          "source": "pangaea/programs/TXPOST.cbl:168"
+        },
+        {
           "target": "9000-CLOSE-FILES",
-          "source": "pangaea/programs/TXPOST.cbl:165"
+          "source": "pangaea/programs/TXPOST.cbl:169"
         }
       ],
       "reads": [
@@ -1602,19 +1652,19 @@
     {
       "name": "1000-INITIALIZE",
       "description": "OPEN THE FILES AND READ THE FIRST RECORD OF EACH. THE AUDIT TRAIL AND THE REJECTS ARE EXTENDED, AND CREATED IF NEW.",
-      "source": "pangaea/programs/TXPOST.cbl:175",
+      "source": "pangaea/programs/TXPOST.cbl:179",
       "performs": [
         {
           "target": "9900-ABORT",
-          "source": "pangaea/programs/TXPOST.cbl:194"
-        },
-        {
-          "target": "1200-READ-MASTER",
           "source": "pangaea/programs/TXPOST.cbl:198"
         },
         {
+          "target": "1200-READ-MASTER",
+          "source": "pangaea/programs/TXPOST.cbl:202"
+        },
+        {
           "target": "1300-READ-TRAN",
-          "source": "pangaea/programs/TXPOST.cbl:199"
+          "source": "pangaea/programs/TXPOST.cbl:203"
         }
       ],
       "performedBy": [
@@ -1644,11 +1694,11 @@
     {
       "name": "1200-READ-MASTER",
       "description": "READ THE NEXT OLD MASTER RECORD, CHECKING ACCOUNT ORDER.",
-      "source": "pangaea/programs/TXPOST.cbl:202",
+      "source": "pangaea/programs/TXPOST.cbl:206",
       "performs": [
         {
           "target": "9900-ABORT",
-          "source": "pangaea/programs/TXPOST.cbl:211"
+          "source": "pangaea/programs/TXPOST.cbl:215"
         }
       ],
       "performedBy": [
@@ -1675,11 +1725,11 @@
     {
       "name": "1300-READ-TRAN",
       "description": "READ THE NEXT TRANSACTION, CHECKING ITS ORDER.",
-      "source": "pangaea/programs/TXPOST.cbl:219",
+      "source": "pangaea/programs/TXPOST.cbl:223",
       "performs": [
         {
           "target": "9900-ABORT",
-          "source": "pangaea/programs/TXPOST.cbl:229"
+          "source": "pangaea/programs/TXPOST.cbl:233"
         }
       ],
       "performedBy": [
@@ -1704,31 +1754,31 @@
     {
       "name": "2000-MATCH",
       "description": "ONE STEP OF THE MATCH, BY WHICHEVER KEY IS LOWER: REJECT A TRANSACTION FOR A MISSING ACCOUNT, APPLY ONE TO ITS ACCOUNT, OR WRITE A FINISHED ACCOUNT.",
-      "source": "pangaea/programs/TXPOST.cbl:237",
+      "source": "pangaea/programs/TXPOST.cbl:241",
       "performs": [
         {
           "target": "3900-REJECT-TRAN",
-          "source": "pangaea/programs/TXPOST.cbl:241"
-        },
-        {
-          "target": "1300-READ-TRAN",
-          "source": "pangaea/programs/TXPOST.cbl:242"
-        },
-        {
-          "target": "3000-APPLY-TRAN",
-          "source": "pangaea/programs/TXPOST.cbl:244"
-        },
-        {
-          "target": "1300-READ-TRAN",
           "source": "pangaea/programs/TXPOST.cbl:245"
         },
         {
+          "target": "1300-READ-TRAN",
+          "source": "pangaea/programs/TXPOST.cbl:246"
+        },
+        {
+          "target": "3000-APPLY-TRAN",
+          "source": "pangaea/programs/TXPOST.cbl:248"
+        },
+        {
+          "target": "1300-READ-TRAN",
+          "source": "pangaea/programs/TXPOST.cbl:249"
+        },
+        {
           "target": "4000-WRITE-MASTER",
-          "source": "pangaea/programs/TXPOST.cbl:247"
+          "source": "pangaea/programs/TXPOST.cbl:251"
         },
         {
           "target": "1200-READ-MASTER",
-          "source": "pangaea/programs/TXPOST.cbl:248"
+          "source": "pangaea/programs/TXPOST.cbl:252"
         }
       ],
       "performedBy": [
@@ -1745,27 +1795,31 @@
     {
       "name": "3000-APPLY-TRAN",
       "description": "APPLY ONE TRANSACTION TO ITS ACCOUNT BY THE POSTING RULES.",
-      "source": "pangaea/programs/TXPOST.cbl:252",
+      "source": "pangaea/programs/TXPOST.cbl:256",
       "performs": [
         {
           "target": "3900-REJECT-TRAN",
-          "source": "pangaea/programs/TXPOST.cbl:257"
+          "source": "pangaea/programs/TXPOST.cbl:261"
         },
         {
           "target": "3100-POST-CREDIT",
-          "source": "pangaea/programs/TXPOST.cbl:262"
-        },
-        {
-          "target": "3300-POST-FEE",
           "source": "pangaea/programs/TXPOST.cbl:266"
         },
         {
+          "target": "3300-POST-FEE",
+          "source": "pangaea/programs/TXPOST.cbl:271"
+        },
+        {
+          "target": "3400-POST-AUTHORIZED",
+          "source": "pangaea/programs/TXPOST.cbl:274"
+        },
+        {
           "target": "3900-REJECT-TRAN",
-          "source": "pangaea/programs/TXPOST.cbl:269"
+          "source": "pangaea/programs/TXPOST.cbl:277"
         },
         {
           "target": "3200-POST-DEBIT",
-          "source": "pangaea/programs/TXPOST.cbl:272"
+          "source": "pangaea/programs/TXPOST.cbl:280"
         }
       ],
       "performedBy": [
@@ -1784,11 +1838,11 @@
     {
       "name": "3100-POST-CREDIT",
       "description": "CREDIT A DEPOSIT, A TRANSFER CREDIT, A RETURNED TRANSFER OR INTEREST.",
-      "source": "pangaea/programs/TXPOST.cbl:277",
+      "source": "pangaea/programs/TXPOST.cbl:285",
       "performs": [
         {
           "target": "3800-WRITE-AUDIT",
-          "source": "pangaea/programs/TXPOST.cbl:281"
+          "source": "pangaea/programs/TXPOST.cbl:289"
         }
       ],
       "performedBy": [
@@ -1808,19 +1862,19 @@
     {
       "name": "3200-POST-DEBIT",
       "description": "DEBIT A WITHDRAWAL OR TRANSFER IF IT STAYS WITHIN THE OVERDRAFT LIMIT. A POSTED TRANSFER SENDS ITS CREDIT ON.",
-      "source": "pangaea/programs/TXPOST.cbl:285",
+      "source": "pangaea/programs/TXPOST.cbl:293",
       "performs": [
         {
           "target": "3900-REJECT-TRAN",
-          "source": "pangaea/programs/TXPOST.cbl:290"
+          "source": "pangaea/programs/TXPOST.cbl:298"
         },
         {
           "target": "3800-WRITE-AUDIT",
-          "source": "pangaea/programs/TXPOST.cbl:295"
+          "source": "pangaea/programs/TXPOST.cbl:303"
         },
         {
           "target": "3500-WRITE-LEG",
-          "source": "pangaea/programs/TXPOST.cbl:297"
+          "source": "pangaea/programs/TXPOST.cbl:305"
         }
       ],
       "performedBy": [
@@ -1846,12 +1900,12 @@
     },
     {
       "name": "3300-POST-FEE",
-      "description": "DEBIT A FEE, OVERDRAFT INTEREST OR A MAINTENANCE FEE, WHATEVER THE BALANCE.",
-      "source": "pangaea/programs/TXPOST.cbl:303",
+      "description": "DEBIT A FEE, OVERDRAFT INTEREST, A MAINTENANCE FEE OR AN ATM FEE, WHATEVER THE BALANCE.",
+      "source": "pangaea/programs/TXPOST.cbl:311",
       "performs": [
         {
           "target": "3800-WRITE-AUDIT",
-          "source": "pangaea/programs/TXPOST.cbl:307"
+          "source": "pangaea/programs/TXPOST.cbl:315"
         }
       ],
       "performedBy": [
@@ -1869,9 +1923,33 @@
       ]
     },
     {
+      "name": "3400-POST-AUTHORIZED",
+      "description": "DEBIT A CARD PURCHASE OR ATM WITHDRAWAL AUTHORIZED ONLINE, WHATEVER THE BALANCE.",
+      "source": "pangaea/programs/TXPOST.cbl:319",
+      "performs": [
+        {
+          "target": "3800-WRITE-AUDIT",
+          "source": "pangaea/programs/TXPOST.cbl:323"
+        }
+      ],
+      "performedBy": [
+        "3000-APPLY-TRAN"
+      ],
+      "reads": [
+        "TD-AMOUNT",
+        "AM-BALANCE",
+        "WS-DEBIT-TOTAL"
+      ],
+      "writes": [
+        "AM-BALANCE",
+        "WS-DEBIT-TOTAL",
+        "WS-SIGNED-AMOUNT"
+      ]
+    },
+    {
       "name": "3500-WRITE-LEG",
       "description": "WRITE THE NEXT LEG OF A TRANSFER FOR THE COUNTER ACCOUNT: A TRANSFER CREDIT AFTER A TRANSFER, A RETURN AFTER A CREDIT THAT COULD NOT POST.",
-      "source": "pangaea/programs/TXPOST.cbl:312",
+      "source": "pangaea/programs/TXPOST.cbl:328",
       "performedBy": [
         "3200-POST-DEBIT",
         "3900-REJECT-TRAN"
@@ -1899,11 +1977,12 @@
     {
       "name": "3800-WRITE-AUDIT",
       "description": "RECORD A POSTING IN THE AUDIT TRAIL.",
-      "source": "pangaea/programs/TXPOST.cbl:327",
+      "source": "pangaea/programs/TXPOST.cbl:343",
       "performedBy": [
         "3100-POST-CREDIT",
         "3200-POST-DEBIT",
-        "3300-POST-FEE"
+        "3300-POST-FEE",
+        "3400-POST-AUTHORIZED"
       ],
       "reads": [
         "WS-BUSINESS-DATE",
@@ -1932,11 +2011,11 @@
     {
       "name": "3900-REJECT-TRAN",
       "description": "WRITE THE TRANSACTION TO THE REJECTS WITH ITS REASON. A TRANSFER CREDIT THAT CANNOT POST GOES BACK TO ITS SENDER.",
-      "source": "pangaea/programs/TXPOST.cbl:341",
+      "source": "pangaea/programs/TXPOST.cbl:357",
       "performs": [
         {
           "target": "3500-WRITE-LEG",
-          "source": "pangaea/programs/TXPOST.cbl:347"
+          "source": "pangaea/programs/TXPOST.cbl:363"
         }
       ],
       "performedBy": [
@@ -1960,7 +2039,7 @@
     {
       "name": "4000-WRITE-MASTER",
       "description": "WRITE AN ACCOUNT, ITS TRANSACTIONS APPLIED, TO THE NEW MASTER.",
-      "source": "pangaea/programs/TXPOST.cbl:351",
+      "source": "pangaea/programs/TXPOST.cbl:367",
       "performedBy": [
         "2000-MATCH"
       ],
@@ -1979,11 +2058,11 @@
     {
       "name": "5000-RECONCILE",
       "description": "THE NEW MASTER MUST HOLD THE OLD BALANCES PLUS WHAT WAS POSTED.",
-      "source": "pangaea/programs/TXPOST.cbl:357",
+      "source": "pangaea/programs/TXPOST.cbl:373",
       "performs": [
         {
           "target": "9900-ABORT",
-          "source": "pangaea/programs/TXPOST.cbl:365"
+          "source": "pangaea/programs/TXPOST.cbl:381"
         }
       ],
       "performedBy": [
@@ -2007,7 +2086,7 @@
     {
       "name": "8000-WRITE-REPORT",
       "description": "WRITE THE POSTING REPORT.",
-      "source": "pangaea/programs/TXPOST.cbl:369",
+      "source": "pangaea/programs/TXPOST.cbl:385",
       "performedBy": [
         "0000-MAIN"
       ],
@@ -2037,7 +2116,7 @@
     {
       "name": "9000-CLOSE-FILES",
       "description": "CLOSE ALL FILES.",
-      "source": "pangaea/programs/TXPOST.cbl:415",
+      "source": "pangaea/programs/TXPOST.cbl:431",
       "performedBy": [
         "0000-MAIN",
         "9900-ABORT"
@@ -2046,11 +2125,11 @@
     {
       "name": "9900-ABORT",
       "description": "STOP THE RUN WITH RETURN CODE 16, SAYING WHY.",
-      "source": "pangaea/programs/TXPOST.cbl:420",
+      "source": "pangaea/programs/TXPOST.cbl:436",
       "performs": [
         {
           "target": "9000-CLOSE-FILES",
-          "source": "pangaea/programs/TXPOST.cbl:422"
+          "source": "pangaea/programs/TXPOST.cbl:438"
         }
       ],
       "performedBy": [
@@ -2074,7 +2153,7 @@
       "fromLiteral": true,
       "paragraph": "0000-MAIN",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:167"
+      "source": "pangaea/programs/TXPOST.cbl:171"
     },
     {
       "from": "0",
@@ -2082,7 +2161,7 @@
       "fromLiteral": true,
       "paragraph": "0000-MAIN",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:169"
+      "source": "pangaea/programs/TXPOST.cbl:173"
     },
     {
       "from": "16",
@@ -2090,7 +2169,7 @@
       "fromLiteral": true,
       "paragraph": "1000-INITIALIZE",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:188"
+      "source": "pangaea/programs/TXPOST.cbl:192"
     },
     {
       "from": "CONTROL-FILE",
@@ -2098,7 +2177,7 @@
       "fromFile": true,
       "paragraph": "1000-INITIALIZE",
       "verb": "READ",
-      "source": "pangaea/programs/TXPOST.cbl:191"
+      "source": "pangaea/programs/TXPOST.cbl:195"
     },
     {
       "from": "'NO BANK CONTROL RECORD'",
@@ -2106,14 +2185,14 @@
       "fromLiteral": true,
       "paragraph": "1000-INITIALIZE",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:193"
+      "source": "pangaea/programs/TXPOST.cbl:197"
     },
     {
       "from": "BC-BUSINESS-DATE",
       "to": "WS-BUSINESS-DATE",
       "paragraph": "1000-INITIALIZE",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:196"
+      "source": "pangaea/programs/TXPOST.cbl:200"
     },
     {
       "from": "SPACES",
@@ -2121,7 +2200,7 @@
       "fromLiteral": true,
       "paragraph": "1000-INITIALIZE",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:197"
+      "source": "pangaea/programs/TXPOST.cbl:201"
     },
     {
       "from": "SPACES",
@@ -2129,7 +2208,7 @@
       "fromLiteral": true,
       "paragraph": "1000-INITIALIZE",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:197"
+      "source": "pangaea/programs/TXPOST.cbl:201"
     },
     {
       "from": "ACCT-IN",
@@ -2137,7 +2216,7 @@
       "fromFile": true,
       "paragraph": "1200-READ-MASTER",
       "verb": "READ",
-      "source": "pangaea/programs/TXPOST.cbl:203"
+      "source": "pangaea/programs/TXPOST.cbl:207"
     },
     {
       "from": "HIGH-VALUES",
@@ -2145,14 +2224,14 @@
       "fromLiteral": true,
       "paragraph": "1200-READ-MASTER",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:205"
+      "source": "pangaea/programs/TXPOST.cbl:209"
     },
     {
       "from": "AM-ACCT-NO",
       "to": "WS-MASTER-KEY",
       "paragraph": "1200-READ-MASTER",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:207"
+      "source": "pangaea/programs/TXPOST.cbl:211"
     },
     {
       "from": "'MASTER NOT IN ACCOUNT ORDER'",
@@ -2160,14 +2239,14 @@
       "fromLiteral": true,
       "paragraph": "1200-READ-MASTER",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:209"
+      "source": "pangaea/programs/TXPOST.cbl:213"
     },
     {
       "from": "WS-MASTER-KEY",
       "to": "WS-PREV-MASTER-KEY",
       "paragraph": "1200-READ-MASTER",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:213"
+      "source": "pangaea/programs/TXPOST.cbl:217"
     },
     {
       "from": "1",
@@ -2175,14 +2254,14 @@
       "fromLiteral": true,
       "paragraph": "1200-READ-MASTER",
       "verb": "ADD",
-      "source": "pangaea/programs/TXPOST.cbl:214"
+      "source": "pangaea/programs/TXPOST.cbl:218"
     },
     {
       "from": "AM-BALANCE",
       "to": "WS-OPENING-TOTAL",
       "paragraph": "1200-READ-MASTER",
       "verb": "ADD",
-      "source": "pangaea/programs/TXPOST.cbl:215"
+      "source": "pangaea/programs/TXPOST.cbl:219"
     },
     {
       "from": "TRAN-IN",
@@ -2190,7 +2269,7 @@
       "fromFile": true,
       "paragraph": "1300-READ-TRAN",
       "verb": "READ",
-      "source": "pangaea/programs/TXPOST.cbl:220"
+      "source": "pangaea/programs/TXPOST.cbl:224"
     },
     {
       "from": "HIGH-VALUES",
@@ -2198,28 +2277,28 @@
       "fromLiteral": true,
       "paragraph": "1300-READ-TRAN",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:222"
+      "source": "pangaea/programs/TXPOST.cbl:226"
     },
     {
       "from": "TD-ACCT-NO",
       "to": "WS-TRAN-KEY",
       "paragraph": "1300-READ-TRAN",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:224"
+      "source": "pangaea/programs/TXPOST.cbl:228"
     },
     {
       "from": "TD-ACCT-NO",
       "to": "WS-TOK-ACCT-NO",
       "paragraph": "1300-READ-TRAN",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:224"
+      "source": "pangaea/programs/TXPOST.cbl:228"
     },
     {
       "from": "TD-TRAN-ID",
       "to": "WS-TOK-TRAN-ID",
       "paragraph": "1300-READ-TRAN",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:225"
+      "source": "pangaea/programs/TXPOST.cbl:229"
     },
     {
       "from": "'TRANSACTIONS NOT IN ACCOUNT ORDER'",
@@ -2227,14 +2306,14 @@
       "fromLiteral": true,
       "paragraph": "1300-READ-TRAN",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:227"
+      "source": "pangaea/programs/TXPOST.cbl:231"
     },
     {
       "from": "WS-TRAN-ORDER-KEY",
       "to": "WS-PREV-TRAN-ORDER-KEY",
       "paragraph": "1300-READ-TRAN",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:231"
+      "source": "pangaea/programs/TXPOST.cbl:235"
     },
     {
       "from": "condition RJ-NO-ACCOUNT",
@@ -2242,14 +2321,14 @@
       "fromLiteral": true,
       "paragraph": "2000-MATCH",
       "verb": "SET",
-      "source": "pangaea/programs/TXPOST.cbl:240"
+      "source": "pangaea/programs/TXPOST.cbl:244"
     },
     {
       "from": "AM-BALANCE",
       "to": "WS-BALANCE-BEFORE",
       "paragraph": "3000-APPLY-TRAN",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:253"
+      "source": "pangaea/programs/TXPOST.cbl:257"
     },
     {
       "from": "condition RJ-CLOSED",
@@ -2257,7 +2336,7 @@
       "fromLiteral": true,
       "paragraph": "3000-APPLY-TRAN",
       "verb": "SET",
-      "source": "pangaea/programs/TXPOST.cbl:256"
+      "source": "pangaea/programs/TXPOST.cbl:260"
     },
     {
       "from": "condition RJ-FROZEN",
@@ -2265,49 +2344,49 @@
       "fromLiteral": true,
       "paragraph": "3000-APPLY-TRAN",
       "verb": "SET",
-      "source": "pangaea/programs/TXPOST.cbl:268"
+      "source": "pangaea/programs/TXPOST.cbl:276"
     },
     {
       "from": "TD-AMOUNT",
       "to": "AM-BALANCE",
       "paragraph": "3100-POST-CREDIT",
       "verb": "ADD",
-      "source": "pangaea/programs/TXPOST.cbl:278"
+      "source": "pangaea/programs/TXPOST.cbl:286"
     },
     {
       "from": "TD-AMOUNT",
       "to": "WS-CREDIT-TOTAL",
       "paragraph": "3100-POST-CREDIT",
       "verb": "ADD",
-      "source": "pangaea/programs/TXPOST.cbl:279"
+      "source": "pangaea/programs/TXPOST.cbl:287"
     },
     {
       "from": "TD-AMOUNT",
       "to": "WS-SIGNED-AMOUNT",
       "paragraph": "3100-POST-CREDIT",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:280"
+      "source": "pangaea/programs/TXPOST.cbl:288"
     },
     {
       "from": "AM-BALANCE",
       "to": "WS-NEW-BALANCE",
       "paragraph": "3200-POST-DEBIT",
       "verb": "COMPUTE",
-      "source": "pangaea/programs/TXPOST.cbl:286"
+      "source": "pangaea/programs/TXPOST.cbl:294"
     },
     {
       "from": "TD-AMOUNT",
       "to": "WS-NEW-BALANCE",
       "paragraph": "3200-POST-DEBIT",
       "verb": "COMPUTE",
-      "source": "pangaea/programs/TXPOST.cbl:286"
+      "source": "pangaea/programs/TXPOST.cbl:294"
     },
     {
       "from": "AM-OVERDRAFT-LIMIT",
       "to": "WS-BALANCE-FLOOR",
       "paragraph": "3200-POST-DEBIT",
       "verb": "COMPUTE",
-      "source": "pangaea/programs/TXPOST.cbl:287"
+      "source": "pangaea/programs/TXPOST.cbl:295"
     },
     {
       "from": "condition RJ-NO-FUNDS",
@@ -2315,56 +2394,77 @@
       "fromLiteral": true,
       "paragraph": "3200-POST-DEBIT",
       "verb": "SET",
-      "source": "pangaea/programs/TXPOST.cbl:289"
+      "source": "pangaea/programs/TXPOST.cbl:297"
     },
     {
       "from": "WS-NEW-BALANCE",
       "to": "AM-BALANCE",
       "paragraph": "3200-POST-DEBIT",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:292"
+      "source": "pangaea/programs/TXPOST.cbl:300"
     },
     {
       "from": "TD-AMOUNT",
       "to": "WS-DEBIT-TOTAL",
       "paragraph": "3200-POST-DEBIT",
       "verb": "ADD",
-      "source": "pangaea/programs/TXPOST.cbl:293"
+      "source": "pangaea/programs/TXPOST.cbl:301"
     },
     {
       "from": "TD-AMOUNT",
       "to": "WS-SIGNED-AMOUNT",
       "paragraph": "3200-POST-DEBIT",
       "verb": "COMPUTE",
-      "source": "pangaea/programs/TXPOST.cbl:294"
+      "source": "pangaea/programs/TXPOST.cbl:302"
     },
     {
       "from": "TD-AMOUNT",
       "to": "AM-BALANCE",
       "paragraph": "3300-POST-FEE",
       "verb": "SUBTRACT",
-      "source": "pangaea/programs/TXPOST.cbl:304"
+      "source": "pangaea/programs/TXPOST.cbl:312"
     },
     {
       "from": "TD-AMOUNT",
       "to": "WS-FEE-TOTAL",
       "paragraph": "3300-POST-FEE",
       "verb": "ADD",
-      "source": "pangaea/programs/TXPOST.cbl:305"
+      "source": "pangaea/programs/TXPOST.cbl:313"
     },
     {
       "from": "TD-AMOUNT",
       "to": "WS-SIGNED-AMOUNT",
       "paragraph": "3300-POST-FEE",
       "verb": "COMPUTE",
-      "source": "pangaea/programs/TXPOST.cbl:306"
+      "source": "pangaea/programs/TXPOST.cbl:314"
+    },
+    {
+      "from": "TD-AMOUNT",
+      "to": "AM-BALANCE",
+      "paragraph": "3400-POST-AUTHORIZED",
+      "verb": "SUBTRACT",
+      "source": "pangaea/programs/TXPOST.cbl:320"
+    },
+    {
+      "from": "TD-AMOUNT",
+      "to": "WS-DEBIT-TOTAL",
+      "paragraph": "3400-POST-AUTHORIZED",
+      "verb": "ADD",
+      "source": "pangaea/programs/TXPOST.cbl:321"
+    },
+    {
+      "from": "TD-AMOUNT",
+      "to": "WS-SIGNED-AMOUNT",
+      "paragraph": "3400-POST-AUTHORIZED",
+      "verb": "COMPUTE",
+      "source": "pangaea/programs/TXPOST.cbl:322"
     },
     {
       "from": "TRAN-RECORD",
       "to": "WS-SAVED-TRAN",
       "paragraph": "3500-WRITE-LEG",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:313"
+      "source": "pangaea/programs/TXPOST.cbl:329"
     },
     {
       "from": "condition TD-TRANSFER-CREDIT",
@@ -2372,7 +2472,7 @@
       "fromLiteral": true,
       "paragraph": "3500-WRITE-LEG",
       "verb": "SET",
-      "source": "pangaea/programs/TXPOST.cbl:315"
+      "source": "pangaea/programs/TXPOST.cbl:331"
     },
     {
       "from": "condition TD-TRANSFER-RETURN",
@@ -2380,35 +2480,35 @@
       "fromLiteral": true,
       "paragraph": "3500-WRITE-LEG",
       "verb": "SET",
-      "source": "pangaea/programs/TXPOST.cbl:317"
+      "source": "pangaea/programs/TXPOST.cbl:333"
     },
     {
       "from": "TD-ACCT-NO",
       "to": "WS-LEG-ACCT-NO",
       "paragraph": "3500-WRITE-LEG",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:319"
+      "source": "pangaea/programs/TXPOST.cbl:335"
     },
     {
       "from": "TD-COUNTER-ACCT-NO",
       "to": "TD-ACCT-NO",
       "paragraph": "3500-WRITE-LEG",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:320"
+      "source": "pangaea/programs/TXPOST.cbl:336"
     },
     {
       "from": "WS-LEG-ACCT-NO",
       "to": "TD-COUNTER-ACCT-NO",
       "paragraph": "3500-WRITE-LEG",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:321"
+      "source": "pangaea/programs/TXPOST.cbl:337"
     },
     {
       "from": "TRAN-RECORD",
       "to": "LEGS-OUT-RECORD",
       "paragraph": "3500-WRITE-LEG",
       "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:322"
+      "source": "pangaea/programs/TXPOST.cbl:338"
     },
     {
       "from": "LEGS-OUT-RECORD",
@@ -2416,7 +2516,7 @@
       "toFile": true,
       "paragraph": "3500-WRITE-LEG",
       "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:322"
+      "source": "pangaea/programs/TXPOST.cbl:338"
     },
     {
       "from": "1",
@@ -2424,77 +2524,77 @@
       "fromLiteral": true,
       "paragraph": "3500-WRITE-LEG",
       "verb": "ADD",
-      "source": "pangaea/programs/TXPOST.cbl:323"
+      "source": "pangaea/programs/TXPOST.cbl:339"
     },
     {
       "from": "WS-SAVED-TRAN",
       "to": "TRAN-RECORD",
       "paragraph": "3500-WRITE-LEG",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:324"
+      "source": "pangaea/programs/TXPOST.cbl:340"
     },
     {
       "from": "WS-BUSINESS-DATE",
       "to": "AU-BUSINESS-DATE",
       "paragraph": "3800-WRITE-AUDIT",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:328"
+      "source": "pangaea/programs/TXPOST.cbl:344"
     },
     {
       "from": "WS-BUSINESS-DATE",
       "to": "AM-LAST-ACTIVITY-DATE",
       "paragraph": "3800-WRITE-AUDIT",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:328"
+      "source": "pangaea/programs/TXPOST.cbl:344"
     },
     {
       "from": "TD-TRAN-ID",
       "to": "AU-TRAN-ID",
       "paragraph": "3800-WRITE-AUDIT",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:330"
+      "source": "pangaea/programs/TXPOST.cbl:346"
     },
     {
       "from": "TD-ACCT-NO",
       "to": "AU-ACCT-NO",
       "paragraph": "3800-WRITE-AUDIT",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:331"
+      "source": "pangaea/programs/TXPOST.cbl:347"
     },
     {
       "from": "TD-TRAN-CODE",
       "to": "AU-TRAN-CODE",
       "paragraph": "3800-WRITE-AUDIT",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:332"
+      "source": "pangaea/programs/TXPOST.cbl:348"
     },
     {
       "from": "WS-SIGNED-AMOUNT",
       "to": "AU-AMOUNT",
       "paragraph": "3800-WRITE-AUDIT",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:333"
+      "source": "pangaea/programs/TXPOST.cbl:349"
     },
     {
       "from": "WS-BALANCE-BEFORE",
       "to": "AU-BALANCE-BEFORE",
       "paragraph": "3800-WRITE-AUDIT",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:334"
+      "source": "pangaea/programs/TXPOST.cbl:350"
     },
     {
       "from": "AM-BALANCE",
       "to": "AU-BALANCE-AFTER",
       "paragraph": "3800-WRITE-AUDIT",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:335"
+      "source": "pangaea/programs/TXPOST.cbl:351"
     },
     {
       "from": "AUDIT-RECORD",
       "to": "AUDIT-OUT-RECORD",
       "paragraph": "3800-WRITE-AUDIT",
       "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:336"
+      "source": "pangaea/programs/TXPOST.cbl:352"
     },
     {
       "from": "AUDIT-OUT-RECORD",
@@ -2502,7 +2602,7 @@
       "toFile": true,
       "paragraph": "3800-WRITE-AUDIT",
       "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:336"
+      "source": "pangaea/programs/TXPOST.cbl:352"
     },
     {
       "from": "1",
@@ -2510,7 +2610,7 @@
       "fromLiteral": true,
       "paragraph": "3800-WRITE-AUDIT",
       "verb": "ADD",
-      "source": "pangaea/programs/TXPOST.cbl:337"
+      "source": "pangaea/programs/TXPOST.cbl:353"
     },
     {
       "from": "'TXPOST'",
@@ -2518,21 +2618,21 @@
       "fromLiteral": true,
       "paragraph": "3900-REJECT-TRAN",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:342"
+      "source": "pangaea/programs/TXPOST.cbl:358"
     },
     {
       "from": "TRAN-RECORD",
       "to": "RJ-TRAN",
       "paragraph": "3900-REJECT-TRAN",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:343"
+      "source": "pangaea/programs/TXPOST.cbl:359"
     },
     {
       "from": "REJECT-RECORD",
       "to": "REJECT-OUT-RECORD",
       "paragraph": "3900-REJECT-TRAN",
       "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:344"
+      "source": "pangaea/programs/TXPOST.cbl:360"
     },
     {
       "from": "REJECT-OUT-RECORD",
@@ -2540,7 +2640,7 @@
       "toFile": true,
       "paragraph": "3900-REJECT-TRAN",
       "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:344"
+      "source": "pangaea/programs/TXPOST.cbl:360"
     },
     {
       "from": "1",
@@ -2548,14 +2648,14 @@
       "fromLiteral": true,
       "paragraph": "3900-REJECT-TRAN",
       "verb": "ADD",
-      "source": "pangaea/programs/TXPOST.cbl:345"
+      "source": "pangaea/programs/TXPOST.cbl:361"
     },
     {
       "from": "ACCT-MASTER-RECORD",
       "to": "ACCT-OUT-RECORD",
       "paragraph": "4000-WRITE-MASTER",
       "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:352"
+      "source": "pangaea/programs/TXPOST.cbl:368"
     },
     {
       "from": "ACCT-OUT-RECORD",
@@ -2563,7 +2663,7 @@
       "toFile": true,
       "paragraph": "4000-WRITE-MASTER",
       "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:352"
+      "source": "pangaea/programs/TXPOST.cbl:368"
     },
     {
       "from": "1",
@@ -2571,42 +2671,42 @@
       "fromLiteral": true,
       "paragraph": "4000-WRITE-MASTER",
       "verb": "ADD",
-      "source": "pangaea/programs/TXPOST.cbl:353"
+      "source": "pangaea/programs/TXPOST.cbl:369"
     },
     {
       "from": "AM-BALANCE",
       "to": "WS-CLOSING-TOTAL",
       "paragraph": "4000-WRITE-MASTER",
       "verb": "ADD",
-      "source": "pangaea/programs/TXPOST.cbl:354"
+      "source": "pangaea/programs/TXPOST.cbl:370"
     },
     {
       "from": "WS-OPENING-TOTAL",
       "to": "WS-EXPECTED-TOTAL",
       "paragraph": "5000-RECONCILE",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:358"
+      "source": "pangaea/programs/TXPOST.cbl:374"
     },
     {
       "from": "WS-CREDIT-TOTAL",
       "to": "WS-EXPECTED-TOTAL",
       "paragraph": "5000-RECONCILE",
       "verb": "ADD",
-      "source": "pangaea/programs/TXPOST.cbl:359"
+      "source": "pangaea/programs/TXPOST.cbl:375"
     },
     {
       "from": "WS-DEBIT-TOTAL",
       "to": "WS-EXPECTED-TOTAL",
       "paragraph": "5000-RECONCILE",
       "verb": "SUBTRACT",
-      "source": "pangaea/programs/TXPOST.cbl:360"
+      "source": "pangaea/programs/TXPOST.cbl:376"
     },
     {
       "from": "WS-FEE-TOTAL",
       "to": "WS-EXPECTED-TOTAL",
       "paragraph": "5000-RECONCILE",
       "verb": "SUBTRACT",
-      "source": "pangaea/programs/TXPOST.cbl:361"
+      "source": "pangaea/programs/TXPOST.cbl:377"
     },
     {
       "from": "'NEW MASTER OUT OF BALANCE'",
@@ -2614,7 +2714,7 @@
       "fromLiteral": true,
       "paragraph": "5000-RECONCILE",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:364"
+      "source": "pangaea/programs/TXPOST.cbl:380"
     },
     {
       "from": "SPACES",
@@ -2622,7 +2722,7 @@
       "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:370"
+      "source": "pangaea/programs/TXPOST.cbl:386"
     },
     {
       "from": "'TXPOST   TRANSACTION POSTING     BUSINESS DATE '",
@@ -2630,14 +2730,14 @@
       "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "STRING",
-      "source": "pangaea/programs/TXPOST.cbl:371"
+      "source": "pangaea/programs/TXPOST.cbl:387"
     },
     {
       "from": "WS-BUSINESS-DATE",
       "to": "REPORT-LINE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "STRING",
-      "source": "pangaea/programs/TXPOST.cbl:371"
+      "source": "pangaea/programs/TXPOST.cbl:387"
     },
     {
       "from": "REPORT-LINE",
@@ -2645,7 +2745,7 @@
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:374"
+      "source": "pangaea/programs/TXPOST.cbl:390"
     },
     {
       "from": "SPACES",
@@ -2653,7 +2753,7 @@
       "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:375"
+      "source": "pangaea/programs/TXPOST.cbl:391"
     },
     {
       "from": "REPORT-LINE",
@@ -2661,7 +2761,7 @@
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:376"
+      "source": "pangaea/programs/TXPOST.cbl:392"
     },
     {
       "from": "'ACCOUNTS READ'",
@@ -2669,21 +2769,21 @@
       "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:377"
+      "source": "pangaea/programs/TXPOST.cbl:393"
     },
     {
       "from": "WS-MASTERS-READ",
       "to": "WS-RC-VALUE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:378"
+      "source": "pangaea/programs/TXPOST.cbl:394"
     },
     {
       "from": "WS-REPORT-COUNT-LINE",
       "to": "REPORT-LINE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:379"
+      "source": "pangaea/programs/TXPOST.cbl:395"
     },
     {
       "from": "REPORT-LINE",
@@ -2691,7 +2791,7 @@
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:379"
+      "source": "pangaea/programs/TXPOST.cbl:395"
     },
     {
       "from": "'ACCOUNTS WRITTEN'",
@@ -2699,21 +2799,21 @@
       "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:380"
+      "source": "pangaea/programs/TXPOST.cbl:396"
     },
     {
       "from": "WS-MASTERS-WRITTEN",
       "to": "WS-RC-VALUE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:381"
+      "source": "pangaea/programs/TXPOST.cbl:397"
     },
     {
       "from": "WS-REPORT-COUNT-LINE",
       "to": "REPORT-LINE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:382"
+      "source": "pangaea/programs/TXPOST.cbl:398"
     },
     {
       "from": "REPORT-LINE",
@@ -2721,7 +2821,7 @@
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:382"
+      "source": "pangaea/programs/TXPOST.cbl:398"
     },
     {
       "from": "'TRANSACTIONS POSTED'",
@@ -2729,21 +2829,21 @@
       "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:383"
+      "source": "pangaea/programs/TXPOST.cbl:399"
     },
     {
       "from": "WS-POSTED-COUNT",
       "to": "WS-RC-VALUE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:384"
+      "source": "pangaea/programs/TXPOST.cbl:400"
     },
     {
       "from": "WS-REPORT-COUNT-LINE",
       "to": "REPORT-LINE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:385"
+      "source": "pangaea/programs/TXPOST.cbl:401"
     },
     {
       "from": "REPORT-LINE",
@@ -2751,7 +2851,7 @@
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:385"
+      "source": "pangaea/programs/TXPOST.cbl:401"
     },
     {
       "from": "'TRANSACTIONS REJECTED'",
@@ -2759,21 +2859,21 @@
       "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:386"
+      "source": "pangaea/programs/TXPOST.cbl:402"
     },
     {
       "from": "WS-REJECT-COUNT",
       "to": "WS-RC-VALUE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:387"
+      "source": "pangaea/programs/TXPOST.cbl:403"
     },
     {
       "from": "WS-REPORT-COUNT-LINE",
       "to": "REPORT-LINE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:388"
+      "source": "pangaea/programs/TXPOST.cbl:404"
     },
     {
       "from": "REPORT-LINE",
@@ -2781,7 +2881,7 @@
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:388"
+      "source": "pangaea/programs/TXPOST.cbl:404"
     },
     {
       "from": "'TRANSFER LEGS WRITTEN'",
@@ -2789,21 +2889,21 @@
       "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:389"
+      "source": "pangaea/programs/TXPOST.cbl:405"
     },
     {
       "from": "WS-LEG-COUNT",
       "to": "WS-RC-VALUE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:390"
+      "source": "pangaea/programs/TXPOST.cbl:406"
     },
     {
       "from": "WS-REPORT-COUNT-LINE",
       "to": "REPORT-LINE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:391"
+      "source": "pangaea/programs/TXPOST.cbl:407"
     },
     {
       "from": "REPORT-LINE",
@@ -2811,7 +2911,7 @@
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:391"
+      "source": "pangaea/programs/TXPOST.cbl:407"
     },
     {
       "from": "SPACES",
@@ -2819,7 +2919,7 @@
       "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:392"
+      "source": "pangaea/programs/TXPOST.cbl:408"
     },
     {
       "from": "REPORT-LINE",
@@ -2827,7 +2927,7 @@
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:393"
+      "source": "pangaea/programs/TXPOST.cbl:409"
     },
     {
       "from": "'OPENING BALANCES'",
@@ -2835,173 +2935,21 @@
       "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:394"
+      "source": "pangaea/programs/TXPOST.cbl:410"
     },
     {
       "from": "WS-OPENING-TOTAL",
       "to": "WS-RA-VALUE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:395"
-    },
-    {
-      "from": "WS-REPORT-AMOUNT-LINE",
-      "to": "REPORT-LINE",
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:396"
-    },
-    {
-      "from": "REPORT-LINE",
-      "to": "REPORT-OUT",
-      "toFile": true,
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:396"
-    },
-    {
-      "from": "'CREDITS'",
-      "to": "WS-RA-LABEL",
-      "fromLiteral": true,
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:397"
-    },
-    {
-      "from": "WS-CREDIT-TOTAL",
-      "to": "WS-RA-VALUE",
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:398"
-    },
-    {
-      "from": "WS-REPORT-AMOUNT-LINE",
-      "to": "REPORT-LINE",
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:399"
-    },
-    {
-      "from": "REPORT-LINE",
-      "to": "REPORT-OUT",
-      "toFile": true,
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:399"
-    },
-    {
-      "from": "'DEBITS'",
-      "to": "WS-RA-LABEL",
-      "fromLiteral": true,
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:400"
-    },
-    {
-      "from": "WS-DEBIT-TOTAL",
-      "to": "WS-RA-VALUE",
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:401"
-    },
-    {
-      "from": "WS-REPORT-AMOUNT-LINE",
-      "to": "REPORT-LINE",
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:402"
-    },
-    {
-      "from": "REPORT-LINE",
-      "to": "REPORT-OUT",
-      "toFile": true,
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:402"
-    },
-    {
-      "from": "'FEES'",
-      "to": "WS-RA-LABEL",
-      "fromLiteral": true,
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:403"
-    },
-    {
-      "from": "WS-FEE-TOTAL",
-      "to": "WS-RA-VALUE",
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:404"
-    },
-    {
-      "from": "WS-REPORT-AMOUNT-LINE",
-      "to": "REPORT-LINE",
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:405"
-    },
-    {
-      "from": "REPORT-LINE",
-      "to": "REPORT-OUT",
-      "toFile": true,
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:405"
-    },
-    {
-      "from": "'CLOSING BALANCES'",
-      "to": "WS-RA-LABEL",
-      "fromLiteral": true,
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:406"
-    },
-    {
-      "from": "WS-CLOSING-TOTAL",
-      "to": "WS-RA-VALUE",
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:407"
-    },
-    {
-      "from": "WS-REPORT-AMOUNT-LINE",
-      "to": "REPORT-LINE",
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:408"
-    },
-    {
-      "from": "REPORT-LINE",
-      "to": "REPORT-OUT",
-      "toFile": true,
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:408"
-    },
-    {
-      "from": "SPACES",
-      "to": "REPORT-LINE",
-      "fromLiteral": true,
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:409"
-    },
-    {
-      "from": "REPORT-LINE",
-      "to": "REPORT-OUT",
-      "toFile": true,
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "WRITE",
-      "source": "pangaea/programs/TXPOST.cbl:410"
-    },
-    {
-      "from": "'NEW MASTER IN BALANCE'",
-      "to": "REPORT-LINE",
-      "fromLiteral": true,
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "MOVE",
       "source": "pangaea/programs/TXPOST.cbl:411"
+    },
+    {
+      "from": "WS-REPORT-AMOUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXPOST.cbl:412"
     },
     {
       "from": "REPORT-LINE",
@@ -3012,12 +2960,164 @@
       "source": "pangaea/programs/TXPOST.cbl:412"
     },
     {
+      "from": "'CREDITS'",
+      "to": "WS-RA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/TXPOST.cbl:413"
+    },
+    {
+      "from": "WS-CREDIT-TOTAL",
+      "to": "WS-RA-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/TXPOST.cbl:414"
+    },
+    {
+      "from": "WS-REPORT-AMOUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXPOST.cbl:415"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXPOST.cbl:415"
+    },
+    {
+      "from": "'DEBITS'",
+      "to": "WS-RA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/TXPOST.cbl:416"
+    },
+    {
+      "from": "WS-DEBIT-TOTAL",
+      "to": "WS-RA-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/TXPOST.cbl:417"
+    },
+    {
+      "from": "WS-REPORT-AMOUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXPOST.cbl:418"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXPOST.cbl:418"
+    },
+    {
+      "from": "'FEES'",
+      "to": "WS-RA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/TXPOST.cbl:419"
+    },
+    {
+      "from": "WS-FEE-TOTAL",
+      "to": "WS-RA-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/TXPOST.cbl:420"
+    },
+    {
+      "from": "WS-REPORT-AMOUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXPOST.cbl:421"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXPOST.cbl:421"
+    },
+    {
+      "from": "'CLOSING BALANCES'",
+      "to": "WS-RA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/TXPOST.cbl:422"
+    },
+    {
+      "from": "WS-CLOSING-TOTAL",
+      "to": "WS-RA-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/TXPOST.cbl:423"
+    },
+    {
+      "from": "WS-REPORT-AMOUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXPOST.cbl:424"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXPOST.cbl:424"
+    },
+    {
+      "from": "SPACES",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/TXPOST.cbl:425"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXPOST.cbl:426"
+    },
+    {
+      "from": "'NEW MASTER IN BALANCE'",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/TXPOST.cbl:427"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/TXPOST.cbl:428"
+    },
+    {
       "from": "16",
       "to": "RETURN-CODE",
       "fromLiteral": true,
       "paragraph": "9900-ABORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/TXPOST.cbl:423"
+      "source": "pangaea/programs/TXPOST.cbl:439"
     }
   ],
   "outputs": [

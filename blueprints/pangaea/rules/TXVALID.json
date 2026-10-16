@@ -3,7 +3,7 @@
   "tables": [
     {
       "paragraph": "0000-MAIN",
-      "source": "pangaea/programs/TXVALID.cbl:101",
+      "source": "pangaea/programs/TXVALID.cbl:111",
       "conditions": [
         "FILE-IS-GOOD",
         "WS-REJECT-COUNT \u003e 0"
@@ -71,13 +71,13 @@
     },
     {
       "paragraph": "1000-OPEN-FILES",
-      "source": "pangaea/programs/TXVALID.cbl:123",
+      "source": "pangaea/programs/TXVALID.cbl:134",
       "conditions": [
-        "WS-CONTROL-STATUS NOT = '00' OR WS-TRAN-IN-STATUS NOT = '00' OR WS-TRAN-OUT-STATUS NOT = '00' OR WS-REJECT-STATUS NOT = '00' OR WS-REPORT-STATUS NOT = '00'",
+        "WS-CONTROL-STATUS NOT = '00' OR WS-TRAN-IN-STATUS NOT = '00' OR WS-TRAN-OUT-STATUS NOT = '00' OR NOT REJECTS-OPENED OR WS-REPORT-STATUS NOT = '00'",
         "READ CONTROL-FILE AT END"
       ],
       "actions": [
-        "OPEN INPUT CONTROL-FILE TRAN-IN OUTPUT TRAN-OUT REJECT-OUT REPORT-OUT",
+        "OPEN INPUT CONTROL-FILE TRAN-IN OUTPUT TRAN-OUT REPORT-OUT EXTEND REJECT-OUT",
         "DISPLAY 'TXVALID: CANNOT OPEN FILES ' WS-FILE-STATUSES",
         "MOVE 16 TO RETURN-CODE",
         "STOP RUN",
@@ -128,19 +128,22 @@
     },
     {
       "paragraph": "2000-READ-HEADER",
-      "source": "pangaea/programs/TXVALID.cbl:145",
+      "source": "pangaea/programs/TXVALID.cbl:158",
       "conditions": [
         "READ TRAN-IN AT END",
         "FILE-IS-GOOD",
         "TR-HEADER",
-        "TH-BUSINESS-DATE = WS-BUSINESS-DATE"
+        "TH-BUSINESS-DATE = WS-BUSINESS-DATE",
+        "NOT TH-FROM-BRANCHES AND NOT TH-FROM-CARDS"
       ],
       "actions": [
         "READ TRAN-IN",
         "MOVE 'EMPTY FILE' TO WS-FILE-ERROR",
         "CONTINUE",
         "MOVE 'FIRST RECORD IS NOT A HEADER' TO WS-FILE-ERROR",
-        "MOVE 'HEADER IS NOT FOR THE BUSINESS DATE' TO WS-FILE-ERROR"
+        "MOVE TH-SOURCE TO WS-SOURCE",
+        "MOVE 'HEADER IS NOT FOR THE BUSINESS DATE' TO WS-FILE-ERROR",
+        "MOVE 'HEADER IS FROM AN UNKNOWN SOURCE' TO WS-FILE-ERROR"
       ],
       "rules": [
         {
@@ -148,6 +151,7 @@
             "Y",
             "N",
             "",
+            "",
             ""
           ],
           "actions": [
@@ -161,16 +165,49 @@
             "Y",
             "Y",
             "N",
+            "",
             ""
           ],
           "actions": [
             0,
             1,
-            3
+            3,
+            4
           ]
         },
         {
           "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            5,
+            4
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            6,
+            4
+          ]
+        },
+        {
+          "entries": [
+            "Y",
             "Y",
             "Y",
             "Y",
@@ -184,20 +221,9 @@
         },
         {
           "entries": [
-            "Y",
-            "Y",
-            "Y",
-            "Y"
-          ],
-          "actions": [
-            0,
-            1
-          ]
-        },
-        {
-          "entries": [
             "N",
             "N",
+            "",
             "",
             ""
           ],
@@ -211,22 +237,12 @@
             "N",
             "Y",
             "N",
+            "",
             ""
           ],
           "actions": [
             0,
-            3
-          ]
-        },
-        {
-          "entries": [
-            "N",
-            "Y",
-            "Y",
-            "N"
-          ],
-          "actions": [
-            0,
+            3,
             4
           ]
         },
@@ -235,10 +251,40 @@
             "N",
             "Y",
             "Y",
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            5,
+            4
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "Y",
             "Y"
           ],
           "actions": [
-            0
+            0,
+            6,
+            4
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            4
           ]
         }
       ]
@@ -246,7 +292,7 @@
     {
       "paragraph": "3000-READ-DETAILS",
       "loop": "PERFORM UNTIL TR-TRAILER OR NOT FILE-IS-GOOD",
-      "source": "pangaea/programs/TXVALID.cbl:163",
+      "source": "pangaea/programs/TXVALID.cbl:182",
       "conditions": [
         "TR-DETAIL",
         "FILE-IS-GOOD",
@@ -329,7 +375,7 @@
     },
     {
       "paragraph": "3100-READ-NEXT",
-      "source": "pangaea/programs/TXVALID.cbl:179",
+      "source": "pangaea/programs/TXVALID.cbl:198",
       "conditions": [
         "READ TRAN-IN AT END"
       ],
@@ -359,11 +405,11 @@
     },
     {
       "paragraph": "3200-VALIDATE-DETAIL",
-      "source": "pangaea/programs/TXVALID.cbl:186",
+      "source": "pangaea/programs/TXVALID.cbl:205",
       "conditions": [
         "TD-AMOUNT IS NUMERIC",
         "TD-ACCT-NO IS NUMERIC",
-        "TD-KNOWN-CODE",
+        "(FROM-BRANCHES AND NOT TD-KNOWN-CODE) OR (FROM-CARDS AND NOT TD-CARD-CODE)",
         "DETAIL-IS-VALID",
         "TD-AMOUNT IS NOT NUMERIC OR TD-AMOUNT = ZERO",
         "TD-TRANSFER AND (TD-COUNTER-ACCT-NO IS NOT NUMERIC OR TD-COUNTER-ACCT-NO = TD-ACCT-NO)"
@@ -387,7 +433,7 @@
           "entries": [
             "Y",
             "Y",
-            "N",
+            "Y",
             "Y",
             "",
             ""
@@ -407,7 +453,7 @@
           "entries": [
             "Y",
             "Y",
-            "N",
+            "Y",
             "N",
             "",
             ""
@@ -426,7 +472,7 @@
           "entries": [
             "Y",
             "Y",
-            "Y",
+            "N",
             "Y",
             "Y",
             ""
@@ -446,7 +492,7 @@
           "entries": [
             "Y",
             "Y",
-            "Y",
+            "N",
             "N",
             "Y",
             ""
@@ -465,7 +511,7 @@
           "entries": [
             "Y",
             "Y",
-            "Y",
+            "N",
             "Y",
             "N",
             "Y"
@@ -485,7 +531,7 @@
           "entries": [
             "Y",
             "Y",
-            "Y",
+            "N",
             "N",
             "N",
             "Y"
@@ -504,7 +550,7 @@
           "entries": [
             "Y",
             "Y",
-            "Y",
+            "N",
             "Y",
             "N",
             "N"
@@ -522,7 +568,7 @@
           "entries": [
             "Y",
             "Y",
-            "Y",
+            "N",
             "N",
             "N",
             "N"
@@ -576,7 +622,7 @@
           "entries": [
             "N",
             "Y",
-            "N",
+            "Y",
             "Y",
             "",
             ""
@@ -595,7 +641,7 @@
           "entries": [
             "N",
             "Y",
-            "N",
+            "Y",
             "N",
             "",
             ""
@@ -613,7 +659,7 @@
           "entries": [
             "N",
             "Y",
-            "Y",
+            "N",
             "Y",
             "Y",
             ""
@@ -632,7 +678,7 @@
           "entries": [
             "N",
             "Y",
-            "Y",
+            "N",
             "N",
             "Y",
             ""
@@ -650,7 +696,7 @@
           "entries": [
             "N",
             "Y",
-            "Y",
+            "N",
             "Y",
             "N",
             "Y"
@@ -669,7 +715,7 @@
           "entries": [
             "N",
             "Y",
-            "Y",
+            "N",
             "N",
             "N",
             "Y"
@@ -687,7 +733,7 @@
           "entries": [
             "N",
             "Y",
-            "Y",
+            "N",
             "Y",
             "N",
             "N"
@@ -704,7 +750,7 @@
           "entries": [
             "N",
             "Y",
-            "Y",
+            "N",
             "N",
             "N",
             "N"
@@ -755,7 +801,7 @@
     },
     {
       "paragraph": "4000-CHECK-TRAILER",
-      "source": "pangaea/programs/TXVALID.cbl:227",
+      "source": "pangaea/programs/TXVALID.cbl:247",
       "conditions": [
         "TT-DETAIL-COUNT = WS-DETAIL-COUNT",
         "FILE-IS-GOOD",
@@ -927,7 +973,7 @@
     },
     {
       "paragraph": "8000-WRITE-REPORT",
-      "source": "pangaea/programs/TXVALID.cbl:248",
+      "source": "pangaea/programs/TXVALID.cbl:268",
       "conditions": [
         "FILE-IS-GOOD"
       ],
