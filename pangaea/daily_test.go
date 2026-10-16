@@ -23,7 +23,9 @@ import (
 // directory. A fixture whose JOBS file lists more jobs runs them after the
 // daily batch, as the scheduler would, with their job logs and reports in
 // a directory of their own; a job's in-stream data is the fixture's
-// JOB.SYSIN. Run with -update to rewrite the golden files.
+// JOB.SYSIN. A step that abends or ends with RC 16, which Pangaea's
+// programs keep for what is broken, fails the test. Run with -update to
+// rewrite the golden files.
 func TestDaily(t *testing.T) {
 	programs := t.TempDir()
 	if _, err := compile.Programs("programs", "copybooks", programs); err != nil {
@@ -74,8 +76,14 @@ func runFixture(t *testing.T, codec *fixture.Codec, programs, fixtureDir string)
 		if err != nil {
 			t.Fatal(err)
 		}
-		if _, err := r.Run(parsed); err != nil {
+		results, err := r.Run(parsed)
+		if err != nil {
 			t.Fatal(err)
+		}
+		for _, result := range results {
+			if result.Abended || result.RC >= 16 {
+				t.Errorf("%s: %s, which is no outcome to keep as golden", job, result)
+			}
 		}
 	}
 
