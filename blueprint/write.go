@@ -284,20 +284,86 @@ func writeDataFlow(b *strings.Builder, dir string, p Program) {
 	if len(p.Lineage) == 0 {
 		return
 	}
-	b.WriteString("\n## Lineage\n\nWhere each data item's values come from, and which records go to which files.\n\n" +
-		"| Into | From | Statement | Paragraph | Source |\n| --- | --- | --- | --- | --- |\n")
-	lineage := slices.Clone(p.Lineage)
-	slices.SortStableFunc(lineage, func(x, y Lineage) int { return strings.Compare(x.To, y.To) })
-	for _, e := range lineage {
-		from, to := e.From, e.To
-		if e.FromFile {
-			from = "file " + from
-		}
-		if e.ToFile {
-			to = "file " + to
-		}
-		b.WriteString(row(to, from, e.Verb, e.Paragraph, sourceLink(dir, e.Source, true)))
+	b.WriteString("\n## Lineage\n\nWhere each data item's values come from, grouped by the record they go into. " +
+		"A data item links to the record it belongs to.\n")
+	records := recordsByItem(p)
+	type group struct {
+		title, intro string
+		edges        []Lineage
 	}
+	var groups []*group
+	byTitle := map[string]*group{}
+	for _, e := range p.Lineage {
+		title, intro := "Into other data items", "Data items the program does not declare, such as special registers and index names.\n\n"
+		switch r, ok := records[e.To]; {
+		case e.ToFile:
+			title, intro = "Into files", "Records written to files.\n\n"
+		case ok:
+			title, intro = "Into "+r.Name, "Record ["+r.Name+"](#"+headingAnchor(r.Name)+")"
+			if r.Copybook != "" {
+				intro += ", from copybook " + copybookLink(r.Copybook)
+			}
+			intro += ".\n\n"
+		}
+		g, ok := byTitle[title]
+		if !ok {
+			g = &group{title: title, intro: intro}
+			byTitle[title] = g
+			groups = append(groups, g)
+		}
+		g.edges = append(g.edges, e)
+	}
+	order := func(g *group) int {
+		switch g.title {
+		case "Into files":
+			return len(p.Records) + 1
+		case "Into other data items":
+			return len(p.Records) + 2
+		}
+		return slices.IndexFunc(p.Records, func(r Record) bool { return "Into "+r.Name == g.title })
+	}
+	slices.SortStableFunc(groups, func(x, y *group) int { return order(x) - order(y) })
+	item := func(name string, file bool) string {
+		if file {
+			return "file " + name
+		}
+		r, ok := records[name]
+		switch {
+		case ok && r.Name == name:
+			return fmt.Sprintf("[%s](#%s)", name, headingAnchor(r.Name))
+		case ok:
+			return fmt.Sprintf("[%s](#%s \"in %s\")", name, headingAnchor(r.Name), r.Name)
+		}
+		return name
+	}
+	for _, g := range groups {
+		fmt.Fprintf(b, "\n### %s\n\n%s| Into | From | Statement | Paragraph | Source |\n| --- | --- | --- | --- | --- |\n", g.title, g.intro)
+		slices.SortStableFunc(g.edges, func(x, y Lineage) int { return strings.Compare(x.To, y.To) })
+		for _, e := range g.edges {
+			to := e.To
+			if e.ToFile {
+				to = "file " + to
+			}
+			b.WriteString(row(to, item(e.From, e.FromFile), e.Verb, e.Paragraph, sourceLink(dir, e.Source, true)))
+		}
+	}
+}
+
+// recordsByItem maps every data item the program declares to the record it
+// belongs to.
+func recordsByItem(p Program) map[string]Record {
+	records := map[string]Record{}
+	var walk func(r Record, f Field)
+	walk = func(r Record, f Field) {
+		records[f.Name] = r
+		for _, child := range f.Fields {
+			walk(r, child)
+		}
+	}
+	for _, r := range p.Records {
+		walk(r, r.Field)
+	}
+	return records
 }
 
 // goesTo lists where a paragraph goes other than by PERFORM: its GO TO

@@ -30,6 +30,11 @@ Program [BANKDATE.cbl](../../../pangaea/programs/BANKDATE.cbl): 2 files, 2 parag
 - [Paragraphs](#paragraphs)
 - [Data flow](#data-flow)
 - [Lineage](#lineage)
+  - [Into BANK-CONTROL-RECORD](#into-bank-control-record)
+  - [Into CONTROL-OUT-RECORD](#into-control-out-record)
+  - [Into WS-DAY-NUMBER](#into-ws-day-number)
+  - [Into WS-WEEKDAY](#into-ws-weekday)
+  - [Into files](#into-files)
 - [Records](#records)
   - [BANK-CONTROL-RECORD](#bank-control-record)
   - [CONTROL-OUT-RECORD](#control-out-record)
@@ -65,17 +70,49 @@ Program [BANKDATE.cbl](../../../pangaea/programs/BANKDATE.cbl): 2 files, 2 parag
 
 ## Lineage
 
-Where each data item's values come from, and which records go to which files.
+Where each data item's values come from, grouped by the record they go into. A data item links to the record it belongs to.
+
+### Into BANK-CONTROL-RECORD
+
+Record [BANK-CONTROL-RECORD](#bank-control-record), from copybook [BANKCTL](../copybooks/BANKCTL.md).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
 | BANK-CONTROL-RECORD | file CONTROL-IN | READ | 0000-MAIN | [BANKDATE.cbl:61](../../../pangaea/programs/BANKDATE.cbl#L61) |
-| BC-BUSINESS-DATE | WS-DAY-NUMBER | COMPUTE | 1000-NEXT-BUSINESS-DAY | [BANKDATE.cbl:83](../../../pangaea/programs/BANKDATE.cbl#L83) |
-| file CONTROL-OUT | CONTROL-OUT-RECORD | WRITE | 0000-MAIN | [BANKDATE.cbl:68](../../../pangaea/programs/BANKDATE.cbl#L68) |
-| CONTROL-OUT-RECORD | BANK-CONTROL-RECORD | WRITE | 0000-MAIN | [BANKDATE.cbl:68](../../../pangaea/programs/BANKDATE.cbl#L68) |
-| WS-DAY-NUMBER | BC-BUSINESS-DATE | COMPUTE | 1000-NEXT-BUSINESS-DAY | [BANKDATE.cbl:75](../../../pangaea/programs/BANKDATE.cbl#L75) |
-| WS-WEEKDAY | WS-DAY-NUMBER | COMPUTE | 1000-NEXT-BUSINESS-DAY | [BANKDATE.cbl:78](../../../pangaea/programs/BANKDATE.cbl#L78) |
-| WS-WEEKDAY | WS-DAY-NUMBER | COMPUTE | 1000-NEXT-BUSINESS-DAY | [BANKDATE.cbl:81](../../../pangaea/programs/BANKDATE.cbl#L81) |
+| BC-BUSINESS-DATE | [WS-DAY-NUMBER](#ws-day-number) | COMPUTE | 1000-NEXT-BUSINESS-DAY | [BANKDATE.cbl:83](../../../pangaea/programs/BANKDATE.cbl#L83) |
+
+### Into CONTROL-OUT-RECORD
+
+Record [CONTROL-OUT-RECORD](#control-out-record).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| CONTROL-OUT-RECORD | [BANK-CONTROL-RECORD](#bank-control-record) | WRITE | 0000-MAIN | [BANKDATE.cbl:68](../../../pangaea/programs/BANKDATE.cbl#L68) |
+
+### Into WS-DAY-NUMBER
+
+Record [WS-DAY-NUMBER](#ws-day-number).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-DAY-NUMBER | [BC-BUSINESS-DATE](#bank-control-record "in BANK-CONTROL-RECORD") | COMPUTE | 1000-NEXT-BUSINESS-DAY | [BANKDATE.cbl:75](../../../pangaea/programs/BANKDATE.cbl#L75) |
+
+### Into WS-WEEKDAY
+
+Record [WS-WEEKDAY](#ws-weekday).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-WEEKDAY | [WS-DAY-NUMBER](#ws-day-number) | COMPUTE | 1000-NEXT-BUSINESS-DAY | [BANKDATE.cbl:78](../../../pangaea/programs/BANKDATE.cbl#L78) |
+| WS-WEEKDAY | [WS-DAY-NUMBER](#ws-day-number) | COMPUTE | 1000-NEXT-BUSINESS-DAY | [BANKDATE.cbl:81](../../../pangaea/programs/BANKDATE.cbl#L81) |
+
+### Into files
+
+Records written to files.
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| file CONTROL-OUT | [CONTROL-OUT-RECORD](#control-out-record) | WRITE | 0000-MAIN | [BANKDATE.cbl:68](../../../pangaea/programs/BANKDATE.cbl#L68) |
 
 ## Records
 

@@ -41,6 +41,25 @@ Program [ACCTMNT.cbl](../../../pangaea/programs/ACCTMNT.cbl): 6 files, 21 paragr
 - [Paragraphs](#paragraphs)
 - [Data flow](#data-flow)
 - [Lineage](#lineage)
+  - [Into BANK-CONTROL-RECORD](#into-bank-control-record)
+  - [Into ACCT-IN-RECORD](#into-acct-in-record)
+  - [Into MAINT-REQUEST](#into-maint-request)
+  - [Into ACCT-OUT-RECORD](#into-acct-out-record)
+  - [Into REJECT-OUT-RECORD](#into-reject-out-record)
+  - [Into REPORT-LINE](#into-report-line)
+  - [Into WS-BUSINESS-DATE](#into-ws-business-date)
+  - [Into WS-MASTER-KEY](#into-ws-master-key)
+  - [Into WS-REQUEST-KEY](#into-ws-request-key)
+  - [Into WS-ACTIVE-KEY](#into-ws-active-key)
+  - [Into WS-PREV-MASTER-KEY](#into-ws-prev-master-key)
+  - [Into WS-REQUEST-ORDER-KEY](#into-ws-request-order-key)
+  - [Into WS-PREV-REQUEST-ORDER-KEY](#into-ws-prev-request-order-key)
+  - [Into ACCT-MASTER-RECORD](#into-acct-master-record)
+  - [Into REJECT-RECORD](#into-reject-record)
+  - [Into WS-TOTALS](#into-ws-totals)
+  - [Into WS-REPORT-COUNT-LINE](#into-ws-report-count-line)
+  - [Into WS-REPORT-AMOUNT-LINE](#into-ws-report-amount-line)
+  - [Into files](#into-files)
 - [Records](#records)
   - [BANK-CONTROL-RECORD](#bank-control-record)
   - [ACCT-IN-RECORD](#acct-in-record)
@@ -133,74 +152,204 @@ Program [ACCTMNT.cbl](../../../pangaea/programs/ACCTMNT.cbl): 6 files, 21 paragr
 
 ## Lineage
 
-Where each data item's values come from, and which records go to which files.
+Where each data item's values come from, grouped by the record they go into. A data item links to the record it belongs to.
+
+### Into BANK-CONTROL-RECORD
+
+Record [BANK-CONTROL-RECORD](#bank-control-record), from copybook [BANKCTL](../copybooks/BANKCTL.md).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| BANK-CONTROL-RECORD | file CONTROL-FILE | READ | 1000-INITIALIZE | [ACCTMNT.cbl:152](../../../pangaea/programs/ACCTMNT.cbl#L152) |
+
+### Into ACCT-IN-RECORD
+
+Record [ACCT-IN-RECORD](#acct-in-record).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
 | ACCT-IN-RECORD | file ACCT-IN | READ | 1200-READ-MASTER | [ACCTMNT.cbl:163](../../../pangaea/programs/ACCTMNT.cbl#L163) |
-| ACCT-MASTER-RECORD | ACCT-IN-RECORD | MOVE | 2000-NEXT-ACCOUNT | [ACCTMNT.cbl:201](../../../pangaea/programs/ACCTMNT.cbl#L201) |
-| file ACCT-OUT | ACCT-OUT-RECORD | WRITE | 2800-WRITE-HELD | [ACCTMNT.cbl:304](../../../pangaea/programs/ACCTMNT.cbl#L304) |
-| ACCT-OUT-RECORD | ACCT-MASTER-RECORD | WRITE | 2800-WRITE-HELD | [ACCTMNT.cbl:304](../../../pangaea/programs/ACCTMNT.cbl#L304) |
-| AM-ACCT-NO | MR-ACCT-NO | MOVE | 2210-OPEN | [ACCTMNT.cbl:241](../../../pangaea/programs/ACCTMNT.cbl#L241) |
-| AM-ACCT-TYPE | MR-ACCT-TYPE | MOVE | 2210-OPEN | [ACCTMNT.cbl:244](../../../pangaea/programs/ACCTMNT.cbl#L244) |
-| AM-CUST-NO | MR-CUST-NO | MOVE | 2210-OPEN | [ACCTMNT.cbl:242](../../../pangaea/programs/ACCTMNT.cbl#L242) |
-| AM-LAST-ACTIVITY-DATE | WS-BUSINESS-DATE | MOVE | 2210-OPEN | [ACCTMNT.cbl:246](../../../pangaea/programs/ACCTMNT.cbl#L246) |
-| AM-OPEN-DATE | WS-BUSINESS-DATE | MOVE | 2210-OPEN | [ACCTMNT.cbl:246](../../../pangaea/programs/ACCTMNT.cbl#L246) |
-| AM-OVERDRAFT-LIMIT | MR-OVERDRAFT-LIMIT | MOVE | 2210-OPEN | [ACCTMNT.cbl:248](../../../pangaea/programs/ACCTMNT.cbl#L248) |
-| AM-OVERDRAFT-LIMIT | MR-OVERDRAFT-LIMIT | MOVE | 2250-LIMIT | [ACCTMNT.cbl:288](../../../pangaea/programs/ACCTMNT.cbl#L288) |
-| AM-SHORT-NAME | MR-SHORT-NAME | MOVE | 2210-OPEN | [ACCTMNT.cbl:243](../../../pangaea/programs/ACCTMNT.cbl#L243) |
-| BANK-CONTROL-RECORD | file CONTROL-FILE | READ | 1000-INITIALIZE | [ACCTMNT.cbl:152](../../../pangaea/programs/ACCTMNT.cbl#L152) |
+
+### Into MAINT-REQUEST
+
+Record [MAINT-REQUEST](#maint-request), from copybook [MAINTREC](../copybooks/MAINTREC.md).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
 | MAINT-REQUEST | file MAINT-IN | READ | 1300-READ-REQUEST | [ACCTMNT.cbl:178](../../../pangaea/programs/ACCTMNT.cbl#L178) |
-| file REJECT-OUT | REJECT-OUT-RECORD | WRITE | 2290-REJECT | [ACCTMNT.cbl:296](../../../pangaea/programs/ACCTMNT.cbl#L296) |
-| REJECT-OUT-RECORD | REJECT-RECORD | WRITE | 2290-REJECT | [ACCTMNT.cbl:296](../../../pangaea/programs/ACCTMNT.cbl#L296) |
-| REPORT-LINE | WS-BUSINESS-DATE | STRING | 8000-WRITE-REPORT | [ACCTMNT.cbl:313](../../../pangaea/programs/ACCTMNT.cbl#L313) |
-| REPORT-LINE | WS-REPORT-COUNT-LINE | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:321](../../../pangaea/programs/ACCTMNT.cbl#L321) |
-| REPORT-LINE | WS-REPORT-COUNT-LINE | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:324](../../../pangaea/programs/ACCTMNT.cbl#L324) |
-| REPORT-LINE | WS-REPORT-COUNT-LINE | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:327](../../../pangaea/programs/ACCTMNT.cbl#L327) |
-| REPORT-LINE | WS-REPORT-COUNT-LINE | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:330](../../../pangaea/programs/ACCTMNT.cbl#L330) |
-| REPORT-LINE | WS-REPORT-COUNT-LINE | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:333](../../../pangaea/programs/ACCTMNT.cbl#L333) |
-| REPORT-LINE | WS-REPORT-COUNT-LINE | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:336](../../../pangaea/programs/ACCTMNT.cbl#L336) |
-| REPORT-LINE | WS-REPORT-COUNT-LINE | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:339](../../../pangaea/programs/ACCTMNT.cbl#L339) |
-| REPORT-LINE | WS-REPORT-COUNT-LINE | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:342](../../../pangaea/programs/ACCTMNT.cbl#L342) |
-| REPORT-LINE | WS-REPORT-COUNT-LINE | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:345](../../../pangaea/programs/ACCTMNT.cbl#L345) |
-| REPORT-LINE | WS-REPORT-AMOUNT-LINE | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:350](../../../pangaea/programs/ACCTMNT.cbl#L350) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:316](../../../pangaea/programs/ACCTMNT.cbl#L316) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:318](../../../pangaea/programs/ACCTMNT.cbl#L318) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:321](../../../pangaea/programs/ACCTMNT.cbl#L321) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:324](../../../pangaea/programs/ACCTMNT.cbl#L324) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:327](../../../pangaea/programs/ACCTMNT.cbl#L327) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:330](../../../pangaea/programs/ACCTMNT.cbl#L330) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:333](../../../pangaea/programs/ACCTMNT.cbl#L333) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:336](../../../pangaea/programs/ACCTMNT.cbl#L336) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:339](../../../pangaea/programs/ACCTMNT.cbl#L339) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:342](../../../pangaea/programs/ACCTMNT.cbl#L342) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:345](../../../pangaea/programs/ACCTMNT.cbl#L345) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:347](../../../pangaea/programs/ACCTMNT.cbl#L347) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:350](../../../pangaea/programs/ACCTMNT.cbl#L350) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:352](../../../pangaea/programs/ACCTMNT.cbl#L352) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:354](../../../pangaea/programs/ACCTMNT.cbl#L354) |
-| RJ-TRAN | MAINT-REQUEST | MOVE | 2290-REJECT | [ACCTMNT.cbl:295](../../../pangaea/programs/ACCTMNT.cbl#L295) |
-| WS-ACTIVE-KEY | WS-MASTER-KEY | MOVE | 2000-NEXT-ACCOUNT | [ACCTMNT.cbl:196](../../../pangaea/programs/ACCTMNT.cbl#L196) |
-| WS-ACTIVE-KEY | WS-REQUEST-KEY | MOVE | 2000-NEXT-ACCOUNT | [ACCTMNT.cbl:198](../../../pangaea/programs/ACCTMNT.cbl#L198) |
-| WS-BALANCES-IN | AM-BALANCE | ADD | 2000-NEXT-ACCOUNT | [ACCTMNT.cbl:202](../../../pangaea/programs/ACCTMNT.cbl#L202) |
-| WS-BALANCES-OUT | AM-BALANCE | ADD | 2800-WRITE-HELD | [ACCTMNT.cbl:306](../../../pangaea/programs/ACCTMNT.cbl#L306) |
-| WS-BUSINESS-DATE | BC-BUSINESS-DATE | MOVE | 1000-INITIALIZE | [ACCTMNT.cbl:156](../../../pangaea/programs/ACCTMNT.cbl#L156) |
-| WS-MASTER-KEY | AI-ACCT-NO | MOVE | 1200-READ-MASTER | [ACCTMNT.cbl:167](../../../pangaea/programs/ACCTMNT.cbl#L167) |
-| WS-PREV-MASTER-KEY | WS-MASTER-KEY | MOVE | 1200-READ-MASTER | [ACCTMNT.cbl:171](../../../pangaea/programs/ACCTMNT.cbl#L171) |
-| WS-PREV-REQUEST-ORDER-KEY | WS-REQUEST-ORDER-KEY | MOVE | 1300-READ-REQUEST | [ACCTMNT.cbl:187](../../../pangaea/programs/ACCTMNT.cbl#L187) |
-| WS-RA-VALUE | WS-BALANCES-OUT | MOVE | 8000-WRITE-REPORT | [ACCTMNT.cbl:349](../../../pangaea/programs/ACCTMNT.cbl#L349) |
-| WS-RC-VALUE | WS-MASTERS-READ | MOVE | 8000-WRITE-REPORT | [ACCTMNT.cbl:320](../../../pangaea/programs/ACCTMNT.cbl#L320) |
-| WS-RC-VALUE | WS-MASTERS-WRITTEN | MOVE | 8000-WRITE-REPORT | [ACCTMNT.cbl:323](../../../pangaea/programs/ACCTMNT.cbl#L323) |
-| WS-RC-VALUE | WS-REQUEST-COUNT | MOVE | 8000-WRITE-REPORT | [ACCTMNT.cbl:326](../../../pangaea/programs/ACCTMNT.cbl#L326) |
-| WS-RC-VALUE | WS-OPENED-COUNT | MOVE | 8000-WRITE-REPORT | [ACCTMNT.cbl:329](../../../pangaea/programs/ACCTMNT.cbl#L329) |
-| WS-RC-VALUE | WS-CLOSED-COUNT | MOVE | 8000-WRITE-REPORT | [ACCTMNT.cbl:332](../../../pangaea/programs/ACCTMNT.cbl#L332) |
-| WS-RC-VALUE | WS-FROZEN-COUNT | MOVE | 8000-WRITE-REPORT | [ACCTMNT.cbl:335](../../../pangaea/programs/ACCTMNT.cbl#L335) |
-| WS-RC-VALUE | WS-UNFROZEN-COUNT | MOVE | 8000-WRITE-REPORT | [ACCTMNT.cbl:338](../../../pangaea/programs/ACCTMNT.cbl#L338) |
-| WS-RC-VALUE | WS-LIMIT-COUNT | MOVE | 8000-WRITE-REPORT | [ACCTMNT.cbl:341](../../../pangaea/programs/ACCTMNT.cbl#L341) |
-| WS-RC-VALUE | WS-REJECT-COUNT | MOVE | 8000-WRITE-REPORT | [ACCTMNT.cbl:344](../../../pangaea/programs/ACCTMNT.cbl#L344) |
-| WS-REQUEST-KEY | MR-ACCT-NO | MOVE | 1300-READ-REQUEST | [ACCTMNT.cbl:182](../../../pangaea/programs/ACCTMNT.cbl#L182) |
-| WS-ROK-ACCT-NO | MR-ACCT-NO | MOVE | 1300-READ-REQUEST | [ACCTMNT.cbl:182](../../../pangaea/programs/ACCTMNT.cbl#L182) |
-| WS-ROK-REQUEST-ID | MR-REQUEST-ID | MOVE | 1300-READ-REQUEST | [ACCTMNT.cbl:183](../../../pangaea/programs/ACCTMNT.cbl#L183) |
+
+### Into ACCT-OUT-RECORD
+
+Record [ACCT-OUT-RECORD](#acct-out-record).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| ACCT-OUT-RECORD | [ACCT-MASTER-RECORD](#acct-master-record) | WRITE | 2800-WRITE-HELD | [ACCTMNT.cbl:304](../../../pangaea/programs/ACCTMNT.cbl#L304) |
+
+### Into REJECT-OUT-RECORD
+
+Record [REJECT-OUT-RECORD](#reject-out-record).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| REJECT-OUT-RECORD | [REJECT-RECORD](#reject-record) | WRITE | 2290-REJECT | [ACCTMNT.cbl:296](../../../pangaea/programs/ACCTMNT.cbl#L296) |
+
+### Into REPORT-LINE
+
+Record [REPORT-LINE](#report-line).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| REPORT-LINE | [WS-BUSINESS-DATE](#ws-business-date) | STRING | 8000-WRITE-REPORT | [ACCTMNT.cbl:313](../../../pangaea/programs/ACCTMNT.cbl#L313) |
+| REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:321](../../../pangaea/programs/ACCTMNT.cbl#L321) |
+| REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:324](../../../pangaea/programs/ACCTMNT.cbl#L324) |
+| REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:327](../../../pangaea/programs/ACCTMNT.cbl#L327) |
+| REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:330](../../../pangaea/programs/ACCTMNT.cbl#L330) |
+| REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:333](../../../pangaea/programs/ACCTMNT.cbl#L333) |
+| REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:336](../../../pangaea/programs/ACCTMNT.cbl#L336) |
+| REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:339](../../../pangaea/programs/ACCTMNT.cbl#L339) |
+| REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:342](../../../pangaea/programs/ACCTMNT.cbl#L342) |
+| REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:345](../../../pangaea/programs/ACCTMNT.cbl#L345) |
+| REPORT-LINE | [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:350](../../../pangaea/programs/ACCTMNT.cbl#L350) |
+
+### Into WS-BUSINESS-DATE
+
+Record [WS-BUSINESS-DATE](#ws-business-date).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-BUSINESS-DATE | [BC-BUSINESS-DATE](#bank-control-record "in BANK-CONTROL-RECORD") | MOVE | 1000-INITIALIZE | [ACCTMNT.cbl:156](../../../pangaea/programs/ACCTMNT.cbl#L156) |
+
+### Into WS-MASTER-KEY
+
+Record [WS-MASTER-KEY](#ws-master-key).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-MASTER-KEY | [AI-ACCT-NO](#acct-in-record "in ACCT-IN-RECORD") | MOVE | 1200-READ-MASTER | [ACCTMNT.cbl:167](../../../pangaea/programs/ACCTMNT.cbl#L167) |
+
+### Into WS-REQUEST-KEY
+
+Record [WS-REQUEST-KEY](#ws-request-key).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-REQUEST-KEY | [MR-ACCT-NO](#maint-request "in MAINT-REQUEST") | MOVE | 1300-READ-REQUEST | [ACCTMNT.cbl:182](../../../pangaea/programs/ACCTMNT.cbl#L182) |
+
+### Into WS-ACTIVE-KEY
+
+Record [WS-ACTIVE-KEY](#ws-active-key).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-ACTIVE-KEY | [WS-MASTER-KEY](#ws-master-key) | MOVE | 2000-NEXT-ACCOUNT | [ACCTMNT.cbl:196](../../../pangaea/programs/ACCTMNT.cbl#L196) |
+| WS-ACTIVE-KEY | [WS-REQUEST-KEY](#ws-request-key) | MOVE | 2000-NEXT-ACCOUNT | [ACCTMNT.cbl:198](../../../pangaea/programs/ACCTMNT.cbl#L198) |
+
+### Into WS-PREV-MASTER-KEY
+
+Record [WS-PREV-MASTER-KEY](#ws-prev-master-key).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-PREV-MASTER-KEY | [WS-MASTER-KEY](#ws-master-key) | MOVE | 1200-READ-MASTER | [ACCTMNT.cbl:171](../../../pangaea/programs/ACCTMNT.cbl#L171) |
+
+### Into WS-REQUEST-ORDER-KEY
+
+Record [WS-REQUEST-ORDER-KEY](#ws-request-order-key).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-ROK-ACCT-NO | [MR-ACCT-NO](#maint-request "in MAINT-REQUEST") | MOVE | 1300-READ-REQUEST | [ACCTMNT.cbl:182](../../../pangaea/programs/ACCTMNT.cbl#L182) |
+| WS-ROK-REQUEST-ID | [MR-REQUEST-ID](#maint-request "in MAINT-REQUEST") | MOVE | 1300-READ-REQUEST | [ACCTMNT.cbl:183](../../../pangaea/programs/ACCTMNT.cbl#L183) |
+
+### Into WS-PREV-REQUEST-ORDER-KEY
+
+Record [WS-PREV-REQUEST-ORDER-KEY](#ws-prev-request-order-key).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-PREV-REQUEST-ORDER-KEY | [WS-REQUEST-ORDER-KEY](#ws-request-order-key) | MOVE | 1300-READ-REQUEST | [ACCTMNT.cbl:187](../../../pangaea/programs/ACCTMNT.cbl#L187) |
+
+### Into ACCT-MASTER-RECORD
+
+Record [ACCT-MASTER-RECORD](#acct-master-record), from copybook [ACCTMAST](../copybooks/ACCTMAST.md).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| ACCT-MASTER-RECORD | [ACCT-IN-RECORD](#acct-in-record) | MOVE | 2000-NEXT-ACCOUNT | [ACCTMNT.cbl:201](../../../pangaea/programs/ACCTMNT.cbl#L201) |
+| AM-ACCT-NO | [MR-ACCT-NO](#maint-request "in MAINT-REQUEST") | MOVE | 2210-OPEN | [ACCTMNT.cbl:241](../../../pangaea/programs/ACCTMNT.cbl#L241) |
+| AM-ACCT-TYPE | [MR-ACCT-TYPE](#maint-request "in MAINT-REQUEST") | MOVE | 2210-OPEN | [ACCTMNT.cbl:244](../../../pangaea/programs/ACCTMNT.cbl#L244) |
+| AM-CUST-NO | [MR-CUST-NO](#maint-request "in MAINT-REQUEST") | MOVE | 2210-OPEN | [ACCTMNT.cbl:242](../../../pangaea/programs/ACCTMNT.cbl#L242) |
+| AM-LAST-ACTIVITY-DATE | [WS-BUSINESS-DATE](#ws-business-date) | MOVE | 2210-OPEN | [ACCTMNT.cbl:246](../../../pangaea/programs/ACCTMNT.cbl#L246) |
+| AM-OPEN-DATE | [WS-BUSINESS-DATE](#ws-business-date) | MOVE | 2210-OPEN | [ACCTMNT.cbl:246](../../../pangaea/programs/ACCTMNT.cbl#L246) |
+| AM-OVERDRAFT-LIMIT | [MR-OVERDRAFT-LIMIT](#maint-request "in MAINT-REQUEST") | MOVE | 2210-OPEN | [ACCTMNT.cbl:248](../../../pangaea/programs/ACCTMNT.cbl#L248) |
+| AM-OVERDRAFT-LIMIT | [MR-OVERDRAFT-LIMIT](#maint-request "in MAINT-REQUEST") | MOVE | 2250-LIMIT | [ACCTMNT.cbl:288](../../../pangaea/programs/ACCTMNT.cbl#L288) |
+| AM-SHORT-NAME | [MR-SHORT-NAME](#maint-request "in MAINT-REQUEST") | MOVE | 2210-OPEN | [ACCTMNT.cbl:243](../../../pangaea/programs/ACCTMNT.cbl#L243) |
+
+### Into REJECT-RECORD
+
+Record [REJECT-RECORD](#reject-record), from copybook [REJREC](../copybooks/REJREC.md).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| RJ-TRAN | [MAINT-REQUEST](#maint-request) | MOVE | 2290-REJECT | [ACCTMNT.cbl:295](../../../pangaea/programs/ACCTMNT.cbl#L295) |
+
+### Into WS-TOTALS
+
+Record [WS-TOTALS](#ws-totals).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-BALANCES-IN | [AM-BALANCE](#acct-master-record "in ACCT-MASTER-RECORD") | ADD | 2000-NEXT-ACCOUNT | [ACCTMNT.cbl:202](../../../pangaea/programs/ACCTMNT.cbl#L202) |
+| WS-BALANCES-OUT | [AM-BALANCE](#acct-master-record "in ACCT-MASTER-RECORD") | ADD | 2800-WRITE-HELD | [ACCTMNT.cbl:306](../../../pangaea/programs/ACCTMNT.cbl#L306) |
+
+### Into WS-REPORT-COUNT-LINE
+
+Record [WS-REPORT-COUNT-LINE](#ws-report-count-line).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-RC-VALUE | [WS-MASTERS-READ](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [ACCTMNT.cbl:320](../../../pangaea/programs/ACCTMNT.cbl#L320) |
+| WS-RC-VALUE | [WS-MASTERS-WRITTEN](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [ACCTMNT.cbl:323](../../../pangaea/programs/ACCTMNT.cbl#L323) |
+| WS-RC-VALUE | [WS-REQUEST-COUNT](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [ACCTMNT.cbl:326](../../../pangaea/programs/ACCTMNT.cbl#L326) |
+| WS-RC-VALUE | [WS-OPENED-COUNT](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [ACCTMNT.cbl:329](../../../pangaea/programs/ACCTMNT.cbl#L329) |
+| WS-RC-VALUE | [WS-CLOSED-COUNT](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [ACCTMNT.cbl:332](../../../pangaea/programs/ACCTMNT.cbl#L332) |
+| WS-RC-VALUE | [WS-FROZEN-COUNT](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [ACCTMNT.cbl:335](../../../pangaea/programs/ACCTMNT.cbl#L335) |
+| WS-RC-VALUE | [WS-UNFROZEN-COUNT](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [ACCTMNT.cbl:338](../../../pangaea/programs/ACCTMNT.cbl#L338) |
+| WS-RC-VALUE | [WS-LIMIT-COUNT](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [ACCTMNT.cbl:341](../../../pangaea/programs/ACCTMNT.cbl#L341) |
+| WS-RC-VALUE | [WS-REJECT-COUNT](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [ACCTMNT.cbl:344](../../../pangaea/programs/ACCTMNT.cbl#L344) |
+
+### Into WS-REPORT-AMOUNT-LINE
+
+Record [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-RA-VALUE | [WS-BALANCES-OUT](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [ACCTMNT.cbl:349](../../../pangaea/programs/ACCTMNT.cbl#L349) |
+
+### Into files
+
+Records written to files.
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| file ACCT-OUT | [ACCT-OUT-RECORD](#acct-out-record) | WRITE | 2800-WRITE-HELD | [ACCTMNT.cbl:304](../../../pangaea/programs/ACCTMNT.cbl#L304) |
+| file REJECT-OUT | [REJECT-OUT-RECORD](#reject-out-record) | WRITE | 2290-REJECT | [ACCTMNT.cbl:296](../../../pangaea/programs/ACCTMNT.cbl#L296) |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:316](../../../pangaea/programs/ACCTMNT.cbl#L316) |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:318](../../../pangaea/programs/ACCTMNT.cbl#L318) |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:321](../../../pangaea/programs/ACCTMNT.cbl#L321) |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:324](../../../pangaea/programs/ACCTMNT.cbl#L324) |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:327](../../../pangaea/programs/ACCTMNT.cbl#L327) |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:330](../../../pangaea/programs/ACCTMNT.cbl#L330) |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:333](../../../pangaea/programs/ACCTMNT.cbl#L333) |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:336](../../../pangaea/programs/ACCTMNT.cbl#L336) |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:339](../../../pangaea/programs/ACCTMNT.cbl#L339) |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:342](../../../pangaea/programs/ACCTMNT.cbl#L342) |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:345](../../../pangaea/programs/ACCTMNT.cbl#L345) |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:347](../../../pangaea/programs/ACCTMNT.cbl#L347) |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:350](../../../pangaea/programs/ACCTMNT.cbl#L350) |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:352](../../../pangaea/programs/ACCTMNT.cbl#L352) |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:354](../../../pangaea/programs/ACCTMNT.cbl#L354) |
 
 ## Records
 
