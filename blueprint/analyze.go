@@ -67,6 +67,8 @@ type File struct {
 	Kind         string   `json:"kind"`
 	Assign       string   `json:"assign"`
 	Organization string   `json:"organization"`
+	Access       string   `json:"access,omitempty"` // RANDOM or DYNAMIC; empty for SEQUENTIAL
+	RecordKey    string   `json:"recordKey,omitempty"`
 	Status       string   `json:"status,omitempty"`
 	Opened       []string `json:"opened,omitempty"`
 	Records      []string `json:"records"`
@@ -263,14 +265,19 @@ func describeFile(p *cobol.Program, fd cobol.FileDescription) (File, error) {
 		return File{}, fmt.Errorf("%s: %s %s has no SELECT", fd.Pos, fd.Kind, fd.Name)
 	}
 	selected := p.Files[i]
-	return File{
+	f := File{
 		Name:         fd.Name,
 		Kind:         fd.Kind,
 		Assign:       selected.Assign,
 		Organization: selected.Organization,
+		RecordKey:    selected.RecordKey,
 		Status:       selected.Status,
 		Source:       selected.Pos.String(),
-	}, nil
+	}
+	if selected.Access != "SEQUENTIAL" {
+		f.Access = selected.Access
+	}
+	return f, nil
 }
 
 // newRecord converts a record layout. A record defined in a copybook names
