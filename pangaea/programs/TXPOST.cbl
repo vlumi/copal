@@ -6,7 +6,9 @@
       * RECORD, WITH ITS TRANSACTIONS APPLIED. EACH POSTING GOES TO    *
       * THE AUDIT TRAIL; A TRANSACTION THAT CANNOT BE POSTED GOES TO   *
       * THE REJECTS. BOTH ARE APPENDED TO, AS THE DAILY BATCH RUNS     *
-      * TXPOST THREE TIMES:                                            *
+      * TXPOST FOUR TIMES:                                             *
+      *   0. THE MONTH-END INTEREST AND FEES FROM MONCHG, ON THE DAY   *
+      *      A MONTH CLOSES; ON OTHER DAYS NONE.                       *
       *   1. THE DAY'S TRANSACTIONS. A POSTED TRANSFER WRITES A        *
       *      TRANSFER CREDIT FOR THE RECEIVING ACCOUNT TO THE LEGS.    *
       *   2. THE TRANSFER CREDITS, SORTED. ONE FOR AN UNKNOWN OR       *
@@ -16,7 +18,9 @@
       * RULES: NOTHING POSTS TO A CLOSED ACCOUNT. CREDITS AND FEES     *
       * POST TO A FROZEN ACCOUNT, WITHDRAWALS AND TRANSFERS DO NOT. A  *
       * DEBIT MAY TAKE THE BALANCE DOWN TO THE OVERDRAFT LIMIT, NO     *
-      * FURTHER. A FEE ALWAYS POSTS, EVEN PAST THE LIMIT.              *
+      * FURTHER. A FEE ALWAYS POSTS, EVEN PAST THE LIMIT. INTEREST     *
+      * POSTS AS A CREDIT, OVERDRAFT INTEREST AND MAINTENANCE FEES AS  *
+      * FEES.                                                          *
       *                                                                *
       * RETURN CODES: 0 ALL POSTED, 4 SOME REJECTED,                   *
       *               16 INPUT OUT OF ORDER, OUT OF BALANCE OR I/O.    *
@@ -30,6 +34,7 @@
       * 1999-01-11 SL  Y2K: 8-DIGIT DATES IN THE AUDIT TRAIL.          *
       * 2003-05-26 MV  CR-0352 FEES POST EVEN PAST THE OVERDRAFT       *
       *                LIMIT.                                          *
+      * 2001-09-03 TL  CR-0298 MONTH-END INTEREST AND FEES.            *
       * 2011-08-15 MV  CR-0471 RECONCILE THE NEW MASTER BEFORE         *
       *                ENDING THE RUN.                                 *
       *================================================================*
@@ -253,8 +258,11 @@
                WHEN TD-DEPOSIT
                  OR TD-TRANSFER-CREDIT
                  OR TD-TRANSFER-RETURN
+                 OR TD-INTEREST
                    PERFORM 3100-POST-CREDIT
                WHEN TD-FEE
+                 OR TD-OVERDRAFT-INTEREST
+                 OR TD-MAINTENANCE-FEE
                    PERFORM 3300-POST-FEE
                WHEN AM-FROZEN
                    SET RJ-FROZEN TO TRUE
@@ -264,7 +272,8 @@
                    PERFORM 3200-POST-DEBIT
            END-EVALUATE.
 
-      * CREDIT A DEPOSIT, A TRANSFER CREDIT OR A RETURNED TRANSFER.
+      * CREDIT A DEPOSIT, A TRANSFER CREDIT, A RETURNED TRANSFER OR
+      * INTEREST.
        3100-POST-CREDIT.
            ADD TD-AMOUNT TO AM-BALANCE
            ADD TD-AMOUNT TO WS-CREDIT-TOTAL
@@ -289,7 +298,8 @@
                END-IF
            END-IF.
 
-      * DEBIT A FEE, WHATEVER THE BALANCE.
+      * DEBIT A FEE, OVERDRAFT INTEREST OR A MAINTENANCE FEE, WHATEVER
+      * THE BALANCE.
        3300-POST-FEE.
            SUBTRACT TD-AMOUNT FROM AM-BALANCE
            ADD TD-AMOUNT TO WS-FEE-TOTAL

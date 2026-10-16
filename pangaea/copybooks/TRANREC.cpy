@@ -11,12 +11,17 @@
       * GOES BACK AS A RETURNED TRANSFER (RT). TC AND RT ARE MADE BY   *
       * POSTING, NEVER RECEIVED IN THE DAILY FILE.                     *
       *                                                                *
+      * WHEN A MONTH CLOSES, THE BANK CREDITS ITS INTEREST (IN),       *
+      * CHARGES OVERDRAFT INTEREST (OD) AND THE MAINTENANCE FEE (MF).  *
+      * THESE TOO ARE NEVER RECEIVED IN THE DAILY FILE.                *
+      *                                                                *
       * MODIFICATION HISTORY                                           *
       * DATE       BY  CHANGE                                          *
       * 1987-03-12 JA  ORIGINAL VERSION.                               *
       * 1991-06-03 PK  CR-0117 ACCOUNT NUMBER HASH IN THE TRAILER.     *
       * 1996-04-15 PK  CR-0233 TRANSFERS: COUNTER ACCOUNT, FROM THE    *
       *                FILLER.                                         *
+      * 2001-09-03 TL  CR-0298 MONTH-END INTEREST AND FEE CODES.       *
       *================================================================*
        01  TRAN-RECORD.
            05  TR-REC-TYPE             PIC X.
@@ -39,6 +44,9 @@
                    88  TD-TRANSFER     VALUE 'TR'.
                    88  TD-TRANSFER-CREDIT VALUE 'TC'.
                    88  TD-TRANSFER-RETURN VALUE 'RT'.
+                   88  TD-INTEREST     VALUE 'IN'.
+                   88  TD-OVERDRAFT-INTEREST VALUE 'OD'.
+                   88  TD-MAINTENANCE-FEE VALUE 'MF'.
                    88  TD-KNOWN-CODE   VALUE 'DP' 'WD' 'FE' 'TR'.
                10  TD-AMOUNT           PIC 9(9)V99.
                10  TD-DESCRIPTION      PIC X(20).

@@ -1,0 +1,215 @@
+# MONCHG
+
+```text
+MONCHG: MONTH-END INTEREST AND FEES
+
+ON THE DAY INTACCR CLOSES A MONTH, WRITES THE MONTH'S CHARGES
+AND CREDITS AS TRANSACTIONS FOR TXPOST: THE INTEREST DUE,
+CREDITED (IN) OR CHARGED AS OVERDRAFT INTEREST (OD), AND THE
+MAINTENANCE FEE (MF) OF AN OPEN CURRENT ACCOUNT WHOSE BALANCE
+CLOSED THE MONTH BELOW THE WAIVER BALANCE. ON OTHER DAYS IT
+WRITES NOTHING.
+
+THE MASTER AND THE ACCRUALS ARE READ IN STEP, SO THE
+TRANSACTIONS COME OUT IN ACCOUNT NUMBER ORDER, AND TXPOST
+POSTS THEM WITHOUT A SORT. TRANSACTION IDS ARE 00, THE CLOSED
+MONTH AS YYMM, AND A SEQUENCE NUMBER.
+
+RETURN CODES: 0 WRITTEN, 16 FILES OUT OF STEP OR I/O.
+
+MODIFICATION HISTORY
+DATE       BY  CHANGE
+2001-09-03 TL  CR-0298 ORIGINAL VERSION.
+```
+
+Program [MONCHG.cbl](../../../pangaea/programs/MONCHG.cbl): 5 files, 10 paragraphs.
+
+- AUTHOR: T. LINDQVIST, BATCH SYSTEMS.
+- INSTALLATION: FIRST BANK OF PANGAEA, DATA CENTER.
+- DATE-WRITTEN: 2001-09-03.
+
+## Files
+
+| File | Kind | Assigned to | Organization | Status field | Records |
+| --- | --- | --- | --- | --- | --- |
+| CONTROL-FILE | FD | BANKCTL | SEQUENTIAL | WS-CONTROL-STATUS | BANK-CONTROL-RECORD |
+| ACCT-IN | FD | ACCTIN | SEQUENTIAL | WS-ACCT-IN-STATUS | ACCT-MASTER-RECORD |
+| ACCR-IN | FD | ACCRIN | SEQUENTIAL | WS-ACCR-IN-STATUS | ACCRUAL-RECORD |
+| TRAN-OUT | FD | TRANOUT | SEQUENTIAL | WS-TRAN-OUT-STATUS | TRAN-OUT-RECORD |
+| REPORT-OUT | FD | MONRPT | LINE SEQUENTIAL | WS-REPORT-STATUS | REPORT-LINE |
+
+## Flow
+
+![The paragraphs of MONCHG and the PERFORMs between them](MONCHG.svg)
+
+## Paragraphs
+
+| Paragraph | Description | Source | Performs | Performed by |
+| --- | --- | --- | --- | --- |
+| 0000-MAIN | CHARGE EVERY ACCOUNT, THEN REPORT. | [MONCHG.cbl:111](../../../pangaea/programs/MONCHG.cbl#L111) | 1000-INITIALIZE, 2000-CHARGE-ACCOUNT, 8000-WRITE-REPORT, 9000-CLOSE-FILES | |
+| 1000-INITIALIZE | OPEN THE FILES AND READ THE FIRST ACCOUNT. THE TRANSACTION RECORD STARTS BLANK: NO COUNTER ACCOUNT. | [MONCHG.cbl:122](../../../pangaea/programs/MONCHG.cbl#L122) | 9900-ABORT, 1200-READ-ACCOUNT | 0000-MAIN |
+| 1200-READ-ACCOUNT | READ THE NEXT ACCOUNT AND ITS ACCRUAL, WHICH MUST MATCH. | [MONCHG.cbl:140](../../../pangaea/programs/MONCHG.cbl#L140) | 9900-ABORT | 1000-INITIALIZE, 2000-CHARGE-ACCOUNT |
+| 2000-CHARGE-ACCOUNT | WRITE AN ACCOUNT'S INTEREST AND FEE, IF ITS MONTH CLOSED. | [MONCHG.cbl:161](../../../pangaea/programs/MONCHG.cbl#L161) | 2100-SETTLE-INTEREST, 2200-CHARGE-FEE, 1200-READ-ACCOUNT | 0000-MAIN |
+| 2100-SETTLE-INTEREST | CREDIT THE INTEREST DUE, OR CHARGE IT IF THE ACCOUNT WAS OVERDRAWN. | [MONCHG.cbl:172](../../../pangaea/programs/MONCHG.cbl#L172) | 2900-WRITE-TRAN | 2000-CHARGE-ACCOUNT |
+| 2200-CHARGE-FEE | CHARGE THE MAINTENANCE FEE: OPEN CURRENT ACCOUNTS ONLY, AND NOT IF THE MONTH CLOSED AT OR ABOVE THE WAIVER BALANCE. | [MONCHG.cbl:194](../../../pangaea/programs/MONCHG.cbl#L194) | 2900-WRITE-TRAN | 2000-CHARGE-ACCOUNT |
+| 2900-WRITE-TRAN | WRITE THE TRANSACTION FOR THE ACCOUNT, WITH THE NEXT ID. | [MONCHG.cbl:212](../../../pangaea/programs/MONCHG.cbl#L212) | | 2100-SETTLE-INTEREST, 2200-CHARGE-FEE |
+| 8000-WRITE-REPORT | WRITE THE MONTH-END CHARGES REPORT. | [MONCHG.cbl:220](../../../pangaea/programs/MONCHG.cbl#L220) | | 0000-MAIN |
+| 9000-CLOSE-FILES | CLOSE ALL FILES. | [MONCHG.cbl:262](../../../pangaea/programs/MONCHG.cbl#L262) | | 0000-MAIN, 9900-ABORT |
+| 9900-ABORT | STOP THE RUN WITH RETURN CODE 16, SAYING WHY. | [MONCHG.cbl:266](../../../pangaea/programs/MONCHG.cbl#L266) | 9000-CLOSE-FILES | 1000-INITIALIZE, 1200-READ-ACCOUNT |
+
+## Records
+
+### BANK-CONTROL-RECORD
+
+File CONTROL-FILE. 80 bytes, layout in copybook [BANKCTL](../copybooks/BANKCTL.md).
+
+### ACCT-MASTER-RECORD
+
+File ACCT-IN. 100 bytes, layout in copybook [ACCTMAST](../copybooks/ACCTMAST.md).
+
+### ACCRUAL-RECORD
+
+File ACCR-IN. 40 bytes, layout in copybook [ACCRREC](../copybooks/ACCRREC.md).
+
+### TRAN-OUT-RECORD
+
+File TRAN-OUT. 80 bytes.
+
+| Level | Field | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --: | --: | --- | --- | --- | --- |
+| 01 | TRAN-OUT-RECORD | 1 | 80 | X(80) | | | [MONCHG.cbl:56](../../../pangaea/programs/MONCHG.cbl#L56) |
+
+### REPORT-LINE
+
+File REPORT-OUT. 80 bytes.
+
+| Level | Field | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --: | --: | --- | --- | --- | --- |
+| 01 | REPORT-LINE | 1 | 80 | X(80) | | | [MONCHG.cbl:58](../../../pangaea/programs/MONCHG.cbl#L58) |
+
+### WS-FILE-STATUSES
+
+Working storage. 10 bytes.
+
+| Level | Field | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-FILE-STATUSES | 1 | 10 | | | | [MONCHG.cbl:61](../../../pangaea/programs/MONCHG.cbl#L61) |
+| 05 | WS-CONTROL-STATUS | 1 | 2 | XX | | | [MONCHG.cbl:62](../../../pangaea/programs/MONCHG.cbl#L62) |
+| 05 | WS-ACCT-IN-STATUS | 3 | 2 | XX | | | [MONCHG.cbl:63](../../../pangaea/programs/MONCHG.cbl#L63) |
+| 05 | WS-ACCR-IN-STATUS | 5 | 2 | XX | | | [MONCHG.cbl:64](../../../pangaea/programs/MONCHG.cbl#L64) |
+| 05 | WS-TRAN-OUT-STATUS | 7 | 2 | XX | | | [MONCHG.cbl:65](../../../pangaea/programs/MONCHG.cbl#L65) |
+| 05 | WS-REPORT-STATUS | 9 | 2 | XX | | | [MONCHG.cbl:66](../../../pangaea/programs/MONCHG.cbl#L66) |
+
+### WS-BUSINESS-DATE
+
+Working storage. 8 bytes.
+
+| Level | Field | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-BUSINESS-DATE | 1 | 8 | 9(8) | | | [MONCHG.cbl:68](../../../pangaea/programs/MONCHG.cbl#L68) |
+
+### WS-ABORT-MESSAGE
+
+Working storage. 40 bytes.
+
+| Level | Field | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-ABORT-MESSAGE | 1 | 40 | X(40) | | | [MONCHG.cbl:69](../../../pangaea/programs/MONCHG.cbl#L69) |
+
+### WS-END-SWITCHES
+
+Working storage. 2 bytes.
+
+| Level | Field | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-END-SWITCHES | 1 | 2 | | | | [MONCHG.cbl:70](../../../pangaea/programs/MONCHG.cbl#L70) |
+| 05 | WS-MASTER-END-SW | 1 | 1 | X | | VALUE 'N' | [MONCHG.cbl:71](../../../pangaea/programs/MONCHG.cbl#L71) |
+| 88 | MASTER-AT-END | | | | | VALUE 'Y' | [MONCHG.cbl:72](../../../pangaea/programs/MONCHG.cbl#L72) |
+| 05 | WS-ACCRUAL-END-SW | 2 | 1 | X | | VALUE 'N' | [MONCHG.cbl:73](../../../pangaea/programs/MONCHG.cbl#L73) |
+| 88 | ACCRUALS-AT-END | | | | | VALUE 'Y' | [MONCHG.cbl:74](../../../pangaea/programs/MONCHG.cbl#L74) |
+
+### WS-MAINTENANCE-FEE
+
+Working storage. 5 bytes. THE MAINTENANCE FEE, AND THE BALANCE THAT WAIVES IT.
+
+| Level | Field | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-MAINTENANCE-FEE | 1 | 5 | 9(3)V99 | | VALUE 2.50 | [MONCHG.cbl:77](../../../pangaea/programs/MONCHG.cbl#L77) |
+
+### WS-FEE-WAIVER-BALANCE
+
+Working storage. 9 bytes.
+
+| Level | Field | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-FEE-WAIVER-BALANCE | 1 | 9 | 9(7)V99 | | VALUE 1000.00 | [MONCHG.cbl:78](../../../pangaea/programs/MONCHG.cbl#L78) |
+
+### WS-CLOSED-MONTH
+
+Working storage. 6 bytes.
+
+| Level | Field | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-CLOSED-MONTH | 1 | 6 | 9(6) | | VALUE 0 | [MONCHG.cbl:80](../../../pangaea/programs/MONCHG.cbl#L80) |
+
+### WS-CLOSED-MONTH-PARTS
+
+Working storage. 6 bytes.
+
+| Level | Field | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-CLOSED-MONTH-PARTS | 1 | 6 | | | REDEFINES WS-CLOSED-MONTH | [MONCHG.cbl:81](../../../pangaea/programs/MONCHG.cbl#L81) |
+| 05 | WS-CM-CENTURY | 1 | 2 | 99 | | | [MONCHG.cbl:82](../../../pangaea/programs/MONCHG.cbl#L82) |
+| 05 | WS-CM-YYMM | 3 | 4 | 9(4) | | | [MONCHG.cbl:83](../../../pangaea/programs/MONCHG.cbl#L83) |
+
+### WS-TRAN-ID
+
+Working storage. 10 bytes.
+
+| Level | Field | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-TRAN-ID | 1 | 10 | | | | [MONCHG.cbl:84](../../../pangaea/programs/MONCHG.cbl#L84) |
+| 05 | FILLER | 1 | 2 | 99 | | VALUE 0 | [MONCHG.cbl:85](../../../pangaea/programs/MONCHG.cbl#L85) |
+| 05 | WS-TI-YYMM | 3 | 4 | 9(4) | | | [MONCHG.cbl:86](../../../pangaea/programs/MONCHG.cbl#L86) |
+| 05 | WS-TI-SEQ | 7 | 4 | 9(4) | | VALUE 0 | [MONCHG.cbl:87](../../../pangaea/programs/MONCHG.cbl#L87) |
+
+### TRAN-RECORD
+
+Working storage. 80 bytes, layout in copybook [TRANREC](../copybooks/TRANREC.md).
+
+### WS-TOTALS
+
+Working storage. 71 bytes.
+
+| Level | Field | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-TOTALS | 1 | 71 | | | | [MONCHG.cbl:91](../../../pangaea/programs/MONCHG.cbl#L91) |
+| 05 | WS-INTEREST-COUNT | 1 | 8 | 9(8) | | VALUE 0 | [MONCHG.cbl:92](../../../pangaea/programs/MONCHG.cbl#L92) |
+| 05 | WS-INTEREST-TOTAL | 9 | 13 | 9(11)V99 | | VALUE 0 | [MONCHG.cbl:93](../../../pangaea/programs/MONCHG.cbl#L93) |
+| 05 | WS-OVERDRAFT-COUNT | 22 | 8 | 9(8) | | VALUE 0 | [MONCHG.cbl:94](../../../pangaea/programs/MONCHG.cbl#L94) |
+| 05 | WS-OVERDRAFT-TOTAL | 30 | 13 | 9(11)V99 | | VALUE 0 | [MONCHG.cbl:95](../../../pangaea/programs/MONCHG.cbl#L95) |
+| 05 | WS-FEE-COUNT | 43 | 8 | 9(8) | | VALUE 0 | [MONCHG.cbl:96](../../../pangaea/programs/MONCHG.cbl#L96) |
+| 05 | WS-FEE-TOTAL | 51 | 13 | 9(11)V99 | | VALUE 0 | [MONCHG.cbl:97](../../../pangaea/programs/MONCHG.cbl#L97) |
+| 05 | WS-WAIVED-COUNT | 64 | 8 | 9(8) | | VALUE 0 | [MONCHG.cbl:98](../../../pangaea/programs/MONCHG.cbl#L98) |
+
+### WS-REPORT-COUNT-LINE
+
+Working storage. 80 bytes.
+
+| Level | Field | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-REPORT-COUNT-LINE | 1 | 80 | | | | [MONCHG.cbl:100](../../../pangaea/programs/MONCHG.cbl#L100) |
+| 05 | WS-RC-LABEL | 1 | 30 | X(30) | | | [MONCHG.cbl:101](../../../pangaea/programs/MONCHG.cbl#L101) |
+| 05 | WS-RC-VALUE | 31 | 10 | ZZ,ZZZ,ZZ9 | | | [MONCHG.cbl:102](../../../pangaea/programs/MONCHG.cbl#L102) |
+| 05 | FILLER | 41 | 40 | X(40) | | VALUE SPACES | [MONCHG.cbl:103](../../../pangaea/programs/MONCHG.cbl#L103) |
+
+### WS-REPORT-AMOUNT-LINE
+
+Working storage. 80 bytes.
+
+| Level | Field | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-REPORT-AMOUNT-LINE | 1 | 80 | | | | [MONCHG.cbl:104](../../../pangaea/programs/MONCHG.cbl#L104) |
+| 05 | WS-RA-LABEL | 1 | 30 | X(30) | | | [MONCHG.cbl:105](../../../pangaea/programs/MONCHG.cbl#L105) |
+| 05 | WS-RA-VALUE | 31 | 21 | Z,ZZZ,ZZZ,ZZZ,ZZ9.99- | | | [MONCHG.cbl:106](../../../pangaea/programs/MONCHG.cbl#L106) |
+| 05 | FILLER | 52 | 29 | X(29) | | VALUE SPACES | [MONCHG.cbl:107](../../../pangaea/programs/MONCHG.cbl#L107) |
