@@ -58,3 +58,17 @@ func TestDDReadsAndWrites(t *testing.T) {
 		}
 	}
 }
+
+// A program that ACCEPTs reads the step's SYSIN, which may be in-stream.
+func TestSysin(t *testing.T) {
+	job, err := analyzeJob("testdata/SYSIN.jcl", []Program{{Name: "SERVER", ReadsSysin: true}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if dd := job.Steps[0].DDs[0]; !dd.InStream || !slices.Equal(dd.Uses, []string{"read"}) {
+		t.Errorf("SYSIN %+v, want in-stream data read", dd)
+	}
+	if want := []string{"Step NOINPUT binds no DD SYSIN for what SERVER ACCEPTs."}; !slices.Equal(job.Findings, want) {
+		t.Errorf("findings %q, want %q", job.Findings, want)
+	}
+}
