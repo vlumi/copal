@@ -31,10 +31,13 @@ type Node struct {
 	Rounded  bool
 }
 
-// Edge is an arrow from one node to another, drawn in a style.
+// Edge is an arrow from one node to another, drawn in a style. Span is the
+// fewest layers it goes down, 1 when not set: an edge that spans 2 keeps a
+// layer free between its nodes, for others to use.
 type Edge struct {
 	From, To string
 	Style    Style
+	Span     int
 }
 
 // Style is how an edge's line is drawn.
@@ -112,6 +115,7 @@ func newLayout(g Graph) (*layout, error) {
 type indexedEdge struct {
 	from, to int
 	style    Style
+	span     int
 	reversed bool // turned around to break a cycle; the arrow points at from
 }
 
@@ -131,7 +135,7 @@ func forwardEdges(g Graph, index map[string]int) ([]indexedEdge, error) {
 			continue
 		}
 		seen[[2]int{from, to}] = true
-		edges = append(edges, indexedEdge{from: from, to: to, style: e.Style})
+		edges = append(edges, indexedEdge{from: from, to: to, style: e.Style, span: max(e.Span, 1)})
 	}
 	back := backEdges(len(g.Nodes), edges)
 	for i := range edges {
@@ -201,16 +205,17 @@ func walkOrder(n int, edges []indexedEdge) []int {
 	return order
 }
 
-// assignLayers puts each node one layer below the lowest node with an edge
-// to it: the length of the longest path to it. A node no edge points to
-// goes just above the highest node it points to, next to what it feeds.
+// assignLayers puts each node below the lowest node with an edge to it, by
+// the edge's span: the length of the longest path to it. A node no edge
+// points to goes just above the highest node it points to, next to what it
+// feeds.
 func (l *layout) assignLayers(g Graph, edges []indexedEdge, order []int) {
 	layer := make([]int, len(g.Nodes))
 	for changed := true; changed; {
 		changed = false
 		for _, e := range edges {
-			if layer[e.to] < layer[e.from]+1 {
-				layer[e.to] = layer[e.from] + 1
+			if layer[e.to] < layer[e.from]+e.span {
+				layer[e.to] = layer[e.from] + e.span
 				changed = true
 			}
 		}
@@ -270,10 +275,22 @@ func (l *layout) route(edges []indexedEdge) {
 // order sorts each layer, from the top down, by the mean position of each
 // slot's neighbors above, which keeps the walk order among slots with the
 // same callers and reduces crossings between the rest.
+//
+// Then, from the bottom up, each slot with nothing above it moves to the
+// mean position of the slots it points to, so that what feeds a node sits
+// next to it instead of where the walk happened to leave it.
 func (l *layout) order() {
 	l.renumber()
 	for i := 1; i < len(l.layers); i++ {
 		sortByNeighbors(l.layers[i], func(s *slot) []*slot { return s.above })
+	}
+	for i := len(l.layers) - 2; i >= 0; i-- {
+		sortByNeighbors(l.layers[i], func(s *slot) []*slot {
+			if len(s.above) > 0 {
+				return nil
+			}
+			return s.below
+		})
 	}
 }
 

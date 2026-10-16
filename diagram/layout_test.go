@@ -105,3 +105,27 @@ func TestSVGErrors(t *testing.T) {
 		})
 	}
 }
+
+// A source sits just above what it feeds, an edge spanning two layers
+// keeps one free, and a source goes next to what it feeds, not where the
+// walk left it.
+func TestLayoutSpansAndSources(t *testing.T) {
+	g := Graph{
+		Nodes: []Node{{ID: "A", Label: "A"}, {ID: "B", Label: "B"}, {ID: "OUT", Label: "OUT"}, {ID: "IN", Label: "IN"}},
+		Edges: []Edge{{From: "A", To: "OUT"}, {From: "A", To: "B", Span: 2}, {From: "IN", To: "B"}},
+	}
+	l, err := newLayout(g)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := map[string]int{"A": 0, "OUT": 1, "IN": 1, "B": 2}
+	for i, s := range l.nodes {
+		if id := g.Nodes[i].ID; s.layer != want[id] {
+			t.Errorf("%s on layer %d, want %d", id, s.layer, want[id])
+		}
+	}
+	in, out := l.nodes[3], l.nodes[2]
+	if in.x > out.x+out.width {
+		t.Errorf("IN at %d, after OUT at %d: not next to B, which it feeds", in.x, out.x)
+	}
+}
