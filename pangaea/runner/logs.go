@@ -77,6 +77,7 @@ type Allocation struct {
 	Indexed   bool
 	Sysout    bool
 	Dummy     bool
+	InStream  bool
 }
 
 // ReadMessages reads the allocation messages in a sysout directory.
@@ -108,8 +109,8 @@ func ReadMessages(dir string) ([]Allocation, error) {
 }
 
 // parseAllocation reads a DD's line of the messages: its name, blank for
-// the next dataset of a concatenation, then SYSOUT, DUMMY, or a dataset
-// with its records, INDEXED or NOT CATALOGED.
+// the next dataset of a concatenation, then SYSOUT, DUMMY, IN-STREAM, or a
+// dataset with its records, INDEXED or NOT CATALOGED.
 func parseAllocation(line, step, previous string) (Allocation, error) {
 	if step == "" || len(line) < 11 {
 		return Allocation{}, fmt.Errorf("%q is not a DD of a step", line)
@@ -125,6 +126,8 @@ func parseAllocation(line, step, previous string) (Allocation, error) {
 		a.Sysout = true
 	case len(fields) == 1 && fields[0] == "DUMMY":
 		a.Dummy = true
+	case len(fields) == 1 && fields[0] == "IN-STREAM":
+		a.InStream = true
 	case len(fields) == 3 && fields[1] == "NOT" && fields[2] == "CATALOGED":
 		a.Dataset = fields[0]
 	case len(fields) == 2 && fields[1] == "INDEXED":
