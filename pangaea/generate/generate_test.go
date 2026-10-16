@@ -106,3 +106,27 @@ func TestDayHasMatchingControlTotals(t *testing.T) {
 		t.Errorf("%d transactions on a payday for 500 accounts, want salaries for most", count)
 	}
 }
+
+func TestRatesAndAccruals(t *testing.T) {
+	g := generator(t)
+	rates, err := g.Rates()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(rates) != len(rateSheet) {
+		t.Fatalf("%d rates, want %d", len(rates), len(rateSheet))
+	}
+	if floor, err := g.Layouts.Rate.Number(rates[1], "RT-FLOOR"); err != nil || floor != 1000000 {
+		t.Errorf("second floor %d, %v, want 10,000.00", floor, err)
+	}
+	accruals, err := g.Accruals([]Account{{No: 1000000001}, {No: 1000000002}}, NewDate(2026, 9, 1))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if through, err := g.Layouts.Accrual.Number(accruals[1], "AC-THROUGH-DATE"); err != nil || through != 20260901 {
+		t.Errorf("through %d, %v", through, err)
+	}
+	if accrued, err := g.Layouts.Accrual.Number(accruals[1], "AC-ACCRUED"); err != nil || accrued != 0 {
+		t.Errorf("accrued %d, %v", accrued, err)
+	}
+}

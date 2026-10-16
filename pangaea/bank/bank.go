@@ -16,6 +16,7 @@ import (
 	"github.com/vlumi/copal/pangaea/generate"
 	"github.com/vlumi/copal/pangaea/jcl"
 	"github.com/vlumi/copal/pangaea/runner"
+	"github.com/vlumi/copal/record"
 )
 
 // StartDate is the first business day of every reset bank.
@@ -44,7 +45,8 @@ const seedFile = "SEED"
 var ErrNoBank = errors.New("no bank here yet; reset one first")
 
 // Reset replaces the bank with a new one: about the given number of
-// accounts, generated from the seed, on the start date.
+// accounts, generated from the seed, on the start date, with the rate
+// table and nothing accrued yet.
 func (b Bank) Reset(seed uint64, accounts int) error {
 	if err := os.RemoveAll(b.Dir); err != nil {
 		return err
@@ -65,11 +67,31 @@ func (b Bank) Reset(seed uint64, accounts int) error {
 	if err != nil {
 		return err
 	}
-	if err := store.Write(dataset.GenerationName("ACCT.MASTER", 1), g.Layouts.Master.Length, master); err != nil {
+	opened, err := g.ReadAccounts(master)
+	if err != nil {
 		return err
 	}
-	if err := store.Write(dataset.GenerationName("BANK.CONTROL", 1), g.Layouts.Control.Length, [][]byte{control}); err != nil {
+	accruals, err := g.Accruals(opened, StartDate)
+	if err != nil {
 		return err
+	}
+	rates, err := g.Rates()
+	if err != nil {
+		return err
+	}
+	for _, d := range []struct {
+		dsn     string
+		layout  *record.Layout
+		records [][]byte
+	}{
+		{dataset.GenerationName("ACCT.MASTER", 1), g.Layouts.Master, master},
+		{dataset.GenerationName("BANK.CONTROL", 1), g.Layouts.Control, [][]byte{control}},
+		{dataset.GenerationName("ACCT.ACCRUAL", 1), g.Layouts.Accrual, accruals},
+		{"BANK.RATES", g.Layouts.Rate, rates},
+	} {
+		if err := store.Write(d.dsn, d.layout.Length, d.records); err != nil {
+			return err
+		}
 	}
 	return os.WriteFile(filepath.Join(b.Dir, seedFile), []byte(strconv.FormatUint(seed, 10)+"\n"), 0o644)
 }
