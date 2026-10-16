@@ -6,16 +6,20 @@
 //	pangaea run     run a job
 //	pangaea reset   reset the running bank to a generated starting point
 //	pangaea days    run the running bank's next business days
+//	pangaea online  serve the running bank's online day until interrupted
 //	pangaea console serve the bank console, a web window onto the running bank
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"net/http"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/vlumi/copal/blueprint"
 	"github.com/vlumi/copal/jcl"
@@ -23,6 +27,8 @@ import (
 	"github.com/vlumi/copal/pangaea/compile"
 	"github.com/vlumi/copal/pangaea/console"
 	"github.com/vlumi/copal/pangaea/dataset"
+	"github.com/vlumi/copal/pangaea/layouts"
+	"github.com/vlumi/copal/pangaea/online"
 	"github.com/vlumi/copal/pangaea/runner"
 )
 
@@ -33,6 +39,7 @@ const usage = `usage:
   pangaea run -datasets dir -sysout dir [-programs dir] job.jcl
   pangaea reset [-bank dir] [-seed n] [-accounts n]
   pangaea days [-bank dir] [-n days]
+  pangaea online [-bank dir] [-addr host:port]
   pangaea console [-bank dir] [-addr host:port] [-src dir] [-blueprints dir]
 `
 
@@ -48,6 +55,7 @@ func main() {
 		"run":     run,
 		"reset":   reset,
 		"days":    days,
+		"online":  serveOnline,
 		"console": serveConsole,
 	}
 	command, ok := commands[os.Args[1]]
@@ -165,6 +173,39 @@ func days(args []string) error {
 		}
 		fmt.Printf("%s  %5d transactions  %4d rejects  RC=%04d%s\n", d.Date, d.Transactions, d.Rejects, rc, monthEnd)
 	})
+}
+
+// serveOnline opens the business day's online day and serves its API,
+// until an interrupt closes the day, extracting its holds for the batch.
+func serveOnline(args []string) error {
+	flags, b := bankFlags("online")
+	addr := flags.String("addr", "localhost:8081", "address to serve on")
+	_ = flags.Parse(args)
+	bankLayouts, err := layouts.Load(b.Copybooks)
+	if err != nil {
+		return err
+	}
+	s := &online.Server{Bank: *b, Layouts: bankLayouts, Clock: time.Now}
+	if err := s.Open(); err != nil {
+		return err
+	}
+	server := &http.Server{Addr: *addr, Handler: s.Handler(), ReadHeaderTimeout: 10 * time.Second}
+	interrupted := make(chan os.Signal, 1)
+	signal.Notify(interrupted, os.Interrupt)
+	go func() {
+		<-interrupted
+		_ = server.Close()
+	}()
+	fmt.Printf("the online day is open at http://%s/; interrupt to close it\n", *addr)
+	if err := server.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
+		_, _ = s.Close()
+		return err
+	}
+	results, err := s.Close()
+	for _, r := range results {
+		fmt.Println(r)
+	}
+	return err
 }
 
 func serveConsole(args []string) error {
