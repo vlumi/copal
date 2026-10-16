@@ -69,8 +69,6 @@ Program [MONCHG.cbl](../../../pangaea/programs/MONCHG.cbl): 5 files, 10 paragrap
 
 ![The paragraphs of MONCHG and how control moves between them](MONCHG.svg)
 
-Solid arrows are PERFORMs, dashed ones GO TOs, and dotted ones control running on into the next paragraph inside a PERFORM THRU range.
-
 ## Paragraphs
 
 | Paragraph | Description | Source | Performs | Goes to | Performed by | Reached by |

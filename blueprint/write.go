@@ -135,7 +135,6 @@ func programMarkdown(dir string, p Program) string {
 	}
 
 	fmt.Fprintf(&b, "\n## Flow\n\n![The paragraphs of %s and how control moves between them](%s.svg)\n", p.Name, p.Name)
-	b.WriteString("\nSolid arrows are PERFORMs, dashed ones GO TOs, and dotted ones control running on into the next paragraph inside a PERFORM THRU range.\n")
 
 	b.WriteString("\n## Paragraphs\n\n| Paragraph | Description | Source | Performs | Goes to | Performed by | Reached by |\n" +
 		"| --- | --- | --- | --- | --- | --- | --- |\n")

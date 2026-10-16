@@ -15,12 +15,14 @@ const style = `<style>
 .edge.dashed { stroke-dasharray: 4 3 }
 .edge.dotted { stroke-dasharray: 1 3 }
 .head { fill: #8c959f }
+.legend { fill: #f6f8fa; stroke: #d0d7de }
 @media (prefers-color-scheme: dark) {
   .box { fill: #161b22; stroke: #8b949e }
   .box.data { fill: #1f2a3a; stroke: #6e7681 }
   .label { fill: #e6edf3 }
   .edge { stroke: #6e7681 }
   .head { fill: #6e7681 }
+  .legend { fill: #0d1117; stroke: #30363d }
 }
 </style>
 `
@@ -30,6 +32,12 @@ func (g Graph) SVG() ([]byte, error) {
 	l, err := newLayout(g)
 	if err != nil {
 		return nil, err
+	}
+	legendX := l.width
+	if len(g.Legend) > 0 {
+		width, height := legendSize(g.Legend)
+		l.width += width + margin
+		l.height = max(l.height, height+2*margin)
 	}
 	var b strings.Builder
 	fmt.Fprintf(&b, `<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d" `+
@@ -44,6 +52,9 @@ func (g Graph) SVG() ([]byte, error) {
 	}
 	for _, s := range l.nodes {
 		l.writeNode(&b, s, g.Nodes[s.node])
+	}
+	if len(g.Legend) > 0 {
+		writeLegend(&b, g.Legend, legendX, margin)
 	}
 	b.WriteString("</svg>\n")
 	return []byte(b.String()), nil

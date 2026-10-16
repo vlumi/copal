@@ -7,7 +7,12 @@ import "github.com/vlumi/copal/diagram"
 // next paragraph dotted. The entry paragraph is emphasized. Each paragraph
 // links to its source and shows its comment on hover.
 func flowDiagram(dir string, p Program) diagram.Graph {
-	var g diagram.Graph
+	g := diagram.Graph{Legend: []diagram.Key{
+		diagram.NodeKey(diagram.Node{Emphasis: true}, "first paragraph"),
+		diagram.EdgeKey(diagram.Solid, "PERFORM"),
+		diagram.EdgeKey(diagram.Dashed, "GO TO"),
+		diagram.EdgeKey(diagram.Dotted, "falls into the next"),
+	}}
 	for i, para := range p.Paragraphs {
 		g.Nodes = append(g.Nodes, diagram.Node{
 			ID:       para.Name,
