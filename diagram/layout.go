@@ -375,25 +375,39 @@ func (l *layout) place() {
 }
 
 // center moves each slot of a layer toward the mean center of its
-// neighbors, left to right, never closer to the slot before it than the
-// gap allows. A slot without neighbors stays as close to its place as it
-// can.
+// neighbors, never closer to the next slot than the gap allows. It places
+// the layer twice, pushing crowded slots rightward in one pass and leftward
+// in the other, and takes the mean of the two, so that crowding spreads
+// both ways instead of drifting to one side. A slot without neighbors stays
+// as close to its place as it can.
 func center(layer []*slot, neighbors func(*slot) []*slot) {
-	next := math.MinInt
-	for _, s := range layer {
-		want := s.x
+	want := make([]int, len(layer))
+	for i, s := range layer {
+		want[i] = s.x
 		if ns := neighbors(s); len(ns) > 0 {
 			sum := 0
 			for _, n := range ns {
 				sum += n.center()
 			}
-			want = sum/len(ns) - s.width/2
+			want[i] = sum/len(ns) - s.width/2
 		}
-		if next != math.MinInt {
-			want = max(want, next)
+	}
+	right := make([]int, len(layer))
+	for i := range layer {
+		right[i] = want[i]
+		if i > 0 {
+			right[i] = max(right[i], right[i-1]+layer[i-1].width+nodeGap)
 		}
-		s.x = want
-		next = s.x + s.width + nodeGap
+	}
+	left := make([]int, len(layer))
+	for i := len(layer) - 1; i >= 0; i-- {
+		left[i] = want[i]
+		if i < len(layer)-1 {
+			left[i] = min(left[i], left[i+1]-layer[i].width-nodeGap)
+		}
+	}
+	for i, s := range layer {
+		s.x = (left[i] + right[i]) / 2
 	}
 }
 
