@@ -1,0 +1,9 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. GREET.
+       DATA DIVISION.
+       LINKAGE SECTION.
+       01  LK-NAME                     PIC X(5).
+       PROCEDURE DIVISION USING LK-NAME.
+       MAIN-PARA.
+           DISPLAY 'HELLO ' LK-NAME
+           GOBACK.

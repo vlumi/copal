@@ -1,0 +1,9 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. CALLER.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01  WS-NAME                     PIC X(5)       VALUE 'WORLD'.
+       PROCEDURE DIVISION.
+       MAIN-PARA.
+           CALL 'GREET' USING WS-NAME
+           STOP RUN.

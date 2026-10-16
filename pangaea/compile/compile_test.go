@@ -27,3 +27,21 @@ func TestPrograms(t *testing.T) {
 		t.Errorf("output %q, want %q with the EBCDIC overpunch sign", got, want)
 	}
 }
+
+// A program called with USING is compiled as a module, which the runtime
+// loads from COB_LIBRARY_PATH when another program calls it.
+func TestCalledPrograms(t *testing.T) {
+	out := t.TempDir()
+	if _, err := Programs("testdata/called", "testdata/copybooks", out); err != nil {
+		t.Fatal(err)
+	}
+	cmd := exec.Command(filepath.Join(out, "CALLER"))
+	cmd.Env = append(cmd.Environ(), "COB_LIBRARY_PATH="+out)
+	output, err := cmd.Output()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := string(output), "HELLO WORLD\n"; got != want {
+		t.Errorf("output %q, want %q", got, want)
+	}
+}
