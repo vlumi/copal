@@ -21,13 +21,14 @@ type Graph struct {
 
 // Node is a box with a label. Title is shown on hover and Link is followed
 // on click, where the viewer supports it. An emphasized node is drawn with a
-// heavier border.
+// heavier border, a rounded one with round ends, as for data.
 type Node struct {
 	ID       string
 	Label    string
 	Title    string
 	Link     string
 	Emphasis bool
+	Rounded  bool
 }
 
 // Edge is an arrow from one node to another, drawn in a style.
@@ -201,7 +202,8 @@ func walkOrder(n int, edges []indexedEdge) []int {
 }
 
 // assignLayers puts each node one layer below the lowest node with an edge
-// to it: the length of the longest path to it.
+// to it: the length of the longest path to it. A node no edge points to
+// goes just above the highest node it points to, next to what it feeds.
 func (l *layout) assignLayers(g Graph, edges []indexedEdge, order []int) {
 	layer := make([]int, len(g.Nodes))
 	for changed := true; changed; {
@@ -211,6 +213,24 @@ func (l *layout) assignLayers(g Graph, edges []indexedEdge, order []int) {
 				layer[e.to] = layer[e.from] + 1
 				changed = true
 			}
+		}
+	}
+	pointedTo := make([]bool, len(g.Nodes))
+	for _, e := range edges {
+		pointedTo[e.to] = true
+	}
+	for v := range g.Nodes {
+		if pointedTo[v] {
+			continue
+		}
+		highest := -1
+		for _, e := range edges {
+			if e.from == v && (highest < 0 || layer[e.to] < highest) {
+				highest = layer[e.to]
+			}
+		}
+		if highest > 0 {
+			layer[v] = highest - 1
 		}
 	}
 	for i, n := range g.Nodes {
