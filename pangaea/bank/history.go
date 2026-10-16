@@ -26,6 +26,9 @@ func (d RunDay) Audit() string { return dataset.GenerationName("TRAN.AUDIT", d.G
 // Rejects is the dataset of the day's rejected transactions.
 func (d RunDay) Rejects() string { return dataset.GenerationName("TRAN.REJECTS", d.Generation) }
 
+// MaintRejects is the dataset of the day's rejected maintenance requests.
+func (d RunDay) MaintRejects() string { return dataset.GenerationName("MAINT.REJECTS", d.Generation) }
+
 // MasterBefore is the account master the day started from.
 func (d RunDay) MasterBefore() string { return dataset.GenerationName("ACCT.MASTER", d.Generation) }
 

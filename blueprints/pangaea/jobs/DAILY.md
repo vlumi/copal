@@ -40,7 +40,7 @@ Job [DAILY.jcl](../../../pangaea/jobs/DAILY.jcl): 12 steps.
 
 ![The steps of DAILY and the datasets they read and write](DAILY.svg)
 
-Boxes are steps, with the program each runs; rounded boxes are datasets, as the job names them. Arrows run from the datasets a step reads to the step, and from the step to the datasets it writes; dotted ones from each step to the next.
+Boxes are steps, with the program each runs; rounded boxes are datasets, as the job names them. Arrows run from the datasets a step reads to the step, and from the step to the datasets it writes; dotted ones from a step to the next where no dataset leads from one to the other.
 
 ## Steps
 

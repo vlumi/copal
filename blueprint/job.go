@@ -197,13 +197,30 @@ func temporaryFindings(job Job) []string {
 
 // jobDiagram is the graph of a job's steps and the datasets between them:
 // an arrow from each dataset a step reads to the step, and from the step
-// to each dataset it writes, and a dotted one from each step to the next.
+// to each dataset it writes, and a dotted one from each step to the next
+// where no dataset leads from one to the other.
 // A dataset that one step writes and another reads is drawn once, between
 // them; one the job only reads is drawn above each step that reads it, and
 // one it only writes below each step that writes it, so that the flow
 // through the job is not lost among arrows from far away. The job's output
 // and dummy DDs are left out.
 func jobDiagram(dir string, job Job) diagram.Graph {
+	return JobGraph(job, JobNotes{Link: func(step Step) string { return sourceTarget(dir, step.Source) }})
+}
+
+// JobNotes add to a job's diagram what a run of it did: a note after each
+// step's label, such as its return code, and after the label of each
+// dataset a DD names alone, such as its records; and the link of each
+// step. Any of them may be nil.
+type JobNotes struct {
+	Step func(Step) string
+	DD   func(Step, DD) string
+	Link func(Step) string
+}
+
+// JobGraph is the graph of a job's network, as in its blueprint, with the
+// notes added.
+func JobGraph(job Job, notes JobNotes) diagram.Graph {
 	read, written := map[string]bool{}, map[string]bool{}
 	for _, step := range job.Steps {
 		for _, dd := range step.DDs {
@@ -224,11 +241,15 @@ func jobDiagram(dir string, job Job) diagram.Graph {
 	}
 	var g diagram.Graph
 	added := map[string]bool{}
-	addDataset := func(ds, step string) string {
-		id := node(ds, step)
+	addDataset := func(ds string, step Step, dd DD) string {
+		id := node(ds, step.Name)
 		if !added[id] {
 			added[id] = true
-			g.Nodes = append(g.Nodes, diagram.Node{ID: id, Label: ds, Rounded: true})
+			label := ds
+			if notes.DD != nil && len(dd.Datasets) == 1 {
+				label = withNote(label, notes.DD(step, dd))
+			}
+			g.Nodes = append(g.Nodes, diagram.Node{ID: id, Label: label, Rounded: true})
 		}
 		return id
 	}
@@ -237,24 +258,58 @@ func jobDiagram(dir string, job Job) diagram.Graph {
 		for _, dd := range step.DDs {
 			if dd.Use == useRead {
 				for _, ds := range dd.Datasets {
-					g.Edges = append(g.Edges, diagram.Edge{From: addDataset(ds, step.Name), To: id})
+					g.Edges = append(g.Edges, diagram.Edge{From: addDataset(ds, step, dd), To: id})
 				}
 			}
 		}
-		g.Nodes = append(g.Nodes, diagram.Node{ID: id, Label: step.Name + " " + step.Program,
-			Title: strings.Join(step.Description, " "), Link: sourceTarget(dir, step.Source)})
-		if i > 0 {
-			g.Edges = append(g.Edges, diagram.Edge{From: "step " + job.Steps[i-1].Name, To: id, Style: diagram.Dotted})
+		node := diagram.Node{ID: id, Label: step.Name + " " + step.Program, Title: strings.Join(step.Description, " ")}
+		if notes.Step != nil {
+			node.Label = withNote(node.Label, notes.Step(step))
+		}
+		if notes.Link != nil {
+			node.Link = notes.Link(step)
+		}
+		g.Nodes = append(g.Nodes, node)
+		if i > 0 && !feeds(job.Steps[i-1], step, read, written) {
+			g.Edges = append(g.Edges, diagram.Edge{From: "step " + job.Steps[i-1].Name, To: id, Style: diagram.Dotted, Span: 2})
 		}
 		for _, dd := range step.DDs {
 			if dd.Use != useRead && dd.Use != "" {
 				for _, ds := range dd.Datasets {
-					g.Edges = append(g.Edges, diagram.Edge{From: id, To: addDataset(ds, step.Name)})
+					g.Edges = append(g.Edges, diagram.Edge{From: id, To: addDataset(ds, step, dd)})
 				}
 			}
 		}
 	}
 	return g
+}
+
+// feeds reports whether a step writes a dataset that the next one reads,
+// one drawn once between them.
+func feeds(step, next Step, read, written map[string]bool) bool {
+	for _, out := range step.DDs {
+		if out.Use == useRead || out.Use == "" {
+			continue
+		}
+		for _, ds := range out.Datasets {
+			if !read[ds] || !written[ds] {
+				continue
+			}
+			for _, in := range next.DDs {
+				if in.Use == useRead && slices.Contains(in.Datasets, ds) {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func withNote(label, note string) string {
+	if note == "" {
+		return label
+	}
+	return label + " " + note
 }
 
 func jobMarkdown(dir string, job Job) string {
@@ -265,7 +320,7 @@ func jobMarkdown(dir string, job Job) string {
 	fmt.Fprintf(&b, "\n## Network\n\n![The steps of %s and the datasets they read and write](%s.svg)\n", job.Name, job.Name)
 	b.WriteString("\nBoxes are steps, with the program each runs; rounded boxes are datasets, as the job names them. " +
 		"Arrows run from the datasets a step reads to the step, and from the step to the datasets it writes; " +
-		"dotted ones from each step to the next.\n")
+		"dotted ones from a step to the next where no dataset leads from one to the other.\n")
 
 	b.WriteString("\n## Steps\n\n| Step | Program | Bypassed by | Description | Source |\n| --- | --- | --- | --- | --- |\n")
 	for _, step := range job.Steps {

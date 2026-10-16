@@ -14,6 +14,7 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/vlumi/copal/blueprint"
 	"github.com/vlumi/copal/pangaea/bank"
 )
 
@@ -23,23 +24,28 @@ var files embed.FS
 // shown is the most accounts a search lists.
 const shown = 200
 
-// Server serves the console for one bank.
+// Server serves the console for one bank, with the blueprints of its
+// programs and jobs.
 type Server struct {
-	bank    bank.Bank
-	layouts *Layouts
-	pages   map[string]*template.Template
+	bank       bank.Bank
+	layouts    *Layouts
+	system     *blueprint.System
+	blueprints string
+	pages      map[string]*template.Template
 	// busy is locked while the bank runs or resets, and read-locked while
 	// a page reads its files.
 	busy sync.RWMutex
 }
 
-// New makes a console for the bank.
-func New(b bank.Bank) (*Server, error) {
+// New makes a console for the bank. The system is Copal's analysis of the
+// bank's programs and jobs, whose blueprints are in the blueprints
+// directory.
+func New(b bank.Bank, system *blueprint.System, blueprints string) (*Server, error) {
 	layouts, err := LoadLayouts(b.Copybooks)
 	if err != nil {
 		return nil, err
 	}
-	s := &Server{bank: b, layouts: layouts, pages: map[string]*template.Template{}}
+	s := &Server{bank: b, layouts: layouts, system: system, blueprints: blueprints, pages: map[string]*template.Template{}}
 	funcs := template.FuncMap{"money": money, "count": count, "date": date}
 	for _, page := range []string{"overview", "nobank", "accounts", "account", "day", "compare", "error"} {
 		t, err := template.New("").Funcs(funcs).ParseFS(files, "templates/base.html", "templates/"+page+".html")
@@ -60,6 +66,8 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /accounts", s.view("accounts", s.accounts))
 	mux.HandleFunc("GET /accounts/{no}", s.view("account", s.account))
 	mux.HandleFunc("GET /days/{date}", s.view("day", s.day))
+	mux.HandleFunc("GET /days/{date}/sysout/{file...}", s.sysout)
+	mux.Handle("GET /blueprints/", http.StripPrefix("/blueprints/", http.FileServer(http.Dir(s.blueprints))))
 	mux.HandleFunc("GET /compare", s.view("compare", s.compare))
 	mux.HandleFunc("POST /reset", s.reset)
 	mux.HandleFunc("POST /run", s.run)
@@ -95,7 +103,7 @@ func (s *Server) view(name string, read viewFunc) http.HandlerFunc {
 			s.fail(w, err)
 			return
 		}
-		v, err := read(&Ledger{Layouts: s.layouts, Store: store}, h, r)
+		v, err := read(&Ledger{Layouts: s.layouts, Store: store, Jobs: s.system.Jobs}, h, r)
 		if err != nil {
 			s.fail(w, err)
 			return
@@ -158,6 +166,27 @@ func (s *Server) compare(l *Ledger, h bank.History, r *http.Request) (any, error
 		to = openings[min(i+1, len(openings)-1)].Date.String()
 	}
 	return l.Compare(h, from, to)
+}
+
+// sysout serves a file a day's jobs wrote, such as a report too large to
+// show on the day's page.
+func (s *Server) sysout(w http.ResponseWriter, r *http.Request) {
+	s.busy.RLock()
+	defer s.busy.RUnlock()
+	h, err := s.bank.History()
+	if err != nil {
+		s.fail(w, err)
+		return
+	}
+	i := slices.IndexFunc(h.Days, func(d bank.RunDay) bool { return d.Date.String() == r.PathValue("date") })
+	if i < 0 {
+		s.fail(w, fmt.Errorf("business day %s: %w", r.PathValue("date"), ErrNotFound))
+		return
+	}
+	file := r.Clone(r.Context())
+	file.URL.Path = "/" + r.PathValue("file")
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	http.FileServer(http.Dir(h.Days[i].Sysout)).ServeHTTP(w, file)
 }
 
 // reset resets the bank from the form's seed and number of accounts.

@@ -207,19 +207,14 @@ func (l *Ledger) fields(r []byte) ([]FieldValue, error) {
 
 // DayPage is everything one business day read and wrote.
 type DayPage struct {
-	Day      bank.RunDay
-	Next     generate.Date
-	File     TransactionFile
-	Computed Totals
-	Postings []Posting
-	Rejects  []Reject
-	Steps    []Step
-	Reports  []Report
-}
-
-// Report is a report a step wrote.
-type Report struct {
-	Name, Text string
+	Day          bank.RunDay
+	Next         generate.Date
+	File         TransactionFile
+	Computed     Totals
+	Postings     []Posting
+	Rejects      []Reject
+	MaintRejects []MaintReject
+	Runs         []JobRun
 }
 
 // Day reads a run day's files.
@@ -243,30 +238,11 @@ func (l *Ledger) Day(h bank.History, date string) (DayPage, error) {
 	if p.Rejects, err = l.Rejects(p.Day.Rejects()); err != nil {
 		return DayPage{}, err
 	}
-	if p.Steps, err = jobSteps(p.Day.Sysout); err != nil {
+	if p.MaintRejects, err = l.MaintRejects(p.Day.MaintRejects()); err != nil {
 		return DayPage{}, err
 	}
-	p.Reports, err = reports(p.Day.Sysout, p.Steps)
+	p.Runs, err = l.jobRuns(p.Day.Sysout)
 	return p, err
-}
-
-// reports reads the reports the steps wrote, in step order.
-func reports(sysout string, steps []Step) ([]Report, error) {
-	var out []Report
-	for _, step := range steps {
-		paths, err := filepath.Glob(filepath.Join(sysout, step.Name+".*"))
-		if err != nil {
-			return nil, err
-		}
-		for _, path := range paths {
-			data, err := os.ReadFile(path)
-			if err != nil {
-				return nil, err
-			}
-			out = append(out, Report{filepath.Base(path), string(data)})
-		}
-	}
-	return out, nil
 }
 
 // Opening is the bank at the start of a business day: the master the day

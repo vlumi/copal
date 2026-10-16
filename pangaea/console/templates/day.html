@@ -3,14 +3,32 @@
 {{with .View}}
 <h1>Business day {{.Day.Date}}</h1>
 <p><a href="/compare?from={{.Day.Date}}&amp;to={{.Next}}">What the day changed in the master</a></p>
-<h2>Job</h2>
+{{$date := .Day.Date}}
+{{range .Runs}}
+<h2>Job {{.Name}}</h2>
+{{if .Network}}
+<p class="note">The job as it ran: each step with its return code, each dataset with the records it held. A step links to its program's blueprint.</p>
+<div class="network">{{.Network}}</div>
+{{end}}
 <table>
   <thead><tr><th>Step</th><th>Program</th><th>Outcome</th></tr></thead>
   <tbody>
-  {{range .Steps}}<tr><td>{{.Name}}</td><td>{{.Program}}</td><td>{{.Outcome}}</td></tr>
+  {{range .Steps}}<tr><td>{{.Name}}</td><td><a href="/blueprints/programs/{{.Program}}.md">{{.Program}}</a></td><td>{{.Outcome}}</td></tr>
   {{end}}
   </tbody>
 </table>
+{{$dir := .Dir}}
+{{range .Reports}}
+{{if .Large}}
+<p><a href="/days/{{$date}}/sysout/{{if $dir}}{{$dir}}/{{end}}{{.Name}}"><code>{{.Name}}</code></a>, too large to show here</p>
+{{else}}
+<details>
+  <summary><code>{{.Name}}</code></summary>
+  <pre>{{.Text}}</pre>
+</details>
+{{end}}
+{{end}}
+{{end}}
 <h2>Control totals</h2>
 <p class="note">The transaction file's trailer, from the branches, against what its details add up to.</p>
 <table>
@@ -30,13 +48,16 @@
   </tbody>
 </table>
 {{else}}<p>None.</p>{{end}}
-<h2>Reports</h2>
-{{range .Reports}}
-<details>
-  <summary><code>{{.Name}}</code></summary>
-  <pre>{{.Text}}</pre>
-</details>
-{{end}}
+<h2>Maintenance rejects ({{len .MaintRejects}})</h2>
+{{if .MaintRejects}}
+<table>
+  <thead><tr><th>Step</th><th>Reason</th><th class="num">Request</th><th>Type</th><th class="num">Account</th><th>Customer</th><th>Name</th><th class="num">Limit</th></tr></thead>
+  <tbody>
+  {{range .MaintRejects}}<tr><td>{{.Program}}</td><td>{{.Reason}}</td><td class="num">{{.Request.ID}}</td><td>{{.Request.Type}}</td><td class="num">{{.Request.Account}}</td><td>{{.Request.Customer}}</td><td>{{.Request.Name}}</td><td class="num">{{money .Request.Limit}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{else}}<p>None.</p>{{end}}
 <h2>Audit trail ({{count (len .Postings)}} postings)</h2>
 <details>
   <summary><code>{{.Day.Audit}}</code></summary>
