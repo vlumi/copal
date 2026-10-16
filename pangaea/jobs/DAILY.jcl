@@ -1,13 +1,15 @@
 //DAILY    JOB
 //*================================================================*
 //* DAILY BATCH: VALIDATE, SORT AND POST THE DAY'S TRANSACTIONS,   *
-//* THEN THE TRANSFER CREDITS AND RETURNS THEY LEAD TO.           *
+//* THEN THE TRANSFER CREDITS AND RETURNS THEY LEAD TO, AND MOVE   *
+//* TO THE NEXT BUSINESS DAY.                                      *
 //*                                                                *
 //* READS   BANK.CONTROL(0)  ACCT.MASTER(0)  TRAN.DAILY(0)         *
-//* WRITES  ACCT.MASTER(+1)                                        *
+//* WRITES  BANK.CONTROL(+1) ACCT.MASTER(+1)                       *
 //*         TRAN.AUDIT(+1)   TRAN.REJECTS(+1)                      *
 //*                                                                *
-//* A STEP RUNS ONLY IF NO EARLIER STEP ENDED WITH RC ABOVE 4.     *
+//* A STEP RUNS ONLY IF NO EARLIER STEP ENDED WITH RC ABOVE 4, SO  *
+//* A RUN THAT FAILS LEAVES THE BUSINESS DATE WHERE IT WAS.        *
 //*================================================================*
 //*----------------------------------------------------------------*
 //* VALIDATE THE DAY'S TRANSACTION FILE                            *
@@ -75,3 +77,10 @@
 //REJECTS  DD DSN=TRAN.REJECTS(+1),DISP=MOD
 //LEGS     DD DUMMY
 //POSTRPT  DD SYSOUT=*
+//*----------------------------------------------------------------*
+//* MOVE TO THE NEXT BUSINESS DAY                                  *
+//*----------------------------------------------------------------*
+//NEXTDAY  EXEC PGM=BANKDATE,COND=(4,LT)
+//BANKIN   DD DSN=BANK.CONTROL(0),DISP=SHR
+//BANKOUT  DD DSN=BANK.CONTROL(+1),DISP=NEW,
+//            DCB=(RECFM=FB,LRECL=80)
