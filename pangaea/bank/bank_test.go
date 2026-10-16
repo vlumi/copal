@@ -29,6 +29,7 @@ func TestDaysAreReproducible(t *testing.T) {
 			t.Fatal(err)
 		}
 		checkDays(t, days)
+		checkHistory(t, b)
 		trees = append(trees, readTree(t, b.Dir))
 	}
 	if len(trees[0]) != len(trees[1]) {
@@ -38,6 +39,24 @@ func TestDaysAreReproducible(t *testing.T) {
 		if !bytes.Equal(data, trees[1][name]) {
 			t.Errorf("%s differs between the two banks", name)
 		}
+	}
+}
+
+func checkHistory(t *testing.T, b Bank) {
+	t.Helper()
+	h, err := b.History()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if h.Seed != 7 || h.Date.String() != "2026-09-04" || h.Master != "ACCT.MASTER.G0004V00" || len(h.Days) != 3 {
+		t.Fatalf("history: seed %d, date %s, master %s, %d days", h.Seed, h.Date, h.Master, len(h.Days))
+	}
+	last := h.Days[2]
+	if last.Date.String() != "2026-09-03" || last.Audit() != "TRAN.AUDIT.G0003V00" || last.MasterAfter() != h.Master {
+		t.Errorf("last day: %s, audit %s, master after %s", last.Date, last.Audit(), last.MasterAfter())
+	}
+	if _, err := os.Stat(filepath.Join(last.Sysout, "JOBLOG")); err != nil {
+		t.Error(err)
 	}
 }
 

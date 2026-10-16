@@ -122,7 +122,7 @@ func (b Bank) runDay(g *generate.Generator, job *jcl.Job) (Day, error) {
 		return Day{}, err
 	}
 
-	r := runner.Runner{Programs: b.Programs, Datasets: store, Sysout: filepath.Join(b.Dir, "sysout", date.String())}
+	r := runner.Runner{Programs: b.Programs, Datasets: store, Sysout: b.sysout(date)}
 	results, err := r.Run(job)
 	day := Day{Date: date, Transactions: len(file) - 2, Results: results}
 	if err != nil {
@@ -139,12 +139,16 @@ func (b Bank) runDay(g *generate.Generator, job *jcl.Job) (Day, error) {
 }
 
 func (b Bank) businessDate(g *generate.Generator, store *dataset.Store) (generate.Date, error) {
-	control, err := store.Read(latest(store, "BANK.CONTROL"))
+	return b.controlDate(g, store, latest(store, "BANK.CONTROL"))
+}
+
+func (b Bank) controlDate(g *generate.Generator, store *dataset.Store, dsn string) (generate.Date, error) {
+	control, err := store.Read(dsn)
 	if err != nil {
 		return generate.Date{}, err
 	}
 	if len(control) != 1 {
-		return generate.Date{}, fmt.Errorf("bank control: %d records, want 1", len(control))
+		return generate.Date{}, fmt.Errorf("%s: %d records, want 1", dsn, len(control))
 	}
 	n, err := g.Layouts.Control.Number(control[0], "BC-BUSINESS-DATE")
 	if err != nil {
