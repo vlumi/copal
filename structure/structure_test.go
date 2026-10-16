@@ -78,8 +78,8 @@ func TestGoTosAndFallThrough(t *testing.T) {
 	want := []summary{
 		{name: "MAIN-PARA"},
 		{name: "CHECK-PARA", goTos: []string{"CHECK-EXIT", "CHECK-ONE", "CHECK-TWO"}, fallsInto: "CHECK-ONE", performedBy: main},
-		{name: "CHECK-ONE", goTos: []string{"CHECK-EXIT"}, performedBy: main, reachedBy: []string{"CHECK-PARA"}},
-		{name: "CHECK-TWO", fallsInto: "CHECK-EXIT", performedBy: main, reachedBy: []string{"CHECK-PARA"}},
+		{name: "CHECK-ONE", goTos: []string{"CHECK-EXIT"}, performedBy: main, reachedBy: []string{"CHECK-PARA", "CHECK-TWO"}},
+		{name: "CHECK-TWO", goTos: []string{"CHECK-EXIT", "CHECK-ONE"}, performedBy: main, reachedBy: []string{"CHECK-PARA"}},
 		{name: "CHECK-EXIT", performedBy: main, reachedBy: []string{"CHECK-PARA", "CHECK-ONE", "CHECK-TWO"}},
 	}
 	if !reflect.DeepEqual(got, want) {

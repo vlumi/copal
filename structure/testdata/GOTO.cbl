@@ -15,6 +15,9 @@
            MOVE 1 TO WS-I
            GO TO CHECK-EXIT.
        CHECK-TWO.
-           MOVE 2 TO WS-I.
+           IF WS-I = 2
+               GO TO CHECK-EXIT
+           ELSE
+               GO TO CHECK-ONE.
        CHECK-EXIT.
            EXIT.
