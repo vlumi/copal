@@ -94,3 +94,30 @@ func TestUnloadRejectsUnprintableBytes(t *testing.T) {
 		t.Error("unloaded a NUL byte as text")
 	}
 }
+
+func TestGenerations(t *testing.T) {
+	s, err := Open(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if n := s.LatestGeneration("ACCT.MASTER"); n != 0 {
+		t.Errorf("latest of an empty group %d, want 0", n)
+	}
+	for _, dsn := range []string{GenerationName("ACCT.MASTER", 1), GenerationName("ACCT.MASTER", 2), "ACCT.MASTER.NEW"} {
+		if err := s.Catalog(dsn, 100); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if n := s.LatestGeneration("ACCT.MASTER"); n != 2 {
+		t.Errorf("latest generation %d, want 2", n)
+	}
+	if err := s.Delete(GenerationName("ACCT.MASTER", 2)); err != nil {
+		t.Fatal(err)
+	}
+	if n := s.LatestGeneration("ACCT.MASTER"); n != 1 {
+		t.Errorf("latest generation after deleting G0002 %d, want 1", n)
+	}
+	if _, err := os.Stat(s.Path("ACCT.MASTER.G0002V00")); !os.IsNotExist(err) {
+		t.Error("deleted dataset's file is still there")
+	}
+}

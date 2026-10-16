@@ -157,3 +157,50 @@ func assertFile(t *testing.T, path, want string) {
 		t.Errorf("%s: %q, want %q", filepath.Base(path), data, want)
 	}
 }
+
+func TestRunGenerationsTemporaryAndAppend(t *testing.T) {
+	r := newRunner(t, map[string]string{
+		// WORK and NEXT write the next master from the current one, through a
+		// temporary dataset.
+		"WORK": `cat "$DD_IN" > "$DD_WORK"`,
+		"NEXT": `cat "$DD_WORK" > "$DD_OUT"; printf X >> "$DD_OUT"`,
+		"LOG":  `printf L >> "$DD_LOG"`,
+		"NONE": `cat "$DD_IN" > "$DD_GONE"`,
+	})
+	if err := r.Datasets.Load("MASTER.G0001V00", strings.NewReader("A\n")); err != nil {
+		t.Fatal(err)
+	}
+	job := parse(t, `//DAY JOB
+//S1 EXEC PGM=WORK
+//IN DD DSN=MASTER(0),DISP=SHR
+//WORK DD DSN=&&WORK,DISP=NEW,DCB=(RECFM=FB,LRECL=1)
+//S2 EXEC PGM=NEXT
+//WORK DD DSN=&&WORK,DISP=OLD
+//OUT DD DSN=MASTER(+1),DISP=NEW,DCB=(RECFM=FB,LRECL=1)
+//S3 EXEC PGM=LOG
+//LOG DD DSN=LOG(+1),DISP=MOD,DCB=(RECFM=FB,LRECL=1)
+//S4 EXEC PGM=LOG
+//LOG DD DSN=LOG(+1),DISP=MOD
+//S5 EXEC PGM=NONE
+//IN DD DSN=MASTER(+1),DISP=SHR
+//GONE DD DUMMY
+`)
+	for range 2 {
+		if _, err := r.Run(job); err != nil {
+			t.Fatal(err)
+		}
+	}
+	want := []string{"LOG.G0001V00", "LOG.G0002V00", "MASTER.G0001V00", "MASTER.G0002V00", "MASTER.G0003V00"}
+	if got := r.Datasets.Names(); !slices.Equal(got, want) {
+		t.Errorf("cataloged %q, want %q: no temporary datasets left", got, want)
+	}
+	assertFile(t, r.Datasets.Path("MASTER.G0003V00"), "AXX")
+	assertFile(t, r.Datasets.Path("LOG.G0002V00"), "LL")
+}
+
+func TestRunRejectsAppendWithoutRecordLength(t *testing.T) {
+	r := newRunner(t, map[string]string{"OK": "exit 0"})
+	if _, err := r.Run(parse(t, "//J JOB\n//S EXEC PGM=OK\n//LOG DD DSN=LOG,DISP=MOD\n")); err == nil {
+		t.Error("appended to a dataset that does not exist without a DCB")
+	}
+}

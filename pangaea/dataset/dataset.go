@@ -57,6 +57,37 @@ func (s *Store) Names() []string {
 	return names
 }
 
+// GenerationName is the name of generation n of a generation data group,
+// as on a mainframe: ACCT.MASTER.G0003V00.
+func GenerationName(base string, n int) string {
+	return fmt.Sprintf("%s.G%04dV00", base, n)
+}
+
+// LatestGeneration is the number of the newest cataloged generation of a
+// generation data group, or 0 if it has none.
+func (s *Store) LatestGeneration(base string) int {
+	latest := 0
+	for dsn := range s.catalog {
+		suffix, ok := strings.CutPrefix(dsn, base+".G")
+		if !ok || !strings.HasSuffix(suffix, "V00") {
+			continue
+		}
+		if n, err := strconv.Atoi(strings.TrimSuffix(suffix, "V00")); err == nil {
+			latest = max(latest, n)
+		}
+	}
+	return latest
+}
+
+// Delete removes a dataset and its catalog entry.
+func (s *Store) Delete(dsn string) error {
+	if err := os.Remove(s.Path(dsn)); err != nil && !errors.Is(err, os.ErrNotExist) {
+		return err
+	}
+	delete(s.catalog, dsn)
+	return s.writeCatalog()
+}
+
 // Catalog records a dataset that a program has written, after checking that
 // its file holds whole records. A dataset the program never opened is
 // cataloged empty, as an allocated dataset would be.
