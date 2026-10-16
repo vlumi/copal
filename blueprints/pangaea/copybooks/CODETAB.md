@@ -13,7 +13,7 @@ DATE       BY  CHANGE
                GENERAL LEDGER SUMMARY.
 ```
 
-Copybook [CODETAB.cpy](../../../pangaea/copybooks/CODETAB.cpy), used by [STMTPRT](../programs/STMTPRT.md).
+Copybook [CODETAB.cpy](../../../pangaea/copybooks/CODETAB.cpy), used by [GLSUM](../programs/GLSUM.md), [STMTPRT](../programs/STMTPRT.md).
 
 ## :P:-CODE-VALUES
 

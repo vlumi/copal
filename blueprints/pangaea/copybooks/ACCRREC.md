@@ -14,7 +14,7 @@ DATE       BY  CHANGE
 2001-09-03 TL  CR-0298 ORIGINAL VERSION.
 ```
 
-Copybook [ACCRREC.cpy](../../../pangaea/copybooks/ACCRREC.cpy), used by [INTACCR](../programs/INTACCR.md), [MONCHG](../programs/MONCHG.md), [STMTPRT](../programs/STMTPRT.md).
+Copybook [ACCRREC.cpy](../../../pangaea/copybooks/ACCRREC.cpy), used by [GLSUM](../programs/GLSUM.md), [INTACCR](../programs/INTACCR.md), [MONCHG](../programs/MONCHG.md), [STMTPRT](../programs/STMTPRT.md).
 
 ## ACCRUAL-RECORD
 
