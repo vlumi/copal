@@ -10,7 +10,7 @@ Copal reads legacy COBOL batch systems and produces design blueprints from them:
 - Pangaea runs: every program compiles with GnuCOBOL and the daily and month-end batches produce outputs that are checked in as golden files. A change to Pangaea updates its golden outputs in the same commit.
 - Copal's blueprints for Pangaea are golden files too, so a change in the analyzer shows as a diff in the blueprints.
 - Code is organized by feature, not by layer.
-- Comments: minimal, English, en-US spelling.
+- All text is English with en-US spelling: code, comments, documentation, commit messages, and Pangaea's programs and data. Comments are minimal.
 - Markdown paragraphs are one line each; the editor wraps. `.markdownlint.jsonc` encodes this.
 - Diagrams are generated as SVG or PNG, not Mermaid: the editor in use does not render Mermaid.
 - Routine operations are make targets with a `##` description, so plain `make` lists them; scripts do the work, the Makefile names it.
