@@ -10,7 +10,7 @@ The hard part of moving a COBOL core system to anything newer is rarely the tran
 
 **Pangaea**, the specimen. A small COBOL batch bank, written for this project (AI-written is fine), that compiles and runs with GnuCOBOL 3.2 (`brew install gnucobol`). Roughly ten programs and a few thousand lines:
 
-- Account master: fixed-length sequential records (indexed later, if GnuCOBOL's indexed files behave), layouts in copybooks.
+- Account master: fixed-length sequential records, layouts in copybooks; indexed once the card channel needs lookups by key (see Decisions).
 - Transactions: a daily input file of deposits, withdrawals, transfers and fees, with a header and a trailer record carrying counts and control totals.
 - Daily batch: validate transactions, sort, post to the master, write rejects and an audit trail, produce the next day's master.
 - Month-end: interest accrual and posting, fees, statements, a general-ledger summary.
@@ -38,6 +38,10 @@ The hard part of moving a COBOL core system to anything newer is rarely the tran
 
 - Translating COBOL into Java or anything else.
 - Supporting every dialect. Pangaea's subset first; real-world breadth only if the project ever needs it.
+
+## Decisions
+
+- Storage is files, the way mainframe batch stored it. Everything passed between batch steps is a sequential file of fixed-length records. The account master becomes an indexed file (`ORGANIZATION INDEXED`, GnuCOBOL's counterpart of a VSAM KSDS) when the card channel arrives: the batch keeps reading it sequentially, online authorizations read it by account number. Card holds are an indexed file too, keyed by account and hold number. No embedded SQL: it needs a precompiler and a database server on top of GnuCOBOL, and it moves the layouts out of copybooks into a schema, which is a different analysis problem. No IMS or IDMS: neither has a usable open implementation for GnuCOBOL. Which indexed backend the GnuCOBOL build uses (Berkeley DB or another) is checked when the indexed master is built.
 
 ## Open decisions for the first session
 
