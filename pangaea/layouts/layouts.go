@@ -12,6 +12,8 @@ import (
 // Layouts are the bank's record layouts.
 type Layouts struct {
 	Master, Tran, Control, Rate, Accrual, Maint, Audit, Reject, Card *record.Layout
+	// Request and Response are the online authorizations' messages.
+	Request, Response *record.Layout
 }
 
 // Load reads the layouts from the bank's copybooks.
@@ -31,6 +33,8 @@ func Load(copybookDir string) (*Layouts, error) {
 		{&l.Audit, "AUDITREC", "AUDIT-RECORD"},
 		{&l.Reject, "REJREC", "REJECT-RECORD"},
 		{&l.Card, "CARDREC", "CARD-RECORD"},
+		{&l.Request, "AUTHMSG", "AUTH-REQUEST"},
+		{&l.Response, "AUTHMSG", "AUTH-RESPONSE"},
 	} {
 		layout, err := record.FromCopybook(filepath.Join(copybookDir, c.copybook+".cpy"), []string{copybookDir}, c.name)
 		if err != nil {

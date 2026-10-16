@@ -2,6 +2,7 @@ package bank
 
 import (
 	"bytes"
+	"errors"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -114,8 +115,8 @@ func readTree(t *testing.T, dir string) map[string][]byte {
 }
 
 // TestFailedDayIsBackedOut runs a day whose posting fails, and checks that
-// the bank backs it out whole, then runs it again and ends up as a bank
-// whose day never failed.
+// the bank backs its batch out whole, keeping its online day, then runs the
+// batch again and ends up as a bank whose day never failed.
 func TestFailedDayIsBackedOut(t *testing.T) {
 	programs := t.TempDir()
 	if _, err := compile.Programs("../programs", "../copybooks", programs); err != nil {
@@ -156,8 +157,10 @@ func TestFailedDayIsBackedOut(t *testing.T) {
 	if store, err = b.Datasets(); err != nil {
 		t.Fatal(err)
 	}
+	before = append(before, "TRAN.CARD.G0002V00")
+	slices.Sort(before)
 	if after := store.Names(); !slices.Equal(after, before) {
-		t.Errorf("after the failed day the catalog holds %q, want %q", after, before)
+		t.Errorf("after the failed day the catalog holds %q, want %q, with the online day's card file", after, before)
 	}
 	if _, err := os.Stat(filepath.Join(b.Dir, "sysout", "2026-09-02.failed", "JOBLOG")); err != nil {
 		t.Errorf("the failed day's job log was not kept: %v", err)
@@ -180,5 +183,72 @@ func TestFailedDayIsBackedOut(t *testing.T) {
 		if !bytes.Equal(data, got[name]) {
 			t.Errorf("%s differs from the bank that never failed", name)
 		}
+	}
+}
+
+// An online day authorizes requests until it is closed, and runs once a
+// business day: after it, the day's batch is next.
+func TestOnlineDay(t *testing.T) {
+	programs := t.TempDir()
+	if _, err := compile.Programs("../programs", "../copybooks", programs); err != nil {
+		t.Fatal(err)
+	}
+	b := Bank{Dir: t.TempDir(), Programs: programs, Copybooks: "../copybooks", Jobs: "../jobs"}
+	if err := b.Reset(7, 300); err != nil {
+		t.Fatal(err)
+	}
+	g, store, err := b.open()
+	if err != nil {
+		t.Fatal(err)
+	}
+	cards, err := store.Read("CARD.MASTER.G0001V00")
+	if err != nil {
+		t.Fatal(err)
+	}
+	card, err := g.Layouts.Card.Number(cards[0], "CR-CARD-NO")
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := g.Layouts.Request.Blank()
+	for name, value := range map[string]int64{"RQ-CARD-NO": card, "RQ-AMOUNT": 0, "RQ-AUTH-CODE": 0, "RQ-TIMESTAMP": 20260901120000} {
+		if err := g.Layouts.Request.SetNumber(request, name, value); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := g.Layouts.Request.SetText(request, "RQ-FUNCTION", "BALQ"); err != nil {
+		t.Fatal(err)
+	}
+
+	d, err := b.OpenDay()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for range 2 {
+		response, err := d.Authorize(request)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if result, _ := g.Layouts.Response.Text(response, "RS-RESULT"); result == "" {
+			t.Errorf("response %q has no result", response)
+		}
+	}
+	if _, err := d.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := d.Authorize(request); !errors.Is(err, ErrOnlineDayClosed) {
+		t.Errorf("authorized after the close: %v", err)
+	}
+	if _, err := b.OpenDay(); !errors.Is(err, ErrOnlineDayRun) {
+		t.Errorf("opened the online day twice: %v", err)
+	}
+	if err := b.RunDays(1, func(Day) {}); err != nil {
+		t.Fatal(err)
+	}
+	next, err := b.OpenDay()
+	if err != nil {
+		t.Fatalf("the next day's online day did not open: %v", err)
+	}
+	if _, err := next.Close(); err != nil {
+		t.Fatal(err)
 	}
 }
