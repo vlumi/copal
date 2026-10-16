@@ -58,36 +58,36 @@ Source: [ACCTMNT.cbl:145](../../../pangaea/programs/ACCTMNT.cbl#L145).
 
 ## 1200-READ-MASTER
 
-| | 1 | 2 | 3 | 4 |
-| --- | :-: | :-: | :-: | :-: |
-| `READ ACCT-IN AT END` | Y | Y | N | N |
-| `WS-MASTER-KEY > WS-PREV-MASTER-KEY` | N | Y | N | Y |
-| → `READ ACCT-IN` | 1 | 1 | 1 | 1 |
-| → `MOVE HIGH-VALUES TO WS-MASTER-KEY` | 2 | 2 | | |
-| → `GO TO 1200-EXIT` | 3 | 3 | | |
-| → `MOVE AI-ACCT-NO TO WS-MASTER-KEY` | 4 | 4 | 2 | 2 |
-| → `MOVE 'MASTER NOT IN ACCOUNT ORDER' TO WS-ABORT-MESSAGE` | 5 | | 3 | |
-| → `PERFORM 9900-ABORT` | 6 | | 4 | |
-| → `MOVE WS-MASTER-KEY TO WS-PREV-MASTER-KEY` | 7 | 5 | 5 | 3 |
-| → `ADD 1 TO WS-MASTERS-READ` | 8 | 6 | 6 | 4 |
+| | 1 | 2 | 3 |
+| --- | :-: | :-: | :-: |
+| `READ ACCT-IN AT END` | Y | N | N |
+| `WS-MASTER-KEY > WS-PREV-MASTER-KEY` | | N | Y |
+| → `READ ACCT-IN` | 1 | 1 | 1 |
+| → `MOVE HIGH-VALUES TO WS-MASTER-KEY` | 2 | | |
+| → `GO TO 1200-EXIT` | 3 | | |
+| → `MOVE AI-ACCT-NO TO WS-MASTER-KEY` | | 2 | 2 |
+| → `MOVE 'MASTER NOT IN ACCOUNT ORDER' TO WS-ABORT-MESSAGE` | | 3 | |
+| → `PERFORM 9900-ABORT` | | 4 | |
+| → `MOVE WS-MASTER-KEY TO WS-PREV-MASTER-KEY` | | 5 | 3 |
+| → `ADD 1 TO WS-MASTERS-READ` | | 6 | 4 |
 
 Source: [ACCTMNT.cbl:162](../../../pangaea/programs/ACCTMNT.cbl#L162).
 
 ## 1300-READ-REQUEST
 
-| | 1 | 2 | 3 | 4 |
-| --- | :-: | :-: | :-: | :-: |
-| `READ MAINT-IN AT END` | Y | Y | N | N |
-| `WS-REQUEST-ORDER-KEY > WS-PREV-REQUEST-ORDER-KEY` | N | Y | N | Y |
-| → `READ MAINT-IN` | 1 | 1 | 1 | 1 |
-| → `MOVE HIGH-VALUES TO WS-REQUEST-KEY` | 2 | 2 | | |
-| → `GO TO 1300-EXIT` | 3 | 3 | | |
-| → `MOVE MR-ACCT-NO TO WS-REQUEST-KEY WS-ROK-ACCT-NO` | 4 | 4 | 2 | 2 |
-| → `MOVE MR-REQUEST-ID TO WS-ROK-REQUEST-ID` | 5 | 5 | 3 | 3 |
-| → `MOVE 'REQUESTS NOT IN ACCOUNT ORDER' TO WS-ABORT-MESSAGE` | 6 | | 4 | |
-| → `PERFORM 9900-ABORT` | 7 | | 5 | |
-| → `MOVE WS-REQUEST-ORDER-KEY TO WS-PREV-REQUEST-ORDER-KEY` | 8 | 6 | 6 | 4 |
-| → `ADD 1 TO WS-REQUEST-COUNT` | 9 | 7 | 7 | 5 |
+| | 1 | 2 | 3 |
+| --- | :-: | :-: | :-: |
+| `READ MAINT-IN AT END` | Y | N | N |
+| `WS-REQUEST-ORDER-KEY > WS-PREV-REQUEST-ORDER-KEY` | | N | Y |
+| → `READ MAINT-IN` | 1 | 1 | 1 |
+| → `MOVE HIGH-VALUES TO WS-REQUEST-KEY` | 2 | | |
+| → `GO TO 1300-EXIT` | 3 | | |
+| → `MOVE MR-ACCT-NO TO WS-REQUEST-KEY WS-ROK-ACCT-NO` | | 2 | 2 |
+| → `MOVE MR-REQUEST-ID TO WS-ROK-REQUEST-ID` | | 3 | 3 |
+| → `MOVE 'REQUESTS NOT IN ACCOUNT ORDER' TO WS-ABORT-MESSAGE` | | 4 | |
+| → `PERFORM 9900-ABORT` | | 5 | |
+| → `MOVE WS-REQUEST-ORDER-KEY TO WS-PREV-REQUEST-ORDER-KEY` | | 6 | 4 |
+| → `ADD 1 TO WS-REQUEST-COUNT` | | 7 | 5 |
 
 Source: [ACCTMNT.cbl:177](../../../pangaea/programs/ACCTMNT.cbl#L177).
 

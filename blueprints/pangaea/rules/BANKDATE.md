@@ -11,12 +11,12 @@ The business rules of [BANKDATE](../programs/BANKDATE.md), paragraph by paragrap
 | → `OPEN INPUT CONTROL-IN OUTPUT CONTROL-OUT` | 1 | 1 | 1 |
 | → `DISPLAY 'BANKDATE: CANNOT OPEN FILES ' WS-IN-STATUS ' ' WS-OUT-STATUS` | 2 | | |
 | → `MOVE 16 TO RETURN-CODE` | 3 | 4 | |
-| → `STOP RUN` | 4 | 10 | 7 |
+| → `STOP RUN` | 4 | 5 | 7 |
 | → `READ CONTROL-IN` | | 2 | 2 |
 | → `DISPLAY 'BANKDATE: NO BANK CONTROL RECORD'` | | 3 | |
-| → `PERFORM 1000-NEXT-BUSINESS-DAY` | | 6 | 3 |
-| → `WRITE CONTROL-OUT-RECORD FROM BANK-CONTROL-RECORD` | | 7 | 4 |
-| → `CLOSE CONTROL-IN CONTROL-OUT` | | 8 | 5 |
-| → `MOVE 0 TO RETURN-CODE` | | 9 | 6 |
+| → `PERFORM 1000-NEXT-BUSINESS-DAY` | | | 3 |
+| → `WRITE CONTROL-OUT-RECORD FROM BANK-CONTROL-RECORD` | | | 4 |
+| → `CLOSE CONTROL-IN CONTROL-OUT` | | | 5 |
+| → `MOVE 0 TO RETURN-CODE` | | | 6 |
 
 Source: [BANKDATE.cbl:52](../../../pangaea/programs/BANKDATE.cbl#L52).

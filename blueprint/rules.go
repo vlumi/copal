@@ -80,13 +80,13 @@ func rulesMarkdown(dir string, r Rules) string {
 		for i, a := range t.Actions {
 			cells := []string{"→ `" + a + "`"}
 			for _, rule := range t.Rules {
-				cell := ""
+				var orders []string
 				for order, action := range rule.Actions {
 					if action == i {
-						cell = strconv.Itoa(order + 1)
+						orders = append(orders, strconv.Itoa(order+1))
 					}
 				}
-				cells = append(cells, cell)
+				cells = append(cells, strings.Join(orders, ", "))
 			}
 			b.WriteString(row(cells...))
 		}
