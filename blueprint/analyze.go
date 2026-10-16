@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/vlumi/copal/cobol"
+	"github.com/vlumi/copal/fileio"
 	"github.com/vlumi/copal/layout"
 	"github.com/vlumi/copal/structure"
 )
@@ -37,13 +38,16 @@ type Identification struct {
 	Text      string `json:"text"`
 }
 
-// File is a file the program declares, with the records of its FD or SD.
+// File is a file the program declares, with the records of its FD or SD
+// and the modes the program opens it in: INPUT, OUTPUT, EXTEND or I-O,
+// counting a SORT's USING files as input and its GIVING files as output.
 type File struct {
 	Name         string   `json:"name"`
 	Kind         string   `json:"kind"`
 	Assign       string   `json:"assign"`
 	Organization string   `json:"organization"`
 	Status       string   `json:"status,omitempty"`
+	Opened       []string `json:"opened,omitempty"`
 	Records      []string `json:"records"`
 	Source       string   `json:"source"`
 }
@@ -161,6 +165,7 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 		program.Identification = append(program.Identification, Identification{Paragraph: e.Paragraph, Text: e.Text})
 	}
 
+	uses := fileio.Uses(p)
 	for _, fd := range p.FileSection {
 		records, err := layout.Records(fd.Entries)
 		if err != nil {
@@ -169,6 +174,11 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 		file, err := describeFile(p, fd)
 		if err != nil {
 			return Program{}, err
+		}
+		for _, u := range uses {
+			if u.File == fd.Name {
+				file.Opened = append(file.Opened, u.Mode)
+			}
 		}
 		for _, r := range records {
 			file.Records = append(file.Records, r.Name)

@@ -26,11 +26,11 @@ Program [TXSORT.cbl](../../../pangaea/programs/TXSORT.cbl): 3 files, 1 paragraph
 
 ## Files
 
-| File | Kind | Assigned to | Organization | Status field | Records |
-| --- | --- | --- | --- | --- | --- |
-| TRAN-IN | FD | TRANIN | SEQUENTIAL | | TRAN-IN-RECORD |
-| TRAN-OUT | FD | TRANOUT | SEQUENTIAL | | TRAN-OUT-RECORD |
-| SORT-WORK | SD | SORTWK | SEQUENTIAL | | SORT-RECORD |
+| File | Kind | Assigned to | Organization | Status field | Opened | Records |
+| --- | --- | --- | --- | --- | --- | --- |
+| TRAN-IN | FD | TRANIN | SEQUENTIAL | | INPUT | TRAN-IN-RECORD |
+| TRAN-OUT | FD | TRANOUT | SEQUENTIAL | | OUTPUT | TRAN-OUT-RECORD |
+| SORT-WORK | SD | SORTWK | SEQUENTIAL | | | SORT-RECORD |
 
 ## Flow
 

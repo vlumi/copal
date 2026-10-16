@@ -98,9 +98,9 @@ func programMarkdown(dir string, p Program) string {
 		}
 	}
 
-	b.WriteString("\n## Files\n\n| File | Kind | Assigned to | Organization | Status field | Records |\n| --- | --- | --- | --- | --- | --- |\n")
+	b.WriteString("\n## Files\n\n| File | Kind | Assigned to | Organization | Status field | Opened | Records |\n| --- | --- | --- | --- | --- | --- | --- |\n")
 	for _, f := range p.Files {
-		b.WriteString(row(f.Name, f.Kind, f.Assign, f.Organization, f.Status, strings.Join(f.Records, ", ")))
+		b.WriteString(row(f.Name, f.Kind, f.Assign, f.Organization, f.Status, strings.Join(f.Opened, ", "), strings.Join(f.Records, ", ")))
 	}
 
 	fmt.Fprintf(&b, "\n## Flow\n\n![The paragraphs of %s and how control moves between them](%s.svg)\n", p.Name, p.Name)
