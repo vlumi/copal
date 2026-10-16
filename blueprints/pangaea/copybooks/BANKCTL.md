@@ -1,5 +1,10 @@
 # BANKCTL
 
+```text
+BANKCTL: BANK CONTROL RECORD, ONE PER FILE
+THE BUSINESS DATE THE BATCH RUNS FOR, NEVER THE CLOCK.
+```
+
 Copybook [BANKCTL.cpy](../../../pangaea/copybooks/BANKCTL.cpy), used by [TXPOST](../programs/TXPOST.md), [TXVALID](../programs/TXVALID.md).
 
 ## BANK-CONTROL-RECORD

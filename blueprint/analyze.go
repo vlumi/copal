@@ -22,11 +22,19 @@ type System struct {
 
 // Program is the blueprint of one program.
 type Program struct {
-	Name       string      `json:"program"`
-	Source     string      `json:"source"`
-	Files      []File      `json:"files"`
-	Records    []Record    `json:"records"`
-	Paragraphs []Paragraph `json:"paragraphs"`
+	Name           string           `json:"program"`
+	Source         string           `json:"source"`
+	Description    []string         `json:"description,omitempty"`
+	Identification []Identification `json:"identification,omitempty"`
+	Files          []File           `json:"files"`
+	Records        []Record         `json:"records"`
+	Paragraphs     []Paragraph      `json:"paragraphs"`
+}
+
+// Identification is an identification paragraph such as AUTHOR.
+type Identification struct {
+	Paragraph string `json:"paragraph"`
+	Text      string `json:"text"`
 }
 
 // File is a file the program declares, with the records of its FD or SD.
@@ -66,6 +74,7 @@ type Field struct {
 	DependingOn string      `json:"dependingOn,omitempty"`
 	Redefines   string      `json:"redefines,omitempty"`
 	Values      []string    `json:"values,omitempty"`
+	Description string      `json:"description,omitempty"`
 	Conditions  []Condition `json:"conditions,omitempty"`
 	Source      string      `json:"source"`
 	Fields      []Field     `json:"fields,omitempty"`
@@ -82,6 +91,7 @@ type Condition struct {
 type Paragraph struct {
 	Name        string    `json:"name"`
 	Section     string    `json:"section,omitempty"`
+	Description string    `json:"description,omitempty"`
 	Source      string    `json:"source"`
 	Performs    []Perform `json:"performs,omitempty"`
 	PerformedBy []string  `json:"performedBy,omitempty"`
@@ -96,10 +106,11 @@ type Perform struct {
 
 // Copybook is the blueprint of a copybook of record layouts.
 type Copybook struct {
-	Name    string   `json:"copybook"`
-	Source  string   `json:"source"`
-	Records []Record `json:"records"`
-	UsedBy  []string `json:"usedBy"`
+	Name        string   `json:"copybook"`
+	Source      string   `json:"source"`
+	Description []string `json:"description,omitempty"`
+	Records     []Record `json:"records"`
+	UsedBy      []string `json:"usedBy"`
 }
 
 // Analyze reads the programs and every copybook in copybookDir.
@@ -132,7 +143,10 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 	if err != nil {
 		return Program{}, err
 	}
-	program := Program{Name: p.ID, Source: path}
+	program := Program{Name: p.ID, Source: path, Description: cobol.CommentText(p.Comment)}
+	for _, e := range p.Identification {
+		program.Identification = append(program.Identification, Identification{Paragraph: e.Paragraph, Text: e.Text})
+	}
 
 	for _, fd := range p.FileSection {
 		records, err := layout.Records(fd.Entries)
@@ -210,6 +224,7 @@ func newField(f *layout.Field) Field {
 		DependingOn: f.DependingOn,
 		Redefines:   f.Redefines,
 		Values:      f.Values,
+		Description: oneLine(f.Comment),
 		Source:      f.Pos.String(),
 	}
 	if f.Category != layout.Group {
@@ -225,7 +240,13 @@ func newField(f *layout.Field) Field {
 }
 
 func newParagraph(para structure.Paragraph) Paragraph {
-	p := Paragraph{Name: para.Name, Section: para.Section, Source: para.Pos.String(), PerformedBy: para.PerformedBy}
+	p := Paragraph{
+		Name:        para.Name,
+		Section:     para.Section,
+		Description: oneLine(para.Comment),
+		Source:      para.Pos.String(),
+		PerformedBy: para.PerformedBy,
+	}
 	for _, perform := range para.Performs {
 		p.Performs = append(p.Performs, Perform{Target: perform.Target, Thru: perform.Thru, Source: perform.Pos.String()})
 	}
@@ -245,12 +266,27 @@ func analyzeCopybook(path, copybookDir string, programs []Program) (Copybook, er
 	for _, r := range records {
 		copybook.Records = append(copybook.Records, Record{Field: newField(r)})
 	}
+	if len(records) > 0 {
+		copybook.Description = cobol.CommentText(records[0].Comment)
+		copybook.Records[0].Description = ""
+	}
 	for _, program := range programs {
 		if slices.ContainsFunc(program.Records, func(r Record) bool { return r.Copybook == copybook.Name }) {
 			copybook.UsedBy = append(copybook.UsedBy, program.Name)
 		}
 	}
 	return copybook, nil
+}
+
+// oneLine joins the text of a short comment into one line.
+func oneLine(comment []string) string {
+	var words []string
+	for _, line := range cobol.CommentText(comment) {
+		if line != "" {
+			words = append(words, strings.TrimSpace(line))
+		}
+	}
+	return strings.Join(words, " ")
 }
 
 func copybookName(path string) string {

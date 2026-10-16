@@ -82,17 +82,24 @@ func (s *System) indexMarkdown(dir, title string) string {
 
 func programMarkdown(dir string, p Program) string {
 	var b strings.Builder
-	fmt.Fprintf(&b, "# %s\n\nProgram %s: %d files, %d paragraphs.\n",
-		p.Name, sourceLink(dir, p.Source, false), len(p.Files), len(p.Paragraphs))
+	fmt.Fprintf(&b, "# %s\n\n", p.Name)
+	writeDescription(&b, p.Description)
+	fmt.Fprintf(&b, "Program %s: %d files, %d paragraphs.\n", sourceLink(dir, p.Source, false), len(p.Files), len(p.Paragraphs))
+	if len(p.Identification) > 0 {
+		b.WriteString("\n")
+		for _, e := range p.Identification {
+			fmt.Fprintf(&b, "- %s: %s\n", e.Paragraph, e.Text)
+		}
+	}
 
 	b.WriteString("\n## Files\n\n| File | Kind | Assigned to | Organization | Status field | Records |\n| --- | --- | --- | --- | --- | --- |\n")
 	for _, f := range p.Files {
 		b.WriteString(row(f.Name, f.Kind, f.Assign, f.Organization, f.Status, strings.Join(f.Records, ", ")))
 	}
 
-	b.WriteString("\n## Paragraphs\n\n| Paragraph | Source | Performs | Performed by |\n| --- | --- | --- | --- |\n")
+	b.WriteString("\n## Paragraphs\n\n| Paragraph | Description | Source | Performs | Performed by |\n| --- | --- | --- | --- | --- |\n")
 	for _, para := range p.Paragraphs {
-		b.WriteString(row(para.Name, sourceLink(dir, para.Source, true),
+		b.WriteString(row(para.Name, para.Description, sourceLink(dir, para.Source, true),
 			strings.Join(performTargets(para.Performs), ", "), strings.Join(para.PerformedBy, ", ")))
 	}
 
@@ -107,7 +114,7 @@ func programMarkdown(dir string, p Program) string {
 			fmt.Fprintf(&b, "%s. %d bytes, layout in copybook [%s](../copybooks/%s.md).\n", where, r.Length, r.Copybook, r.Copybook)
 			continue
 		}
-		fmt.Fprintf(&b, "%s. %d bytes.\n\n", where, r.Length)
+		fmt.Fprintf(&b, "%s. %d bytes.%s\n\n", where, r.Length, sentence(r.Description))
 		writeLayout(&b, dir, r.Field)
 	}
 	return b.String()
@@ -115,9 +122,11 @@ func programMarkdown(dir string, p Program) string {
 
 func copybookMarkdown(dir string, c Copybook) string {
 	var b strings.Builder
-	fmt.Fprintf(&b, "# %s\n\nCopybook %s, used by %s.\n", c.Name, sourceLink(dir, c.Source, false), programLinks(c.UsedBy, "../programs/"))
+	fmt.Fprintf(&b, "# %s\n\n", c.Name)
+	writeDescription(&b, c.Description)
+	fmt.Fprintf(&b, "Copybook %s, used by %s.\n", sourceLink(dir, c.Source, false), programLinks(c.UsedBy, "../programs/"))
 	for _, r := range c.Records {
-		fmt.Fprintf(&b, "\n## %s\n\n%d bytes.\n\n", r.Name, r.Length)
+		fmt.Fprintf(&b, "\n## %s\n\n%d bytes.%s\n\n", r.Name, r.Length, sentence(r.Description))
 		writeLayout(&b, dir, r.Field)
 	}
 	return b.String()
@@ -159,8 +168,32 @@ func row(cells ...string) string {
 	return b.String()
 }
 
+// writeDescription writes a header comment as preformatted text, keeping
+// the line breaks and alignment its author chose.
+func writeDescription(b *strings.Builder, description []string) {
+	if len(description) == 0 {
+		return
+	}
+	b.WriteString("```text\n")
+	for _, line := range description {
+		b.WriteString(line + "\n")
+	}
+	b.WriteString("```\n\n")
+}
+
+// sentence returns a description as a sentence to follow another, or nothing.
+func sentence(description string) string {
+	if description == "" {
+		return ""
+	}
+	return " " + description
+}
+
 func fieldNotes(f Field) string {
 	var notes []string
+	if f.Description != "" && f.Level != 1 {
+		notes = append(notes, f.Description)
+	}
 	if f.Redefines != "" {
 		notes = append(notes, "REDEFINES "+f.Redefines)
 	}

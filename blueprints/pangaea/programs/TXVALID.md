@@ -1,5 +1,19 @@
 # TXVALID
 
+```text
+TXVALID: VALIDATE THE DAY'S TRANSACTION FILE
+
+CHECKS THE FILE AS A WHOLE: A HEADER FOR TODAY'S BUSINESS
+DATE, THEN DETAILS, THEN A TRAILER WHOSE CONTROL TOTALS MATCH
+THE DETAILS. A FILE THAT FAILS THESE CHECKS IS NOT PROCESSED.
+CHECKS EACH DETAIL'S FIELDS AND WRITES IT EITHER TO THE VALID
+FILE OR TO THE REJECTS. WHETHER THE ACCOUNT EXISTS IS LEFT TO
+POSTING, WHICH READS THE MASTER.
+
+RETURN CODES: 0 ALL VALID, 4 SOME DETAILS REJECTED,
+              12 FILE REJECTED, 16 I/O ERROR.
+```
+
 Program [TXVALID.cbl](../../../pangaea/programs/TXVALID.cbl): 5 files, 10 paragraphs.
 
 ## Files
@@ -14,18 +28,18 @@ Program [TXVALID.cbl](../../../pangaea/programs/TXVALID.cbl): 5 files, 10 paragr
 
 ## Paragraphs
 
-| Paragraph | Source | Performs | Performed by |
-| --- | --- | --- | --- |
-| 0000-MAIN | [TXVALID.cbl:86](../../../pangaea/programs/TXVALID.cbl#L86) | 1000-OPEN-FILES, 2000-READ-HEADER, 3000-READ-DETAILS, 4000-CHECK-TRAILER, 8000-WRITE-REPORT, 9000-CLOSE-FILES | |
-| 1000-OPEN-FILES | [TXVALID.cbl:107](../../../pangaea/programs/TXVALID.cbl#L107) | | 0000-MAIN |
-| 2000-READ-HEADER | [TXVALID.cbl:128](../../../pangaea/programs/TXVALID.cbl#L128) | | 0000-MAIN |
-| 3000-READ-DETAILS | [TXVALID.cbl:143](../../../pangaea/programs/TXVALID.cbl#L143) | 3100-READ-NEXT, 3200-VALIDATE-DETAIL, 3300-REJECT-RECORD | 0000-MAIN |
-| 3100-READ-NEXT | [TXVALID.cbl:160](../../../pangaea/programs/TXVALID.cbl#L160) | | 3000-READ-DETAILS |
-| 3200-VALIDATE-DETAIL | [TXVALID.cbl:166](../../../pangaea/programs/TXVALID.cbl#L166) | 3300-REJECT-RECORD | 3000-READ-DETAILS |
-| 3300-REJECT-RECORD | [TXVALID.cbl:194](../../../pangaea/programs/TXVALID.cbl#L194) | | 3000-READ-DETAILS, 3200-VALIDATE-DETAIL |
-| 4000-CHECK-TRAILER | [TXVALID.cbl:200](../../../pangaea/programs/TXVALID.cbl#L200) | | 0000-MAIN |
-| 8000-WRITE-REPORT | [TXVALID.cbl:220](../../../pangaea/programs/TXVALID.cbl#L220) | | 0000-MAIN |
-| 9000-CLOSE-FILES | [TXVALID.cbl:251](../../../pangaea/programs/TXVALID.cbl#L251) | | 0000-MAIN |
+| Paragraph | Description | Source | Performs | Performed by |
+| --- | --- | --- | --- | --- |
+| 0000-MAIN | | [TXVALID.cbl:86](../../../pangaea/programs/TXVALID.cbl#L86) | 1000-OPEN-FILES, 2000-READ-HEADER, 3000-READ-DETAILS, 4000-CHECK-TRAILER, 8000-WRITE-REPORT, 9000-CLOSE-FILES | |
+| 1000-OPEN-FILES | | [TXVALID.cbl:107](../../../pangaea/programs/TXVALID.cbl#L107) | | 0000-MAIN |
+| 2000-READ-HEADER | | [TXVALID.cbl:128](../../../pangaea/programs/TXVALID.cbl#L128) | | 0000-MAIN |
+| 3000-READ-DETAILS | | [TXVALID.cbl:143](../../../pangaea/programs/TXVALID.cbl#L143) | 3100-READ-NEXT, 3200-VALIDATE-DETAIL, 3300-REJECT-RECORD | 0000-MAIN |
+| 3100-READ-NEXT | | [TXVALID.cbl:160](../../../pangaea/programs/TXVALID.cbl#L160) | | 3000-READ-DETAILS |
+| 3200-VALIDATE-DETAIL | | [TXVALID.cbl:166](../../../pangaea/programs/TXVALID.cbl#L166) | 3300-REJECT-RECORD | 3000-READ-DETAILS |
+| 3300-REJECT-RECORD | | [TXVALID.cbl:194](../../../pangaea/programs/TXVALID.cbl#L194) | | 3000-READ-DETAILS, 3200-VALIDATE-DETAIL |
+| 4000-CHECK-TRAILER | | [TXVALID.cbl:200](../../../pangaea/programs/TXVALID.cbl#L200) | | 0000-MAIN |
+| 8000-WRITE-REPORT | | [TXVALID.cbl:220](../../../pangaea/programs/TXVALID.cbl#L220) | | 0000-MAIN |
+| 9000-CLOSE-FILES | | [TXVALID.cbl:251](../../../pangaea/programs/TXVALID.cbl#L251) | | 0000-MAIN |
 
 ## Records
 

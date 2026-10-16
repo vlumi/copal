@@ -1,6 +1,23 @@
 {
   "program": "TXPOST",
   "source": "pangaea/programs/TXPOST.cbl",
+  "description": [
+    "TXPOST: POST THE DAY'S TRANSACTIONS TO THE ACCOUNT MASTER",
+    "",
+    "MATCHES THE SORTED TRANSACTIONS AGAINST THE OLD MASTER, BOTH",
+    "IN ACCOUNT NUMBER ORDER, AND WRITES THE NEW MASTER: EVERY OLD",
+    "RECORD, WITH ITS TRANSACTIONS APPLIED. EACH POSTING GOES TO",
+    "THE AUDIT TRAIL; A TRANSACTION THAT CANNOT BE POSTED GOES TO",
+    "THE REJECTS.",
+    "",
+    "RULES: NOTHING POSTS TO A CLOSED ACCOUNT. DEPOSITS AND FEES",
+    "POST TO A FROZEN ACCOUNT, WITHDRAWALS DO NOT. A WITHDRAWAL",
+    "MAY TAKE THE BALANCE DOWN TO THE OVERDRAFT LIMIT, NO FURTHER.",
+    "A FEE ALWAYS POSTS, EVEN PAST THE LIMIT.",
+    "",
+    "RETURN CODES: 0 ALL POSTED, 4 SOME REJECTED,",
+    "              16 INPUT OUT OF ORDER, OUT OF BALANCE OR I/O."
+  ],
   "files": [
     {
       "name": "CONTROL-FILE",
@@ -90,6 +107,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
+      "description": "BANKCTL: BANK CONTROL RECORD, ONE PER FILE THE BUSINESS DATE THE BATCH RUNS FOR, NEVER THE CLOCK.",
       "source": "pangaea/copybooks/BANKCTL.cpy:5",
       "fields": [
         {
@@ -124,6 +142,7 @@
       "start": 1,
       "length": 100,
       "category": "group",
+      "description": "ACCTMAST: ACCOUNT MASTER RECORD, 100 BYTES IN ACCOUNT NUMBER ORDER. THE BALANCE MAY GO BELOW ZERO DOWN TO THE OVERDRAFT LIMIT, AND BELOW THAT ONLY BY FEES.",
       "source": "pangaea/copybooks/ACCTMAST.cpy:6",
       "fields": [
         {
@@ -285,6 +304,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
+      "description": "TRANREC: DAILY TRANSACTION FILE RECORD, 80 BYTES ONE HEADER, THE DETAILS, ONE TRAILER, TOLD APART BY THE RECORD TYPE. THE BODY IS REDEFINED FOR EACH RECORD TYPE. THE TRAILER CARRIES THE SENDER'S CONTROL TOTALS: THE DETAIL COUNT, THE SUM OF AMOUNTS AND THE SUM OF ACCOUNT NUMBERS.",
       "source": "pangaea/copybooks/TRANREC.cpy:8",
       "fields": [
         {
@@ -708,6 +728,7 @@
       "picture": "X(10)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
+      "description": "MATCH KEYS: HIGH-VALUES ONCE A FILE IS AT ITS END.",
       "source": "pangaea/programs/TXPOST.cbl:77"
     },
     {
@@ -1011,6 +1032,7 @@
       "start": 1,
       "length": 100,
       "category": "group",
+      "description": "AUDITREC: AUDIT TRAIL RECORD, 100 BYTES, ONE PER POSTING THE AMOUNT IS SIGNED: CREDITS POSITIVE, DEBITS NEGATIVE.",
       "source": "pangaea/copybooks/AUDITREC.cpy:5",
       "fields": [
         {
@@ -1115,6 +1137,7 @@
       "start": 1,
       "length": 100,
       "category": "group",
+      "description": "REJREC: REJECTED TRANSACTION, 100 BYTES THE TRANSACTION AS RECEIVED, WITH THE STEP THAT REJECTED IT AND WHY.",
       "source": "pangaea/copybooks/REJREC.cpy:6",
       "fields": [
         {
@@ -1514,6 +1537,7 @@
     },
     {
       "name": "5000-RECONCILE",
+      "description": "THE NEW MASTER MUST HOLD THE OLD BALANCES PLUS WHAT WAS POSTED.",
       "source": "pangaea/programs/TXPOST.cbl:267",
       "performs": [
         {

@@ -1,5 +1,15 @@
 # TXSORT
 
+```text
+TXSORT: SORT THE VALID TRANSACTIONS FOR POSTING
+
+POSTING MATCHES TRANSACTIONS AGAINST THE ACCOUNT MASTER, SO
+IT NEEDS THEM IN ACCOUNT NUMBER ORDER. WITHIN AN ACCOUNT THEY
+KEEP THE ORDER OF THEIR TRANSACTION IDS.
+
+RETURN CODES: 0 SORTED, 16 SORT FAILED.
+```
+
 Program [TXSORT.cbl](../../../pangaea/programs/TXSORT.cbl): 3 files, 1 paragraphs.
 
 ## Files
@@ -12,9 +22,9 @@ Program [TXSORT.cbl](../../../pangaea/programs/TXSORT.cbl): 3 files, 1 paragraph
 
 ## Paragraphs
 
-| Paragraph | Source | Performs | Performed by |
-| --- | --- | --- | --- |
-| 0000-MAIN | [TXSORT.cbl:36](../../../pangaea/programs/TXSORT.cbl#L36) | | |
+| Paragraph | Description | Source | Performs | Performed by |
+| --- | --- | --- | --- | --- |
+| 0000-MAIN | | [TXSORT.cbl:36](../../../pangaea/programs/TXSORT.cbl#L36) | | |
 
 ## Records
 

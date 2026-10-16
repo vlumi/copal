@@ -1,6 +1,19 @@
 {
   "program": "TXVALID",
   "source": "pangaea/programs/TXVALID.cbl",
+  "description": [
+    "TXVALID: VALIDATE THE DAY'S TRANSACTION FILE",
+    "",
+    "CHECKS THE FILE AS A WHOLE: A HEADER FOR TODAY'S BUSINESS",
+    "DATE, THEN DETAILS, THEN A TRAILER WHOSE CONTROL TOTALS MATCH",
+    "THE DETAILS. A FILE THAT FAILS THESE CHECKS IS NOT PROCESSED.",
+    "CHECKS EACH DETAIL'S FIELDS AND WRITES IT EITHER TO THE VALID",
+    "FILE OR TO THE REJECTS. WHETHER THE ACCOUNT EXISTS IS LEFT TO",
+    "POSTING, WHICH READS THE MASTER.",
+    "",
+    "RETURN CODES: 0 ALL VALID, 4 SOME DETAILS REJECTED,",
+    "              12 FILE REJECTED, 16 I/O ERROR."
+  ],
   "files": [
     {
       "name": "CONTROL-FILE",
@@ -68,6 +81,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
+      "description": "BANKCTL: BANK CONTROL RECORD, ONE PER FILE THE BUSINESS DATE THE BATCH RUNS FOR, NEVER THE CLOCK.",
       "source": "pangaea/copybooks/BANKCTL.cpy:5",
       "fields": [
         {
@@ -102,6 +116,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
+      "description": "TRANREC: DAILY TRANSACTION FILE RECORD, 80 BYTES ONE HEADER, THE DETAILS, ONE TRAILER, TOLD APART BY THE RECORD TYPE. THE BODY IS REDEFINED FOR EACH RECORD TYPE. THE TRAILER CARRIES THE SENDER'S CONTROL TOTALS: THE DETAIL COUNT, THE SUM OF AMOUNTS AND THE SUM OF ACCOUNT NUMBERS.",
       "source": "pangaea/copybooks/TRANREC.cpy:8",
       "fields": [
         {
@@ -490,6 +505,7 @@
       "start": 1,
       "length": 100,
       "category": "group",
+      "description": "REJREC: REJECTED TRANSACTION, 100 BYTES THE TRANSACTION AS RECEIVED, WITH THE STEP THAT REJECTED IT AND WHY.",
       "source": "pangaea/copybooks/REJREC.cpy:6",
       "fields": [
         {

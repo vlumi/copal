@@ -1,5 +1,11 @@
 # REJREC
 
+```text
+REJREC: REJECTED TRANSACTION, 100 BYTES
+THE TRANSACTION AS RECEIVED, WITH THE STEP THAT REJECTED IT
+AND WHY.
+```
+
 Copybook [REJREC.cpy](../../../pangaea/copybooks/REJREC.cpy), used by [TXPOST](../programs/TXPOST.md), [TXVALID](../programs/TXVALID.md).
 
 ## REJECT-RECORD
