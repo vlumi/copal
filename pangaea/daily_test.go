@@ -2,8 +2,10 @@ package pangaea_test
 
 import (
 	"bytes"
+	"errors"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/vlumi/copal/internal/golden"
@@ -16,7 +18,9 @@ import (
 // TestDaily runs the daily batch on each fixture in testdata, whose input
 // directory holds the datasets to start from, and compares every dataset the
 // batch creates, and its job log and reports, with the fixture's golden
-// directory. Run with -update to rewrite the golden files.
+// directory. A fixture whose JOBS file lists more jobs runs them after the
+// daily batch, as the scheduler would, with their job logs and reports in
+// a directory of their own. Run with -update to rewrite the golden files.
 func TestDaily(t *testing.T) {
 	programs := t.TempDir()
 	if _, err := compile.Programs("programs", "copybooks", programs); err != nil {
@@ -29,12 +33,12 @@ func TestDaily(t *testing.T) {
 	for _, input := range fixtures {
 		fixture := filepath.Dir(input)
 		t.Run(filepath.Base(fixture), func(t *testing.T) {
-			runDaily(t, programs, fixture)
+			runFixture(t, programs, fixture)
 		})
 	}
 }
 
-func runDaily(t *testing.T, programs, fixture string) {
+func runFixture(t *testing.T, programs, fixture string) {
 	dir := t.TempDir()
 	store, err := dataset.Open(filepath.Join(dir, "datasets"))
 	if err != nil {
@@ -52,9 +56,14 @@ func runDaily(t *testing.T, programs, fixture string) {
 	loaded := store.Names()
 
 	sysout := filepath.Join(dir, "sysout")
-	r := runner.Runner{Programs: programs, Datasets: store, Sysout: sysout}
-	if _, err := r.Run(parseJob(t, "jobs/DAILY.jcl")); err != nil {
-		t.Fatal(err)
+	for i, job := range fixtureJobs(t, fixture) {
+		r := runner.Runner{Programs: programs, Datasets: store, Sysout: sysout}
+		if i > 0 {
+			r.Sysout = filepath.Join(sysout, job)
+		}
+		if _, err := r.Run(parseJob(t, filepath.Join("jobs", job+".jcl"))); err != nil {
+			t.Fatal(err)
+		}
 	}
 
 	created := filepath.Join(dir, "created")
@@ -68,6 +77,18 @@ func runDaily(t *testing.T, programs, fixture string) {
 	}
 	golden.CompareDir(t, created, filepath.Join(fixture, "golden", "datasets"))
 	golden.CompareDir(t, sysout, filepath.Join(fixture, "golden", "sysout"))
+}
+
+// fixtureJobs lists the jobs a fixture runs: those in its JOBS file, or
+// the daily batch alone.
+func fixtureJobs(t *testing.T, fixture string) []string {
+	data, err := os.ReadFile(filepath.Join(fixture, "JOBS"))
+	if errors.Is(err, os.ErrNotExist) {
+		return []string{"DAILY"}
+	} else if err != nil {
+		t.Fatal(err)
+	}
+	return strings.Fields(string(data))
 }
 
 func parseJob(t *testing.T, path string) *jcl.Job {

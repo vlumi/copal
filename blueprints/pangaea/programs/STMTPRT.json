@@ -1,0 +1,2241 @@
+{
+  "program": "STMTPRT",
+  "source": "pangaea/programs/STMTPRT.cbl",
+  "description": [
+    "STMTPRT: PRINT THE MONTH'S STATEMENTS",
+    "",
+    "ON THE FIRST BUSINESS DAY OF A MONTH, AFTER THE DAILY BATCH,",
+    "PRINTS A STATEMENT FOR EVERY ACCOUNT FOR THE MONTH THAT",
+    "CLOSED: THE OPENING BALANCE, EVERY POSTING OF THE MONTH, THE",
+    "INTEREST AND FEES POSTED FOR IT AFTER IT CLOSED, AND THE",
+    "CLOSING BALANCE. A CLOSED ACCOUNT WITH NOTHING TO SHOW GETS",
+    "NONE.",
+    "",
+    "THE MONTH THAT CLOSED IS THE DUE MONTH OF THE DAY'S ACCRUALS.",
+    "THE POSTINGS ARE READ FROM EVERY AUDIT TRAIL, NEWEST FIRST,",
+    "PICKED BY DATE AND SORTED BY ACCOUNT, DATE AND THE ORDER THEY",
+    "WERE READ IN, WHICH WITHIN A DAY IS THE ORDER THEY POSTED IN.",
+    "THEY ARE MATCHED AGAINST THE MASTER THE MONTH CLOSED WITH.",
+    "",
+    "RETURN CODES: 0 PRINTED OR NO MONTH CLOSED,",
+    "              16 POSTINGS FOR NO ACCOUNT, SORT FAILED OR I/O.",
+    "",
+    "MODIFICATION HISTORY",
+    "DATE       BY  CHANGE",
+    "2001-09-03 TL  CR-0298 ORIGINAL VERSION."
+  ],
+  "identification": [
+    {
+      "paragraph": "AUTHOR",
+      "text": "T. LINDQVIST, BATCH SYSTEMS."
+    },
+    {
+      "paragraph": "INSTALLATION",
+      "text": "FIRST BANK OF PANGAEA, DATA CENTER."
+    },
+    {
+      "paragraph": "DATE-WRITTEN",
+      "text": "2001-09-03."
+    }
+  ],
+  "files": [
+    {
+      "name": "ACCR-IN",
+      "kind": "FD",
+      "assign": "ACCRIN",
+      "organization": "SEQUENTIAL",
+      "status": "WS-ACCR-IN-STATUS",
+      "records": [
+        "ACCRUAL-RECORD"
+      ],
+      "source": "pangaea/programs/STMTPRT.cbl:33"
+    },
+    {
+      "name": "ACCT-IN",
+      "kind": "FD",
+      "assign": "ACCTIN",
+      "organization": "SEQUENTIAL",
+      "status": "WS-ACCT-IN-STATUS",
+      "records": [
+        "ACCT-MASTER-RECORD"
+      ],
+      "source": "pangaea/programs/STMTPRT.cbl:36"
+    },
+    {
+      "name": "AUDIT-IN",
+      "kind": "FD",
+      "assign": "AUDIT",
+      "organization": "SEQUENTIAL",
+      "status": "WS-AUDIT-STATUS",
+      "records": [
+        "AUDIT-RECORD"
+      ],
+      "source": "pangaea/programs/STMTPRT.cbl:39"
+    },
+    {
+      "name": "STMT-OUT",
+      "kind": "FD",
+      "assign": "STMTOUT",
+      "organization": "LINE SEQUENTIAL",
+      "status": "WS-STMT-STATUS",
+      "records": [
+        "STMT-LINE"
+      ],
+      "source": "pangaea/programs/STMTPRT.cbl:42"
+    },
+    {
+      "name": "REPORT-OUT",
+      "kind": "FD",
+      "assign": "STMTRPT",
+      "organization": "LINE SEQUENTIAL",
+      "status": "WS-REPORT-STATUS",
+      "records": [
+        "REPORT-LINE"
+      ],
+      "source": "pangaea/programs/STMTPRT.cbl:45"
+    },
+    {
+      "name": "STMT-SORT",
+      "kind": "SD",
+      "assign": "SORTWK",
+      "organization": "SEQUENTIAL",
+      "records": [
+        "SORT-RECORD"
+      ],
+      "source": "pangaea/programs/STMTPRT.cbl:48"
+    }
+  ],
+  "records": [
+    {
+      "section": "file",
+      "file": "ACCR-IN",
+      "copybook": "ACCRREC",
+      "level": 1,
+      "name": "ACCRUAL-RECORD",
+      "start": 1,
+      "length": 40,
+      "category": "group",
+      "description": "ACCRREC: INTEREST ACCRUAL RECORD, 40 BYTES ONE PER ACCOUNT, IN ACCOUNT NUMBER ORDER LIKE THE MASTER. INTEREST IS ACCRUED FOR EVERY CALENDAR DAY BEFORE THE THROUGH DATE, TO SIX DECIMALS, AND IS NEGATIVE FOR AN OVERDRAWN BALANCE. WHEN A MONTH CLOSES, ITS INTEREST BECOMES DUE, ROUNDED TO THE CENT; THE FRACTION STAYS ACCRUED. THE DUE MONTH IS ZERO ON THE DAYS NO MONTH CLOSES. MODIFICATION HISTORY DATE       BY  CHANGE 2001-09-03 TL  CR-0298 ORIGINAL VERSION.",
+      "source": "pangaea/copybooks/ACCRREC.cpy:14",
+      "fields": [
+        {
+          "level": 5,
+          "name": "AC-ACCT-NO",
+          "start": 1,
+          "length": 10,
+          "picture": "9(10)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 10,
+          "source": "pangaea/copybooks/ACCRREC.cpy:15"
+        },
+        {
+          "level": 5,
+          "name": "AC-THROUGH-DATE",
+          "start": 11,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/ACCRREC.cpy:16"
+        },
+        {
+          "level": 5,
+          "name": "AC-ACCRUED",
+          "start": 19,
+          "length": 7,
+          "picture": "S9(7)V9(6)",
+          "usage": "COMP-3",
+          "category": "numeric",
+          "digits": 13,
+          "scale": 6,
+          "signed": true,
+          "source": "pangaea/copybooks/ACCRREC.cpy:17"
+        },
+        {
+          "level": 5,
+          "name": "AC-DUE",
+          "start": 26,
+          "length": 5,
+          "picture": "S9(7)V99",
+          "usage": "COMP-3",
+          "category": "numeric",
+          "digits": 9,
+          "scale": 2,
+          "signed": true,
+          "source": "pangaea/copybooks/ACCRREC.cpy:18"
+        },
+        {
+          "level": 5,
+          "name": "AC-DUE-MONTH",
+          "start": 31,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 6,
+          "source": "pangaea/copybooks/ACCRREC.cpy:19"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 37,
+          "length": 4,
+          "picture": "X(4)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/ACCRREC.cpy:20"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "ACCT-IN",
+      "copybook": "ACCTMAST",
+      "level": 1,
+      "name": "ACCT-MASTER-RECORD",
+      "start": 1,
+      "length": 100,
+      "category": "group",
+      "description": "ACCTMAST: ACCOUNT MASTER RECORD, 100 BYTES IN ACCOUNT NUMBER ORDER. THE BALANCE MAY GO BELOW ZERO DOWN TO THE OVERDRAFT LIMIT, AND BELOW THAT ONLY BY FEES. MODIFICATION HISTORY DATE       BY  CHANGE 1987-03-12 JA  ORIGINAL VERSION. 1994-11-14 PK  CR-0201 OVERDRAFT LIMIT, FROM THE FILLER. 1999-01-11 SL  Y2K: 8-DIGIT DATES.",
+      "source": "pangaea/copybooks/ACCTMAST.cpy:12",
+      "fields": [
+        {
+          "level": 5,
+          "name": "AM-ACCT-NO",
+          "start": 1,
+          "length": 10,
+          "picture": "9(10)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 10,
+          "source": "pangaea/copybooks/ACCTMAST.cpy:13"
+        },
+        {
+          "level": 5,
+          "name": "AM-CUST-NO",
+          "start": 11,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/ACCTMAST.cpy:14"
+        },
+        {
+          "level": 5,
+          "name": "AM-SHORT-NAME",
+          "start": 19,
+          "length": 20,
+          "picture": "X(20)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/ACCTMAST.cpy:15"
+        },
+        {
+          "level": 5,
+          "name": "AM-ACCT-TYPE",
+          "start": 39,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "conditions": [
+            {
+              "name": "AM-CURRENT",
+              "values": [
+                "'C'"
+              ],
+              "source": "pangaea/copybooks/ACCTMAST.cpy:17"
+            },
+            {
+              "name": "AM-SAVINGS",
+              "values": [
+                "'S'"
+              ],
+              "source": "pangaea/copybooks/ACCTMAST.cpy:18"
+            }
+          ],
+          "source": "pangaea/copybooks/ACCTMAST.cpy:16"
+        },
+        {
+          "level": 5,
+          "name": "AM-STATUS",
+          "start": 40,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "conditions": [
+            {
+              "name": "AM-OPEN",
+              "values": [
+                "'O'"
+              ],
+              "source": "pangaea/copybooks/ACCTMAST.cpy:20"
+            },
+            {
+              "name": "AM-FROZEN",
+              "values": [
+                "'F'"
+              ],
+              "source": "pangaea/copybooks/ACCTMAST.cpy:21"
+            },
+            {
+              "name": "AM-CLOSED",
+              "values": [
+                "'X'"
+              ],
+              "source": "pangaea/copybooks/ACCTMAST.cpy:22"
+            }
+          ],
+          "source": "pangaea/copybooks/ACCTMAST.cpy:19"
+        },
+        {
+          "level": 5,
+          "name": "AM-OPEN-DATE",
+          "start": 41,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/ACCTMAST.cpy:23"
+        },
+        {
+          "level": 5,
+          "name": "AM-LAST-ACTIVITY-DATE",
+          "start": 49,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/ACCTMAST.cpy:24"
+        },
+        {
+          "level": 5,
+          "name": "AM-BALANCE",
+          "start": 57,
+          "length": 13,
+          "picture": "S9(11)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 13,
+          "scale": 2,
+          "signed": true,
+          "source": "pangaea/copybooks/ACCTMAST.cpy:25"
+        },
+        {
+          "level": 5,
+          "name": "AM-OVERDRAFT-LIMIT",
+          "start": 70,
+          "length": 9,
+          "picture": "9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 9,
+          "scale": 2,
+          "source": "pangaea/copybooks/ACCTMAST.cpy:26"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 79,
+          "length": 22,
+          "picture": "X(22)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/ACCTMAST.cpy:27"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "AUDIT-IN",
+      "copybook": "AUDITREC",
+      "level": 1,
+      "name": "AUDIT-RECORD",
+      "start": 1,
+      "length": 100,
+      "category": "group",
+      "description": "AUDITREC: AUDIT TRAIL RECORD, 100 BYTES, ONE PER POSTING THE AMOUNT IS SIGNED: CREDITS POSITIVE, DEBITS NEGATIVE.",
+      "source": "pangaea/copybooks/AUDITREC.cpy:5",
+      "fields": [
+        {
+          "level": 5,
+          "name": "AU-BUSINESS-DATE",
+          "start": 1,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/AUDITREC.cpy:6"
+        },
+        {
+          "level": 5,
+          "name": "AU-TRAN-ID",
+          "start": 9,
+          "length": 10,
+          "picture": "9(10)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 10,
+          "source": "pangaea/copybooks/AUDITREC.cpy:7"
+        },
+        {
+          "level": 5,
+          "name": "AU-ACCT-NO",
+          "start": 19,
+          "length": 10,
+          "picture": "9(10)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 10,
+          "source": "pangaea/copybooks/AUDITREC.cpy:8"
+        },
+        {
+          "level": 5,
+          "name": "AU-TRAN-CODE",
+          "start": 29,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/AUDITREC.cpy:9"
+        },
+        {
+          "level": 5,
+          "name": "AU-AMOUNT",
+          "start": 31,
+          "length": 11,
+          "picture": "S9(9)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 11,
+          "scale": 2,
+          "signed": true,
+          "source": "pangaea/copybooks/AUDITREC.cpy:10"
+        },
+        {
+          "level": 5,
+          "name": "AU-BALANCE-BEFORE",
+          "start": 42,
+          "length": 13,
+          "picture": "S9(11)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 13,
+          "scale": 2,
+          "signed": true,
+          "source": "pangaea/copybooks/AUDITREC.cpy:11"
+        },
+        {
+          "level": 5,
+          "name": "AU-BALANCE-AFTER",
+          "start": 55,
+          "length": 13,
+          "picture": "S9(11)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 13,
+          "scale": 2,
+          "signed": true,
+          "source": "pangaea/copybooks/AUDITREC.cpy:12"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 68,
+          "length": 33,
+          "picture": "X(33)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/AUDITREC.cpy:13"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "STMT-OUT",
+      "level": 1,
+      "name": "STMT-LINE",
+      "start": 1,
+      "length": 80,
+      "picture": "X(80)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "source": "pangaea/programs/STMTPRT.cbl:59"
+    },
+    {
+      "section": "file",
+      "file": "REPORT-OUT",
+      "level": 1,
+      "name": "REPORT-LINE",
+      "start": 1,
+      "length": 80,
+      "picture": "X(80)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "source": "pangaea/programs/STMTPRT.cbl:61"
+    },
+    {
+      "section": "file",
+      "file": "STMT-SORT",
+      "level": 1,
+      "name": "SORT-RECORD",
+      "start": 1,
+      "length": 75,
+      "category": "group",
+      "source": "pangaea/programs/STMTPRT.cbl:63",
+      "fields": [
+        {
+          "level": 5,
+          "name": "SR-ACCT-NO",
+          "start": 1,
+          "length": 10,
+          "picture": "9(10)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 10,
+          "source": "pangaea/programs/STMTPRT.cbl:64"
+        },
+        {
+          "level": 5,
+          "name": "SR-DATE",
+          "start": 11,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/programs/STMTPRT.cbl:65"
+        },
+        {
+          "level": 5,
+          "name": "SR-SEQ",
+          "start": 19,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/programs/STMTPRT.cbl:66"
+        },
+        {
+          "level": 5,
+          "name": "SR-TRAN-ID",
+          "start": 27,
+          "length": 10,
+          "picture": "9(10)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 10,
+          "source": "pangaea/programs/STMTPRT.cbl:67"
+        },
+        {
+          "level": 5,
+          "name": "SR-TRAN-CODE",
+          "start": 37,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/STMTPRT.cbl:68"
+        },
+        {
+          "level": 5,
+          "name": "SR-AMOUNT",
+          "start": 39,
+          "length": 11,
+          "picture": "S9(9)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 11,
+          "scale": 2,
+          "signed": true,
+          "source": "pangaea/programs/STMTPRT.cbl:69"
+        },
+        {
+          "level": 5,
+          "name": "SR-BALANCE-BEFORE",
+          "start": 50,
+          "length": 13,
+          "picture": "S9(11)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 13,
+          "scale": 2,
+          "signed": true,
+          "source": "pangaea/programs/STMTPRT.cbl:70"
+        },
+        {
+          "level": 5,
+          "name": "SR-BALANCE-AFTER",
+          "start": 63,
+          "length": 13,
+          "picture": "S9(11)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 13,
+          "scale": 2,
+          "signed": true,
+          "source": "pangaea/programs/STMTPRT.cbl:71"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-FILE-STATUSES",
+      "start": 1,
+      "length": 10,
+      "category": "group",
+      "source": "pangaea/programs/STMTPRT.cbl:74",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-ACCR-IN-STATUS",
+          "start": 1,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/STMTPRT.cbl:75"
+        },
+        {
+          "level": 5,
+          "name": "WS-ACCT-IN-STATUS",
+          "start": 3,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/STMTPRT.cbl:76"
+        },
+        {
+          "level": 5,
+          "name": "WS-AUDIT-STATUS",
+          "start": 5,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/STMTPRT.cbl:77"
+        },
+        {
+          "level": 5,
+          "name": "WS-STMT-STATUS",
+          "start": 7,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/STMTPRT.cbl:78"
+        },
+        {
+          "level": 5,
+          "name": "WS-REPORT-STATUS",
+          "start": 9,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/STMTPRT.cbl:79"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ABORT-MESSAGE",
+      "start": 1,
+      "length": 40,
+      "picture": "X(40)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "source": "pangaea/programs/STMTPRT.cbl:81"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-SWITCHES",
+      "start": 1,
+      "length": 2,
+      "category": "group",
+      "source": "pangaea/programs/STMTPRT.cbl:82",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-MASTER-END-SW",
+          "start": 1,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'N'"
+          ],
+          "conditions": [
+            {
+              "name": "MASTER-AT-END",
+              "values": [
+                "'Y'"
+              ],
+              "source": "pangaea/programs/STMTPRT.cbl:84"
+            }
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:83"
+        },
+        {
+          "level": 5,
+          "name": "WS-POSTING-END-SW",
+          "start": 2,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'N'"
+          ],
+          "conditions": [
+            {
+              "name": "POSTINGS-AT-END",
+              "values": [
+                "'Y'"
+              ],
+              "source": "pangaea/programs/STMTPRT.cbl:86"
+            }
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:85"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-CLOSED-MONTH",
+      "start": 1,
+      "length": 6,
+      "category": "group",
+      "description": "THE MONTH THAT CLOSED AND THE ONE AFTER IT, WHOSE FIRST BUSINESS DAY POSTED THE CLOSED MONTH'S INTEREST AND FEES.",
+      "source": "pangaea/programs/STMTPRT.cbl:90",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-CM-YEAR",
+          "start": 1,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 4,
+          "source": "pangaea/programs/STMTPRT.cbl:91"
+        },
+        {
+          "level": 5,
+          "name": "WS-CM-MONTH",
+          "start": 5,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 2,
+          "source": "pangaea/programs/STMTPRT.cbl:92"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-CLOSED-MONTH-NUMBER",
+      "start": 1,
+      "length": 6,
+      "picture": "9(6)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "digits": 6,
+      "redefines": "WS-CLOSED-MONTH",
+      "source": "pangaea/programs/STMTPRT.cbl:93"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-NEXT-MONTH",
+      "start": 1,
+      "length": 6,
+      "category": "group",
+      "source": "pangaea/programs/STMTPRT.cbl:95",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-NM-YEAR",
+          "start": 1,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 4,
+          "source": "pangaea/programs/STMTPRT.cbl:96"
+        },
+        {
+          "level": 5,
+          "name": "WS-NM-MONTH",
+          "start": 5,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 2,
+          "source": "pangaea/programs/STMTPRT.cbl:97"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-POSTING-MONTH",
+      "start": 1,
+      "length": 6,
+      "picture": "X(6)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "source": "pangaea/programs/STMTPRT.cbl:98"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-POSTING-CODE",
+      "start": 1,
+      "length": 2,
+      "picture": "XX",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "conditions": [
+        {
+          "name": "WS-MONTH-END-CODE",
+          "values": [
+            "'IN'",
+            "'OD'",
+            "'MF'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:100"
+        }
+      ],
+      "source": "pangaea/programs/STMTPRT.cbl:99"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-POSTING-KEY",
+      "start": 1,
+      "length": 10,
+      "picture": "X(10)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "description": "THE KEY OF THE POSTING IN HAND: HIGH-VALUES AFTER THE LAST.",
+      "source": "pangaea/programs/STMTPRT.cbl:103"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-SEQ",
+      "start": 1,
+      "length": 8,
+      "picture": "9(8)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "digits": 8,
+      "values": [
+        "0"
+      ],
+      "source": "pangaea/programs/STMTPRT.cbl:104"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-MONTH-NAME-VALUES",
+      "start": 1,
+      "length": 108,
+      "category": "group",
+      "source": "pangaea/programs/STMTPRT.cbl:106",
+      "fields": [
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 1,
+          "length": 9,
+          "picture": "X(9)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'JANUARY'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:107"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 10,
+          "length": 9,
+          "picture": "X(9)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'FEBRUARY'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:108"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 19,
+          "length": 9,
+          "picture": "X(9)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'MARCH'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:109"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 28,
+          "length": 9,
+          "picture": "X(9)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'APRIL'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:110"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 37,
+          "length": 9,
+          "picture": "X(9)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'MAY'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:111"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 46,
+          "length": 9,
+          "picture": "X(9)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'JUNE'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:112"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 55,
+          "length": 9,
+          "picture": "X(9)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'JULY'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:113"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 64,
+          "length": 9,
+          "picture": "X(9)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'AUGUST'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:114"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 73,
+          "length": 9,
+          "picture": "X(9)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'SEPTEMBER'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:115"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 82,
+          "length": 9,
+          "picture": "X(9)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'OCTOBER'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:116"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 91,
+          "length": 9,
+          "picture": "X(9)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'NOVEMBER'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:117"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 100,
+          "length": 9,
+          "picture": "X(9)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'DECEMBER'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:118"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-MONTH-NAMES",
+      "start": 1,
+      "length": 108,
+      "category": "group",
+      "redefines": "WS-MONTH-NAME-VALUES",
+      "source": "pangaea/programs/STMTPRT.cbl:119",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-MONTH-NAME",
+          "start": 1,
+          "length": 9,
+          "picture": "X(9)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "occurs": 12,
+          "source": "pangaea/programs/STMTPRT.cbl:120"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-CODE-VALUES",
+      "start": 1,
+      "length": 198,
+      "category": "group",
+      "description": "WHAT EACH TRANSACTION CODE SAYS ON A STATEMENT.",
+      "source": "pangaea/programs/STMTPRT.cbl:123",
+      "fields": [
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 1,
+          "length": 22,
+          "picture": "X(22)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'DPDEPOSIT'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:124"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 23,
+          "length": 22,
+          "picture": "X(22)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'WDWITHDRAWAL'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:126"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 45,
+          "length": 22,
+          "picture": "X(22)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'FEFEE'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:128"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 67,
+          "length": 22,
+          "picture": "X(22)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'TRTRANSFER OUT'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:130"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 89,
+          "length": 22,
+          "picture": "X(22)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'TCTRANSFER IN'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:132"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 111,
+          "length": 22,
+          "picture": "X(22)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'RTTRANSFER RETURNED'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:134"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 133,
+          "length": 22,
+          "picture": "X(22)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'INCREDIT INTEREST'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:136"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 155,
+          "length": 22,
+          "picture": "X(22)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'ODOVERDRAFT INTEREST'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:138"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 177,
+          "length": 22,
+          "picture": "X(22)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'MFMAINTENANCE FEE'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:140"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-CODE-TABLE",
+      "start": 1,
+      "length": 198,
+      "category": "group",
+      "redefines": "WS-CODE-VALUES",
+      "source": "pangaea/programs/STMTPRT.cbl:142",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-CODE-ENTRY",
+          "start": 1,
+          "length": 22,
+          "category": "group",
+          "occurs": 9,
+          "indexedBy": [
+            "WS-CX"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:143",
+          "fields": [
+            {
+              "level": 10,
+              "name": "WS-CODE",
+              "start": 1,
+              "length": 2,
+              "picture": "XX",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "source": "pangaea/programs/STMTPRT.cbl:145"
+            },
+            {
+              "level": 10,
+              "name": "WS-CODE-TEXT",
+              "start": 3,
+              "length": 20,
+              "picture": "X(20)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "source": "pangaea/programs/STMTPRT.cbl:146"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-STATEMENT",
+      "start": 1,
+      "length": 52,
+      "category": "group",
+      "source": "pangaea/programs/STMTPRT.cbl:148",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-OPENING",
+          "start": 1,
+          "length": 13,
+          "picture": "S9(11)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 13,
+          "scale": 2,
+          "signed": true,
+          "source": "pangaea/programs/STMTPRT.cbl:149"
+        },
+        {
+          "level": 5,
+          "name": "WS-CLOSING",
+          "start": 14,
+          "length": 13,
+          "picture": "S9(11)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 13,
+          "scale": 2,
+          "signed": true,
+          "source": "pangaea/programs/STMTPRT.cbl:150"
+        },
+        {
+          "level": 5,
+          "name": "WS-CREDITS",
+          "start": 27,
+          "length": 13,
+          "picture": "S9(11)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 13,
+          "scale": 2,
+          "signed": true,
+          "source": "pangaea/programs/STMTPRT.cbl:151"
+        },
+        {
+          "level": 5,
+          "name": "WS-DEBITS",
+          "start": 40,
+          "length": 13,
+          "picture": "S9(11)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 13,
+          "scale": 2,
+          "signed": true,
+          "source": "pangaea/programs/STMTPRT.cbl:152"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-TOTALS",
+      "start": 1,
+      "length": 62,
+      "category": "group",
+      "source": "pangaea/programs/STMTPRT.cbl:154",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-ACCOUNT-COUNT",
+          "start": 1,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:155"
+        },
+        {
+          "level": 5,
+          "name": "WS-STATEMENT-COUNT",
+          "start": 9,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:156"
+        },
+        {
+          "level": 5,
+          "name": "WS-SELECTED-COUNT",
+          "start": 17,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:157"
+        },
+        {
+          "level": 5,
+          "name": "WS-PRINTED-COUNT",
+          "start": 25,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:158"
+        },
+        {
+          "level": 5,
+          "name": "WS-CREDIT-TOTAL",
+          "start": 33,
+          "length": 15,
+          "picture": "S9(13)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 15,
+          "scale": 2,
+          "signed": true,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:159"
+        },
+        {
+          "level": 5,
+          "name": "WS-DEBIT-TOTAL",
+          "start": 48,
+          "length": 15,
+          "picture": "S9(13)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 15,
+          "scale": 2,
+          "signed": true,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:160"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-RULE-LINE",
+      "start": 1,
+      "length": 80,
+      "picture": "X(80)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "values": [
+        "ALL '='"
+      ],
+      "source": "pangaea/programs/STMTPRT.cbl:162"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-TITLE-LINE",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "source": "pangaea/programs/STMTPRT.cbl:163",
+      "fields": [
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 1,
+          "length": 48,
+          "picture": "X(48)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'FIRST BANK OF PANGAEA'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:164"
+        },
+        {
+          "level": 5,
+          "name": "WS-TL-PERIOD",
+          "start": 49,
+          "length": 32,
+          "picture": "X(32)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/STMTPRT.cbl:166"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ACCOUNT-LINE",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "source": "pangaea/programs/STMTPRT.cbl:167",
+      "fields": [
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 1,
+          "length": 8,
+          "picture": "X(8)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'ACCOUNT'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:168"
+        },
+        {
+          "level": 5,
+          "name": "WS-AL-ACCT-NO",
+          "start": 9,
+          "length": 10,
+          "picture": "9(10)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 10,
+          "source": "pangaea/programs/STMTPRT.cbl:169"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 19,
+          "length": 3,
+          "picture": "X(3)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "SPACES"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:170"
+        },
+        {
+          "level": 5,
+          "name": "WS-AL-NAME",
+          "start": 22,
+          "length": 20,
+          "picture": "X(20)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/STMTPRT.cbl:171"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 42,
+          "length": 16,
+          "picture": "X(16)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "SPACES"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:172"
+        },
+        {
+          "level": 5,
+          "name": "WS-AL-KIND",
+          "start": 58,
+          "length": 23,
+          "picture": "X(23)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/STMTPRT.cbl:173"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-HEADING-LINE",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "source": "pangaea/programs/STMTPRT.cbl:174",
+      "fields": [
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 1,
+          "length": 12,
+          "picture": "X(12)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'DATE'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:175"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 13,
+          "length": 12,
+          "picture": "X(12)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'TRANSACTION'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:176"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 25,
+          "length": 20,
+          "picture": "X(20)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'DESCRIPTION'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:178"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 45,
+          "length": 16,
+          "picture": "X(16)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'          AMOUNT'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:180"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 61,
+          "length": 19,
+          "picture": "X(19)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'            BALANCE'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:182"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 80,
+          "length": 1,
+          "picture": "X(1)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "SPACES"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:184"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-DATE",
+      "start": 1,
+      "length": 8,
+      "picture": "9(8)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "digits": 8,
+      "source": "pangaea/programs/STMTPRT.cbl:185"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-DATE-PARTS",
+      "start": 1,
+      "length": 8,
+      "category": "group",
+      "redefines": "WS-DATE",
+      "source": "pangaea/programs/STMTPRT.cbl:186",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-DATE-YEAR",
+          "start": 1,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 4,
+          "source": "pangaea/programs/STMTPRT.cbl:187"
+        },
+        {
+          "level": 5,
+          "name": "WS-DATE-MONTH",
+          "start": 5,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 2,
+          "source": "pangaea/programs/STMTPRT.cbl:188"
+        },
+        {
+          "level": 5,
+          "name": "WS-DATE-DAY",
+          "start": 7,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 2,
+          "source": "pangaea/programs/STMTPRT.cbl:189"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-POSTING-LINE",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "source": "pangaea/programs/STMTPRT.cbl:190",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-PL-DATE",
+          "start": 1,
+          "length": 10,
+          "category": "group",
+          "source": "pangaea/programs/STMTPRT.cbl:191",
+          "fields": [
+            {
+              "level": 10,
+              "name": "WS-PL-YEAR",
+              "start": 1,
+              "length": 4,
+              "picture": "9(4)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "digits": 4,
+              "source": "pangaea/programs/STMTPRT.cbl:192"
+            },
+            {
+              "level": 10,
+              "name": "FILLER",
+              "start": 5,
+              "length": 1,
+              "picture": "X",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "values": [
+                "'-'"
+              ],
+              "source": "pangaea/programs/STMTPRT.cbl:193"
+            },
+            {
+              "level": 10,
+              "name": "WS-PL-MONTH",
+              "start": 6,
+              "length": 2,
+              "picture": "99",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "digits": 2,
+              "source": "pangaea/programs/STMTPRT.cbl:194"
+            },
+            {
+              "level": 10,
+              "name": "FILLER",
+              "start": 8,
+              "length": 1,
+              "picture": "X",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "values": [
+                "'-'"
+              ],
+              "source": "pangaea/programs/STMTPRT.cbl:195"
+            },
+            {
+              "level": 10,
+              "name": "WS-PL-DAY",
+              "start": 9,
+              "length": 2,
+              "picture": "99",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "digits": 2,
+              "source": "pangaea/programs/STMTPRT.cbl:196"
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 11,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "SPACES"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:197"
+        },
+        {
+          "level": 5,
+          "name": "WS-PL-TRAN-ID",
+          "start": 13,
+          "length": 10,
+          "picture": "9(10)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 10,
+          "source": "pangaea/programs/STMTPRT.cbl:198"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 23,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "SPACES"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:199"
+        },
+        {
+          "level": 5,
+          "name": "WS-PL-DESCRIPTION",
+          "start": 25,
+          "length": 20,
+          "picture": "X(20)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/STMTPRT.cbl:200"
+        },
+        {
+          "level": 5,
+          "name": "WS-PL-AMOUNT",
+          "start": 45,
+          "length": 17,
+          "picture": "Z,ZZZ,ZZZ,ZZ9.99-",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "source": "pangaea/programs/STMTPRT.cbl:201"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 62,
+          "length": 1,
+          "picture": "X(1)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "SPACES"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:202"
+        },
+        {
+          "level": 5,
+          "name": "WS-PL-BALANCE",
+          "start": 63,
+          "length": 18,
+          "picture": "ZZ,ZZZ,ZZZ,ZZ9.99-",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "source": "pangaea/programs/STMTPRT.cbl:203"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-BALANCE-LINE",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "source": "pangaea/programs/STMTPRT.cbl:204",
+      "fields": [
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 1,
+          "length": 12,
+          "picture": "X(12)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "SPACES"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:205"
+        },
+        {
+          "level": 5,
+          "name": "WS-BL-LABEL",
+          "start": 13,
+          "length": 50,
+          "picture": "X(50)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/STMTPRT.cbl:206"
+        },
+        {
+          "level": 5,
+          "name": "WS-BL-BALANCE",
+          "start": 63,
+          "length": 18,
+          "picture": "ZZ,ZZZ,ZZZ,ZZ9.99-",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "source": "pangaea/programs/STMTPRT.cbl:207"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-SUM-LINE",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "source": "pangaea/programs/STMTPRT.cbl:208",
+      "fields": [
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 1,
+          "length": 12,
+          "picture": "X(12)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "SPACES"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:209"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 13,
+          "length": 8,
+          "picture": "X(8)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'CREDITS'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:210"
+        },
+        {
+          "level": 5,
+          "name": "WS-SL-CREDITS",
+          "start": 21,
+          "length": 17,
+          "picture": "ZZ,ZZZ,ZZZ,ZZ9.99",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "source": "pangaea/programs/STMTPRT.cbl:211"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 38,
+          "length": 4,
+          "picture": "X(4)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "SPACES"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:212"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 42,
+          "length": 7,
+          "picture": "X(7)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'DEBITS'"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:213"
+        },
+        {
+          "level": 5,
+          "name": "WS-SL-DEBITS",
+          "start": 49,
+          "length": 17,
+          "picture": "ZZ,ZZZ,ZZZ,ZZ9.99",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "source": "pangaea/programs/STMTPRT.cbl:214"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 66,
+          "length": 15,
+          "picture": "X(15)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "SPACES"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:215"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REPORT-COUNT-LINE",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "source": "pangaea/programs/STMTPRT.cbl:217",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-RC-LABEL",
+          "start": 1,
+          "length": 30,
+          "picture": "X(30)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/STMTPRT.cbl:218"
+        },
+        {
+          "level": 5,
+          "name": "WS-RC-VALUE",
+          "start": 31,
+          "length": 10,
+          "picture": "ZZ,ZZZ,ZZ9",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "source": "pangaea/programs/STMTPRT.cbl:219"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 41,
+          "length": 40,
+          "picture": "X(40)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "SPACES"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:220"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REPORT-AMOUNT-LINE",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "source": "pangaea/programs/STMTPRT.cbl:221",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-RA-LABEL",
+          "start": 1,
+          "length": 30,
+          "picture": "X(30)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/STMTPRT.cbl:222"
+        },
+        {
+          "level": 5,
+          "name": "WS-RA-VALUE",
+          "start": 31,
+          "length": 21,
+          "picture": "Z,ZZZ,ZZZ,ZZZ,ZZ9.99-",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "source": "pangaea/programs/STMTPRT.cbl:223"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 52,
+          "length": 29,
+          "picture": "X(29)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "SPACES"
+          ],
+          "source": "pangaea/programs/STMTPRT.cbl:224"
+        }
+      ]
+    }
+  ],
+  "paragraphs": [
+    {
+      "name": "0000-MAIN",
+      "description": "FIND THE MONTH THAT CLOSED, IF ONE DID, AND PRINT ITS STATEMENTS FROM THE SORTED POSTINGS.",
+      "source": "pangaea/programs/STMTPRT.cbl:229",
+      "performs": [
+        {
+          "target": "1000-INITIALIZE",
+          "source": "pangaea/programs/STMTPRT.cbl:230"
+        },
+        {
+          "target": "9900-ABORT",
+          "source": "pangaea/programs/STMTPRT.cbl:238"
+        },
+        {
+          "target": "8000-WRITE-REPORT",
+          "source": "pangaea/programs/STMTPRT.cbl:241"
+        },
+        {
+          "target": "9000-CLOSE-FILES",
+          "source": "pangaea/programs/STMTPRT.cbl:242"
+        }
+      ]
+    },
+    {
+      "name": "1000-INITIALIZE",
+      "description": "OPEN THE FILES AND TAKE THE CLOSED MONTH FROM THE ACCRUALS.",
+      "source": "pangaea/programs/STMTPRT.cbl:247",
+      "performedBy": [
+        "0000-MAIN"
+      ]
+    },
+    {
+      "name": "2000-SELECT-POSTINGS",
+      "description": "RELEASE THE POSTINGS OF THE CLOSED MONTH, AND THE INTEREST AND FEES POSTED FOR IT ON THE FIRST BUSINESS DAY OF THE NEXT.",
+      "source": "pangaea/programs/STMTPRT.cbl:270",
+      "performs": [
+        {
+          "target": "2100-RELEASE-POSTING",
+          "source": "pangaea/programs/STMTPRT.cbl:279"
+        },
+        {
+          "target": "9900-ABORT",
+          "source": "pangaea/programs/STMTPRT.cbl:285"
+        }
+      ]
+    },
+    {
+      "name": "2100-RELEASE-POSTING",
+      "description": "RELEASE ONE POSTING TO THE SORT.",
+      "source": "pangaea/programs/STMTPRT.cbl:289",
+      "performedBy": [
+        "2000-SELECT-POSTINGS"
+      ]
+    },
+    {
+      "name": "3000-PRINT-STATEMENTS",
+      "description": "PRINT A STATEMENT FOR EACH ACCOUNT OF THE MASTER, WITH ITS SORTED POSTINGS. EVERY POSTING MUST BELONG TO AN ACCOUNT.",
+      "source": "pangaea/programs/STMTPRT.cbl:303",
+      "performs": [
+        {
+          "target": "3100-RETURN-POSTING",
+          "source": "pangaea/programs/STMTPRT.cbl:304"
+        },
+        {
+          "target": "3200-READ-MASTER",
+          "source": "pangaea/programs/STMTPRT.cbl:305"
+        },
+        {
+          "target": "9900-ABORT",
+          "source": "pangaea/programs/STMTPRT.cbl:309"
+        },
+        {
+          "target": "3300-PRINT-STATEMENT",
+          "source": "pangaea/programs/STMTPRT.cbl:311"
+        },
+        {
+          "target": "3200-READ-MASTER",
+          "source": "pangaea/programs/STMTPRT.cbl:312"
+        },
+        {
+          "target": "9900-ABORT",
+          "source": "pangaea/programs/STMTPRT.cbl:316"
+        }
+      ]
+    },
+    {
+      "name": "3100-RETURN-POSTING",
+      "description": "RETURN THE NEXT SORTED POSTING.",
+      "source": "pangaea/programs/STMTPRT.cbl:320",
+      "performedBy": [
+        "3000-PRINT-STATEMENTS",
+        "3300-PRINT-STATEMENT"
+      ]
+    },
+    {
+      "name": "3200-READ-MASTER",
+      "description": "READ THE NEXT ACCOUNT OF THE MASTER.",
+      "source": "pangaea/programs/STMTPRT.cbl:330",
+      "performedBy": [
+        "3000-PRINT-STATEMENTS"
+      ]
+    },
+    {
+      "name": "3300-PRINT-STATEMENT",
+      "description": "PRINT ONE ACCOUNT'S STATEMENT, UNLESS IT IS CLOSED AND HAS NOTHING TO SHOW.",
+      "source": "pangaea/programs/STMTPRT.cbl:340",
+      "performs": [
+        {
+          "target": "3400-PRINT-HEADING",
+          "source": "pangaea/programs/STMTPRT.cbl:351"
+        },
+        {
+          "target": "3500-PRINT-POSTING",
+          "source": "pangaea/programs/STMTPRT.cbl:353"
+        },
+        {
+          "target": "3100-RETURN-POSTING",
+          "source": "pangaea/programs/STMTPRT.cbl:354"
+        },
+        {
+          "target": "3600-PRINT-CLOSING",
+          "source": "pangaea/programs/STMTPRT.cbl:356"
+        }
+      ],
+      "performedBy": [
+        "3000-PRINT-STATEMENTS"
+      ]
+    },
+    {
+      "name": "3400-PRINT-HEADING",
+      "description": "PRINT THE STATEMENT'S HEADING AND OPENING BALANCE.",
+      "source": "pangaea/programs/STMTPRT.cbl:360",
+      "performedBy": [
+        "3300-PRINT-STATEMENT"
+      ]
+    },
+    {
+      "name": "3500-PRINT-POSTING",
+      "description": "PRINT ONE POSTING, DESCRIBED BY ITS TRANSACTION CODE.",
+      "source": "pangaea/programs/STMTPRT.cbl:389",
+      "performedBy": [
+        "3300-PRINT-STATEMENT"
+      ]
+    },
+    {
+      "name": "3600-PRINT-CLOSING",
+      "description": "PRINT THE CLOSING BALANCE AND THE MONTH'S CREDITS AND DEBITS.",
+      "source": "pangaea/programs/STMTPRT.cbl:414",
+      "performedBy": [
+        "3300-PRINT-STATEMENT"
+      ]
+    },
+    {
+      "name": "8000-WRITE-REPORT",
+      "description": "WRITE THE STATEMENT RUN'S REPORT. EVERY POSTING SELECTED MUST HAVE BEEN PRINTED.",
+      "source": "pangaea/programs/STMTPRT.cbl:428",
+      "performs": [
+        {
+          "target": "9900-ABORT",
+          "source": "pangaea/programs/STMTPRT.cbl:463"
+        }
+      ],
+      "performedBy": [
+        "0000-MAIN"
+      ]
+    },
+    {
+      "name": "9000-CLOSE-FILES",
+      "description": "CLOSE ALL FILES.",
+      "source": "pangaea/programs/STMTPRT.cbl:467",
+      "performedBy": [
+        "0000-MAIN",
+        "9900-ABORT"
+      ]
+    },
+    {
+      "name": "9900-ABORT",
+      "description": "STOP THE RUN WITH RETURN CODE 16, SAYING WHY.",
+      "source": "pangaea/programs/STMTPRT.cbl:471",
+      "performs": [
+        {
+          "target": "9000-CLOSE-FILES",
+          "source": "pangaea/programs/STMTPRT.cbl:473"
+        }
+      ],
+      "performedBy": [
+        "0000-MAIN",
+        "2000-SELECT-POSTINGS",
+        "3000-PRINT-STATEMENTS",
+        "8000-WRITE-REPORT"
+      ]
+    }
+  ]
+}

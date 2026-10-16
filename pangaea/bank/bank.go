@@ -23,19 +23,23 @@ import (
 var StartDate = generate.NewDate(2026, 9, 1)
 
 // Bank is a bank in a directory: its datasets, every generation of them,
-// under datasets/, and each day's job log and reports under sysout/DATE/.
+// under datasets/, and each day's job log and reports under sysout/DATE/,
+// those of the month-end job under sysout/DATE/MONTHLY/.
 type Bank struct {
-	Dir       string
-	Programs  string // the compiled COBOL programs
-	Copybooks string
-	DailyJob  string
+	Dir        string
+	Programs   string // the compiled COBOL programs
+	Copybooks  string
+	DailyJob   string
+	MonthlyJob string
 }
 
-// Day is the outcome of one business day.
+// Day is the outcome of one business day: the daily batch's steps, and on
+// the first business day of a month the month-end job's.
 type Day struct {
 	Date         generate.Date
 	Transactions int
 	Results      []runner.Result
+	MonthEnd     []runner.Result
 	Rejects      int
 }
 
@@ -107,12 +111,16 @@ func (b Bank) RunDays(n int, report func(Day)) error {
 	if err != nil {
 		return err
 	}
-	job, err := b.job()
+	daily, err := parseJob(b.DailyJob)
+	if err != nil {
+		return err
+	}
+	monthly, err := parseJob(b.MonthlyJob)
 	if err != nil {
 		return err
 	}
 	for range n {
-		day, err := b.runDay(g, job)
+		day, err := b.runDay(g, daily, monthly)
 		if err != nil {
 			return err
 		}
@@ -121,7 +129,9 @@ func (b Bank) RunDays(n int, report func(Day)) error {
 	return nil
 }
 
-func (b Bank) runDay(g *generate.Generator, job *jcl.Job) (Day, error) {
+// runDay runs a business day: the daily batch, and on the first business
+// day of a month the month-end job after it, as a scheduler would.
+func (b Bank) runDay(g *generate.Generator, daily, monthly *jcl.Job) (Day, error) {
 	store, err := dataset.Open(b.datasets())
 	if err != nil {
 		return Day{}, err
@@ -147,20 +157,37 @@ func (b Bank) runDay(g *generate.Generator, job *jcl.Job) (Day, error) {
 		return Day{}, err
 	}
 
-	r := runner.Runner{Programs: b.Programs, Datasets: store, Sysout: b.sysout(date)}
-	results, err := r.Run(job)
-	day := Day{Date: date, Transactions: len(file) - 2, Results: results}
-	if err != nil {
+	day := Day{Date: date, Transactions: len(file) - 2}
+	if day.Results, err = b.runJob(store, daily, b.sysout(date)); err != nil {
 		return day, fmt.Errorf("%s: %w", date, err)
+	}
+	rejects, err := store.Read(latest(store, "TRAN.REJECTS"))
+	if err != nil {
+		return day, err
+	}
+	day.Rejects = len(rejects)
+	if date.FirstBusinessDayOfMonth() {
+		if day.MonthEnd, err = b.runJob(store, monthly, filepath.Join(b.sysout(date), monthly.Name)); err != nil {
+			return day, fmt.Errorf("%s: %w", date, err)
+		}
+	}
+	return day, nil
+}
+
+// runJob runs a job, which must go through: no step may end above RC 4,
+// be bypassed or abend.
+func (b Bank) runJob(store *dataset.Store, job *jcl.Job, sysout string) ([]runner.Result, error) {
+	r := runner.Runner{Programs: b.Programs, Datasets: store, Sysout: sysout}
+	results, err := r.Run(job)
+	if err != nil {
+		return results, err
 	}
 	for _, result := range results {
 		if result.RC > 4 || result.Bypassed || result.Abended {
-			return day, fmt.Errorf("%s: the daily batch did not go through, at step %s; see %s", date, result.Step, r.Sysout)
+			return results, fmt.Errorf("job %s did not go through, at step %s; see %s", job.Name, result.Step, sysout)
 		}
 	}
-	rejects, err := store.Read(latest(store, "TRAN.REJECTS"))
-	day.Rejects = len(rejects)
-	return day, err
+	return results, nil
 }
 
 func (b Bank) businessDate(g *generate.Generator, store *dataset.Store) (generate.Date, error) {
@@ -206,10 +233,14 @@ func (b Bank) generator(seed uint64) (*generate.Generator, error) {
 	return &generate.Generator{Layouts: layouts, Seed: seed}, nil
 }
 
-func (b Bank) job() (*jcl.Job, error) {
-	data, err := os.ReadFile(b.DailyJob)
+func parseJob(path string) (*jcl.Job, error) {
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return jcl.Parse(bytes.NewReader(data))
+	job, err := jcl.Parse(bytes.NewReader(data))
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", path, err)
+	}
+	return job, nil
 }

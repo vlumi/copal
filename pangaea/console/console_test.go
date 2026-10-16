@@ -20,7 +20,7 @@ func TestConsole(t *testing.T) {
 	if _, err := compile.Programs("../programs", "../copybooks", programs); err != nil {
 		t.Fatal(err)
 	}
-	b := bank.Bank{Dir: t.TempDir(), Programs: programs, Copybooks: "../copybooks", DailyJob: "../jobs/DAILY.jcl"}
+	b := bank.Bank{Dir: t.TempDir(), Programs: programs, Copybooks: "../copybooks", DailyJob: "../jobs/DAILY.jcl", MonthlyJob: "../jobs/MONTHLY.jcl"}
 	c, err := New(b)
 	if err != nil {
 		t.Fatal(err)

@@ -20,7 +20,7 @@ func TestDaysAreReproducible(t *testing.T) {
 	}
 	var trees []map[string][]byte
 	for range 2 {
-		b := Bank{Dir: t.TempDir(), Programs: programs, Copybooks: "../copybooks", DailyJob: "../jobs/DAILY.jcl"}
+		b := Bank{Dir: t.TempDir(), Programs: programs, Copybooks: "../copybooks", DailyJob: "../jobs/DAILY.jcl", MonthlyJob: "../jobs/MONTHLY.jcl"}
 		if err := b.Reset(7, 300); err != nil {
 			t.Fatal(err)
 		}
@@ -72,6 +72,9 @@ func checkDays(t *testing.T, days []Day) {
 			t.Errorf("%s: %d transactions, %d rejects", d.Date, d.Transactions, d.Rejects)
 		}
 		rejects += d.Rejects
+		if monthEnd := len(d.MonthEnd) > 0; monthEnd != (i == 0) {
+			t.Errorf("%s: month-end job run %v, want it on the first business day of the month only", d.Date, monthEnd)
+		}
 	}
 	if rejects == 0 {
 		t.Error("three days without a single reject")

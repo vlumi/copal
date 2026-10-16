@@ -143,7 +143,7 @@ func parseJob(path string) (*jcl.Job, error) {
 
 func bankFlags(name string) (*flag.FlagSet, *bank.Bank) {
 	flags := flag.NewFlagSet(name, flag.ExitOnError)
-	b := &bank.Bank{Copybooks: "pangaea/copybooks", DailyJob: "pangaea/jobs/DAILY.jcl"}
+	b := &bank.Bank{Copybooks: "pangaea/copybooks", DailyJob: "pangaea/jobs/DAILY.jcl", MonthlyJob: "pangaea/jobs/MONTHLY.jcl"}
 	flags.StringVar(&b.Dir, "bank", "pangaea/run/bank", "directory of the running bank")
 	flags.StringVar(&b.Programs, "programs", "pangaea/build", "directory of the compiled programs")
 	return flags, b
@@ -170,7 +170,11 @@ func days(args []string) error {
 		for _, r := range d.Results {
 			rc = max(rc, r.RC)
 		}
-		fmt.Printf("%s  %5d transactions  %4d rejects  RC=%04d\n", d.Date, d.Transactions, d.Rejects, rc)
+		monthEnd := ""
+		if len(d.MonthEnd) > 0 {
+			monthEnd = "  and the month-end job"
+		}
+		fmt.Printf("%s  %5d transactions  %4d rejects  RC=%04d%s\n", d.Date, d.Transactions, d.Rejects, rc, monthEnd)
 	})
 }
 
