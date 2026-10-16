@@ -83,13 +83,11 @@ type names struct {
 
 func newNames(records *layout.ProgramRecords) *names {
 	n := &names{conditions: map[string]string{}, records: map[string][]string{}, files: map[string]string{}}
-	all := records.WorkingStorage
 	for _, f := range records.Files {
 		for _, r := range f.Records {
 			n.records[f.File] = append(n.records[f.File], r.Name)
 			n.files[r.Name] = f.File
 		}
-		all = append(all, f.Records...)
 	}
 	var index func(f *layout.Field)
 	index = func(f *layout.Field) {
@@ -100,7 +98,7 @@ func newNames(records *layout.ProgramRecords) *names {
 			index(child)
 		}
 	}
-	for _, r := range all {
+	for _, r := range records.All() {
 		index(r)
 	}
 	return n

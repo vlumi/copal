@@ -150,6 +150,7 @@ func programMarkdown(dir string, p Program) string {
 			strings.Join(para.PerformedBy, ", "), strings.Join(para.ReachedBy, ", ")))
 	}
 
+	writeCalls(&b, dir, p)
 	writeDataFlow(&b, dir, p)
 	writeOrigins(&b, p)
 
@@ -157,8 +158,11 @@ func programMarkdown(dir string, p Program) string {
 	for _, r := range p.Records {
 		fmt.Fprintf(&b, "\n### %s\n\n", r.Name)
 		where := "Working storage"
-		if r.File != "" {
+		switch {
+		case r.File != "":
 			where = "File " + r.File
+		case r.Section == "linkage":
+			where = "Linkage"
 		}
 		if r.Copybook != "" {
 			fmt.Fprintf(&b, "%s. %d bytes, layout in copybook [%s](../copybooks/%s.md).\n", where, r.Length, r.Copybook, r.Copybook)
