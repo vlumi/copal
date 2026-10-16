@@ -11,6 +11,7 @@ const style = `<style>
 .box.data { fill: #e8eef6; stroke: #8c959f }
 .box.dashed { stroke-dasharray: 4 3 }
 .label { fill: #1f2328 }
+.label.first { font-weight: 600 }
 .edge { fill: none; stroke: #8c959f; stroke-width: 1.2 }
 .edge.dashed { stroke-dasharray: 4 3 }
 .edge.dotted { stroke-dasharray: 1 3 }
@@ -69,7 +70,7 @@ const arrowLength = 8
 // the arrowhead's base takes over, and arrives there vertically.
 func (l *layout) writeEdge(b *strings.Builder, e routedEdge) {
 	from, last := e.chain[0], len(e.chain)-1
-	x, y := port(from, from.below, e.chain[1]), l.top(from)+boxHeight
+	x, y := port(from, from.below, e.chain[1]), l.bottom(from)
 	if e.reversed {
 		y += arrowLength
 	}
@@ -84,7 +85,7 @@ func (l *layout) writeEdge(b *strings.Builder, e routedEdge) {
 		path += fmt.Sprintf(" C%d,%d %d,%d %d,%d", x, mid, nx, mid, nx, ny)
 		x, y = nx, ny
 		if s.node < 0 {
-			y += boxHeight
+			y = l.bottom(s)
 			path += fmt.Sprintf(" L%d,%d", x, y)
 		}
 	}
@@ -120,7 +121,14 @@ func (l *layout) writeNode(b *strings.Builder, s *slot, n Node) {
 	if n.Data {
 		radius = boxHeight / 2
 	}
-	fmt.Fprintf(b, `<rect class="%s" x="%d" y="%d" width="%d" height="%d" rx="%d"/>`, class, s.x, top, s.width, boxHeight, radius)
-	fmt.Fprintf(b, `<text class="label" x="%d" y="%d" text-anchor="middle">%s</text>`, s.center(), top+boxHeight/2+4, label(n.Label))
+	fmt.Fprintf(b, `<rect class="%s" x="%d" y="%d" width="%d" height="%d" rx="%d"/>`, class, s.x, top, s.width, s.height, radius)
+	lines := strings.Split(n.Label, "\n")
+	for i, line := range lines {
+		class := "label"
+		if i == 0 && len(lines) > 1 {
+			class += " first"
+		}
+		fmt.Fprintf(b, `<text class="%s" x="%d" y="%d" text-anchor="middle">%s</text>`, class, s.center(), top+boxHeight/2+4+i*lineHeight, label(line))
+	}
 	b.WriteString(end + "\n")
 }

@@ -35,6 +35,19 @@ Program [MONCHG.cbl](../../../pangaea/programs/MONCHG.cbl): 5 files, 10 paragrap
 - [Paragraphs](#paragraphs)
 - [Data flow](#data-flow)
 - [Lineage](#lineage)
+  - [Into BANK-CONTROL-RECORD](#into-bank-control-record)
+  - [Into ACCT-MASTER-RECORD](#into-acct-master-record)
+  - [Into ACCRUAL-RECORD](#into-accrual-record)
+  - [Into TRAN-OUT-RECORD](#into-tran-out-record)
+  - [Into REPORT-LINE](#into-report-line)
+  - [Into WS-BUSINESS-DATE](#into-ws-business-date)
+  - [Into WS-CLOSED-MONTH](#into-ws-closed-month)
+  - [Into WS-TRAN-ID](#into-ws-tran-id)
+  - [Into TRAN-RECORD](#into-tran-record)
+  - [Into WS-TOTALS](#into-ws-totals)
+  - [Into WS-REPORT-COUNT-LINE](#into-ws-report-count-line)
+  - [Into WS-REPORT-AMOUNT-LINE](#into-ws-report-amount-line)
+  - [Into files](#into-files)
 - [Records](#records)
   - [BANK-CONTROL-RECORD](#bank-control-record)
   - [ACCT-MASTER-RECORD](#acct-master-record)
@@ -101,54 +114,142 @@ Program [MONCHG.cbl](../../../pangaea/programs/MONCHG.cbl): 5 files, 10 paragrap
 
 ## Lineage
 
-Where each data item's values come from, and which records go to which files.
+Where each data item's values come from, grouped by the record they go into. A data item links to the record it belongs to.
+
+### Into BANK-CONTROL-RECORD
+
+Record [BANK-CONTROL-RECORD](#bank-control-record), from copybook [BANKCTL](../copybooks/BANKCTL.md).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| BANK-CONTROL-RECORD | file CONTROL-FILE | READ | 1000-INITIALIZE | [MONCHG.cbl:130](../../../pangaea/programs/MONCHG.cbl#L130) |
+
+### Into ACCT-MASTER-RECORD
+
+Record [ACCT-MASTER-RECORD](#acct-master-record), from copybook [ACCTMAST](../copybooks/ACCTMAST.md).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| ACCT-MASTER-RECORD | file ACCT-IN | READ | 1200-READ-ACCOUNT | [MONCHG.cbl:141](../../../pangaea/programs/MONCHG.cbl#L141) |
+
+### Into ACCRUAL-RECORD
+
+Record [ACCRUAL-RECORD](#accrual-record), from copybook [ACCRREC](../copybooks/ACCRREC.md).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
 | ACCRUAL-RECORD | file ACCR-IN | READ | 1200-READ-ACCOUNT | [MONCHG.cbl:145](../../../pangaea/programs/MONCHG.cbl#L145) |
-| ACCT-MASTER-RECORD | file ACCT-IN | READ | 1200-READ-ACCOUNT | [MONCHG.cbl:141](../../../pangaea/programs/MONCHG.cbl#L141) |
-| BANK-CONTROL-RECORD | file CONTROL-FILE | READ | 1000-INITIALIZE | [MONCHG.cbl:130](../../../pangaea/programs/MONCHG.cbl#L130) |
-| REPORT-LINE | WS-BUSINESS-DATE | STRING | 8000-WRITE-REPORT | [MONCHG.cbl:222](../../../pangaea/programs/MONCHG.cbl#L222) |
-| REPORT-LINE | WS-CLOSED-MONTH | STRING | 8000-WRITE-REPORT | [MONCHG.cbl:233](../../../pangaea/programs/MONCHG.cbl#L233) |
-| REPORT-LINE | WS-REPORT-COUNT-LINE | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:240](../../../pangaea/programs/MONCHG.cbl#L240) |
-| REPORT-LINE | WS-REPORT-AMOUNT-LINE | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:243](../../../pangaea/programs/MONCHG.cbl#L243) |
-| REPORT-LINE | WS-REPORT-COUNT-LINE | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:246](../../../pangaea/programs/MONCHG.cbl#L246) |
-| REPORT-LINE | WS-REPORT-AMOUNT-LINE | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:249](../../../pangaea/programs/MONCHG.cbl#L249) |
-| REPORT-LINE | WS-REPORT-COUNT-LINE | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:252](../../../pangaea/programs/MONCHG.cbl#L252) |
-| REPORT-LINE | WS-REPORT-AMOUNT-LINE | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:255](../../../pangaea/programs/MONCHG.cbl#L255) |
-| REPORT-LINE | WS-REPORT-COUNT-LINE | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:258](../../../pangaea/programs/MONCHG.cbl#L258) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:225](../../../pangaea/programs/MONCHG.cbl#L225) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:227](../../../pangaea/programs/MONCHG.cbl#L227) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:230](../../../pangaea/programs/MONCHG.cbl#L230) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:235](../../../pangaea/programs/MONCHG.cbl#L235) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:237](../../../pangaea/programs/MONCHG.cbl#L237) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:240](../../../pangaea/programs/MONCHG.cbl#L240) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:243](../../../pangaea/programs/MONCHG.cbl#L243) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:246](../../../pangaea/programs/MONCHG.cbl#L246) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:249](../../../pangaea/programs/MONCHG.cbl#L249) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:252](../../../pangaea/programs/MONCHG.cbl#L252) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:255](../../../pangaea/programs/MONCHG.cbl#L255) |
-| file REPORT-OUT | REPORT-LINE | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:258](../../../pangaea/programs/MONCHG.cbl#L258) |
-| TD-ACCT-NO | AM-ACCT-NO | MOVE | 2900-WRITE-TRAN | [MONCHG.cbl:216](../../../pangaea/programs/MONCHG.cbl#L216) |
-| TD-AMOUNT | AC-DUE | MOVE | 2100-SETTLE-INTEREST | [MONCHG.cbl:176](../../../pangaea/programs/MONCHG.cbl#L176) |
-| TD-AMOUNT | AC-DUE | COMPUTE | 2100-SETTLE-INTEREST | [MONCHG.cbl:183](../../../pangaea/programs/MONCHG.cbl#L183) |
-| TD-AMOUNT | WS-MAINTENANCE-FEE | MOVE | 2200-CHARGE-FEE | [MONCHG.cbl:199](../../../pangaea/programs/MONCHG.cbl#L199) |
-| TD-TRAN-ID | WS-TRAN-ID | MOVE | 2900-WRITE-TRAN | [MONCHG.cbl:215](../../../pangaea/programs/MONCHG.cbl#L215) |
-| file TRAN-OUT | TRAN-OUT-RECORD | WRITE | 2900-WRITE-TRAN | [MONCHG.cbl:217](../../../pangaea/programs/MONCHG.cbl#L217) |
-| TRAN-OUT-RECORD | TRAN-RECORD | WRITE | 2900-WRITE-TRAN | [MONCHG.cbl:217](../../../pangaea/programs/MONCHG.cbl#L217) |
-| WS-BUSINESS-DATE | BC-BUSINESS-DATE | MOVE | 1000-INITIALIZE | [MONCHG.cbl:135](../../../pangaea/programs/MONCHG.cbl#L135) |
-| WS-CLOSED-MONTH | AC-DUE-MONTH | MOVE | 2000-CHARGE-ACCOUNT | [MONCHG.cbl:163](../../../pangaea/programs/MONCHG.cbl#L163) |
-| WS-FEE-TOTAL | TD-AMOUNT | ADD | 2200-CHARGE-FEE | [MONCHG.cbl:203](../../../pangaea/programs/MONCHG.cbl#L203) |
-| WS-INTEREST-TOTAL | TD-AMOUNT | ADD | 2100-SETTLE-INTEREST | [MONCHG.cbl:180](../../../pangaea/programs/MONCHG.cbl#L180) |
-| WS-OVERDRAFT-TOTAL | TD-AMOUNT | ADD | 2100-SETTLE-INTEREST | [MONCHG.cbl:187](../../../pangaea/programs/MONCHG.cbl#L187) |
-| WS-RA-VALUE | WS-INTEREST-TOTAL | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:242](../../../pangaea/programs/MONCHG.cbl#L242) |
-| WS-RA-VALUE | WS-OVERDRAFT-TOTAL | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:248](../../../pangaea/programs/MONCHG.cbl#L248) |
-| WS-RA-VALUE | WS-FEE-TOTAL | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:254](../../../pangaea/programs/MONCHG.cbl#L254) |
-| WS-RC-VALUE | WS-INTEREST-COUNT | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:239](../../../pangaea/programs/MONCHG.cbl#L239) |
-| WS-RC-VALUE | WS-OVERDRAFT-COUNT | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:245](../../../pangaea/programs/MONCHG.cbl#L245) |
-| WS-RC-VALUE | WS-FEE-COUNT | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:251](../../../pangaea/programs/MONCHG.cbl#L251) |
-| WS-RC-VALUE | WS-WAIVED-COUNT | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:257](../../../pangaea/programs/MONCHG.cbl#L257) |
-| WS-TI-YYMM | WS-CM-YYMM | MOVE | 2000-CHARGE-ACCOUNT | [MONCHG.cbl:164](../../../pangaea/programs/MONCHG.cbl#L164) |
+
+### Into TRAN-OUT-RECORD
+
+Record [TRAN-OUT-RECORD](#tran-out-record).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| TRAN-OUT-RECORD | [TRAN-RECORD](#tran-record) | WRITE | 2900-WRITE-TRAN | [MONCHG.cbl:217](../../../pangaea/programs/MONCHG.cbl#L217) |
+
+### Into REPORT-LINE
+
+Record [REPORT-LINE](#report-line).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| REPORT-LINE | [WS-BUSINESS-DATE](#ws-business-date) | STRING | 8000-WRITE-REPORT | [MONCHG.cbl:222](../../../pangaea/programs/MONCHG.cbl#L222) |
+| REPORT-LINE | [WS-CLOSED-MONTH](#ws-closed-month) | STRING | 8000-WRITE-REPORT | [MONCHG.cbl:233](../../../pangaea/programs/MONCHG.cbl#L233) |
+| REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:240](../../../pangaea/programs/MONCHG.cbl#L240) |
+| REPORT-LINE | [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:243](../../../pangaea/programs/MONCHG.cbl#L243) |
+| REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:246](../../../pangaea/programs/MONCHG.cbl#L246) |
+| REPORT-LINE | [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:249](../../../pangaea/programs/MONCHG.cbl#L249) |
+| REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:252](../../../pangaea/programs/MONCHG.cbl#L252) |
+| REPORT-LINE | [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:255](../../../pangaea/programs/MONCHG.cbl#L255) |
+| REPORT-LINE | [WS-REPORT-COUNT-LINE](#ws-report-count-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:258](../../../pangaea/programs/MONCHG.cbl#L258) |
+
+### Into WS-BUSINESS-DATE
+
+Record [WS-BUSINESS-DATE](#ws-business-date).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-BUSINESS-DATE | [BC-BUSINESS-DATE](#bank-control-record "in BANK-CONTROL-RECORD") | MOVE | 1000-INITIALIZE | [MONCHG.cbl:135](../../../pangaea/programs/MONCHG.cbl#L135) |
+
+### Into WS-CLOSED-MONTH
+
+Record [WS-CLOSED-MONTH](#ws-closed-month).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-CLOSED-MONTH | [AC-DUE-MONTH](#accrual-record "in ACCRUAL-RECORD") | MOVE | 2000-CHARGE-ACCOUNT | [MONCHG.cbl:163](../../../pangaea/programs/MONCHG.cbl#L163) |
+
+### Into WS-TRAN-ID
+
+Record [WS-TRAN-ID](#ws-tran-id).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-TI-YYMM | [WS-CM-YYMM](#ws-closed-month-parts "in WS-CLOSED-MONTH-PARTS") | MOVE | 2000-CHARGE-ACCOUNT | [MONCHG.cbl:164](../../../pangaea/programs/MONCHG.cbl#L164) |
+
+### Into TRAN-RECORD
+
+Record [TRAN-RECORD](#tran-record), from copybook [TRANREC](../copybooks/TRANREC.md).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| TD-ACCT-NO | [AM-ACCT-NO](#acct-master-record "in ACCT-MASTER-RECORD") | MOVE | 2900-WRITE-TRAN | [MONCHG.cbl:216](../../../pangaea/programs/MONCHG.cbl#L216) |
+| TD-AMOUNT | [AC-DUE](#accrual-record "in ACCRUAL-RECORD") | MOVE | 2100-SETTLE-INTEREST | [MONCHG.cbl:176](../../../pangaea/programs/MONCHG.cbl#L176) |
+| TD-AMOUNT | [AC-DUE](#accrual-record "in ACCRUAL-RECORD") | COMPUTE | 2100-SETTLE-INTEREST | [MONCHG.cbl:183](../../../pangaea/programs/MONCHG.cbl#L183) |
+| TD-AMOUNT | [WS-MAINTENANCE-FEE](#ws-maintenance-fee) | MOVE | 2200-CHARGE-FEE | [MONCHG.cbl:199](../../../pangaea/programs/MONCHG.cbl#L199) |
+| TD-TRAN-ID | [WS-TRAN-ID](#ws-tran-id) | MOVE | 2900-WRITE-TRAN | [MONCHG.cbl:215](../../../pangaea/programs/MONCHG.cbl#L215) |
+
+### Into WS-TOTALS
+
+Record [WS-TOTALS](#ws-totals).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-FEE-TOTAL | [TD-AMOUNT](#tran-record "in TRAN-RECORD") | ADD | 2200-CHARGE-FEE | [MONCHG.cbl:203](../../../pangaea/programs/MONCHG.cbl#L203) |
+| WS-INTEREST-TOTAL | [TD-AMOUNT](#tran-record "in TRAN-RECORD") | ADD | 2100-SETTLE-INTEREST | [MONCHG.cbl:180](../../../pangaea/programs/MONCHG.cbl#L180) |
+| WS-OVERDRAFT-TOTAL | [TD-AMOUNT](#tran-record "in TRAN-RECORD") | ADD | 2100-SETTLE-INTEREST | [MONCHG.cbl:187](../../../pangaea/programs/MONCHG.cbl#L187) |
+
+### Into WS-REPORT-COUNT-LINE
+
+Record [WS-REPORT-COUNT-LINE](#ws-report-count-line).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-RC-VALUE | [WS-INTEREST-COUNT](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:239](../../../pangaea/programs/MONCHG.cbl#L239) |
+| WS-RC-VALUE | [WS-OVERDRAFT-COUNT](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:245](../../../pangaea/programs/MONCHG.cbl#L245) |
+| WS-RC-VALUE | [WS-FEE-COUNT](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:251](../../../pangaea/programs/MONCHG.cbl#L251) |
+| WS-RC-VALUE | [WS-WAIVED-COUNT](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:257](../../../pangaea/programs/MONCHG.cbl#L257) |
+
+### Into WS-REPORT-AMOUNT-LINE
+
+Record [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-RA-VALUE | [WS-INTEREST-TOTAL](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:242](../../../pangaea/programs/MONCHG.cbl#L242) |
+| WS-RA-VALUE | [WS-OVERDRAFT-TOTAL](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:248](../../../pangaea/programs/MONCHG.cbl#L248) |
+| WS-RA-VALUE | [WS-FEE-TOTAL](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:254](../../../pangaea/programs/MONCHG.cbl#L254) |
+
+### Into files
+
+Records written to files.
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:225](../../../pangaea/programs/MONCHG.cbl#L225) |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:227](../../../pangaea/programs/MONCHG.cbl#L227) |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:230](../../../pangaea/programs/MONCHG.cbl#L230) |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:235](../../../pangaea/programs/MONCHG.cbl#L235) |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:237](../../../pangaea/programs/MONCHG.cbl#L237) |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:240](../../../pangaea/programs/MONCHG.cbl#L240) |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:243](../../../pangaea/programs/MONCHG.cbl#L243) |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:246](../../../pangaea/programs/MONCHG.cbl#L246) |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:249](../../../pangaea/programs/MONCHG.cbl#L249) |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:252](../../../pangaea/programs/MONCHG.cbl#L252) |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:255](../../../pangaea/programs/MONCHG.cbl#L255) |
+| file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:258](../../../pangaea/programs/MONCHG.cbl#L258) |
+| file TRAN-OUT | [TRAN-OUT-RECORD](#tran-out-record) | WRITE | 2900-WRITE-TRAN | [MONCHG.cbl:217](../../../pangaea/programs/MONCHG.cbl#L217) |
 
 ## Records
 
