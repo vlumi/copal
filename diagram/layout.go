@@ -30,11 +30,20 @@ type Node struct {
 	Emphasis bool
 }
 
-// Edge is an arrow from one node to another.
+// Edge is an arrow from one node to another, drawn in a style.
 type Edge struct {
 	From, To string
-	Dashed   bool
+	Style    Style
 }
+
+// Style is how an edge's line is drawn.
+type Style string
+
+const (
+	Solid  Style = ""
+	Dashed Style = "dashed"
+	Dotted Style = "dotted"
+)
 
 // Sizes in pixels. Labels are set in a monospace font, so their width
 // follows from their length.
@@ -51,14 +60,13 @@ const (
 // slot is a box or, for an edge that spans several layers, a waypoint the
 // edge passes through on an intermediate layer.
 type slot struct {
-	node   int // index in Graph.Nodes, or -1 for a waypoint
-	layer  int
-	order  float64
-	x      int // left edge
-	width  int
-	above  []*slot // slots in the layer above with an edge to this one
-	below  []*slot
-	dashed bool // for a waypoint: whether its edge is dashed
+	node  int // index in Graph.Nodes, or -1 for a waypoint
+	layer int
+	order float64
+	x     int // left edge
+	width int
+	above []*slot // slots in the layer above with an edge to this one
+	below []*slot
 }
 
 func (s *slot) center() int { return s.x + s.width/2 }
@@ -76,7 +84,7 @@ type layout struct {
 // waypoints. The arrow points at the bottom end unless the edge is reversed.
 type routedEdge struct {
 	chain    []*slot
-	dashed   bool
+	style    Style
 	reversed bool
 }
 
@@ -102,7 +110,7 @@ func newLayout(g Graph) (*layout, error) {
 
 type indexedEdge struct {
 	from, to int
-	dashed   bool
+	style    Style
 	reversed bool // turned around to break a cycle; the arrow points at from
 }
 
@@ -122,7 +130,7 @@ func forwardEdges(g Graph, index map[string]int) ([]indexedEdge, error) {
 			continue
 		}
 		seen[[2]int{from, to}] = true
-		edges = append(edges, indexedEdge{from: from, to: to, dashed: e.Dashed})
+		edges = append(edges, indexedEdge{from: from, to: to, style: e.Style})
 	}
 	back := backEdges(len(g.Nodes), edges)
 	for i := range edges {
@@ -226,7 +234,7 @@ func (l *layout) route(edges []indexedEdge) {
 		from, to := l.nodes[e.from], l.nodes[e.to]
 		chain := []*slot{from}
 		for layer := from.layer + 1; layer < to.layer; layer++ {
-			waypoint := &slot{node: -1, layer: layer, order: from.order, width: dummyWidth, dashed: e.dashed}
+			waypoint := &slot{node: -1, layer: layer, order: from.order, width: dummyWidth}
 			l.add(waypoint)
 			chain = append(chain, waypoint)
 		}
@@ -235,7 +243,7 @@ func (l *layout) route(edges []indexedEdge) {
 			chain[i-1].below = append(chain[i-1].below, chain[i])
 			chain[i].above = append(chain[i].above, chain[i-1])
 		}
-		l.edges = append(l.edges, routedEdge{chain: chain, dashed: e.dashed, reversed: e.reversed})
+		l.edges = append(l.edges, routedEdge{chain: chain, style: e.style, reversed: e.reversed})
 	}
 }
 
