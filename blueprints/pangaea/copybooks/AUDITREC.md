@@ -1,5 +1,10 @@
 # AUDITREC
 
+```text
+AUDITREC: AUDIT TRAIL RECORD, 100 BYTES, ONE PER POSTING
+THE AMOUNT IS SIGNED: CREDITS POSITIVE, DEBITS NEGATIVE.
+```
+
 Copybook [AUDITREC.cpy](../../../pangaea/copybooks/AUDITREC.cpy), used by [TXPOST](../programs/TXPOST.md).
 
 ## AUDIT-RECORD

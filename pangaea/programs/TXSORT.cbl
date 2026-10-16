@@ -6,9 +6,18 @@
       * KEEP THE ORDER OF THEIR TRANSACTION IDS.                       *
       *                                                                *
       * RETURN CODES: 0 SORTED, 16 SORT FAILED.                        *
+      *                                                                *
+      * MODIFICATION HISTORY                                           *
+      * DATE       BY  CHANGE                                          *
+      * 1987-03-12 JA  ORIGINAL VERSION.                               *
+      * 1993-02-08 PK  CR-0142 KEEP TRANSACTION ID ORDER WITHIN AN     *
+      *                ACCOUNT.                                        *
       *================================================================*
        IDENTIFICATION DIVISION.
        PROGRAM-ID. TXSORT.
+       AUTHOR. J. ARKWRIGHT, BATCH SYSTEMS.
+       INSTALLATION. FIRST BANK OF PANGAEA, DATA CENTRE.
+       DATE-WRITTEN. 1987-03-12.
 
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
@@ -33,6 +42,7 @@
            05  FILLER                  PIC X(59).
 
        PROCEDURE DIVISION.
+      * SORT BY ACCOUNT NUMBER, THEN TRANSACTION ID.
        0000-MAIN.
            SORT SORT-WORK
                ON ASCENDING KEY SR-ACCT-NO SR-TRAN-ID

@@ -14,9 +14,22 @@
       *                                                                *
       * RETURN CODES: 0 ALL POSTED, 4 SOME REJECTED,                   *
       *               16 INPUT OUT OF ORDER, OUT OF BALANCE OR I/O.    *
+      *                                                                *
+      * MODIFICATION HISTORY                                           *
+      * DATE       BY  CHANGE                                          *
+      * 1987-04-02 JA  ORIGINAL VERSION.                               *
+      * 1994-11-14 PK  CR-0201 OVERDRAFT LIMITS.                       *
+      * 1999-01-11 SL  Y2K: 8-DIGIT DATES IN THE AUDIT TRAIL.          *
+      * 2003-05-26 MV  CR-0352 FEES POST EVEN PAST THE OVERDRAFT       *
+      *                LIMIT.                                          *
+      * 2011-08-15 MV  CR-0471 RECONCILE THE NEW MASTER BEFORE         *
+      *                ENDING THE RUN.                                 *
       *================================================================*
        IDENTIFICATION DIVISION.
        PROGRAM-ID. TXPOST.
+       AUTHOR. J. ARKWRIGHT, BATCH SYSTEMS.
+       INSTALLATION. FIRST BANK OF PANGAEA, DATA CENTRE.
+       DATE-WRITTEN. 1987-04-02.
 
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
@@ -114,6 +127,7 @@
            05  FILLER                  PIC X(29)      VALUE SPACES.
 
        PROCEDURE DIVISION.
+      * MATCH UNTIL BOTH FILES END, THEN RECONCILE AND REPORT.
        0000-MAIN.
            PERFORM 1000-INITIALIZE
            PERFORM 2000-MATCH
@@ -129,6 +143,7 @@
            END-IF
            STOP RUN.
 
+      * OPEN THE FILES AND READ THE FIRST RECORD OF EACH.
        1000-INITIALIZE.
            OPEN INPUT  CONTROL-FILE ACCT-IN TRAN-IN
                 OUTPUT ACCT-OUT AUDIT-OUT REJECT-OUT REPORT-OUT
@@ -153,6 +168,7 @@
            PERFORM 1200-READ-MASTER
            PERFORM 1300-READ-TRAN.
 
+      * READ THE NEXT OLD MASTER RECORD, CHECKING ACCOUNT ORDER.
        1200-READ-MASTER.
            READ ACCT-IN
                AT END
@@ -169,6 +185,7 @@
                    ADD AM-BALANCE TO WS-OPENING-TOTAL
            END-READ.
 
+      * READ THE NEXT TRANSACTION, CHECKING ITS ORDER.
        1300-READ-TRAN.
            READ TRAN-IN
                AT END
@@ -184,6 +201,9 @@
                    MOVE WS-TRAN-ORDER-KEY TO WS-PREV-TRAN-ORDER-KEY
            END-READ.
 
+      * ONE STEP OF THE MATCH, BY WHICHEVER KEY IS LOWER: REJECT A
+      * TRANSACTION FOR A MISSING ACCOUNT, APPLY ONE TO ITS ACCOUNT, OR
+      * WRITE A FINISHED ACCOUNT.
        2000-MATCH.
            EVALUATE TRUE
                WHEN WS-TRAN-KEY < WS-MASTER-KEY
@@ -198,6 +218,7 @@
                    PERFORM 1200-READ-MASTER
            END-EVALUATE.
 
+      * APPLY ONE TRANSACTION TO ITS ACCOUNT BY THE POSTING RULES.
        3000-APPLY-TRAN.
            MOVE AM-BALANCE TO WS-BALANCE-BEFORE
            EVALUATE TRUE
@@ -215,12 +236,14 @@
                    PERFORM 3200-POST-WITHDRAWAL
            END-EVALUATE.
 
+      * CREDIT A DEPOSIT.
        3100-POST-DEPOSIT.
            ADD TD-AMOUNT TO AM-BALANCE
            ADD TD-AMOUNT TO WS-DEPOSIT-TOTAL
            MOVE TD-AMOUNT TO WS-SIGNED-AMOUNT
            PERFORM 3800-WRITE-AUDIT.
 
+      * DEBIT A WITHDRAWAL IF IT STAYS WITHIN THE OVERDRAFT LIMIT.
        3200-POST-WITHDRAWAL.
            COMPUTE WS-NEW-BALANCE = AM-BALANCE - TD-AMOUNT
            COMPUTE WS-BALANCE-FLOOR = 0 - AM-OVERDRAFT-LIMIT
@@ -234,12 +257,14 @@
                PERFORM 3800-WRITE-AUDIT
            END-IF.
 
+      * DEBIT A FEE, WHATEVER THE BALANCE.
        3300-POST-FEE.
            SUBTRACT TD-AMOUNT FROM AM-BALANCE
            ADD TD-AMOUNT TO WS-FEE-TOTAL
            COMPUTE WS-SIGNED-AMOUNT = 0 - TD-AMOUNT
            PERFORM 3800-WRITE-AUDIT.
 
+      * RECORD A POSTING IN THE AUDIT TRAIL.
        3800-WRITE-AUDIT.
            MOVE WS-BUSINESS-DATE  TO AU-BUSINESS-DATE
                                      AM-LAST-ACTIVITY-DATE
@@ -252,12 +277,14 @@
            WRITE AUDIT-OUT-RECORD FROM AUDIT-RECORD
            ADD 1 TO WS-POSTED-COUNT.
 
+      * WRITE THE TRANSACTION TO THE REJECTS WITH ITS REASON.
        3900-REJECT-TRAN.
            MOVE 'TXPOST' TO RJ-PROGRAM
            MOVE TRAN-RECORD TO RJ-TRAN
            WRITE REJECT-OUT-RECORD FROM REJECT-RECORD
            ADD 1 TO WS-REJECT-COUNT.
 
+      * WRITE AN ACCOUNT, ITS TRANSACTIONS APPLIED, TO THE NEW MASTER.
        4000-WRITE-MASTER.
            WRITE ACCT-OUT-RECORD FROM ACCT-MASTER-RECORD
            ADD 1 TO WS-MASTERS-WRITTEN
@@ -275,6 +302,7 @@
                PERFORM 9900-ABORT
            END-IF.
 
+      * WRITE THE POSTING REPORT.
        8000-WRITE-REPORT.
            MOVE SPACES TO REPORT-LINE
            STRING 'TXPOST   TRANSACTION POSTING     BUSINESS DATE '
@@ -317,10 +345,12 @@
            MOVE 'NEW MASTER IN BALANCE' TO REPORT-LINE
            WRITE REPORT-LINE.
 
+      * CLOSE ALL FILES.
        9000-CLOSE-FILES.
            CLOSE CONTROL-FILE ACCT-IN TRAN-IN
                  ACCT-OUT AUDIT-OUT REJECT-OUT REPORT-OUT.
 
+      * STOP THE RUN WITH RETURN CODE 16, SAYING WHY.
        9900-ABORT.
            DISPLAY 'TXPOST: ' WS-ABORT-MESSAGE
            PERFORM 9000-CLOSE-FILES

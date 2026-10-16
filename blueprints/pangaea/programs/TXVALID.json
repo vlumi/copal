@@ -1,6 +1,42 @@
 {
   "program": "TXVALID",
   "source": "pangaea/programs/TXVALID.cbl",
+  "description": [
+    "TXVALID: VALIDATE THE DAY'S TRANSACTION FILE",
+    "",
+    "CHECKS THE FILE AS A WHOLE: A HEADER FOR TODAY'S BUSINESS",
+    "DATE, THEN DETAILS, THEN A TRAILER WHOSE CONTROL TOTALS MATCH",
+    "THE DETAILS. A FILE THAT FAILS THESE CHECKS IS NOT PROCESSED.",
+    "CHECKS EACH DETAIL'S FIELDS AND WRITES IT EITHER TO THE VALID",
+    "FILE OR TO THE REJECTS. WHETHER THE ACCOUNT EXISTS IS LEFT TO",
+    "POSTING, WHICH READS THE MASTER.",
+    "",
+    "RETURN CODES: 0 ALL VALID, 4 SOME DETAILS REJECTED,",
+    "              12 FILE REJECTED, 16 I/O ERROR.",
+    "",
+    "MODIFICATION HISTORY",
+    "DATE       BY  CHANGE",
+    "1987-03-12 JA  ORIGINAL VERSION.",
+    "1991-06-03 PK  CR-0117 ACCOUNT NUMBER HASH IN THE TRAILER.",
+    "1999-01-11 SL  Y2K: 8-DIGIT BUSINESS DATE FROM THE BANK",
+    "               CONTROL RECORD.",
+    "2004-09-20 PK  CR-0388 REJECT RECORDS OF UNKNOWN TYPE",
+    "               INSTEAD OF STOPPING THE RUN."
+  ],
+  "identification": [
+    {
+      "paragraph": "AUTHOR",
+      "text": "J. ARKWRIGHT, BATCH SYSTEMS."
+    },
+    {
+      "paragraph": "INSTALLATION",
+      "text": "FIRST BANK OF PANGAEA, DATA CENTRE."
+    },
+    {
+      "paragraph": "DATE-WRITTEN",
+      "text": "1987-03-12."
+    }
+  ],
   "files": [
     {
       "name": "CONTROL-FILE",
@@ -11,7 +47,7 @@
       "records": [
         "BANK-CONTROL-RECORD"
       ],
-      "source": "pangaea/programs/TXVALID.cbl:20"
+      "source": "pangaea/programs/TXVALID.cbl:32"
     },
     {
       "name": "TRAN-IN",
@@ -22,7 +58,7 @@
       "records": [
         "TRAN-RECORD"
       ],
-      "source": "pangaea/programs/TXVALID.cbl:23"
+      "source": "pangaea/programs/TXVALID.cbl:35"
     },
     {
       "name": "TRAN-OUT",
@@ -33,7 +69,7 @@
       "records": [
         "TRAN-OUT-RECORD"
       ],
-      "source": "pangaea/programs/TXVALID.cbl:26"
+      "source": "pangaea/programs/TXVALID.cbl:38"
     },
     {
       "name": "REJECT-OUT",
@@ -44,7 +80,7 @@
       "records": [
         "REJECT-OUT-RECORD"
       ],
-      "source": "pangaea/programs/TXVALID.cbl:29"
+      "source": "pangaea/programs/TXVALID.cbl:41"
     },
     {
       "name": "REPORT-OUT",
@@ -55,7 +91,7 @@
       "records": [
         "REPORT-LINE"
       ],
-      "source": "pangaea/programs/TXVALID.cbl:32"
+      "source": "pangaea/programs/TXVALID.cbl:44"
     }
   ],
   "records": [
@@ -68,6 +104,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
+      "description": "BANKCTL: BANK CONTROL RECORD, ONE PER FILE THE BUSINESS DATE THE BATCH RUNS FOR, NEVER THE CLOCK.",
       "source": "pangaea/copybooks/BANKCTL.cpy:5",
       "fields": [
         {
@@ -102,7 +139,8 @@
       "start": 1,
       "length": 80,
       "category": "group",
-      "source": "pangaea/copybooks/TRANREC.cpy:8",
+      "description": "TRANREC: DAILY TRANSACTION FILE RECORD, 80 BYTES ONE HEADER, THE DETAILS, ONE TRAILER, TOLD APART BY THE RECORD TYPE. THE BODY IS REDEFINED FOR EACH RECORD TYPE. THE TRAILER CARRIES THE SENDER'S CONTROL TOTALS: THE DETAIL COUNT, THE SUM OF AMOUNTS AND THE SUM OF ACCOUNT NUMBERS. MODIFICATION HISTORY DATE       BY  CHANGE 1987-03-12 JA  ORIGINAL VERSION. 1991-06-03 PK  CR-0117 ACCOUNT NUMBER HASH IN THE TRAILER.",
+      "source": "pangaea/copybooks/TRANREC.cpy:13",
       "fields": [
         {
           "level": 5,
@@ -118,24 +156,24 @@
               "values": [
                 "'H'"
               ],
-              "source": "pangaea/copybooks/TRANREC.cpy:10"
+              "source": "pangaea/copybooks/TRANREC.cpy:15"
             },
             {
               "name": "TR-DETAIL",
               "values": [
                 "'D'"
               ],
-              "source": "pangaea/copybooks/TRANREC.cpy:11"
+              "source": "pangaea/copybooks/TRANREC.cpy:16"
             },
             {
               "name": "TR-TRAILER",
               "values": [
                 "'T'"
               ],
-              "source": "pangaea/copybooks/TRANREC.cpy:12"
+              "source": "pangaea/copybooks/TRANREC.cpy:17"
             }
           ],
-          "source": "pangaea/copybooks/TRANREC.cpy:9"
+          "source": "pangaea/copybooks/TRANREC.cpy:14"
         },
         {
           "level": 5,
@@ -145,7 +183,7 @@
           "picture": "X(79)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/copybooks/TRANREC.cpy:13"
+          "source": "pangaea/copybooks/TRANREC.cpy:18"
         },
         {
           "level": 5,
@@ -154,7 +192,7 @@
           "length": 79,
           "category": "group",
           "redefines": "TR-BODY",
-          "source": "pangaea/copybooks/TRANREC.cpy:14",
+          "source": "pangaea/copybooks/TRANREC.cpy:19",
           "fields": [
             {
               "level": 10,
@@ -165,7 +203,7 @@
               "usage": "DISPLAY",
               "category": "numeric",
               "digits": 8,
-              "source": "pangaea/copybooks/TRANREC.cpy:15"
+              "source": "pangaea/copybooks/TRANREC.cpy:20"
             },
             {
               "level": 10,
@@ -175,7 +213,7 @@
               "picture": "X(8)",
               "usage": "DISPLAY",
               "category": "alphanumeric",
-              "source": "pangaea/copybooks/TRANREC.cpy:16"
+              "source": "pangaea/copybooks/TRANREC.cpy:21"
             },
             {
               "level": 10,
@@ -186,7 +224,7 @@
               "usage": "DISPLAY",
               "category": "numeric",
               "digits": 6,
-              "source": "pangaea/copybooks/TRANREC.cpy:17"
+              "source": "pangaea/copybooks/TRANREC.cpy:22"
             },
             {
               "level": 10,
@@ -196,7 +234,7 @@
               "picture": "X(57)",
               "usage": "DISPLAY",
               "category": "alphanumeric",
-              "source": "pangaea/copybooks/TRANREC.cpy:18"
+              "source": "pangaea/copybooks/TRANREC.cpy:23"
             }
           ]
         },
@@ -207,7 +245,7 @@
           "length": 79,
           "category": "group",
           "redefines": "TR-BODY",
-          "source": "pangaea/copybooks/TRANREC.cpy:19",
+          "source": "pangaea/copybooks/TRANREC.cpy:24",
           "fields": [
             {
               "level": 10,
@@ -218,7 +256,7 @@
               "usage": "DISPLAY",
               "category": "numeric",
               "digits": 10,
-              "source": "pangaea/copybooks/TRANREC.cpy:20"
+              "source": "pangaea/copybooks/TRANREC.cpy:25"
             },
             {
               "level": 10,
@@ -229,7 +267,7 @@
               "usage": "DISPLAY",
               "category": "numeric",
               "digits": 10,
-              "source": "pangaea/copybooks/TRANREC.cpy:21"
+              "source": "pangaea/copybooks/TRANREC.cpy:26"
             },
             {
               "level": 10,
@@ -245,21 +283,21 @@
                   "values": [
                     "'DP'"
                   ],
-                  "source": "pangaea/copybooks/TRANREC.cpy:23"
+                  "source": "pangaea/copybooks/TRANREC.cpy:28"
                 },
                 {
                   "name": "TD-WITHDRAWAL",
                   "values": [
                     "'WD'"
                   ],
-                  "source": "pangaea/copybooks/TRANREC.cpy:24"
+                  "source": "pangaea/copybooks/TRANREC.cpy:29"
                 },
                 {
                   "name": "TD-FEE",
                   "values": [
                     "'FE'"
                   ],
-                  "source": "pangaea/copybooks/TRANREC.cpy:25"
+                  "source": "pangaea/copybooks/TRANREC.cpy:30"
                 },
                 {
                   "name": "TD-KNOWN-CODE",
@@ -268,10 +306,10 @@
                     "'WD'",
                     "'FE'"
                   ],
-                  "source": "pangaea/copybooks/TRANREC.cpy:26"
+                  "source": "pangaea/copybooks/TRANREC.cpy:31"
                 }
               ],
-              "source": "pangaea/copybooks/TRANREC.cpy:22"
+              "source": "pangaea/copybooks/TRANREC.cpy:27"
             },
             {
               "level": 10,
@@ -283,7 +321,7 @@
               "category": "numeric",
               "digits": 11,
               "scale": 2,
-              "source": "pangaea/copybooks/TRANREC.cpy:27"
+              "source": "pangaea/copybooks/TRANREC.cpy:32"
             },
             {
               "level": 10,
@@ -293,7 +331,7 @@
               "picture": "X(20)",
               "usage": "DISPLAY",
               "category": "alphanumeric",
-              "source": "pangaea/copybooks/TRANREC.cpy:28"
+              "source": "pangaea/copybooks/TRANREC.cpy:33"
             },
             {
               "level": 10,
@@ -303,7 +341,7 @@
               "picture": "X(26)",
               "usage": "DISPLAY",
               "category": "alphanumeric",
-              "source": "pangaea/copybooks/TRANREC.cpy:29"
+              "source": "pangaea/copybooks/TRANREC.cpy:34"
             }
           ]
         },
@@ -314,7 +352,7 @@
           "length": 79,
           "category": "group",
           "redefines": "TR-BODY",
-          "source": "pangaea/copybooks/TRANREC.cpy:30",
+          "source": "pangaea/copybooks/TRANREC.cpy:35",
           "fields": [
             {
               "level": 10,
@@ -325,7 +363,7 @@
               "usage": "DISPLAY",
               "category": "numeric",
               "digits": 8,
-              "source": "pangaea/copybooks/TRANREC.cpy:31"
+              "source": "pangaea/copybooks/TRANREC.cpy:36"
             },
             {
               "level": 10,
@@ -337,7 +375,7 @@
               "category": "numeric",
               "digits": 15,
               "scale": 2,
-              "source": "pangaea/copybooks/TRANREC.cpy:32"
+              "source": "pangaea/copybooks/TRANREC.cpy:37"
             },
             {
               "level": 10,
@@ -348,7 +386,7 @@
               "usage": "DISPLAY",
               "category": "numeric",
               "digits": 15,
-              "source": "pangaea/copybooks/TRANREC.cpy:33"
+              "source": "pangaea/copybooks/TRANREC.cpy:38"
             },
             {
               "level": 10,
@@ -358,7 +396,7 @@
               "picture": "X(41)",
               "usage": "DISPLAY",
               "category": "alphanumeric",
-              "source": "pangaea/copybooks/TRANREC.cpy:34"
+              "source": "pangaea/copybooks/TRANREC.cpy:39"
             }
           ]
         }
@@ -374,7 +412,7 @@
       "picture": "X(80)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
-      "source": "pangaea/programs/TXVALID.cbl:43"
+      "source": "pangaea/programs/TXVALID.cbl:55"
     },
     {
       "section": "file",
@@ -386,7 +424,7 @@
       "picture": "X(100)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
-      "source": "pangaea/programs/TXVALID.cbl:45"
+      "source": "pangaea/programs/TXVALID.cbl:57"
     },
     {
       "section": "file",
@@ -398,7 +436,7 @@
       "picture": "X(80)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
-      "source": "pangaea/programs/TXVALID.cbl:47"
+      "source": "pangaea/programs/TXVALID.cbl:59"
     },
     {
       "section": "working-storage",
@@ -407,7 +445,7 @@
       "start": 1,
       "length": 10,
       "category": "group",
-      "source": "pangaea/programs/TXVALID.cbl:50",
+      "source": "pangaea/programs/TXVALID.cbl:62",
       "fields": [
         {
           "level": 5,
@@ -417,7 +455,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/programs/TXVALID.cbl:51"
+          "source": "pangaea/programs/TXVALID.cbl:63"
         },
         {
           "level": 5,
@@ -433,10 +471,10 @@
               "values": [
                 "'10'"
               ],
-              "source": "pangaea/programs/TXVALID.cbl:53"
+              "source": "pangaea/programs/TXVALID.cbl:65"
             }
           ],
-          "source": "pangaea/programs/TXVALID.cbl:52"
+          "source": "pangaea/programs/TXVALID.cbl:64"
         },
         {
           "level": 5,
@@ -446,7 +484,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/programs/TXVALID.cbl:54"
+          "source": "pangaea/programs/TXVALID.cbl:66"
         },
         {
           "level": 5,
@@ -456,7 +494,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/programs/TXVALID.cbl:55"
+          "source": "pangaea/programs/TXVALID.cbl:67"
         },
         {
           "level": 5,
@@ -466,7 +504,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/programs/TXVALID.cbl:56"
+          "source": "pangaea/programs/TXVALID.cbl:68"
         }
       ]
     },
@@ -480,7 +518,7 @@
       "usage": "DISPLAY",
       "category": "numeric",
       "digits": 8,
-      "source": "pangaea/programs/TXVALID.cbl:58"
+      "source": "pangaea/programs/TXVALID.cbl:70"
     },
     {
       "section": "working-storage",
@@ -490,6 +528,7 @@
       "start": 1,
       "length": 100,
       "category": "group",
+      "description": "REJREC: REJECTED TRANSACTION, 100 BYTES THE TRANSACTION AS RECEIVED, WITH THE STEP THAT REJECTED IT AND WHY.",
       "source": "pangaea/copybooks/REJREC.cpy:6",
       "fields": [
         {
@@ -610,10 +649,10 @@
           "values": [
             "SPACES"
           ],
-          "source": "pangaea/programs/TXVALID.cbl:63"
+          "source": "pangaea/programs/TXVALID.cbl:75"
         }
       ],
-      "source": "pangaea/programs/TXVALID.cbl:62"
+      "source": "pangaea/programs/TXVALID.cbl:74"
     },
     {
       "section": "working-storage",
@@ -630,17 +669,17 @@
           "values": [
             "'Y'"
           ],
-          "source": "pangaea/programs/TXVALID.cbl:66"
+          "source": "pangaea/programs/TXVALID.cbl:78"
         },
         {
           "name": "DETAIL-IS-REJECTED",
           "values": [
             "'N'"
           ],
-          "source": "pangaea/programs/TXVALID.cbl:67"
+          "source": "pangaea/programs/TXVALID.cbl:79"
         }
       ],
-      "source": "pangaea/programs/TXVALID.cbl:65"
+      "source": "pangaea/programs/TXVALID.cbl:77"
     },
     {
       "section": "working-storage",
@@ -649,7 +688,7 @@
       "start": 1,
       "length": 54,
       "category": "group",
-      "source": "pangaea/programs/TXVALID.cbl:69",
+      "source": "pangaea/programs/TXVALID.cbl:81",
       "fields": [
         {
           "level": 5,
@@ -663,7 +702,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/TXVALID.cbl:70"
+          "source": "pangaea/programs/TXVALID.cbl:82"
         },
         {
           "level": 5,
@@ -677,7 +716,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/TXVALID.cbl:71"
+          "source": "pangaea/programs/TXVALID.cbl:83"
         },
         {
           "level": 5,
@@ -691,7 +730,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/TXVALID.cbl:72"
+          "source": "pangaea/programs/TXVALID.cbl:84"
         },
         {
           "level": 5,
@@ -706,7 +745,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/TXVALID.cbl:73"
+          "source": "pangaea/programs/TXVALID.cbl:85"
         },
         {
           "level": 5,
@@ -720,7 +759,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/TXVALID.cbl:74"
+          "source": "pangaea/programs/TXVALID.cbl:86"
         }
       ]
     },
@@ -731,7 +770,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
-      "source": "pangaea/programs/TXVALID.cbl:76",
+      "source": "pangaea/programs/TXVALID.cbl:88",
       "fields": [
         {
           "level": 5,
@@ -741,7 +780,7 @@
           "picture": "X(30)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/programs/TXVALID.cbl:77"
+          "source": "pangaea/programs/TXVALID.cbl:89"
         },
         {
           "level": 5,
@@ -751,7 +790,7 @@
           "picture": "ZZ,ZZZ,ZZ9",
           "usage": "DISPLAY",
           "category": "numeric-edited",
-          "source": "pangaea/programs/TXVALID.cbl:78"
+          "source": "pangaea/programs/TXVALID.cbl:90"
         },
         {
           "level": 5,
@@ -764,7 +803,7 @@
           "values": [
             "SPACES"
           ],
-          "source": "pangaea/programs/TXVALID.cbl:79"
+          "source": "pangaea/programs/TXVALID.cbl:91"
         }
       ]
     },
@@ -775,7 +814,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
-      "source": "pangaea/programs/TXVALID.cbl:80",
+      "source": "pangaea/programs/TXVALID.cbl:92",
       "fields": [
         {
           "level": 5,
@@ -785,7 +824,7 @@
           "picture": "X(30)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/programs/TXVALID.cbl:81"
+          "source": "pangaea/programs/TXVALID.cbl:93"
         },
         {
           "level": 5,
@@ -795,7 +834,7 @@
           "picture": "Z,ZZZ,ZZZ,ZZZ,ZZ9.99",
           "usage": "DISPLAY",
           "category": "numeric-edited",
-          "source": "pangaea/programs/TXVALID.cbl:82"
+          "source": "pangaea/programs/TXVALID.cbl:94"
         },
         {
           "level": 5,
@@ -808,7 +847,7 @@
           "values": [
             "SPACES"
           ],
-          "source": "pangaea/programs/TXVALID.cbl:83"
+          "source": "pangaea/programs/TXVALID.cbl:95"
         }
       ]
     }
@@ -816,67 +855,71 @@
   "paragraphs": [
     {
       "name": "0000-MAIN",
-      "source": "pangaea/programs/TXVALID.cbl:86",
+      "description": "VALIDATE THE FILE AND SET THE RETURN CODE.",
+      "source": "pangaea/programs/TXVALID.cbl:99",
       "performs": [
         {
           "target": "1000-OPEN-FILES",
-          "source": "pangaea/programs/TXVALID.cbl:87"
+          "source": "pangaea/programs/TXVALID.cbl:100"
         },
         {
           "target": "2000-READ-HEADER",
-          "source": "pangaea/programs/TXVALID.cbl:88"
+          "source": "pangaea/programs/TXVALID.cbl:101"
         },
         {
           "target": "3000-READ-DETAILS",
-          "source": "pangaea/programs/TXVALID.cbl:90"
+          "source": "pangaea/programs/TXVALID.cbl:103"
         },
         {
           "target": "4000-CHECK-TRAILER",
-          "source": "pangaea/programs/TXVALID.cbl:93"
+          "source": "pangaea/programs/TXVALID.cbl:106"
         },
         {
           "target": "8000-WRITE-REPORT",
-          "source": "pangaea/programs/TXVALID.cbl:95"
+          "source": "pangaea/programs/TXVALID.cbl:108"
         },
         {
           "target": "9000-CLOSE-FILES",
-          "source": "pangaea/programs/TXVALID.cbl:96"
+          "source": "pangaea/programs/TXVALID.cbl:109"
         }
       ]
     },
     {
       "name": "1000-OPEN-FILES",
-      "source": "pangaea/programs/TXVALID.cbl:107",
+      "description": "OPEN THE FILES AND READ THE BUSINESS DATE.",
+      "source": "pangaea/programs/TXVALID.cbl:121",
       "performedBy": [
         "0000-MAIN"
       ]
     },
     {
       "name": "2000-READ-HEADER",
-      "source": "pangaea/programs/TXVALID.cbl:128",
+      "description": "THE FIRST RECORD MUST BE THE HEADER FOR THE BUSINESS DATE.",
+      "source": "pangaea/programs/TXVALID.cbl:143",
       "performedBy": [
         "0000-MAIN"
       ]
     },
     {
       "name": "3000-READ-DETAILS",
-      "source": "pangaea/programs/TXVALID.cbl:143",
+      "description": "VALIDATE EACH RECORD UNTIL THE TRAILER.",
+      "source": "pangaea/programs/TXVALID.cbl:159",
       "performs": [
         {
           "target": "3100-READ-NEXT",
-          "source": "pangaea/programs/TXVALID.cbl:144"
+          "source": "pangaea/programs/TXVALID.cbl:160"
         },
         {
           "target": "3200-VALIDATE-DETAIL",
-          "source": "pangaea/programs/TXVALID.cbl:148"
+          "source": "pangaea/programs/TXVALID.cbl:164"
         },
         {
           "target": "3300-REJECT-RECORD",
-          "source": "pangaea/programs/TXVALID.cbl:153"
+          "source": "pangaea/programs/TXVALID.cbl:169"
         },
         {
           "target": "3100-READ-NEXT",
-          "source": "pangaea/programs/TXVALID.cbl:156"
+          "source": "pangaea/programs/TXVALID.cbl:172"
         }
       ],
       "performedBy": [
@@ -885,18 +928,20 @@
     },
     {
       "name": "3100-READ-NEXT",
-      "source": "pangaea/programs/TXVALID.cbl:160",
+      "description": "READ ONE RECORD. THE FILE MUST NOT END BEFORE ITS TRAILER.",
+      "source": "pangaea/programs/TXVALID.cbl:177",
       "performedBy": [
         "3000-READ-DETAILS"
       ]
     },
     {
       "name": "3200-VALIDATE-DETAIL",
-      "source": "pangaea/programs/TXVALID.cbl:166",
+      "description": "ADD A DETAIL TO THE TOTALS, THEN CHECK ITS FIELDS.",
+      "source": "pangaea/programs/TXVALID.cbl:184",
       "performs": [
         {
           "target": "3300-REJECT-RECORD",
-          "source": "pangaea/programs/TXVALID.cbl:191"
+          "source": "pangaea/programs/TXVALID.cbl:209"
         }
       ],
       "performedBy": [
@@ -905,7 +950,8 @@
     },
     {
       "name": "3300-REJECT-RECORD",
-      "source": "pangaea/programs/TXVALID.cbl:194",
+      "description": "WRITE THE RECORD TO THE REJECTS WITH ITS REASON.",
+      "source": "pangaea/programs/TXVALID.cbl:213",
       "performedBy": [
         "3000-READ-DETAILS",
         "3200-VALIDATE-DETAIL"
@@ -913,21 +959,24 @@
     },
     {
       "name": "4000-CHECK-TRAILER",
-      "source": "pangaea/programs/TXVALID.cbl:200",
-      "performedBy": [
-        "0000-MAIN"
-      ]
-    },
-    {
-      "name": "8000-WRITE-REPORT",
+      "description": "THE TRAILER MUST MATCH THE TOTALS, AND END THE FILE.",
       "source": "pangaea/programs/TXVALID.cbl:220",
       "performedBy": [
         "0000-MAIN"
       ]
     },
     {
+      "name": "8000-WRITE-REPORT",
+      "description": "WRITE THE VALIDATION REPORT.",
+      "source": "pangaea/programs/TXVALID.cbl:241",
+      "performedBy": [
+        "0000-MAIN"
+      ]
+    },
+    {
       "name": "9000-CLOSE-FILES",
-      "source": "pangaea/programs/TXVALID.cbl:251",
+      "description": "CLOSE ALL FILES.",
+      "source": "pangaea/programs/TXVALID.cbl:273",
       "performedBy": [
         "0000-MAIN"
       ]

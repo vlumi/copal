@@ -4,6 +4,11 @@
       * RECORD TYPE. THE BODY IS REDEFINED FOR EACH RECORD TYPE.       *
       * THE TRAILER CARRIES THE SENDER'S CONTROL TOTALS: THE DETAIL    *
       * COUNT, THE SUM OF AMOUNTS AND THE SUM OF ACCOUNT NUMBERS.      *
+      *                                                                *
+      * MODIFICATION HISTORY                                           *
+      * DATE       BY  CHANGE                                          *
+      * 1987-03-12 JA  ORIGINAL VERSION.                               *
+      * 1991-06-03 PK  CR-0117 ACCOUNT NUMBER HASH IN THE TRAILER.     *
       *================================================================*
        01  TRAN-RECORD.
            05  TR-REC-TYPE             PIC X.

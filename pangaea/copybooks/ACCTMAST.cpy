@@ -2,6 +2,12 @@
       * ACCTMAST: ACCOUNT MASTER RECORD, 100 BYTES                     *
       * IN ACCOUNT NUMBER ORDER. THE BALANCE MAY GO BELOW ZERO DOWN    *
       * TO THE OVERDRAFT LIMIT, AND BELOW THAT ONLY BY FEES.           *
+      *                                                                *
+      * MODIFICATION HISTORY                                           *
+      * DATE       BY  CHANGE                                          *
+      * 1987-03-12 JA  ORIGINAL VERSION.                               *
+      * 1994-11-14 PK  CR-0201 OVERDRAFT LIMIT, FROM THE FILLER.       *
+      * 1999-01-11 SL  Y2K: 8-DIGIT DATES.                             *
       *================================================================*
        01  ACCT-MASTER-RECORD.
            05  AM-ACCT-NO              PIC 9(10).

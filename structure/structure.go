@@ -14,6 +14,7 @@ import (
 type Paragraph struct {
 	Name        string
 	Section     string
+	Comment     []string
 	Pos         cobol.Pos
 	Performs    []Perform
 	PerformedBy []string
@@ -41,7 +42,7 @@ func Paragraphs(p *cobol.Program) ([]Paragraph, error) {
 		if err != nil {
 			return nil, err
 		}
-		paragraphs[i] = Paragraph{Name: para.Name, Section: para.Section, Pos: para.Pos, Performs: performs}
+		paragraphs[i] = Paragraph{Name: para.Name, Section: para.Section, Comment: para.Comment, Pos: para.Pos, Performs: performs}
 	}
 	for _, para := range paragraphs {
 		for _, perform := range para.Performs {

@@ -44,11 +44,8 @@ The hard part of moving a COBOL core system to anything newer is rarely the tran
 
 - Storage is files, the way mainframe batch stored it. Everything passed between batch steps is a sequential file of fixed-length records. The account master becomes an indexed file (`ORGANIZATION INDEXED`, GnuCOBOL's counterpart of a VSAM KSDS) when the online channel arrives: the batch keeps reading it sequentially, online authorizations read it by account number. Cards and card holds are indexed files too, keyed by card number and by account and hold number. No embedded SQL: it needs a precompiler and a database server on top of GnuCOBOL, and it moves the layouts out of copybooks into a schema, which is a different analysis problem. No IMS or IDMS: neither has a usable open implementation for GnuCOBOL. Which indexed backend the GnuCOBOL build uses (Berkeley DB or another) is checked when the indexed master is built.
 - Copal is written in Go and parses COBOL itself. ProLeap and cobol-rekt were both evaluated on a sample with `COPY ... REPLACING`, `REDEFINES`, `OCCURS DEPENDING ON`, level-88s, `COMP-3`, `PERFORM THRU` and `GO TO`. Both parse it correctly, and neither is enough for Copal. Neither maps positions back to the source file and copybook: ProLeap reports lines of the expanded text, cobol-rekt's JSON has no positions at all. Neither computes record layouts: ProLeap has no offsets or lengths, cobol-rekt gives `COMP-3` fields their display size and fails on `OCCURS 0 TO n`. Neither has data flow Copal could trust: ProLeap has none, cobol-rekt records `ADD A TO B` as modifying A. cobol-rekt's output is also not reproducible as shipped, because it uses random IDs. ProLeap has had no code change since January 2024. Either one would add a JVM and a vendored jar to the toolchain, and Copal would still have to write the layout engine, the `PERFORM` range graph and the data flow itself. Copal needs to cover only the subset Pangaea uses, and Pangaea is written alongside it, so a hand-written parser in Go is the smaller dependency and keeps positions exact. The standard library is enough to start with.
+- Diagrams are SVG laid out by Copal itself, not by Graphviz. Blueprints are golden files, so the rendering has to be byte-for-byte reproducible, and Graphviz's layout changes between versions (Homebrew and Ubuntu ship different ones). Copal's graphs are small enough for a simple layered layout.
 - Pangaea grows in the order of [roadmap.md](roadmap.md): a minimal daily batch first, Copal's layout and structure extraction on that, then both together.
-
-## Open decisions
-
-- Graph rendering: Graphviz (`dot`) or hand-laid SVG. Blueprints are golden files, so the rendering has to be reproducible: Graphviz layouts can change between versions (Homebrew and Ubuntu ship different ones), which argues for checking in the `dot` source rather than the SVG, or for hand-laid SVG. Decide when the first diagram is drawn.
 
 ## Besides the code
 
@@ -59,7 +56,6 @@ The hard part of moving a COBOL core system to anything newer is rarely the tran
 
 - Fixtures and golden files hold records as text, which works only while every field is display. `COMP-3` arrives with month-end, and those datasets need another representation: hex, or fields decoded through Copal's record layouts.
 - `structure` finds `PERFORM` statements by scanning a paragraph's tokens. Data flow needs real statement parsing, and `structure` should move onto it then. `PERFORM ... THRU` is recorded but its range is not expanded, so the paragraphs inside a range do not list who performs them.
-- The lexer drops comments, so blueprints cannot show the description a copybook or program carries in its header comment. Keeping comment lines attached to the next token would allow it.
 
 ## Toolchain
 

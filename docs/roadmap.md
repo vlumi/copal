@@ -30,6 +30,14 @@ Done when: `make pangaea-daily` runs the batch on the fixture and `make ci` comp
 
 Done when: `make blueprints` regenerates them and a change to a copybook shows up as a diff in the golden blueprints.
 
+## 3b. Blueprints people can read
+
+- The documentation already in the source: the header comment of each program and copybook, the comments before paragraphs and fields, and identification entries such as `AUTHOR` and `DATE-WRITTEN`.
+- Pangaea's programs carry what long-lived code carries: identification entries, a modification history in the header banner, a comment before each paragraph.
+- A diagram per program: its paragraphs and the `PERFORM`s between them, as SVG laid out by Copal, in the program's blueprint. `GO TO`, fall-through and `THRU` ranges join it in milestone 6.
+
+Done when: every program blueprint opens with the program's own description and shows its paragraph diagram.
+
 ## 4. A living bank
 
 Pangaea stops being a fixture and becomes a running bank.
