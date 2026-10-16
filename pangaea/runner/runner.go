@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/vlumi/copal/pangaea/dataset"
@@ -59,14 +60,21 @@ func (r Runner) Run(job *jcl.Job) ([]Result, error) {
 	run := &jobRun{Runner: r, newest: map[string]int{}}
 	for _, step := range job.Steps {
 		for _, dd := range step.DDs {
-			if dd.Relative {
-				run.newest[dd.DSN] = r.Datasets.LatestGeneration(dd.DSN)
+			for _, d := range append([]jcl.DD{dd}, dd.Concatenated...) {
+				if !d.Temporary {
+					run.newest[d.DSN] = r.Datasets.LatestGeneration(d.DSN)
+				}
 			}
 		}
 	}
 	results, err := run.steps(job)
 	if cleanupErr := run.deleteTemporary(); err == nil {
 		err = cleanupErr
+	}
+	if run.scratch != "" {
+		if cleanupErr := os.RemoveAll(run.scratch); err == nil {
+			err = cleanupErr
+		}
 	}
 	if err != nil {
 		return results, err
@@ -76,11 +84,13 @@ func (r Runner) Run(job *jcl.Job) ([]Result, error) {
 
 // jobRun is the state of one run of a job: the newest generation of each
 // generation data group when the job started, which relative generations
-// count from, and the temporary datasets it created.
+// count from, the temporary datasets it created, and a scratch directory
+// for the files that concatenated datasets are read from.
 type jobRun struct {
 	Runner
 	newest    map[string]int
 	temporary []string
+	scratch   string
 }
 
 func (run *jobRun) steps(job *jcl.Job) ([]Result, error) {
@@ -184,17 +194,82 @@ func (run *jobRun) allocateDD(step jcl.Step, dd jcl.DD) (string, error) {
 	case dd.Dummy:
 		return os.DevNull, nil
 	}
+	if dd.Disp == jcl.Shr || dd.Disp == jcl.Old {
+		return run.allocateInput(step, dd)
+	}
 	dsn := run.dsn(dd)
 	_, cataloged := run.Datasets.LRECL(dsn)
 	switch {
 	case dd.Disp == jcl.New && cataloged:
 		return "", fmt.Errorf("%s already exists", dsn)
-	case (dd.Disp == jcl.Shr || dd.Disp == jcl.Old) && !cataloged:
-		return "", fmt.Errorf("%s not cataloged", dsn)
 	case dd.Disp == jcl.Mod && !cataloged && dd.LRECL == 0:
 		return "", fmt.Errorf("%s does not exist yet and has no DCB to create it with", dsn)
 	}
 	return run.Datasets.Path(dsn), nil
+}
+
+// allocateInput returns the file a program reads a DD from: the dataset's
+// own, or, for a concatenation or every generation of a group, a scratch
+// file of all their records in order.
+func (run *jobRun) allocateInput(step jcl.Step, dd jcl.DD) (string, error) {
+	var members []string
+	for _, d := range append([]jcl.DD{dd}, dd.Concatenated...) {
+		dsns, err := run.inputs(d)
+		if err != nil {
+			return "", err
+		}
+		members = append(members, dsns...)
+	}
+	if len(members) == 1 {
+		return run.Datasets.Path(members[0]), nil
+	}
+	return run.concatenate(step.Name+"."+dd.Name, members)
+}
+
+// inputs lists the datasets a DD reads: the one it names, or every
+// generation of the group it names, newest first, as of the job's start.
+func (run *jobRun) inputs(dd jcl.DD) ([]string, error) {
+	dsn := run.dsn(dd)
+	if _, cataloged := run.Datasets.LRECL(dsn); cataloged {
+		return []string{dsn}, nil
+	}
+	var dsns []string
+	if !dd.Relative && !dd.Temporary {
+		for _, n := range slices.Backward(run.Datasets.Generations(dd.DSN)) {
+			if n <= run.newest[dd.DSN] {
+				dsns = append(dsns, dataset.GenerationName(dd.DSN, n))
+			}
+		}
+	}
+	if len(dsns) == 0 {
+		return nil, fmt.Errorf("%s not cataloged", dsn)
+	}
+	return dsns, nil
+}
+
+// concatenate writes the records of the datasets, which must have one
+// record length, to one scratch file.
+func (run *jobRun) concatenate(name string, dsns []string) (string, error) {
+	lrecl, _ := run.Datasets.LRECL(dsns[0])
+	var data []byte
+	for _, dsn := range dsns {
+		if n, _ := run.Datasets.LRECL(dsn); n != lrecl {
+			return "", fmt.Errorf("%s has records of %d bytes, %s of %d", dsn, n, dsns[0], lrecl)
+		}
+		member, err := os.ReadFile(run.Datasets.Path(dsn))
+		if err != nil {
+			return "", err
+		}
+		data = append(data, member...)
+	}
+	if run.scratch == "" {
+		var err error
+		if run.scratch, err = os.MkdirTemp("", "pangaea-concatenation-"); err != nil {
+			return "", err
+		}
+	}
+	path := filepath.Join(run.scratch, name)
+	return path, os.WriteFile(path, data, 0o644)
 }
 
 // catalogWritten catalogs the datasets the step created or appended to.
