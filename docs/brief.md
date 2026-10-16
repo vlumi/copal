@@ -55,8 +55,6 @@ The hard part of moving a COBOL core system to anything newer is rarely the tran
 
 ## Debt
 
-- Backing out a failed business day deletes the datasets it cataloged, but the online day updates the online files in place, and those updates stay. Once the online day has traffic, a day that is run again must not run its online day again, only its batch.
-
 - Field origins ignore the order of statements: a value that every path overwrites before the record is written still counts as an origin, as does a field of a record redefined for another record type. Order-aware tracing needs the control flow between statements, which the statement parser and the structure analysis now make possible.
 
 ## Toolchain
