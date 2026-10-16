@@ -57,7 +57,8 @@ func New(b bank.Bank, system *blueprint.System, blueprints string) (*Server, err
 	return s, nil
 }
 
-// Handler routes the console's pages and actions.
+// Handler routes the console's pages and actions. Its forms reset and run
+// the bank, so it refuses them from pages of other origins.
 func (s *Server) Handler() http.Handler {
 	static, _ := fs.Sub(files, "static")
 	mux := http.NewServeMux()
@@ -71,7 +72,7 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /compare", s.view("compare", s.compare))
 	mux.HandleFunc("POST /reset", s.reset)
 	mux.HandleFunc("POST /run", s.run)
-	return mux
+	return http.NewCrossOriginProtection().Handler(mux)
 }
 
 // page is what every template gets: the bank's history for the header, and
