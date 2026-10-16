@@ -13,7 +13,7 @@ DATE       BY  CHANGE
 2003-05-19 MV  CR-0342 ORIGINAL VERSION.
 ```
 
-Copybook [CARDREC.cpy](../../../pangaea/copybooks/CARDREC.cpy), used by [CARDLOAD](../programs/CARDLOAD.md).
+Copybook [CARDREC.cpy](../../../pangaea/copybooks/CARDREC.cpy), used by [ATMBAL](../programs/ATMBAL.md), [ATMWDL](../programs/ATMWDL.md), [AUTHPUR](../programs/AUTHPUR.md), [AUTHREV](../programs/AUTHREV.md), [AUTHSRV](../programs/AUTHSRV.md), [CARDLOAD](../programs/CARDLOAD.md).
 
 ## CARD-RECORD
 

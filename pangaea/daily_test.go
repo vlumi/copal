@@ -1,6 +1,7 @@
 package pangaea_test
 
 import (
+	"bytes"
 	"errors"
 	"os"
 	"path/filepath"
@@ -21,7 +22,8 @@ import (
 // batch creates, and its job log and reports, with the fixture's golden
 // directory. A fixture whose JOBS file lists more jobs runs them after the
 // daily batch, as the scheduler would, with their job logs and reports in
-// a directory of their own. Run with -update to rewrite the golden files.
+// a directory of their own; a job's in-stream data is the fixture's
+// JOB.SYSIN. Run with -update to rewrite the golden files.
 func TestDaily(t *testing.T) {
 	programs := t.TempDir()
 	if _, err := compile.Programs("programs", "copybooks", programs); err != nil {
@@ -62,6 +64,11 @@ func runFixture(t *testing.T, codec *fixture.Codec, programs, fixtureDir string)
 		r := runner.Runner{Programs: programs, Datasets: store, Sysout: sysout}
 		if i > 0 {
 			r.Sysout = filepath.Join(sysout, job)
+		}
+		if data, err := os.ReadFile(filepath.Join(fixtureDir, job+".SYSIN")); err == nil {
+			r.InStream = bytes.NewReader(data)
+		} else if !errors.Is(err, os.ErrNotExist) {
+			t.Fatal(err)
 		}
 		parsed, err := jcl.ParseFile(filepath.Join("jobs", job+".jcl"))
 		if err != nil {

@@ -1,0 +1,186 @@
+{
+  "program": "AUTHPUR",
+  "tables": [
+    {
+      "paragraph": "0000-MAIN",
+      "source": "pangaea/programs/AUTHPUR.cbl:38",
+      "conditions": [
+        "CR-BLOCKED",
+        "AO-OPEN",
+        "RQ-AMOUNT = 0",
+        "WS-DAY-PURCHASES \u003e CR-PURCHASE-LIMIT",
+        "RQ-AMOUNT \u003e WS-AVAILABLE"
+      ],
+      "actions": [
+        "PERFORM 1000-START-CARD-TOTALS",
+        "ADD AO-BALANCE AO-OVERDRAFT-LIMIT GIVING WS-AVAILABLE",
+        "SUBTRACT AO-HOLDS FROM WS-AVAILABLE",
+        "COMPUTE WS-DAY-PURCHASES = CR-DAY-PURCHASES + RQ-AMOUNT",
+        "SET RS-CARD-BLOCKED TO TRUE",
+        "MOVE 'CARD BLOCKED' TO RS-MESSAGE",
+        "GOBACK",
+        "SET RS-ACCOUNT-NOT-OPEN TO TRUE",
+        "MOVE 'ACCOUNT NOT OPEN' TO RS-MESSAGE",
+        "SET RS-INVALID-AMOUNT TO TRUE",
+        "MOVE 'NO AMOUNT' TO RS-MESSAGE",
+        "SET RS-OVER-LIMIT TO TRUE",
+        "MOVE 'OVER DAILY PURCHASE LIMIT' TO RS-MESSAGE",
+        "SET RS-INSUFFICIENT-FUNDS TO TRUE",
+        "MOVE 'INSUFFICIENT FUNDS' TO RS-MESSAGE",
+        "PERFORM 2000-APPROVE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            7,
+            8,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            9,
+            10,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            11,
+            12,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            13,
+            14,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            15,
+            6
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "1000-START-CARD-TOTALS",
+      "source": "pangaea/programs/AUTHPUR.cbl:65",
+      "conditions": [
+        "CR-TOTALS-DATE = BC-BUSINESS-DATE",
+        "CR-TOTALS-DATE(1:6) = BC-BUSINESS-DATE(1:6)"
+      ],
+      "actions": [
+        "MOVE 0 TO CR-MONTH-WITHDRAWALS",
+        "MOVE 0 TO CR-DAY-PURCHASES CR-DAY-CASH",
+        "MOVE BC-BUSINESS-DATE TO CR-TOTALS-DATE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": null
+        }
+      ]
+    }
+  ]
+}

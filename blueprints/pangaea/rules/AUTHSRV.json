@@ -1,0 +1,1924 @@
+{
+  "program": "AUTHSRV",
+  "tables": [
+    {
+      "paragraph": "1000-INITIALIZE",
+      "source": "pangaea/programs/AUTHSRV.cbl:113",
+      "conditions": [
+        "WS-FILE-STATUSES = ALL '0'",
+        "READ CONTROL-FILE AT END"
+      ],
+      "actions": [
+        "OPEN INPUT CONTROL-FILE I-O ACCT-FILE CARD-FILE HOLD-FILE OUTPUT REPORT-OUT",
+        "DISPLAY 'AUTHSRV: CANNOT OPEN FILES ' WS-FILE-STATUSES UPON SYSERR",
+        "MOVE 16 TO RETURN-CODE",
+        "STOP RUN",
+        "READ CONTROL-FILE",
+        "MOVE 'NO BANK CONTROL RECORD' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT",
+        "PERFORM 1100-FIND-LAST-HOLD"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            4,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "1100-FIND-LAST-HOLD",
+      "source": "pangaea/programs/AUTHSRV.cbl:131",
+      "conditions": [
+        "START HOLD-FILE KEY IS NOT LESS THAN HD-KEY INVALID KEY"
+      ],
+      "actions": [
+        "MOVE LOW-VALUES TO HD-KEY",
+        "START HOLD-FILE KEY IS NOT LESS THAN HD-KEY",
+        "SET END-OF-HOLDS TO TRUE",
+        "PERFORM UNTIL END-OF-HOLDS"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "1100-FIND-LAST-HOLD",
+      "loop": "PERFORM UNTIL END-OF-HOLDS",
+      "source": "pangaea/programs/AUTHSRV.cbl:137",
+      "conditions": [
+        "READ HOLD-FILE NEXT RECORD AT END",
+        "HD-HOLD-NO \u003e WS-LAST-HOLD-NO"
+      ],
+      "actions": [
+        "READ HOLD-FILE NEXT RECORD",
+        "SET END-OF-HOLDS TO TRUE",
+        "MOVE HD-HOLD-NO TO WS-LAST-HOLD-NO"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2000-SERVE-REQUEST",
+      "source": "pangaea/programs/AUTHSRV.cbl:149",
+      "conditions": [
+        "ACCEPT AUTH-REQUEST ON EXCEPTION"
+      ],
+      "actions": [
+        "ACCEPT AUTH-REQUEST",
+        "SET END-OF-INPUT TO TRUE",
+        "PERFORM 2100-AUTHORIZE",
+        "DISPLAY AUTH-RESPONSE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            2,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2100-AUTHORIZE",
+      "source": "pangaea/programs/AUTHSRV.cbl:160",
+      "conditions": [
+        "RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY",
+        "RS-RESULT = SPACES AND RQ-REVERSAL",
+        "RS-RESULT = SPACES",
+        "RQ-PURCHASE",
+        "RS-APPROVED",
+        "RQ-BALANCE-ENQUIRY",
+        "RQ-REVERSAL",
+        "RQ-WITHDRAWAL"
+      ],
+      "actions": [
+        "ADD 1 TO WS-REQUEST-COUNT",
+        "MOVE SPACES TO AUTH-RESPONSE HOLD-RECORD",
+        "PERFORM 2200-READ-CARD-AND-ACCOUNT",
+        "PERFORM 2300-READ-HOLD",
+        "CALL 'AUTHPUR' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD",
+        "ADD 1 TO WS-APPROVED-COUNT",
+        "PERFORM 2400-SAVE-CHANGES",
+        "ADD 1 TO WS-DECLINED-COUNT",
+        "CALL 'AUTHREV' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD",
+        "CALL 'ATMWDL' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD",
+        "CALL 'ATMBAL' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD",
+        "SET RS-INVALID-REQUEST TO TRUE",
+        "MOVE 'UNKNOWN REQUEST' TO RS-MESSAGE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            8,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            8,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "N",
+            "",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            8,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            9,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            9,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "N",
+            "",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            9,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            10,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "N",
+            "Y",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            10,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "N",
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "",
+            "Y",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "",
+            "Y",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "",
+            "N",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            4,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            4,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            8,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            8,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            8,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            9,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            9,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            9,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            10,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "Y",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            10,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "",
+            "Y",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "",
+            "Y",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "",
+            "N",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            3,
+            4,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            3,
+            8,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            3,
+            8,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "N",
+            "",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            3,
+            8,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            3,
+            9,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            3,
+            9,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "N",
+            "",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            3,
+            9,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            3,
+            10,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "N",
+            "Y",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            3,
+            10,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            3,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "N",
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            3,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N",
+            "",
+            "Y",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            3,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N",
+            "",
+            "Y",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            3,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N",
+            "",
+            "N",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            3,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            4,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            4,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            8,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            8,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            8,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            9,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            9,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            9,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            10,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "Y",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            10,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "",
+            "Y",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "",
+            "Y",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "",
+            "N",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            11,
+            12,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2200-READ-CARD-AND-ACCOUNT",
+      "source": "pangaea/programs/AUTHSRV.cbl:203",
+      "conditions": [
+        "READ CARD-FILE INVALID KEY",
+        "READ ACCT-FILE INVALID KEY"
+      ],
+      "actions": [
+        "MOVE RQ-CARD-NO TO CR-CARD-NO",
+        "READ CARD-FILE",
+        "SET RS-NO-SUCH-CARD TO TRUE",
+        "MOVE 'NO SUCH CARD' TO RS-MESSAGE",
+        "MOVE CR-ACCT-NO TO AO-ACCT-NO",
+        "READ ACCT-FILE",
+        "SET RS-ACCOUNT-NOT-OPEN TO TRUE",
+        "MOVE 'NO SUCH ACCOUNT' TO RS-MESSAGE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            4,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2300-READ-HOLD",
+      "source": "pangaea/programs/AUTHSRV.cbl:219",
+      "conditions": [
+        "READ HOLD-FILE INVALID KEY"
+      ],
+      "actions": [
+        "MOVE CR-ACCT-NO TO HD-ACCT-NO",
+        "MOVE RQ-AUTH-CODE TO HD-HOLD-NO",
+        "READ HOLD-FILE",
+        "SET RS-NO-SUCH-AUTH TO TRUE",
+        "MOVE 'NO SUCH AUTHORIZATION' TO RS-MESSAGE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2400-SAVE-CHANGES",
+      "source": "pangaea/programs/AUTHSRV.cbl:230",
+      "conditions": [
+        "REWRITE ACCT-ONLINE-RECORD INVALID KEY",
+        "REWRITE CARD-RECORD INVALID KEY",
+        "RQ-REVERSAL",
+        "REWRITE HOLD-RECORD INVALID KEY",
+        "WRITE HOLD-RECORD INVALID KEY"
+      ],
+      "actions": [
+        "REWRITE ACCT-ONLINE-RECORD",
+        "MOVE 'CANNOT REWRITE THE ACCOUNT' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT",
+        "REWRITE CARD-RECORD",
+        "MOVE 'CANNOT REWRITE THE CARD' TO WS-ABORT-MESSAGE",
+        "REWRITE HOLD-RECORD",
+        "MOVE 'CANNOT REWRITE THE HOLD' TO WS-ABORT-MESSAGE",
+        "ADD HD-AMOUNT TO WS-RELEASED-TOTAL",
+        "ADD 1 TO WS-LAST-HOLD-NO",
+        "MOVE WS-LAST-HOLD-NO TO HD-HOLD-NO RS-AUTH-CODE",
+        "WRITE HOLD-RECORD",
+        "MOVE 'CANNOT WRITE THE HOLD' TO WS-ABORT-MESSAGE",
+        "ADD HD-AMOUNT TO WS-HELD-TOTAL",
+        "ADD HD-FEE TO WS-HELD-TOTAL"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            2,
+            5,
+            6,
+            2,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            2,
+            5,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            2,
+            8,
+            9,
+            10,
+            11,
+            2,
+            12,
+            13
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            2,
+            8,
+            9,
+            10,
+            12,
+            13
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            6,
+            2,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            8,
+            9,
+            10,
+            11,
+            2,
+            12,
+            13
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            8,
+            9,
+            10,
+            12,
+            13
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            3,
+            4,
+            2,
+            5,
+            6,
+            2,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            3,
+            4,
+            2,
+            5,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N",
+            "",
+            "Y"
+          ],
+          "actions": [
+            0,
+            3,
+            4,
+            2,
+            8,
+            9,
+            10,
+            11,
+            2,
+            12,
+            13
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N",
+            "",
+            "N"
+          ],
+          "actions": [
+            0,
+            3,
+            4,
+            2,
+            8,
+            9,
+            10,
+            12,
+            13
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            3,
+            5,
+            6,
+            2,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            3,
+            5,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "",
+            "Y"
+          ],
+          "actions": [
+            0,
+            3,
+            8,
+            9,
+            10,
+            11,
+            2,
+            12,
+            13
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "",
+            "N"
+          ],
+          "actions": [
+            0,
+            3,
+            8,
+            9,
+            10,
+            12,
+            13
+          ]
+        }
+      ]
+    }
+  ]
+}

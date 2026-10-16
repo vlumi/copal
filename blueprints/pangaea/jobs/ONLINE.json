@@ -1,0 +1,135 @@
+{
+  "job": "ONLINE",
+  "source": "pangaea/jobs/ONLINE.jcl",
+  "description": [
+    "THE ONLINE DAY: AUTHSRV AUTHORIZES CARD PURCHASES, THEIR",
+    "REVERSALS, ATM WITHDRAWALS AND BALANCE ENQUIRIES, ONE REQUEST",
+    "AT A TIME, FROM THE OPENING OF THE BUSINESS DAY TO THE BATCH",
+    "WINDOW. THE REQUESTS ARE THE JOB'S IN-STREAM DATA, WHICH THE",
+    "ONLINE SERVER SUPPLIES FROM THE TERMINALS AS THEY COME, AND",
+    "THE RESPONSES GO TO THE STEP'S OUTPUT, BACK TO THE SERVER.",
+    "",
+    "READS   BANK.CONTROL(0)",
+    "UPDATES ACCT.ONLINE(0)   CARD.ONLINE(0)   HOLD.ONLINE(0)",
+    "",
+    "THE NIGHT'S BATCH LOADS THE ONLINE FILES AND STARTS THE HOLD",
+    "FILE, SO THE JOB CAN BE RUN AGAIN DURING THE DAY."
+  ],
+  "steps": [
+    {
+      "step": "AUTH",
+      "program": "AUTHSRV",
+      "source": "pangaea/jobs/ONLINE.jcl:16",
+      "dds": [
+        {
+          "dd": "BANKCTL",
+          "datasets": [
+            "BANK.CONTROL(0)"
+          ],
+          "disp": "SHR",
+          "file": "CONTROL-FILE",
+          "uses": [
+            "read"
+          ],
+          "copybook": "BANKCTL",
+          "source": "pangaea/jobs/ONLINE.jcl:17"
+        },
+        {
+          "dd": "ACCTONL",
+          "datasets": [
+            "ACCT.ONLINE(0)"
+          ],
+          "disp": "OLD",
+          "file": "ACCT-FILE",
+          "uses": [
+            "update"
+          ],
+          "copybook": "ACCTONL",
+          "source": "pangaea/jobs/ONLINE.jcl:18"
+        },
+        {
+          "dd": "CARDONL",
+          "datasets": [
+            "CARD.ONLINE(0)"
+          ],
+          "disp": "OLD",
+          "file": "CARD-FILE",
+          "uses": [
+            "update"
+          ],
+          "copybook": "CARDREC",
+          "source": "pangaea/jobs/ONLINE.jcl:19"
+        },
+        {
+          "dd": "HOLDS",
+          "datasets": [
+            "HOLD.ONLINE(0)"
+          ],
+          "disp": "OLD",
+          "file": "HOLD-FILE",
+          "uses": [
+            "update"
+          ],
+          "copybook": "HOLDREC",
+          "source": "pangaea/jobs/ONLINE.jcl:20"
+        },
+        {
+          "dd": "AUTHRPT",
+          "sysout": true,
+          "file": "REPORT-OUT",
+          "uses": [
+            "write"
+          ],
+          "source": "pangaea/jobs/ONLINE.jcl:21"
+        },
+        {
+          "dd": "SYSIN",
+          "inStream": true,
+          "uses": [
+            "read"
+          ],
+          "source": "pangaea/jobs/ONLINE.jcl:22"
+        }
+      ]
+    }
+  ],
+  "datasets": [
+    {
+      "dataset": "BANK.CONTROL(0)",
+      "copybook": "BANKCTL",
+      "readBy": [
+        "AUTH"
+      ]
+    },
+    {
+      "dataset": "ACCT.ONLINE(0)",
+      "copybook": "ACCTONL",
+      "writtenBy": [
+        "AUTH"
+      ],
+      "readBy": [
+        "AUTH"
+      ]
+    },
+    {
+      "dataset": "CARD.ONLINE(0)",
+      "copybook": "CARDREC",
+      "writtenBy": [
+        "AUTH"
+      ],
+      "readBy": [
+        "AUTH"
+      ]
+    },
+    {
+      "dataset": "HOLD.ONLINE(0)",
+      "copybook": "HOLDREC",
+      "writtenBy": [
+        "AUTH"
+      ],
+      "readBy": [
+        "AUTH"
+      ]
+    }
+  ]
+}

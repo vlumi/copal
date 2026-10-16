@@ -1,0 +1,2512 @@
+{
+  "program": "AUTHSRV",
+  "source": "pangaea/programs/AUTHSRV.cbl",
+  "description": [
+    "AUTHSRV: SERVE THE DAY'S CARD AND ATM AUTHORIZATIONS",
+    "",
+    "RUNS FOR THE WHOLE ONLINE DAY, AS A TRANSACTION MONITOR DOES.",
+    "READS ONE AUTHORIZATION REQUEST AT A TIME FROM SYSIN, READS",
+    "THE CARD AND ITS ACCOUNT FROM THE ONLINE FILES, AND FOR A",
+    "REVERSAL THE HOLD, CALLS THE PROGRAM FOR THE REQUEST, AND",
+    "WRITES THE RESPONSE TO SYSOUT. WHEN A REQUEST IS APPROVED IT",
+    "REWRITES THE ACCOUNT AND THE CARD AND WRITES OR REWRITES THE",
+    "HOLD. THE CALLED PROGRAMS DECIDE; ONLY AUTHSRV OPENS FILES, SO",
+    "THAT EACH FILE HAS ONE READER AND WRITER. ENDS WITH THE",
+    "REQUESTS, WHEN THE BATCH WINDOW OPENS, AND REPORTS THE DAY.",
+    "",
+    "HOLD NUMBERS, THE AUTHORIZATION CODES, NUMBER THE DAY'S HOLDS",
+    "FROM 1, AND GO ON FROM THE HIGHEST IN THE HOLD FILE WHEN THE",
+    "SERVER IS STARTED AGAIN DURING THE DAY.",
+    "",
+    "RETURN CODES: 0 SERVED, 16 I/O.",
+    "",
+    "MODIFICATION HISTORY",
+    "DATE       BY  CHANGE",
+    "2003-05-19 MV  CR-0342 ORIGINAL VERSION."
+  ],
+  "identification": [
+    {
+      "paragraph": "AUTHOR",
+      "text": "M. VARGA, ONLINE SYSTEMS."
+    },
+    {
+      "paragraph": "INSTALLATION",
+      "text": "FIRST BANK OF PANGAEA, DATA CENTER."
+    },
+    {
+      "paragraph": "DATE-WRITTEN",
+      "text": "2003-05-19."
+    }
+  ],
+  "files": [
+    {
+      "name": "CONTROL-FILE",
+      "kind": "FD",
+      "assign": "BANKCTL",
+      "organization": "SEQUENTIAL",
+      "status": "WS-CONTROL-STATUS",
+      "opened": [
+        "INPUT"
+      ],
+      "records": [
+        "BANK-CONTROL-RECORD"
+      ],
+      "source": "pangaea/programs/AUTHSRV.cbl:33"
+    },
+    {
+      "name": "ACCT-FILE",
+      "kind": "FD",
+      "assign": "ACCTONL",
+      "organization": "INDEXED",
+      "access": "RANDOM",
+      "recordKey": "AO-ACCT-NO",
+      "status": "WS-ACCT-STATUS",
+      "opened": [
+        "I-O"
+      ],
+      "records": [
+        "ACCT-ONLINE-RECORD"
+      ],
+      "source": "pangaea/programs/AUTHSRV.cbl:36"
+    },
+    {
+      "name": "CARD-FILE",
+      "kind": "FD",
+      "assign": "CARDONL",
+      "organization": "INDEXED",
+      "access": "RANDOM",
+      "recordKey": "CR-CARD-NO",
+      "status": "WS-CARD-STATUS",
+      "opened": [
+        "I-O"
+      ],
+      "records": [
+        "CARD-RECORD"
+      ],
+      "source": "pangaea/programs/AUTHSRV.cbl:41"
+    },
+    {
+      "name": "HOLD-FILE",
+      "kind": "FD",
+      "assign": "HOLDS",
+      "organization": "INDEXED",
+      "access": "DYNAMIC",
+      "recordKey": "HD-KEY",
+      "status": "WS-HOLD-STATUS",
+      "opened": [
+        "I-O"
+      ],
+      "records": [
+        "HOLD-RECORD"
+      ],
+      "source": "pangaea/programs/AUTHSRV.cbl:46"
+    },
+    {
+      "name": "REPORT-OUT",
+      "kind": "FD",
+      "assign": "AUTHRPT",
+      "organization": "LINE SEQUENTIAL",
+      "status": "WS-REPORT-STATUS",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "REPORT-LINE"
+      ],
+      "source": "pangaea/programs/AUTHSRV.cbl:51"
+    }
+  ],
+  "records": [
+    {
+      "section": "file",
+      "file": "CONTROL-FILE",
+      "copybook": "BANKCTL",
+      "level": 1,
+      "name": "BANK-CONTROL-RECORD",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "description": "BANKCTL: BANK CONTROL RECORD, ONE PER FILE THE BUSINESS DATE THE BATCH RUNS FOR, NEVER THE CLOCK.",
+      "source": "pangaea/copybooks/BANKCTL.cpy:5",
+      "fields": [
+        {
+          "level": 5,
+          "name": "BC-BUSINESS-DATE",
+          "start": 1,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/BANKCTL.cpy:6"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 9,
+          "length": 72,
+          "picture": "X(72)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/BANKCTL.cpy:7"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "ACCT-FILE",
+      "copybook": "ACCTONL",
+      "level": 1,
+      "name": "ACCT-ONLINE-RECORD",
+      "start": 1,
+      "length": 100,
+      "category": "group",
+      "description": "ACCTONL: ONLINE ACCOUNT RECORD, 100 BYTES INDEXED BY ACCOUNT NUMBER. LOADED FROM THE MASTER EACH NIGHT BY ACCTLOAD; DURING THE DAY THE AUTHORIZATIONS ADD WHAT THEY APPROVE TO THE HOLDS, AND THE AVAILABLE BALANCE IS THE BALANCE PLUS THE OVERDRAFT LIMIT LESS THE HOLDS. MODIFICATION HISTORY DATE       BY  CHANGE 2003-05-19 MV  CR-0342 ORIGINAL VERSION.",
+      "source": "pangaea/copybooks/ACCTONL.cpy:12",
+      "fields": [
+        {
+          "level": 5,
+          "name": "AO-ACCT-NO",
+          "start": 1,
+          "length": 10,
+          "picture": "9(10)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 10,
+          "source": "pangaea/copybooks/ACCTONL.cpy:13"
+        },
+        {
+          "level": 5,
+          "name": "AO-CUST-NO",
+          "start": 11,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/ACCTONL.cpy:14"
+        },
+        {
+          "level": 5,
+          "name": "AO-SHORT-NAME",
+          "start": 19,
+          "length": 20,
+          "picture": "X(20)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/ACCTONL.cpy:15"
+        },
+        {
+          "level": 5,
+          "name": "AO-ACCT-TYPE",
+          "start": 39,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "conditions": [
+            {
+              "name": "AO-CURRENT",
+              "values": [
+                "'C'"
+              ],
+              "source": "pangaea/copybooks/ACCTONL.cpy:17"
+            },
+            {
+              "name": "AO-SAVINGS",
+              "values": [
+                "'S'"
+              ],
+              "source": "pangaea/copybooks/ACCTONL.cpy:18"
+            }
+          ],
+          "source": "pangaea/copybooks/ACCTONL.cpy:16"
+        },
+        {
+          "level": 5,
+          "name": "AO-STATUS",
+          "start": 40,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "conditions": [
+            {
+              "name": "AO-OPEN",
+              "values": [
+                "'O'"
+              ],
+              "source": "pangaea/copybooks/ACCTONL.cpy:20"
+            },
+            {
+              "name": "AO-FROZEN",
+              "values": [
+                "'F'"
+              ],
+              "source": "pangaea/copybooks/ACCTONL.cpy:21"
+            }
+          ],
+          "source": "pangaea/copybooks/ACCTONL.cpy:19"
+        },
+        {
+          "level": 5,
+          "name": "AO-BALANCE",
+          "start": 41,
+          "length": 13,
+          "picture": "S9(11)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 13,
+          "scale": 2,
+          "signed": true,
+          "description": "THE BALANCE AT THE END OF THE BUSINESS DAY IT WAS LOADED ON.",
+          "source": "pangaea/copybooks/ACCTONL.cpy:23"
+        },
+        {
+          "level": 5,
+          "name": "AO-OVERDRAFT-LIMIT",
+          "start": 54,
+          "length": 9,
+          "picture": "9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 9,
+          "scale": 2,
+          "source": "pangaea/copybooks/ACCTONL.cpy:24"
+        },
+        {
+          "level": 5,
+          "name": "AO-HOLDS",
+          "start": 63,
+          "length": 13,
+          "picture": "S9(11)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 13,
+          "scale": 2,
+          "signed": true,
+          "source": "pangaea/copybooks/ACCTONL.cpy:25"
+        },
+        {
+          "level": 5,
+          "name": "AO-AS-OF-DATE",
+          "start": 76,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/ACCTONL.cpy:26"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 84,
+          "length": 17,
+          "picture": "X(17)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/ACCTONL.cpy:27"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "CARD-FILE",
+      "copybook": "CARDREC",
+      "level": 1,
+      "name": "CARD-RECORD",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "description": "CARDREC: CARD RECORD, 80 BYTES THE CARD MASTER, IN CARD NUMBER ORDER, AND THE ONLINE CARD FILE LOADED FROM IT EACH NIGHT, INDEXED BY CARD NUMBER. A CARD IS VALID TO THE END OF ITS EXPIRY MONTH. THE AUTHORIZATIONS KEEP THE TOTALS OF THE DAY OF CR-TOTALS-DATE, AND THE ATM WITHDRAWALS OF ITS MONTH, AND START THEM OVER ON A NEW DAY. MODIFICATION HISTORY DATE       BY  CHANGE 2003-05-19 MV  CR-0342 ORIGINAL VERSION.",
+      "source": "pangaea/copybooks/CARDREC.cpy:13",
+      "fields": [
+        {
+          "level": 5,
+          "name": "CR-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "picture": "9(16)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 16,
+          "source": "pangaea/copybooks/CARDREC.cpy:14"
+        },
+        {
+          "level": 5,
+          "name": "CR-ACCT-NO",
+          "start": 17,
+          "length": 10,
+          "picture": "9(10)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 10,
+          "source": "pangaea/copybooks/CARDREC.cpy:15"
+        },
+        {
+          "level": 5,
+          "name": "CR-CUST-NO",
+          "start": 27,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/CARDREC.cpy:16"
+        },
+        {
+          "level": 5,
+          "name": "CR-STATUS",
+          "start": 35,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "conditions": [
+            {
+              "name": "CR-ACTIVE",
+              "values": [
+                "'A'"
+              ],
+              "source": "pangaea/copybooks/CARDREC.cpy:18"
+            },
+            {
+              "name": "CR-BLOCKED",
+              "values": [
+                "'B'"
+              ],
+              "source": "pangaea/copybooks/CARDREC.cpy:19"
+            }
+          ],
+          "source": "pangaea/copybooks/CARDREC.cpy:17"
+        },
+        {
+          "level": 5,
+          "name": "CR-EXPIRY-MONTH",
+          "start": 36,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 6,
+          "source": "pangaea/copybooks/CARDREC.cpy:20"
+        },
+        {
+          "level": 5,
+          "name": "CR-PURCHASE-LIMIT",
+          "start": 42,
+          "length": 7,
+          "picture": "9(5)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 7,
+          "scale": 2,
+          "description": "DAILY LIMITS.",
+          "source": "pangaea/copybooks/CARDREC.cpy:22"
+        },
+        {
+          "level": 5,
+          "name": "CR-CASH-LIMIT",
+          "start": 49,
+          "length": 7,
+          "picture": "9(5)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 7,
+          "scale": 2,
+          "source": "pangaea/copybooks/CARDREC.cpy:23"
+        },
+        {
+          "level": 5,
+          "name": "CR-TOTALS-DATE",
+          "start": 56,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/CARDREC.cpy:24"
+        },
+        {
+          "level": 5,
+          "name": "CR-DAY-PURCHASES",
+          "start": 64,
+          "length": 7,
+          "picture": "9(5)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 7,
+          "scale": 2,
+          "source": "pangaea/copybooks/CARDREC.cpy:25"
+        },
+        {
+          "level": 5,
+          "name": "CR-DAY-CASH",
+          "start": 71,
+          "length": 7,
+          "picture": "9(5)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 7,
+          "scale": 2,
+          "source": "pangaea/copybooks/CARDREC.cpy:26"
+        },
+        {
+          "level": 5,
+          "name": "CR-MONTH-WITHDRAWALS",
+          "start": 78,
+          "length": 3,
+          "picture": "9(3)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 3,
+          "source": "pangaea/copybooks/CARDREC.cpy:27"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "HOLD-FILE",
+      "copybook": "HOLDREC",
+      "level": 1,
+      "name": "HOLD-RECORD",
+      "start": 1,
+      "length": 100,
+      "category": "group",
+      "description": "HOLDREC: HOLD RECORD, 100 BYTES AN AMOUNT AUTHORIZED ONLINE AND NOT YET POSTED: A CARD PURCHASE OR AN ATM WITHDRAWAL AND ITS FEE. INDEXED BY ACCOUNT AND HOLD NUMBER, THE AUTHORIZATION CODE, WHICH NUMBERS THE DAY'S HOLDS FROM 1. A REVERSED PURCHASE STAYS, MARKED. MODIFICATION HISTORY DATE       BY  CHANGE 2003-05-19 MV  CR-0342 ORIGINAL VERSION. 2007-02-05 MV  CR-0415 ATM FEE.",
+      "source": "pangaea/copybooks/HOLDREC.cpy:13",
+      "fields": [
+        {
+          "level": 5,
+          "name": "HD-KEY",
+          "start": 1,
+          "length": 16,
+          "category": "group",
+          "source": "pangaea/copybooks/HOLDREC.cpy:14",
+          "fields": [
+            {
+              "level": 10,
+              "name": "HD-ACCT-NO",
+              "start": 1,
+              "length": 10,
+              "picture": "9(10)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "digits": 10,
+              "source": "pangaea/copybooks/HOLDREC.cpy:15"
+            },
+            {
+              "level": 10,
+              "name": "HD-HOLD-NO",
+              "start": 11,
+              "length": 6,
+              "picture": "9(6)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "digits": 6,
+              "source": "pangaea/copybooks/HOLDREC.cpy:16"
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "name": "HD-CARD-NO",
+          "start": 17,
+          "length": 16,
+          "picture": "9(16)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 16,
+          "source": "pangaea/copybooks/HOLDREC.cpy:17"
+        },
+        {
+          "level": 5,
+          "name": "HD-KIND",
+          "start": 33,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "conditions": [
+            {
+              "name": "HD-PURCHASE",
+              "values": [
+                "'P'"
+              ],
+              "source": "pangaea/copybooks/HOLDREC.cpy:19"
+            },
+            {
+              "name": "HD-WITHDRAWAL",
+              "values": [
+                "'W'"
+              ],
+              "source": "pangaea/copybooks/HOLDREC.cpy:20"
+            }
+          ],
+          "source": "pangaea/copybooks/HOLDREC.cpy:18"
+        },
+        {
+          "level": 5,
+          "name": "HD-STATUS",
+          "start": 34,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "conditions": [
+            {
+              "name": "HD-OPEN",
+              "values": [
+                "'O'"
+              ],
+              "source": "pangaea/copybooks/HOLDREC.cpy:22"
+            },
+            {
+              "name": "HD-REVERSED",
+              "values": [
+                "'R'"
+              ],
+              "source": "pangaea/copybooks/HOLDREC.cpy:23"
+            }
+          ],
+          "source": "pangaea/copybooks/HOLDREC.cpy:21"
+        },
+        {
+          "level": 5,
+          "name": "HD-AMOUNT",
+          "start": 35,
+          "length": 9,
+          "picture": "9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 9,
+          "scale": 2,
+          "source": "pangaea/copybooks/HOLDREC.cpy:24"
+        },
+        {
+          "level": 5,
+          "name": "HD-FEE",
+          "start": 44,
+          "length": 5,
+          "picture": "9(3)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 5,
+          "scale": 2,
+          "source": "pangaea/copybooks/HOLDREC.cpy:25"
+        },
+        {
+          "level": 5,
+          "name": "HD-TERMINAL",
+          "start": 49,
+          "length": 20,
+          "picture": "X(20)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/HOLDREC.cpy:26"
+        },
+        {
+          "level": 5,
+          "name": "HD-TIMESTAMP",
+          "start": 69,
+          "length": 14,
+          "picture": "9(14)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 14,
+          "source": "pangaea/copybooks/HOLDREC.cpy:27"
+        },
+        {
+          "level": 5,
+          "name": "HD-BUSINESS-DATE",
+          "start": 83,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/HOLDREC.cpy:28"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 91,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/HOLDREC.cpy:29"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "REPORT-OUT",
+      "level": 1,
+      "name": "REPORT-LINE",
+      "start": 1,
+      "length": 80,
+      "picture": "X(80)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "source": "pangaea/programs/AUTHSRV.cbl:66"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-FILE-STATUSES",
+      "start": 1,
+      "length": 10,
+      "category": "group",
+      "source": "pangaea/programs/AUTHSRV.cbl:69",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-CONTROL-STATUS",
+          "start": 1,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/AUTHSRV.cbl:70"
+        },
+        {
+          "level": 5,
+          "name": "WS-ACCT-STATUS",
+          "start": 3,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/AUTHSRV.cbl:71"
+        },
+        {
+          "level": 5,
+          "name": "WS-CARD-STATUS",
+          "start": 5,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/AUTHSRV.cbl:72"
+        },
+        {
+          "level": 5,
+          "name": "WS-HOLD-STATUS",
+          "start": 7,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/AUTHSRV.cbl:73"
+        },
+        {
+          "level": 5,
+          "name": "WS-REPORT-STATUS",
+          "start": 9,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/AUTHSRV.cbl:74"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ABORT-MESSAGE",
+      "start": 1,
+      "length": 40,
+      "picture": "X(40)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "source": "pangaea/programs/AUTHSRV.cbl:76"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-INPUT-END-SW",
+      "start": 1,
+      "length": 1,
+      "picture": "X",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "values": [
+        "'N'"
+      ],
+      "conditions": [
+        {
+          "name": "END-OF-INPUT",
+          "values": [
+            "'Y'"
+          ],
+          "source": "pangaea/programs/AUTHSRV.cbl:78"
+        }
+      ],
+      "source": "pangaea/programs/AUTHSRV.cbl:77"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-HOLDS-END-SW",
+      "start": 1,
+      "length": 1,
+      "picture": "X",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "values": [
+        "'N'"
+      ],
+      "conditions": [
+        {
+          "name": "END-OF-HOLDS",
+          "values": [
+            "'Y'"
+          ],
+          "source": "pangaea/programs/AUTHSRV.cbl:80"
+        }
+      ],
+      "source": "pangaea/programs/AUTHSRV.cbl:79"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-LAST-HOLD-NO",
+      "start": 1,
+      "length": 6,
+      "picture": "9(6)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "digits": 6,
+      "values": [
+        "0"
+      ],
+      "source": "pangaea/programs/AUTHSRV.cbl:81"
+    },
+    {
+      "section": "working-storage",
+      "copybook": "AUTHMSG",
+      "level": 1,
+      "name": "AUTH-REQUEST",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "description": "AUTHMSG: AUTHORIZATION REQUEST, 80 BYTES, AND RESPONSE, 90 A CARD TERMINAL OR ATM SENDS A REQUEST FOR A CARD: A PURCHASE, THE REVERSAL OF ONE BY ITS AUTHORIZATION CODE, A CASH WITHDRAWAL OR A BALANCE ENQUIRY. THE RESPONSE GIVES THE RESULT, AND WHEN APPROVED THE AUTHORIZATION CODE, THE AMOUNT HELD AND THE FEE, AND THE ACCOUNT'S BALANCE AND AVAILABLE BALANCE AFTERWARDS. MODIFICATION HISTORY DATE       BY  CHANGE 2003-05-19 MV  CR-0342 ORIGINAL VERSION. 2007-02-05 MV  CR-0415 FEE IN THE RESPONSE.",
+      "source": "pangaea/copybooks/AUTHMSG.cpy:15",
+      "fields": [
+        {
+          "level": 5,
+          "name": "RQ-FUNCTION",
+          "start": 1,
+          "length": 4,
+          "picture": "X(4)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "conditions": [
+            {
+              "name": "RQ-PURCHASE",
+              "values": [
+                "'PURC'"
+              ],
+              "source": "pangaea/copybooks/AUTHMSG.cpy:17"
+            },
+            {
+              "name": "RQ-REVERSAL",
+              "values": [
+                "'REVS'"
+              ],
+              "source": "pangaea/copybooks/AUTHMSG.cpy:18"
+            },
+            {
+              "name": "RQ-WITHDRAWAL",
+              "values": [
+                "'WDRL'"
+              ],
+              "source": "pangaea/copybooks/AUTHMSG.cpy:19"
+            },
+            {
+              "name": "RQ-BALANCE-ENQUIRY",
+              "values": [
+                "'BALQ'"
+              ],
+              "source": "pangaea/copybooks/AUTHMSG.cpy:20"
+            }
+          ],
+          "source": "pangaea/copybooks/AUTHMSG.cpy:16"
+        },
+        {
+          "level": 5,
+          "name": "RQ-CARD-NO",
+          "start": 5,
+          "length": 16,
+          "picture": "9(16)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 16,
+          "source": "pangaea/copybooks/AUTHMSG.cpy:21"
+        },
+        {
+          "level": 5,
+          "name": "RQ-AMOUNT",
+          "start": 21,
+          "length": 9,
+          "picture": "9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 9,
+          "scale": 2,
+          "source": "pangaea/copybooks/AUTHMSG.cpy:22"
+        },
+        {
+          "level": 5,
+          "name": "RQ-AUTH-CODE",
+          "start": 30,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 6,
+          "source": "pangaea/copybooks/AUTHMSG.cpy:23"
+        },
+        {
+          "level": 5,
+          "name": "RQ-TERMINAL",
+          "start": 36,
+          "length": 20,
+          "picture": "X(20)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/AUTHMSG.cpy:24"
+        },
+        {
+          "level": 5,
+          "name": "RQ-TIMESTAMP",
+          "start": 56,
+          "length": 14,
+          "picture": "9(14)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 14,
+          "source": "pangaea/copybooks/AUTHMSG.cpy:25"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 70,
+          "length": 11,
+          "picture": "X(11)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/AUTHMSG.cpy:26"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "copybook": "AUTHMSG",
+      "level": 1,
+      "name": "AUTH-RESPONSE",
+      "start": 1,
+      "length": 90,
+      "category": "group",
+      "source": "pangaea/copybooks/AUTHMSG.cpy:27",
+      "fields": [
+        {
+          "level": 5,
+          "name": "RS-RESULT",
+          "start": 1,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "conditions": [
+            {
+              "name": "RS-APPROVED",
+              "values": [
+                "'00'"
+              ],
+              "source": "pangaea/copybooks/AUTHMSG.cpy:29"
+            },
+            {
+              "name": "RS-INVALID-REQUEST",
+              "values": [
+                "'12'"
+              ],
+              "source": "pangaea/copybooks/AUTHMSG.cpy:30"
+            },
+            {
+              "name": "RS-INVALID-AMOUNT",
+              "values": [
+                "'13'"
+              ],
+              "source": "pangaea/copybooks/AUTHMSG.cpy:31"
+            },
+            {
+              "name": "RS-NO-SUCH-CARD",
+              "values": [
+                "'14'"
+              ],
+              "source": "pangaea/copybooks/AUTHMSG.cpy:32"
+            },
+            {
+              "name": "RS-NO-SUCH-AUTH",
+              "values": [
+                "'25'"
+              ],
+              "source": "pangaea/copybooks/AUTHMSG.cpy:33"
+            },
+            {
+              "name": "RS-INSUFFICIENT-FUNDS",
+              "values": [
+                "'51'"
+              ],
+              "source": "pangaea/copybooks/AUTHMSG.cpy:34"
+            },
+            {
+              "name": "RS-OVER-LIMIT",
+              "values": [
+                "'61'"
+              ],
+              "source": "pangaea/copybooks/AUTHMSG.cpy:35"
+            },
+            {
+              "name": "RS-CARD-BLOCKED",
+              "values": [
+                "'62'"
+              ],
+              "source": "pangaea/copybooks/AUTHMSG.cpy:36"
+            },
+            {
+              "name": "RS-ACCOUNT-NOT-OPEN",
+              "values": [
+                "'78'"
+              ],
+              "source": "pangaea/copybooks/AUTHMSG.cpy:37"
+            }
+          ],
+          "source": "pangaea/copybooks/AUTHMSG.cpy:28"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 3,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/AUTHMSG.cpy:38"
+        },
+        {
+          "level": 5,
+          "name": "RS-AUTH-CODE",
+          "start": 4,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 6,
+          "source": "pangaea/copybooks/AUTHMSG.cpy:39"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 10,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/AUTHMSG.cpy:40"
+        },
+        {
+          "level": 5,
+          "name": "RS-AMOUNT",
+          "start": 11,
+          "length": 10,
+          "picture": "Z(6)9.99",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "source": "pangaea/copybooks/AUTHMSG.cpy:41"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 21,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/AUTHMSG.cpy:42"
+        },
+        {
+          "level": 5,
+          "name": "RS-FEE",
+          "start": 22,
+          "length": 6,
+          "picture": "ZZ9.99",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "source": "pangaea/copybooks/AUTHMSG.cpy:43"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 28,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/AUTHMSG.cpy:44"
+        },
+        {
+          "level": 5,
+          "name": "RS-BALANCE",
+          "start": 29,
+          "length": 15,
+          "picture": "-9(11).99",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "source": "pangaea/copybooks/AUTHMSG.cpy:45"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 44,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/AUTHMSG.cpy:46"
+        },
+        {
+          "level": 5,
+          "name": "RS-AVAILABLE",
+          "start": 45,
+          "length": 15,
+          "picture": "-9(11).99",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "source": "pangaea/copybooks/AUTHMSG.cpy:47"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 60,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/AUTHMSG.cpy:48"
+        },
+        {
+          "level": 5,
+          "name": "RS-MESSAGE",
+          "start": 61,
+          "length": 30,
+          "picture": "X(30)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/AUTHMSG.cpy:49"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-TOTALS",
+      "start": 1,
+      "length": 50,
+      "category": "group",
+      "source": "pangaea/programs/AUTHSRV.cbl:85",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-REQUEST-COUNT",
+          "start": 1,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/AUTHSRV.cbl:86"
+        },
+        {
+          "level": 5,
+          "name": "WS-APPROVED-COUNT",
+          "start": 9,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/AUTHSRV.cbl:87"
+        },
+        {
+          "level": 5,
+          "name": "WS-DECLINED-COUNT",
+          "start": 17,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/AUTHSRV.cbl:88"
+        },
+        {
+          "level": 5,
+          "name": "WS-HELD-TOTAL",
+          "start": 25,
+          "length": 13,
+          "picture": "9(11)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 13,
+          "scale": 2,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/AUTHSRV.cbl:89"
+        },
+        {
+          "level": 5,
+          "name": "WS-RELEASED-TOTAL",
+          "start": 38,
+          "length": 13,
+          "picture": "9(11)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 13,
+          "scale": 2,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/AUTHSRV.cbl:90"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REPORT-COUNT-LINE",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "source": "pangaea/programs/AUTHSRV.cbl:92",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-RC-LABEL",
+          "start": 1,
+          "length": 30,
+          "picture": "X(30)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/AUTHSRV.cbl:93"
+        },
+        {
+          "level": 5,
+          "name": "WS-RC-VALUE",
+          "start": 31,
+          "length": 10,
+          "picture": "ZZ,ZZZ,ZZ9",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "source": "pangaea/programs/AUTHSRV.cbl:94"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 41,
+          "length": 40,
+          "picture": "X(40)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "SPACES"
+          ],
+          "source": "pangaea/programs/AUTHSRV.cbl:95"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REPORT-AMOUNT-LINE",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "source": "pangaea/programs/AUTHSRV.cbl:96",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-RA-LABEL",
+          "start": 1,
+          "length": 30,
+          "picture": "X(30)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/AUTHSRV.cbl:97"
+        },
+        {
+          "level": 5,
+          "name": "WS-RA-VALUE",
+          "start": 31,
+          "length": 21,
+          "picture": "Z,ZZZ,ZZZ,ZZZ,ZZ9.99-",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "source": "pangaea/programs/AUTHSRV.cbl:98"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 52,
+          "length": 29,
+          "picture": "X(29)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "SPACES"
+          ],
+          "source": "pangaea/programs/AUTHSRV.cbl:99"
+        }
+      ]
+    }
+  ],
+  "paragraphs": [
+    {
+      "name": "0000-MAIN",
+      "description": "SERVE REQUESTS UNTIL THERE ARE NO MORE, THEN REPORT.",
+      "source": "pangaea/programs/AUTHSRV.cbl:103",
+      "performs": [
+        {
+          "target": "1000-INITIALIZE",
+          "source": "pangaea/programs/AUTHSRV.cbl:104"
+        },
+        {
+          "target": "2000-SERVE-REQUEST",
+          "source": "pangaea/programs/AUTHSRV.cbl:105"
+        },
+        {
+          "target": "8000-WRITE-REPORT",
+          "source": "pangaea/programs/AUTHSRV.cbl:106"
+        },
+        {
+          "target": "9000-CLOSE-FILES",
+          "source": "pangaea/programs/AUTHSRV.cbl:107"
+        }
+      ],
+      "reads": [
+        "WS-INPUT-END-SW"
+      ],
+      "writes": [
+        "RETURN-CODE"
+      ]
+    },
+    {
+      "name": "1000-INITIALIZE",
+      "description": "OPEN THE FILES, READ THE BUSINESS DATE AND FIND THE LAST HOLD NUMBER GIVEN TODAY.",
+      "source": "pangaea/programs/AUTHSRV.cbl:113",
+      "performs": [
+        {
+          "target": "9900-ABORT",
+          "source": "pangaea/programs/AUTHSRV.cbl:126"
+        },
+        {
+          "target": "1100-FIND-LAST-HOLD",
+          "source": "pangaea/programs/AUTHSRV.cbl:128"
+        }
+      ],
+      "performedBy": [
+        "0000-MAIN"
+      ],
+      "reads": [
+        "WS-FILE-STATUSES"
+      ],
+      "writes": [
+        "RETURN-CODE",
+        "BANK-CONTROL-RECORD",
+        "WS-ABORT-MESSAGE"
+      ]
+    },
+    {
+      "name": "1100-FIND-LAST-HOLD",
+      "description": "READ THROUGH THE HOLDS FOR THE HIGHEST HOLD NUMBER.",
+      "source": "pangaea/programs/AUTHSRV.cbl:131",
+      "performedBy": [
+        "1000-INITIALIZE"
+      ],
+      "reads": [
+        "HD-KEY",
+        "WS-HOLDS-END-SW",
+        "HD-HOLD-NO",
+        "WS-LAST-HOLD-NO"
+      ],
+      "writes": [
+        "HD-KEY",
+        "WS-HOLDS-END-SW",
+        "HOLD-RECORD",
+        "WS-LAST-HOLD-NO"
+      ]
+    },
+    {
+      "name": "2000-SERVE-REQUEST",
+      "description": "READ THE NEXT REQUEST, AND ANSWER IT.",
+      "source": "pangaea/programs/AUTHSRV.cbl:149",
+      "performs": [
+        {
+          "target": "2100-AUTHORIZE",
+          "source": "pangaea/programs/AUTHSRV.cbl:154"
+        }
+      ],
+      "performedBy": [
+        "0000-MAIN"
+      ],
+      "reads": [
+        "AUTH-RESPONSE"
+      ],
+      "writes": [
+        "AUTH-REQUEST",
+        "WS-INPUT-END-SW"
+      ]
+    },
+    {
+      "name": "2100-AUTHORIZE",
+      "description": "FIND THE RECORDS THE REQUEST IS ABOUT, CALL THE PROGRAM FOR IT, AND KEEP WHAT IT CHANGED IF IT APPROVED.",
+      "source": "pangaea/programs/AUTHSRV.cbl:160",
+      "performs": [
+        {
+          "target": "2200-READ-CARD-AND-ACCOUNT",
+          "source": "pangaea/programs/AUTHSRV.cbl:165"
+        },
+        {
+          "target": "2300-READ-HOLD",
+          "source": "pangaea/programs/AUTHSRV.cbl:171"
+        },
+        {
+          "target": "2400-SAVE-CHANGES",
+          "source": "pangaea/programs/AUTHSRV.cbl:196"
+        }
+      ],
+      "performedBy": [
+        "2000-SERVE-REQUEST"
+      ],
+      "reads": [
+        "WS-REQUEST-COUNT",
+        "RQ-FUNCTION",
+        "RS-RESULT",
+        "AUTH-REQUEST",
+        "AUTH-RESPONSE",
+        "BANK-CONTROL-RECORD",
+        "ACCT-ONLINE-RECORD",
+        "CARD-RECORD",
+        "HOLD-RECORD",
+        "WS-APPROVED-COUNT",
+        "WS-DECLINED-COUNT"
+      ],
+      "writes": [
+        "WS-REQUEST-COUNT",
+        "AUTH-RESPONSE",
+        "HOLD-RECORD",
+        "RS-RESULT",
+        "RS-MESSAGE",
+        "AUTH-REQUEST",
+        "BANK-CONTROL-RECORD",
+        "ACCT-ONLINE-RECORD",
+        "CARD-RECORD",
+        "WS-APPROVED-COUNT",
+        "WS-DECLINED-COUNT"
+      ]
+    },
+    {
+      "name": "2200-READ-CARD-AND-ACCOUNT",
+      "description": "READ THE CARD, AND THE ACCOUNT IT DRAWS ON.",
+      "source": "pangaea/programs/AUTHSRV.cbl:203",
+      "performedBy": [
+        "2100-AUTHORIZE"
+      ],
+      "reads": [
+        "RQ-CARD-NO",
+        "CR-ACCT-NO"
+      ],
+      "writes": [
+        "CR-CARD-NO",
+        "CARD-RECORD",
+        "RS-RESULT",
+        "RS-MESSAGE",
+        "AO-ACCT-NO",
+        "ACCT-ONLINE-RECORD"
+      ]
+    },
+    {
+      "name": "2300-READ-HOLD",
+      "description": "READ THE HOLD OF THE AUTHORIZATION TO REVERSE.",
+      "source": "pangaea/programs/AUTHSRV.cbl:219",
+      "performedBy": [
+        "2100-AUTHORIZE"
+      ],
+      "reads": [
+        "CR-ACCT-NO",
+        "RQ-AUTH-CODE"
+      ],
+      "writes": [
+        "HD-ACCT-NO",
+        "HD-HOLD-NO",
+        "HOLD-RECORD",
+        "RS-RESULT",
+        "RS-MESSAGE"
+      ]
+    },
+    {
+      "name": "2400-SAVE-CHANGES",
+      "description": "REWRITE THE ACCOUNT AND THE CARD, AND WRITE A NEW HOLD UNDER THE NEXT HOLD NUMBER OR REWRITE THE REVERSED ONE.",
+      "source": "pangaea/programs/AUTHSRV.cbl:230",
+      "performs": [
+        {
+          "target": "9900-ABORT",
+          "source": "pangaea/programs/AUTHSRV.cbl:234"
+        },
+        {
+          "target": "9900-ABORT",
+          "source": "pangaea/programs/AUTHSRV.cbl:239"
+        },
+        {
+          "target": "9900-ABORT",
+          "source": "pangaea/programs/AUTHSRV.cbl:246"
+        },
+        {
+          "target": "9900-ABORT",
+          "source": "pangaea/programs/AUTHSRV.cbl:255"
+        }
+      ],
+      "performedBy": [
+        "2100-AUTHORIZE"
+      ],
+      "reads": [
+        "RQ-FUNCTION",
+        "HD-AMOUNT",
+        "WS-RELEASED-TOTAL",
+        "WS-LAST-HOLD-NO",
+        "WS-HELD-TOTAL",
+        "HD-FEE"
+      ],
+      "writes": [
+        "ACCT-ONLINE-RECORD",
+        "WS-ABORT-MESSAGE",
+        "CARD-RECORD",
+        "HOLD-RECORD",
+        "WS-RELEASED-TOTAL",
+        "WS-LAST-HOLD-NO",
+        "HD-HOLD-NO",
+        "RS-AUTH-CODE",
+        "WS-HELD-TOTAL"
+      ]
+    },
+    {
+      "name": "8000-WRITE-REPORT",
+      "description": "WRITE THE DAY'S REPORT.",
+      "source": "pangaea/programs/AUTHSRV.cbl:262",
+      "performedBy": [
+        "0000-MAIN"
+      ],
+      "reads": [
+        "BC-BUSINESS-DATE",
+        "WS-REQUEST-COUNT",
+        "WS-REPORT-COUNT-LINE",
+        "WS-APPROVED-COUNT",
+        "WS-DECLINED-COUNT",
+        "WS-LAST-HOLD-NO",
+        "WS-HELD-TOTAL",
+        "WS-REPORT-AMOUNT-LINE",
+        "WS-RELEASED-TOTAL"
+      ],
+      "writes": [
+        "REPORT-LINE",
+        "WS-RC-LABEL",
+        "WS-RC-VALUE",
+        "WS-RA-LABEL",
+        "WS-RA-VALUE"
+      ]
+    },
+    {
+      "name": "9000-CLOSE-FILES",
+      "description": "CLOSE ALL FILES.",
+      "source": "pangaea/programs/AUTHSRV.cbl:292",
+      "performedBy": [
+        "0000-MAIN",
+        "9900-ABORT"
+      ]
+    },
+    {
+      "name": "9900-ABORT",
+      "description": "STOP THE RUN WITH RETURN CODE 16, SAYING WHY.",
+      "source": "pangaea/programs/AUTHSRV.cbl:296",
+      "performs": [
+        {
+          "target": "9000-CLOSE-FILES",
+          "source": "pangaea/programs/AUTHSRV.cbl:298"
+        }
+      ],
+      "performedBy": [
+        "1000-INITIALIZE",
+        "2400-SAVE-CHANGES"
+      ],
+      "reads": [
+        "WS-ABORT-MESSAGE"
+      ],
+      "writes": [
+        "RETURN-CODE"
+      ]
+    }
+  ],
+  "readsSysin": true,
+  "calls": [
+    {
+      "program": "AUTHPUR",
+      "using": [
+        "AUTH-REQUEST",
+        "AUTH-RESPONSE",
+        "BANK-CONTROL-RECORD",
+        "ACCT-ONLINE-RECORD",
+        "CARD-RECORD",
+        "HOLD-RECORD"
+      ],
+      "paragraph": "2100-AUTHORIZE",
+      "source": "pangaea/programs/AUTHSRV.cbl:176"
+    },
+    {
+      "program": "AUTHREV",
+      "using": [
+        "AUTH-REQUEST",
+        "AUTH-RESPONSE",
+        "BANK-CONTROL-RECORD",
+        "ACCT-ONLINE-RECORD",
+        "CARD-RECORD",
+        "HOLD-RECORD"
+      ],
+      "paragraph": "2100-AUTHORIZE",
+      "source": "pangaea/programs/AUTHSRV.cbl:180"
+    },
+    {
+      "program": "ATMWDL",
+      "using": [
+        "AUTH-REQUEST",
+        "AUTH-RESPONSE",
+        "BANK-CONTROL-RECORD",
+        "ACCT-ONLINE-RECORD",
+        "CARD-RECORD",
+        "HOLD-RECORD"
+      ],
+      "paragraph": "2100-AUTHORIZE",
+      "source": "pangaea/programs/AUTHSRV.cbl:184"
+    },
+    {
+      "program": "ATMBAL",
+      "using": [
+        "AUTH-REQUEST",
+        "AUTH-RESPONSE",
+        "BANK-CONTROL-RECORD",
+        "ACCT-ONLINE-RECORD",
+        "CARD-RECORD",
+        "HOLD-RECORD"
+      ],
+      "paragraph": "2100-AUTHORIZE",
+      "source": "pangaea/programs/AUTHSRV.cbl:188"
+    }
+  ],
+  "lineage": [
+    {
+      "from": "0",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "0000-MAIN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:108"
+    },
+    {
+      "from": "16",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:120"
+    },
+    {
+      "from": "CONTROL-FILE",
+      "to": "BANK-CONTROL-RECORD",
+      "fromFile": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "READ",
+      "source": "pangaea/programs/AUTHSRV.cbl:123"
+    },
+    {
+      "from": "'NO BANK CONTROL RECORD'",
+      "to": "WS-ABORT-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:125"
+    },
+    {
+      "from": "LOW-VALUES",
+      "to": "HD-KEY",
+      "fromLiteral": true,
+      "paragraph": "1100-FIND-LAST-HOLD",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:132"
+    },
+    {
+      "from": "condition END-OF-HOLDS",
+      "to": "WS-HOLDS-END-SW",
+      "fromLiteral": true,
+      "paragraph": "1100-FIND-LAST-HOLD",
+      "verb": "SET",
+      "source": "pangaea/programs/AUTHSRV.cbl:135"
+    },
+    {
+      "from": "HOLD-FILE",
+      "to": "HOLD-RECORD",
+      "fromFile": true,
+      "paragraph": "1100-FIND-LAST-HOLD",
+      "verb": "READ",
+      "source": "pangaea/programs/AUTHSRV.cbl:138"
+    },
+    {
+      "from": "condition END-OF-HOLDS",
+      "to": "WS-HOLDS-END-SW",
+      "fromLiteral": true,
+      "paragraph": "1100-FIND-LAST-HOLD",
+      "verb": "SET",
+      "source": "pangaea/programs/AUTHSRV.cbl:140"
+    },
+    {
+      "from": "HD-HOLD-NO",
+      "to": "WS-LAST-HOLD-NO",
+      "paragraph": "1100-FIND-LAST-HOLD",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:143"
+    },
+    {
+      "from": "condition END-OF-INPUT",
+      "to": "WS-INPUT-END-SW",
+      "fromLiteral": true,
+      "paragraph": "2000-SERVE-REQUEST",
+      "verb": "SET",
+      "source": "pangaea/programs/AUTHSRV.cbl:152"
+    },
+    {
+      "from": "1",
+      "to": "WS-REQUEST-COUNT",
+      "fromLiteral": true,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "ADD",
+      "source": "pangaea/programs/AUTHSRV.cbl:161"
+    },
+    {
+      "from": "SPACES",
+      "to": "AUTH-RESPONSE",
+      "fromLiteral": true,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:162"
+    },
+    {
+      "from": "SPACES",
+      "to": "HOLD-RECORD",
+      "fromLiteral": true,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:162"
+    },
+    {
+      "from": "condition RS-INVALID-REQUEST",
+      "to": "RS-RESULT",
+      "fromLiteral": true,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "SET",
+      "source": "pangaea/programs/AUTHSRV.cbl:167"
+    },
+    {
+      "from": "'UNKNOWN REQUEST'",
+      "to": "RS-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:168"
+    },
+    {
+      "from": "1",
+      "to": "WS-APPROVED-COUNT",
+      "fromLiteral": true,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "ADD",
+      "source": "pangaea/programs/AUTHSRV.cbl:194"
+    },
+    {
+      "from": "1",
+      "to": "WS-DECLINED-COUNT",
+      "fromLiteral": true,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "ADD",
+      "source": "pangaea/programs/AUTHSRV.cbl:199"
+    },
+    {
+      "from": "RQ-CARD-NO",
+      "to": "CR-CARD-NO",
+      "paragraph": "2200-READ-CARD-AND-ACCOUNT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:204"
+    },
+    {
+      "from": "CARD-FILE",
+      "to": "CARD-RECORD",
+      "fromFile": true,
+      "paragraph": "2200-READ-CARD-AND-ACCOUNT",
+      "verb": "READ",
+      "source": "pangaea/programs/AUTHSRV.cbl:205"
+    },
+    {
+      "from": "condition RS-NO-SUCH-CARD",
+      "to": "RS-RESULT",
+      "fromLiteral": true,
+      "paragraph": "2200-READ-CARD-AND-ACCOUNT",
+      "verb": "SET",
+      "source": "pangaea/programs/AUTHSRV.cbl:207"
+    },
+    {
+      "from": "'NO SUCH CARD'",
+      "to": "RS-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "2200-READ-CARD-AND-ACCOUNT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:208"
+    },
+    {
+      "from": "CR-ACCT-NO",
+      "to": "AO-ACCT-NO",
+      "paragraph": "2200-READ-CARD-AND-ACCOUNT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:210"
+    },
+    {
+      "from": "ACCT-FILE",
+      "to": "ACCT-ONLINE-RECORD",
+      "fromFile": true,
+      "paragraph": "2200-READ-CARD-AND-ACCOUNT",
+      "verb": "READ",
+      "source": "pangaea/programs/AUTHSRV.cbl:211"
+    },
+    {
+      "from": "condition RS-ACCOUNT-NOT-OPEN",
+      "to": "RS-RESULT",
+      "fromLiteral": true,
+      "paragraph": "2200-READ-CARD-AND-ACCOUNT",
+      "verb": "SET",
+      "source": "pangaea/programs/AUTHSRV.cbl:213"
+    },
+    {
+      "from": "'NO SUCH ACCOUNT'",
+      "to": "RS-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "2200-READ-CARD-AND-ACCOUNT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:214"
+    },
+    {
+      "from": "CR-ACCT-NO",
+      "to": "HD-ACCT-NO",
+      "paragraph": "2300-READ-HOLD",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:220"
+    },
+    {
+      "from": "RQ-AUTH-CODE",
+      "to": "HD-HOLD-NO",
+      "paragraph": "2300-READ-HOLD",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:221"
+    },
+    {
+      "from": "HOLD-FILE",
+      "to": "HOLD-RECORD",
+      "fromFile": true,
+      "paragraph": "2300-READ-HOLD",
+      "verb": "READ",
+      "source": "pangaea/programs/AUTHSRV.cbl:222"
+    },
+    {
+      "from": "condition RS-NO-SUCH-AUTH",
+      "to": "RS-RESULT",
+      "fromLiteral": true,
+      "paragraph": "2300-READ-HOLD",
+      "verb": "SET",
+      "source": "pangaea/programs/AUTHSRV.cbl:224"
+    },
+    {
+      "from": "'NO SUCH AUTHORIZATION'",
+      "to": "RS-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "2300-READ-HOLD",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:225"
+    },
+    {
+      "from": "ACCT-ONLINE-RECORD",
+      "to": "ACCT-FILE",
+      "toFile": true,
+      "paragraph": "2400-SAVE-CHANGES",
+      "verb": "REWRITE",
+      "source": "pangaea/programs/AUTHSRV.cbl:231"
+    },
+    {
+      "from": "'CANNOT REWRITE THE ACCOUNT'",
+      "to": "WS-ABORT-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "2400-SAVE-CHANGES",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:233"
+    },
+    {
+      "from": "CARD-RECORD",
+      "to": "CARD-FILE",
+      "toFile": true,
+      "paragraph": "2400-SAVE-CHANGES",
+      "verb": "REWRITE",
+      "source": "pangaea/programs/AUTHSRV.cbl:236"
+    },
+    {
+      "from": "'CANNOT REWRITE THE CARD'",
+      "to": "WS-ABORT-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "2400-SAVE-CHANGES",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:238"
+    },
+    {
+      "from": "HOLD-RECORD",
+      "to": "HOLD-FILE",
+      "toFile": true,
+      "paragraph": "2400-SAVE-CHANGES",
+      "verb": "REWRITE",
+      "source": "pangaea/programs/AUTHSRV.cbl:242"
+    },
+    {
+      "from": "'CANNOT REWRITE THE HOLD'",
+      "to": "WS-ABORT-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "2400-SAVE-CHANGES",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:244"
+    },
+    {
+      "from": "HD-AMOUNT",
+      "to": "WS-RELEASED-TOTAL",
+      "paragraph": "2400-SAVE-CHANGES",
+      "verb": "ADD",
+      "source": "pangaea/programs/AUTHSRV.cbl:248"
+    },
+    {
+      "from": "1",
+      "to": "WS-LAST-HOLD-NO",
+      "fromLiteral": true,
+      "paragraph": "2400-SAVE-CHANGES",
+      "verb": "ADD",
+      "source": "pangaea/programs/AUTHSRV.cbl:250"
+    },
+    {
+      "from": "WS-LAST-HOLD-NO",
+      "to": "HD-HOLD-NO",
+      "paragraph": "2400-SAVE-CHANGES",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:251"
+    },
+    {
+      "from": "WS-LAST-HOLD-NO",
+      "to": "RS-AUTH-CODE",
+      "paragraph": "2400-SAVE-CHANGES",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:251"
+    },
+    {
+      "from": "HOLD-RECORD",
+      "to": "HOLD-FILE",
+      "toFile": true,
+      "paragraph": "2400-SAVE-CHANGES",
+      "verb": "WRITE",
+      "source": "pangaea/programs/AUTHSRV.cbl:252"
+    },
+    {
+      "from": "'CANNOT WRITE THE HOLD'",
+      "to": "WS-ABORT-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "2400-SAVE-CHANGES",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:254"
+    },
+    {
+      "from": "HD-AMOUNT",
+      "to": "WS-HELD-TOTAL",
+      "paragraph": "2400-SAVE-CHANGES",
+      "verb": "ADD",
+      "source": "pangaea/programs/AUTHSRV.cbl:257"
+    },
+    {
+      "from": "HD-FEE",
+      "to": "WS-HELD-TOTAL",
+      "paragraph": "2400-SAVE-CHANGES",
+      "verb": "ADD",
+      "source": "pangaea/programs/AUTHSRV.cbl:258"
+    },
+    {
+      "from": "SPACES",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:263"
+    },
+    {
+      "from": "'AUTHSRV  ONLINE AUTHORIZATIONS   BUSINESS DATE '",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "STRING",
+      "source": "pangaea/programs/AUTHSRV.cbl:264"
+    },
+    {
+      "from": "BC-BUSINESS-DATE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "STRING",
+      "source": "pangaea/programs/AUTHSRV.cbl:264"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/AUTHSRV.cbl:267"
+    },
+    {
+      "from": "SPACES",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:268"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/AUTHSRV.cbl:269"
+    },
+    {
+      "from": "'REQUESTS'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:270"
+    },
+    {
+      "from": "WS-REQUEST-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:271"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/AUTHSRV.cbl:272"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/AUTHSRV.cbl:272"
+    },
+    {
+      "from": "'APPROVED'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:273"
+    },
+    {
+      "from": "WS-APPROVED-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:274"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/AUTHSRV.cbl:275"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/AUTHSRV.cbl:275"
+    },
+    {
+      "from": "'DECLINED'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:276"
+    },
+    {
+      "from": "WS-DECLINED-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:277"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/AUTHSRV.cbl:278"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/AUTHSRV.cbl:278"
+    },
+    {
+      "from": "'LAST AUTHORIZATION CODE'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:279"
+    },
+    {
+      "from": "WS-LAST-HOLD-NO",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:280"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/AUTHSRV.cbl:281"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/AUTHSRV.cbl:281"
+    },
+    {
+      "from": "SPACES",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:282"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/AUTHSRV.cbl:283"
+    },
+    {
+      "from": "'HELD WITH FEES'",
+      "to": "WS-RA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:284"
+    },
+    {
+      "from": "WS-HELD-TOTAL",
+      "to": "WS-RA-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:285"
+    },
+    {
+      "from": "WS-REPORT-AMOUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/AUTHSRV.cbl:286"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/AUTHSRV.cbl:286"
+    },
+    {
+      "from": "'RELEASED BY REVERSALS'",
+      "to": "WS-RA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:287"
+    },
+    {
+      "from": "WS-RELEASED-TOTAL",
+      "to": "WS-RA-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:288"
+    },
+    {
+      "from": "WS-REPORT-AMOUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/AUTHSRV.cbl:289"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/AUTHSRV.cbl:289"
+    },
+    {
+      "from": "16",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "9900-ABORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/AUTHSRV.cbl:299"
+    }
+  ],
+  "outputs": [
+    {
+      "file": "ACCT-FILE",
+      "record": "ACCT-ONLINE-RECORD",
+      "fields": [
+        {
+          "name": "AO-ACCT-NO",
+          "start": 1,
+          "length": 10,
+          "origins": [
+            "file ACCT-FILE AO-ACCT-NO",
+            "file CARD-FILE CR-ACCT-NO"
+          ]
+        },
+        {
+          "name": "AO-CUST-NO",
+          "start": 11,
+          "length": 8,
+          "origins": [
+            "file ACCT-FILE AO-CUST-NO"
+          ]
+        },
+        {
+          "name": "AO-SHORT-NAME",
+          "start": 19,
+          "length": 20,
+          "origins": [
+            "file ACCT-FILE AO-SHORT-NAME"
+          ]
+        },
+        {
+          "name": "AO-ACCT-TYPE",
+          "start": 39,
+          "length": 1,
+          "origins": [
+            "file ACCT-FILE AO-ACCT-TYPE"
+          ]
+        },
+        {
+          "name": "AO-STATUS",
+          "start": 40,
+          "length": 1,
+          "origins": [
+            "file ACCT-FILE AO-STATUS"
+          ]
+        },
+        {
+          "name": "AO-BALANCE",
+          "start": 41,
+          "length": 13,
+          "origins": [
+            "file ACCT-FILE AO-BALANCE"
+          ]
+        },
+        {
+          "name": "AO-OVERDRAFT-LIMIT",
+          "start": 54,
+          "length": 9,
+          "origins": [
+            "file ACCT-FILE AO-OVERDRAFT-LIMIT"
+          ]
+        },
+        {
+          "name": "AO-HOLDS",
+          "start": 63,
+          "length": 13,
+          "origins": [
+            "file ACCT-FILE AO-HOLDS"
+          ]
+        },
+        {
+          "name": "AO-AS-OF-DATE",
+          "start": 76,
+          "length": 8,
+          "origins": [
+            "file ACCT-FILE AO-AS-OF-DATE"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "CARD-FILE",
+      "record": "CARD-RECORD",
+      "fields": [
+        {
+          "name": "CR-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "origins": [
+            "file CARD-FILE CR-CARD-NO"
+          ]
+        },
+        {
+          "name": "CR-ACCT-NO",
+          "start": 17,
+          "length": 10,
+          "origins": [
+            "file CARD-FILE CR-ACCT-NO"
+          ]
+        },
+        {
+          "name": "CR-CUST-NO",
+          "start": 27,
+          "length": 8,
+          "origins": [
+            "file CARD-FILE CR-CUST-NO"
+          ]
+        },
+        {
+          "name": "CR-STATUS",
+          "start": 35,
+          "length": 1,
+          "origins": [
+            "file CARD-FILE CR-STATUS"
+          ]
+        },
+        {
+          "name": "CR-EXPIRY-MONTH",
+          "start": 36,
+          "length": 6,
+          "origins": [
+            "file CARD-FILE CR-EXPIRY-MONTH"
+          ]
+        },
+        {
+          "name": "CR-PURCHASE-LIMIT",
+          "start": 42,
+          "length": 7,
+          "origins": [
+            "file CARD-FILE CR-PURCHASE-LIMIT"
+          ]
+        },
+        {
+          "name": "CR-CASH-LIMIT",
+          "start": 49,
+          "length": 7,
+          "origins": [
+            "file CARD-FILE CR-CASH-LIMIT"
+          ]
+        },
+        {
+          "name": "CR-TOTALS-DATE",
+          "start": 56,
+          "length": 8,
+          "origins": [
+            "file CARD-FILE CR-TOTALS-DATE"
+          ]
+        },
+        {
+          "name": "CR-DAY-PURCHASES",
+          "start": 64,
+          "length": 7,
+          "origins": [
+            "file CARD-FILE CR-DAY-PURCHASES"
+          ]
+        },
+        {
+          "name": "CR-DAY-CASH",
+          "start": 71,
+          "length": 7,
+          "origins": [
+            "file CARD-FILE CR-DAY-CASH"
+          ]
+        },
+        {
+          "name": "CR-MONTH-WITHDRAWALS",
+          "start": 78,
+          "length": 3,
+          "origins": [
+            "file CARD-FILE CR-MONTH-WITHDRAWALS"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "HOLD-FILE",
+      "record": "HOLD-RECORD",
+      "fields": [
+        {
+          "name": "HD-ACCT-NO",
+          "start": 1,
+          "length": 10,
+          "origins": [
+            "file CARD-FILE CR-ACCT-NO",
+            "file HOLD-FILE HD-ACCT-NO"
+          ]
+        },
+        {
+          "name": "HD-HOLD-NO",
+          "start": 11,
+          "length": 6,
+          "origins": [
+            "file HOLD-FILE HD-HOLD-NO",
+            "initial value of WS-LAST-HOLD-NO",
+            "literal 1"
+          ]
+        },
+        {
+          "name": "HD-CARD-NO",
+          "start": 17,
+          "length": 16,
+          "origins": [
+            "file HOLD-FILE HD-CARD-NO"
+          ]
+        },
+        {
+          "name": "HD-KIND",
+          "start": 33,
+          "length": 1,
+          "origins": [
+            "file HOLD-FILE HD-KIND"
+          ]
+        },
+        {
+          "name": "HD-STATUS",
+          "start": 34,
+          "length": 1,
+          "origins": [
+            "file HOLD-FILE HD-STATUS"
+          ]
+        },
+        {
+          "name": "HD-AMOUNT",
+          "start": 35,
+          "length": 9,
+          "origins": [
+            "file HOLD-FILE HD-AMOUNT"
+          ]
+        },
+        {
+          "name": "HD-FEE",
+          "start": 44,
+          "length": 5,
+          "origins": [
+            "file HOLD-FILE HD-FEE"
+          ]
+        },
+        {
+          "name": "HD-TERMINAL",
+          "start": 49,
+          "length": 20,
+          "origins": [
+            "file HOLD-FILE HD-TERMINAL"
+          ]
+        },
+        {
+          "name": "HD-TIMESTAMP",
+          "start": 69,
+          "length": 14,
+          "origins": [
+            "file HOLD-FILE HD-TIMESTAMP"
+          ]
+        },
+        {
+          "name": "HD-BUSINESS-DATE",
+          "start": 83,
+          "length": 8,
+          "origins": [
+            "file HOLD-FILE HD-BUSINESS-DATE"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "REPORT-OUT",
+      "record": "WS-REPORT-AMOUNT-LINE",
+      "fields": [
+        {
+          "name": "WS-RA-LABEL",
+          "start": 1,
+          "length": 30,
+          "origins": [
+            "literal 'HELD WITH FEES'",
+            "literal 'RELEASED BY REVERSALS'"
+          ]
+        },
+        {
+          "name": "WS-RA-VALUE",
+          "start": 31,
+          "length": 21,
+          "origins": [
+            "file HOLD-FILE HD-AMOUNT",
+            "file HOLD-FILE HD-FEE",
+            "initial value of WS-HELD-TOTAL",
+            "initial value of WS-RELEASED-TOTAL"
+          ]
+        }
+      ]
+    }
+  ]
+}

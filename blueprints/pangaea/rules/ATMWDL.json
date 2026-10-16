@@ -1,0 +1,333 @@
+{
+  "program": "ATMWDL",
+  "tables": [
+    {
+      "paragraph": "0000-MAIN",
+      "source": "pangaea/programs/ATMWDL.cbl:47",
+      "conditions": [
+        "CR-MONTH-WITHDRAWALS \u003c WS-FREE-WITHDRAWALS",
+        "CR-BLOCKED",
+        "AO-OPEN",
+        "RQ-AMOUNT = 0 OR FUNCTION MOD(RQ-AMOUNT WS-NOTE) NOT = 0",
+        "WS-DAY-CASH \u003e CR-CASH-LIMIT",
+        "WS-TO-HOLD \u003e WS-AVAILABLE"
+      ],
+      "actions": [
+        "PERFORM 1000-START-CARD-TOTALS",
+        "ADD AO-BALANCE AO-OVERDRAFT-LIMIT GIVING WS-AVAILABLE",
+        "SUBTRACT AO-HOLDS FROM WS-AVAILABLE",
+        "COMPUTE WS-DAY-CASH = CR-DAY-CASH + RQ-AMOUNT",
+        "MOVE 0 TO WS-FEE",
+        "COMPUTE WS-TO-HOLD = RQ-AMOUNT + WS-FEE",
+        "SET RS-CARD-BLOCKED TO TRUE",
+        "MOVE 'CARD BLOCKED' TO RS-MESSAGE",
+        "GOBACK",
+        "SET RS-ACCOUNT-NOT-OPEN TO TRUE",
+        "MOVE 'ACCOUNT NOT OPEN' TO RS-MESSAGE",
+        "SET RS-INVALID-AMOUNT TO TRUE",
+        "MOVE 'AMOUNT NOT IN NOTES OF 20' TO RS-MESSAGE",
+        "SET RS-OVER-LIMIT TO TRUE",
+        "MOVE 'OVER DAILY CASH LIMIT' TO RS-MESSAGE",
+        "SET RS-INSUFFICIENT-FUNDS TO TRUE",
+        "MOVE 'INSUFFICIENT FUNDS' TO RS-MESSAGE",
+        "PERFORM 2000-APPROVE",
+        "MOVE WS-ATM-FEE TO WS-FEE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            9,
+            10,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            11,
+            12,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            13,
+            14,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            15,
+            16,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            17,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            18,
+            5,
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            18,
+            5,
+            9,
+            10,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            18,
+            5,
+            11,
+            12,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "N",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            18,
+            5,
+            13,
+            14,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            18,
+            5,
+            15,
+            16,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            18,
+            5,
+            17,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "1000-START-CARD-TOTALS",
+      "source": "pangaea/programs/ATMWDL.cbl:82",
+      "conditions": [
+        "CR-TOTALS-DATE = BC-BUSINESS-DATE",
+        "CR-TOTALS-DATE(1:6) = BC-BUSINESS-DATE(1:6)"
+      ],
+      "actions": [
+        "MOVE 0 TO CR-MONTH-WITHDRAWALS",
+        "MOVE 0 TO CR-DAY-PURCHASES CR-DAY-CASH",
+        "MOVE BC-BUSINESS-DATE TO CR-TOTALS-DATE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": null
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+      *================================================================*
+      * AUTHPUR: AUTHORIZE A CARD PURCHASE                             *
+      *                                                                *
+      * CALLED BY AUTHSRV WITH THE REQUEST, THE CARD AND ITS ACCOUNT.  *
+      * APPROVES THE PURCHASE IF THE CARD IS ACTIVE, THE ACCOUNT OPEN, *
+      * THE DAY'S PURCHASES STAY WITHIN THE CARD'S DAILY LIMIT AND THE *
+      * AMOUNT WITHIN THE AVAILABLE BALANCE: THE BALANCE PLUS THE      *
+      * OVERDRAFT LIMIT LESS WHAT IS ALREADY HELD. AN APPROVED         *
+      * PURCHASE IS HELD ON THE ACCOUNT AND COUNTED ON THE CARD, AND   *
+      * THE HOLD RECORD FILLED IN FOR AUTHSRV TO WRITE. NO FILES.      *
+      *                                                                *
+      * MODIFICATION HISTORY                                           *
+      * DATE       BY  CHANGE                                          *
+      * 2003-05-19 MV  CR-0342 ORIGINAL VERSION.                       *
+      *================================================================*
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. AUTHPUR.
+       AUTHOR. M. VARGA, ONLINE SYSTEMS.
+       INSTALLATION. FIRST BANK OF PANGAEA, DATA CENTER.
+       DATE-WRITTEN. 2003-05-19.
+
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01  WS-AVAILABLE                PIC S9(11)V99.
+       01  WS-DAY-PURCHASES            PIC 9(7)V99.
+
+       LINKAGE SECTION.
+           COPY AUTHMSG.
+           COPY BANKCTL.
+           COPY ACCTONL.
+           COPY CARDREC.
+           COPY HOLDREC.
+
+       PROCEDURE DIVISION USING AUTH-REQUEST AUTH-RESPONSE
+               BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD
+               HOLD-RECORD.
+      * DECIDE, AND HOLD THE AMOUNT IF APPROVED.
+       0000-MAIN.
+           PERFORM 1000-START-CARD-TOTALS
+           ADD AO-BALANCE AO-OVERDRAFT-LIMIT GIVING WS-AVAILABLE
+           SUBTRACT AO-HOLDS FROM WS-AVAILABLE
+           COMPUTE WS-DAY-PURCHASES = CR-DAY-PURCHASES + RQ-AMOUNT
+           EVALUATE TRUE
+               WHEN CR-BLOCKED
+                   SET RS-CARD-BLOCKED TO TRUE
+                   MOVE 'CARD BLOCKED' TO RS-MESSAGE
+               WHEN NOT AO-OPEN
+                   SET RS-ACCOUNT-NOT-OPEN TO TRUE
+                   MOVE 'ACCOUNT NOT OPEN' TO RS-MESSAGE
+               WHEN RQ-AMOUNT = 0
+                   SET RS-INVALID-AMOUNT TO TRUE
+                   MOVE 'NO AMOUNT' TO RS-MESSAGE
+               WHEN WS-DAY-PURCHASES > CR-PURCHASE-LIMIT
+                   SET RS-OVER-LIMIT TO TRUE
+                   MOVE 'OVER DAILY PURCHASE LIMIT' TO RS-MESSAGE
+               WHEN RQ-AMOUNT > WS-AVAILABLE
+                   SET RS-INSUFFICIENT-FUNDS TO TRUE
+                   MOVE 'INSUFFICIENT FUNDS' TO RS-MESSAGE
+               WHEN OTHER
+                   PERFORM 2000-APPROVE
+           END-EVALUATE
+           GOBACK.
+
+      * THE CARD'S TOTALS ARE FOR ONE DAY: START THEM OVER ON A NEW ONE.
+       1000-START-CARD-TOTALS.
+           IF CR-TOTALS-DATE NOT = BC-BUSINESS-DATE
+               IF CR-TOTALS-DATE(1:6) NOT = BC-BUSINESS-DATE(1:6)
+                   MOVE 0 TO CR-MONTH-WITHDRAWALS
+               END-IF
+               MOVE 0 TO CR-DAY-PURCHASES CR-DAY-CASH
+               MOVE BC-BUSINESS-DATE TO CR-TOTALS-DATE
+           END-IF.
+
+      * HOLD THE AMOUNT AND COUNT IT ON THE CARD.
+       2000-APPROVE.
+           ADD RQ-AMOUNT TO AO-HOLDS
+           MOVE WS-DAY-PURCHASES TO CR-DAY-PURCHASES
+           MOVE AO-ACCT-NO TO HD-ACCT-NO
+           MOVE CR-CARD-NO TO HD-CARD-NO
+           SET HD-PURCHASE TO TRUE
+           SET HD-OPEN TO TRUE
+           MOVE RQ-AMOUNT TO HD-AMOUNT
+           MOVE 0 TO HD-FEE
+           MOVE RQ-TERMINAL TO HD-TERMINAL
+           MOVE RQ-TIMESTAMP TO HD-TIMESTAMP
+           MOVE BC-BUSINESS-DATE TO HD-BUSINESS-DATE
+           SET RS-APPROVED TO TRUE
+           MOVE 'APPROVED' TO RS-MESSAGE
+           MOVE RQ-AMOUNT TO RS-AMOUNT
+           MOVE 0 TO RS-FEE
+           MOVE AO-BALANCE TO RS-BALANCE
+           SUBTRACT RQ-AMOUNT FROM WS-AVAILABLE
+           MOVE WS-AVAILABLE TO RS-AVAILABLE.
