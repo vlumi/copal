@@ -209,12 +209,13 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 		program.Identification = append(program.Identification, Identification{Paragraph: e.Paragraph, Text: e.Text})
 	}
 
+	laidOut, err := layout.Program(p)
+	if err != nil {
+		return Program{}, err
+	}
 	uses := fileio.Uses(p)
-	for _, fd := range p.FileSection {
-		records, err := layout.Records(fd.Entries)
-		if err != nil {
-			return Program{}, err
-		}
+	for i, fd := range p.FileSection {
+		records := laidOut.Files[i].Records
 		file, err := describeFile(p, fd)
 		if err != nil {
 			return Program{}, err
@@ -231,11 +232,7 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 		program.Files = append(program.Files, file)
 	}
 
-	records, err := layout.Records(p.WorkingStorage)
-	if err != nil {
-		return Program{}, err
-	}
-	for _, r := range records {
+	for _, r := range laidOut.WorkingStorage {
 		program.Records = append(program.Records, newRecord(r, "working-storage", "", path))
 	}
 
@@ -243,10 +240,7 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 	if err != nil {
 		return Program{}, err
 	}
-	flow, err := dataflow.Analyze(p)
-	if err != nil {
-		return Program{}, err
-	}
+	flow := dataflow.Analyze(p, laidOut)
 	for i, para := range paragraphs {
 		bp := newParagraph(para)
 		bp.Reads, bp.Writes = flow.Paragraphs[i].Reads, flow.Paragraphs[i].Writes

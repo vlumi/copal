@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/vlumi/copal/cobol"
+	"github.com/vlumi/copal/layout"
 )
 
 func TestAnalyze(t *testing.T) {
@@ -14,10 +15,11 @@ func TestAnalyze(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	flow, err := Analyze(p)
+	records, err := layout.Program(p)
 	if err != nil {
 		t.Fatal(err)
 	}
+	flow := Analyze(p, records)
 	var got []string
 	for _, para := range flow.Paragraphs {
 		got = append(got, fmt.Sprintf("%s reads %s writes %s", para.Name, strings.Join(para.Reads, " "), strings.Join(para.Writes, " ")))
