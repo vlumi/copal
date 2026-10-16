@@ -32,8 +32,9 @@ func (g Graph) SVG() ([]byte, error) {
 		`font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12">`+"\n",
 		l.width, l.height, l.width, l.height)
 	b.WriteString(style)
-	b.WriteString(`<defs><marker id="arrow" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">` +
-		`<path class="head" d="M0,0 L8,4 L0,8 z"/></marker></defs>` + "\n")
+	fmt.Fprintf(&b, `<defs><marker id="arrow" viewBox="0 0 %d 8" refX="0" refY="4" markerUnits="userSpaceOnUse" `+
+		`markerWidth="%d" markerHeight="8" orient="auto-start-reverse"><path class="head" d="M0,0 L%d,4 L0,8 z"/></marker></defs>`+"\n",
+		arrowLength, arrowLength, arrowLength)
 	for _, e := range l.edges {
 		l.writeEdge(&b, e)
 	}
@@ -44,15 +45,26 @@ func (g Graph) SVG() ([]byte, error) {
 	return []byte(b.String()), nil
 }
 
+// arrowLength is how far an arrowhead reaches from the end of its line to
+// the box it points at.
+const arrowLength = 8
+
 // writeEdge draws an edge as curves between layers, straight down through
-// its waypoints.
+// its waypoints. The line stops short of the box at its arrow end, where
+// the arrowhead's base takes over, and arrives there vertically.
 func (l *layout) writeEdge(b *strings.Builder, e routedEdge) {
-	from := e.chain[0]
+	from, last := e.chain[0], len(e.chain)-1
 	x, y := port(from, from.below, e.chain[1]), l.top(from)+boxHeight
+	if e.reversed {
+		y += arrowLength
+	}
 	path := fmt.Sprintf("M%d,%d", x, y)
-	for i := 1; i < len(e.chain); i++ {
+	for i := 1; i <= last; i++ {
 		s := e.chain[i]
 		nx, ny := port(s, s.above, e.chain[i-1]), l.top(s)
+		if i == last && !e.reversed {
+			ny -= arrowLength
+		}
 		mid := (y + ny) / 2
 		path += fmt.Sprintf(" C%d,%d %d,%d %d,%d", x, mid, nx, mid, nx, ny)
 		x, y = nx, ny
