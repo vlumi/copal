@@ -2,7 +2,7 @@
 
 The order in which Copal and the First Bank of Pangaea are built. [brief.md](brief.md) has the reasons and the open decisions; this file has the sequence. Each milestone ends with something that runs, a `make` target that shows it, and `make ci` green.
 
-The two parts grow together: Pangaea gets a little bigger, Copal learns to read what was added, and the blueprints are regenerated as golden files. Somewhere in the middle Pangaea also becomes a bank you can watch: a dataset large enough to feel real, a business calendar, a reset button, and a console in the browser.
+The two parts grow together: Pangaea gets a little bigger, Copal learns to read what was added, and the blueprints are regenerated as golden files. Somewhere in the middle Pangaea also becomes a bank you can watch: a dataset large enough to feel real, a business calendar, a reset button, a console in the browser, and an online day of card purchases and ATM withdrawals between the nightly batches.
 
 ## 1. Groundwork
 
@@ -67,21 +67,23 @@ The console gains a page per run: the job network with each step's return code a
 
 Done when: Pangaea has its ten or so programs, a month-end in the console, and a blueprint for every program and for the job network.
 
-## 7. The card channel
+## 7. The online channel: cards and ATMs
 
-Worth having, but late and small. A bank that only has a batch misses the coupling that makes real core systems hard to replace: an online day that writes what the night's batch reads, a balance that means different things at different hours, and a batch window during which the online side has to stand still. That coupling is exactly the kind of undocumented contract Copal is meant to surface, and it makes the console worth watching during the day.
+A bank that only has a batch is not a realistic bank. Customers pay by card and take cash from ATMs all day, and that online day is coupled to the night's batch in ways that make real core systems hard to replace: the online side writes what the batch reads, a balance means different things at different hours, and during the batch window the online side has to stand still. That coupling is exactly the kind of undocumented contract Copal is meant to surface.
 
-- A debit card authorization API over HTTP: authorize, reverse, and a balance enquiry.
-- The authorization rule lives in COBOL, as a called program in the style of an online transaction, so Copal reads it like the rest of the bank. A thin server around it does the HTTP and nothing else.
-- The account master becomes an indexed file keyed by account number: the daily batch still reads it in key order, authorizations read single accounts by key.
-- Authorizations do not update the master. They write holds to an indexed file keyed by account and hold number, and the available balance is the master balance minus open holds.
-- At end of day the holds are read in key order into a transaction file with header and trailer, the daily batch posts it, and the holds are released.
+- A card file: cards linked to accounts, with status (active, blocked, expired) and daily limits for purchases and for cash.
+- An authorization API over HTTP for two kinds of terminal. Card purchases: authorize and reverse. ATMs: cash withdrawal and balance enquiry.
+- The authorization rules live in COBOL, as called programs in the style of online transactions, so Copal reads them like the rest of the bank: card status, available balance, overdraft limit, the daily purchase and cash limits, and an ATM fee for withdrawals beyond the free ones each month.
+- A thin server around them does the HTTP and nothing else.
+- The account master becomes an indexed file keyed by account number: the daily batch still reads it in key order, authorizations read single accounts by key. The card file is indexed by card number.
+- Authorizations do not update the master. They write holds to an indexed file keyed by account and hold number, and the available balance is the master balance minus open holds. Each card keeps its running totals for the day.
+- At end of day the holds are read in key order into a transaction file with header and trailer, the daily batch posts it, releases the holds, and resets the cards' daily totals.
 - During the batch window the API answers that the bank is closed.
-- A traffic simulator that swipes cards at a configurable rate, and live updates in the console (server-sent events) so balances and holds move while you watch.
+- A traffic simulator that makes card purchases and ATM withdrawals at a configurable rate, following the customers' generated habits, with live updates in the console (server-sent events) so balances and holds move while you watch.
 
 Open decision for this milestone: how the server calls COBOL (a process per request, or libcob in-process).
 
-Done when: with the simulator running, the console shows available balances dropping during the day, the API closes for the batch, and the next morning the card transactions appear in the master.
+Done when: with the simulator running, the console shows available balances dropping during the day and declines for cards over their limits, the API closes for the batch, and the next morning the card and ATM transactions appear in the master.
 
 ## Later
 
