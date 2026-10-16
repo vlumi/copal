@@ -30,6 +30,41 @@
                    MOVE WS-RATE(WS-I) TO WS-BEST
                END-IF
            END-PERFORM.
+       WIDE-PARA.
+           IF A1 = 1
+               DISPLAY 'Y1'
+           ELSE
+               DISPLAY 'N1'
+           END-IF
+           IF A2 = 1
+               DISPLAY 'Y2'
+           ELSE
+               DISPLAY 'N2'
+           END-IF
+           IF A3 = 1
+               DISPLAY 'Y3'
+           ELSE
+               DISPLAY 'N3'
+           END-IF
+           IF A4 = 1
+               DISPLAY 'Y4'
+           ELSE
+               DISPLAY 'N4'
+           END-IF
+           IF A5 = 1
+               DISPLAY 'Y5'
+           ELSE
+               DISPLAY 'N5'
+           END-IF
+           IF A6 = 1
+               DISPLAY 'Y6'
+           ELSE
+               DISPLAY 'N6'
+           END-IF
+           IF B = 1
+               GO TO OPEN-PARA
+           END-IF
+           DISPLAY 'AFTER'.
        OPEN-PARA.
            EXIT.
        REJECT-PARA.

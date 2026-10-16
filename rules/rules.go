@@ -106,11 +106,12 @@ func (e *extractor) paths(statements []cobol.Statement) []path {
 			alternatives = []path{{actions: []string{s.Text}}}
 		}
 		next := cross(paths, alternatives)
-		if len(next) > maxPaths {
+		collapsed := len(next) > maxPaths
+		if collapsed {
 			next = cross(paths, []path{{actions: []string{s.Text}}})
 		}
 		paths = next
-		if s.Verb == "IF" && len(s.Branches) == 1 && structure.EndsUnconditionally(s.Branches[0].Statements) {
+		if !collapsed && s.Verb == "IF" && len(s.Branches) == 1 && structure.EndsUnconditionally(s.Branches[0].Statements) {
 			break
 		}
 	}
