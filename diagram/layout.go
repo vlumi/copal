@@ -15,8 +15,9 @@ import (
 // starting from the nodes in order and following the edges in order. For a
 // call graph, with the edges in statement order, that is execution order.
 type Graph struct {
-	Nodes []Node
-	Edges []Edge
+	Nodes  []Node
+	Edges  []Edge
+	Legend []Key // drawn in a box of its own, to the right at the top
 }
 
 // Node is a box with a label. Title is shown on hover and Link is followed

@@ -49,8 +49,6 @@ Program [BANKDATE.cbl](../../../pangaea/programs/BANKDATE.cbl): 2 files, 2 parag
 
 ![The paragraphs of BANKDATE and how control moves between them](BANKDATE.svg)
 
-Solid arrows are PERFORMs, dashed ones GO TOs, and dotted ones control running on into the next paragraph inside a PERFORM THRU range.
-
 ## Paragraphs
 
 | Paragraph | Description | Source | Performs | Goes to | Performed by | Reached by |

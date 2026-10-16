@@ -89,8 +89,6 @@ Program [STMTPRT.cbl](../../../pangaea/programs/STMTPRT.cbl): 6 files, 14 paragr
 
 ![The paragraphs of STMTPRT and how control moves between them](STMTPRT.svg)
 
-Solid arrows are PERFORMs, dashed ones GO TOs, and dotted ones control running on into the next paragraph inside a PERFORM THRU range.
-
 ## Paragraphs
 
 | Paragraph | Description | Source | Performs | Goes to | Performed by | Reached by |

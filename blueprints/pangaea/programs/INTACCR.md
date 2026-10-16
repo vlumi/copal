@@ -87,8 +87,6 @@ Program [INTACCR.cbl](../../../pangaea/programs/INTACCR.cbl): 6 files, 15 paragr
 
 ![The paragraphs of INTACCR and how control moves between them](INTACCR.svg)
 
-Solid arrows are PERFORMs, dashed ones GO TOs, and dotted ones control running on into the next paragraph inside a PERFORM THRU range.
-
 ## Paragraphs
 
 | Paragraph | Description | Source | Performs | Goes to | Performed by | Reached by |

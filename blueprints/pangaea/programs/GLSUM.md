@@ -77,8 +77,6 @@ Program [GLSUM.cbl](../../../pangaea/programs/GLSUM.cbl): 4 files, 9 paragraphs.
 
 ![The paragraphs of GLSUM and how control moves between them](GLSUM.svg)
 
-Solid arrows are PERFORMs, dashed ones GO TOs, and dotted ones control running on into the next paragraph inside a PERFORM THRU range.
-
 ## Paragraphs
 
 | Paragraph | Description | Source | Performs | Goes to | Performed by | Reached by |

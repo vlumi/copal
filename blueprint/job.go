@@ -208,13 +208,16 @@ func jobDiagram(dir string, job Job) diagram.Graph {
 	return JobGraph(job, JobNotes{Link: func(step Step) string { return sourceTarget(dir, step.Source) }})
 }
 
-// NetworkLegend says how to read a job's network.
-const NetworkLegend = "White boxes are steps, with the program each runs. Shaded, rounded ones are datasets, " +
-	"as the job names them: NAME(0) is a generation data group's current generation, NAME(+1) the next, which " +
-	"the job writes. A dashed outline, and a name starting with &&, mark a temporary dataset, which lives only " +
-	"while the job runs. A dataset is drawn next to each step that uses it, unless one step writes what another " +
-	"reads. Arrows run from the datasets a step reads to the step, and from the step to the datasets it writes; " +
-	"dotted ones from a step to the next where no dataset leads from one to the other."
+// networkKeys say how to read a job's network.
+var networkKeys = []diagram.Key{
+	diagram.NodeKey(diagram.Node{}, "step and its program"),
+	diagram.NodeKey(diagram.Node{Data: true}, "dataset"),
+	diagram.NodeKey(diagram.Node{Data: true, Dashed: true}, "temporary dataset, &&NAME"),
+	diagram.EdgeKey(diagram.Solid, "read or written"),
+	diagram.EdgeKey(diagram.Dotted, "runs next"),
+	diagram.TextKey("NAME(0)  current generation"),
+	diagram.TextKey("NAME(+1) generation written"),
+}
 
 // JobNotes add to a job's diagram what a run of it did: a note after each
 // step's label, such as its return code, and after the label of each
@@ -229,6 +232,7 @@ type JobNotes struct {
 // JobGraph is the graph of a job's network, as in its blueprint, with the
 // notes added.
 func JobGraph(job Job, notes JobNotes) diagram.Graph {
+	g := diagram.Graph{Legend: networkKeys}
 	read, written := map[string]bool{}, map[string]bool{}
 	for _, step := range job.Steps {
 		for _, dd := range step.DDs {
@@ -247,7 +251,6 @@ func JobGraph(job Job, notes JobNotes) diagram.Graph {
 		}
 		return "dataset " + ds + " at " + step
 	}
-	var g diagram.Graph
 	added := map[string]bool{}
 	addDataset := func(ds string, step Step, dd DD) string {
 		id := node(ds, step.Name)
@@ -326,7 +329,6 @@ func jobMarkdown(dir string, job Job) string {
 	writeDescription(&b, job.Description)
 	fmt.Fprintf(&b, "Job %s: %d steps.\n", sourceLink(dir, job.Source, false), len(job.Steps))
 	fmt.Fprintf(&b, "\n## Network\n\n![The steps of %s and the datasets they read and write](%s.svg)\n", job.Name, job.Name)
-	b.WriteString("\n" + NetworkLegend + "\n")
 
 	b.WriteString("\n## Steps\n\n| Step | Program | Bypassed by | Description | Source |\n| --- | --- | --- | --- | --- |\n")
 	for _, step := range job.Steps {
