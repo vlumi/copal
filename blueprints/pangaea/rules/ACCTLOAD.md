@@ -15,7 +15,7 @@ The business rules of [ACCTLOAD](../programs/ACCTLOAD.md), paragraph by paragrap
 | --- | :-: | :-: | :-: |
 | `WS-FILE-STATUSES = ALL '0'` | N | Y | Y |
 | `READ CONTROL-FILE AT END` | | Y | N |
-| → `OPEN INPUT CONTROL-FILE ACCT-IN OUTPUT ONLINE-OUT REPORT-OUT` | 1 | 1 | 1 |
+| → `OPEN INPUT CONTROL-FILE ACCT-IN OUTPUT ONLINE-OUT HOLD-OUT REPORT-OUT` | 1 | 1 | 1 |
 | → `DISPLAY 'ACCTLOAD: CANNOT OPEN FILES ' WS-FILE-STATUSES` | 2 | | |
 | → `MOVE 16 TO RETURN-CODE` | 3 | | |
 | → `STOP RUN` | 4 | | |
@@ -25,7 +25,7 @@ The business rules of [ACCTLOAD](../programs/ACCTLOAD.md), paragraph by paragrap
 | → `MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE` | | 5 | 3 |
 | → `PERFORM 1200-READ-ACCOUNT` | | 6 | 4 |
 
-Source: [ACCTLOAD.cbl:90](../../../pangaea/programs/ACCTLOAD.cbl#L90).
+Source: [ACCTLOAD.cbl:100](../../../pangaea/programs/ACCTLOAD.cbl#L100).
 
 ## 1200-READ-ACCOUNT
 
@@ -36,7 +36,7 @@ Source: [ACCTLOAD.cbl:90](../../../pangaea/programs/ACCTLOAD.cbl#L90).
 | → `SET MASTER-AT-END TO TRUE` | 2 | |
 | → `ADD 1 TO WS-READ-COUNT` | | 2 |
 
-Source: [ACCTLOAD.cbl:106](../../../pangaea/programs/ACCTLOAD.cbl#L106).
+Source: [ACCTLOAD.cbl:116](../../../pangaea/programs/ACCTLOAD.cbl#L116).
 
 ## 2000-LOAD-ACCOUNT
 
@@ -47,7 +47,7 @@ Source: [ACCTLOAD.cbl:106](../../../pangaea/programs/ACCTLOAD.cbl#L106).
 | → `PERFORM 1200-READ-ACCOUNT` | 2 | 2 |
 | → `PERFORM 2100-WRITE-ONLINE` | | 1 |
 
-Source: [ACCTLOAD.cbl:115](../../../pangaea/programs/ACCTLOAD.cbl#L115).
+Source: [ACCTLOAD.cbl:125](../../../pangaea/programs/ACCTLOAD.cbl#L125).
 
 ## 2100-WRITE-ONLINE
 
@@ -70,4 +70,4 @@ Source: [ACCTLOAD.cbl:115](../../../pangaea/programs/ACCTLOAD.cbl#L115).
 | → `ADD 1 TO WS-LOADED-COUNT` | 14 | 12 |
 | → `ADD AM-BALANCE TO WS-LOADED-BALANCE` | 15 | 13 |
 
-Source: [ACCTLOAD.cbl:123](../../../pangaea/programs/ACCTLOAD.cbl#L123).
+Source: [ACCTLOAD.cbl:133](../../../pangaea/programs/ACCTLOAD.cbl#L133).

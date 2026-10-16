@@ -6,10 +6,11 @@
     "",
     "WRITES THE NEW ACCOUNT MASTER'S ACCOUNTS TO A NEW INDEXED",
     "ONLINE ACCOUNT FILE, FOR THE CARD AND ATM AUTHORIZATIONS OF",
-    "THE NEXT BUSINESS DAY, WITH NO HOLDS. CLOSED ACCOUNTS ARE LEFT",
-    "OUT, SO THAT AUTHORIZATIONS FIND NO SUCH ACCOUNT. THE MASTER",
-    "IS IN ACCOUNT NUMBER ORDER, SO THE FILE IS WRITTEN IN KEY",
-    "ORDER, SEQUENTIALLY.",
+    "THE NEXT BUSINESS DAY, WITH NO HOLDS, AND STARTS THE DAY'S",
+    "HOLD FILE, EMPTY. CLOSED ACCOUNTS ARE LEFT OUT, SO THAT",
+    "AUTHORIZATIONS FIND NO SUCH ACCOUNT. THE MASTER IS IN ACCOUNT",
+    "NUMBER ORDER, SO THE FILE IS WRITTEN IN KEY ORDER,",
+    "SEQUENTIALLY.",
     "",
     "RETURN CODES: 0 LOADED, 16 MASTER OUT OF ORDER OR I/O.",
     "",
@@ -44,7 +45,7 @@
       "records": [
         "BANK-CONTROL-RECORD"
       ],
-      "source": "pangaea/programs/ACCTLOAD.cbl:26"
+      "source": "pangaea/programs/ACCTLOAD.cbl:27"
     },
     {
       "name": "ACCT-IN",
@@ -58,7 +59,7 @@
       "records": [
         "ACCT-MASTER-RECORD"
       ],
-      "source": "pangaea/programs/ACCTLOAD.cbl:29"
+      "source": "pangaea/programs/ACCTLOAD.cbl:30"
     },
     {
       "name": "ONLINE-OUT",
@@ -73,7 +74,22 @@
       "records": [
         "ACCT-ONLINE-RECORD"
       ],
-      "source": "pangaea/programs/ACCTLOAD.cbl:32"
+      "source": "pangaea/programs/ACCTLOAD.cbl:33"
+    },
+    {
+      "name": "HOLD-OUT",
+      "kind": "FD",
+      "assign": "HOLDOUT",
+      "organization": "INDEXED",
+      "recordKey": "HD-KEY",
+      "status": "WS-HOLD-STATUS",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "HOLD-RECORD"
+      ],
+      "source": "pangaea/programs/ACCTLOAD.cbl:38"
     },
     {
       "name": "REPORT-OUT",
@@ -87,7 +103,7 @@
       "records": [
         "REPORT-LINE"
       ],
-      "source": "pangaea/programs/ACCTLOAD.cbl:37"
+      "source": "pangaea/programs/ACCTLOAD.cbl:43"
     }
   ],
   "records": [
@@ -448,6 +464,181 @@
     },
     {
       "section": "file",
+      "file": "HOLD-OUT",
+      "copybook": "HOLDREC",
+      "level": 1,
+      "name": "HOLD-RECORD",
+      "start": 1,
+      "length": 100,
+      "category": "group",
+      "description": "HOLDREC: HOLD RECORD, 100 BYTES AN AMOUNT AUTHORIZED ONLINE AND NOT YET POSTED: A CARD PURCHASE OR AN ATM WITHDRAWAL AND ITS FEE. INDEXED BY ACCOUNT AND HOLD NUMBER, THE AUTHORIZATION CODE, WHICH NUMBERS THE DAY'S HOLDS FROM 1. A REVERSED PURCHASE STAYS, MARKED. MODIFICATION HISTORY DATE       BY  CHANGE 2003-05-19 MV  CR-0342 ORIGINAL VERSION. 2007-02-05 MV  CR-0415 ATM FEE.",
+      "source": "pangaea/copybooks/HOLDREC.cpy:13",
+      "fields": [
+        {
+          "level": 5,
+          "name": "HD-KEY",
+          "start": 1,
+          "length": 16,
+          "category": "group",
+          "source": "pangaea/copybooks/HOLDREC.cpy:14",
+          "fields": [
+            {
+              "level": 10,
+              "name": "HD-ACCT-NO",
+              "start": 1,
+              "length": 10,
+              "picture": "9(10)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "digits": 10,
+              "source": "pangaea/copybooks/HOLDREC.cpy:15"
+            },
+            {
+              "level": 10,
+              "name": "HD-HOLD-NO",
+              "start": 11,
+              "length": 6,
+              "picture": "9(6)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "digits": 6,
+              "source": "pangaea/copybooks/HOLDREC.cpy:16"
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "name": "HD-CARD-NO",
+          "start": 17,
+          "length": 16,
+          "picture": "9(16)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 16,
+          "source": "pangaea/copybooks/HOLDREC.cpy:17"
+        },
+        {
+          "level": 5,
+          "name": "HD-KIND",
+          "start": 33,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "conditions": [
+            {
+              "name": "HD-PURCHASE",
+              "values": [
+                "'P'"
+              ],
+              "source": "pangaea/copybooks/HOLDREC.cpy:19"
+            },
+            {
+              "name": "HD-WITHDRAWAL",
+              "values": [
+                "'W'"
+              ],
+              "source": "pangaea/copybooks/HOLDREC.cpy:20"
+            }
+          ],
+          "source": "pangaea/copybooks/HOLDREC.cpy:18"
+        },
+        {
+          "level": 5,
+          "name": "HD-STATUS",
+          "start": 34,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "conditions": [
+            {
+              "name": "HD-OPEN",
+              "values": [
+                "'O'"
+              ],
+              "source": "pangaea/copybooks/HOLDREC.cpy:22"
+            },
+            {
+              "name": "HD-REVERSED",
+              "values": [
+                "'R'"
+              ],
+              "source": "pangaea/copybooks/HOLDREC.cpy:23"
+            }
+          ],
+          "source": "pangaea/copybooks/HOLDREC.cpy:21"
+        },
+        {
+          "level": 5,
+          "name": "HD-AMOUNT",
+          "start": 35,
+          "length": 9,
+          "picture": "9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 9,
+          "scale": 2,
+          "source": "pangaea/copybooks/HOLDREC.cpy:24"
+        },
+        {
+          "level": 5,
+          "name": "HD-FEE",
+          "start": 44,
+          "length": 5,
+          "picture": "9(3)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 5,
+          "scale": 2,
+          "source": "pangaea/copybooks/HOLDREC.cpy:25"
+        },
+        {
+          "level": 5,
+          "name": "HD-TERMINAL",
+          "start": 49,
+          "length": 20,
+          "picture": "X(20)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/HOLDREC.cpy:26"
+        },
+        {
+          "level": 5,
+          "name": "HD-TIMESTAMP",
+          "start": 69,
+          "length": 14,
+          "picture": "9(14)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 14,
+          "source": "pangaea/copybooks/HOLDREC.cpy:27"
+        },
+        {
+          "level": 5,
+          "name": "HD-BUSINESS-DATE",
+          "start": 83,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/HOLDREC.cpy:28"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 91,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/HOLDREC.cpy:29"
+        }
+      ]
+    },
+    {
+      "section": "file",
       "file": "REPORT-OUT",
       "level": 1,
       "name": "REPORT-LINE",
@@ -456,16 +647,16 @@
       "picture": "X(80)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
-      "source": "pangaea/programs/ACCTLOAD.cbl:50"
+      "source": "pangaea/programs/ACCTLOAD.cbl:58"
     },
     {
       "section": "working-storage",
       "level": 1,
       "name": "WS-FILE-STATUSES",
       "start": 1,
-      "length": 8,
+      "length": 10,
       "category": "group",
-      "source": "pangaea/programs/ACCTLOAD.cbl:53",
+      "source": "pangaea/programs/ACCTLOAD.cbl:61",
       "fields": [
         {
           "level": 5,
@@ -475,7 +666,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/programs/ACCTLOAD.cbl:54"
+          "source": "pangaea/programs/ACCTLOAD.cbl:62"
         },
         {
           "level": 5,
@@ -485,7 +676,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/programs/ACCTLOAD.cbl:55"
+          "source": "pangaea/programs/ACCTLOAD.cbl:63"
         },
         {
           "level": 5,
@@ -495,17 +686,27 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/programs/ACCTLOAD.cbl:56"
+          "source": "pangaea/programs/ACCTLOAD.cbl:64"
         },
         {
           "level": 5,
-          "name": "WS-REPORT-STATUS",
+          "name": "WS-HOLD-STATUS",
           "start": 7,
           "length": 2,
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/programs/ACCTLOAD.cbl:57"
+          "source": "pangaea/programs/ACCTLOAD.cbl:65"
+        },
+        {
+          "level": 5,
+          "name": "WS-REPORT-STATUS",
+          "start": 9,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/ACCTLOAD.cbl:66"
         }
       ]
     },
@@ -519,7 +720,7 @@
       "usage": "DISPLAY",
       "category": "numeric",
       "digits": 8,
-      "source": "pangaea/programs/ACCTLOAD.cbl:59"
+      "source": "pangaea/programs/ACCTLOAD.cbl:68"
     },
     {
       "section": "working-storage",
@@ -530,7 +731,7 @@
       "picture": "X(40)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
-      "source": "pangaea/programs/ACCTLOAD.cbl:60"
+      "source": "pangaea/programs/ACCTLOAD.cbl:69"
     },
     {
       "section": "working-storage",
@@ -550,10 +751,10 @@
           "values": [
             "'Y'"
           ],
-          "source": "pangaea/programs/ACCTLOAD.cbl:62"
+          "source": "pangaea/programs/ACCTLOAD.cbl:71"
         }
       ],
-      "source": "pangaea/programs/ACCTLOAD.cbl:61"
+      "source": "pangaea/programs/ACCTLOAD.cbl:70"
     },
     {
       "section": "working-storage",
@@ -562,7 +763,7 @@
       "start": 1,
       "length": 37,
       "category": "group",
-      "source": "pangaea/programs/ACCTLOAD.cbl:64",
+      "source": "pangaea/programs/ACCTLOAD.cbl:73",
       "fields": [
         {
           "level": 5,
@@ -576,7 +777,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/ACCTLOAD.cbl:65"
+          "source": "pangaea/programs/ACCTLOAD.cbl:74"
         },
         {
           "level": 5,
@@ -590,7 +791,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/ACCTLOAD.cbl:66"
+          "source": "pangaea/programs/ACCTLOAD.cbl:75"
         },
         {
           "level": 5,
@@ -604,7 +805,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/ACCTLOAD.cbl:67"
+          "source": "pangaea/programs/ACCTLOAD.cbl:76"
         },
         {
           "level": 5,
@@ -620,7 +821,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/ACCTLOAD.cbl:68"
+          "source": "pangaea/programs/ACCTLOAD.cbl:77"
         }
       ]
     },
@@ -631,7 +832,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
-      "source": "pangaea/programs/ACCTLOAD.cbl:70",
+      "source": "pangaea/programs/ACCTLOAD.cbl:79",
       "fields": [
         {
           "level": 5,
@@ -641,7 +842,7 @@
           "picture": "X(30)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/programs/ACCTLOAD.cbl:71"
+          "source": "pangaea/programs/ACCTLOAD.cbl:80"
         },
         {
           "level": 5,
@@ -651,7 +852,7 @@
           "picture": "ZZ,ZZZ,ZZ9",
           "usage": "DISPLAY",
           "category": "numeric-edited",
-          "source": "pangaea/programs/ACCTLOAD.cbl:72"
+          "source": "pangaea/programs/ACCTLOAD.cbl:81"
         },
         {
           "level": 5,
@@ -664,7 +865,7 @@
           "values": [
             "SPACES"
           ],
-          "source": "pangaea/programs/ACCTLOAD.cbl:73"
+          "source": "pangaea/programs/ACCTLOAD.cbl:82"
         }
       ]
     },
@@ -675,7 +876,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
-      "source": "pangaea/programs/ACCTLOAD.cbl:74",
+      "source": "pangaea/programs/ACCTLOAD.cbl:83",
       "fields": [
         {
           "level": 5,
@@ -685,7 +886,7 @@
           "picture": "X(30)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/programs/ACCTLOAD.cbl:75"
+          "source": "pangaea/programs/ACCTLOAD.cbl:84"
         },
         {
           "level": 5,
@@ -695,7 +896,7 @@
           "picture": "Z,ZZZ,ZZZ,ZZZ,ZZ9.99-",
           "usage": "DISPLAY",
           "category": "numeric-edited",
-          "source": "pangaea/programs/ACCTLOAD.cbl:76"
+          "source": "pangaea/programs/ACCTLOAD.cbl:85"
         },
         {
           "level": 5,
@@ -708,7 +909,7 @@
           "values": [
             "SPACES"
           ],
-          "source": "pangaea/programs/ACCTLOAD.cbl:77"
+          "source": "pangaea/programs/ACCTLOAD.cbl:86"
         }
       ]
     }
@@ -717,23 +918,23 @@
     {
       "name": "0000-MAIN",
       "description": "LOAD EVERY ACCOUNT, THEN REPORT.",
-      "source": "pangaea/programs/ACCTLOAD.cbl:81",
+      "source": "pangaea/programs/ACCTLOAD.cbl:90",
       "performs": [
         {
           "target": "1000-INITIALIZE",
-          "source": "pangaea/programs/ACCTLOAD.cbl:82"
+          "source": "pangaea/programs/ACCTLOAD.cbl:91"
         },
         {
           "target": "2000-LOAD-ACCOUNT",
-          "source": "pangaea/programs/ACCTLOAD.cbl:83"
+          "source": "pangaea/programs/ACCTLOAD.cbl:92"
         },
         {
           "target": "8000-WRITE-REPORT",
-          "source": "pangaea/programs/ACCTLOAD.cbl:84"
+          "source": "pangaea/programs/ACCTLOAD.cbl:93"
         },
         {
           "target": "9000-CLOSE-FILES",
-          "source": "pangaea/programs/ACCTLOAD.cbl:85"
+          "source": "pangaea/programs/ACCTLOAD.cbl:94"
         }
       ],
       "reads": [
@@ -745,16 +946,16 @@
     },
     {
       "name": "1000-INITIALIZE",
-      "description": "OPEN THE FILES AND READ THE FIRST ACCOUNT.",
-      "source": "pangaea/programs/ACCTLOAD.cbl:90",
+      "description": "OPEN THE FILES AND READ THE FIRST ACCOUNT. THE HOLD FILE IS OPENED ONLY TO START IT.",
+      "source": "pangaea/programs/ACCTLOAD.cbl:100",
       "performs": [
         {
           "target": "9900-ABORT",
-          "source": "pangaea/programs/ACCTLOAD.cbl:101"
+          "source": "pangaea/programs/ACCTLOAD.cbl:111"
         },
         {
           "target": "1200-READ-ACCOUNT",
-          "source": "pangaea/programs/ACCTLOAD.cbl:104"
+          "source": "pangaea/programs/ACCTLOAD.cbl:114"
         }
       ],
       "performedBy": [
@@ -773,7 +974,7 @@
     },
     {
       "name": "1200-READ-ACCOUNT",
-      "source": "pangaea/programs/ACCTLOAD.cbl:106",
+      "source": "pangaea/programs/ACCTLOAD.cbl:116",
       "performedBy": [
         "1000-INITIALIZE",
         "2000-LOAD-ACCOUNT"
@@ -790,15 +991,15 @@
     {
       "name": "2000-LOAD-ACCOUNT",
       "description": "WRITE AN ACCOUNT THAT IS NOT CLOSED TO THE ONLINE FILE.",
-      "source": "pangaea/programs/ACCTLOAD.cbl:115",
+      "source": "pangaea/programs/ACCTLOAD.cbl:125",
       "performs": [
         {
           "target": "2100-WRITE-ONLINE",
-          "source": "pangaea/programs/ACCTLOAD.cbl:119"
+          "source": "pangaea/programs/ACCTLOAD.cbl:129"
         },
         {
           "target": "1200-READ-ACCOUNT",
-          "source": "pangaea/programs/ACCTLOAD.cbl:121"
+          "source": "pangaea/programs/ACCTLOAD.cbl:131"
         }
       ],
       "performedBy": [
@@ -814,11 +1015,11 @@
     },
     {
       "name": "2100-WRITE-ONLINE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:123",
+      "source": "pangaea/programs/ACCTLOAD.cbl:133",
       "performs": [
         {
           "target": "9900-ABORT",
-          "source": "pangaea/programs/ACCTLOAD.cbl:138"
+          "source": "pangaea/programs/ACCTLOAD.cbl:148"
         }
       ],
       "performedBy": [
@@ -855,7 +1056,7 @@
     {
       "name": "8000-WRITE-REPORT",
       "description": "WRITE THE LOAD REPORT.",
-      "source": "pangaea/programs/ACCTLOAD.cbl:144",
+      "source": "pangaea/programs/ACCTLOAD.cbl:154",
       "performedBy": [
         "0000-MAIN"
       ],
@@ -879,7 +1080,7 @@
     {
       "name": "9000-CLOSE-FILES",
       "description": "CLOSE ALL FILES.",
-      "source": "pangaea/programs/ACCTLOAD.cbl:168",
+      "source": "pangaea/programs/ACCTLOAD.cbl:178",
       "performedBy": [
         "0000-MAIN",
         "9900-ABORT"
@@ -888,11 +1089,11 @@
     {
       "name": "9900-ABORT",
       "description": "STOP THE RUN WITH RETURN CODE 16, SAYING WHY.",
-      "source": "pangaea/programs/ACCTLOAD.cbl:172",
+      "source": "pangaea/programs/ACCTLOAD.cbl:182",
       "performs": [
         {
           "target": "9000-CLOSE-FILES",
-          "source": "pangaea/programs/ACCTLOAD.cbl:174"
+          "source": "pangaea/programs/ACCTLOAD.cbl:184"
         }
       ],
       "performedBy": [
@@ -914,7 +1115,7 @@
       "fromLiteral": true,
       "paragraph": "0000-MAIN",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:86"
+      "source": "pangaea/programs/ACCTLOAD.cbl:95"
     },
     {
       "from": "16",
@@ -922,7 +1123,7 @@
       "fromLiteral": true,
       "paragraph": "1000-INITIALIZE",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:95"
+      "source": "pangaea/programs/ACCTLOAD.cbl:105"
     },
     {
       "from": "CONTROL-FILE",
@@ -930,7 +1131,7 @@
       "fromFile": true,
       "paragraph": "1000-INITIALIZE",
       "verb": "READ",
-      "source": "pangaea/programs/ACCTLOAD.cbl:98"
+      "source": "pangaea/programs/ACCTLOAD.cbl:108"
     },
     {
       "from": "'NO BANK CONTROL RECORD'",
@@ -938,14 +1139,14 @@
       "fromLiteral": true,
       "paragraph": "1000-INITIALIZE",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:100"
+      "source": "pangaea/programs/ACCTLOAD.cbl:110"
     },
     {
       "from": "BC-BUSINESS-DATE",
       "to": "WS-BUSINESS-DATE",
       "paragraph": "1000-INITIALIZE",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:103"
+      "source": "pangaea/programs/ACCTLOAD.cbl:113"
     },
     {
       "from": "ACCT-IN",
@@ -953,7 +1154,7 @@
       "fromFile": true,
       "paragraph": "1200-READ-ACCOUNT",
       "verb": "READ",
-      "source": "pangaea/programs/ACCTLOAD.cbl:107"
+      "source": "pangaea/programs/ACCTLOAD.cbl:117"
     },
     {
       "from": "condition MASTER-AT-END",
@@ -961,7 +1162,7 @@
       "fromLiteral": true,
       "paragraph": "1200-READ-ACCOUNT",
       "verb": "SET",
-      "source": "pangaea/programs/ACCTLOAD.cbl:109"
+      "source": "pangaea/programs/ACCTLOAD.cbl:119"
     },
     {
       "from": "1",
@@ -969,7 +1170,7 @@
       "fromLiteral": true,
       "paragraph": "1200-READ-ACCOUNT",
       "verb": "ADD",
-      "source": "pangaea/programs/ACCTLOAD.cbl:111"
+      "source": "pangaea/programs/ACCTLOAD.cbl:121"
     },
     {
       "from": "1",
@@ -977,7 +1178,7 @@
       "fromLiteral": true,
       "paragraph": "2000-LOAD-ACCOUNT",
       "verb": "ADD",
-      "source": "pangaea/programs/ACCTLOAD.cbl:117"
+      "source": "pangaea/programs/ACCTLOAD.cbl:127"
     },
     {
       "from": "SPACES",
@@ -985,56 +1186,56 @@
       "fromLiteral": true,
       "paragraph": "2100-WRITE-ONLINE",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:124"
+      "source": "pangaea/programs/ACCTLOAD.cbl:134"
     },
     {
       "from": "AM-ACCT-NO",
       "to": "AO-ACCT-NO",
       "paragraph": "2100-WRITE-ONLINE",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:125"
+      "source": "pangaea/programs/ACCTLOAD.cbl:135"
     },
     {
       "from": "AM-CUST-NO",
       "to": "AO-CUST-NO",
       "paragraph": "2100-WRITE-ONLINE",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:126"
+      "source": "pangaea/programs/ACCTLOAD.cbl:136"
     },
     {
       "from": "AM-SHORT-NAME",
       "to": "AO-SHORT-NAME",
       "paragraph": "2100-WRITE-ONLINE",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:127"
+      "source": "pangaea/programs/ACCTLOAD.cbl:137"
     },
     {
       "from": "AM-ACCT-TYPE",
       "to": "AO-ACCT-TYPE",
       "paragraph": "2100-WRITE-ONLINE",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:128"
+      "source": "pangaea/programs/ACCTLOAD.cbl:138"
     },
     {
       "from": "AM-STATUS",
       "to": "AO-STATUS",
       "paragraph": "2100-WRITE-ONLINE",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:129"
+      "source": "pangaea/programs/ACCTLOAD.cbl:139"
     },
     {
       "from": "AM-BALANCE",
       "to": "AO-BALANCE",
       "paragraph": "2100-WRITE-ONLINE",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:130"
+      "source": "pangaea/programs/ACCTLOAD.cbl:140"
     },
     {
       "from": "AM-OVERDRAFT-LIMIT",
       "to": "AO-OVERDRAFT-LIMIT",
       "paragraph": "2100-WRITE-ONLINE",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:131"
+      "source": "pangaea/programs/ACCTLOAD.cbl:141"
     },
     {
       "from": "0",
@@ -1042,14 +1243,14 @@
       "fromLiteral": true,
       "paragraph": "2100-WRITE-ONLINE",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:132"
+      "source": "pangaea/programs/ACCTLOAD.cbl:142"
     },
     {
       "from": "WS-BUSINESS-DATE",
       "to": "AO-AS-OF-DATE",
       "paragraph": "2100-WRITE-ONLINE",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:133"
+      "source": "pangaea/programs/ACCTLOAD.cbl:143"
     },
     {
       "from": "ACCT-ONLINE-RECORD",
@@ -1057,7 +1258,7 @@
       "toFile": true,
       "paragraph": "2100-WRITE-ONLINE",
       "verb": "WRITE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:134"
+      "source": "pangaea/programs/ACCTLOAD.cbl:144"
     },
     {
       "from": "'MASTER NOT IN ACCOUNT NUMBER ORDER'",
@@ -1065,7 +1266,7 @@
       "fromLiteral": true,
       "paragraph": "2100-WRITE-ONLINE",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:136"
+      "source": "pangaea/programs/ACCTLOAD.cbl:146"
     },
     {
       "from": "1",
@@ -1073,14 +1274,14 @@
       "fromLiteral": true,
       "paragraph": "2100-WRITE-ONLINE",
       "verb": "ADD",
-      "source": "pangaea/programs/ACCTLOAD.cbl:140"
+      "source": "pangaea/programs/ACCTLOAD.cbl:150"
     },
     {
       "from": "AM-BALANCE",
       "to": "WS-LOADED-BALANCE",
       "paragraph": "2100-WRITE-ONLINE",
       "verb": "ADD",
-      "source": "pangaea/programs/ACCTLOAD.cbl:141"
+      "source": "pangaea/programs/ACCTLOAD.cbl:151"
     },
     {
       "from": "SPACES",
@@ -1088,7 +1289,7 @@
       "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:145"
+      "source": "pangaea/programs/ACCTLOAD.cbl:155"
     },
     {
       "from": "'ACCTLOAD ONLINE ACCOUNT LOAD     BUSINESS DATE '",
@@ -1096,14 +1297,14 @@
       "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "STRING",
-      "source": "pangaea/programs/ACCTLOAD.cbl:146"
+      "source": "pangaea/programs/ACCTLOAD.cbl:156"
     },
     {
       "from": "WS-BUSINESS-DATE",
       "to": "REPORT-LINE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "STRING",
-      "source": "pangaea/programs/ACCTLOAD.cbl:146"
+      "source": "pangaea/programs/ACCTLOAD.cbl:156"
     },
     {
       "from": "REPORT-LINE",
@@ -1111,7 +1312,7 @@
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:149"
+      "source": "pangaea/programs/ACCTLOAD.cbl:159"
     },
     {
       "from": "SPACES",
@@ -1119,7 +1320,7 @@
       "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:150"
+      "source": "pangaea/programs/ACCTLOAD.cbl:160"
     },
     {
       "from": "REPORT-LINE",
@@ -1127,7 +1328,7 @@
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:151"
+      "source": "pangaea/programs/ACCTLOAD.cbl:161"
     },
     {
       "from": "'ACCOUNTS READ'",
@@ -1135,21 +1336,21 @@
       "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:152"
+      "source": "pangaea/programs/ACCTLOAD.cbl:162"
     },
     {
       "from": "WS-READ-COUNT",
       "to": "WS-RC-VALUE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:153"
+      "source": "pangaea/programs/ACCTLOAD.cbl:163"
     },
     {
       "from": "WS-REPORT-COUNT-LINE",
       "to": "REPORT-LINE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:154"
+      "source": "pangaea/programs/ACCTLOAD.cbl:164"
     },
     {
       "from": "REPORT-LINE",
@@ -1157,7 +1358,7 @@
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:154"
+      "source": "pangaea/programs/ACCTLOAD.cbl:164"
     },
     {
       "from": "'ACCOUNTS LOADED'",
@@ -1165,21 +1366,21 @@
       "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:155"
+      "source": "pangaea/programs/ACCTLOAD.cbl:165"
     },
     {
       "from": "WS-LOADED-COUNT",
       "to": "WS-RC-VALUE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:156"
+      "source": "pangaea/programs/ACCTLOAD.cbl:166"
     },
     {
       "from": "WS-REPORT-COUNT-LINE",
       "to": "REPORT-LINE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:157"
+      "source": "pangaea/programs/ACCTLOAD.cbl:167"
     },
     {
       "from": "REPORT-LINE",
@@ -1187,7 +1388,7 @@
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:157"
+      "source": "pangaea/programs/ACCTLOAD.cbl:167"
     },
     {
       "from": "'CLOSED ACCOUNTS LEFT OUT'",
@@ -1195,21 +1396,21 @@
       "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:158"
+      "source": "pangaea/programs/ACCTLOAD.cbl:168"
     },
     {
       "from": "WS-CLOSED-COUNT",
       "to": "WS-RC-VALUE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:159"
+      "source": "pangaea/programs/ACCTLOAD.cbl:169"
     },
     {
       "from": "WS-REPORT-COUNT-LINE",
       "to": "REPORT-LINE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:160"
+      "source": "pangaea/programs/ACCTLOAD.cbl:170"
     },
     {
       "from": "REPORT-LINE",
@@ -1217,7 +1418,7 @@
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:160"
+      "source": "pangaea/programs/ACCTLOAD.cbl:170"
     },
     {
       "from": "SPACES",
@@ -1225,7 +1426,7 @@
       "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:161"
+      "source": "pangaea/programs/ACCTLOAD.cbl:171"
     },
     {
       "from": "REPORT-LINE",
@@ -1233,7 +1434,7 @@
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:162"
+      "source": "pangaea/programs/ACCTLOAD.cbl:172"
     },
     {
       "from": "'BALANCES LOADED'",
@@ -1241,21 +1442,21 @@
       "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:163"
+      "source": "pangaea/programs/ACCTLOAD.cbl:173"
     },
     {
       "from": "WS-LOADED-BALANCE",
       "to": "WS-RA-VALUE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:164"
+      "source": "pangaea/programs/ACCTLOAD.cbl:174"
     },
     {
       "from": "WS-REPORT-AMOUNT-LINE",
       "to": "REPORT-LINE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:165"
+      "source": "pangaea/programs/ACCTLOAD.cbl:175"
     },
     {
       "from": "REPORT-LINE",
@@ -1263,7 +1464,7 @@
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:165"
+      "source": "pangaea/programs/ACCTLOAD.cbl:175"
     },
     {
       "from": "16",
@@ -1271,7 +1472,7 @@
       "fromLiteral": true,
       "paragraph": "9900-ABORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:175"
+      "source": "pangaea/programs/ACCTLOAD.cbl:185"
     }
   ],
   "outputs": [

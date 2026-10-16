@@ -3,13 +3,13 @@
   "tables": [
     {
       "paragraph": "1000-INITIALIZE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:90",
+      "source": "pangaea/programs/ACCTLOAD.cbl:100",
       "conditions": [
         "WS-FILE-STATUSES = ALL '0'",
         "READ CONTROL-FILE AT END"
       ],
       "actions": [
-        "OPEN INPUT CONTROL-FILE ACCT-IN OUTPUT ONLINE-OUT REPORT-OUT",
+        "OPEN INPUT CONTROL-FILE ACCT-IN OUTPUT ONLINE-OUT HOLD-OUT REPORT-OUT",
         "DISPLAY 'ACCTLOAD: CANNOT OPEN FILES ' WS-FILE-STATUSES",
         "MOVE 16 TO RETURN-CODE",
         "STOP RUN",
@@ -62,7 +62,7 @@
     },
     {
       "paragraph": "1200-READ-ACCOUNT",
-      "source": "pangaea/programs/ACCTLOAD.cbl:106",
+      "source": "pangaea/programs/ACCTLOAD.cbl:116",
       "conditions": [
         "READ ACCT-IN AT END"
       ],
@@ -94,7 +94,7 @@
     },
     {
       "paragraph": "2000-LOAD-ACCOUNT",
-      "source": "pangaea/programs/ACCTLOAD.cbl:115",
+      "source": "pangaea/programs/ACCTLOAD.cbl:125",
       "conditions": [
         "AM-CLOSED"
       ],
@@ -126,7 +126,7 @@
     },
     {
       "paragraph": "2100-WRITE-ONLINE",
-      "source": "pangaea/programs/ACCTLOAD.cbl:123",
+      "source": "pangaea/programs/ACCTLOAD.cbl:133",
       "conditions": [
         "WRITE ACCT-ONLINE-RECORD INVALID KEY"
       ],
