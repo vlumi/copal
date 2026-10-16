@@ -1,0 +1,717 @@
+{
+  "program": "GLSUM",
+  "tables": [
+    {
+      "paragraph": "0000-MAIN",
+      "source": "pangaea/programs/GLSUM.cbl:156",
+      "conditions": [
+        "WS-CLOSED-MONTH-NUMBER = 0",
+        "WS-TRANSIT-NET = 0"
+      ],
+      "actions": [
+        "PERFORM 1000-INITIALIZE",
+        "PERFORM 2000-POST-MONTH",
+        "PERFORM 3000-WRITE-LEDGER",
+        "PERFORM 8000-WRITE-REPORT",
+        "PERFORM 9000-CLOSE-FILES",
+        "MOVE 4 TO RETURN-CODE",
+        "STOP RUN",
+        "MOVE 0 TO RETURN-CODE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            7,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            3,
+            4,
+            7,
+            6
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "1000-INITIALIZE",
+      "source": "pangaea/programs/GLSUM.cbl:173",
+      "conditions": [
+        "WS-FILE-STATUSES = ALL '0'",
+        "READ ACCR-IN AT END",
+        "WS-CM-MONTH = 12"
+      ],
+      "actions": [
+        "OPEN INPUT ACCR-IN AUDIT-IN OUTPUT GL-OUT REPORT-OUT",
+        "DISPLAY 'GLSUM: CANNOT OPEN FILES ' WS-FILE-STATUSES",
+        "MOVE 16 TO RETURN-CODE",
+        "STOP RUN",
+        "MOVE 0 TO WS-CLOSED-MONTH-NUMBER",
+        "READ ACCR-IN",
+        "MOVE AC-DUE-MONTH TO WS-CLOSED-MONTH-NUMBER",
+        "MOVE WS-CM-YEAR TO WS-NM-YEAR",
+        "ADD 1 TO WS-NM-YEAR",
+        "MOVE 1 TO WS-NM-MONTH",
+        "PERFORM VARYING WS-TX FROM 1 BY 1 UNTIL WS-TX \u003e 6",
+        "COMPUTE WS-NM-MONTH = WS-CM-MONTH + 1"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            4,
+            5,
+            6,
+            7,
+            11,
+            10
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            4,
+            5,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            4,
+            5,
+            7,
+            11,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2000-POST-MONTH",
+      "source": "pangaea/programs/GLSUM.cbl:199",
+      "conditions": [
+        "WS-AUDIT-STATUS = '10'"
+      ],
+      "actions": [
+        "READ AUDIT-IN",
+        "PERFORM UNTIL WS-AUDIT-STATUS NOT = '00'",
+        "MOVE 'CANNOT READ THE AUDIT TRAILS' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2000-POST-MONTH",
+      "loop": "PERFORM UNTIL WS-AUDIT-STATUS NOT = '00'",
+      "source": "pangaea/programs/GLSUM.cbl:201",
+      "conditions": [
+        "WS-POSTING-MONTH = WS-CLOSED-MONTH OR (WS-POSTING-MONTH = WS-NEXT-MONTH AND WS-MONTH-END-CODE)"
+      ],
+      "actions": [
+        "MOVE AU-BUSINESS-DATE(1:6) TO WS-POSTING-MONTH",
+        "MOVE AU-TRAN-CODE TO WS-POSTING-CODE",
+        "PERFORM 2100-POST-TO-LEDGER",
+        "READ AUDIT-IN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2100-POST-TO-LEDGER",
+      "source": "pangaea/programs/GLSUM.cbl:218",
+      "conditions": [
+        "GS-CODE(GS-CX) = AU-TRAN-CODE",
+        "AU-AMOUNT \u003c 0"
+      ],
+      "actions": [
+        "SET GS-CX TO 1",
+        "SEARCH GS-CODE-ENTRY",
+        "CONTINUE",
+        "COMPUTE WS-AMOUNT = 0 - AU-AMOUNT",
+        "MOVE WS-DEPOSITS-ACCOUNT TO WS-DEBIT-ACCOUNT",
+        "MOVE GS-CODE-GL-ACCOUNT(GS-CX) TO WS-CREDIT-ACCOUNT",
+        "MOVE WS-DEBIT-ACCOUNT TO WS-WANTED-ACCOUNT",
+        "PERFORM 2200-FIND-ACCOUNT",
+        "ADD WS-AMOUNT TO WS-LT-DEBITS(WS-TX)",
+        "MOVE WS-CREDIT-ACCOUNT TO WS-WANTED-ACCOUNT",
+        "ADD WS-AMOUNT TO WS-LT-CREDITS(WS-TX)",
+        "ADD 1 TO WS-POSTING-COUNT",
+        "MOVE AU-AMOUNT TO WS-AMOUNT",
+        "MOVE GS-CODE-GL-ACCOUNT(GS-CX) TO WS-DEBIT-ACCOUNT",
+        "MOVE WS-DEPOSITS-ACCOUNT TO WS-CREDIT-ACCOUNT",
+        "MOVE 'UNKNOWN TRANSACTION CODE' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            7,
+            10,
+            11
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            12,
+            13,
+            14,
+            6,
+            7,
+            8,
+            9,
+            7,
+            10,
+            11
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            15,
+            16,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            7,
+            10,
+            11
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            15,
+            16,
+            12,
+            13,
+            14,
+            6,
+            7,
+            8,
+            9,
+            7,
+            10,
+            11
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2200-FIND-ACCOUNT",
+      "source": "pangaea/programs/GLSUM.cbl:245",
+      "conditions": [
+        "WS-LE-ACCOUNT(WS-LX) = WS-WANTED-ACCOUNT"
+      ],
+      "actions": [
+        "SET WS-LX TO 1",
+        "SEARCH WS-LEDGER-ENTRY",
+        "SET WS-TX TO WS-LX",
+        "MOVE 'UNKNOWN LEDGER ACCOUNT' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            3,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "3000-WRITE-LEDGER",
+      "source": "pangaea/programs/GLSUM.cbl:257",
+      "conditions": [
+        "WS-DEBIT-TOTAL = WS-CREDIT-TOTAL"
+      ],
+      "actions": [
+        "PERFORM VARYING WS-LX FROM 1 BY 1 UNTIL WS-LX \u003e 6",
+        "MOVE 'LEDGER OUT OF BALANCE' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "3000-WRITE-LEDGER",
+      "loop": "PERFORM VARYING WS-LX FROM 1 BY 1 UNTIL WS-LX \u003e 6",
+      "source": "pangaea/programs/GLSUM.cbl:258",
+      "conditions": [
+        "WS-LE-ACCOUNT(WS-LX) = WS-DEPOSITS-ACCOUNT",
+        "WS-LE-ACCOUNT(WS-LX) = WS-TRANSIT-ACCOUNT"
+      ],
+      "actions": [
+        "SET WS-TX TO WS-LX",
+        "MOVE SPACES TO GL-SUMMARY-RECORD",
+        "MOVE WS-CLOSED-MONTH-NUMBER TO GL-MONTH",
+        "MOVE WS-LE-ACCOUNT(WS-LX) TO GL-ACCOUNT",
+        "MOVE WS-LE-NAME(WS-LX) TO GL-ACCOUNT-NAME",
+        "MOVE WS-LT-DEBITS(WS-TX) TO GL-DEBITS",
+        "MOVE WS-LT-CREDITS(WS-TX) TO GL-CREDITS",
+        "WRITE GL-SUMMARY-RECORD",
+        "ADD WS-LT-DEBITS(WS-TX) TO WS-DEBIT-TOTAL",
+        "ADD WS-LT-CREDITS(WS-TX) TO WS-CREDIT-TOTAL",
+        "COMPUTE WS-DEPOSITS-CHANGE = WS-LT-CREDITS(WS-TX) - WS-LT-DEBITS(WS-TX)",
+        "COMPUTE WS-TRANSIT-NET = WS-LT-DEBITS(WS-TX) - WS-LT-CREDITS(WS-TX)"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            11
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "8000-WRITE-REPORT",
+      "source": "pangaea/programs/GLSUM.cbl:284",
+      "conditions": [
+        "WS-CLOSED-MONTH-NUMBER = 0",
+        "WS-TRANSIT-NET = 0"
+      ],
+      "actions": [
+        "MOVE 'GLSUM    GENERAL LEDGER SUMMARY' TO REPORT-LINE",
+        "WRITE REPORT-LINE",
+        "MOVE SPACES TO REPORT-LINE",
+        "MOVE 'NO MONTH CLOSED' TO REPORT-LINE",
+        "EXIT PARAGRAPH",
+        "STRING 'MONTH CLOSED                  ' WS-CLOSED-MONTH DELIMITED BY SIZE INTO REPORT-LINE",
+        "MOVE 'POSTINGS' TO WS-RC-LABEL",
+        "MOVE WS-POSTING-COUNT TO WS-RC-VALUE",
+        "WRITE REPORT-LINE FROM WS-REPORT-COUNT-LINE",
+        "WRITE REPORT-LINE FROM WS-HEADING-LINE",
+        "PERFORM VARYING WS-LX FROM 1 BY 1 UNTIL WS-LX \u003e 6",
+        "MOVE SPACES TO WS-LL-ACCOUNT",
+        "MOVE 'TOTAL' TO WS-LL-NAME",
+        "MOVE WS-DEBIT-TOTAL TO WS-LL-DEBITS",
+        "MOVE WS-CREDIT-TOTAL TO WS-LL-CREDITS",
+        "WRITE REPORT-LINE FROM WS-LEDGER-LINE",
+        "MOVE 'CUSTOMER DEPOSITS CHANGE' TO WS-RA-LABEL",
+        "MOVE WS-DEPOSITS-CHANGE TO WS-RA-VALUE",
+        "WRITE REPORT-LINE FROM WS-REPORT-AMOUNT-LINE",
+        "MOVE 'TRANSFERS IN TRANSIT NET' TO WS-RA-LABEL",
+        "MOVE WS-TRANSIT-NET TO WS-RA-VALUE",
+        "MOVE 'LEDGER IN BALANCE' TO REPORT-LINE",
+        "MOVE 'TRANSFERS IN TRANSIT DO NOT NET TO ZERO' TO REPORT-LINE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            1,
+            3,
+            1,
+            4,
+            2,
+            5,
+            1,
+            6,
+            7,
+            8,
+            2,
+            1,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            2,
+            1,
+            16,
+            17,
+            18,
+            19,
+            20,
+            18,
+            2,
+            1,
+            21,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            1,
+            3,
+            1,
+            4,
+            2,
+            5,
+            1,
+            6,
+            7,
+            8,
+            2,
+            1,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            2,
+            1,
+            16,
+            17,
+            18,
+            19,
+            20,
+            18,
+            2,
+            1,
+            22,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            1,
+            2,
+            5,
+            1,
+            6,
+            7,
+            8,
+            2,
+            1,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            2,
+            1,
+            16,
+            17,
+            18,
+            19,
+            20,
+            18,
+            2,
+            1,
+            21,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            1,
+            2,
+            5,
+            1,
+            6,
+            7,
+            8,
+            2,
+            1,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            2,
+            1,
+            16,
+            17,
+            18,
+            19,
+            20,
+            18,
+            2,
+            1,
+            22,
+            1
+          ]
+        }
+      ]
+    }
+  ]
+}

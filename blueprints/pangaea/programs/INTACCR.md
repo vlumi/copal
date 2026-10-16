@@ -26,7 +26,7 @@ DATE       BY  CHANGE
 2002-02-11 TL  CR-0311 ACCOUNTS OPENED SINCE THE LAST RUN.
 ```
 
-Program [INTACCR.cbl](../../../pangaea/programs/INTACCR.cbl): 6 files, 15 paragraphs.
+Program [INTACCR.cbl](../../../pangaea/programs/INTACCR.cbl): 6 files, 15 paragraphs. Its business rules: [14 decision tables](../rules/INTACCR.md).
 
 - AUTHOR: T. LINDQVIST, BATCH SYSTEMS.
 - INSTALLATION: FIRST BANK OF PANGAEA, DATA CENTER.

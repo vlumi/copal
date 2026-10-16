@@ -13,6 +13,7 @@ import (
 	"github.com/vlumi/copal/dataflow"
 	"github.com/vlumi/copal/fileio"
 	"github.com/vlumi/copal/layout"
+	"github.com/vlumi/copal/rules"
 	"github.com/vlumi/copal/structure"
 )
 
@@ -34,6 +35,8 @@ type Program struct {
 	Records        []Record         `json:"records"`
 	Paragraphs     []Paragraph      `json:"paragraphs"`
 	Lineage        []Lineage        `json:"lineage,omitempty"`
+	// Rules are the program's decision tables, a blueprint of their own.
+	Rules Rules `json:"-"`
 }
 
 // Lineage is one statement moving a value from one data item, or a file,
@@ -247,6 +250,7 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 		program.Lineage = append(program.Lineage, Lineage{From: e.From, To: e.To, FromFile: e.FromFile, ToFile: e.ToFile,
 			Paragraph: e.Paragraph, Verb: e.Verb, Source: e.Pos.String()})
 	}
+	program.Rules = newRules(program.Name, rules.Tables(p))
 	return program, nil
 }
 

@@ -96,7 +96,7 @@ func Paragraphs(p *cobol.Program) ([]Paragraph, error) {
 			}
 			for i := first; i <= last; i++ {
 				addOnce(&paragraphs[i].PerformedBy, para.Name)
-				if i < last && !ends[i] && !endsUnconditionally(p.Paragraphs[i].Statements) {
+				if i < last && !ends[i] && !EndsUnconditionally(p.Paragraphs[i].Statements) {
 					paragraphs[i].FallsInto = paragraphs[i+1].Name
 				}
 			}
@@ -124,11 +124,11 @@ func known(index map[string]int, name string) bool {
 	return ok
 }
 
-// endsUnconditionally reports whether control never runs off the end of
+// EndsUnconditionally reports whether control never runs off the end of
 // the statements: the last one is a GO TO with a single target, STOP RUN,
 // GOBACK or EXIT PROGRAM, or an IF or EVALUATE all of whose branches end
 // so, an ELSE or WHEN OTHER among them.
-func endsUnconditionally(statements []cobol.Statement) bool {
+func EndsUnconditionally(statements []cobol.Statement) bool {
 	if len(statements) == 0 {
 		return false
 	}
@@ -142,7 +142,7 @@ func endsUnconditionally(statements []cobol.Statement) bool {
 		otherwise := false
 		for _, b := range last.Branches {
 			otherwise = otherwise || b.Kind == "ELSE" || b.Kind == "OTHER"
-			if !endsUnconditionally(b.Statements) {
+			if !EndsUnconditionally(b.Statements) {
 				return false
 			}
 		}

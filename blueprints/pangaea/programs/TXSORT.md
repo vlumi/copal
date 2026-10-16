@@ -18,7 +18,7 @@ DATE       BY  CHANGE
                ACCOUNT.
 ```
 
-Program [TXSORT.cbl](../../../pangaea/programs/TXSORT.cbl): 3 files, 1 paragraphs.
+Program [TXSORT.cbl](../../../pangaea/programs/TXSORT.cbl): 3 files, 1 paragraphs. Its business rules: [1 decision tables](../rules/TXSORT.md).
 
 - AUTHOR: J. ARKWRIGHT, BATCH SYSTEMS.
 - INSTALLATION: FIRST BANK OF PANGAEA, DATA CENTER.

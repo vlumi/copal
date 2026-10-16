@@ -1,0 +1,801 @@
+{
+  "program": "ACCTMNT",
+  "tables": [
+    {
+      "paragraph": "0000-MAIN",
+      "source": "pangaea/programs/ACCTMNT.cbl:128",
+      "conditions": [
+        "WS-BALANCES-OUT = WS-BALANCES-IN",
+        "WS-REJECT-COUNT \u003e 0"
+      ],
+      "actions": [
+        "PERFORM 1000-INITIALIZE",
+        "PERFORM 2000-NEXT-ACCOUNT THRU 2999-EXIT UNTIL WS-MASTER-KEY = HIGH-VALUES AND WS-REQUEST-KEY = HIGH-VALUES",
+        "MOVE 'NEW MASTER OUT OF BALANCE' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT",
+        "PERFORM 8000-WRITE-REPORT",
+        "PERFORM 9000-CLOSE-FILES",
+        "MOVE 4 TO RETURN-CODE",
+        "STOP RUN",
+        "MOVE 0 TO RETURN-CODE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            8,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            4,
+            5,
+            8,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "1000-INITIALIZE",
+      "source": "pangaea/programs/ACCTMNT.cbl:145",
+      "conditions": [
+        "WS-FILE-STATUSES = ALL '0'",
+        "READ CONTROL-FILE AT END"
+      ],
+      "actions": [
+        "OPEN INPUT CONTROL-FILE ACCT-IN MAINT-IN OUTPUT ACCT-OUT REJECT-OUT REPORT-OUT",
+        "DISPLAY 'ACCTMNT: CANNOT OPEN FILES ' WS-FILE-STATUSES",
+        "MOVE 16 TO RETURN-CODE",
+        "STOP RUN",
+        "READ CONTROL-FILE",
+        "MOVE 'NO BANK CONTROL RECORD' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT",
+        "MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE",
+        "MOVE SPACES TO REJECT-RECORD",
+        "PERFORM 1200-READ-MASTER THRU 1200-EXIT",
+        "PERFORM 1300-READ-REQUEST THRU 1300-EXIT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            4,
+            7,
+            8,
+            9,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "1200-READ-MASTER",
+      "source": "pangaea/programs/ACCTMNT.cbl:162",
+      "conditions": [
+        "READ ACCT-IN AT END",
+        "WS-MASTER-KEY \u003e WS-PREV-MASTER-KEY"
+      ],
+      "actions": [
+        "READ ACCT-IN",
+        "MOVE HIGH-VALUES TO WS-MASTER-KEY",
+        "GO TO 1200-EXIT",
+        "MOVE AI-ACCT-NO TO WS-MASTER-KEY",
+        "MOVE 'MASTER NOT IN ACCOUNT ORDER' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT",
+        "MOVE WS-MASTER-KEY TO WS-PREV-MASTER-KEY",
+        "ADD 1 TO WS-MASTERS-READ"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            3,
+            6,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "1300-READ-REQUEST",
+      "source": "pangaea/programs/ACCTMNT.cbl:177",
+      "conditions": [
+        "READ MAINT-IN AT END",
+        "WS-REQUEST-ORDER-KEY \u003e WS-PREV-REQUEST-ORDER-KEY"
+      ],
+      "actions": [
+        "READ MAINT-IN",
+        "MOVE HIGH-VALUES TO WS-REQUEST-KEY",
+        "GO TO 1300-EXIT",
+        "MOVE MR-ACCT-NO TO WS-REQUEST-KEY WS-ROK-ACCT-NO",
+        "MOVE MR-REQUEST-ID TO WS-ROK-REQUEST-ID",
+        "MOVE 'REQUESTS NOT IN ACCOUNT ORDER' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT",
+        "MOVE WS-REQUEST-ORDER-KEY TO WS-PREV-REQUEST-ORDER-KEY",
+        "ADD 1 TO WS-REQUEST-COUNT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            7,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            3,
+            4,
+            7,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2000-NEXT-ACCOUNT",
+      "source": "pangaea/programs/ACCTMNT.cbl:195",
+      "conditions": [
+        "WS-REQUEST-KEY \u003c WS-MASTER-KEY",
+        "WS-MASTER-KEY = WS-ACTIVE-KEY"
+      ],
+      "actions": [
+        "MOVE WS-MASTER-KEY TO WS-ACTIVE-KEY",
+        "MOVE WS-REQUEST-KEY TO WS-ACTIVE-KEY",
+        "SET NOTHING-HELD TO TRUE",
+        "MOVE ACCT-IN-RECORD TO ACCT-MASTER-RECORD",
+        "ADD AM-BALANCE TO WS-BALANCES-IN",
+        "SET ACCOUNT-HELD TO TRUE",
+        "PERFORM 1200-READ-MASTER THRU 1200-EXIT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2100-APPLY-REQUESTS",
+      "source": "pangaea/programs/ACCTMNT.cbl:207",
+      "conditions": [
+        "WS-REQUEST-KEY = WS-ACTIVE-KEY"
+      ],
+      "actions": [
+        "GO TO 2800-WRITE-HELD",
+        "PERFORM 2200-APPLY-REQUEST THRU 2299-EXIT",
+        "PERFORM 1300-READ-REQUEST THRU 1300-EXIT",
+        "GO TO 2100-APPLY-REQUESTS"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0
+          ]
+        },
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            1,
+            2,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2200-APPLY-REQUEST",
+      "source": "pangaea/programs/ACCTMNT.cbl:215",
+      "conditions": [
+        "MR-OPEN",
+        "NOTHING-HELD",
+        "AM-CLOSED",
+        "MR-CLOSE",
+        "MR-FREEZE",
+        "MR-UNFREEZE",
+        "MR-LIMIT"
+      ],
+      "actions": [
+        "GO TO 2210-OPEN",
+        "SET RJ-NO-ACCOUNT TO TRUE",
+        "GO TO 2290-REJECT",
+        "SET RJ-CLOSED TO TRUE",
+        "GO TO 2220-CLOSE",
+        "GO TO 2230-FREEZE",
+        "GO TO 2240-UNFREEZE",
+        "GO TO 2250-LIMIT",
+        "SET RJ-BAD-TYPE TO TRUE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            3,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "Y",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            4
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "N",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            5
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "Y",
+            ""
+          ],
+          "actions": [
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            8,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2210-OPEN",
+      "source": "pangaea/programs/ACCTMNT.cbl:236",
+      "conditions": [
+        "ACCOUNT-HELD",
+        "AM-SAVINGS"
+      ],
+      "actions": [
+        "SET RJ-EXISTS TO TRUE",
+        "GO TO 2290-REJECT",
+        "MOVE SPACES TO ACCT-MASTER-RECORD",
+        "MOVE MR-ACCT-NO TO AM-ACCT-NO",
+        "MOVE MR-CUST-NO TO AM-CUST-NO",
+        "MOVE MR-SHORT-NAME TO AM-SHORT-NAME",
+        "MOVE MR-ACCT-TYPE TO AM-ACCT-TYPE",
+        "SET AM-OPEN TO TRUE",
+        "MOVE WS-BUSINESS-DATE TO AM-OPEN-DATE AM-LAST-ACTIVITY-DATE",
+        "MOVE 0 TO AM-BALANCE",
+        "MOVE MR-OVERDRAFT-LIMIT TO AM-OVERDRAFT-LIMIT",
+        "MOVE 0 TO AM-OVERDRAFT-LIMIT",
+        "SET ACCOUNT-HELD TO TRUE",
+        "ADD 1 TO WS-OPENED-COUNT",
+        "GO TO 2299-EXIT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            12,
+            13,
+            14
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2220-CLOSE",
+      "source": "pangaea/programs/ACCTMNT.cbl:256",
+      "conditions": [
+        "AM-BALANCE = 0"
+      ],
+      "actions": [
+        "SET RJ-HAS-BALANCE TO TRUE",
+        "GO TO 2290-REJECT",
+        "SET AM-CLOSED TO TRUE",
+        "MOVE 0 TO AM-OVERDRAFT-LIMIT",
+        "ADD 1 TO WS-CLOSED-COUNT",
+        "GO TO 2299-EXIT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2230-FREEZE",
+      "source": "pangaea/programs/ACCTMNT.cbl:266",
+      "conditions": [
+        "AM-OPEN"
+      ],
+      "actions": [
+        "SET RJ-BAD-STATUS TO TRUE",
+        "GO TO 2290-REJECT",
+        "SET AM-FROZEN TO TRUE",
+        "ADD 1 TO WS-FROZEN-COUNT",
+        "GO TO 2299-EXIT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            2,
+            3,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2240-UNFREEZE",
+      "source": "pangaea/programs/ACCTMNT.cbl:275",
+      "conditions": [
+        "AM-FROZEN"
+      ],
+      "actions": [
+        "SET RJ-BAD-STATUS TO TRUE",
+        "GO TO 2290-REJECT",
+        "SET AM-OPEN TO TRUE",
+        "ADD 1 TO WS-UNFROZEN-COUNT",
+        "GO TO 2299-EXIT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            2,
+            3,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2250-LIMIT",
+      "source": "pangaea/programs/ACCTMNT.cbl:284",
+      "conditions": [
+        "AM-CURRENT"
+      ],
+      "actions": [
+        "SET RJ-BAD-TYPE TO TRUE",
+        "GO TO 2290-REJECT",
+        "MOVE MR-OVERDRAFT-LIMIT TO AM-OVERDRAFT-LIMIT",
+        "ADD 1 TO WS-LIMIT-COUNT",
+        "GO TO 2299-EXIT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            2,
+            3,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2800-WRITE-HELD",
+      "source": "pangaea/programs/ACCTMNT.cbl:302",
+      "conditions": [
+        "ACCOUNT-HELD"
+      ],
+      "actions": [
+        "WRITE ACCT-OUT-RECORD FROM ACCT-MASTER-RECORD",
+        "ADD 1 TO WS-MASTERS-WRITTEN",
+        "ADD AM-BALANCE TO WS-BALANCES-OUT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": null
+        }
+      ]
+    }
+  ]
+}

@@ -28,7 +28,7 @@ DATE       BY  CHANGE
 1999-01-11 SL  Y2K: 8-DIGIT OPEN DATES.
 ```
 
-Program [ACCTMNT.cbl](../../../pangaea/programs/ACCTMNT.cbl): 6 files, 21 paragraphs.
+Program [ACCTMNT.cbl](../../../pangaea/programs/ACCTMNT.cbl): 6 files, 21 paragraphs. Its business rules: [13 decision tables](../rules/ACCTMNT.md).
 
 - AUTHOR: J. ARKWRIGHT, BATCH SYSTEMS.
 - INSTALLATION: FIRST BANK OF PANGAEA, DATA CENTER.

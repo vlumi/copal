@@ -41,7 +41,7 @@ DATE       BY  CHANGE
                ENDING THE RUN.
 ```
 
-Program [TXPOST.cbl](../../../pangaea/programs/TXPOST.cbl): 8 files, 17 paragraphs.
+Program [TXPOST.cbl](../../../pangaea/programs/TXPOST.cbl): 8 files, 17 paragraphs. Its business rules: [10 decision tables](../rules/TXPOST.md).
 
 - AUTHOR: J. ARKWRIGHT, BATCH SYSTEMS.
 - INSTALLATION: FIRST BANK OF PANGAEA, DATA CENTER.

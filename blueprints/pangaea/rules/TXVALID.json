@@ -1,0 +1,1015 @@
+{
+  "program": "TXVALID",
+  "tables": [
+    {
+      "paragraph": "0000-MAIN",
+      "source": "pangaea/programs/TXVALID.cbl:101",
+      "conditions": [
+        "FILE-IS-GOOD",
+        "WS-REJECT-COUNT \u003e 0"
+      ],
+      "actions": [
+        "PERFORM 1000-OPEN-FILES",
+        "PERFORM 2000-READ-HEADER",
+        "PERFORM 3000-READ-DETAILS",
+        "PERFORM 4000-CHECK-TRAILER",
+        "PERFORM 8000-WRITE-REPORT",
+        "PERFORM 9000-CLOSE-FILES",
+        "MOVE 4 TO RETURN-CODE",
+        "STOP RUN",
+        "MOVE 0 TO RETURN-CODE",
+        "MOVE 12 TO RETURN-CODE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            8,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            4,
+            5,
+            9,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "1000-OPEN-FILES",
+      "source": "pangaea/programs/TXVALID.cbl:123",
+      "conditions": [
+        "WS-CONTROL-STATUS NOT = '00' OR WS-TRAN-IN-STATUS NOT = '00' OR WS-TRAN-OUT-STATUS NOT = '00' OR WS-REJECT-STATUS NOT = '00' OR WS-REPORT-STATUS NOT = '00'",
+        "READ CONTROL-FILE AT END"
+      ],
+      "actions": [
+        "OPEN INPUT CONTROL-FILE TRAN-IN OUTPUT TRAN-OUT REJECT-OUT REPORT-OUT",
+        "DISPLAY 'TXVALID: CANNOT OPEN FILES ' WS-FILE-STATUSES",
+        "MOVE 16 TO RETURN-CODE",
+        "STOP RUN",
+        "READ CONTROL-FILE",
+        "DISPLAY 'TXVALID: NO BANK CONTROL RECORD'",
+        "MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE",
+        "MOVE SPACES TO REJECT-RECORD"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            4,
+            5,
+            2,
+            3,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            4,
+            6,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2000-READ-HEADER",
+      "source": "pangaea/programs/TXVALID.cbl:145",
+      "conditions": [
+        "READ TRAN-IN AT END",
+        "FILE-IS-GOOD",
+        "TR-HEADER",
+        "TH-BUSINESS-DATE = WS-BUSINESS-DATE"
+      ],
+      "actions": [
+        "READ TRAN-IN",
+        "MOVE 'EMPTY FILE' TO WS-FILE-ERROR",
+        "CONTINUE",
+        "MOVE 'FIRST RECORD IS NOT A HEADER' TO WS-FILE-ERROR",
+        "MOVE 'HEADER IS NOT FOR THE BUSINESS DATE' TO WS-FILE-ERROR"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            4
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            4
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "3000-READ-DETAILS",
+      "loop": "PERFORM UNTIL TR-TRAILER OR NOT FILE-IS-GOOD",
+      "source": "pangaea/programs/TXVALID.cbl:163",
+      "conditions": [
+        "TR-DETAIL",
+        "FILE-IS-GOOD",
+        "TR-HEADER"
+      ],
+      "actions": [
+        "PERFORM 3200-VALIDATE-DETAIL",
+        "PERFORM 3100-READ-NEXT",
+        "MOVE 'SECOND HEADER' TO WS-FILE-ERROR",
+        "MOVE 'TYPE' TO RJ-REASON",
+        "PERFORM 3300-REJECT-RECORD"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            ""
+          ],
+          "actions": [
+            0
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            2,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            3,
+            4,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            3,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "3100-READ-NEXT",
+      "source": "pangaea/programs/TXVALID.cbl:179",
+      "conditions": [
+        "READ TRAN-IN AT END"
+      ],
+      "actions": [
+        "READ TRAN-IN",
+        "MOVE 'NO TRAILER' TO WS-FILE-ERROR"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "3200-VALIDATE-DETAIL",
+      "source": "pangaea/programs/TXVALID.cbl:186",
+      "conditions": [
+        "TD-AMOUNT IS NUMERIC",
+        "TD-ACCT-NO IS NUMERIC",
+        "TD-KNOWN-CODE",
+        "DETAIL-IS-VALID",
+        "TD-AMOUNT IS NOT NUMERIC OR TD-AMOUNT = ZERO",
+        "TD-TRANSFER AND (TD-COUNTER-ACCT-NO IS NOT NUMERIC OR TD-COUNTER-ACCT-NO = TD-ACCT-NO)"
+      ],
+      "actions": [
+        "ADD 1 TO WS-DETAIL-COUNT",
+        "ADD TD-AMOUNT TO WS-AMOUNT-TOTAL",
+        "ADD TD-ACCT-NO TO WS-ACCT-HASH",
+        "SET DETAIL-IS-VALID TO TRUE",
+        "SET RJ-BAD-CODE TO TRUE",
+        "SET DETAIL-IS-REJECTED TO TRUE",
+        "WRITE TRAN-OUT-RECORD FROM TRAN-RECORD",
+        "ADD 1 TO WS-VALID-COUNT",
+        "PERFORM 3300-REJECT-RECORD",
+        "SET RJ-BAD-AMOUNT TO TRUE",
+        "SET RJ-BAD-COUNTER TO TRUE",
+        "SET RJ-BAD-ACCOUNT TO TRUE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            9,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            9,
+            5,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            10,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            10,
+            5,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            3,
+            11,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            3,
+            11,
+            5,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            9,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            9,
+            5,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            10,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            10,
+            5,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            3,
+            11,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            3,
+            11,
+            5,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "4000-CHECK-TRAILER",
+      "source": "pangaea/programs/TXVALID.cbl:227",
+      "conditions": [
+        "TT-DETAIL-COUNT = WS-DETAIL-COUNT",
+        "FILE-IS-GOOD",
+        "READ TRAN-IN AT END",
+        "TT-AMOUNT-TOTAL = WS-AMOUNT-TOTAL",
+        "TT-ACCT-HASH = WS-ACCT-HASH"
+      ],
+      "actions": [
+        "MOVE 'TRAILER DETAIL COUNT DIFFERS' TO WS-FILE-ERROR",
+        "READ TRAN-IN",
+        "MOVE 'RECORDS AFTER THE TRAILER' TO WS-FILE-ERROR",
+        "MOVE 'TRAILER AMOUNT TOTAL DIFFERS' TO WS-FILE-ERROR",
+        "MOVE 'TRAILER ACCOUNT HASH DIFFERS' TO WS-FILE-ERROR"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "N",
+            ""
+          ],
+          "actions": [
+            3,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            ""
+          ],
+          "actions": [
+            3,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "",
+            "N",
+            ""
+          ],
+          "actions": [
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            4,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            4,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            4
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            1
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "",
+            "Y",
+            "Y"
+          ],
+          "actions": null
+        }
+      ]
+    },
+    {
+      "paragraph": "8000-WRITE-REPORT",
+      "source": "pangaea/programs/TXVALID.cbl:248",
+      "conditions": [
+        "FILE-IS-GOOD"
+      ],
+      "actions": [
+        "MOVE SPACES TO REPORT-LINE",
+        "STRING 'TXVALID  TRANSACTION VALIDATION  BUSINESS DATE ' WS-BUSINESS-DATE DELIMITED BY SIZE INTO REPORT-LINE",
+        "WRITE REPORT-LINE",
+        "MOVE 'DETAILS READ' TO WS-RC-LABEL",
+        "MOVE WS-DETAIL-COUNT TO WS-RC-VALUE",
+        "WRITE REPORT-LINE FROM WS-REPORT-COUNT-LINE",
+        "MOVE 'DETAILS VALID' TO WS-RC-LABEL",
+        "MOVE WS-VALID-COUNT TO WS-RC-VALUE",
+        "MOVE 'RECORDS REJECTED' TO WS-RC-LABEL",
+        "MOVE WS-REJECT-COUNT TO WS-RC-VALUE",
+        "MOVE 'AMOUNT TOTAL' TO WS-RA-LABEL",
+        "MOVE WS-AMOUNT-TOTAL TO WS-RA-VALUE",
+        "WRITE REPORT-LINE FROM WS-REPORT-AMOUNT-LINE",
+        "MOVE 'FILE ACCEPTED' TO REPORT-LINE",
+        "STRING 'FILE REJECTED: ' WS-FILE-ERROR DELIMITED BY SIZE INTO REPORT-LINE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            5,
+            8,
+            9,
+            5,
+            10,
+            11,
+            12,
+            0,
+            2,
+            0,
+            13,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            5,
+            8,
+            9,
+            5,
+            10,
+            11,
+            12,
+            0,
+            2,
+            0,
+            14,
+            2
+          ]
+        }
+      ]
+    }
+  ]
+}
