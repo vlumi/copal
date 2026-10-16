@@ -67,8 +67,8 @@ Done when: you can reset the bank, run a day from the browser, and see the maste
 
 Pangaea reaches the size in the brief, a step at a time, each step with Copal reading it:
 
-- Month-end: interest accrual and posting (`COMP-3` amounts), monthly fees, statements, a general-ledger summary. Interest accrues every day; the first business day of a month posts the month before's interest and fees ahead of its own transactions (done), and a month-end job after the daily batch prints the statements (done) and the general-ledger summary.
-- The nasties: `REDEFINES`, `OCCURS` and `OCCURS DEPENDING ON`, level-88 conditions, `PERFORM THRU` with a few `GO TO`s, `COPY ... REPLACING`, and a job that only works because an earlier one sorted its input.
+- Month-end (done): interest accrual and posting (`COMP-3` amounts), monthly fees, statements, a general-ledger summary. Interest accrues every day; the first business day of a month posts the month before's interest and fees ahead of its own transactions, and a month-end job after the daily batch prints the statements and the general-ledger summary.
+- The nasties: `REDEFINES`, `OCCURS` and `OCCURS DEPENDING ON`, level-88 conditions, `COPY ... REPLACING`, and a job that only works because its input comes in master order (done); `PERFORM THRU` with a few `GO TO`s.
 - Copal: data flow per paragraph and field lineage; business rules as decision tables; file I/O joined with the job network into one graph, drawn as SVG.
 
 The console gains a page per run: the job network with each step's return code and record counts, and links from steps to the blueprints of their programs.
