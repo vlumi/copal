@@ -121,3 +121,21 @@ func TestGenerations(t *testing.T) {
 		t.Error("deleted dataset's file is still there")
 	}
 }
+
+func TestWriteAndRead(t *testing.T) {
+	s, err := Open(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	records := [][]byte{[]byte("AB"), []byte("CD")}
+	if err := s.Write("A", 2, records); err != nil {
+		t.Fatal(err)
+	}
+	got, err := s.Read("A")
+	if err != nil || len(got) != 2 || string(got[1]) != "CD" {
+		t.Errorf("read %q, %v", got, err)
+	}
+	if err := s.Write("B", 3, records); err == nil {
+		t.Error("wrote 2-byte records as 3-byte ones")
+	}
+}

@@ -106,6 +106,34 @@ func (s *Store) Catalog(dsn string, lrecl int) error {
 	return s.writeCatalog()
 }
 
+// Write creates a dataset from records of the given length and catalogs it.
+func (s *Store) Write(dsn string, lrecl int, records [][]byte) error {
+	var data bytes.Buffer
+	for _, r := range records {
+		if len(r) != lrecl {
+			return fmt.Errorf("%s: a record of %d bytes, want %d", dsn, len(r), lrecl)
+		}
+		data.Write(r)
+	}
+	if err := os.WriteFile(s.Path(dsn), data.Bytes(), 0o644); err != nil {
+		return err
+	}
+	return s.Catalog(dsn, lrecl)
+}
+
+// Read returns the records of a cataloged dataset.
+func (s *Store) Read(dsn string) ([][]byte, error) {
+	lrecl, ok := s.LRECL(dsn)
+	if !ok {
+		return nil, fmt.Errorf("%s: not cataloged", dsn)
+	}
+	data, err := os.ReadFile(s.Path(dsn))
+	if err != nil {
+		return nil, err
+	}
+	return slices.Collect(slices.Chunk(data, lrecl)), nil
+}
+
 // Load creates a dataset from text, one record per line. Every line must
 // have the same length, which becomes the record length.
 func (s *Store) Load(dsn string, r io.Reader) error {
