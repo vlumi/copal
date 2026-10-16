@@ -20,7 +20,8 @@
       *                                                                *
       * MODIFICATION HISTORY                                           *
       * DATE       BY  CHANGE                                          *
-      * 2004-03-15 TL  CR-0390 ORIGINAL VERSION.                       *
+      * 1494-11-10 LP  EVERY DEBIT HAS ITS CREDIT: THE SUMMA, VENICE.  *
+      * 2004-03-15 TL  CR-0390 IN COBOL.                               *
       *================================================================*
        IDENTIFICATION DIVISION.
        PROGRAM-ID. GLSUM.

@@ -7,7 +7,9 @@
       *                                                                *
       * MODIFICATION HISTORY                                           *
       * DATE       BY  CHANGE                                          *
-      * 2001-09-03 TL  CR-0298 ORIGINAL VERSION.                       *
+      * -1754      HAM ORIGINAL VERSION, ON CLAY, IN BABYLON: AT MOST  *
+      *                20% A YEAR ON SILVER, 33 1/3% ON GRAIN.         *
+      * 2001-09-03 TL  CR-0298 IN COBOL, WITH TIERS. GRAIN DROPPED.    *
       *================================================================*
        01  RATE-RECORD.
            05  RT-ACCT-TYPE            PIC X.

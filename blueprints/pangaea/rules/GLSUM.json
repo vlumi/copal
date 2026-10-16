@@ -3,7 +3,7 @@
   "tables": [
     {
       "paragraph": "0000-MAIN",
-      "source": "pangaea/programs/GLSUM.cbl:160",
+      "source": "pangaea/programs/GLSUM.cbl:161",
       "conditions": [
         "WS-CLOSED-MONTH-NUMBER = 0",
         "WS-TRANSIT-NET = 0"
@@ -79,7 +79,7 @@
     },
     {
       "paragraph": "1000-INITIALIZE",
-      "source": "pangaea/programs/GLSUM.cbl:177",
+      "source": "pangaea/programs/GLSUM.cbl:178",
       "conditions": [
         "WS-FILE-STATUSES = ALL '0'",
         "READ ACCR-IN AT END",
@@ -181,7 +181,7 @@
     },
     {
       "paragraph": "2000-POST-MONTH",
-      "source": "pangaea/programs/GLSUM.cbl:204",
+      "source": "pangaea/programs/GLSUM.cbl:205",
       "conditions": [
         "WS-AUDIT-STATUS = '10'"
       ],
@@ -217,7 +217,7 @@
     {
       "paragraph": "2000-POST-MONTH",
       "loop": "PERFORM UNTIL WS-AUDIT-STATUS NOT = '00'",
-      "source": "pangaea/programs/GLSUM.cbl:206",
+      "source": "pangaea/programs/GLSUM.cbl:207",
       "conditions": [
         "WS-POSTING-MONTH = WS-CLOSED-MONTH OR (WS-POSTING-MONTH = WS-NEXT-MONTH AND WS-MONTH-END-CODE)"
       ],
@@ -253,7 +253,7 @@
     },
     {
       "paragraph": "2100-POST-TO-LEDGER",
-      "source": "pangaea/programs/GLSUM.cbl:223",
+      "source": "pangaea/programs/GLSUM.cbl:224",
       "conditions": [
         "GS-CODE(GS-CX) = AU-TRAN-CODE",
         "AU-AMOUNT \u003c 0"
@@ -368,7 +368,7 @@
     },
     {
       "paragraph": "2200-FIND-ACCOUNT",
-      "source": "pangaea/programs/GLSUM.cbl:250",
+      "source": "pangaea/programs/GLSUM.cbl:251",
       "conditions": [
         "WS-LE-ACCOUNT(WS-LX) = WS-WANTED-ACCOUNT"
       ],
@@ -405,7 +405,7 @@
     },
     {
       "paragraph": "3000-WRITE-LEDGER",
-      "source": "pangaea/programs/GLSUM.cbl:262",
+      "source": "pangaea/programs/GLSUM.cbl:263",
       "conditions": [
         "WS-DEBIT-TOTAL = WS-CREDIT-TOTAL"
       ],
@@ -438,7 +438,7 @@
     {
       "paragraph": "3000-WRITE-LEDGER",
       "loop": "PERFORM VARYING WS-LX FROM 1 BY 1 UNTIL WS-LX \u003e WS-LEDGER-COUNT",
-      "source": "pangaea/programs/GLSUM.cbl:263",
+      "source": "pangaea/programs/GLSUM.cbl:264",
       "conditions": [
         "WS-LE-ACCOUNT(WS-LX) = WS-DEPOSITS-ACCOUNT",
         "WS-LE-ACCOUNT(WS-LX) = WS-TRANSIT-ACCOUNT"
@@ -518,7 +518,7 @@
     },
     {
       "paragraph": "8000-WRITE-REPORT",
-      "source": "pangaea/programs/GLSUM.cbl:290",
+      "source": "pangaea/programs/GLSUM.cbl:291",
       "conditions": [
         "WS-CLOSED-MONTH-NUMBER = 0",
         "WS-TRANSIT-NET = 0"

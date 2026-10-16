@@ -20,7 +20,8 @@
       *                                                                *
       * MODIFICATION HISTORY                                           *
       * DATE       BY  CHANGE                                          *
-      * 2001-09-03 TL  CR-0298 ORIGINAL VERSION.                       *
+      * 1202       FIB INTEREST BY THE DAY, IN THE LIBER ABACI, PISA.  *
+      * 2001-09-03 TL  CR-0298 IN COBOL.                               *
       * 2002-02-11 TL  CR-0311 ACCOUNTS OPENED SINCE THE LAST RUN.     *
       *================================================================*
        IDENTIFICATION DIVISION.
