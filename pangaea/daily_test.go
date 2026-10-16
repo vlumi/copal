@@ -15,20 +15,34 @@ import (
 
 var update = flag.Bool("update", false, "rewrite the golden files")
 
-// TestDaily runs the daily batch on the fixture in testdata/daily/input and
-// compares every dataset it creates, and its job log and reports, with the
-// golden files in testdata/daily/golden. Run with -update to rewrite them.
+// TestDaily runs the daily batch on each fixture in testdata, whose input
+// directory holds the datasets to start from, and compares every dataset the
+// batch creates, and its job log and reports, with the fixture's golden
+// directory. Run with -update to rewrite the golden files.
 func TestDaily(t *testing.T) {
-	dir := t.TempDir()
-	programs := filepath.Join(dir, "programs")
+	programs := t.TempDir()
 	if _, err := compile.Programs("programs", "copybooks", programs); err != nil {
 		t.Fatal(err)
 	}
+	fixtures, err := filepath.Glob("testdata/*/input")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, input := range fixtures {
+		fixture := filepath.Dir(input)
+		t.Run(filepath.Base(fixture), func(t *testing.T) {
+			runDaily(t, programs, fixture)
+		})
+	}
+}
+
+func runDaily(t *testing.T, programs, fixture string) {
+	dir := t.TempDir()
 	store, err := dataset.Open(filepath.Join(dir, "datasets"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	inputs, err := filepath.Glob("testdata/daily/input/*.txt")
+	inputs, err := filepath.Glob(filepath.Join(fixture, "input", "*.txt"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -54,8 +68,8 @@ func TestDaily(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	compareWithGolden(t, created, "testdata/daily/golden/datasets")
-	compareWithGolden(t, sysout, "testdata/daily/golden/sysout")
+	compareWithGolden(t, created, filepath.Join(fixture, "golden", "datasets"))
+	compareWithGolden(t, sysout, filepath.Join(fixture, "golden", "sysout"))
 }
 
 func parseJob(t *testing.T, path string) *jcl.Job {
