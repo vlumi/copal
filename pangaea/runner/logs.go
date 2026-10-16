@@ -66,13 +66,15 @@ func ReadJobLog(dir string) (string, []Result, error) {
 
 // Allocation is a dataset a step's DD statement was bound to, as the
 // allocation messages give it, and the records it held when the step
-// ended; a concatenation has one for each of its datasets. A DD bound to
-// the job's output or to nothing has no dataset.
+// ended; a concatenation has one for each of its datasets. An indexed
+// dataset's records are not counted. A DD bound to the job's output or to
+// nothing has no dataset.
 type Allocation struct {
 	Step, DD  string
 	Dataset   string
 	Records   int
 	Cataloged bool
+	Indexed   bool
 	Sysout    bool
 	Dummy     bool
 }
@@ -107,7 +109,7 @@ func ReadMessages(dir string) ([]Allocation, error) {
 
 // parseAllocation reads a DD's line of the messages: its name, blank for
 // the next dataset of a concatenation, then SYSOUT, DUMMY, or a dataset
-// with its records or NOT CATALOGED.
+// with its records, INDEXED or NOT CATALOGED.
 func parseAllocation(line, step, previous string) (Allocation, error) {
 	if step == "" || len(line) < 11 {
 		return Allocation{}, fmt.Errorf("%q is not a DD of a step", line)
@@ -125,6 +127,8 @@ func parseAllocation(line, step, previous string) (Allocation, error) {
 		a.Dummy = true
 	case len(fields) == 3 && fields[1] == "NOT" && fields[2] == "CATALOGED":
 		a.Dataset = fields[0]
+	case len(fields) == 2 && fields[1] == "INDEXED":
+		a.Dataset, a.Cataloged, a.Indexed = fields[0], true, true
 	case len(fields) == 3 && fields[2] == "RECORDS":
 		n, err := strconv.Atoi(fields[1])
 		if err != nil {

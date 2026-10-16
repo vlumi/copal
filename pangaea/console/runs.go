@@ -71,9 +71,10 @@ func (l *Ledger) jobRun(dir string) (JobRun, error) {
 	if err != nil {
 		return JobRun{}, err
 	}
-	records := map[[2]string]int{}
+	records, indexed := map[[2]string]int{}, map[[2]string]bool{}
 	for _, a := range allocations {
 		records[[2]string{a.Step, a.DD}] += a.Records
+		indexed[[2]string{a.Step, a.DD}] = a.Indexed
 	}
 	outcomes := map[string]string{}
 	for _, s := range run.Steps {
@@ -86,6 +87,8 @@ func (l *Ledger) jobRun(dir string) (JobRun, error) {
 			switch {
 			case !ok:
 				return ""
+			case indexed[[2]string{s.Name, dd.Name}]:
+				return "indexed"
 			case n == 1:
 				return "1 record"
 			}

@@ -240,3 +240,24 @@ func TestRunConcatenatesGenerations(t *testing.T) {
 		t.Error("concatenated datasets of different record lengths")
 	}
 }
+
+// An indexed dataset is cataloged as such and is read only on its own.
+func TestRunIndexed(t *testing.T) {
+	r := newRunner(t, map[string]string{
+		"LOAD": `printf AB > "$DD_OUT"`,
+		"READ": `exit 0`,
+	})
+	if _, err := r.Run(parse(t, "//J JOB\n//S EXEC PGM=LOAD\n//OUT DD DSN=K(+1),DISP=NEW,RECORG=KS,LRECL=2\n")); err != nil {
+		t.Fatal(err)
+	}
+	if !r.Datasets.Indexed("K.G0001V00") {
+		t.Error("K.G0001V00 not cataloged as indexed")
+	}
+	if err := r.Datasets.Load("PLAIN", strings.NewReader("CD\n")); err != nil {
+		t.Fatal(err)
+	}
+	concatenated := parse(t, "//J JOB\n//S EXEC PGM=READ\n//IN DD DSN=PLAIN,DISP=SHR\n// DD DSN=K(0),DISP=SHR\n")
+	if _, err := r.Run(concatenated); err == nil {
+		t.Error("concatenated an indexed dataset")
+	}
+}
