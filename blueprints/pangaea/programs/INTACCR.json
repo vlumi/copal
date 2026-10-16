@@ -1292,6 +1292,14 @@
           "target": "9000-CLOSE-FILES",
           "source": "pangaea/programs/INTACCR.cbl:164"
         }
+      ],
+      "reads": [
+        "WS-MASTER-END-SW",
+        "WS-ACCRUAL-KEY"
+      ],
+      "writes": [
+        "WS-ABORT-MESSAGE",
+        "RETURN-CODE"
       ]
     },
     {
@@ -1318,6 +1326,18 @@
       ],
       "performedBy": [
         "0000-MAIN"
+      ],
+      "reads": [
+        "WS-FILE-STATUSES",
+        "BC-BUSINESS-DATE",
+        "WS-BUSINESS-DATE"
+      ],
+      "writes": [
+        "RETURN-CODE",
+        "BANK-CONTROL-RECORD",
+        "WS-ABORT-MESSAGE",
+        "WS-BUSINESS-DATE",
+        "WS-TODAY"
       ]
     },
     {
@@ -1336,6 +1356,23 @@
       ],
       "performedBy": [
         "1000-INITIALIZE"
+      ],
+      "reads": [
+        "WS-RATE-STATUS",
+        "WS-RATE-COUNT",
+        "RT-ACCT-TYPE",
+        "RT-KIND",
+        "RT-FLOOR",
+        "RT-ANNUAL-RATE"
+      ],
+      "writes": [
+        "RATE-RECORD",
+        "WS-ABORT-MESSAGE",
+        "WS-RATE-COUNT",
+        "WS-RT-ACCT-TYPE",
+        "WS-RT-KIND",
+        "WS-RT-FLOOR",
+        "WS-RT-ANNUAL-RATE"
       ]
     },
     {
@@ -1345,6 +1382,10 @@
       "performedBy": [
         "1000-INITIALIZE",
         "2000-ACCRUE-ACCOUNT"
+      ],
+      "writes": [
+        "ACCT-MASTER-RECORD",
+        "WS-MASTER-END-SW"
       ]
     },
     {
@@ -1354,6 +1395,13 @@
       "performedBy": [
         "1000-INITIALIZE",
         "1400-TAKE-ACCRUAL"
+      ],
+      "reads": [
+        "AI-ACCT-NO"
+      ],
+      "writes": [
+        "ACCR-IN-RECORD",
+        "WS-ACCRUAL-KEY"
       ]
     },
     {
@@ -1372,6 +1420,21 @@
       ],
       "performedBy": [
         "2000-ACCRUE-ACCOUNT"
+      ],
+      "reads": [
+        "WS-ACCRUAL-KEY",
+        "AM-ACCT-NO",
+        "ACCR-IN-RECORD",
+        "WS-BUSINESS-DATE",
+        "WS-STARTED-COUNT"
+      ],
+      "writes": [
+        "ACCRUAL-RECORD",
+        "AC-ACCT-NO",
+        "AC-THROUGH-DATE",
+        "AC-ACCRUED",
+        "WS-STARTED-COUNT",
+        "WS-ABORT-MESSAGE"
       ]
     },
     {
@@ -1410,6 +1473,24 @@
       ],
       "performedBy": [
         "0000-MAIN"
+      ],
+      "reads": [
+        "AC-THROUGH-DATE",
+        "WS-MONTH-START-DAY",
+        "WS-TODAY",
+        "WS-FROM-DAY",
+        "WS-BUSINESS-DATE",
+        "ACCRUAL-RECORD",
+        "WS-ACCOUNT-COUNT"
+      ],
+      "writes": [
+        "AC-DUE",
+        "AC-DUE-MONTH",
+        "WS-FROM-DAY",
+        "WS-DAYS",
+        "AC-THROUGH-DATE",
+        "ACCR-OUT-RECORD",
+        "WS-ACCOUNT-COUNT"
       ]
     },
     {
@@ -1432,6 +1513,22 @@
       ],
       "performedBy": [
         "2000-ACCRUE-ACCOUNT"
+      ],
+      "reads": [
+        "WS-RX",
+        "WS-RATE-COUNT",
+        "WS-RT-ACCT-TYPE",
+        "AM-ACCT-TYPE",
+        "AM-BALANCE",
+        "WS-RT-KIND",
+        "WS-RT-FLOOR",
+        "WS-RATE-FOUND-SW",
+        "WS-BEST-FLOOR"
+      ],
+      "writes": [
+        "WS-RATE-FOUND-SW",
+        "WS-RX",
+        "WS-ABORT-MESSAGE"
       ]
     },
     {
@@ -1440,6 +1537,16 @@
       "source": "pangaea/programs/INTACCR.cbl:291",
       "performedBy": [
         "2100-FIND-RATE"
+      ],
+      "reads": [
+        "WS-RT-ANNUAL-RATE",
+        "WS-RX",
+        "WS-RT-FLOOR"
+      ],
+      "writes": [
+        "WS-RATE-FOUND-SW",
+        "WS-ACCOUNT-RATE",
+        "WS-BEST-FLOOR"
       ]
     },
     {
@@ -1448,6 +1555,20 @@
       "source": "pangaea/programs/INTACCR.cbl:297",
       "performedBy": [
         "2000-ACCRUE-ACCOUNT"
+      ],
+      "reads": [
+        "AC-THROUGH-DATE",
+        "WS-TH-YEAR",
+        "WS-TH-MONTH",
+        "WS-MS-YEAR",
+        "WS-MONTH-START-DATE"
+      ],
+      "writes": [
+        "WS-THROUGH-DATE",
+        "WS-MS-YEAR",
+        "WS-MS-MONTH",
+        "WS-MS-DAY",
+        "WS-MONTH-START-DAY"
       ]
     },
     {
@@ -1456,6 +1577,23 @@
       "source": "pangaea/programs/INTACCR.cbl:311",
       "performedBy": [
         "2000-ACCRUE-ACCOUNT"
+      ],
+      "reads": [
+        "AM-BALANCE",
+        "WS-ACCOUNT-RATE",
+        "WS-DAYS",
+        "WS-INTEREST-PRODUCT",
+        "WS-INCREMENT",
+        "AC-ACCRUED",
+        "WS-DEBIT-ACCRUED",
+        "WS-CREDIT-ACCRUED"
+      ],
+      "writes": [
+        "WS-INTEREST-PRODUCT",
+        "WS-INCREMENT",
+        "AC-ACCRUED",
+        "WS-DEBIT-ACCRUED",
+        "WS-CREDIT-ACCRUED"
       ]
     },
     {
@@ -1464,6 +1602,26 @@
       "source": "pangaea/programs/INTACCR.cbl:326",
       "performedBy": [
         "2000-ACCRUE-ACCOUNT"
+      ],
+      "reads": [
+        "AC-ACCRUED",
+        "AC-DUE",
+        "WS-TH-YEAR",
+        "WS-TH-MONTH",
+        "WS-DUE-MONTH",
+        "AC-DUE-MONTH",
+        "WS-DEBIT-DUE",
+        "WS-CREDIT-DUE"
+      ],
+      "writes": [
+        "AC-DUE",
+        "AC-ACCRUED",
+        "WS-DM-YEAR",
+        "WS-DM-MONTH",
+        "AC-DUE-MONTH",
+        "WS-CLOSED-MONTH",
+        "WS-DEBIT-DUE",
+        "WS-CREDIT-DUE"
       ]
     },
     {
@@ -1472,6 +1630,26 @@
       "source": "pangaea/programs/INTACCR.cbl:340",
       "performedBy": [
         "0000-MAIN"
+      ],
+      "reads": [
+        "WS-BUSINESS-DATE",
+        "WS-RATE-COUNT",
+        "WS-REPORT-COUNT-LINE",
+        "WS-ACCOUNT-COUNT",
+        "WS-STARTED-COUNT",
+        "WS-CREDIT-ACCRUED",
+        "WS-REPORT-AMOUNT-LINE",
+        "WS-DEBIT-ACCRUED",
+        "WS-CLOSED-MONTH",
+        "WS-CREDIT-DUE",
+        "WS-DEBIT-DUE"
+      ],
+      "writes": [
+        "REPORT-LINE",
+        "WS-RC-LABEL",
+        "WS-RC-VALUE",
+        "WS-RA-LABEL",
+        "WS-RA-VALUE"
       ]
     },
     {
@@ -1499,7 +1677,544 @@
         "1100-LOAD-RATES",
         "1400-TAKE-ACCRUAL",
         "2100-FIND-RATE"
+      ],
+      "reads": [
+        "WS-ABORT-MESSAGE"
+      ],
+      "writes": [
+        "RETURN-CODE"
       ]
+    }
+  ],
+  "lineage": [
+    {
+      "from": "CONTROL-FILE",
+      "to": "BANK-CONTROL-RECORD",
+      "fromFile": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "READ",
+      "source": "pangaea/programs/INTACCR.cbl:177"
+    },
+    {
+      "from": "BC-BUSINESS-DATE",
+      "to": "WS-BUSINESS-DATE",
+      "paragraph": "1000-INITIALIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:182"
+    },
+    {
+      "from": "WS-BUSINESS-DATE",
+      "to": "WS-TODAY",
+      "paragraph": "1000-INITIALIZE",
+      "verb": "COMPUTE",
+      "source": "pangaea/programs/INTACCR.cbl:183"
+    },
+    {
+      "from": "RATE-FILE",
+      "to": "RATE-RECORD",
+      "fromFile": true,
+      "paragraph": "1100-LOAD-RATES",
+      "verb": "READ",
+      "source": "pangaea/programs/INTACCR.cbl:190"
+    },
+    {
+      "from": "RT-ACCT-TYPE",
+      "to": "WS-RT-ACCT-TYPE",
+      "paragraph": "1100-LOAD-RATES",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:197"
+    },
+    {
+      "from": "RT-KIND",
+      "to": "WS-RT-KIND",
+      "paragraph": "1100-LOAD-RATES",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:198"
+    },
+    {
+      "from": "RT-FLOOR",
+      "to": "WS-RT-FLOOR",
+      "paragraph": "1100-LOAD-RATES",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:199"
+    },
+    {
+      "from": "RT-ANNUAL-RATE",
+      "to": "WS-RT-ANNUAL-RATE",
+      "paragraph": "1100-LOAD-RATES",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:200"
+    },
+    {
+      "from": "RATE-FILE",
+      "to": "RATE-RECORD",
+      "fromFile": true,
+      "paragraph": "1100-LOAD-RATES",
+      "verb": "READ",
+      "source": "pangaea/programs/INTACCR.cbl:201"
+    },
+    {
+      "from": "ACCT-IN",
+      "to": "ACCT-MASTER-RECORD",
+      "fromFile": true,
+      "paragraph": "1200-READ-MASTER",
+      "verb": "READ",
+      "source": "pangaea/programs/INTACCR.cbl:210"
+    },
+    {
+      "from": "ACCR-IN",
+      "to": "ACCR-IN-RECORD",
+      "fromFile": true,
+      "paragraph": "1300-READ-ACCRUAL",
+      "verb": "READ",
+      "source": "pangaea/programs/INTACCR.cbl:217"
+    },
+    {
+      "from": "AI-ACCT-NO",
+      "to": "WS-ACCRUAL-KEY",
+      "paragraph": "1300-READ-ACCRUAL",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:221"
+    },
+    {
+      "from": "ACCR-IN-RECORD",
+      "to": "ACCRUAL-RECORD",
+      "paragraph": "1400-TAKE-ACCRUAL",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:229"
+    },
+    {
+      "from": "AM-ACCT-NO",
+      "to": "AC-ACCT-NO",
+      "paragraph": "1400-TAKE-ACCRUAL",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:233"
+    },
+    {
+      "from": "WS-BUSINESS-DATE",
+      "to": "AC-THROUGH-DATE",
+      "paragraph": "1400-TAKE-ACCRUAL",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:234"
+    },
+    {
+      "from": "AC-THROUGH-DATE",
+      "to": "WS-FROM-DAY",
+      "paragraph": "2000-ACCRUE-ACCOUNT",
+      "verb": "COMPUTE",
+      "source": "pangaea/programs/INTACCR.cbl:248"
+    },
+    {
+      "from": "WS-MONTH-START-DAY",
+      "to": "WS-DAYS",
+      "paragraph": "2000-ACCRUE-ACCOUNT",
+      "verb": "COMPUTE",
+      "source": "pangaea/programs/INTACCR.cbl:252"
+    },
+    {
+      "from": "WS-FROM-DAY",
+      "to": "WS-DAYS",
+      "paragraph": "2000-ACCRUE-ACCOUNT",
+      "verb": "COMPUTE",
+      "source": "pangaea/programs/INTACCR.cbl:252"
+    },
+    {
+      "from": "WS-MONTH-START-DAY",
+      "to": "WS-FROM-DAY",
+      "paragraph": "2000-ACCRUE-ACCOUNT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:255"
+    },
+    {
+      "from": "WS-TODAY",
+      "to": "WS-DAYS",
+      "paragraph": "2000-ACCRUE-ACCOUNT",
+      "verb": "COMPUTE",
+      "source": "pangaea/programs/INTACCR.cbl:257"
+    },
+    {
+      "from": "WS-FROM-DAY",
+      "to": "WS-DAYS",
+      "paragraph": "2000-ACCRUE-ACCOUNT",
+      "verb": "COMPUTE",
+      "source": "pangaea/programs/INTACCR.cbl:257"
+    },
+    {
+      "from": "WS-BUSINESS-DATE",
+      "to": "AC-THROUGH-DATE",
+      "paragraph": "2000-ACCRUE-ACCOUNT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:259"
+    },
+    {
+      "from": "ACCRUAL-RECORD",
+      "to": "ACCR-OUT-RECORD",
+      "paragraph": "2000-ACCRUE-ACCOUNT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/INTACCR.cbl:260"
+    },
+    {
+      "from": "ACCR-OUT-RECORD",
+      "to": "ACCR-OUT",
+      "toFile": true,
+      "paragraph": "2000-ACCRUE-ACCOUNT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/INTACCR.cbl:260"
+    },
+    {
+      "from": "WS-RT-ANNUAL-RATE",
+      "to": "WS-ACCOUNT-RATE",
+      "paragraph": "2110-TAKE-RATE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:293"
+    },
+    {
+      "from": "WS-RT-FLOOR",
+      "to": "WS-BEST-FLOOR",
+      "paragraph": "2110-TAKE-RATE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:294"
+    },
+    {
+      "from": "AC-THROUGH-DATE",
+      "to": "WS-THROUGH-DATE",
+      "paragraph": "2200-FIND-MONTH-START",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:298"
+    },
+    {
+      "from": "WS-TH-YEAR",
+      "to": "WS-MS-YEAR",
+      "paragraph": "2200-FIND-MONTH-START",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:299"
+    },
+    {
+      "from": "WS-TH-MONTH",
+      "to": "WS-MS-MONTH",
+      "paragraph": "2200-FIND-MONTH-START",
+      "verb": "COMPUTE",
+      "source": "pangaea/programs/INTACCR.cbl:304"
+    },
+    {
+      "from": "WS-MONTH-START-DATE",
+      "to": "WS-MONTH-START-DAY",
+      "paragraph": "2200-FIND-MONTH-START",
+      "verb": "COMPUTE",
+      "source": "pangaea/programs/INTACCR.cbl:307"
+    },
+    {
+      "from": "AM-BALANCE",
+      "to": "WS-INTEREST-PRODUCT",
+      "paragraph": "2300-ACCRUE-DAYS",
+      "verb": "MULTIPLY",
+      "source": "pangaea/programs/INTACCR.cbl:312"
+    },
+    {
+      "from": "WS-ACCOUNT-RATE",
+      "to": "WS-INTEREST-PRODUCT",
+      "paragraph": "2300-ACCRUE-DAYS",
+      "verb": "MULTIPLY",
+      "source": "pangaea/programs/INTACCR.cbl:312"
+    },
+    {
+      "from": "WS-DAYS",
+      "to": "WS-INTEREST-PRODUCT",
+      "paragraph": "2300-ACCRUE-DAYS",
+      "verb": "MULTIPLY",
+      "source": "pangaea/programs/INTACCR.cbl:314"
+    },
+    {
+      "from": "WS-INTEREST-PRODUCT",
+      "to": "WS-INCREMENT",
+      "paragraph": "2300-ACCRUE-DAYS",
+      "verb": "DIVIDE",
+      "source": "pangaea/programs/INTACCR.cbl:315"
+    },
+    {
+      "from": "WS-INCREMENT",
+      "to": "AC-ACCRUED",
+      "paragraph": "2300-ACCRUE-DAYS",
+      "verb": "ADD",
+      "source": "pangaea/programs/INTACCR.cbl:317"
+    },
+    {
+      "from": "WS-INCREMENT",
+      "to": "WS-DEBIT-ACCRUED",
+      "paragraph": "2300-ACCRUE-DAYS",
+      "verb": "ADD",
+      "source": "pangaea/programs/INTACCR.cbl:319"
+    },
+    {
+      "from": "WS-INCREMENT",
+      "to": "WS-CREDIT-ACCRUED",
+      "paragraph": "2300-ACCRUE-DAYS",
+      "verb": "ADD",
+      "source": "pangaea/programs/INTACCR.cbl:321"
+    },
+    {
+      "from": "AC-ACCRUED",
+      "to": "AC-DUE",
+      "paragraph": "2400-CLOSE-MONTH",
+      "verb": "COMPUTE",
+      "source": "pangaea/programs/INTACCR.cbl:327"
+    },
+    {
+      "from": "AC-DUE",
+      "to": "AC-ACCRUED",
+      "paragraph": "2400-CLOSE-MONTH",
+      "verb": "SUBTRACT",
+      "source": "pangaea/programs/INTACCR.cbl:328"
+    },
+    {
+      "from": "WS-TH-YEAR",
+      "to": "WS-DM-YEAR",
+      "paragraph": "2400-CLOSE-MONTH",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:329"
+    },
+    {
+      "from": "WS-TH-MONTH",
+      "to": "WS-DM-MONTH",
+      "paragraph": "2400-CLOSE-MONTH",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:330"
+    },
+    {
+      "from": "WS-DUE-MONTH",
+      "to": "AC-DUE-MONTH",
+      "paragraph": "2400-CLOSE-MONTH",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:331"
+    },
+    {
+      "from": "AC-DUE-MONTH",
+      "to": "WS-CLOSED-MONTH",
+      "paragraph": "2400-CLOSE-MONTH",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:332"
+    },
+    {
+      "from": "AC-DUE",
+      "to": "WS-DEBIT-DUE",
+      "paragraph": "2400-CLOSE-MONTH",
+      "verb": "ADD",
+      "source": "pangaea/programs/INTACCR.cbl:334"
+    },
+    {
+      "from": "AC-DUE",
+      "to": "WS-CREDIT-DUE",
+      "paragraph": "2400-CLOSE-MONTH",
+      "verb": "ADD",
+      "source": "pangaea/programs/INTACCR.cbl:336"
+    },
+    {
+      "from": "WS-BUSINESS-DATE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "STRING",
+      "source": "pangaea/programs/INTACCR.cbl:342"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/INTACCR.cbl:345"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/INTACCR.cbl:347"
+    },
+    {
+      "from": "WS-RATE-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:349"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/INTACCR.cbl:350"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/INTACCR.cbl:350"
+    },
+    {
+      "from": "WS-ACCOUNT-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:352"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/INTACCR.cbl:353"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/INTACCR.cbl:353"
+    },
+    {
+      "from": "WS-STARTED-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:355"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/INTACCR.cbl:356"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/INTACCR.cbl:356"
+    },
+    {
+      "from": "WS-CREDIT-ACCRUED",
+      "to": "WS-RA-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:358"
+    },
+    {
+      "from": "WS-REPORT-AMOUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/INTACCR.cbl:359"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/INTACCR.cbl:359"
+    },
+    {
+      "from": "WS-DEBIT-ACCRUED",
+      "to": "WS-RA-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:361"
+    },
+    {
+      "from": "WS-REPORT-AMOUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/INTACCR.cbl:362"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/INTACCR.cbl:362"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/INTACCR.cbl:364"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/INTACCR.cbl:367"
+    },
+    {
+      "from": "WS-CLOSED-MONTH",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "STRING",
+      "source": "pangaea/programs/INTACCR.cbl:370"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/INTACCR.cbl:372"
+    },
+    {
+      "from": "WS-CREDIT-DUE",
+      "to": "WS-RA-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:374"
+    },
+    {
+      "from": "WS-REPORT-AMOUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/INTACCR.cbl:375"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/INTACCR.cbl:375"
+    },
+    {
+      "from": "WS-DEBIT-DUE",
+      "to": "WS-RA-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/INTACCR.cbl:377"
+    },
+    {
+      "from": "WS-REPORT-AMOUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/INTACCR.cbl:378"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/INTACCR.cbl:378"
     }
   ]
 }

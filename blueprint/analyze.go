@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/vlumi/copal/cobol"
+	"github.com/vlumi/copal/dataflow"
 	"github.com/vlumi/copal/fileio"
 	"github.com/vlumi/copal/layout"
 	"github.com/vlumi/copal/structure"
@@ -32,6 +33,19 @@ type Program struct {
 	Files          []File           `json:"files"`
 	Records        []Record         `json:"records"`
 	Paragraphs     []Paragraph      `json:"paragraphs"`
+	Lineage        []Lineage        `json:"lineage,omitempty"`
+}
+
+// Lineage is one statement moving a value from one data item, or a file,
+// into another, or into a file.
+type Lineage struct {
+	From      string `json:"from"`
+	To        string `json:"to"`
+	FromFile  bool   `json:"fromFile,omitempty"`
+	ToFile    bool   `json:"toFile,omitempty"`
+	Paragraph string `json:"paragraph"`
+	Verb      string `json:"verb"`
+	Source    string `json:"source"`
 }
 
 // Identification is an identification paragraph such as AUTHOR.
@@ -106,6 +120,8 @@ type Paragraph struct {
 	FallsInto   string    `json:"fallsInto,omitempty"`
 	PerformedBy []string  `json:"performedBy,omitempty"`
 	ReachedBy   []string  `json:"reachedBy,omitempty"`
+	Reads       []string  `json:"reads,omitempty"`
+	Writes      []string  `json:"writes,omitempty"`
 }
 
 // GoTo is a GO TO statement's target.
@@ -218,8 +234,18 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 	if err != nil {
 		return Program{}, err
 	}
-	for _, para := range paragraphs {
-		program.Paragraphs = append(program.Paragraphs, newParagraph(para))
+	flow, err := dataflow.Analyze(p)
+	if err != nil {
+		return Program{}, err
+	}
+	for i, para := range paragraphs {
+		bp := newParagraph(para)
+		bp.Reads, bp.Writes = flow.Paragraphs[i].Reads, flow.Paragraphs[i].Writes
+		program.Paragraphs = append(program.Paragraphs, bp)
+	}
+	for _, e := range flow.Lineage {
+		program.Lineage = append(program.Lineage, Lineage{From: e.From, To: e.To, FromFile: e.FromFile, ToFile: e.ToFile,
+			Paragraph: e.Paragraph, Verb: e.Verb, Source: e.Pos.String()})
 	}
 	return program, nil
 }

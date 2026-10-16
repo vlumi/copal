@@ -132,6 +132,8 @@ func programMarkdown(dir string, p Program) string {
 			strings.Join(para.PerformedBy, ", "), strings.Join(para.ReachedBy, ", ")))
 	}
 
+	writeDataFlow(&b, dir, p)
+
 	b.WriteString("\n## Records\n")
 	for _, r := range p.Records {
 		fmt.Fprintf(&b, "\n### %s\n\n", r.Name)
@@ -258,6 +260,32 @@ func performTargets(performs []Perform) []string {
 		}
 	}
 	return targets
+}
+
+// writeDataFlow writes what each paragraph reads and writes, and the
+// lineage of each data item: where its values come from, by item.
+func writeDataFlow(b *strings.Builder, dir string, p Program) {
+	b.WriteString("\n## Data flow\n\n| Paragraph | Reads | Writes |\n| --- | --- | --- |\n")
+	for _, para := range p.Paragraphs {
+		b.WriteString(row(para.Name, strings.Join(para.Reads, ", "), strings.Join(para.Writes, ", ")))
+	}
+	if len(p.Lineage) == 0 {
+		return
+	}
+	b.WriteString("\n## Lineage\n\nWhere each data item's values come from, and which records go to which files.\n\n" +
+		"| Into | From | Statement | Paragraph | Source |\n| --- | --- | --- | --- | --- |\n")
+	lineage := slices.Clone(p.Lineage)
+	slices.SortStableFunc(lineage, func(x, y Lineage) int { return strings.Compare(x.To, y.To) })
+	for _, e := range lineage {
+		from, to := e.From, e.To
+		if e.FromFile {
+			from = "file " + from
+		}
+		if e.ToFile {
+			to = "file " + to
+		}
+		b.WriteString(row(to, from, e.Verb, e.Paragraph, sourceLink(dir, e.Source, true)))
+	}
 }
 
 // goesTo lists where a paragraph goes other than by PERFORM: its GO TO

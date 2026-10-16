@@ -1168,6 +1168,17 @@
           "target": "9000-CLOSE-FILES",
           "source": "pangaea/programs/ACCTMNT.cbl:137"
         }
+      ],
+      "reads": [
+        "WS-MASTER-KEY",
+        "WS-REQUEST-KEY",
+        "WS-BALANCES-OUT",
+        "WS-BALANCES-IN",
+        "WS-REJECT-COUNT"
+      ],
+      "writes": [
+        "WS-ABORT-MESSAGE",
+        "RETURN-CODE"
       ]
     },
     {
@@ -1192,6 +1203,17 @@
       ],
       "performedBy": [
         "0000-MAIN"
+      ],
+      "reads": [
+        "WS-FILE-STATUSES",
+        "BC-BUSINESS-DATE"
+      ],
+      "writes": [
+        "RETURN-CODE",
+        "BANK-CONTROL-RECORD",
+        "WS-ABORT-MESSAGE",
+        "WS-BUSINESS-DATE",
+        "REJECT-RECORD"
       ]
     },
     {
@@ -1214,6 +1236,19 @@
       "performedBy": [
         "1000-INITIALIZE",
         "2000-NEXT-ACCOUNT"
+      ],
+      "reads": [
+        "AI-ACCT-NO",
+        "WS-MASTER-KEY",
+        "WS-PREV-MASTER-KEY",
+        "WS-MASTERS-READ"
+      ],
+      "writes": [
+        "ACCT-IN-RECORD",
+        "WS-MASTER-KEY",
+        "WS-ABORT-MESSAGE",
+        "WS-PREV-MASTER-KEY",
+        "WS-MASTERS-READ"
       ]
     },
     {
@@ -1247,6 +1282,22 @@
       "performedBy": [
         "1000-INITIALIZE",
         "2100-APPLY-REQUESTS"
+      ],
+      "reads": [
+        "MR-ACCT-NO",
+        "MR-REQUEST-ID",
+        "WS-REQUEST-ORDER-KEY",
+        "WS-PREV-REQUEST-ORDER-KEY",
+        "WS-REQUEST-COUNT"
+      ],
+      "writes": [
+        "MAINT-REQUEST",
+        "WS-REQUEST-KEY",
+        "WS-ROK-ACCT-NO",
+        "WS-ROK-REQUEST-ID",
+        "WS-ABORT-MESSAGE",
+        "WS-PREV-REQUEST-ORDER-KEY",
+        "WS-REQUEST-COUNT"
       ]
     },
     {
@@ -1274,6 +1325,20 @@
       "fallsInto": "2100-APPLY-REQUESTS",
       "performedBy": [
         "0000-MAIN"
+      ],
+      "reads": [
+        "WS-MASTER-KEY",
+        "WS-REQUEST-KEY",
+        "WS-ACTIVE-KEY",
+        "ACCT-IN-RECORD",
+        "AM-BALANCE",
+        "WS-BALANCES-IN"
+      ],
+      "writes": [
+        "WS-ACTIVE-KEY",
+        "WS-HELD-SW",
+        "ACCT-MASTER-RECORD",
+        "WS-BALANCES-IN"
       ]
     },
     {
@@ -1308,6 +1373,10 @@
       "reachedBy": [
         "2000-NEXT-ACCOUNT",
         "2100-APPLY-REQUESTS"
+      ],
+      "reads": [
+        "WS-REQUEST-KEY",
+        "WS-ACTIVE-KEY"
       ]
     },
     {
@@ -1351,6 +1420,14 @@
       "performedBy": [
         "0000-MAIN",
         "2100-APPLY-REQUESTS"
+      ],
+      "reads": [
+        "MR-REQUEST-TYPE",
+        "WS-HELD-SW",
+        "AM-STATUS"
+      ],
+      "writes": [
+        "RJ-REASON"
       ]
     },
     {
@@ -1373,6 +1450,32 @@
       ],
       "reachedBy": [
         "2200-APPLY-REQUEST"
+      ],
+      "reads": [
+        "WS-HELD-SW",
+        "MR-ACCT-NO",
+        "MR-CUST-NO",
+        "MR-SHORT-NAME",
+        "MR-ACCT-TYPE",
+        "WS-BUSINESS-DATE",
+        "MR-OVERDRAFT-LIMIT",
+        "AM-ACCT-TYPE",
+        "WS-OPENED-COUNT"
+      ],
+      "writes": [
+        "RJ-REASON",
+        "ACCT-MASTER-RECORD",
+        "AM-ACCT-NO",
+        "AM-CUST-NO",
+        "AM-SHORT-NAME",
+        "AM-ACCT-TYPE",
+        "AM-STATUS",
+        "AM-OPEN-DATE",
+        "AM-LAST-ACTIVITY-DATE",
+        "AM-BALANCE",
+        "AM-OVERDRAFT-LIMIT",
+        "WS-HELD-SW",
+        "WS-OPENED-COUNT"
       ]
     },
     {
@@ -1395,6 +1498,16 @@
       ],
       "reachedBy": [
         "2200-APPLY-REQUEST"
+      ],
+      "reads": [
+        "AM-BALANCE",
+        "WS-CLOSED-COUNT"
+      ],
+      "writes": [
+        "RJ-REASON",
+        "AM-STATUS",
+        "AM-OVERDRAFT-LIMIT",
+        "WS-CLOSED-COUNT"
       ]
     },
     {
@@ -1417,6 +1530,15 @@
       ],
       "reachedBy": [
         "2200-APPLY-REQUEST"
+      ],
+      "reads": [
+        "AM-STATUS",
+        "WS-FROZEN-COUNT"
+      ],
+      "writes": [
+        "RJ-REASON",
+        "AM-STATUS",
+        "WS-FROZEN-COUNT"
       ]
     },
     {
@@ -1439,6 +1561,15 @@
       ],
       "reachedBy": [
         "2200-APPLY-REQUEST"
+      ],
+      "reads": [
+        "AM-STATUS",
+        "WS-UNFROZEN-COUNT"
+      ],
+      "writes": [
+        "RJ-REASON",
+        "AM-STATUS",
+        "WS-UNFROZEN-COUNT"
       ]
     },
     {
@@ -1461,6 +1592,16 @@
       ],
       "reachedBy": [
         "2200-APPLY-REQUEST"
+      ],
+      "reads": [
+        "AM-ACCT-TYPE",
+        "MR-OVERDRAFT-LIMIT",
+        "WS-LIMIT-COUNT"
+      ],
+      "writes": [
+        "RJ-REASON",
+        "AM-OVERDRAFT-LIMIT",
+        "WS-LIMIT-COUNT"
       ]
     },
     {
@@ -1479,6 +1620,17 @@
         "2230-FREEZE",
         "2240-UNFREEZE",
         "2250-LIMIT"
+      ],
+      "reads": [
+        "MAINT-REQUEST",
+        "REJECT-RECORD",
+        "WS-REJECT-COUNT"
+      ],
+      "writes": [
+        "RJ-PROGRAM",
+        "RJ-TRAN",
+        "REJECT-OUT-RECORD",
+        "WS-REJECT-COUNT"
       ]
     },
     {
@@ -1507,6 +1659,18 @@
       ],
       "reachedBy": [
         "2100-APPLY-REQUESTS"
+      ],
+      "reads": [
+        "WS-HELD-SW",
+        "ACCT-MASTER-RECORD",
+        "WS-MASTERS-WRITTEN",
+        "AM-BALANCE",
+        "WS-BALANCES-OUT"
+      ],
+      "writes": [
+        "ACCT-OUT-RECORD",
+        "WS-MASTERS-WRITTEN",
+        "WS-BALANCES-OUT"
       ]
     },
     {
@@ -1525,6 +1689,28 @@
       "source": "pangaea/programs/ACCTMNT.cbl:311",
       "performedBy": [
         "0000-MAIN"
+      ],
+      "reads": [
+        "WS-BUSINESS-DATE",
+        "WS-MASTERS-READ",
+        "WS-REPORT-COUNT-LINE",
+        "WS-MASTERS-WRITTEN",
+        "WS-REQUEST-COUNT",
+        "WS-OPENED-COUNT",
+        "WS-CLOSED-COUNT",
+        "WS-FROZEN-COUNT",
+        "WS-UNFROZEN-COUNT",
+        "WS-LIMIT-COUNT",
+        "WS-REJECT-COUNT",
+        "WS-BALANCES-OUT",
+        "WS-REPORT-AMOUNT-LINE"
+      ],
+      "writes": [
+        "REPORT-LINE",
+        "WS-RC-LABEL",
+        "WS-RC-VALUE",
+        "WS-RA-LABEL",
+        "WS-RA-VALUE"
       ]
     },
     {
@@ -1551,7 +1737,483 @@
         "1000-INITIALIZE",
         "1200-READ-MASTER",
         "1300-READ-REQUEST"
+      ],
+      "reads": [
+        "WS-ABORT-MESSAGE"
+      ],
+      "writes": [
+        "RETURN-CODE"
       ]
+    }
+  ],
+  "lineage": [
+    {
+      "from": "CONTROL-FILE",
+      "to": "BANK-CONTROL-RECORD",
+      "fromFile": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "READ",
+      "source": "pangaea/programs/ACCTMNT.cbl:152"
+    },
+    {
+      "from": "BC-BUSINESS-DATE",
+      "to": "WS-BUSINESS-DATE",
+      "paragraph": "1000-INITIALIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:156"
+    },
+    {
+      "from": "ACCT-IN",
+      "to": "ACCT-IN-RECORD",
+      "fromFile": true,
+      "paragraph": "1200-READ-MASTER",
+      "verb": "READ",
+      "source": "pangaea/programs/ACCTMNT.cbl:163"
+    },
+    {
+      "from": "AI-ACCT-NO",
+      "to": "WS-MASTER-KEY",
+      "paragraph": "1200-READ-MASTER",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:167"
+    },
+    {
+      "from": "WS-MASTER-KEY",
+      "to": "WS-PREV-MASTER-KEY",
+      "paragraph": "1200-READ-MASTER",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:171"
+    },
+    {
+      "from": "MAINT-IN",
+      "to": "MAINT-REQUEST",
+      "fromFile": true,
+      "paragraph": "1300-READ-REQUEST",
+      "verb": "READ",
+      "source": "pangaea/programs/ACCTMNT.cbl:178"
+    },
+    {
+      "from": "MR-ACCT-NO",
+      "to": "WS-REQUEST-KEY",
+      "paragraph": "1300-READ-REQUEST",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:182"
+    },
+    {
+      "from": "MR-ACCT-NO",
+      "to": "WS-ROK-ACCT-NO",
+      "paragraph": "1300-READ-REQUEST",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:182"
+    },
+    {
+      "from": "MR-REQUEST-ID",
+      "to": "WS-ROK-REQUEST-ID",
+      "paragraph": "1300-READ-REQUEST",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:183"
+    },
+    {
+      "from": "WS-REQUEST-ORDER-KEY",
+      "to": "WS-PREV-REQUEST-ORDER-KEY",
+      "paragraph": "1300-READ-REQUEST",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:187"
+    },
+    {
+      "from": "WS-MASTER-KEY",
+      "to": "WS-ACTIVE-KEY",
+      "paragraph": "2000-NEXT-ACCOUNT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:196"
+    },
+    {
+      "from": "WS-REQUEST-KEY",
+      "to": "WS-ACTIVE-KEY",
+      "paragraph": "2000-NEXT-ACCOUNT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:198"
+    },
+    {
+      "from": "ACCT-IN-RECORD",
+      "to": "ACCT-MASTER-RECORD",
+      "paragraph": "2000-NEXT-ACCOUNT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:201"
+    },
+    {
+      "from": "AM-BALANCE",
+      "to": "WS-BALANCES-IN",
+      "paragraph": "2000-NEXT-ACCOUNT",
+      "verb": "ADD",
+      "source": "pangaea/programs/ACCTMNT.cbl:202"
+    },
+    {
+      "from": "MR-ACCT-NO",
+      "to": "AM-ACCT-NO",
+      "paragraph": "2210-OPEN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:241"
+    },
+    {
+      "from": "MR-CUST-NO",
+      "to": "AM-CUST-NO",
+      "paragraph": "2210-OPEN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:242"
+    },
+    {
+      "from": "MR-SHORT-NAME",
+      "to": "AM-SHORT-NAME",
+      "paragraph": "2210-OPEN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:243"
+    },
+    {
+      "from": "MR-ACCT-TYPE",
+      "to": "AM-ACCT-TYPE",
+      "paragraph": "2210-OPEN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:244"
+    },
+    {
+      "from": "WS-BUSINESS-DATE",
+      "to": "AM-OPEN-DATE",
+      "paragraph": "2210-OPEN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:246"
+    },
+    {
+      "from": "WS-BUSINESS-DATE",
+      "to": "AM-LAST-ACTIVITY-DATE",
+      "paragraph": "2210-OPEN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:246"
+    },
+    {
+      "from": "MR-OVERDRAFT-LIMIT",
+      "to": "AM-OVERDRAFT-LIMIT",
+      "paragraph": "2210-OPEN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:248"
+    },
+    {
+      "from": "MR-OVERDRAFT-LIMIT",
+      "to": "AM-OVERDRAFT-LIMIT",
+      "paragraph": "2250-LIMIT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:288"
+    },
+    {
+      "from": "MAINT-REQUEST",
+      "to": "RJ-TRAN",
+      "paragraph": "2290-REJECT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:295"
+    },
+    {
+      "from": "REJECT-RECORD",
+      "to": "REJECT-OUT-RECORD",
+      "paragraph": "2290-REJECT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:296"
+    },
+    {
+      "from": "REJECT-OUT-RECORD",
+      "to": "REJECT-OUT",
+      "toFile": true,
+      "paragraph": "2290-REJECT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:296"
+    },
+    {
+      "from": "ACCT-MASTER-RECORD",
+      "to": "ACCT-OUT-RECORD",
+      "paragraph": "2800-WRITE-HELD",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:304"
+    },
+    {
+      "from": "ACCT-OUT-RECORD",
+      "to": "ACCT-OUT",
+      "toFile": true,
+      "paragraph": "2800-WRITE-HELD",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:304"
+    },
+    {
+      "from": "AM-BALANCE",
+      "to": "WS-BALANCES-OUT",
+      "paragraph": "2800-WRITE-HELD",
+      "verb": "ADD",
+      "source": "pangaea/programs/ACCTMNT.cbl:306"
+    },
+    {
+      "from": "WS-BUSINESS-DATE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "STRING",
+      "source": "pangaea/programs/ACCTMNT.cbl:313"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:316"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:318"
+    },
+    {
+      "from": "WS-MASTERS-READ",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:320"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:321"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:321"
+    },
+    {
+      "from": "WS-MASTERS-WRITTEN",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:323"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:324"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:324"
+    },
+    {
+      "from": "WS-REQUEST-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:326"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:327"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:327"
+    },
+    {
+      "from": "WS-OPENED-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:329"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:330"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:330"
+    },
+    {
+      "from": "WS-CLOSED-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:332"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:333"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:333"
+    },
+    {
+      "from": "WS-FROZEN-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:335"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:336"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:336"
+    },
+    {
+      "from": "WS-UNFROZEN-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:338"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:339"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:339"
+    },
+    {
+      "from": "WS-LIMIT-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:341"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:342"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:342"
+    },
+    {
+      "from": "WS-REJECT-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:344"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:345"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:345"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:347"
+    },
+    {
+      "from": "WS-BALANCES-OUT",
+      "to": "WS-RA-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:349"
+    },
+    {
+      "from": "WS-REPORT-AMOUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:350"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:350"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:352"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:354"
     }
   ]
 }

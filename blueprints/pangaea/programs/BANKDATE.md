@@ -43,6 +43,27 @@ Solid arrows are PERFORMs, dashed ones GO TOs, and dotted ones control running o
 | 0000-MAIN | READ TODAY'S CONTROL RECORD AND WRITE THE NEXT BUSINESS DAY'S. | [BANKDATE.cbl:52](../../../pangaea/programs/BANKDATE.cbl#L52) | 1000-NEXT-BUSINESS-DAY | | | |
 | 1000-NEXT-BUSINESS-DAY | MOVE THE BUSINESS DATE TO THE NEXT DAY THAT IS NOT A WEEKEND. | [BANKDATE.cbl:74](../../../pangaea/programs/BANKDATE.cbl#L74) | | | 0000-MAIN | |
 
+## Data flow
+
+| Paragraph | Reads | Writes |
+| --- | --- | --- |
+| 0000-MAIN | WS-IN-STATUS, WS-OUT-STATUS, BANK-CONTROL-RECORD | RETURN-CODE, BANK-CONTROL-RECORD, CONTROL-OUT-RECORD |
+| 1000-NEXT-BUSINESS-DAY | BC-BUSINESS-DATE, WS-DAY-NUMBER, WS-WEEKDAY | WS-DAY-NUMBER, WS-WEEKDAY, BC-BUSINESS-DATE |
+
+## Lineage
+
+Where each data item's values come from, and which records go to which files.
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| BANK-CONTROL-RECORD | file CONTROL-IN | READ | 0000-MAIN | [BANKDATE.cbl:61](../../../pangaea/programs/BANKDATE.cbl#L61) |
+| BC-BUSINESS-DATE | WS-DAY-NUMBER | COMPUTE | 1000-NEXT-BUSINESS-DAY | [BANKDATE.cbl:83](../../../pangaea/programs/BANKDATE.cbl#L83) |
+| file CONTROL-OUT | CONTROL-OUT-RECORD | WRITE | 0000-MAIN | [BANKDATE.cbl:68](../../../pangaea/programs/BANKDATE.cbl#L68) |
+| CONTROL-OUT-RECORD | BANK-CONTROL-RECORD | WRITE | 0000-MAIN | [BANKDATE.cbl:68](../../../pangaea/programs/BANKDATE.cbl#L68) |
+| WS-DAY-NUMBER | BC-BUSINESS-DATE | COMPUTE | 1000-NEXT-BUSINESS-DAY | [BANKDATE.cbl:75](../../../pangaea/programs/BANKDATE.cbl#L75) |
+| WS-WEEKDAY | WS-DAY-NUMBER | COMPUTE | 1000-NEXT-BUSINESS-DAY | [BANKDATE.cbl:78](../../../pangaea/programs/BANKDATE.cbl#L78) |
+| WS-WEEKDAY | WS-DAY-NUMBER | COMPUTE | 1000-NEXT-BUSINESS-DAY | [BANKDATE.cbl:81](../../../pangaea/programs/BANKDATE.cbl#L81) |
+
 ## Records
 
 ### BANK-CONTROL-RECORD

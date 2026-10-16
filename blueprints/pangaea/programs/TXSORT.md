@@ -44,6 +44,12 @@ Solid arrows are PERFORMs, dashed ones GO TOs, and dotted ones control running o
 | --- | --- | --- | --- | --- | --- | --- |
 | 0000-MAIN | SORT BY ACCOUNT NUMBER, THEN TRANSACTION ID. | [TXSORT.cbl:48](../../../pangaea/programs/TXSORT.cbl#L48) | | | | |
 
+## Data flow
+
+| Paragraph | Reads | Writes |
+| --- | --- | --- |
+| 0000-MAIN | SR-ACCT-NO, SR-TRAN-ID, SORT-RETURN | RETURN-CODE |
+
 ## Records
 
 ### TRAN-IN-RECORD
