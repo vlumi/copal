@@ -52,6 +52,12 @@ ADDR ?= localhost:8080
 console: pangaea-build  ## Serve the bank console in the browser (ADDR)
 	go run ./cmd/pangaea console -addr $(ADDR)
 
+ONLINE_ADDR ?= localhost:8081
+
+.PHONY: online
+online: pangaea-build  ## Serve the bank's online day until interrupted (ONLINE_ADDR)
+	go run ./cmd/pangaea online -addr $(ONLINE_ADDR)
+
 .PHONY: blueprints
 blueprints:  ## Regenerate Pangaea's blueprints with Copal
 	rm -rf blueprints/pangaea
