@@ -3,17 +3,21 @@
 // listed with their record length in a catalog.
 //
 // Fixtures and golden files hold the same records as text, one per line,
-// so that they read and diff well.
+// so that they read and diff well. A record with bytes that are not
+// printable, such as packed decimal fields, is written in hex the way
+// COBOL writes a hex literal: X'F0F1C3'.
 package dataset
 
 import (
 	"bufio"
 	"bytes"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"regexp"
 	"slices"
 	"strconv"
 	"strings"
@@ -134,21 +138,25 @@ func (s *Store) Read(dsn string) ([][]byte, error) {
 	return slices.Collect(slices.Chunk(data, lrecl)), nil
 }
 
-// Load creates a dataset from text, one record per line. Every line must
-// have the same length, which becomes the record length.
+// Load creates a dataset from text, one record per line, each line the
+// record itself or the record in hex. Every record must have the same
+// length, which becomes the record length.
 func (s *Store) Load(dsn string, r io.Reader) error {
 	var records bytes.Buffer
 	lrecl := 0
 	scanner := bufio.NewScanner(r)
 	for lineNo := 1; scanner.Scan(); lineNo++ {
-		line := scanner.Bytes()
+		record, err := fromText(scanner.Text())
+		if err != nil {
+			return fmt.Errorf("%s line %d: %w", dsn, lineNo, err)
+		}
 		if lrecl == 0 {
-			lrecl = len(line)
+			lrecl = len(record)
 		}
-		if len(line) != lrecl || lrecl == 0 {
-			return fmt.Errorf("%s line %d: %d characters, the first record has %d", dsn, lineNo, len(line), lrecl)
+		if len(record) != lrecl || lrecl == 0 {
+			return fmt.Errorf("%s line %d: a record of %d bytes, the first has %d", dsn, lineNo, len(record), lrecl)
 		}
-		records.Write(line)
+		records.Write(record)
 	}
 	if err := scanner.Err(); err != nil {
 		return err
@@ -162,27 +170,40 @@ func (s *Store) Load(dsn string, r io.Reader) error {
 	return s.Catalog(dsn, lrecl)
 }
 
-// Unload writes a cataloged dataset as text, one record per line. Every byte
-// must be printable: Pangaea's records hold only display fields, so anything
-// else, such as the NULs of a field never moved to, is a program error.
+// Unload writes a cataloged dataset as text, one record per line.
 func (s *Store) Unload(dsn string, w io.Writer) error {
-	lrecl, ok := s.LRECL(dsn)
-	if !ok {
-		return fmt.Errorf("%s: not cataloged", dsn)
-	}
-	data, err := os.ReadFile(s.Path(dsn))
+	records, err := s.Read(dsn)
 	if err != nil {
 		return err
 	}
-	for record := range slices.Chunk(data, lrecl) {
-		if i := bytes.IndexFunc(record, notPrintable); i >= 0 {
-			return fmt.Errorf("%s: byte %d of record %q is not printable", dsn, i+1, record)
-		}
-		if _, err := fmt.Fprintf(w, "%s\n", record); err != nil {
+	for _, record := range records {
+		if _, err := fmt.Fprintln(w, toText(record)); err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+// hexRecord is a record written in hex.
+var hexRecord = regexp.MustCompile(`^X'((?:[0-9A-F]{2})+)'$`)
+
+// toText writes a record as itself if it is printable, and in hex if it
+// is not, or if it would read as hex.
+func toText(record []byte) string {
+	if bytes.IndexFunc(record, notPrintable) < 0 && !hexRecord.Match(record) {
+		return string(record)
+	}
+	return "X'" + strings.ToUpper(hex.EncodeToString(record)) + "'"
+}
+
+func fromText(line string) ([]byte, error) {
+	if m := hexRecord.FindStringSubmatch(line); m != nil {
+		return hex.DecodeString(m[1])
+	}
+	if i := strings.IndexFunc(line, notPrintable); i >= 0 {
+		return nil, fmt.Errorf("character %d is not printable; write the record in hex", i+1)
+	}
+	return []byte(line), nil
 }
 
 func notPrintable(r rune) bool {

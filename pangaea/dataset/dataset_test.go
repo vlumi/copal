@@ -1,6 +1,7 @@
 package dataset
 
 import (
+	"bytes"
 	"os"
 	"slices"
 	"strings"
@@ -79,22 +80,6 @@ func TestCatalog(t *testing.T) {
 	}
 }
 
-func TestUnloadRejectsUnprintableBytes(t *testing.T) {
-	s, err := Open(t.TempDir())
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(s.Path("A"), []byte("12\x0034"), 0o644); err != nil {
-		t.Fatal(err)
-	}
-	if err := s.Catalog("A", 5); err != nil {
-		t.Fatal(err)
-	}
-	if err := s.Unload("A", &strings.Builder{}); err == nil {
-		t.Error("unloaded a NUL byte as text")
-	}
-}
-
 func TestGenerations(t *testing.T) {
 	s, err := Open(t.TempDir())
 	if err != nil {
@@ -137,5 +122,34 @@ func TestWriteAndRead(t *testing.T) {
 	}
 	if err := s.Write("B", 3, records); err == nil {
 		t.Error("wrote 2-byte records as 3-byte ones")
+	}
+}
+
+// A record that is not printable is written in hex, and so is one that
+// would otherwise read as hex.
+func TestRecordsInHex(t *testing.T) {
+	s, err := Open(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	records := [][]byte{{'A', 0x12, 0x34, 0x5C, 'Z'}, []byte("X'41'"), []byte("HELLO")}
+	if err := s.Write("PACKED", 5, records); err != nil {
+		t.Fatal(err)
+	}
+	var text strings.Builder
+	if err := s.Unload("PACKED", &text); err != nil {
+		t.Fatal(err)
+	}
+	if want := "X'4112345C5A'\nX'5827343127'\nHELLO\n"; text.String() != want {
+		t.Errorf("unloaded %q, want %q", text.String(), want)
+	}
+	if err := s.Load("RELOADED", strings.NewReader(text.String())); err != nil {
+		t.Fatal(err)
+	}
+	if reloaded, err := s.Read("RELOADED"); err != nil || !slices.EqualFunc(reloaded, records, bytes.Equal) {
+		t.Errorf("reloaded %q, %v, want %q", reloaded, err, records)
+	}
+	if err := s.Load("RAW", strings.NewReader("A\x01C\n")); err == nil {
+		t.Error("loaded a line that is not printable")
 	}
 }
