@@ -91,13 +91,17 @@ func (c *Codec) LoadFile(store *dataset.Store, path string) error {
 	return store.Write(dsn, l.Length, records)
 }
 
-// UnloadAll writes every cataloged dataset to dir: as DSN.fields if its
-// records hold packed decimal fields, as DSN.txt otherwise.
+// UnloadAll writes every cataloged dataset but the indexed ones, which
+// have no text form, to dir: as DSN.fields if its records hold packed
+// decimal fields, as DSN.txt otherwise.
 func (c *Codec) UnloadAll(store *dataset.Store, dir string) error {
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return err
 	}
 	for _, dsn := range store.Names() {
+		if store.Indexed(dsn) {
+			continue
+		}
 		l := c.layout(dsn)
 		var b bytes.Buffer
 		var err error

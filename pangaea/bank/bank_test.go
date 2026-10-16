@@ -10,11 +10,12 @@ import (
 	"testing"
 
 	"github.com/vlumi/copal/pangaea/compile"
+	"github.com/vlumi/copal/pangaea/dataset"
 )
 
 // TestDaysAreReproducible resets two banks from the same seed, runs three
 // business days in each, and checks that every dataset and report is the
-// same, byte for byte.
+// same, byte for byte, but for what readTree leaves out.
 func TestDaysAreReproducible(t *testing.T) {
 	programs := t.TempDir()
 	if _, err := compile.Programs("../programs", "../copybooks", programs); err != nil {
@@ -83,15 +84,26 @@ func checkDays(t *testing.T, days []Day) {
 	}
 }
 
+// readTree reads every file of a bank. An indexed dataset is read as
+// empty: its Berkeley DB file carries a file ID of its own, and the records
+// in it are those of the master it was loaded from.
 func readTree(t *testing.T, dir string) map[string][]byte {
 	t.Helper()
+	store, err := dataset.Open(filepath.Join(dir, "datasets"))
+	if err != nil {
+		t.Fatal(err)
+	}
 	files := map[string][]byte{}
-	err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
+	err = filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil || d.IsDir() {
 			return err
 		}
-		data, err := os.ReadFile(path)
 		rel, _ := filepath.Rel(dir, path)
+		if filepath.Dir(rel) == "datasets" && store.Indexed(d.Name()) {
+			files[rel] = nil
+			return nil
+		}
+		data, err := os.ReadFile(path)
 		files[rel] = data
 		return err
 	})

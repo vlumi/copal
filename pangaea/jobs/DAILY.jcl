@@ -3,13 +3,14 @@
 //* DAILY BATCH: VALIDATE THE DAY'S TRANSACTIONS, ACCRUE INTEREST  *
 //* AND POST WHAT A CLOSED MONTH OWES, THEN SORT AND POST THE      *
 //* DAY'S TRANSACTIONS, THE TRANSFER CREDITS AND RETURNS THEY LEAD *
-//* TO, APPLY THE DAY'S ACCOUNT MAINTENANCE, AND MOVE TO THE NEXT  *
-//* BUSINESS DAY.                                                  *
+//* TO, APPLY THE DAY'S ACCOUNT MAINTENANCE, LOAD THE ONLINE       *
+//* ACCOUNT FILE, AND MOVE TO THE NEXT BUSINESS DAY.               *
 //*                                                                *
 //* READS   BANK.CONTROL(0)  ACCT.MASTER(0)  TRAN.DAILY(0)         *
 //*         ACCT.ACCRUAL(0)  ACCT.MAINT(0)    BANK.RATES           *
 //* WRITES  BANK.CONTROL(+1) ACCT.MASTER(+1) ACCT.ACCRUAL(+1)      *
 //*         TRAN.AUDIT(+1)   TRAN.REJECTS(+1) MAINT.REJECTS(+1)    *
+//*         ACCT.ONLINE(+1)                                        *
 //*                                                                *
 //* A STEP RUNS ONLY IF NO EARLIER STEP ENDED WITH RC ABOVE 4, SO  *
 //* A RUN THAT FAILS LEAVES THE BUSINESS DATE WHERE IT WAS.        *
@@ -121,6 +122,16 @@
 //REJECTS  DD DSN=MAINT.REJECTS(+1),DISP=NEW,
 //            DCB=(RECFM=FB,LRECL=100)
 //MNTRPT   DD SYSOUT=*
+//*----------------------------------------------------------------*
+//* LOAD THE NEW MASTER INTO THE ONLINE ACCOUNT FILE, WHICH THE    *
+//* CARD AND ATM AUTHORIZATIONS READ DURING THE NEXT BUSINESS DAY  *
+//*----------------------------------------------------------------*
+//LOAD     EXEC PGM=ACCTLOAD,COND=(4,LT)
+//BANKCTL  DD DSN=BANK.CONTROL(0),DISP=SHR
+//ACCTIN   DD DSN=ACCT.MASTER(+1),DISP=SHR
+//ACCTOUT  DD DSN=ACCT.ONLINE(+1),DISP=NEW,
+//            RECORG=KS,LRECL=100
+//LOADRPT  DD SYSOUT=*
 //*----------------------------------------------------------------*
 //* MOVE TO THE NEXT BUSINESS DAY                                  *
 //*----------------------------------------------------------------*
