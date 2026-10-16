@@ -93,6 +93,18 @@ Open decision for this milestone: how the server calls COBOL (a process per requ
 
 Done when: with the simulator running, the console shows available balances dropping during the day and declines for cards over their limits, the API closes for the batch, and the next morning the card and ATM transactions appear in the master.
 
+## 8. The explorer
+
+Static blueprints are good for reading one program or job at a time, but understanding a system means moving through it: from the job network to a step, its program, a paragraph, a record, a field, and following a value across programs through the datasets between them. The explorer is a web app for that, a second reader of the same analysis the blueprints are written from.
+
+- `copal explore` serves the analysis of any system Copal reads, not just Pangaea, locally, in the browser.
+- Every name is a link: jobs, steps, datasets, programs, paragraphs, records, fields, copybooks. Search finds any of them, and history goes back and forth.
+- The job networks and program flows are Copal's own diagrams, with pan and zoom.
+- Lineage across programs: pick a field and see where its values come from and where they go, through the statements of each program and through the datasets that pass records from step to step, highlighted on the diagrams. This needs lineage by storage position, through groups and redefinitions, joined across programs by the copybook that describes each dataset.
+- Server-rendered pages with a little script, like the bank console; no frontend build.
+
+Done when: starting from a field in a report, you can follow it back through every program and job step to the input it came from, on the diagrams.
+
 ## Later
 
 From the brief, once the above stands: test data derived from the extracted conditions so every branch is reached, run through GnuCOBOL as the oracle a rewrite has to match; data that respects cross-record rules; and only then a model for naming and prose.
