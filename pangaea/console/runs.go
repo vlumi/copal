@@ -1,13 +1,10 @@
 package console
 
 import (
-	"bufio"
 	"html/template"
 	"os"
 	"path/filepath"
 	"slices"
-	"strconv"
-	"strings"
 
 	"github.com/vlumi/copal/blueprint"
 	"github.com/vlumi/copal/pangaea/runner"
@@ -18,7 +15,7 @@ import (
 type JobRun struct {
 	Name    string
 	Dir     string
-	Steps   []Step
+	Steps   []runner.Result
 	Network template.HTML
 	Reports []Report
 }
@@ -58,12 +55,9 @@ func (l *Ledger) jobRuns(sysout string) ([]JobRun, error) {
 }
 
 func (l *Ledger) jobRun(dir string) (JobRun, error) {
-	data, err := os.ReadFile(filepath.Join(dir, runner.JobLog))
-	if err != nil {
-		return JobRun{}, err
-	}
-	run := JobRun{Name: strings.TrimPrefix(strings.SplitN(string(data), "\n", 2)[0], "JOB ")}
-	if run.Steps, err = jobSteps(dir); err != nil {
+	var run JobRun
+	var err error
+	if run.Name, run.Steps, err = runner.ReadJobLog(dir); err != nil {
 		return JobRun{}, err
 	}
 	if run.Reports, err = reports(dir, run.Steps); err != nil {
@@ -73,24 +67,29 @@ func (l *Ledger) jobRun(dir string) (JobRun, error) {
 	if i < 0 {
 		return run, nil
 	}
-	records, err := allocatedRecords(dir)
+	allocations, err := runner.ReadMessages(dir)
 	if err != nil {
 		return JobRun{}, err
 	}
+	records := map[[2]string]int{}
+	for _, a := range allocations {
+		records[[2]string{a.Step, a.DD}] += a.Records
+	}
 	outcomes := map[string]string{}
 	for _, s := range run.Steps {
-		outcomes[s.Name] = s.Outcome
+		outcomes[s.Step] = s.Outcome()
 	}
 	svg, err := blueprint.JobGraph(l.Jobs[i], blueprint.JobNotes{
 		Step: func(s blueprint.Step) string { return outcomes[s.Name] },
 		DD: func(s blueprint.Step, dd blueprint.DD) string {
-			if n, ok := records[s.Name][dd.Name]; ok {
-				if n == 1 {
-					return "1 record"
-				}
-				return count(n) + " records"
+			n, ok := records[[2]string{s.Name, dd.Name}]
+			switch {
+			case !ok:
+				return ""
+			case n == 1:
+				return "1 record"
 			}
-			return ""
+			return count(n) + " records"
 		},
 		ProgramLink:  func(name string) string { return "/blueprints/programs/" + name + ".md" },
 		CopybookLink: func(name string) string { return "/blueprints/copybooks/" + name + ".md" },
@@ -99,44 +98,11 @@ func (l *Ledger) jobRun(dir string) (JobRun, error) {
 	return run, err
 }
 
-// allocatedRecords reads the records each step's DDs held, from the
-// runner's allocation messages: by step, by DD, all its datasets together.
-func allocatedRecords(dir string) (map[string]map[string]int, error) {
-	f, err := os.Open(filepath.Join(dir, runner.Messages))
-	if err != nil {
-		return nil, err
-	}
-	defer func() { _ = f.Close() }()
-	records := map[string]map[string]int{}
-	var step, dd string
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		line := scanner.Text()
-		if !strings.HasPrefix(line, " ") {
-			step = strings.Fields(line)[0]
-			records[step] = map[string]int{}
-			continue
-		}
-		fields := strings.Fields(line)
-		if !strings.HasPrefix(line, "   ") {
-			dd = fields[0]
-		}
-		if len(fields) >= 2 && fields[len(fields)-1] == "RECORDS" {
-			n, err := strconv.Atoi(fields[len(fields)-2])
-			if err != nil {
-				return nil, err
-			}
-			records[step][dd] += n
-		}
-	}
-	return records, scanner.Err()
-}
-
 // reports reads the reports the steps wrote, in step order.
-func reports(sysout string, steps []Step) ([]Report, error) {
+func reports(sysout string, steps []runner.Result) ([]Report, error) {
 	var out []Report
 	for _, step := range steps {
-		paths, err := filepath.Glob(filepath.Join(sysout, step.Name+".*"))
+		paths, err := filepath.Glob(filepath.Join(sysout, step.Step+".*"))
 		if err != nil {
 			return nil, err
 		}

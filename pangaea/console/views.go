@@ -4,8 +4,7 @@ import (
 	"cmp"
 	"errors"
 	"fmt"
-	"os"
-	"path/filepath"
+	"math"
 	"slices"
 	"strconv"
 	"strings"
@@ -13,6 +12,7 @@ import (
 	"github.com/vlumi/copal/layout"
 	"github.com/vlumi/copal/pangaea/bank"
 	"github.com/vlumi/copal/pangaea/generate"
+	"github.com/vlumi/copal/pangaea/runner"
 )
 
 // Overview is the bank as it stands, and the days it has run, newest first.
@@ -28,12 +28,7 @@ type DaySummary struct {
 	Transactions int
 	Postings     int
 	Rejects      int
-	Steps        []Step
-}
-
-// Step is a job step's line in the job log.
-type Step struct {
-	Name, Program, Outcome string
+	Steps        []runner.Result
 }
 
 // Worst is the outcome of the step that did worst: the highest return code
@@ -41,12 +36,12 @@ type Step struct {
 func (s DaySummary) Worst() string {
 	worst, rank := "", -1
 	for _, step := range s.Steps {
-		r := 10000
-		if rc, ok := strings.CutPrefix(step.Outcome, "RC="); ok {
-			r, _ = strconv.Atoi(rc)
+		r := step.RC
+		if step.Bypassed || step.Abended {
+			r = math.MaxInt
 		}
 		if r > rank {
-			worst, rank = step.Outcome, r
+			worst, rank = step.Outcome(), r
 		}
 	}
 	return worst
@@ -87,24 +82,8 @@ func (l *Ledger) summary(d bank.RunDay) (DaySummary, error) {
 	}
 	s.Transactions -= 2 // the header and the trailer
 	var err error
-	s.Steps, err = jobSteps(d.Sysout)
+	_, s.Steps, err = runner.ReadJobLog(d.Sysout)
 	return s, err
-}
-
-// jobSteps reads the steps from a job log.
-func jobSteps(sysout string) ([]Step, error) {
-	data, err := os.ReadFile(filepath.Join(sysout, "JOBLOG"))
-	if err != nil {
-		return nil, err
-	}
-	var steps []Step
-	for line := range strings.Lines(string(data)) {
-		fields := strings.Fields(line)
-		if len(fields) == 3 {
-			steps = append(steps, Step{fields[0], fields[1], fields[2]})
-		}
-	}
-	return steps, nil
 }
 
 // Search finds the accounts whose number starts with the query, whose

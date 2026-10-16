@@ -67,6 +67,21 @@ func TestConsole(t *testing.T) {
 	get(t, server.URL+"/accounts/42", http.StatusNotFound, "not found")
 	get(t, server.URL+"/days/2026-09-03", http.StatusNotFound, "not found")
 	post(t, client, server.URL+"/run", url.Values{"days": {"none"}}, "")
+
+	foreign, err := http.NewRequest("POST", server.URL+"/reset", strings.NewReader("seed=1&accounts=100"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	foreign.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	foreign.Header.Set("Sec-Fetch-Site", "cross-site")
+	resp, err := client.Do(foreign)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_ = resp.Body.Close()
+	if resp.StatusCode != http.StatusForbidden {
+		t.Errorf("a reset from another site: %s, want it forbidden", resp.Status)
+	}
 }
 
 func get(t *testing.T, url string, status int, want ...string) string {

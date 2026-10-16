@@ -34,7 +34,7 @@ const usage = `usage:
   pangaea run -datasets dir -sysout dir [-programs dir] job.jcl
   pangaea reset [-bank dir] [-seed n] [-accounts n]
   pangaea days [-bank dir] [-n days]
-  pangaea console [-bank dir] [-addr host:port]
+  pangaea console [-bank dir] [-addr host:port] [-src dir] [-blueprints dir]
 `
 
 func main() {
@@ -183,16 +183,18 @@ func days(args []string) error {
 func serveConsole(args []string) error {
 	flags, b := bankFlags("console")
 	addr := flags.String("addr", "localhost:8080", "address to serve on")
+	src := flags.String("src", "pangaea/programs", "directory of the COBOL programs")
+	blueprints := flags.String("blueprints", "blueprints/pangaea", "directory of the bank's blueprints")
 	_ = flags.Parse(args)
-	programs, err := filepath.Glob("pangaea/programs/*.cbl")
+	programs, err := filepath.Glob(filepath.Join(*src, "*.cbl"))
 	if err != nil {
 		return err
 	}
-	system, err := blueprint.Analyze(append(programs, b.DailyJob, b.MonthlyJob), "pangaea/copybooks")
+	system, err := blueprint.Analyze(append(programs, b.DailyJob, b.MonthlyJob), b.Copybooks)
 	if err != nil {
 		return err
 	}
-	c, err := console.New(*b, system, "blueprints/pangaea")
+	c, err := console.New(*b, system, *blueprints)
 	if err != nil {
 		return err
 	}
