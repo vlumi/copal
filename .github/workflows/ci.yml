@@ -1,0 +1,22 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    # Ubuntu 26.04 is the first Ubuntu with GnuCOBOL 3.2 in apt.
+    container: ubuntu:26.04
+    steps:
+      - name: Install system packages
+        run: |
+          apt-get update
+          apt-get install --yes --no-install-recommends ca-certificates git make gnucobol3 nodejs npm
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+      - run: make ci
