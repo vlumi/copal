@@ -4,6 +4,9 @@
 help:  ## List the available commands
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z0-9_-]+:.*## / {printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
+.PHONY: toolchain
+toolchain:  ## Check that the build tools are installed
+	@scripts/check-toolchain.sh
+
 .PHONY: ci
-ci:  ## Full local CI (nothing to check yet)
-	@echo "nothing built yet: see docs/brief.md"
+ci: toolchain  ## Full local CI
