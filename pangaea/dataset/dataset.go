@@ -107,6 +107,9 @@ func (s *Store) Delete(dsn string) error {
 // its file holds whole records. A dataset the program never opened is
 // cataloged empty, as an allocated dataset would be.
 func (s *Store) Catalog(dsn string, lrecl int) error {
+	if lrecl < 1 {
+		return fmt.Errorf("%s: a record length of %d", dsn, lrecl)
+	}
 	info, err := os.Stat(s.Path(dsn))
 	if errors.Is(err, os.ErrNotExist) {
 		if err := os.WriteFile(s.Path(dsn), nil, 0o644); err != nil {
@@ -266,7 +269,7 @@ func (s *Store) readCatalog() error {
 	for line := range strings.Lines(string(data)) {
 		dsn, lrecl, ok := strings.Cut(strings.TrimSpace(line), " ")
 		n, err := strconv.Atoi(lrecl)
-		if !ok || err != nil {
+		if !ok || err != nil || n < 1 {
 			return fmt.Errorf("catalog: bad entry %q", line)
 		}
 		s.catalog[dsn] = n

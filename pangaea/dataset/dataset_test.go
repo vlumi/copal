@@ -3,6 +3,7 @@ package dataset
 import (
 	"bytes"
 	"os"
+	"path/filepath"
 	"slices"
 	"strings"
 	"testing"
@@ -73,6 +74,9 @@ func TestCatalog(t *testing.T) {
 	}
 	if err := s.Catalog("SHORT", 4); err == nil {
 		t.Error("cataloged a partial record")
+	}
+	if err := s.Catalog("SHORT", 0); err == nil {
+		t.Error("cataloged records of no length")
 	}
 
 	if got, want := s.Names(), []string{"NEVER.OPENED"}; !slices.Equal(got, want) {
@@ -151,5 +155,15 @@ func TestRecordsInHex(t *testing.T) {
 	}
 	if err := s.Load("RAW", strings.NewReader("A\x01C\n")); err == nil {
 		t.Error("loaded a line that is not printable")
+	}
+}
+
+func TestCatalogRejectsNoRecordLength(t *testing.T) {
+	dir := t.TempDir()
+	if err := os.WriteFile(filepath.Join(dir, "CATALOG"), []byte("A 0\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := Open(dir); err == nil {
+		t.Error("opened a catalog with a record length of 0")
 	}
 }
