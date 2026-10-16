@@ -103,12 +103,15 @@ func programMarkdown(dir string, p Program) string {
 		b.WriteString(row(f.Name, f.Kind, f.Assign, f.Organization, f.Status, strings.Join(f.Records, ", ")))
 	}
 
-	fmt.Fprintf(&b, "\n## Flow\n\n![The paragraphs of %s and the PERFORMs between them](%s.svg)\n", p.Name, p.Name)
+	fmt.Fprintf(&b, "\n## Flow\n\n![The paragraphs of %s and how control moves between them](%s.svg)\n", p.Name, p.Name)
+	b.WriteString("\nSolid arrows are PERFORMs, dashed ones GO TOs, and dotted ones control running on into the next paragraph inside a PERFORM THRU range.\n")
 
-	b.WriteString("\n## Paragraphs\n\n| Paragraph | Description | Source | Performs | Performed by |\n| --- | --- | --- | --- | --- |\n")
+	b.WriteString("\n## Paragraphs\n\n| Paragraph | Description | Source | Performs | Goes to | Performed by | Reached by |\n" +
+		"| --- | --- | --- | --- | --- | --- | --- |\n")
 	for _, para := range p.Paragraphs {
 		b.WriteString(row(para.Name, para.Description, sourceLink(dir, para.Source, true),
-			strings.Join(performTargets(para.Performs), ", "), strings.Join(para.PerformedBy, ", ")))
+			strings.Join(performTargets(para.Performs), ", "), strings.Join(goesTo(para), ", "),
+			strings.Join(para.PerformedBy, ", "), strings.Join(para.ReachedBy, ", ")))
 	}
 
 	b.WriteString("\n## Records\n")
@@ -235,6 +238,21 @@ func performTargets(performs []Perform) []string {
 		if !slices.Contains(targets, target) {
 			targets = append(targets, target)
 		}
+	}
+	return targets
+}
+
+// goesTo lists where a paragraph goes other than by PERFORM: its GO TO
+// targets, each once, and the paragraph it falls into.
+func goesTo(para Paragraph) []string {
+	var targets []string
+	for _, g := range para.GoTos {
+		if !slices.Contains(targets, g.Target) {
+			targets = append(targets, g.Target)
+		}
+	}
+	if para.FallsInto != "" {
+		targets = append(targets, para.FallsInto+" (falls into)")
 	}
 	return targets
 }

@@ -65,7 +65,7 @@ func TestLayoutKeepsBoxesApartAndEdgesDescending(t *testing.T) {
 func TestLayoutTurnsCyclesAround(t *testing.T) {
 	g := Graph{
 		Nodes: []Node{{ID: "A", Label: "A"}, {ID: "B", Label: "B"}},
-		Edges: []Edge{{From: "A", To: "B"}, {From: "B", To: "A", Dashed: true}},
+		Edges: []Edge{{From: "A", To: "B"}, {From: "B", To: "A", Style: Dashed}},
 	}
 	l, err := newLayout(g)
 	if err != nil {

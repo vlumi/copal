@@ -156,6 +156,14 @@ func (b Bank) runDay(g *generate.Generator, daily, monthly *jcl.Job) (Day, error
 	if err := store.Write(dataset.GenerationName("TRAN.DAILY", fileSeq), g.Layouts.Tran.Length, file); err != nil {
 		return Day{}, err
 	}
+	requests, err := g.Maintenance(date, accounts)
+	if err != nil {
+		return Day{}, err
+	}
+	maint := dataset.GenerationName("ACCT.MAINT", store.LatestGeneration("ACCT.MAINT")+1)
+	if err := store.Write(maint, g.Layouts.Maint.Length, requests); err != nil {
+		return Day{}, err
+	}
 
 	day := Day{Date: date, Transactions: len(file) - 2}
 	if day.Results, err = b.runJob(store, daily, b.sysout(date)); err != nil {

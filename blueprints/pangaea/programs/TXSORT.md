@@ -34,13 +34,15 @@ Program [TXSORT.cbl](../../../pangaea/programs/TXSORT.cbl): 3 files, 1 paragraph
 
 ## Flow
 
-![The paragraphs of TXSORT and the PERFORMs between them](TXSORT.svg)
+![The paragraphs of TXSORT and how control moves between them](TXSORT.svg)
+
+Solid arrows are PERFORMs, dashed ones GO TOs, and dotted ones control running on into the next paragraph inside a PERFORM THRU range.
 
 ## Paragraphs
 
-| Paragraph | Description | Source | Performs | Performed by |
-| --- | --- | --- | --- | --- |
-| 0000-MAIN | SORT BY ACCOUNT NUMBER, THEN TRANSACTION ID. | [TXSORT.cbl:48](../../../pangaea/programs/TXSORT.cbl#L48) | | |
+| Paragraph | Description | Source | Performs | Goes to | Performed by | Reached by |
+| --- | --- | --- | --- | --- | --- | --- |
+| 0000-MAIN | SORT BY ACCOUNT NUMBER, THEN TRANSACTION ID. | [TXSORT.cbl:48](../../../pangaea/programs/TXSORT.cbl#L48) | | | | |
 
 ## Records
 

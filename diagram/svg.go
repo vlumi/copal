@@ -11,6 +11,7 @@ const style = `<style>
 .label { fill: #1f2328 }
 .edge { fill: none; stroke: #8c959f; stroke-width: 1.2 }
 .edge.dashed { stroke-dasharray: 4 3 }
+.edge.dotted { stroke-dasharray: 1 3 }
 .head { fill: #8c959f }
 @media (prefers-color-scheme: dark) {
   .box { fill: #161b22; stroke: #8b949e }
@@ -74,8 +75,8 @@ func (l *layout) writeEdge(b *strings.Builder, e routedEdge) {
 		}
 	}
 	class, marker := "edge", "marker-end"
-	if e.dashed {
-		class += " dashed"
+	if e.style != Solid {
+		class += " " + string(e.style)
 	}
 	if e.reversed {
 		marker = "marker-start"

@@ -38,12 +38,15 @@ func TestConsole(t *testing.T) {
 		"ACCT.MASTER.G0001V00", "ACCT.MASTER.G0003V00", "Reconciled")
 	get(t, server.URL+"/", http.StatusOK, `href="/days/2026-09-02"`, "RC=0004")
 	get(t, server.URL+"/days/2026-09-02", http.StatusOK, "TRAN.AUDIT.G0002V00", "VALID.VALRPT", "POST.POSTRPT")
-	accounts := get(t, server.URL+"/accounts", http.StatusOK, "200 of 200 accounts")
+	accounts := get(t, server.URL+"/accounts", http.StatusOK)
+	if !regexp.MustCompile(`(\d+) of (\d+) accounts`).MatchString(accounts) {
+		t.Error("the account list does not say how many accounts it shows")
+	}
 	first := regexp.MustCompile(`/accounts/(\d+)`).FindStringSubmatch(accounts)
 	if first == nil {
 		t.Fatal("no account in the list")
 	}
-	get(t, server.URL+"/accounts?q="+first[1], http.StatusOK, "1 of 200 accounts")
+	get(t, server.URL+"/accounts?q="+first[1], http.StatusOK, "1 of ")
 	get(t, server.URL+first[0], http.StatusOK, "AM-BALANCE", "S9(11)V99")
 	get(t, server.URL+"/accounts/42", http.StatusNotFound, "not found")
 	get(t, server.URL+"/days/2026-09-03", http.StatusNotFound, "not found")

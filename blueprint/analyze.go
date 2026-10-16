@@ -88,14 +88,24 @@ type Condition struct {
 	Source string   `json:"source"`
 }
 
-// Paragraph is a paragraph with what it performs and what performs it.
+// Paragraph is a paragraph with what it performs, where it goes by GO TO
+// or by falling into the next, and what performs it or comes to it.
 type Paragraph struct {
 	Name        string    `json:"name"`
 	Section     string    `json:"section,omitempty"`
 	Description string    `json:"description,omitempty"`
 	Source      string    `json:"source"`
 	Performs    []Perform `json:"performs,omitempty"`
+	GoTos       []GoTo    `json:"goTos,omitempty"`
+	FallsInto   string    `json:"fallsInto,omitempty"`
 	PerformedBy []string  `json:"performedBy,omitempty"`
+	ReachedBy   []string  `json:"reachedBy,omitempty"`
+}
+
+// GoTo is a GO TO statement's target.
+type GoTo struct {
+	Target string `json:"target"`
+	Source string `json:"source"`
 }
 
 // Perform is a PERFORM statement naming a procedure or a THRU range, or a
@@ -249,10 +259,15 @@ func newParagraph(para structure.Paragraph) Paragraph {
 		Section:     para.Section,
 		Description: oneLine(para.Comment),
 		Source:      para.Pos.String(),
+		FallsInto:   para.FallsInto,
 		PerformedBy: para.PerformedBy,
+		ReachedBy:   para.ReachedBy,
 	}
 	for _, perform := range para.Performs {
 		p.Performs = append(p.Performs, Perform{Target: perform.Target, Thru: perform.Thru, Sort: perform.Sort, Source: perform.Pos.String()})
+	}
+	for _, goTo := range para.GoTos {
+		p.GoTos = append(p.GoTos, GoTo{Target: goTo.Target, Source: goTo.Pos.String()})
 	}
 	return p
 }

@@ -1,0 +1,1539 @@
+{
+  "program": "ACCTMNT",
+  "source": "pangaea/programs/ACCTMNT.cbl",
+  "description": [
+    "ACCTMNT: ACCOUNT MAINTENANCE",
+    "",
+    "APPLIES THE BRANCHES' MAINTENANCE REQUESTS TO THE MASTER AT",
+    "THE END OF THE DAY: OPENS ACCOUNTS, CLOSES THEM, FREEZES AND",
+    "UNFREEZES THEM, AND CHANGES OVERDRAFT LIMITS. THE REQUESTS",
+    "COME IN ACCOUNT NUMBER ORDER AND ARE MATCHED AGAINST THE",
+    "MASTER: EACH ACCOUNT IS HELD WHILE ITS REQUESTS APPLY, THEN",
+    "WRITTEN TO THE NEW MASTER. A REQUEST THAT CANNOT APPLY GOES TO",
+    "THE REJECTS WITH ITS REASON.",
+    "",
+    "RULES: AN OPENING NEEDS AN ACCOUNT NUMBER NOT YET USED; ANY",
+    "OTHER REQUEST AN ACCOUNT THAT EXISTS AND IS NOT CLOSED. ONLY",
+    "AN EMPTY ACCOUNT CLOSES. ONLY AN OPEN ACCOUNT FREEZES, ONLY A",
+    "FROZEN ONE UNFREEZES. ONLY CURRENT ACCOUNTS HAVE OVERDRAFTS.",
+    "MAINTENANCE NEVER MOVES MONEY: THE NEW MASTER MUST HOLD THE",
+    "SAME BALANCES AS THE OLD.",
+    "",
+    "RETURN CODES: 0 ALL APPLIED, 4 SOME REJECTED,",
+    "              16 INPUT OUT OF ORDER, OUT OF BALANCE OR I/O.",
+    "",
+    "MODIFICATION HISTORY",
+    "DATE       BY  CHANGE",
+    "1988-05-09 JA  CR-0031 ORIGINAL VERSION.",
+    "1994-11-14 PK  CR-0201 OVERDRAFT LIMIT CHANGES.",
+    "1999-01-11 SL  Y2K: 8-DIGIT OPEN DATES."
+  ],
+  "identification": [
+    {
+      "paragraph": "AUTHOR",
+      "text": "J. ARKWRIGHT, BATCH SYSTEMS."
+    },
+    {
+      "paragraph": "INSTALLATION",
+      "text": "FIRST BANK OF PANGAEA, DATA CENTER."
+    },
+    {
+      "paragraph": "DATE-WRITTEN",
+      "text": "1988-05-09."
+    }
+  ],
+  "files": [
+    {
+      "name": "CONTROL-FILE",
+      "kind": "FD",
+      "assign": "BANKCTL",
+      "organization": "SEQUENTIAL",
+      "status": "WS-CONTROL-STATUS",
+      "records": [
+        "BANK-CONTROL-RECORD"
+      ],
+      "source": "pangaea/programs/ACCTMNT.cbl:37"
+    },
+    {
+      "name": "ACCT-IN",
+      "kind": "FD",
+      "assign": "ACCTIN",
+      "organization": "SEQUENTIAL",
+      "status": "WS-ACCT-IN-STATUS",
+      "records": [
+        "ACCT-IN-RECORD"
+      ],
+      "source": "pangaea/programs/ACCTMNT.cbl:40"
+    },
+    {
+      "name": "MAINT-IN",
+      "kind": "FD",
+      "assign": "MAINTIN",
+      "organization": "SEQUENTIAL",
+      "status": "WS-MAINT-IN-STATUS",
+      "records": [
+        "MAINT-REQUEST"
+      ],
+      "source": "pangaea/programs/ACCTMNT.cbl:43"
+    },
+    {
+      "name": "ACCT-OUT",
+      "kind": "FD",
+      "assign": "ACCTOUT",
+      "organization": "SEQUENTIAL",
+      "status": "WS-ACCT-OUT-STATUS",
+      "records": [
+        "ACCT-OUT-RECORD"
+      ],
+      "source": "pangaea/programs/ACCTMNT.cbl:46"
+    },
+    {
+      "name": "REJECT-OUT",
+      "kind": "FD",
+      "assign": "REJECTS",
+      "organization": "SEQUENTIAL",
+      "status": "WS-REJECT-STATUS",
+      "records": [
+        "REJECT-OUT-RECORD"
+      ],
+      "source": "pangaea/programs/ACCTMNT.cbl:49"
+    },
+    {
+      "name": "REPORT-OUT",
+      "kind": "FD",
+      "assign": "MNTRPT",
+      "organization": "LINE SEQUENTIAL",
+      "status": "WS-REPORT-STATUS",
+      "records": [
+        "REPORT-LINE"
+      ],
+      "source": "pangaea/programs/ACCTMNT.cbl:52"
+    }
+  ],
+  "records": [
+    {
+      "section": "file",
+      "file": "CONTROL-FILE",
+      "copybook": "BANKCTL",
+      "level": 1,
+      "name": "BANK-CONTROL-RECORD",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "description": "BANKCTL: BANK CONTROL RECORD, ONE PER FILE THE BUSINESS DATE THE BATCH RUNS FOR, NEVER THE CLOCK.",
+      "source": "pangaea/copybooks/BANKCTL.cpy:5",
+      "fields": [
+        {
+          "level": 5,
+          "name": "BC-BUSINESS-DATE",
+          "start": 1,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/BANKCTL.cpy:6"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 9,
+          "length": 72,
+          "picture": "X(72)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/BANKCTL.cpy:7"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "ACCT-IN",
+      "level": 1,
+      "name": "ACCT-IN-RECORD",
+      "start": 1,
+      "length": 100,
+      "category": "group",
+      "source": "pangaea/programs/ACCTMNT.cbl:61",
+      "fields": [
+        {
+          "level": 5,
+          "name": "AI-ACCT-NO",
+          "start": 1,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/ACCTMNT.cbl:62"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 11,
+          "length": 90,
+          "picture": "X(90)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/ACCTMNT.cbl:63"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "MAINT-IN",
+      "copybook": "MAINTREC",
+      "level": 1,
+      "name": "MAINT-REQUEST",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "description": "MAINTREC: ACCOUNT MAINTENANCE REQUEST, 80 BYTES THE BRANCHES' REQUESTS TO OPEN AN ACCOUNT, CLOSE ONE, FREEZE OR UNFREEZE ONE, OR CHANGE ITS OVERDRAFT LIMIT, IN ACCOUNT NUMBER AND REQUEST ID ORDER. AN OPENING CARRIES THE NEW ACCOUNT'S CUSTOMER, NAME AND TYPE; A LIMIT CHANGE THE NEW LIMIT. MODIFICATION HISTORY DATE       BY  CHANGE 1988-05-09 JA  CR-0031 ORIGINAL VERSION.",
+      "source": "pangaea/copybooks/MAINTREC.cpy:13",
+      "fields": [
+        {
+          "level": 5,
+          "name": "MR-REQUEST-ID",
+          "start": 1,
+          "length": 10,
+          "picture": "9(10)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 10,
+          "source": "pangaea/copybooks/MAINTREC.cpy:14"
+        },
+        {
+          "level": 5,
+          "name": "MR-REQUEST-TYPE",
+          "start": 11,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "conditions": [
+            {
+              "name": "MR-OPEN",
+              "values": [
+                "'O'"
+              ],
+              "source": "pangaea/copybooks/MAINTREC.cpy:16"
+            },
+            {
+              "name": "MR-CLOSE",
+              "values": [
+                "'C'"
+              ],
+              "source": "pangaea/copybooks/MAINTREC.cpy:17"
+            },
+            {
+              "name": "MR-FREEZE",
+              "values": [
+                "'F'"
+              ],
+              "source": "pangaea/copybooks/MAINTREC.cpy:18"
+            },
+            {
+              "name": "MR-UNFREEZE",
+              "values": [
+                "'U'"
+              ],
+              "source": "pangaea/copybooks/MAINTREC.cpy:19"
+            },
+            {
+              "name": "MR-LIMIT",
+              "values": [
+                "'L'"
+              ],
+              "source": "pangaea/copybooks/MAINTREC.cpy:20"
+            }
+          ],
+          "source": "pangaea/copybooks/MAINTREC.cpy:15"
+        },
+        {
+          "level": 5,
+          "name": "MR-ACCT-NO",
+          "start": 12,
+          "length": 10,
+          "picture": "9(10)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 10,
+          "source": "pangaea/copybooks/MAINTREC.cpy:21"
+        },
+        {
+          "level": 5,
+          "name": "MR-CUST-NO",
+          "start": 22,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/MAINTREC.cpy:22"
+        },
+        {
+          "level": 5,
+          "name": "MR-SHORT-NAME",
+          "start": 30,
+          "length": 20,
+          "picture": "X(20)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/MAINTREC.cpy:23"
+        },
+        {
+          "level": 5,
+          "name": "MR-ACCT-TYPE",
+          "start": 50,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/MAINTREC.cpy:24"
+        },
+        {
+          "level": 5,
+          "name": "MR-OVERDRAFT-LIMIT",
+          "start": 51,
+          "length": 9,
+          "picture": "9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 9,
+          "scale": 2,
+          "source": "pangaea/copybooks/MAINTREC.cpy:25"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 60,
+          "length": 21,
+          "picture": "X(21)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/MAINTREC.cpy:26"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "ACCT-OUT",
+      "level": 1,
+      "name": "ACCT-OUT-RECORD",
+      "start": 1,
+      "length": 100,
+      "picture": "X(100)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "source": "pangaea/programs/ACCTMNT.cbl:67"
+    },
+    {
+      "section": "file",
+      "file": "REJECT-OUT",
+      "level": 1,
+      "name": "REJECT-OUT-RECORD",
+      "start": 1,
+      "length": 100,
+      "picture": "X(100)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "source": "pangaea/programs/ACCTMNT.cbl:69"
+    },
+    {
+      "section": "file",
+      "file": "REPORT-OUT",
+      "level": 1,
+      "name": "REPORT-LINE",
+      "start": 1,
+      "length": 80,
+      "picture": "X(80)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "source": "pangaea/programs/ACCTMNT.cbl:71"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-FILE-STATUSES",
+      "start": 1,
+      "length": 12,
+      "category": "group",
+      "source": "pangaea/programs/ACCTMNT.cbl:74",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-CONTROL-STATUS",
+          "start": 1,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/ACCTMNT.cbl:75"
+        },
+        {
+          "level": 5,
+          "name": "WS-ACCT-IN-STATUS",
+          "start": 3,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/ACCTMNT.cbl:76"
+        },
+        {
+          "level": 5,
+          "name": "WS-MAINT-IN-STATUS",
+          "start": 5,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/ACCTMNT.cbl:77"
+        },
+        {
+          "level": 5,
+          "name": "WS-ACCT-OUT-STATUS",
+          "start": 7,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/ACCTMNT.cbl:78"
+        },
+        {
+          "level": 5,
+          "name": "WS-REJECT-STATUS",
+          "start": 9,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/ACCTMNT.cbl:79"
+        },
+        {
+          "level": 5,
+          "name": "WS-REPORT-STATUS",
+          "start": 11,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/ACCTMNT.cbl:80"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-BUSINESS-DATE",
+      "start": 1,
+      "length": 8,
+      "picture": "9(8)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "digits": 8,
+      "source": "pangaea/programs/ACCTMNT.cbl:82"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ABORT-MESSAGE",
+      "start": 1,
+      "length": 40,
+      "picture": "X(40)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "source": "pangaea/programs/ACCTMNT.cbl:83"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-MASTER-KEY",
+      "start": 1,
+      "length": 10,
+      "picture": "X(10)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "description": "MATCH KEYS: HIGH-VALUES ONCE A FILE IS AT ITS END. THE ACTIVE KEY IS THE LOWER OF THE TWO: THE ACCOUNT BEING WORKED ON.",
+      "source": "pangaea/programs/ACCTMNT.cbl:87"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REQUEST-KEY",
+      "start": 1,
+      "length": 10,
+      "picture": "X(10)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "source": "pangaea/programs/ACCTMNT.cbl:88"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ACTIVE-KEY",
+      "start": 1,
+      "length": 10,
+      "picture": "X(10)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "source": "pangaea/programs/ACCTMNT.cbl:89"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-PREV-MASTER-KEY",
+      "start": 1,
+      "length": 10,
+      "picture": "X(10)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "values": [
+        "LOW-VALUES"
+      ],
+      "source": "pangaea/programs/ACCTMNT.cbl:90"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REQUEST-ORDER-KEY",
+      "start": 1,
+      "length": 20,
+      "category": "group",
+      "source": "pangaea/programs/ACCTMNT.cbl:91",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-ROK-ACCT-NO",
+          "start": 1,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/ACCTMNT.cbl:92"
+        },
+        {
+          "level": 5,
+          "name": "WS-ROK-REQUEST-ID",
+          "start": 11,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/ACCTMNT.cbl:93"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-PREV-REQUEST-ORDER-KEY",
+      "start": 1,
+      "length": 20,
+      "picture": "X(20)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "values": [
+        "LOW-VALUES"
+      ],
+      "source": "pangaea/programs/ACCTMNT.cbl:94"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-HELD-SW",
+      "start": 1,
+      "length": 1,
+      "picture": "X",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "description": "THE ACCOUNT HELD WHILE ITS REQUESTS APPLY.",
+      "conditions": [
+        {
+          "name": "ACCOUNT-HELD",
+          "values": [
+            "'Y'"
+          ],
+          "source": "pangaea/programs/ACCTMNT.cbl:98"
+        },
+        {
+          "name": "NOTHING-HELD",
+          "values": [
+            "'N'"
+          ],
+          "source": "pangaea/programs/ACCTMNT.cbl:99"
+        }
+      ],
+      "source": "pangaea/programs/ACCTMNT.cbl:97"
+    },
+    {
+      "section": "working-storage",
+      "copybook": "ACCTMAST",
+      "level": 1,
+      "name": "ACCT-MASTER-RECORD",
+      "start": 1,
+      "length": 100,
+      "category": "group",
+      "description": "ACCTMAST: ACCOUNT MASTER RECORD, 100 BYTES IN ACCOUNT NUMBER ORDER. THE BALANCE MAY GO BELOW ZERO DOWN TO THE OVERDRAFT LIMIT, AND BELOW THAT ONLY BY FEES. MODIFICATION HISTORY DATE       BY  CHANGE 1987-03-12 JA  ORIGINAL VERSION. 1994-11-14 PK  CR-0201 OVERDRAFT LIMIT, FROM THE FILLER. 1999-01-11 SL  Y2K: 8-DIGIT DATES.",
+      "source": "pangaea/copybooks/ACCTMAST.cpy:12",
+      "fields": [
+        {
+          "level": 5,
+          "name": "AM-ACCT-NO",
+          "start": 1,
+          "length": 10,
+          "picture": "9(10)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 10,
+          "source": "pangaea/copybooks/ACCTMAST.cpy:13"
+        },
+        {
+          "level": 5,
+          "name": "AM-CUST-NO",
+          "start": 11,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/ACCTMAST.cpy:14"
+        },
+        {
+          "level": 5,
+          "name": "AM-SHORT-NAME",
+          "start": 19,
+          "length": 20,
+          "picture": "X(20)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/ACCTMAST.cpy:15"
+        },
+        {
+          "level": 5,
+          "name": "AM-ACCT-TYPE",
+          "start": 39,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "conditions": [
+            {
+              "name": "AM-CURRENT",
+              "values": [
+                "'C'"
+              ],
+              "source": "pangaea/copybooks/ACCTMAST.cpy:17"
+            },
+            {
+              "name": "AM-SAVINGS",
+              "values": [
+                "'S'"
+              ],
+              "source": "pangaea/copybooks/ACCTMAST.cpy:18"
+            }
+          ],
+          "source": "pangaea/copybooks/ACCTMAST.cpy:16"
+        },
+        {
+          "level": 5,
+          "name": "AM-STATUS",
+          "start": 40,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "conditions": [
+            {
+              "name": "AM-OPEN",
+              "values": [
+                "'O'"
+              ],
+              "source": "pangaea/copybooks/ACCTMAST.cpy:20"
+            },
+            {
+              "name": "AM-FROZEN",
+              "values": [
+                "'F'"
+              ],
+              "source": "pangaea/copybooks/ACCTMAST.cpy:21"
+            },
+            {
+              "name": "AM-CLOSED",
+              "values": [
+                "'X'"
+              ],
+              "source": "pangaea/copybooks/ACCTMAST.cpy:22"
+            }
+          ],
+          "source": "pangaea/copybooks/ACCTMAST.cpy:19"
+        },
+        {
+          "level": 5,
+          "name": "AM-OPEN-DATE",
+          "start": 41,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/ACCTMAST.cpy:23"
+        },
+        {
+          "level": 5,
+          "name": "AM-LAST-ACTIVITY-DATE",
+          "start": 49,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/ACCTMAST.cpy:24"
+        },
+        {
+          "level": 5,
+          "name": "AM-BALANCE",
+          "start": 57,
+          "length": 13,
+          "picture": "S9(11)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 13,
+          "scale": 2,
+          "signed": true,
+          "source": "pangaea/copybooks/ACCTMAST.cpy:25"
+        },
+        {
+          "level": 5,
+          "name": "AM-OVERDRAFT-LIMIT",
+          "start": 70,
+          "length": 9,
+          "picture": "9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 9,
+          "scale": 2,
+          "source": "pangaea/copybooks/ACCTMAST.cpy:26"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 79,
+          "length": 22,
+          "picture": "X(22)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/ACCTMAST.cpy:27"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "copybook": "REJREC",
+      "level": 1,
+      "name": "REJECT-RECORD",
+      "start": 1,
+      "length": 100,
+      "category": "group",
+      "description": "REJREC: REJECTED TRANSACTION, 100 BYTES THE TRANSACTION AS RECEIVED, WITH THE STEP THAT REJECTED IT AND WHY. ACCOUNT MAINTENANCE REJECTS ITS REQUESTS IN THE SAME FORM, THE REQUEST IN PLACE OF THE TRANSACTION. MODIFICATION HISTORY DATE       BY  CHANGE 1987-03-12 JA  ORIGINAL VERSION. 1988-05-09 JA  CR-0031 ACCOUNT MAINTENANCE REASONS.",
+      "source": "pangaea/copybooks/REJREC.cpy:12",
+      "fields": [
+        {
+          "level": 5,
+          "name": "RJ-PROGRAM",
+          "start": 1,
+          "length": 8,
+          "picture": "X(8)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/REJREC.cpy:13"
+        },
+        {
+          "level": 5,
+          "name": "RJ-REASON",
+          "start": 9,
+          "length": 4,
+          "picture": "X(4)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "conditions": [
+            {
+              "name": "RJ-BAD-ACCOUNT",
+              "values": [
+                "'ACCT'"
+              ],
+              "source": "pangaea/copybooks/REJREC.cpy:15"
+            },
+            {
+              "name": "RJ-BAD-COUNTER",
+              "values": [
+                "'CTRA'"
+              ],
+              "source": "pangaea/copybooks/REJREC.cpy:16"
+            },
+            {
+              "name": "RJ-BAD-CODE",
+              "values": [
+                "'CODE'"
+              ],
+              "source": "pangaea/copybooks/REJREC.cpy:17"
+            },
+            {
+              "name": "RJ-BAD-AMOUNT",
+              "values": [
+                "'AMNT'"
+              ],
+              "source": "pangaea/copybooks/REJREC.cpy:18"
+            },
+            {
+              "name": "RJ-BAD-TYPE",
+              "values": [
+                "'TYPE'"
+              ],
+              "source": "pangaea/copybooks/REJREC.cpy:19"
+            },
+            {
+              "name": "RJ-NO-ACCOUNT",
+              "values": [
+                "'UNKN'"
+              ],
+              "source": "pangaea/copybooks/REJREC.cpy:20"
+            },
+            {
+              "name": "RJ-CLOSED",
+              "values": [
+                "'CLSD'"
+              ],
+              "source": "pangaea/copybooks/REJREC.cpy:21"
+            },
+            {
+              "name": "RJ-FROZEN",
+              "values": [
+                "'FRZN'"
+              ],
+              "source": "pangaea/copybooks/REJREC.cpy:22"
+            },
+            {
+              "name": "RJ-NO-FUNDS",
+              "values": [
+                "'FUND'"
+              ],
+              "source": "pangaea/copybooks/REJREC.cpy:23"
+            },
+            {
+              "name": "RJ-EXISTS",
+              "values": [
+                "'EXST'"
+              ],
+              "source": "pangaea/copybooks/REJREC.cpy:24"
+            },
+            {
+              "name": "RJ-HAS-BALANCE",
+              "values": [
+                "'BALN'"
+              ],
+              "source": "pangaea/copybooks/REJREC.cpy:25"
+            },
+            {
+              "name": "RJ-BAD-STATUS",
+              "values": [
+                "'STAT'"
+              ],
+              "source": "pangaea/copybooks/REJREC.cpy:26"
+            }
+          ],
+          "source": "pangaea/copybooks/REJREC.cpy:14"
+        },
+        {
+          "level": 5,
+          "name": "RJ-TRAN",
+          "start": 13,
+          "length": 80,
+          "picture": "X(80)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/REJREC.cpy:27"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 93,
+          "length": 8,
+          "picture": "X(8)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/REJREC.cpy:28"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-TOTALS",
+      "start": 1,
+      "length": 102,
+      "category": "group",
+      "source": "pangaea/programs/ACCTMNT.cbl:104",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-MASTERS-READ",
+          "start": 1,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/ACCTMNT.cbl:105"
+        },
+        {
+          "level": 5,
+          "name": "WS-MASTERS-WRITTEN",
+          "start": 9,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/ACCTMNT.cbl:106"
+        },
+        {
+          "level": 5,
+          "name": "WS-REQUEST-COUNT",
+          "start": 17,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/ACCTMNT.cbl:107"
+        },
+        {
+          "level": 5,
+          "name": "WS-OPENED-COUNT",
+          "start": 25,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/ACCTMNT.cbl:108"
+        },
+        {
+          "level": 5,
+          "name": "WS-CLOSED-COUNT",
+          "start": 33,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/ACCTMNT.cbl:109"
+        },
+        {
+          "level": 5,
+          "name": "WS-FROZEN-COUNT",
+          "start": 41,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/ACCTMNT.cbl:110"
+        },
+        {
+          "level": 5,
+          "name": "WS-UNFROZEN-COUNT",
+          "start": 49,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/ACCTMNT.cbl:111"
+        },
+        {
+          "level": 5,
+          "name": "WS-LIMIT-COUNT",
+          "start": 57,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/ACCTMNT.cbl:112"
+        },
+        {
+          "level": 5,
+          "name": "WS-REJECT-COUNT",
+          "start": 65,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/ACCTMNT.cbl:113"
+        },
+        {
+          "level": 5,
+          "name": "WS-BALANCES-IN",
+          "start": 73,
+          "length": 15,
+          "picture": "S9(13)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 15,
+          "scale": 2,
+          "signed": true,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/ACCTMNT.cbl:114"
+        },
+        {
+          "level": 5,
+          "name": "WS-BALANCES-OUT",
+          "start": 88,
+          "length": 15,
+          "picture": "S9(13)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 15,
+          "scale": 2,
+          "signed": true,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/ACCTMNT.cbl:115"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REPORT-COUNT-LINE",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "source": "pangaea/programs/ACCTMNT.cbl:117",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-RC-LABEL",
+          "start": 1,
+          "length": 30,
+          "picture": "X(30)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/ACCTMNT.cbl:118"
+        },
+        {
+          "level": 5,
+          "name": "WS-RC-VALUE",
+          "start": 31,
+          "length": 10,
+          "picture": "ZZ,ZZZ,ZZ9",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "source": "pangaea/programs/ACCTMNT.cbl:119"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 41,
+          "length": 40,
+          "picture": "X(40)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "SPACES"
+          ],
+          "source": "pangaea/programs/ACCTMNT.cbl:120"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REPORT-AMOUNT-LINE",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "source": "pangaea/programs/ACCTMNT.cbl:121",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-RA-LABEL",
+          "start": 1,
+          "length": 30,
+          "picture": "X(30)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/ACCTMNT.cbl:122"
+        },
+        {
+          "level": 5,
+          "name": "WS-RA-VALUE",
+          "start": 31,
+          "length": 21,
+          "picture": "Z,ZZZ,ZZZ,ZZZ,ZZ9.99-",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "source": "pangaea/programs/ACCTMNT.cbl:123"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 52,
+          "length": 29,
+          "picture": "X(29)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "SPACES"
+          ],
+          "source": "pangaea/programs/ACCTMNT.cbl:124"
+        }
+      ]
+    }
+  ],
+  "paragraphs": [
+    {
+      "name": "0000-MAIN",
+      "description": "MATCH UNTIL BOTH FILES END, THEN RECONCILE AND REPORT.",
+      "source": "pangaea/programs/ACCTMNT.cbl:128",
+      "performs": [
+        {
+          "target": "1000-INITIALIZE",
+          "source": "pangaea/programs/ACCTMNT.cbl:129"
+        },
+        {
+          "target": "2000-NEXT-ACCOUNT",
+          "thru": "2999-EXIT",
+          "source": "pangaea/programs/ACCTMNT.cbl:130"
+        },
+        {
+          "target": "9900-ABORT",
+          "source": "pangaea/programs/ACCTMNT.cbl:135"
+        },
+        {
+          "target": "8000-WRITE-REPORT",
+          "source": "pangaea/programs/ACCTMNT.cbl:136"
+        },
+        {
+          "target": "9000-CLOSE-FILES",
+          "source": "pangaea/programs/ACCTMNT.cbl:137"
+        }
+      ]
+    },
+    {
+      "name": "1000-INITIALIZE",
+      "description": "OPEN THE FILES AND READ THE FIRST RECORD OF EACH.",
+      "source": "pangaea/programs/ACCTMNT.cbl:145",
+      "performs": [
+        {
+          "target": "9900-ABORT",
+          "source": "pangaea/programs/ACCTMNT.cbl:155"
+        },
+        {
+          "target": "1200-READ-MASTER",
+          "thru": "1200-EXIT",
+          "source": "pangaea/programs/ACCTMNT.cbl:158"
+        },
+        {
+          "target": "1300-READ-REQUEST",
+          "thru": "1300-EXIT",
+          "source": "pangaea/programs/ACCTMNT.cbl:159"
+        }
+      ],
+      "performedBy": [
+        "0000-MAIN"
+      ]
+    },
+    {
+      "name": "1200-READ-MASTER",
+      "description": "READ THE NEXT OLD MASTER RECORD, CHECKING ACCOUNT ORDER.",
+      "source": "pangaea/programs/ACCTMNT.cbl:162",
+      "performs": [
+        {
+          "target": "9900-ABORT",
+          "source": "pangaea/programs/ACCTMNT.cbl:170"
+        }
+      ],
+      "goTos": [
+        {
+          "target": "1200-EXIT",
+          "source": "pangaea/programs/ACCTMNT.cbl:166"
+        }
+      ],
+      "fallsInto": "1200-EXIT",
+      "performedBy": [
+        "1000-INITIALIZE",
+        "2000-NEXT-ACCOUNT"
+      ]
+    },
+    {
+      "name": "1200-EXIT",
+      "source": "pangaea/programs/ACCTMNT.cbl:173",
+      "performedBy": [
+        "1000-INITIALIZE",
+        "2000-NEXT-ACCOUNT"
+      ],
+      "reachedBy": [
+        "1200-READ-MASTER"
+      ]
+    },
+    {
+      "name": "1300-READ-REQUEST",
+      "description": "READ THE NEXT REQUEST, CHECKING ITS ORDER.",
+      "source": "pangaea/programs/ACCTMNT.cbl:177",
+      "performs": [
+        {
+          "target": "9900-ABORT",
+          "source": "pangaea/programs/ACCTMNT.cbl:186"
+        }
+      ],
+      "goTos": [
+        {
+          "target": "1300-EXIT",
+          "source": "pangaea/programs/ACCTMNT.cbl:181"
+        }
+      ],
+      "fallsInto": "1300-EXIT",
+      "performedBy": [
+        "1000-INITIALIZE",
+        "2100-APPLY-REQUESTS"
+      ]
+    },
+    {
+      "name": "1300-EXIT",
+      "source": "pangaea/programs/ACCTMNT.cbl:189",
+      "performedBy": [
+        "1000-INITIALIZE",
+        "2100-APPLY-REQUESTS"
+      ],
+      "reachedBy": [
+        "1300-READ-REQUEST"
+      ]
+    },
+    {
+      "name": "2000-NEXT-ACCOUNT",
+      "description": "TAKE THE LOWER KEY AS THE ACTIVE ACCOUNT, AND HOLD IT IF THE MASTER HAS IT. AN ACCOUNT ONLY THE REQUESTS NAME IS NOT HELD UNTIL AN OPENING MAKES IT.",
+      "source": "pangaea/programs/ACCTMNT.cbl:195",
+      "performs": [
+        {
+          "target": "1200-READ-MASTER",
+          "thru": "1200-EXIT",
+          "source": "pangaea/programs/ACCTMNT.cbl:204"
+        }
+      ],
+      "fallsInto": "2100-APPLY-REQUESTS",
+      "performedBy": [
+        "0000-MAIN"
+      ]
+    },
+    {
+      "name": "2100-APPLY-REQUESTS",
+      "description": "APPLY THE ACTIVE ACCOUNT'S REQUESTS, ONE AFTER THE OTHER.",
+      "source": "pangaea/programs/ACCTMNT.cbl:207",
+      "performs": [
+        {
+          "target": "2200-APPLY-REQUEST",
+          "thru": "2299-EXIT",
+          "source": "pangaea/programs/ACCTMNT.cbl:210"
+        },
+        {
+          "target": "1300-READ-REQUEST",
+          "thru": "1300-EXIT",
+          "source": "pangaea/programs/ACCTMNT.cbl:211"
+        }
+      ],
+      "goTos": [
+        {
+          "target": "2800-WRITE-HELD",
+          "source": "pangaea/programs/ACCTMNT.cbl:209"
+        },
+        {
+          "target": "2100-APPLY-REQUESTS",
+          "source": "pangaea/programs/ACCTMNT.cbl:212"
+        }
+      ],
+      "performedBy": [
+        "0000-MAIN"
+      ],
+      "reachedBy": [
+        "2000-NEXT-ACCOUNT",
+        "2100-APPLY-REQUESTS"
+      ]
+    },
+    {
+      "name": "2200-APPLY-REQUEST",
+      "description": "APPLY ONE REQUEST BY ITS TYPE.",
+      "source": "pangaea/programs/ACCTMNT.cbl:215",
+      "goTos": [
+        {
+          "target": "2210-OPEN",
+          "source": "pangaea/programs/ACCTMNT.cbl:217"
+        },
+        {
+          "target": "2290-REJECT",
+          "source": "pangaea/programs/ACCTMNT.cbl:220"
+        },
+        {
+          "target": "2290-REJECT",
+          "source": "pangaea/programs/ACCTMNT.cbl:223"
+        },
+        {
+          "target": "2220-CLOSE",
+          "source": "pangaea/programs/ACCTMNT.cbl:225"
+        },
+        {
+          "target": "2230-FREEZE",
+          "source": "pangaea/programs/ACCTMNT.cbl:227"
+        },
+        {
+          "target": "2240-UNFREEZE",
+          "source": "pangaea/programs/ACCTMNT.cbl:229"
+        },
+        {
+          "target": "2250-LIMIT",
+          "source": "pangaea/programs/ACCTMNT.cbl:231"
+        },
+        {
+          "target": "2290-REJECT",
+          "source": "pangaea/programs/ACCTMNT.cbl:233"
+        }
+      ],
+      "performedBy": [
+        "0000-MAIN",
+        "2100-APPLY-REQUESTS"
+      ]
+    },
+    {
+      "name": "2210-OPEN",
+      "description": "OPEN A NEW ACCOUNT, EMPTY, FROM TODAY.",
+      "source": "pangaea/programs/ACCTMNT.cbl:236",
+      "goTos": [
+        {
+          "target": "2290-REJECT",
+          "source": "pangaea/programs/ACCTMNT.cbl:239"
+        },
+        {
+          "target": "2299-EXIT",
+          "source": "pangaea/programs/ACCTMNT.cbl:253"
+        }
+      ],
+      "performedBy": [
+        "0000-MAIN",
+        "2100-APPLY-REQUESTS"
+      ],
+      "reachedBy": [
+        "2200-APPLY-REQUEST"
+      ]
+    },
+    {
+      "name": "2220-CLOSE",
+      "description": "CLOSE AN ACCOUNT, IF IT IS EMPTY.",
+      "source": "pangaea/programs/ACCTMNT.cbl:256",
+      "goTos": [
+        {
+          "target": "2290-REJECT",
+          "source": "pangaea/programs/ACCTMNT.cbl:259"
+        },
+        {
+          "target": "2299-EXIT",
+          "source": "pangaea/programs/ACCTMNT.cbl:263"
+        }
+      ],
+      "performedBy": [
+        "0000-MAIN",
+        "2100-APPLY-REQUESTS"
+      ],
+      "reachedBy": [
+        "2200-APPLY-REQUEST"
+      ]
+    },
+    {
+      "name": "2230-FREEZE",
+      "description": "FREEZE AN OPEN ACCOUNT.",
+      "source": "pangaea/programs/ACCTMNT.cbl:266",
+      "goTos": [
+        {
+          "target": "2290-REJECT",
+          "source": "pangaea/programs/ACCTMNT.cbl:269"
+        },
+        {
+          "target": "2299-EXIT",
+          "source": "pangaea/programs/ACCTMNT.cbl:272"
+        }
+      ],
+      "performedBy": [
+        "0000-MAIN",
+        "2100-APPLY-REQUESTS"
+      ],
+      "reachedBy": [
+        "2200-APPLY-REQUEST"
+      ]
+    },
+    {
+      "name": "2240-UNFREEZE",
+      "description": "UNFREEZE A FROZEN ACCOUNT.",
+      "source": "pangaea/programs/ACCTMNT.cbl:275",
+      "goTos": [
+        {
+          "target": "2290-REJECT",
+          "source": "pangaea/programs/ACCTMNT.cbl:278"
+        },
+        {
+          "target": "2299-EXIT",
+          "source": "pangaea/programs/ACCTMNT.cbl:281"
+        }
+      ],
+      "performedBy": [
+        "0000-MAIN",
+        "2100-APPLY-REQUESTS"
+      ],
+      "reachedBy": [
+        "2200-APPLY-REQUEST"
+      ]
+    },
+    {
+      "name": "2250-LIMIT",
+      "description": "CHANGE A CURRENT ACCOUNT'S OVERDRAFT LIMIT.",
+      "source": "pangaea/programs/ACCTMNT.cbl:284",
+      "goTos": [
+        {
+          "target": "2290-REJECT",
+          "source": "pangaea/programs/ACCTMNT.cbl:287"
+        },
+        {
+          "target": "2299-EXIT",
+          "source": "pangaea/programs/ACCTMNT.cbl:290"
+        }
+      ],
+      "performedBy": [
+        "0000-MAIN",
+        "2100-APPLY-REQUESTS"
+      ],
+      "reachedBy": [
+        "2200-APPLY-REQUEST"
+      ]
+    },
+    {
+      "name": "2290-REJECT",
+      "description": "WRITE THE REQUEST TO THE REJECTS WITH ITS REASON.",
+      "source": "pangaea/programs/ACCTMNT.cbl:293",
+      "fallsInto": "2299-EXIT",
+      "performedBy": [
+        "0000-MAIN",
+        "2100-APPLY-REQUESTS"
+      ],
+      "reachedBy": [
+        "2200-APPLY-REQUEST",
+        "2210-OPEN",
+        "2220-CLOSE",
+        "2230-FREEZE",
+        "2240-UNFREEZE",
+        "2250-LIMIT"
+      ]
+    },
+    {
+      "name": "2299-EXIT",
+      "source": "pangaea/programs/ACCTMNT.cbl:298",
+      "performedBy": [
+        "0000-MAIN",
+        "2100-APPLY-REQUESTS"
+      ],
+      "reachedBy": [
+        "2210-OPEN",
+        "2220-CLOSE",
+        "2230-FREEZE",
+        "2240-UNFREEZE",
+        "2250-LIMIT",
+        "2290-REJECT"
+      ]
+    },
+    {
+      "name": "2800-WRITE-HELD",
+      "description": "WRITE THE HELD ACCOUNT, ITS REQUESTS APPLIED, TO THE NEW MASTER.",
+      "source": "pangaea/programs/ACCTMNT.cbl:302",
+      "fallsInto": "2999-EXIT",
+      "performedBy": [
+        "0000-MAIN"
+      ],
+      "reachedBy": [
+        "2100-APPLY-REQUESTS"
+      ]
+    },
+    {
+      "name": "2999-EXIT",
+      "source": "pangaea/programs/ACCTMNT.cbl:307",
+      "performedBy": [
+        "0000-MAIN"
+      ],
+      "reachedBy": [
+        "2800-WRITE-HELD"
+      ]
+    },
+    {
+      "name": "8000-WRITE-REPORT",
+      "description": "WRITE THE MAINTENANCE REPORT.",
+      "source": "pangaea/programs/ACCTMNT.cbl:311",
+      "performedBy": [
+        "0000-MAIN"
+      ]
+    },
+    {
+      "name": "9000-CLOSE-FILES",
+      "description": "CLOSE ALL FILES.",
+      "source": "pangaea/programs/ACCTMNT.cbl:357",
+      "performedBy": [
+        "0000-MAIN",
+        "9900-ABORT"
+      ]
+    },
+    {
+      "name": "9900-ABORT",
+      "description": "STOP THE RUN WITH RETURN CODE 16, SAYING WHY.",
+      "source": "pangaea/programs/ACCTMNT.cbl:362",
+      "performs": [
+        {
+          "target": "9000-CLOSE-FILES",
+          "source": "pangaea/programs/ACCTMNT.cbl:364"
+        }
+      ],
+      "performedBy": [
+        "0000-MAIN",
+        "1000-INITIALIZE",
+        "1200-READ-MASTER",
+        "1300-READ-REQUEST"
+      ]
+    }
+  ]
+}

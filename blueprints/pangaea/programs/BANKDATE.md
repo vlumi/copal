@@ -32,14 +32,16 @@ Program [BANKDATE.cbl](../../../pangaea/programs/BANKDATE.cbl): 2 files, 2 parag
 
 ## Flow
 
-![The paragraphs of BANKDATE and the PERFORMs between them](BANKDATE.svg)
+![The paragraphs of BANKDATE and how control moves between them](BANKDATE.svg)
+
+Solid arrows are PERFORMs, dashed ones GO TOs, and dotted ones control running on into the next paragraph inside a PERFORM THRU range.
 
 ## Paragraphs
 
-| Paragraph | Description | Source | Performs | Performed by |
-| --- | --- | --- | --- | --- |
-| 0000-MAIN | READ TODAY'S CONTROL RECORD AND WRITE THE NEXT BUSINESS DAY'S. | [BANKDATE.cbl:52](../../../pangaea/programs/BANKDATE.cbl#L52) | 1000-NEXT-BUSINESS-DAY | |
-| 1000-NEXT-BUSINESS-DAY | MOVE THE BUSINESS DATE TO THE NEXT DAY THAT IS NOT A WEEKEND. | [BANKDATE.cbl:74](../../../pangaea/programs/BANKDATE.cbl#L74) | | 0000-MAIN |
+| Paragraph | Description | Source | Performs | Goes to | Performed by | Reached by |
+| --- | --- | --- | --- | --- | --- | --- |
+| 0000-MAIN | READ TODAY'S CONTROL RECORD AND WRITE THE NEXT BUSINESS DAY'S. | [BANKDATE.cbl:52](../../../pangaea/programs/BANKDATE.cbl#L52) | 1000-NEXT-BUSINESS-DAY | | | |
+| 1000-NEXT-BUSINESS-DAY | MOVE THE BUSINESS DATE TO THE NEXT DAY THAT IS NOT A WEEKEND. | [BANKDATE.cbl:74](../../../pangaea/programs/BANKDATE.cbl#L74) | | | 0000-MAIN | |
 
 ## Records
 

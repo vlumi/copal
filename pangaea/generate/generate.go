@@ -20,6 +20,7 @@ type Layouts struct {
 	Control *record.Layout
 	Rate    *record.Layout
 	Accrual *record.Layout
+	Maint   *record.Layout
 }
 
 // LoadLayouts reads the layouts from Pangaea's copybooks.
@@ -35,6 +36,7 @@ func LoadLayouts(copybookDir string) (*Layouts, error) {
 		{&l.Control, "BANKCTL", "BANK-CONTROL-RECORD"},
 		{&l.Rate, "RATEREC", "RATE-RECORD"},
 		{&l.Accrual, "ACCRREC", "ACCRUAL-RECORD"},
+		{&l.Maint, "MAINTREC", "MAINT-REQUEST"},
 	} {
 		layout, err := record.FromCopybook(filepath.Join(copybookDir, c.copybook+".cpy"), []string{copybookDir}, c.name)
 		if err != nil {
@@ -59,6 +61,7 @@ type Account struct {
 	Name     string
 	Savings  bool
 	Status   string // O open, F frozen, X closed
+	Opened   int64  // the open date, yyyymmdd
 	Balance  int64  // cents
 	Limit    int64  // overdraft limit, cents
 }
@@ -95,6 +98,7 @@ func (g *Generator) ReadAccounts(records [][]byte) ([]Account, error) {
 		}{
 			{"AM-ACCT-NO", &a.No, nil},
 			{"AM-CUST-NO", &a.Customer, nil},
+			{"AM-OPEN-DATE", &a.Opened, nil},
 			{"AM-BALANCE", &a.Balance, nil},
 			{"AM-OVERDRAFT-LIMIT", &a.Limit, nil},
 			{"AM-SHORT-NAME", nil, &a.Name},

@@ -11,14 +11,17 @@
       * WHEN THE DAYS CROSS INTO A NEW MONTH, THE DAYS OF THE OLD      *
       * MONTH ARE ACCRUED FIRST AND ITS INTEREST BECOMES DUE, ROUNDED  *
       * TO THE CENT, TO BE CREDITED OR CHARGED. THE ACCRUALS ARE READ  *
-      * IN STEP WITH THE MASTER, ONE FOR EACH ACCOUNT.                 *
+      * IN STEP WITH THE MASTER, ONE FOR EACH ACCOUNT. AN ACCOUNT      *
+      * OPENED SINCE THE LAST RUN HAS NONE YET AND STARTS ACCRUING     *
+      * TODAY.                                                         *
       *                                                                *
       * RETURN CODES: 0 ACCRUED,                                       *
-      *               16 FILES OUT OF STEP, NO RATE, OR I/O.           *
+      *               16 AN ACCRUAL FOR NO ACCOUNT, NO RATE, OR I/O.   *
       *                                                                *
       * MODIFICATION HISTORY                                           *
       * DATE       BY  CHANGE                                          *
       * 2001-09-03 TL  CR-0298 ORIGINAL VERSION.                       *
+      * 2002-02-11 TL  CR-0311 ACCOUNTS OPENED SINCE THE LAST RUN.     *
       *================================================================*
        IDENTIFICATION DIVISION.
        PROGRAM-ID. INTACCR.
@@ -57,7 +60,9 @@
        FD  ACCT-IN.
            COPY ACCTMAST.
        FD  ACCR-IN.
-           COPY ACCRREC.
+       01  ACCR-IN-RECORD.
+           05  AI-ACCT-NO              PIC X(10).
+           05  FILLER                  PIC X(30).
        FD  ACCR-OUT.
        01  ACCR-OUT-RECORD             PIC X(40).
        FD  REPORT-OUT.
@@ -77,8 +82,11 @@
        01  WS-END-SWITCHES.
            05  WS-MASTER-END-SW        PIC X          VALUE 'N'.
                88  MASTER-AT-END       VALUE 'Y'.
-           05  WS-ACCRUAL-END-SW       PIC X          VALUE 'N'.
-               88  ACCRUALS-AT-END     VALUE 'Y'.
+      * THE ACCOUNT NUMBER OF THE NEXT ACCRUAL: HIGH-VALUES AT THE END.
+       01  WS-ACCRUAL-KEY              PIC X(10).
+
+      * THE ACCOUNT'S ACCRUAL, AS READ OR STARTED, THEN AS WRITTEN.
+           COPY ACCRREC.
 
       * THE RATE TABLE, AS MANY RATES AS THE RATE FILE HOLDS.
        01  WS-RATE-COUNT               PIC 99         VALUE 0.
@@ -126,6 +134,7 @@
 
        01  WS-TOTALS.
            05  WS-ACCOUNT-COUNT        PIC 9(8)       VALUE 0.
+           05  WS-STARTED-COUNT        PIC 9(8)       VALUE 0.
            05  WS-CREDIT-ACCRUED       PIC S9(9)V9(6) COMP-3 VALUE 0.
            05  WS-DEBIT-ACCRUED        PIC S9(9)V9(6) COMP-3 VALUE 0.
            05  WS-CREDIT-DUE           PIC S9(11)V99  COMP-3 VALUE 0.
@@ -146,7 +155,11 @@
        0000-MAIN.
            PERFORM 1000-INITIALIZE
            PERFORM 2000-ACCRUE-ACCOUNT
-               UNTIL MASTER-AT-END AND ACCRUALS-AT-END
+               UNTIL MASTER-AT-END
+           IF WS-ACCRUAL-KEY NOT = HIGH-VALUES
+               MOVE 'AN ACCRUAL FOR NO ACCOUNT' TO WS-ABORT-MESSAGE
+               PERFORM 9900-ABORT
+           END-IF
            PERFORM 8000-WRITE-REPORT
            PERFORM 9000-CLOSE-FILES
            MOVE 0 TO RETURN-CODE
@@ -169,7 +182,8 @@
            MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE
            COMPUTE WS-TODAY = FUNCTION INTEGER-OF-DATE(WS-BUSINESS-DATE)
            PERFORM 1100-LOAD-RATES
-           PERFORM 1200-READ-ACCOUNT.
+           PERFORM 1200-READ-MASTER
+           PERFORM 1300-READ-ACCRUAL.
 
       * READ THE RATE FILE INTO THE RATE TABLE.
        1100-LOAD-RATES.
@@ -191,30 +205,44 @@
                PERFORM 9900-ABORT
            END-IF.
 
-      * READ THE NEXT ACCOUNT AND ITS ACCRUAL, WHICH MUST MATCH.
-       1200-READ-ACCOUNT.
+      * READ THE NEXT ACCOUNT.
+       1200-READ-MASTER.
            READ ACCT-IN
                AT END
                    SET MASTER-AT-END TO TRUE
-           END-READ
+           END-READ.
+
+      * READ THE NEXT ACCRUAL.
+       1300-READ-ACCRUAL.
            READ ACCR-IN
                AT END
-                   SET ACCRUALS-AT-END TO TRUE
-           END-READ
-           IF MASTER-AT-END AND ACCRUALS-AT-END
-               CONTINUE
-           ELSE
-               IF MASTER-AT-END OR ACCRUALS-AT-END
-                  OR AC-ACCT-NO NOT = AM-ACCT-NO
-                   MOVE 'ACCRUALS OUT OF STEP WITH THE MASTER'
-                       TO WS-ABORT-MESSAGE
+                   MOVE HIGH-VALUES TO WS-ACCRUAL-KEY
+               NOT AT END
+                   MOVE AI-ACCT-NO TO WS-ACCRUAL-KEY
+           END-READ.
+
+      * TAKE THE ACCOUNT'S ACCRUAL, OR START ONE FOR AN ACCOUNT OPENED
+      * SINCE THE LAST RUN: NOTHING ACCRUED, THROUGH TODAY.
+       1400-TAKE-ACCRUAL.
+           EVALUATE TRUE
+               WHEN WS-ACCRUAL-KEY = AM-ACCT-NO
+                   MOVE ACCR-IN-RECORD TO ACCRUAL-RECORD
+                   PERFORM 1300-READ-ACCRUAL
+               WHEN WS-ACCRUAL-KEY > AM-ACCT-NO
+                   MOVE SPACES TO ACCRUAL-RECORD
+                   MOVE AM-ACCT-NO TO AC-ACCT-NO
+                   MOVE WS-BUSINESS-DATE TO AC-THROUGH-DATE
+                   MOVE 0 TO AC-ACCRUED
+                   ADD 1 TO WS-STARTED-COUNT
+               WHEN OTHER
+                   MOVE 'AN ACCRUAL FOR NO ACCOUNT' TO WS-ABORT-MESSAGE
                    PERFORM 9900-ABORT
-               END-IF
-           END-IF.
+           END-EVALUATE.
 
       * ACCRUE ONE ACCOUNT UP TO THE BUSINESS DATE. IF A MONTH CLOSED
       * ON THE WAY, ACCRUE ITS DAYS FIRST AND MAKE ITS INTEREST DUE.
        2000-ACCRUE-ACCOUNT.
+           PERFORM 1400-TAKE-ACCRUAL
            PERFORM 2100-FIND-RATE
            MOVE 0 TO AC-DUE AC-DUE-MONTH
            COMPUTE WS-FROM-DAY =
@@ -231,7 +259,7 @@
            MOVE WS-BUSINESS-DATE TO AC-THROUGH-DATE
            WRITE ACCR-OUT-RECORD FROM ACCRUAL-RECORD
            ADD 1 TO WS-ACCOUNT-COUNT
-           PERFORM 1200-READ-ACCOUNT.
+           PERFORM 1200-READ-MASTER.
 
       * FIND THE ACCOUNT'S RATE: BELOW ZERO THE DEBIT RATE OF ITS
       * TYPE, OTHERWISE THE CREDIT RATE OF THE HIGHEST TIER IT REACHES.
@@ -322,6 +350,9 @@
            WRITE REPORT-LINE FROM WS-REPORT-COUNT-LINE
            MOVE 'ACCOUNTS ACCRUED' TO WS-RC-LABEL
            MOVE WS-ACCOUNT-COUNT TO WS-RC-VALUE
+           WRITE REPORT-LINE FROM WS-REPORT-COUNT-LINE
+           MOVE 'ACCRUALS STARTED' TO WS-RC-LABEL
+           MOVE WS-STARTED-COUNT TO WS-RC-VALUE
            WRITE REPORT-LINE FROM WS-REPORT-COUNT-LINE
            MOVE 'CREDIT INTEREST ACCRUED' TO WS-RA-LABEL
            MOVE WS-CREDIT-ACCRUED TO WS-RA-VALUE
