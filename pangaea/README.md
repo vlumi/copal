@@ -9,7 +9,7 @@ A small COBOL batch bank, the specimen Copal is developed against. Fiction writt
 - [jobs/](jobs/): job files in a small subset of JCL, run by the Go runner in [runner/](runner/).
 - [testdata/](testdata/): fixtures, each an `input` directory of datasets to start from and a `golden` directory of the datasets, job log and reports a run produces.
 
-The Go packages around the COBOL are the bank's machine room, not the bank: [jcl/](jcl/) parses job files, [dataset/](dataset/) keeps the datasets and their catalog, [runner/](runner/) runs jobs and [compile/](compile/) compiles the programs. [generate/](generate/) makes up customers and their business, and [bank/](bank/) runs the bank day after day. `cmd/pangaea` puts them on the command line.
+The Go packages around the COBOL are the bank's machine room, not the bank: [jcl/](jcl/) parses job files, [dataset/](dataset/) keeps the datasets and their catalog, [runner/](runner/) runs jobs and [compile/](compile/) compiles the programs. [generate/](generate/) makes up customers and their business, and [bank/](bank/) runs the bank day after day, and [console/](console/) shows it in the browser. `cmd/pangaea` puts them on the command line.
 
 ## The daily batch
 
@@ -33,6 +33,17 @@ The day's inputs are the current generations, (0), of the bank control record, t
 Every generation stays cataloged in `pangaea/run/bank/datasets`, so the history of the master, the audit trail and the rejects is all there; each day's job log and reports are in `pangaea/run/bank/sysout/DATE`. The same seed always gives the same bank, day after day.
 
 The generator ([generate/](generate/)) reads and writes records through the layouts Copal computes from the copybooks, so it never hand-codes a record format. Customers have habits that follow from the seed: a salary on the 25th, rent on the first business day of the month, savings after payday, cash, deposits and transfers to other customers. Branches make the odd mistake, and customers sometimes try to spend money they do not have, so a few percent of each day ends up in the rejects.
+
+## The console
+
+`make console` serves a window onto the running bank at <http://localhost:8080/> (`ADDR` to change it):
+
+- the bank today: its business date, accounts and balances, and every day it has run, with each day's worst return code;
+- accounts, searched by account number, customer number or name, and for each account its master record field by field, every posting and every reject since the reset;
+- each business day: the job's steps, the transaction file's control totals against its details, the rejects, the reports, the audit trail and the transaction file;
+- what changed between any two days' openings: balances, status changes and new accounts, reconciled against the postings in the audit trails in between.
+
+It reads every record through the layouts Copal computes from the copybooks, the same way the generator writes them. Its buttons reset the bank and run business days by calling the same code as `make bank-reset` and `make bank-days`; the console itself never writes the bank's files.
 
 ## Conventions
 

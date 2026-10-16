@@ -51,7 +51,7 @@ Pangaea stops being a fixture and becomes a running bank.
 
 The hand-written fixtures stay as the CI golden set; the generated bank is for watching, and a test runs three days in two banks from the same seed and compares them byte for byte.
 
-## 5. The bank console
+## 5. The bank console (done)
 
 A small web UI that shows the bank's state and how each batch changed it.
 
