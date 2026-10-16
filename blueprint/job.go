@@ -204,6 +204,22 @@ func temporaryFindings(job Job) []string {
 // through the job is not lost among arrows from far away. The job's output
 // and dummy DDs are left out.
 func jobDiagram(dir string, job Job) diagram.Graph {
+	return JobGraph(job, JobNotes{Link: func(step Step) string { return sourceTarget(dir, step.Source) }})
+}
+
+// JobNotes add to a job's diagram what a run of it did: a note after each
+// step's label, such as its return code, and after the label of each
+// dataset a DD names alone, such as its records; and the link of each
+// step. Any of them may be nil.
+type JobNotes struct {
+	Step func(Step) string
+	DD   func(Step, DD) string
+	Link func(Step) string
+}
+
+// JobGraph is the graph of a job's network, as in its blueprint, with the
+// notes added.
+func JobGraph(job Job, notes JobNotes) diagram.Graph {
 	read, written := map[string]bool{}, map[string]bool{}
 	for _, step := range job.Steps {
 		for _, dd := range step.DDs {
@@ -224,11 +240,15 @@ func jobDiagram(dir string, job Job) diagram.Graph {
 	}
 	var g diagram.Graph
 	added := map[string]bool{}
-	addDataset := func(ds, step string) string {
-		id := node(ds, step)
+	addDataset := func(ds string, step Step, dd DD) string {
+		id := node(ds, step.Name)
 		if !added[id] {
 			added[id] = true
-			g.Nodes = append(g.Nodes, diagram.Node{ID: id, Label: ds, Rounded: true})
+			label := ds
+			if notes.DD != nil && len(dd.Datasets) == 1 {
+				label = withNote(label, notes.DD(step, dd))
+			}
+			g.Nodes = append(g.Nodes, diagram.Node{ID: id, Label: label, Rounded: true})
 		}
 		return id
 	}
@@ -237,24 +257,37 @@ func jobDiagram(dir string, job Job) diagram.Graph {
 		for _, dd := range step.DDs {
 			if dd.Use == useRead {
 				for _, ds := range dd.Datasets {
-					g.Edges = append(g.Edges, diagram.Edge{From: addDataset(ds, step.Name), To: id})
+					g.Edges = append(g.Edges, diagram.Edge{From: addDataset(ds, step, dd), To: id})
 				}
 			}
 		}
-		g.Nodes = append(g.Nodes, diagram.Node{ID: id, Label: step.Name + " " + step.Program,
-			Title: strings.Join(step.Description, " "), Link: sourceTarget(dir, step.Source)})
+		node := diagram.Node{ID: id, Label: step.Name + " " + step.Program, Title: strings.Join(step.Description, " ")}
+		if notes.Step != nil {
+			node.Label = withNote(node.Label, notes.Step(step))
+		}
+		if notes.Link != nil {
+			node.Link = notes.Link(step)
+		}
+		g.Nodes = append(g.Nodes, node)
 		if i > 0 {
 			g.Edges = append(g.Edges, diagram.Edge{From: "step " + job.Steps[i-1].Name, To: id, Style: diagram.Dotted})
 		}
 		for _, dd := range step.DDs {
 			if dd.Use != useRead && dd.Use != "" {
 				for _, ds := range dd.Datasets {
-					g.Edges = append(g.Edges, diagram.Edge{From: id, To: addDataset(ds, step.Name)})
+					g.Edges = append(g.Edges, diagram.Edge{From: id, To: addDataset(ds, step, dd)})
 				}
 			}
 		}
 	}
 	return g
+}
+
+func withNote(label, note string) string {
+	if note == "" {
+		return label
+	}
+	return label + " " + note
 }
 
 func jobMarkdown(dir string, job Job) string {
