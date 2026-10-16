@@ -1,7 +1,8 @@
 // Package runner executes Pangaea's jobs, standing in for the mainframe's
 // job entry subsystem: it runs each step's program with its DD statements
 // bound to datasets, bypasses steps by their COND tests, catalogs the new
-// datasets and writes a job log.
+// datasets and generations, deletes the temporary ones, and writes a job
+// log.
 package runner
 
 import (
@@ -48,25 +49,54 @@ func (r Result) String() string {
 
 // Run executes the job's steps in order. A step is bypassed when its COND
 // test holds for an earlier step's return code; after an abend, every
-// remaining step is bypassed. The error is for a job that could not run as
-// written, such as a missing dataset or program, not for a step's return code.
+// remaining step is bypassed. Temporary datasets are deleted when the job
+// ends. The error is for a job that could not run as written, such as a
+// missing dataset or program, not for a step's return code.
 func (r Runner) Run(job *jcl.Job) ([]Result, error) {
 	if err := os.MkdirAll(r.Sysout, 0o755); err != nil {
 		return nil, err
 	}
+	run := &jobRun{Runner: r, newest: map[string]int{}}
+	for _, step := range job.Steps {
+		for _, dd := range step.DDs {
+			if dd.Relative {
+				run.newest[dd.DSN] = r.Datasets.LatestGeneration(dd.DSN)
+			}
+		}
+	}
+	results, err := run.steps(job)
+	if cleanupErr := run.deleteTemporary(); err == nil {
+		err = cleanupErr
+	}
+	if err != nil {
+		return results, err
+	}
+	return results, r.writeJobLog(job, results)
+}
+
+// jobRun is the state of one run of a job: the newest generation of each
+// generation data group when the job started, which relative generations
+// count from, and the temporary datasets it created.
+type jobRun struct {
+	Runner
+	newest    map[string]int
+	temporary []string
+}
+
+func (run *jobRun) steps(job *jcl.Job) ([]Result, error) {
 	var results []Result
 	for _, step := range job.Steps {
 		if abended(results) || bypassed(step, results) {
 			results = append(results, Result{Step: step.Name, Program: step.Program, Bypassed: true})
 			continue
 		}
-		result, err := r.runStep(step)
+		result, err := run.runStep(step)
 		if err != nil {
 			return results, fmt.Errorf("step %s: %w", step.Name, err)
 		}
 		results = append(results, result)
 	}
-	return results, r.writeJobLog(job, results)
+	return results, nil
 }
 
 func abended(results []Result) bool {
@@ -90,17 +120,17 @@ func bypassed(step jcl.Step, results []Result) bool {
 	return false
 }
 
-func (r Runner) runStep(step jcl.Step) (Result, error) {
+func (run *jobRun) runStep(step jcl.Step) (Result, error) {
 	result := Result{Step: step.Name, Program: step.Program}
-	env, err := r.allocate(step)
+	env, err := run.allocate(step)
 	if err != nil {
 		return result, err
 	}
-	output, err := os.Create(filepath.Join(r.Sysout, step.Name+".STDOUT"))
+	output, err := os.Create(filepath.Join(run.Sysout, step.Name+".STDOUT"))
 	if err != nil {
 		return result, err
 	}
-	cmd := exec.Command(filepath.Join(r.Programs, step.Program))
+	cmd := exec.Command(filepath.Join(run.Programs, step.Program))
 	cmd.Env = append(os.Environ(), env...)
 	cmd.Stdout = output
 	cmd.Stderr = output
@@ -115,38 +145,83 @@ func (r Runner) runStep(step jcl.Step) (Result, error) {
 		result.RC = exit.ExitCode()
 	case errors.As(runErr, &exit):
 		result.Abended = true
-		return result, r.discardNew(step)
+		return result, run.discardNew(step)
 	case runErr != nil:
 		return result, runErr
 	}
-	return result, r.catalogNew(step)
+	return result, run.catalogWritten(step)
+}
+
+// dsn is the cataloged name of a DD's dataset.
+func (run *jobRun) dsn(dd jcl.DD) string {
+	switch {
+	case dd.Temporary:
+		return "TEMP." + dd.DSN
+	case dd.Relative:
+		return dataset.GenerationName(dd.DSN, run.newest[dd.DSN]+dd.Generation)
+	}
+	return dd.DSN
 }
 
 // allocate checks the step's datasets and returns the environment that binds
 // each DD name to its file, the way GnuCOBOL resolves ASSIGN names.
-func (r Runner) allocate(step jcl.Step) ([]string, error) {
+func (run *jobRun) allocate(step jcl.Step) ([]string, error) {
 	var env []string
 	for _, dd := range step.DDs {
-		path := filepath.Join(r.Sysout, step.Name+"."+dd.Name)
-		if !dd.Sysout {
-			_, cataloged := r.Datasets.LRECL(dd.DSN)
-			switch {
-			case dd.Disp == jcl.New && cataloged:
-				return nil, fmt.Errorf("DD %s: %s already exists", dd.Name, dd.DSN)
-			case dd.Disp != jcl.New && !cataloged:
-				return nil, fmt.Errorf("DD %s: %s not cataloged", dd.Name, dd.DSN)
-			}
-			path = r.Datasets.Path(dd.DSN)
+		path, err := run.allocateDD(step, dd)
+		if err != nil {
+			return nil, fmt.Errorf("DD %s: %w", dd.Name, err)
 		}
 		env = append(env, "DD_"+dd.Name+"="+path)
 	}
 	return env, nil
 }
 
-func (r Runner) catalogNew(step jcl.Step) error {
+func (run *jobRun) allocateDD(step jcl.Step, dd jcl.DD) (string, error) {
+	switch {
+	case dd.Sysout:
+		return filepath.Join(run.Sysout, step.Name+"."+dd.Name), nil
+	case dd.Dummy:
+		return os.DevNull, nil
+	}
+	dsn := run.dsn(dd)
+	_, cataloged := run.Datasets.LRECL(dsn)
+	switch {
+	case dd.Disp == jcl.New && cataloged:
+		return "", fmt.Errorf("%s already exists", dsn)
+	case (dd.Disp == jcl.Shr || dd.Disp == jcl.Old) && !cataloged:
+		return "", fmt.Errorf("%s not cataloged", dsn)
+	case dd.Disp == jcl.Mod && !cataloged && dd.LRECL == 0:
+		return "", fmt.Errorf("%s does not exist yet and has no DCB to create it with", dsn)
+	}
+	return run.Datasets.Path(dsn), nil
+}
+
+// catalogWritten catalogs the datasets the step created or appended to.
+func (run *jobRun) catalogWritten(step jcl.Step) error {
+	for _, dd := range step.DDs {
+		if dd.Disp != jcl.New && dd.Disp != jcl.Mod {
+			continue
+		}
+		dsn := run.dsn(dd)
+		lrecl, cataloged := run.Datasets.LRECL(dsn)
+		if !cataloged {
+			lrecl = dd.LRECL
+			if dd.Temporary {
+				run.temporary = append(run.temporary, dsn)
+			}
+		}
+		if err := run.Datasets.Catalog(dsn, lrecl); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (run *jobRun) discardNew(step jcl.Step) error {
 	for _, dd := range step.DDs {
 		if dd.Disp == jcl.New {
-			if err := r.Datasets.Catalog(dd.DSN, dd.LRECL); err != nil {
+			if err := os.Remove(run.Datasets.Path(run.dsn(dd))); err != nil && !errors.Is(err, os.ErrNotExist) {
 				return err
 			}
 		}
@@ -154,12 +229,10 @@ func (r Runner) catalogNew(step jcl.Step) error {
 	return nil
 }
 
-func (r Runner) discardNew(step jcl.Step) error {
-	for _, dd := range step.DDs {
-		if dd.Disp == jcl.New {
-			if err := os.Remove(r.Datasets.Path(dd.DSN)); err != nil && !errors.Is(err, os.ErrNotExist) {
-				return err
-			}
+func (run *jobRun) deleteTemporary() error {
+	for _, dsn := range run.temporary {
+		if err := run.Datasets.Delete(dsn); err != nil {
+			return err
 		}
 	}
 	return nil
