@@ -69,7 +69,7 @@ Pangaea reaches the size in the brief, a step at a time, each step with Copal re
 
 - Month-end (done): interest accrual and posting (`COMP-3` amounts), monthly fees, statements, a general-ledger summary. Interest accrues every day; the first business day of a month posts the month before's interest and fees ahead of its own transactions, and a month-end job after the daily batch prints the statements and the general-ledger summary.
 - The nasties (done): `REDEFINES`, `OCCURS` and `OCCURS DEPENDING ON`, level-88 conditions, `COPY ... REPLACING`, a job that only works because its input comes in master order, and account maintenance in 1988 style, with `PERFORM THRU` ranges, `GO TO`s and fall-through, which Copal follows into its diagrams.
-- Copal: file I/O joined with the job network into one graph, drawn as SVG, a statement parser, and data flow per paragraph and field lineage within a program (done); business rules as decision tables.
+- Copal (done): file I/O joined with the job network into one graph, drawn as SVG, a statement parser, data flow per paragraph and field lineage within a program, and business rules as decision tables.
 
 The console gains a page per run: the job network with each step's return code and record counts, and links from steps to the blueprints of their programs.
 
