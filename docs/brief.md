@@ -21,7 +21,7 @@ The hard part of moving a COBOL core system to anything newer is rarely the tran
 
 **Copal**, the analyzer. Deterministic, no models at this stage.
 
-1. **Parse.** Fixed-format source (sequence area, indicator column, area A and B), `COPY` expansion with `REPLACING`, and the subset of COBOL that Pangaea uses. First decide between writing a subset parser and building on an existing one: evaluate ProLeap (ANTLR-based COBOL 85 parser) and cobol-rekt (an open-source COBOL reverse-engineering toolkit, active as of 2026) before writing anything, and record the decision in this file.
+1. **Parse.** Fixed-format source (sequence area, indicator column, area A and B), `COPY` expansion with `REPLACING`, and the subset of COBOL that Pangaea uses. Copal has its own parser for this subset; see Decisions for why.
 2. **Record layouts.** From the copybooks and data divisions: every field with level, name, offset, length, `PIC`, usage and redefinitions. This is the map of the fixed-format interchange between jobs.
 3. **Program structure.** Paragraphs and sections, the `PERFORM` graph (including `THRU` ranges and fall-through), and the control flow within paragraphs.
 4. **Data flow.** For each paragraph, the fields it reads and writes; field-to-field lineage through `MOVE`, `COMPUTE` and arithmetic verbs.
@@ -43,18 +43,18 @@ The hard part of moving a COBOL core system to anything newer is rarely the tran
 ## Decisions
 
 - Storage is files, the way mainframe batch stored it. Everything passed between batch steps is a sequential file of fixed-length records. The account master becomes an indexed file (`ORGANIZATION INDEXED`, GnuCOBOL's counterpart of a VSAM KSDS) when the online channel arrives: the batch keeps reading it sequentially, online authorizations read it by account number. Cards and card holds are indexed files too, keyed by card number and by account and hold number. No embedded SQL: it needs a precompiler and a database server on top of GnuCOBOL, and it moves the layouts out of copybooks into a schema, which is a different analysis problem. No IMS or IDMS: neither has a usable open implementation for GnuCOBOL. Which indexed backend the GnuCOBOL build uses (Berkeley DB or another) is checked when the indexed master is built.
+- Copal is written in Go and parses COBOL itself. ProLeap and cobol-rekt were both evaluated on a sample with `COPY ... REPLACING`, `REDEFINES`, `OCCURS DEPENDING ON`, level-88s, `COMP-3`, `PERFORM THRU` and `GO TO`. Both parse it correctly, and neither is enough for Copal. Neither maps positions back to the source file and copybook: ProLeap reports lines of the expanded text, cobol-rekt's JSON has no positions at all. Neither computes record layouts: ProLeap has no offsets or lengths, cobol-rekt gives `COMP-3` fields their display size and fails on `OCCURS 0 TO n`. Neither has data flow Copal could trust: ProLeap has none, cobol-rekt records `ADD A TO B` as modifying A. cobol-rekt's output is also not reproducible as shipped, because it uses random IDs. ProLeap has had no code change since January 2024. Either one would add a JVM and a vendored jar to the toolchain, and Copal would still have to write the layout engine, the `PERFORM` range graph and the data flow itself. Copal needs to cover only the subset Pangaea uses, and Pangaea is written alongside it, so a hand-written parser in Go is the smaller dependency and keeps positions exact. The standard library is enough to start with.
+- Pangaea grows in the order of [roadmap.md](roadmap.md): a minimal daily batch first, Copal's layout and structure extraction on that, then both together.
 
-## Open decisions for the first session
+## Open decisions
 
-- Copal's implementation language. Go is the default (Ville's most recent language, simple to ship as one binary); Java would make ProLeap usable directly. Decide after the parser evaluation.
-- Graph rendering: Graphviz (`dot`) or hand-laid SVG.
-- How far Pangaea goes before Copal starts: suggested order is a minimal daily batch first (two or three programs, one copybook), Copal's layout and structure extraction on that, then grow both together.
+- Graph rendering: Graphviz (`dot`) or hand-laid SVG. Blueprints are golden files, so the rendering has to be reproducible: Graphviz layouts can change between versions (Homebrew and Ubuntu ship different ones), which argues for checking in the `dot` source rather than the SVG, or for hand-laid SVG. Decide when the first diagram is drawn.
 
 ## First tasks besides the code
 
-- A GitHub Actions workflow that runs the same checks as `make ci` (GnuCOBOL from apt on Ubuntu), so the history shows green builds and the check exists for branch protection once the repository is public.
+- A GitHub Actions workflow that runs the same checks as `make ci` (GnuCOBOL 3.2 from apt in an Ubuntu 26.04 container; Ubuntu 24.04 has only 3.1.2), so the history shows green builds and the check exists for branch protection once the repository is public.
 - Keep the README's status line current as parts start working.
 
 ## Toolchain
 
-GnuCOBOL 3.2 from Homebrew (`cobc -x` for executables, `-free` is not used: Pangaea is fixed-format on purpose). Go latest stable or the JDK chosen above. `make ci` builds Pangaea, runs its batches against the golden outputs, runs Copal's tests and regenerates the blueprints to compare against the golden ones.
+GnuCOBOL 3.2 from Homebrew (`cobc -x` for executables, `-free` is not used: Pangaea is fixed-format on purpose). Go, latest stable. `make ci` builds Pangaea, runs its batches against the golden outputs, runs Copal's tests and regenerates the blueprints to compare against the golden ones.
