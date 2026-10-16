@@ -14,5 +14,9 @@ toolchain:  ## Check that the build tools are installed
 lint-md:  ## Lint the Markdown files
 	@$(MARKDOWNLINT) "**/*.md" "!CLAUDE.md"
 
+.PHONY: pangaea-build
+pangaea-build:  ## Compile Pangaea's COBOL programs
+	go run ./cmd/pangaea build
+
 .PHONY: ci
 ci: toolchain lint-md  ## Full local CI
