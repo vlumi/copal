@@ -85,11 +85,12 @@ func (l *Ledger) jobRun(dir string) (JobRun, error) {
 		Step: func(s blueprint.Step) string { return outcomes[s.Name] },
 		DD: func(s blueprint.Step, dd blueprint.DD) string {
 			if n, ok := records[s.Name][dd.Name]; ok {
-				return "· " + count(n)
+				return count(n) + " records"
 			}
 			return ""
 		},
-		Link: func(s blueprint.Step) string { return "/blueprints/programs/" + s.Program + ".md" },
+		ProgramLink:  func(name string) string { return "/blueprints/programs/" + name + ".md" },
+		CopybookLink: func(name string) string { return "/blueprints/copybooks/" + name + ".md" },
 	}).SVG()
 	run.Network = template.HTML(svg) //nolint:gosec // drawn by Copal, its labels escaped
 	return run, err

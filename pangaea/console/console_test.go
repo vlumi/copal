@@ -48,7 +48,7 @@ func TestConsole(t *testing.T) {
 		"ACCT.MASTER.G0001V00", "ACCT.MASTER.G0003V00", "Reconciled")
 	get(t, server.URL+"/", http.StatusOK, `href="/days/2026-09-02"`, "RC=0004")
 	get(t, server.URL+"/days/2026-09-02", http.StatusOK, "TRAN.AUDIT.G0002V00", "VALID.VALRPT", "POST.POSTRPT",
-		"Job DAILY", "<svg", "MAINT ACCTMNT RC=", "/blueprints/programs/ACCTMNT.md")
+		"Job DAILY", "<svg", ">program ACCTMNT<", "/blueprints/programs/ACCTMNT.md", "/blueprints/copybooks/ACCTMAST.md", " records<")
 	get(t, server.URL+"/days/2026-09-01", http.StatusOK, "Job MONTHLY", "STMT.STMTRPT")
 	get(t, server.URL+"/days/2026-09-02/sysout/JOBLOG", http.StatusOK, "JOB DAILY")
 	get(t, server.URL+"/days/2026-09-01/sysout/MONTHLY/JOBLOG", http.StatusOK, "JOB MONTHLY")

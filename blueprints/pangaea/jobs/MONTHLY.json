@@ -29,6 +29,7 @@
           "disp": "SHR",
           "file": "ACCR-IN",
           "use": "read",
+          "copybook": "ACCRREC",
           "source": "pangaea/jobs/MONTHLY.jcl:17"
         },
         {
@@ -39,6 +40,7 @@
           "disp": "SHR",
           "file": "ACCT-IN",
           "use": "read",
+          "copybook": "ACCTMAST",
           "source": "pangaea/jobs/MONTHLY.jcl:18"
         },
         {
@@ -49,6 +51,7 @@
           "disp": "SHR",
           "file": "AUDIT-IN",
           "use": "read",
+          "copybook": "AUDITREC",
           "source": "pangaea/jobs/MONTHLY.jcl:19"
         },
         {
@@ -84,6 +87,7 @@
           "disp": "SHR",
           "file": "ACCR-IN",
           "use": "read",
+          "copybook": "ACCRREC",
           "source": "pangaea/jobs/MONTHLY.jcl:26"
         },
         {
@@ -94,6 +98,7 @@
           "disp": "SHR",
           "file": "AUDIT-IN",
           "use": "read",
+          "copybook": "AUDITREC",
           "source": "pangaea/jobs/MONTHLY.jcl:27"
         },
         {
@@ -104,6 +109,7 @@
           "disp": "NEW",
           "file": "GL-OUT",
           "use": "write",
+          "copybook": "GLREC",
           "source": "pangaea/jobs/MONTHLY.jcl:28"
         },
         {
@@ -113,6 +119,38 @@
           "use": "write",
           "source": "pangaea/jobs/MONTHLY.jcl:30"
         }
+      ]
+    }
+  ],
+  "datasets": [
+    {
+      "dataset": "ACCT.ACCRUAL(0)",
+      "copybook": "ACCRREC",
+      "readBy": [
+        "STMT",
+        "LEDGER"
+      ]
+    },
+    {
+      "dataset": "ACCT.MASTER(-1)",
+      "copybook": "ACCTMAST",
+      "readBy": [
+        "STMT"
+      ]
+    },
+    {
+      "dataset": "TRAN.AUDIT",
+      "copybook": "AUDITREC",
+      "readBy": [
+        "STMT",
+        "LEDGER"
+      ]
+    },
+    {
+      "dataset": "GL.SUMMARY(+1)",
+      "copybook": "GLREC",
+      "writtenBy": [
+        "LEDGER"
       ]
     }
   ]

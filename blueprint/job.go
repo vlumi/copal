@@ -16,11 +16,22 @@ import (
 // statements bind, how the step's program uses each, and what does not
 // fit between the job and its programs.
 type Job struct {
-	Name        string   `json:"job"`
-	Source      string   `json:"source"`
-	Description []string `json:"description,omitempty"`
-	Steps       []Step   `json:"steps"`
-	Findings    []string `json:"findings,omitempty"`
+	Name        string    `json:"job"`
+	Source      string    `json:"source"`
+	Description []string  `json:"description,omitempty"`
+	Steps       []Step    `json:"steps"`
+	Datasets    []Dataset `json:"datasets"`
+	Findings    []string  `json:"findings,omitempty"`
+}
+
+// Dataset is a dataset a job names, as it names it, with the copybook
+// whose record describes it, as far as the programs that use it say, and
+// the steps that write and read it.
+type Dataset struct {
+	Name      string   `json:"dataset"`
+	Copybook  string   `json:"copybook,omitempty"`
+	WrittenBy []string `json:"writtenBy,omitempty"`
+	ReadBy    []string `json:"readBy,omitempty"`
 }
 
 // Step is one step of a job: the program it runs, the return code test
@@ -45,7 +56,10 @@ type DD struct {
 	Dummy    bool     `json:"dummy,omitempty"`
 	File     string   `json:"file,omitempty"`
 	Use      string   `json:"use,omitempty"`
-	Source   string   `json:"source"`
+	// Copybook is the copybook of the record the program declares for the
+	// file, when it declares it with one.
+	Copybook string `json:"copybook,omitempty"`
+	Source   string `json:"source"`
 }
 
 // Uses of a dataset, from the modes the program opens its file in.
@@ -91,7 +105,76 @@ func analyzeJob(path string, programs []Program) (Job, error) {
 		job.Steps = append(job.Steps, step)
 	}
 	job.Findings = append(job.Findings, temporaryFindings(job)...)
+	job.Datasets = jobDatasets(job)
 	return job, nil
+}
+
+// jobDatasets lists the datasets the job names, in the order it first
+// names them, with the steps that write and read each.
+func jobDatasets(job Job) []Dataset {
+	var datasets []Dataset
+	for _, step := range job.Steps {
+		for _, dd := range step.DDs {
+			for _, name := range dd.Datasets {
+				i := slices.IndexFunc(datasets, func(d Dataset) bool { return d.Name == name })
+				if i < 0 {
+					datasets = append(datasets, Dataset{Name: name})
+					i = len(datasets) - 1
+				}
+				switch dd.Use {
+				case "":
+				case useRead:
+					addOnce(&datasets[i].ReadBy, step.Name)
+				default:
+					addOnce(&datasets[i].WrittenBy, step.Name)
+				}
+			}
+		}
+	}
+	return datasets
+}
+
+// datasetBase is the dataset a name stands for, whatever its generation:
+// ACCT.MASTER for ACCT.MASTER(+1).
+func datasetBase(name string) string {
+	base, _, _ := strings.Cut(name, "(")
+	return base
+}
+
+// describeDatasets names each dataset's record layout from every job: the
+// copybook of the record a program declares for a file bound to the
+// dataset, in any generation. Two programs that describe one dataset with
+// different copybooks are a finding of each job that names it.
+func describeDatasets(jobs []Job) {
+	copybooks := map[string][]string{}
+	for _, job := range jobs {
+		for _, step := range job.Steps {
+			for _, dd := range step.DDs {
+				for _, name := range dd.Datasets {
+					if dd.Copybook != "" {
+						list := copybooks[datasetBase(name)]
+						addOnce(&list, dd.Copybook)
+						copybooks[datasetBase(name)] = list
+					}
+				}
+			}
+		}
+	}
+	for j := range jobs {
+		reported := map[string]bool{}
+		for i, d := range jobs[j].Datasets {
+			base := datasetBase(d.Name)
+			list := copybooks[base]
+			if len(list) > 0 {
+				jobs[j].Datasets[i].Copybook = list[0]
+			}
+			if len(list) > 1 && !reported[base] {
+				reported[base] = true
+				jobs[j].Findings = append(jobs[j].Findings,
+					fmt.Sprintf("%s is described by more than one copybook: %s.", base, strings.Join(list, ", ")))
+			}
+		}
+	}
 }
 
 func newDD(path string, d jcl.DD) DD {
@@ -128,6 +211,7 @@ func bind(dd *DD, step string, p Program) []string {
 	}
 	f := p.Files[i]
 	dd.File = f.Name
+	dd.Copybook = fileCopybook(p, f)
 	var modes []string
 	for _, mode := range f.Opened {
 		modes = append(modes, uses[mode])
@@ -146,6 +230,30 @@ func bind(dd *DD, step string, p Program) []string {
 		return []string{fmt.Sprintf("Step %s: %s appends to DD %s, which is not DISP=MOD.", step, p.Name, dd.Name)}
 	}
 	return nil
+}
+
+// fileCopybook is the copybook of a file's record: the record declared
+// for the file, or else the one the program writes it from or reads it into.
+func fileCopybook(p Program, f File) string {
+	copybooks := map[string]string{}
+	for _, r := range p.Records {
+		if r.Copybook == "" {
+			continue
+		}
+		if r.File == f.Name {
+			return r.Copybook
+		}
+		copybooks[r.Name] = r.Copybook
+	}
+	for _, e := range p.Lineage {
+		switch {
+		case (e.Verb == "WRITE" || e.Verb == "RELEASE") && slices.Contains(f.Records, e.To) && copybooks[e.From] != "":
+			return copybooks[e.From]
+		case (e.Verb == "READ" || e.Verb == "RETURN") && slices.Contains(f.Records, e.From) && copybooks[e.To] != "":
+			return copybooks[e.To]
+		}
+	}
+	return ""
 }
 
 // unbound reports the program's files that the step binds no DD to. A
@@ -204,14 +312,17 @@ func temporaryFindings(job Job) []string {
 // one it only writes below each step that writes it, so that the flow
 // through the job is not lost among arrows from far away. The job's output
 // and dummy DDs are left out.
-func jobDiagram(dir string, job Job) diagram.Graph {
-	return JobGraph(job, JobNotes{Link: func(step Step) string { return sourceTarget(dir, step.Source) }})
+func jobDiagram(job Job) diagram.Graph {
+	return JobGraph(job, JobNotes{
+		ProgramLink:  func(name string) string { return "../programs/" + name + ".md" },
+		CopybookLink: func(name string) string { return "../copybooks/" + name + ".md" },
+	})
 }
 
 // networkKeys say how to read a job's network.
 var networkKeys = []diagram.Key{
-	diagram.NodeKey(diagram.Node{}, "step and its program"),
-	diagram.NodeKey(diagram.Node{Data: true}, "dataset"),
+	diagram.NodeKey(diagram.Node{}, "step, the program it runs"),
+	diagram.NodeKey(diagram.Node{Data: true}, "dataset, its record's copybook"),
 	diagram.NodeKey(diagram.Node{Data: true, Dashed: true}, "temporary dataset, &&NAME"),
 	diagram.EdgeKey(diagram.Solid, "read or written"),
 	diagram.EdgeKey(diagram.Dotted, "runs next"),
@@ -219,19 +330,25 @@ var networkKeys = []diagram.Key{
 	diagram.TextKey("NAME(+1) generation written"),
 }
 
-// JobNotes add to a job's diagram what a run of it did: a note after each
-// step's label, such as its return code, and after the label of each
-// dataset a DD names alone, such as its records; and the link of each
-// step. Any of them may be nil.
+// JobNotes add to a job's diagram what a run of it did, a line under each
+// step's label, such as its return code, and under the label of each
+// dataset a DD names alone, such as its records; and say where steps and
+// copybooks link to, by name. Any of them may be nil.
 type JobNotes struct {
-	Step func(Step) string
-	DD   func(Step, DD) string
-	Link func(Step) string
+	Step         func(Step) string
+	DD           func(Step, DD) string
+	ProgramLink  func(string) string
+	CopybookLink func(string) string
 }
 
 // JobGraph is the graph of a job's network, as in its blueprint, with the
-// notes added.
+// notes added. A step shows its program, and a dataset the copybook that
+// describes its records, when it is known.
 func JobGraph(job Job, notes JobNotes) diagram.Graph {
+	copybooks := map[string]string{}
+	for _, d := range job.Datasets {
+		copybooks[d.Name] = d.Copybook
+	}
 	g := diagram.Graph{Legend: networkKeys}
 	read, written := map[string]bool{}, map[string]bool{}
 	for _, step := range job.Steps {
@@ -256,11 +373,17 @@ func JobGraph(job Job, notes JobNotes) diagram.Graph {
 		id := node(ds, step.Name)
 		if !added[id] {
 			added[id] = true
-			label := ds
-			if notes.DD != nil && len(dd.Datasets) == 1 {
-				label = withNote(label, notes.DD(step, dd))
+			n := diagram.Node{ID: id, Label: ds, Data: true, Dashed: strings.HasPrefix(ds, "&&")}
+			if c := copybooks[ds]; c != "" {
+				n.Label += "\ncopybook " + c
+				if notes.CopybookLink != nil {
+					n.Link = notes.CopybookLink(c)
+				}
 			}
-			g.Nodes = append(g.Nodes, diagram.Node{ID: id, Label: label, Data: true, Dashed: strings.HasPrefix(ds, "&&")})
+			if notes.DD != nil && len(dd.Datasets) == 1 {
+				n.Label = withNote(n.Label, notes.DD(step, dd))
+			}
+			g.Nodes = append(g.Nodes, n)
 		}
 		return id
 	}
@@ -273,12 +396,12 @@ func JobGraph(job Job, notes JobNotes) diagram.Graph {
 				}
 			}
 		}
-		node := diagram.Node{ID: id, Label: step.Name + " " + step.Program, Title: strings.Join(step.Description, " ")}
+		node := diagram.Node{ID: id, Label: step.Name + "\nprogram " + step.Program, Title: strings.Join(step.Description, " ")}
 		if notes.Step != nil {
 			node.Label = withNote(node.Label, notes.Step(step))
 		}
-		if notes.Link != nil {
-			node.Link = notes.Link(step)
+		if notes.ProgramLink != nil {
+			node.Link = notes.ProgramLink(step.Program)
 		}
 		g.Nodes = append(g.Nodes, node)
 		if i > 0 && !feeds(job.Steps[i-1], step, read, written) {
@@ -316,11 +439,24 @@ func feeds(step, next Step, read, written map[string]bool) bool {
 	return false
 }
 
+func copybookLink(name string) string {
+	if name == "" {
+		return ""
+	}
+	return fmt.Sprintf("[%s](../copybooks/%s.md)", name, name)
+}
+
+func addOnce(names *[]string, name string) {
+	if !slices.Contains(*names, name) {
+		*names = append(*names, name)
+	}
+}
+
 func withNote(label, note string) string {
 	if note == "" {
 		return label
 	}
-	return label + " " + note
+	return label + "\n" + note
 }
 
 func jobMarkdown(dir string, job Job) string {
@@ -330,17 +466,29 @@ func jobMarkdown(dir string, job Job) string {
 	fmt.Fprintf(&b, "Job %s: %d steps.\n", sourceLink(dir, job.Source, false), len(job.Steps))
 	fmt.Fprintf(&b, "\n## Network\n\n![The steps of %s and the datasets they read and write](%s.svg)\n", job.Name, job.Name)
 
-	b.WriteString("\n## Steps\n\n| Step | Program | Bypassed by | Description | Source |\n| --- | --- | --- | --- | --- |\n")
+	b.WriteString("\n## Steps\n\n| Step | Program | Reads | Writes | Bypassed by | Description | Source |\n" +
+		"| --- | --- | --- | --- | --- | --- | --- |\n")
 	for _, step := range job.Steps {
 		cond := ""
 		if step.Cond != "" {
 			cond = "COND=" + step.Cond
 		}
-		b.WriteString(row(step.Name, fmt.Sprintf("[%s](../programs/%s.md)", step.Program, step.Program), cond,
+		var reads, writes []string
+		for _, dd := range step.DDs {
+			switch dd.Use {
+			case "":
+			case useRead:
+				reads = append(reads, dd.Datasets...)
+			default:
+				writes = append(writes, dd.Datasets...)
+			}
+		}
+		b.WriteString(row(step.Name, fmt.Sprintf("[%s](../programs/%s.md)", step.Program, step.Program),
+			strings.Join(reads, ", "), strings.Join(writes, ", "), cond,
 			strings.Join(step.Description, " "), sourceLink(dir, step.Source, true)))
 	}
 	for _, step := range job.Steps {
-		fmt.Fprintf(&b, "\n### %s\n\n| DD | Dataset | DISP | File | Use |\n| --- | --- | --- | --- | --- |\n", step.Name)
+		fmt.Fprintf(&b, "\n### %s\n\n| DD | Dataset | DISP | File | Copybook | Use |\n| --- | --- | --- | --- | --- | --- |\n", step.Name)
 		for _, dd := range step.DDs {
 			datasets := strings.Join(dd.Datasets, ", ")
 			switch {
@@ -349,8 +497,14 @@ func jobMarkdown(dir string, job Job) string {
 			case dd.Dummy:
 				datasets = "dummy"
 			}
-			b.WriteString(row(dd.Name, datasets, dd.Disp, dd.File, dd.Use))
+			b.WriteString(row(dd.Name, datasets, dd.Disp, dd.File, copybookLink(dd.Copybook), dd.Use))
 		}
+	}
+	b.WriteString("\n## Datasets\n\nEach dataset the job names, the copybook that describes its records, " +
+		"from the programs that read or write it in any job, and the steps that write and read it.\n\n" +
+		"| Dataset | Copybook | Written by | Read by |\n| --- | --- | --- | --- |\n")
+	for _, d := range job.Datasets {
+		b.WriteString(row(d.Name, copybookLink(d.Copybook), strings.Join(d.WrittenBy, ", "), strings.Join(d.ReadBy, ", ")))
 	}
 	b.WriteString("\n## Findings\n\n")
 	if len(job.Findings) == 0 {

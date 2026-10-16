@@ -43,7 +43,7 @@ func (s *System) Render(dir, title string) (map[string][]byte, error) {
 		if err := renderBoth(files, dir, "jobs", job.Name, job, jobMarkdown); err != nil {
 			return nil, err
 		}
-		svg, err := jobDiagram(filepath.Join(dir, "jobs"), job).SVG()
+		svg, err := jobDiagram(job).SVG()
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", job.Name, err)
 		}
