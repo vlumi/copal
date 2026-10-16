@@ -26,5 +26,13 @@ test:  ## Run the tests
 pangaea-build:  ## Compile Pangaea's COBOL programs
 	go run ./cmd/pangaea build
 
+.PHONY: pangaea-daily
+pangaea-daily:  ## Run the daily batch on the fixture and show its reports
+	@scripts/pangaea-daily.sh
+
+.PHONY: pangaea-golden
+pangaea-golden:  ## Rewrite Pangaea's golden outputs from a run on the fixture
+	go test ./pangaea -run TestDaily -update
+
 .PHONY: ci
 ci: toolchain lint-md lint-go test  ## Full local CI

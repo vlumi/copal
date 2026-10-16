@@ -78,3 +78,19 @@ func TestCatalog(t *testing.T) {
 		t.Errorf("names %v, want %v", got, want)
 	}
 }
+
+func TestUnloadRejectsUnprintableBytes(t *testing.T) {
+	s, err := Open(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(s.Path("A"), []byte("12\x0034"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := s.Catalog("A", 5); err != nil {
+		t.Fatal(err)
+	}
+	if err := s.Unload("A", &strings.Builder{}); err == nil {
+		t.Error("unloaded a NUL byte as text")
+	}
+}

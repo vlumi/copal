@@ -4,7 +4,7 @@ The order in which Copal and the First Bank of Pangaea are built. [brief.md](bri
 
 The two parts grow together: Pangaea gets a little bigger, Copal learns to read what was added, and the blueprints are regenerated as golden files. Somewhere in the middle Pangaea also becomes a bank you can watch: a dataset large enough to feel real, a business calendar, a reset button, a console in the browser, and an online day of card purchases and ATM withdrawals between the nightly batches.
 
-## 1. Groundwork
+## 1. Groundwork (done)
 
 - Evaluate ProLeap and cobol-rekt against a few lines of fixed-format COBOL; decide Copal's language and record it in the brief.
 - Toolchain checks in the Makefile: GnuCOBOL 3.2, the chosen language, Graphviz if chosen.
@@ -12,10 +12,10 @@ The two parts grow together: Pangaea gets a little bigger, Copal learns to read 
 
 Done when: a pushed branch shows a green build.
 
-## 2. Pangaea: a minimal daily batch
+## 2. Pangaea: a minimal daily batch (done)
 
 - One copybook for the account master, one for the transaction file (header, detail and trailer records, told apart by a record-type field).
-- Three programs: validate (control totals, record order, known accounts), sort, post (new master, rejects, audit trail).
+- Three programs: validate (control totals, record order, field checks), sort, post (known accounts, account status and overdraft limits; new master, rejects, audit trail). Deposits, withdrawals and fees; transfers come with the living bank, posted as two legs.
 - The job network file in its small JCL-like format, and a runner that executes it and stops on bad return codes.
 - A small hand-written fixture: a dozen accounts, one day of transactions with a reject or two. Its outputs are the first golden files.
 

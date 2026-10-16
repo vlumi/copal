@@ -1,0 +1,328 @@
+      *================================================================*
+      * TXPOST: POST THE DAY'S TRANSACTIONS TO THE ACCOUNT MASTER      *
+      *                                                                *
+      * MATCHES THE SORTED TRANSACTIONS AGAINST THE OLD MASTER, BOTH   *
+      * IN ACCOUNT NUMBER ORDER, AND WRITES THE NEW MASTER: EVERY OLD  *
+      * RECORD, WITH ITS TRANSACTIONS APPLIED. EACH POSTING GOES TO    *
+      * THE AUDIT TRAIL; A TRANSACTION THAT CANNOT BE POSTED GOES TO   *
+      * THE REJECTS.                                                   *
+      *                                                                *
+      * RULES: NOTHING POSTS TO A CLOSED ACCOUNT. DEPOSITS AND FEES    *
+      * POST TO A FROZEN ACCOUNT, WITHDRAWALS DO NOT. A WITHDRAWAL     *
+      * MAY TAKE THE BALANCE DOWN TO THE OVERDRAFT LIMIT, NO FURTHER.  *
+      * A FEE ALWAYS POSTS, EVEN PAST THE LIMIT.                       *
+      *                                                                *
+      * RETURN CODES: 0 ALL POSTED, 4 SOME REJECTED,                   *
+      *               16 INPUT OUT OF ORDER, OUT OF BALANCE OR I/O.    *
+      *================================================================*
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. TXPOST.
+
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT CONTROL-FILE ASSIGN TO BANKCTL
+               ORGANIZATION IS SEQUENTIAL
+               FILE STATUS IS WS-CONTROL-STATUS.
+           SELECT ACCT-IN      ASSIGN TO ACCTIN
+               ORGANIZATION IS SEQUENTIAL
+               FILE STATUS IS WS-ACCT-IN-STATUS.
+           SELECT TRAN-IN      ASSIGN TO TRANIN
+               ORGANIZATION IS SEQUENTIAL
+               FILE STATUS IS WS-TRAN-IN-STATUS.
+           SELECT ACCT-OUT     ASSIGN TO ACCTOUT
+               ORGANIZATION IS SEQUENTIAL
+               FILE STATUS IS WS-ACCT-OUT-STATUS.
+           SELECT AUDIT-OUT    ASSIGN TO AUDIT
+               ORGANIZATION IS SEQUENTIAL
+               FILE STATUS IS WS-AUDIT-STATUS.
+           SELECT REJECT-OUT   ASSIGN TO REJECTS
+               ORGANIZATION IS SEQUENTIAL
+               FILE STATUS IS WS-REJECT-STATUS.
+           SELECT REPORT-OUT   ASSIGN TO POSTRPT
+               ORGANIZATION IS LINE SEQUENTIAL
+               FILE STATUS IS WS-REPORT-STATUS.
+
+       DATA DIVISION.
+       FILE SECTION.
+       FD  CONTROL-FILE.
+           COPY BANKCTL.
+       FD  ACCT-IN.
+           COPY ACCTMAST.
+       FD  TRAN-IN.
+           COPY TRANREC.
+       FD  ACCT-OUT.
+       01  ACCT-OUT-RECORD             PIC X(100).
+       FD  AUDIT-OUT.
+       01  AUDIT-OUT-RECORD            PIC X(100).
+       FD  REJECT-OUT.
+       01  REJECT-OUT-RECORD           PIC X(100).
+       FD  REPORT-OUT.
+       01  REPORT-LINE                 PIC X(80).
+
+       WORKING-STORAGE SECTION.
+       01  WS-FILE-STATUSES.
+           05  WS-CONTROL-STATUS       PIC XX.
+           05  WS-ACCT-IN-STATUS       PIC XX.
+           05  WS-TRAN-IN-STATUS       PIC XX.
+           05  WS-ACCT-OUT-STATUS      PIC XX.
+           05  WS-AUDIT-STATUS         PIC XX.
+           05  WS-REJECT-STATUS        PIC XX.
+           05  WS-REPORT-STATUS        PIC XX.
+
+       01  WS-BUSINESS-DATE            PIC 9(8).
+       01  WS-ABORT-MESSAGE            PIC X(40).
+
+      * MATCH KEYS: HIGH-VALUES ONCE A FILE IS AT ITS END.
+       01  WS-MASTER-KEY               PIC X(10).
+       01  WS-TRAN-KEY                 PIC X(10).
+       01  WS-PREV-MASTER-KEY          PIC X(10)      VALUE LOW-VALUES.
+       01  WS-TRAN-ORDER-KEY.
+           05  WS-TOK-ACCT-NO          PIC X(10).
+           05  WS-TOK-TRAN-ID          PIC X(10).
+       01  WS-PREV-TRAN-ORDER-KEY      PIC X(20)      VALUE LOW-VALUES.
+
+       01  WS-POSTING.
+           05  WS-BALANCE-BEFORE       PIC S9(11)V99.
+           05  WS-NEW-BALANCE          PIC S9(11)V99.
+           05  WS-BALANCE-FLOOR        PIC S9(11)V99.
+           05  WS-SIGNED-AMOUNT        PIC S9(9)V99.
+
+       01  WS-TOTALS.
+           05  WS-MASTERS-READ         PIC 9(8)       VALUE 0.
+           05  WS-MASTERS-WRITTEN      PIC 9(8)       VALUE 0.
+           05  WS-POSTED-COUNT         PIC 9(8)       VALUE 0.
+           05  WS-REJECT-COUNT         PIC 9(8)       VALUE 0.
+           05  WS-OPENING-TOTAL        PIC S9(13)V99  VALUE 0.
+           05  WS-DEPOSIT-TOTAL        PIC 9(13)V99   VALUE 0.
+           05  WS-WITHDRAWAL-TOTAL     PIC 9(13)V99   VALUE 0.
+           05  WS-FEE-TOTAL            PIC 9(13)V99   VALUE 0.
+           05  WS-CLOSING-TOTAL        PIC S9(13)V99  VALUE 0.
+           05  WS-EXPECTED-TOTAL       PIC S9(13)V99  VALUE 0.
+
+           COPY AUDITREC.
+
+           COPY REJREC.
+
+       01  WS-REPORT-COUNT-LINE.
+           05  WS-RC-LABEL             PIC X(30).
+           05  WS-RC-VALUE             PIC ZZ,ZZZ,ZZ9.
+           05  FILLER                  PIC X(40)      VALUE SPACES.
+       01  WS-REPORT-AMOUNT-LINE.
+           05  WS-RA-LABEL             PIC X(30).
+           05  WS-RA-VALUE             PIC Z,ZZZ,ZZZ,ZZZ,ZZ9.99-.
+           05  FILLER                  PIC X(29)      VALUE SPACES.
+
+       PROCEDURE DIVISION.
+       0000-MAIN.
+           PERFORM 1000-INITIALIZE
+           PERFORM 2000-MATCH
+               UNTIL WS-MASTER-KEY = HIGH-VALUES
+                 AND WS-TRAN-KEY = HIGH-VALUES
+           PERFORM 5000-RECONCILE
+           PERFORM 8000-WRITE-REPORT
+           PERFORM 9000-CLOSE-FILES
+           IF WS-REJECT-COUNT > 0
+               MOVE 4 TO RETURN-CODE
+           ELSE
+               MOVE 0 TO RETURN-CODE
+           END-IF
+           STOP RUN.
+
+       1000-INITIALIZE.
+           OPEN INPUT  CONTROL-FILE ACCT-IN TRAN-IN
+                OUTPUT ACCT-OUT AUDIT-OUT REJECT-OUT REPORT-OUT
+           IF WS-CONTROL-STATUS NOT = '00'
+              OR WS-ACCT-IN-STATUS NOT = '00'
+              OR WS-TRAN-IN-STATUS NOT = '00'
+              OR WS-ACCT-OUT-STATUS NOT = '00'
+              OR WS-AUDIT-STATUS NOT = '00'
+              OR WS-REJECT-STATUS NOT = '00'
+              OR WS-REPORT-STATUS NOT = '00'
+               DISPLAY 'TXPOST: CANNOT OPEN FILES ' WS-FILE-STATUSES
+               MOVE 16 TO RETURN-CODE
+               STOP RUN
+           END-IF
+           READ CONTROL-FILE
+               AT END
+                   MOVE 'NO BANK CONTROL RECORD' TO WS-ABORT-MESSAGE
+                   PERFORM 9900-ABORT
+           END-READ
+           MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE
+           MOVE SPACES TO AUDIT-RECORD REJECT-RECORD
+           PERFORM 1200-READ-MASTER
+           PERFORM 1300-READ-TRAN.
+
+       1200-READ-MASTER.
+           READ ACCT-IN
+               AT END
+                   MOVE HIGH-VALUES TO WS-MASTER-KEY
+               NOT AT END
+                   MOVE AM-ACCT-NO TO WS-MASTER-KEY
+                   IF WS-MASTER-KEY NOT > WS-PREV-MASTER-KEY
+                       MOVE 'MASTER NOT IN ACCOUNT ORDER'
+                           TO WS-ABORT-MESSAGE
+                       PERFORM 9900-ABORT
+                   END-IF
+                   MOVE WS-MASTER-KEY TO WS-PREV-MASTER-KEY
+                   ADD 1 TO WS-MASTERS-READ
+                   ADD AM-BALANCE TO WS-OPENING-TOTAL
+           END-READ.
+
+       1300-READ-TRAN.
+           READ TRAN-IN
+               AT END
+                   MOVE HIGH-VALUES TO WS-TRAN-KEY
+               NOT AT END
+                   MOVE TD-ACCT-NO TO WS-TRAN-KEY WS-TOK-ACCT-NO
+                   MOVE TD-TRAN-ID TO WS-TOK-TRAN-ID
+                   IF WS-TRAN-ORDER-KEY NOT > WS-PREV-TRAN-ORDER-KEY
+                       MOVE 'TRANSACTIONS NOT IN ACCOUNT ORDER'
+                           TO WS-ABORT-MESSAGE
+                       PERFORM 9900-ABORT
+                   END-IF
+                   MOVE WS-TRAN-ORDER-KEY TO WS-PREV-TRAN-ORDER-KEY
+           END-READ.
+
+       2000-MATCH.
+           EVALUATE TRUE
+               WHEN WS-TRAN-KEY < WS-MASTER-KEY
+                   SET RJ-NO-ACCOUNT TO TRUE
+                   PERFORM 3900-REJECT-TRAN
+                   PERFORM 1300-READ-TRAN
+               WHEN WS-TRAN-KEY = WS-MASTER-KEY
+                   PERFORM 3000-APPLY-TRAN
+                   PERFORM 1300-READ-TRAN
+               WHEN OTHER
+                   PERFORM 4000-WRITE-MASTER
+                   PERFORM 1200-READ-MASTER
+           END-EVALUATE.
+
+       3000-APPLY-TRAN.
+           MOVE AM-BALANCE TO WS-BALANCE-BEFORE
+           EVALUATE TRUE
+               WHEN AM-CLOSED
+                   SET RJ-CLOSED TO TRUE
+                   PERFORM 3900-REJECT-TRAN
+               WHEN TD-DEPOSIT
+                   PERFORM 3100-POST-DEPOSIT
+               WHEN TD-FEE
+                   PERFORM 3300-POST-FEE
+               WHEN TD-WITHDRAWAL AND AM-FROZEN
+                   SET RJ-FROZEN TO TRUE
+                   PERFORM 3900-REJECT-TRAN
+               WHEN TD-WITHDRAWAL
+                   PERFORM 3200-POST-WITHDRAWAL
+           END-EVALUATE.
+
+       3100-POST-DEPOSIT.
+           ADD TD-AMOUNT TO AM-BALANCE
+           ADD TD-AMOUNT TO WS-DEPOSIT-TOTAL
+           MOVE TD-AMOUNT TO WS-SIGNED-AMOUNT
+           PERFORM 3800-WRITE-AUDIT.
+
+       3200-POST-WITHDRAWAL.
+           COMPUTE WS-NEW-BALANCE = AM-BALANCE - TD-AMOUNT
+           COMPUTE WS-BALANCE-FLOOR = 0 - AM-OVERDRAFT-LIMIT
+           IF WS-NEW-BALANCE < WS-BALANCE-FLOOR
+               SET RJ-NO-FUNDS TO TRUE
+               PERFORM 3900-REJECT-TRAN
+           ELSE
+               MOVE WS-NEW-BALANCE TO AM-BALANCE
+               ADD TD-AMOUNT TO WS-WITHDRAWAL-TOTAL
+               COMPUTE WS-SIGNED-AMOUNT = 0 - TD-AMOUNT
+               PERFORM 3800-WRITE-AUDIT
+           END-IF.
+
+       3300-POST-FEE.
+           SUBTRACT TD-AMOUNT FROM AM-BALANCE
+           ADD TD-AMOUNT TO WS-FEE-TOTAL
+           COMPUTE WS-SIGNED-AMOUNT = 0 - TD-AMOUNT
+           PERFORM 3800-WRITE-AUDIT.
+
+       3800-WRITE-AUDIT.
+           MOVE WS-BUSINESS-DATE  TO AU-BUSINESS-DATE
+                                     AM-LAST-ACTIVITY-DATE
+           MOVE TD-TRAN-ID        TO AU-TRAN-ID
+           MOVE TD-ACCT-NO        TO AU-ACCT-NO
+           MOVE TD-TRAN-CODE      TO AU-TRAN-CODE
+           MOVE WS-SIGNED-AMOUNT  TO AU-AMOUNT
+           MOVE WS-BALANCE-BEFORE TO AU-BALANCE-BEFORE
+           MOVE AM-BALANCE        TO AU-BALANCE-AFTER
+           WRITE AUDIT-OUT-RECORD FROM AUDIT-RECORD
+           ADD 1 TO WS-POSTED-COUNT.
+
+       3900-REJECT-TRAN.
+           MOVE 'TXPOST' TO RJ-PROGRAM
+           MOVE TRAN-RECORD TO RJ-TRAN
+           WRITE REJECT-OUT-RECORD FROM REJECT-RECORD
+           ADD 1 TO WS-REJECT-COUNT.
+
+       4000-WRITE-MASTER.
+           WRITE ACCT-OUT-RECORD FROM ACCT-MASTER-RECORD
+           ADD 1 TO WS-MASTERS-WRITTEN
+           ADD AM-BALANCE TO WS-CLOSING-TOTAL.
+
+      * THE NEW MASTER MUST HOLD THE OLD BALANCES PLUS WHAT WAS POSTED.
+       5000-RECONCILE.
+           MOVE WS-OPENING-TOTAL TO WS-EXPECTED-TOTAL
+           ADD WS-DEPOSIT-TOTAL TO WS-EXPECTED-TOTAL
+           SUBTRACT WS-WITHDRAWAL-TOTAL FROM WS-EXPECTED-TOTAL
+           SUBTRACT WS-FEE-TOTAL FROM WS-EXPECTED-TOTAL
+           IF WS-EXPECTED-TOTAL NOT = WS-CLOSING-TOTAL
+              OR WS-MASTERS-WRITTEN NOT = WS-MASTERS-READ
+               MOVE 'NEW MASTER OUT OF BALANCE' TO WS-ABORT-MESSAGE
+               PERFORM 9900-ABORT
+           END-IF.
+
+       8000-WRITE-REPORT.
+           MOVE SPACES TO REPORT-LINE
+           STRING 'TXPOST   TRANSACTION POSTING     BUSINESS DATE '
+                  WS-BUSINESS-DATE
+               DELIMITED BY SIZE INTO REPORT-LINE
+           WRITE REPORT-LINE
+           MOVE SPACES TO REPORT-LINE
+           WRITE REPORT-LINE
+           MOVE 'ACCOUNTS READ' TO WS-RC-LABEL
+           MOVE WS-MASTERS-READ TO WS-RC-VALUE
+           WRITE REPORT-LINE FROM WS-REPORT-COUNT-LINE
+           MOVE 'ACCOUNTS WRITTEN' TO WS-RC-LABEL
+           MOVE WS-MASTERS-WRITTEN TO WS-RC-VALUE
+           WRITE REPORT-LINE FROM WS-REPORT-COUNT-LINE
+           MOVE 'TRANSACTIONS POSTED' TO WS-RC-LABEL
+           MOVE WS-POSTED-COUNT TO WS-RC-VALUE
+           WRITE REPORT-LINE FROM WS-REPORT-COUNT-LINE
+           MOVE 'TRANSACTIONS REJECTED' TO WS-RC-LABEL
+           MOVE WS-REJECT-COUNT TO WS-RC-VALUE
+           WRITE REPORT-LINE FROM WS-REPORT-COUNT-LINE
+           MOVE SPACES TO REPORT-LINE
+           WRITE REPORT-LINE
+           MOVE 'OPENING BALANCES' TO WS-RA-LABEL
+           MOVE WS-OPENING-TOTAL TO WS-RA-VALUE
+           WRITE REPORT-LINE FROM WS-REPORT-AMOUNT-LINE
+           MOVE 'DEPOSITS' TO WS-RA-LABEL
+           MOVE WS-DEPOSIT-TOTAL TO WS-RA-VALUE
+           WRITE REPORT-LINE FROM WS-REPORT-AMOUNT-LINE
+           MOVE 'WITHDRAWALS' TO WS-RA-LABEL
+           MOVE WS-WITHDRAWAL-TOTAL TO WS-RA-VALUE
+           WRITE REPORT-LINE FROM WS-REPORT-AMOUNT-LINE
+           MOVE 'FEES' TO WS-RA-LABEL
+           MOVE WS-FEE-TOTAL TO WS-RA-VALUE
+           WRITE REPORT-LINE FROM WS-REPORT-AMOUNT-LINE
+           MOVE 'CLOSING BALANCES' TO WS-RA-LABEL
+           MOVE WS-CLOSING-TOTAL TO WS-RA-VALUE
+           WRITE REPORT-LINE FROM WS-REPORT-AMOUNT-LINE
+           MOVE SPACES TO REPORT-LINE
+           WRITE REPORT-LINE
+           MOVE 'NEW MASTER IN BALANCE' TO REPORT-LINE
+           WRITE REPORT-LINE.
+
+       9000-CLOSE-FILES.
+           CLOSE CONTROL-FILE ACCT-IN TRAN-IN
+                 ACCT-OUT AUDIT-OUT REJECT-OUT REPORT-OUT.
+
+       9900-ABORT.
+           DISPLAY 'TXPOST: ' WS-ABORT-MESSAGE
+           PERFORM 9000-CLOSE-FILES
+           MOVE 16 TO RETURN-CODE
+           STOP RUN.
