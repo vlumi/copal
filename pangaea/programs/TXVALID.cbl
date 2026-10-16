@@ -42,7 +42,7 @@
        FD  TRAN-OUT.
        01  TRAN-OUT-RECORD             PIC X(80).
        FD  REJECT-OUT.
-           COPY REJREC.
+       01  REJECT-OUT-RECORD           PIC X(100).
        FD  REPORT-OUT.
        01  REPORT-LINE                 PIC X(80).
 
@@ -56,6 +56,8 @@
            05  WS-REPORT-STATUS        PIC XX.
 
        01  WS-BUSINESS-DATE            PIC 9(8).
+
+           COPY REJREC.
 
        01  WS-FILE-ERROR               PIC X(40) VALUE SPACES.
            88  FILE-IS-GOOD            VALUE SPACES.
@@ -120,7 +122,8 @@
                    MOVE 16 TO RETURN-CODE
                    STOP RUN
            END-READ
-           MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE.
+           MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE
+           MOVE SPACES TO REJECT-RECORD.
 
        2000-READ-HEADER.
            READ TRAN-IN
@@ -191,7 +194,7 @@
        3300-REJECT-RECORD.
            MOVE 'TXVALID' TO RJ-PROGRAM
            MOVE TRAN-RECORD TO RJ-TRAN
-           WRITE REJECT-RECORD
+           WRITE REJECT-OUT-RECORD FROM REJECT-RECORD
            ADD 1 TO WS-REJECT-COUNT.
 
        4000-CHECK-TRAILER.
