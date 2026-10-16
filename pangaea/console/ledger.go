@@ -10,13 +10,14 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/vlumi/copal/blueprint"
 	"github.com/vlumi/copal/pangaea/dataset"
 	"github.com/vlumi/copal/record"
 )
 
 // Layouts are the records the console reads.
 type Layouts struct {
-	Master, Tran, Audit, Reject *record.Layout
+	Master, Tran, Audit, Reject, Maint *record.Layout
 }
 
 // LoadLayouts reads the layouts from Pangaea's copybooks.
@@ -31,6 +32,7 @@ func LoadLayouts(copybookDir string) (*Layouts, error) {
 		{&l.Tran, "TRANREC", "TRAN-RECORD"},
 		{&l.Audit, "AUDITREC", "AUDIT-RECORD"},
 		{&l.Reject, "REJREC", "REJECT-RECORD"},
+		{&l.Maint, "MAINTREC", "MAINT-REQUEST"},
 	} {
 		layout, err := record.FromCopybook(filepath.Join(copybookDir, c.copybook+".cpy"), []string{copybookDir}, c.name)
 		if err != nil {
@@ -41,10 +43,12 @@ func LoadLayouts(copybookDir string) (*Layouts, error) {
 	return &l, nil
 }
 
-// Ledger reads the bank's datasets through the layouts.
+// Ledger reads the bank's datasets through the layouts, and its jobs' runs
+// with the jobs' blueprints.
 type Ledger struct {
 	Layouts *Layouts
 	Store   *dataset.Store
+	Jobs    []blueprint.Job
 }
 
 // Account is an account master record.
@@ -133,6 +137,40 @@ func (l *Ledger) Rejects(dsn string) ([]Reject, error) {
 		r := Reject{Program: d.text("RJ-PROGRAM"), Reason: d.text("RJ-REASON"), Tran: tran.transaction()}
 		if d.err == nil {
 			d.err = tran.err
+		}
+		return r
+	})
+}
+
+// MaintRequest is an account maintenance request. Its customer, name and
+// account type are blank unless it opens an account.
+type MaintRequest struct {
+	ID          int64
+	Type        string
+	Account     int64
+	Customer    string
+	Name        string
+	AccountType string
+	Limit       int64
+}
+
+// MaintReject is a maintenance request the batch could not apply, and why.
+type MaintReject struct {
+	Program, Reason string
+	Request         MaintRequest
+}
+
+// MaintRejects reads the rejected maintenance requests.
+func (l *Ledger) MaintRejects(dsn string) ([]MaintReject, error) {
+	return read(l, l.Layouts.Reject, dsn, func(d *decoder) MaintReject {
+		m := &decoder{l: l.Layouts.Maint, r: []byte(fmt.Sprintf("%-*s", l.Layouts.Maint.Length, d.text("RJ-TRAN")))}
+		r := MaintReject{Program: d.text("RJ-PROGRAM"), Reason: d.text("RJ-REASON"), Request: MaintRequest{
+			ID: m.number("MR-REQUEST-ID"), Type: m.text("MR-REQUEST-TYPE"), Account: m.number("MR-ACCT-NO"),
+			Customer: m.text("MR-CUST-NO"), Name: m.text("MR-SHORT-NAME"), AccountType: m.text("MR-ACCT-TYPE"),
+			Limit: m.number("MR-OVERDRAFT-LIMIT"),
+		}}
+		if d.err == nil {
+			d.err = m.err
 		}
 		return r
 	})

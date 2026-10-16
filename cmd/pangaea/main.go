@@ -15,8 +15,10 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 
+	"github.com/vlumi/copal/blueprint"
 	"github.com/vlumi/copal/jcl"
 	"github.com/vlumi/copal/pangaea/bank"
 	"github.com/vlumi/copal/pangaea/compile"
@@ -182,7 +184,15 @@ func serveConsole(args []string) error {
 	flags, b := bankFlags("console")
 	addr := flags.String("addr", "localhost:8080", "address to serve on")
 	_ = flags.Parse(args)
-	c, err := console.New(*b)
+	programs, err := filepath.Glob("pangaea/programs/*.cbl")
+	if err != nil {
+		return err
+	}
+	system, err := blueprint.Analyze(append(programs, b.DailyJob, b.MonthlyJob), "pangaea/copybooks")
+	if err != nil {
+		return err
+	}
+	c, err := console.New(*b, system, "blueprints/pangaea")
 	if err != nil {
 		return err
 	}

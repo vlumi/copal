@@ -5,10 +5,12 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
 
+	"github.com/vlumi/copal/blueprint"
 	"github.com/vlumi/copal/pangaea/bank"
 	"github.com/vlumi/copal/pangaea/compile"
 )
@@ -21,7 +23,15 @@ func TestConsole(t *testing.T) {
 		t.Fatal(err)
 	}
 	b := bank.Bank{Dir: t.TempDir(), Programs: programs, Copybooks: "../copybooks", DailyJob: "../jobs/DAILY.jcl", MonthlyJob: "../jobs/MONTHLY.jcl"}
-	c, err := New(b)
+	sources, err := filepath.Glob("../programs/*.cbl")
+	if err != nil {
+		t.Fatal(err)
+	}
+	system, err := blueprint.Analyze(append(sources, b.DailyJob, b.MonthlyJob), "../copybooks")
+	if err != nil {
+		t.Fatal(err)
+	}
+	c, err := New(b, system, "../../blueprints/pangaea")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -37,7 +47,13 @@ func TestConsole(t *testing.T) {
 	get(t, server.URL+"/compare?from=2026-09-01&to=2026-09-03", http.StatusOK,
 		"ACCT.MASTER.G0001V00", "ACCT.MASTER.G0003V00", "Reconciled")
 	get(t, server.URL+"/", http.StatusOK, `href="/days/2026-09-02"`, "RC=0004")
-	get(t, server.URL+"/days/2026-09-02", http.StatusOK, "TRAN.AUDIT.G0002V00", "VALID.VALRPT", "POST.POSTRPT")
+	get(t, server.URL+"/days/2026-09-02", http.StatusOK, "TRAN.AUDIT.G0002V00", "VALID.VALRPT", "POST.POSTRPT",
+		"Job DAILY", "<svg", "MAINT ACCTMNT RC=", "/blueprints/programs/ACCTMNT.md")
+	get(t, server.URL+"/days/2026-09-01", http.StatusOK, "Job MONTHLY", "STMT.STMTRPT")
+	get(t, server.URL+"/days/2026-09-02/sysout/JOBLOG", http.StatusOK, "JOB DAILY")
+	get(t, server.URL+"/days/2026-09-01/sysout/MONTHLY/JOBLOG", http.StatusOK, "JOB MONTHLY")
+	get(t, server.URL+"/days/2026-09-02/sysout/../SEED", http.StatusNotFound)
+	get(t, server.URL+"/blueprints/programs/ACCTMNT.md", http.StatusOK, "# ACCTMNT")
 	accounts := get(t, server.URL+"/accounts", http.StatusOK)
 	if !regexp.MustCompile(`(\d+) of (\d+) accounts`).MatchString(accounts) {
 		t.Error("the account list does not say how many accounts it shows")
