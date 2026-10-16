@@ -4,7 +4,6 @@
 package bank
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"os"
@@ -112,11 +111,11 @@ func (b Bank) RunDays(n int, report func(Day)) error {
 	if err != nil {
 		return err
 	}
-	daily, err := parseJob(b.DailyJob)
+	daily, err := jcl.ParseFile(b.DailyJob)
 	if err != nil {
 		return err
 	}
-	monthly, err := parseJob(b.MonthlyJob)
+	monthly, err := jcl.ParseFile(b.MonthlyJob)
 	if err != nil {
 		return err
 	}
@@ -280,16 +279,4 @@ func (b Bank) generator(seed uint64) (*generate.Generator, error) {
 		return nil, err
 	}
 	return &generate.Generator{Layouts: layouts, Seed: seed}, nil
-}
-
-func parseJob(path string) (*jcl.Job, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-	job, err := jcl.Parse(bytes.NewReader(data))
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", path, err)
-	}
-	return job, nil
 }

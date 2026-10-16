@@ -1,9 +1,7 @@
 package blueprint
 
 import (
-	"bytes"
 	"fmt"
-	"os"
 	"slices"
 	"strings"
 
@@ -84,13 +82,9 @@ func (dd DD) writes() bool {
 }
 
 func analyzeJob(path string, programs []Program) (Job, error) {
-	data, err := os.ReadFile(path)
+	parsed, err := jcl.ParseFile(path)
 	if err != nil {
 		return Job{}, err
-	}
-	parsed, err := jcl.Parse(bytes.NewReader(data))
-	if err != nil {
-		return Job{}, fmt.Errorf("%s: %w", path, err)
 	}
 	job := Job{Name: parsed.Name, Source: path, Description: cobol.CommentText(parsed.Comment)}
 	for _, s := range parsed.Steps {
