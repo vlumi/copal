@@ -20,6 +20,8 @@
       * MODIFICATION HISTORY                                           *
       * DATE       BY  CHANGE                                          *
       * 2001-09-03 TL  CR-0298 ORIGINAL VERSION.                       *
+      * 2004-03-15 TL  CR-0390 THE CODE TABLE FROM CODETAB, SHARED     *
+      *                WITH GLSUM.                                     *
       *================================================================*
        IDENTIFICATION DIVISION.
        PROGRAM-ID. STMTPRT.
@@ -120,30 +122,7 @@
            05  WS-MONTH-NAME           PIC X(9)       OCCURS 12 TIMES.
 
       * WHAT EACH TRANSACTION CODE SAYS ON A STATEMENT.
-       01  WS-CODE-VALUES.
-           05  FILLER                  PIC X(22)
-                                       VALUE 'DPDEPOSIT'.
-           05  FILLER                  PIC X(22)
-                                       VALUE 'WDWITHDRAWAL'.
-           05  FILLER                  PIC X(22)
-                                       VALUE 'FEFEE'.
-           05  FILLER                  PIC X(22)
-                                       VALUE 'TRTRANSFER OUT'.
-           05  FILLER                  PIC X(22)
-                                       VALUE 'TCTRANSFER IN'.
-           05  FILLER                  PIC X(22)
-                                       VALUE 'RTTRANSFER RETURNED'.
-           05  FILLER                  PIC X(22)
-                                       VALUE 'INCREDIT INTEREST'.
-           05  FILLER                  PIC X(22)
-                                       VALUE 'ODOVERDRAFT INTEREST'.
-           05  FILLER                  PIC X(22)
-                                       VALUE 'MFMAINTENANCE FEE'.
-       01  WS-CODE-TABLE REDEFINES WS-CODE-VALUES.
-           05  WS-CODE-ENTRY           OCCURS 9 TIMES
-                                       INDEXED BY WS-CX.
-               10  WS-CODE             PIC XX.
-               10  WS-CODE-TEXT        PIC X(20).
+           COPY CODETAB REPLACING ==:P:== BY ==ST==.
 
        01  WS-STATEMENT.
            05  WS-OPENING              PIC S9(11)V99.
@@ -392,12 +371,12 @@
            MOVE WS-DATE-MONTH TO WS-PL-MONTH
            MOVE WS-DATE-DAY TO WS-PL-DAY
            MOVE SR-TRAN-ID TO WS-PL-TRAN-ID
-           SET WS-CX TO 1
-           SEARCH WS-CODE-ENTRY
+           SET ST-CX TO 1
+           SEARCH ST-CODE-ENTRY
                AT END
                    MOVE SR-TRAN-CODE TO WS-PL-DESCRIPTION
-               WHEN WS-CODE(WS-CX) = SR-TRAN-CODE
-                   MOVE WS-CODE-TEXT(WS-CX) TO WS-PL-DESCRIPTION
+               WHEN ST-CODE(ST-CX) = SR-TRAN-CODE
+                   MOVE ST-CODE-TEXT(ST-CX) TO WS-PL-DESCRIPTION
            END-SEARCH
            MOVE SR-AMOUNT TO WS-PL-AMOUNT
            MOVE SR-BALANCE-AFTER TO WS-PL-BALANCE
