@@ -462,6 +462,7 @@ func port(s *slot, others []*slot, other *slot) int {
 	return s.x + s.width*(k+1)/(len(sorted)+1)
 }
 
-func label(s string) string {
-	return strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;", `"`, "&quot;").Replace(s)
-}
+// escape makes text safe in XML, in an element or an attribute.
+func escape(s string) string { return xmlEscaper.Replace(s) }
+
+var xmlEscaper = strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;", `"`, "&quot;")

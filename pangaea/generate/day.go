@@ -55,7 +55,7 @@ func (d *day) customerBusiness(g *Generator) {
 		if a.Savings {
 			accounts = savings
 		}
-		if _, seen := accounts[a.Customer]; !seen {
+		if _, known := accounts[a.Customer]; !known {
 			accounts[a.Customer] = a
 			if !a.Savings && a.Open() {
 				landlords = append(landlords, a.No)

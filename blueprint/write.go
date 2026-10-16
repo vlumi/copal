@@ -11,12 +11,11 @@ import (
 )
 
 // Render returns the system's blueprints as files by path: an index in
-// README.md, programs/NAME, copybooks/NAME and jobs/NAME as .md and .json,
-// each program's paragraph diagram as programs/NAME.svg and each job's
-// network as jobs/NAME.svg. Links
-// to the source are relative to dir, where the blueprints are to be
-// written, so the source paths must be relative to the same working
-// directory as dir.
+// README.md; programs/NAME, rules/NAME, copybooks/NAME and jobs/NAME as .md
+// and .json; each program's flow as programs/NAME.svg and each job's
+// network as jobs/NAME.svg. Links to the source are relative to dir, where
+// the blueprints are to be written, so the source paths must be relative
+// to the same working directory as dir.
 func (s *System) Render(dir, title string) (map[string][]byte, error) {
 	files := map[string][]byte{"README.md": []byte(s.indexMarkdown(dir, title))}
 	for _, p := range s.Programs {
