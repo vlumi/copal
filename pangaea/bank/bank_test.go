@@ -23,7 +23,7 @@ func TestDaysAreReproducible(t *testing.T) {
 	}
 	var trees []map[string][]byte
 	for range 2 {
-		b := Bank{Dir: t.TempDir(), Programs: programs, Copybooks: "../copybooks", DailyJob: "../jobs/DAILY.jcl", MonthlyJob: "../jobs/MONTHLY.jcl"}
+		b := Bank{Dir: t.TempDir(), Programs: programs, Copybooks: "../copybooks", Jobs: "../jobs"}
 		if err := b.Reset(7, 300); err != nil {
 			t.Fatal(err)
 		}
@@ -122,7 +122,7 @@ func TestFailedDayIsBackedOut(t *testing.T) {
 		t.Fatal(err)
 	}
 	newBank := func(programs string) Bank {
-		b := Bank{Dir: t.TempDir(), Programs: programs, Copybooks: "../copybooks", DailyJob: "../jobs/DAILY.jcl", MonthlyJob: "../jobs/MONTHLY.jcl"}
+		b := Bank{Dir: t.TempDir(), Programs: programs, Copybooks: "../copybooks", Jobs: "../jobs"}
 		if err := b.Reset(7, 300); err != nil {
 			t.Fatal(err)
 		}

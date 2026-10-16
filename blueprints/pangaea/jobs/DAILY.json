@@ -2,16 +2,16 @@
   "job": "DAILY",
   "source": "pangaea/jobs/DAILY.jcl",
   "description": [
-    "DAILY BATCH: VALIDATE THE DAY'S TRANSACTIONS, ACCRUE INTEREST",
-    "AND POST WHAT A CLOSED MONTH OWES, THEN SORT AND POST THE",
-    "DAY'S TRANSACTIONS, THE TRANSFER CREDITS AND RETURNS THEY LEAD",
-    "TO, APPLY THE DAY'S ACCOUNT MAINTENANCE, LOAD THE ONLINE",
-    "ACCOUNT FILE, MOVE TO THE NEXT BUSINESS DAY, AND LOAD THE",
-    "ONLINE CARD FILE FOR IT.",
+    "DAILY BATCH: VALIDATE THE DAY'S TRANSACTIONS FROM THE BRANCHES",
+    "AND THE CARDS, ACCRUE INTEREST AND POST WHAT A CLOSED MONTH",
+    "OWES, THEN SORT AND POST THE DAY'S TRANSACTIONS, THE TRANSFER",
+    "CREDITS AND RETURNS THEY LEAD TO, APPLY THE DAY'S ACCOUNT",
+    "MAINTENANCE, LOAD THE ONLINE ACCOUNT FILE, MOVE TO THE NEXT",
+    "BUSINESS DAY, AND LOAD THE ONLINE CARD FILE FOR IT.",
     "",
     "READS   BANK.CONTROL(0)  ACCT.MASTER(0)  TRAN.DAILY(0)",
-    "        ACCT.ACCRUAL(0)  ACCT.MAINT(0)    BANK.RATES",
-    "        CARD.MASTER(0)",
+    "        TRAN.CARD(0)     ACCT.ACCRUAL(0)  ACCT.MAINT(0)",
+    "        CARD.MASTER(0)   BANK.RATES",
     "WRITES  BANK.CONTROL(+1) ACCT.MASTER(+1) ACCT.ACCRUAL(+1)",
     "        TRAN.AUDIT(+1)   TRAN.REJECTS(+1) MAINT.REJECTS(+1)",
     "        ACCT.ONLINE(+1)  CARD.ONLINE(+1)  HOLD.ONLINE(+1)",
@@ -24,7 +24,7 @@
       "step": "VALID",
       "program": "TXVALID",
       "description": [
-        "VALIDATE THE DAY'S TRANSACTION FILE"
+        "VALIDATE THE BRANCHES' TRANSACTION FILE"
       ],
       "source": "pangaea/jobs/DAILY.jcl:23",
       "dds": [
@@ -92,15 +92,14 @@
       ]
     },
     {
-      "step": "ACCRUE",
-      "program": "INTACCR",
+      "step": "VALIDC",
+      "program": "TXVALID",
       "cond": "(4,LT)",
       "description": [
-        "ACCRUE INTEREST UP TO TODAY ON THE OPENING BALANCES. WHEN A",
-        "MONTH HAS CLOSED, POST ITS INTEREST AND FEES. THE CHARGES COME",
-        "IN MASTER ORDER, SO THEY ARE POSTED WITHOUT A SORT."
+        "VALIDATE THE CARD FILE, THE ONLINE DAY'S AUTHORIZED CARD AND",
+        "ATM TRANSACTIONS"
       ],
-      "source": "pangaea/jobs/DAILY.jcl:36",
+      "source": "pangaea/jobs/DAILY.jcl:35",
       "dds": [
         {
           "dd": "BANKCTL",
@@ -113,7 +112,81 @@
             "read"
           ],
           "copybook": "BANKCTL",
+          "source": "pangaea/jobs/DAILY.jcl:36"
+        },
+        {
+          "dd": "TRANIN",
+          "datasets": [
+            "TRAN.CARD(0)"
+          ],
+          "disp": "SHR",
+          "file": "TRAN-IN",
+          "uses": [
+            "read"
+          ],
+          "copybook": "TRANREC",
           "source": "pangaea/jobs/DAILY.jcl:37"
+        },
+        {
+          "dd": "TRANOUT",
+          "datasets": [
+            "\u0026\u0026CARDVAL"
+          ],
+          "disp": "NEW",
+          "file": "TRAN-OUT",
+          "uses": [
+            "write"
+          ],
+          "copybook": "TRANREC",
+          "source": "pangaea/jobs/DAILY.jcl:38"
+        },
+        {
+          "dd": "REJECTS",
+          "datasets": [
+            "TRAN.REJECTS(+1)"
+          ],
+          "disp": "MOD",
+          "file": "REJECT-OUT",
+          "uses": [
+            "append"
+          ],
+          "copybook": "REJREC",
+          "source": "pangaea/jobs/DAILY.jcl:40"
+        },
+        {
+          "dd": "VALRPT",
+          "sysout": true,
+          "file": "REPORT-OUT",
+          "uses": [
+            "write"
+          ],
+          "source": "pangaea/jobs/DAILY.jcl:41"
+        }
+      ]
+    },
+    {
+      "step": "ACCRUE",
+      "program": "INTACCR",
+      "cond": "(4,LT)",
+      "description": [
+        "ACCRUE INTEREST UP TO TODAY ON THE OPENING BALANCES. WHEN A",
+        "MONTH HAS CLOSED, POST ITS INTEREST AND FEES. THE CHARGES COME",
+        "IN MASTER ORDER, SO THEY ARE POSTED WITHOUT A SORT."
+      ],
+      "source": "pangaea/jobs/DAILY.jcl:47",
+      "dds": [
+        {
+          "dd": "BANKCTL",
+          "datasets": [
+            "BANK.CONTROL(0)"
+          ],
+          "disp": "SHR",
+          "file": "CONTROL-FILE",
+          "uses": [
+            "read"
+          ],
+          "copybook": "BANKCTL",
+          "source": "pangaea/jobs/DAILY.jcl:48"
         },
         {
           "dd": "RATES",
@@ -126,7 +199,7 @@
             "read"
           ],
           "copybook": "RATEREC",
-          "source": "pangaea/jobs/DAILY.jcl:38"
+          "source": "pangaea/jobs/DAILY.jcl:49"
         },
         {
           "dd": "ACCTIN",
@@ -139,7 +212,7 @@
             "read"
           ],
           "copybook": "ACCTMAST",
-          "source": "pangaea/jobs/DAILY.jcl:39"
+          "source": "pangaea/jobs/DAILY.jcl:50"
         },
         {
           "dd": "ACCRIN",
@@ -151,7 +224,7 @@
           "uses": [
             "read"
           ],
-          "source": "pangaea/jobs/DAILY.jcl:40"
+          "source": "pangaea/jobs/DAILY.jcl:51"
         },
         {
           "dd": "ACCROUT",
@@ -164,7 +237,7 @@
             "write"
           ],
           "copybook": "ACCRREC",
-          "source": "pangaea/jobs/DAILY.jcl:41"
+          "source": "pangaea/jobs/DAILY.jcl:52"
         },
         {
           "dd": "ACCRRPT",
@@ -173,7 +246,7 @@
           "uses": [
             "write"
           ],
-          "source": "pangaea/jobs/DAILY.jcl:43"
+          "source": "pangaea/jobs/DAILY.jcl:54"
         }
       ]
     },
@@ -181,7 +254,7 @@
       "step": "CHARGE",
       "program": "MONCHG",
       "cond": "(4,LT)",
-      "source": "pangaea/jobs/DAILY.jcl:44",
+      "source": "pangaea/jobs/DAILY.jcl:55",
       "dds": [
         {
           "dd": "BANKCTL",
@@ -194,7 +267,7 @@
             "read"
           ],
           "copybook": "BANKCTL",
-          "source": "pangaea/jobs/DAILY.jcl:45"
+          "source": "pangaea/jobs/DAILY.jcl:56"
         },
         {
           "dd": "ACCTIN",
@@ -207,7 +280,7 @@
             "read"
           ],
           "copybook": "ACCTMAST",
-          "source": "pangaea/jobs/DAILY.jcl:46"
+          "source": "pangaea/jobs/DAILY.jcl:57"
         },
         {
           "dd": "ACCRIN",
@@ -220,7 +293,7 @@
             "read"
           ],
           "copybook": "ACCRREC",
-          "source": "pangaea/jobs/DAILY.jcl:47"
+          "source": "pangaea/jobs/DAILY.jcl:58"
         },
         {
           "dd": "TRANOUT",
@@ -233,7 +306,7 @@
             "write"
           ],
           "copybook": "TRANREC",
-          "source": "pangaea/jobs/DAILY.jcl:48"
+          "source": "pangaea/jobs/DAILY.jcl:59"
         },
         {
           "dd": "MONRPT",
@@ -242,7 +315,7 @@
           "uses": [
             "write"
           ],
-          "source": "pangaea/jobs/DAILY.jcl:50"
+          "source": "pangaea/jobs/DAILY.jcl:61"
         }
       ]
     },
@@ -250,7 +323,7 @@
       "step": "POSTMO",
       "program": "TXPOST",
       "cond": "(4,LT)",
-      "source": "pangaea/jobs/DAILY.jcl:51",
+      "source": "pangaea/jobs/DAILY.jcl:62",
       "dds": [
         {
           "dd": "BANKCTL",
@@ -263,7 +336,7 @@
             "read"
           ],
           "copybook": "BANKCTL",
-          "source": "pangaea/jobs/DAILY.jcl:52"
+          "source": "pangaea/jobs/DAILY.jcl:63"
         },
         {
           "dd": "ACCTIN",
@@ -276,7 +349,7 @@
             "read"
           ],
           "copybook": "ACCTMAST",
-          "source": "pangaea/jobs/DAILY.jcl:53"
+          "source": "pangaea/jobs/DAILY.jcl:64"
         },
         {
           "dd": "TRANIN",
@@ -289,7 +362,7 @@
             "read"
           ],
           "copybook": "TRANREC",
-          "source": "pangaea/jobs/DAILY.jcl:54"
+          "source": "pangaea/jobs/DAILY.jcl:65"
         },
         {
           "dd": "ACCTOUT",
@@ -302,7 +375,7 @@
             "write"
           ],
           "copybook": "ACCTMAST",
-          "source": "pangaea/jobs/DAILY.jcl:55"
+          "source": "pangaea/jobs/DAILY.jcl:66"
         },
         {
           "dd": "AUDIT",
@@ -315,7 +388,7 @@
             "append"
           ],
           "copybook": "AUDITREC",
-          "source": "pangaea/jobs/DAILY.jcl:57"
+          "source": "pangaea/jobs/DAILY.jcl:68"
         },
         {
           "dd": "REJECTS",
@@ -328,7 +401,7 @@
             "append"
           ],
           "copybook": "REJREC",
-          "source": "pangaea/jobs/DAILY.jcl:59"
+          "source": "pangaea/jobs/DAILY.jcl:70"
         },
         {
           "dd": "LEGS",
@@ -338,7 +411,7 @@
             "write"
           ],
           "copybook": "TRANREC",
-          "source": "pangaea/jobs/DAILY.jcl:60"
+          "source": "pangaea/jobs/DAILY.jcl:71"
         },
         {
           "dd": "POSTRPT",
@@ -347,7 +420,7 @@
           "uses": [
             "write"
           ],
-          "source": "pangaea/jobs/DAILY.jcl:61"
+          "source": "pangaea/jobs/DAILY.jcl:72"
         }
       ]
     },
@@ -356,21 +429,23 @@
       "program": "TXSORT",
       "cond": "(4,LT)",
       "description": [
-        "SORT THE DAY'S TRANSACTIONS INTO ACCOUNT ORDER AND POST THEM"
+        "SORT THE DAY'S TRANSACTIONS, FROM THE BRANCHES AND THE CARDS,",
+        "INTO ACCOUNT ORDER AND POST THEM"
       ],
-      "source": "pangaea/jobs/DAILY.jcl:65",
+      "source": "pangaea/jobs/DAILY.jcl:77",
       "dds": [
         {
           "dd": "TRANIN",
           "datasets": [
-            "\u0026\u0026VALID"
+            "\u0026\u0026VALID",
+            "\u0026\u0026CARDVAL"
           ],
           "disp": "OLD",
           "file": "TRAN-IN",
           "uses": [
             "read"
           ],
-          "source": "pangaea/jobs/DAILY.jcl:66"
+          "source": "pangaea/jobs/DAILY.jcl:78"
         },
         {
           "dd": "TRANOUT",
@@ -382,7 +457,7 @@
           "uses": [
             "write"
           ],
-          "source": "pangaea/jobs/DAILY.jcl:67"
+          "source": "pangaea/jobs/DAILY.jcl:80"
         }
       ]
     },
@@ -390,7 +465,7 @@
       "step": "POST",
       "program": "TXPOST",
       "cond": "(4,LT)",
-      "source": "pangaea/jobs/DAILY.jcl:69",
+      "source": "pangaea/jobs/DAILY.jcl:82",
       "dds": [
         {
           "dd": "BANKCTL",
@@ -403,7 +478,7 @@
             "read"
           ],
           "copybook": "BANKCTL",
-          "source": "pangaea/jobs/DAILY.jcl:70"
+          "source": "pangaea/jobs/DAILY.jcl:83"
         },
         {
           "dd": "ACCTIN",
@@ -416,7 +491,7 @@
             "read"
           ],
           "copybook": "ACCTMAST",
-          "source": "pangaea/jobs/DAILY.jcl:71"
+          "source": "pangaea/jobs/DAILY.jcl:84"
         },
         {
           "dd": "TRANIN",
@@ -429,7 +504,7 @@
             "read"
           ],
           "copybook": "TRANREC",
-          "source": "pangaea/jobs/DAILY.jcl:72"
+          "source": "pangaea/jobs/DAILY.jcl:85"
         },
         {
           "dd": "ACCTOUT",
@@ -442,7 +517,7 @@
             "write"
           ],
           "copybook": "ACCTMAST",
-          "source": "pangaea/jobs/DAILY.jcl:73"
+          "source": "pangaea/jobs/DAILY.jcl:86"
         },
         {
           "dd": "AUDIT",
@@ -455,7 +530,7 @@
             "append"
           ],
           "copybook": "AUDITREC",
-          "source": "pangaea/jobs/DAILY.jcl:75"
+          "source": "pangaea/jobs/DAILY.jcl:88"
         },
         {
           "dd": "REJECTS",
@@ -468,7 +543,7 @@
             "append"
           ],
           "copybook": "REJREC",
-          "source": "pangaea/jobs/DAILY.jcl:76"
+          "source": "pangaea/jobs/DAILY.jcl:89"
         },
         {
           "dd": "LEGS",
@@ -481,7 +556,7 @@
             "write"
           ],
           "copybook": "TRANREC",
-          "source": "pangaea/jobs/DAILY.jcl:77"
+          "source": "pangaea/jobs/DAILY.jcl:90"
         },
         {
           "dd": "POSTRPT",
@@ -490,7 +565,7 @@
           "uses": [
             "write"
           ],
-          "source": "pangaea/jobs/DAILY.jcl:79"
+          "source": "pangaea/jobs/DAILY.jcl:92"
         }
       ]
     },
@@ -501,7 +576,7 @@
       "description": [
         "SORT AND POST THE CREDITS OF THE TRANSFERS THAT POSTED"
       ],
-      "source": "pangaea/jobs/DAILY.jcl:83",
+      "source": "pangaea/jobs/DAILY.jcl:96",
       "dds": [
         {
           "dd": "TRANIN",
@@ -513,7 +588,7 @@
           "uses": [
             "read"
           ],
-          "source": "pangaea/jobs/DAILY.jcl:84"
+          "source": "pangaea/jobs/DAILY.jcl:97"
         },
         {
           "dd": "TRANOUT",
@@ -525,7 +600,7 @@
           "uses": [
             "write"
           ],
-          "source": "pangaea/jobs/DAILY.jcl:85"
+          "source": "pangaea/jobs/DAILY.jcl:98"
         }
       ]
     },
@@ -533,7 +608,7 @@
       "step": "POSTCR",
       "program": "TXPOST",
       "cond": "(4,LT)",
-      "source": "pangaea/jobs/DAILY.jcl:87",
+      "source": "pangaea/jobs/DAILY.jcl:100",
       "dds": [
         {
           "dd": "BANKCTL",
@@ -546,7 +621,7 @@
             "read"
           ],
           "copybook": "BANKCTL",
-          "source": "pangaea/jobs/DAILY.jcl:88"
+          "source": "pangaea/jobs/DAILY.jcl:101"
         },
         {
           "dd": "ACCTIN",
@@ -559,7 +634,7 @@
             "read"
           ],
           "copybook": "ACCTMAST",
-          "source": "pangaea/jobs/DAILY.jcl:89"
+          "source": "pangaea/jobs/DAILY.jcl:102"
         },
         {
           "dd": "TRANIN",
@@ -572,7 +647,7 @@
             "read"
           ],
           "copybook": "TRANREC",
-          "source": "pangaea/jobs/DAILY.jcl:90"
+          "source": "pangaea/jobs/DAILY.jcl:103"
         },
         {
           "dd": "ACCTOUT",
@@ -585,7 +660,7 @@
             "write"
           ],
           "copybook": "ACCTMAST",
-          "source": "pangaea/jobs/DAILY.jcl:91"
+          "source": "pangaea/jobs/DAILY.jcl:104"
         },
         {
           "dd": "AUDIT",
@@ -598,7 +673,7 @@
             "append"
           ],
           "copybook": "AUDITREC",
-          "source": "pangaea/jobs/DAILY.jcl:93"
+          "source": "pangaea/jobs/DAILY.jcl:106"
         },
         {
           "dd": "REJECTS",
@@ -611,7 +686,7 @@
             "append"
           ],
           "copybook": "REJREC",
-          "source": "pangaea/jobs/DAILY.jcl:94"
+          "source": "pangaea/jobs/DAILY.jcl:107"
         },
         {
           "dd": "LEGS",
@@ -624,7 +699,7 @@
             "write"
           ],
           "copybook": "TRANREC",
-          "source": "pangaea/jobs/DAILY.jcl:95"
+          "source": "pangaea/jobs/DAILY.jcl:108"
         },
         {
           "dd": "POSTRPT",
@@ -633,7 +708,7 @@
           "uses": [
             "write"
           ],
-          "source": "pangaea/jobs/DAILY.jcl:97"
+          "source": "pangaea/jobs/DAILY.jcl:110"
         }
       ]
     },
@@ -644,7 +719,7 @@
       "description": [
         "SORT AND POST THE RETURNS OF THE CREDITS THAT COULD NOT POST"
       ],
-      "source": "pangaea/jobs/DAILY.jcl:101",
+      "source": "pangaea/jobs/DAILY.jcl:114",
       "dds": [
         {
           "dd": "TRANIN",
@@ -656,7 +731,7 @@
           "uses": [
             "read"
           ],
-          "source": "pangaea/jobs/DAILY.jcl:102"
+          "source": "pangaea/jobs/DAILY.jcl:115"
         },
         {
           "dd": "TRANOUT",
@@ -668,7 +743,7 @@
           "uses": [
             "write"
           ],
-          "source": "pangaea/jobs/DAILY.jcl:103"
+          "source": "pangaea/jobs/DAILY.jcl:116"
         }
       ]
     },
@@ -676,114 +751,6 @@
       "step": "POSTRT",
       "program": "TXPOST",
       "cond": "(4,LT)",
-      "source": "pangaea/jobs/DAILY.jcl:105",
-      "dds": [
-        {
-          "dd": "BANKCTL",
-          "datasets": [
-            "BANK.CONTROL(0)"
-          ],
-          "disp": "SHR",
-          "file": "CONTROL-FILE",
-          "uses": [
-            "read"
-          ],
-          "copybook": "BANKCTL",
-          "source": "pangaea/jobs/DAILY.jcl:106"
-        },
-        {
-          "dd": "ACCTIN",
-          "datasets": [
-            "\u0026\u0026CREDITED"
-          ],
-          "disp": "OLD",
-          "file": "ACCT-IN",
-          "uses": [
-            "read"
-          ],
-          "copybook": "ACCTMAST",
-          "source": "pangaea/jobs/DAILY.jcl:107"
-        },
-        {
-          "dd": "TRANIN",
-          "datasets": [
-            "\u0026\u0026RETSORT"
-          ],
-          "disp": "OLD",
-          "file": "TRAN-IN",
-          "uses": [
-            "read"
-          ],
-          "copybook": "TRANREC",
-          "source": "pangaea/jobs/DAILY.jcl:108"
-        },
-        {
-          "dd": "ACCTOUT",
-          "datasets": [
-            "\u0026\u0026RETURNED"
-          ],
-          "disp": "NEW",
-          "file": "ACCT-OUT",
-          "uses": [
-            "write"
-          ],
-          "copybook": "ACCTMAST",
-          "source": "pangaea/jobs/DAILY.jcl:109"
-        },
-        {
-          "dd": "AUDIT",
-          "datasets": [
-            "TRAN.AUDIT(+1)"
-          ],
-          "disp": "MOD",
-          "file": "AUDIT-OUT",
-          "uses": [
-            "append"
-          ],
-          "copybook": "AUDITREC",
-          "source": "pangaea/jobs/DAILY.jcl:111"
-        },
-        {
-          "dd": "REJECTS",
-          "datasets": [
-            "TRAN.REJECTS(+1)"
-          ],
-          "disp": "MOD",
-          "file": "REJECT-OUT",
-          "uses": [
-            "append"
-          ],
-          "copybook": "REJREC",
-          "source": "pangaea/jobs/DAILY.jcl:112"
-        },
-        {
-          "dd": "LEGS",
-          "dummy": true,
-          "file": "LEGS-OUT",
-          "uses": [
-            "write"
-          ],
-          "copybook": "TRANREC",
-          "source": "pangaea/jobs/DAILY.jcl:113"
-        },
-        {
-          "dd": "POSTRPT",
-          "sysout": true,
-          "file": "REPORT-OUT",
-          "uses": [
-            "write"
-          ],
-          "source": "pangaea/jobs/DAILY.jcl:114"
-        }
-      ]
-    },
-    {
-      "step": "MAINT",
-      "program": "ACCTMNT",
-      "cond": "(4,LT)",
-      "description": [
-        "APPLY THE DAY'S ACCOUNT MAINTENANCE, WRITING THE NEW MASTER"
-      ],
       "source": "pangaea/jobs/DAILY.jcl:118",
       "dds": [
         {
@@ -802,32 +769,33 @@
         {
           "dd": "ACCTIN",
           "datasets": [
-            "\u0026\u0026RETURNED"
+            "\u0026\u0026CREDITED"
           ],
           "disp": "OLD",
           "file": "ACCT-IN",
           "uses": [
             "read"
           ],
+          "copybook": "ACCTMAST",
           "source": "pangaea/jobs/DAILY.jcl:120"
         },
         {
-          "dd": "MAINTIN",
+          "dd": "TRANIN",
           "datasets": [
-            "ACCT.MAINT(0)"
+            "\u0026\u0026RETSORT"
           ],
-          "disp": "SHR",
-          "file": "MAINT-IN",
+          "disp": "OLD",
+          "file": "TRAN-IN",
           "uses": [
             "read"
           ],
-          "copybook": "MAINTREC",
+          "copybook": "TRANREC",
           "source": "pangaea/jobs/DAILY.jcl:121"
         },
         {
           "dd": "ACCTOUT",
           "datasets": [
-            "ACCT.MASTER(+1)"
+            "\u0026\u0026RETURNED"
           ],
           "disp": "NEW",
           "file": "ACCT-OUT",
@@ -838,39 +806,60 @@
           "source": "pangaea/jobs/DAILY.jcl:122"
         },
         {
-          "dd": "REJECTS",
+          "dd": "AUDIT",
           "datasets": [
-            "MAINT.REJECTS(+1)"
+            "TRAN.AUDIT(+1)"
           ],
-          "disp": "NEW",
-          "file": "REJECT-OUT",
+          "disp": "MOD",
+          "file": "AUDIT-OUT",
           "uses": [
-            "write"
+            "append"
           ],
-          "copybook": "REJREC",
+          "copybook": "AUDITREC",
           "source": "pangaea/jobs/DAILY.jcl:124"
         },
         {
-          "dd": "MNTRPT",
+          "dd": "REJECTS",
+          "datasets": [
+            "TRAN.REJECTS(+1)"
+          ],
+          "disp": "MOD",
+          "file": "REJECT-OUT",
+          "uses": [
+            "append"
+          ],
+          "copybook": "REJREC",
+          "source": "pangaea/jobs/DAILY.jcl:125"
+        },
+        {
+          "dd": "LEGS",
+          "dummy": true,
+          "file": "LEGS-OUT",
+          "uses": [
+            "write"
+          ],
+          "copybook": "TRANREC",
+          "source": "pangaea/jobs/DAILY.jcl:126"
+        },
+        {
+          "dd": "POSTRPT",
           "sysout": true,
           "file": "REPORT-OUT",
           "uses": [
             "write"
           ],
-          "source": "pangaea/jobs/DAILY.jcl:126"
+          "source": "pangaea/jobs/DAILY.jcl:127"
         }
       ]
     },
     {
-      "step": "LOAD",
-      "program": "ACCTLOAD",
+      "step": "MAINT",
+      "program": "ACCTMNT",
       "cond": "(4,LT)",
       "description": [
-        "LOAD THE NEW MASTER INTO THE ONLINE ACCOUNT FILE, WHICH THE",
-        "CARD AND ATM AUTHORIZATIONS READ DURING THE NEXT BUSINESS DAY,",
-        "AND START THAT DAY'S HOLD FILE"
+        "APPLY THE DAY'S ACCOUNT MAINTENANCE, WRITING THE NEW MASTER"
       ],
-      "source": "pangaea/jobs/DAILY.jcl:132",
+      "source": "pangaea/jobs/DAILY.jcl:131",
       "dds": [
         {
           "dd": "BANKCTL",
@@ -883,7 +872,93 @@
             "read"
           ],
           "copybook": "BANKCTL",
+          "source": "pangaea/jobs/DAILY.jcl:132"
+        },
+        {
+          "dd": "ACCTIN",
+          "datasets": [
+            "\u0026\u0026RETURNED"
+          ],
+          "disp": "OLD",
+          "file": "ACCT-IN",
+          "uses": [
+            "read"
+          ],
           "source": "pangaea/jobs/DAILY.jcl:133"
+        },
+        {
+          "dd": "MAINTIN",
+          "datasets": [
+            "ACCT.MAINT(0)"
+          ],
+          "disp": "SHR",
+          "file": "MAINT-IN",
+          "uses": [
+            "read"
+          ],
+          "copybook": "MAINTREC",
+          "source": "pangaea/jobs/DAILY.jcl:134"
+        },
+        {
+          "dd": "ACCTOUT",
+          "datasets": [
+            "ACCT.MASTER(+1)"
+          ],
+          "disp": "NEW",
+          "file": "ACCT-OUT",
+          "uses": [
+            "write"
+          ],
+          "copybook": "ACCTMAST",
+          "source": "pangaea/jobs/DAILY.jcl:135"
+        },
+        {
+          "dd": "REJECTS",
+          "datasets": [
+            "MAINT.REJECTS(+1)"
+          ],
+          "disp": "NEW",
+          "file": "REJECT-OUT",
+          "uses": [
+            "write"
+          ],
+          "copybook": "REJREC",
+          "source": "pangaea/jobs/DAILY.jcl:137"
+        },
+        {
+          "dd": "MNTRPT",
+          "sysout": true,
+          "file": "REPORT-OUT",
+          "uses": [
+            "write"
+          ],
+          "source": "pangaea/jobs/DAILY.jcl:139"
+        }
+      ]
+    },
+    {
+      "step": "LOAD",
+      "program": "ACCTLOAD",
+      "cond": "(4,LT)",
+      "description": [
+        "LOAD THE NEW MASTER INTO THE ONLINE ACCOUNT FILE, WHICH THE",
+        "CARD AND ATM AUTHORIZATIONS READ DURING THE NEXT BUSINESS DAY,",
+        "AND START THAT DAY'S HOLD FILE"
+      ],
+      "source": "pangaea/jobs/DAILY.jcl:145",
+      "dds": [
+        {
+          "dd": "BANKCTL",
+          "datasets": [
+            "BANK.CONTROL(0)"
+          ],
+          "disp": "SHR",
+          "file": "CONTROL-FILE",
+          "uses": [
+            "read"
+          ],
+          "copybook": "BANKCTL",
+          "source": "pangaea/jobs/DAILY.jcl:146"
         },
         {
           "dd": "ACCTIN",
@@ -896,7 +971,7 @@
             "read"
           ],
           "copybook": "ACCTMAST",
-          "source": "pangaea/jobs/DAILY.jcl:134"
+          "source": "pangaea/jobs/DAILY.jcl:147"
         },
         {
           "dd": "ACCTOUT",
@@ -910,7 +985,7 @@
             "write"
           ],
           "copybook": "ACCTONL",
-          "source": "pangaea/jobs/DAILY.jcl:135"
+          "source": "pangaea/jobs/DAILY.jcl:148"
         },
         {
           "dd": "HOLDOUT",
@@ -924,7 +999,7 @@
             "write"
           ],
           "copybook": "HOLDREC",
-          "source": "pangaea/jobs/DAILY.jcl:137"
+          "source": "pangaea/jobs/DAILY.jcl:150"
         },
         {
           "dd": "LOADRPT",
@@ -933,7 +1008,7 @@
           "uses": [
             "write"
           ],
-          "source": "pangaea/jobs/DAILY.jcl:139"
+          "source": "pangaea/jobs/DAILY.jcl:152"
         }
       ]
     },
@@ -944,7 +1019,7 @@
       "description": [
         "MOVE TO THE NEXT BUSINESS DAY"
       ],
-      "source": "pangaea/jobs/DAILY.jcl:143",
+      "source": "pangaea/jobs/DAILY.jcl:156",
       "dds": [
         {
           "dd": "BANKIN",
@@ -957,7 +1032,7 @@
             "read"
           ],
           "copybook": "BANKCTL",
-          "source": "pangaea/jobs/DAILY.jcl:144"
+          "source": "pangaea/jobs/DAILY.jcl:157"
         },
         {
           "dd": "BANKOUT",
@@ -970,7 +1045,7 @@
             "write"
           ],
           "copybook": "BANKCTL",
-          "source": "pangaea/jobs/DAILY.jcl:145"
+          "source": "pangaea/jobs/DAILY.jcl:158"
         }
       ]
     },
@@ -982,7 +1057,7 @@
         "LOAD THE CARDS INTO THE ONLINE CARD FILE FOR THE NEXT BUSINESS",
         "DAY, LEAVING OUT THOSE THAT HAVE EXPIRED BY THEN"
       ],
-      "source": "pangaea/jobs/DAILY.jcl:151",
+      "source": "pangaea/jobs/DAILY.jcl:164",
       "dds": [
         {
           "dd": "BANKCTL",
@@ -995,7 +1070,7 @@
             "read"
           ],
           "copybook": "BANKCTL",
-          "source": "pangaea/jobs/DAILY.jcl:152"
+          "source": "pangaea/jobs/DAILY.jcl:165"
         },
         {
           "dd": "CARDIN",
@@ -1008,7 +1083,7 @@
             "read"
           ],
           "copybook": "CARDREC",
-          "source": "pangaea/jobs/DAILY.jcl:153"
+          "source": "pangaea/jobs/DAILY.jcl:166"
         },
         {
           "dd": "CARDOUT",
@@ -1022,7 +1097,7 @@
             "write"
           ],
           "copybook": "CARDREC",
-          "source": "pangaea/jobs/DAILY.jcl:154"
+          "source": "pangaea/jobs/DAILY.jcl:167"
         },
         {
           "dd": "LOADRPT",
@@ -1031,7 +1106,7 @@
           "uses": [
             "write"
           ],
-          "source": "pangaea/jobs/DAILY.jcl:156"
+          "source": "pangaea/jobs/DAILY.jcl:169"
         }
       ]
     }
@@ -1042,6 +1117,7 @@
       "copybook": "BANKCTL",
       "readBy": [
         "VALID",
+        "VALIDC",
         "ACCRUE",
         "CHARGE",
         "POSTMO",
@@ -1075,10 +1151,28 @@
       "copybook": "REJREC",
       "writtenBy": [
         "VALID",
+        "VALIDC",
         "POSTMO",
         "POST",
         "POSTCR",
         "POSTRT"
+      ]
+    },
+    {
+      "dataset": "TRAN.CARD(0)",
+      "copybook": "TRANREC",
+      "readBy": [
+        "VALIDC"
+      ]
+    },
+    {
+      "dataset": "\u0026\u0026CARDVAL",
+      "copybook": "TRANREC",
+      "writtenBy": [
+        "VALIDC"
+      ],
+      "readBy": [
+        "SORT"
       ]
     },
     {

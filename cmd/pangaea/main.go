@@ -132,7 +132,7 @@ func run(args []string) error {
 
 func bankFlags(name string) (*flag.FlagSet, *bank.Bank) {
 	flags := flag.NewFlagSet(name, flag.ExitOnError)
-	b := &bank.Bank{Copybooks: "pangaea/copybooks", DailyJob: "pangaea/jobs/DAILY.jcl", MonthlyJob: "pangaea/jobs/MONTHLY.jcl"}
+	b := &bank.Bank{Copybooks: "pangaea/copybooks", Jobs: "pangaea/jobs"}
 	flags.StringVar(&b.Dir, "bank", "pangaea/run/bank", "directory of the running bank")
 	flags.StringVar(&b.Programs, "programs", "pangaea/build", "directory of the compiled programs")
 	return flags, b
@@ -177,7 +177,7 @@ func serveConsole(args []string) error {
 	if err != nil {
 		return err
 	}
-	system, err := blueprint.Analyze(append(programs, b.DailyJob, b.MonthlyJob), b.Copybooks)
+	system, err := blueprint.Analyze(append(programs, b.JobFiles()...), b.Copybooks)
 	if err != nil {
 		return err
 	}

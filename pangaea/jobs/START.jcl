@@ -1,0 +1,22 @@
+//START    JOB
+//*================================================================*
+//* OPEN A NEW BANK: LOAD THE ONLINE FILES FOR ITS FIRST BUSINESS  *
+//* DAY, AS THE DAILY BATCH LOADS THEM EVERY NIGHT AFTER.          *
+//*                                                                *
+//* READS   BANK.CONTROL(0)  ACCT.MASTER(0)  CARD.MASTER(0)        *
+//* WRITES  ACCT.ONLINE(+1)  HOLD.ONLINE(+1)  CARD.ONLINE(+1)      *
+//*================================================================*
+//LOAD     EXEC PGM=ACCTLOAD
+//BANKCTL  DD DSN=BANK.CONTROL(0),DISP=SHR
+//ACCTIN   DD DSN=ACCT.MASTER(0),DISP=SHR
+//ACCTOUT  DD DSN=ACCT.ONLINE(+1),DISP=NEW,
+//            RECORG=KS,LRECL=100
+//HOLDOUT  DD DSN=HOLD.ONLINE(+1),DISP=NEW,
+//            RECORG=KS,LRECL=100
+//LOADRPT  DD SYSOUT=*
+//CARDS    EXEC PGM=CARDLOAD,COND=(4,LT)
+//BANKCTL  DD DSN=BANK.CONTROL(0),DISP=SHR
+//CARDIN   DD DSN=CARD.MASTER(0),DISP=SHR
+//CARDOUT  DD DSN=CARD.ONLINE(+1),DISP=NEW,
+//            RECORG=KS,LRECL=80
+//LOADRPT  DD SYSOUT=*

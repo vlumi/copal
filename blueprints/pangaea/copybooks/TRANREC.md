@@ -31,7 +31,7 @@ DATE       BY  CHANGE
 2003-05-19 MV  CR-0342 THE CARD FILE AND ITS CODES.
 ```
 
-Copybook [TRANREC.cpy](../../../pangaea/copybooks/TRANREC.cpy), used by [MONCHG](../programs/MONCHG.md), [TXPOST](../programs/TXPOST.md), [TXVALID](../programs/TXVALID.md).
+Copybook [TRANREC.cpy](../../../pangaea/copybooks/TRANREC.cpy), used by [HOLDEXT](../programs/HOLDEXT.md), [MONCHG](../programs/MONCHG.md), [TXPOST](../programs/TXPOST.md), [TXVALID](../programs/TXVALID.md).
 
 ## TRAN-RECORD
 

@@ -22,12 +22,12 @@ func TestConsole(t *testing.T) {
 	if _, err := compile.Programs("../programs", "../copybooks", programs); err != nil {
 		t.Fatal(err)
 	}
-	b := bank.Bank{Dir: t.TempDir(), Programs: programs, Copybooks: "../copybooks", DailyJob: "../jobs/DAILY.jcl", MonthlyJob: "../jobs/MONTHLY.jcl"}
+	b := bank.Bank{Dir: t.TempDir(), Programs: programs, Copybooks: "../copybooks", Jobs: "../jobs"}
 	sources, err := filepath.Glob("../programs/*.cbl")
 	if err != nil {
 		t.Fatal(err)
 	}
-	system, err := blueprint.Analyze(append(sources, b.DailyJob, b.MonthlyJob), "../copybooks")
+	system, err := blueprint.Analyze(append(sources, b.JobFiles()...), "../copybooks")
 	if err != nil {
 		t.Fatal(err)
 	}

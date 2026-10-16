@@ -1,0 +1,185 @@
+{
+  "job": "START",
+  "source": "pangaea/jobs/START.jcl",
+  "description": [
+    "OPEN A NEW BANK: LOAD THE ONLINE FILES FOR ITS FIRST BUSINESS",
+    "DAY, AS THE DAILY BATCH LOADS THEM EVERY NIGHT AFTER.",
+    "",
+    "READS   BANK.CONTROL(0)  ACCT.MASTER(0)  CARD.MASTER(0)",
+    "WRITES  ACCT.ONLINE(+1)  HOLD.ONLINE(+1)  CARD.ONLINE(+1)"
+  ],
+  "steps": [
+    {
+      "step": "LOAD",
+      "program": "ACCTLOAD",
+      "source": "pangaea/jobs/START.jcl:9",
+      "dds": [
+        {
+          "dd": "BANKCTL",
+          "datasets": [
+            "BANK.CONTROL(0)"
+          ],
+          "disp": "SHR",
+          "file": "CONTROL-FILE",
+          "uses": [
+            "read"
+          ],
+          "copybook": "BANKCTL",
+          "source": "pangaea/jobs/START.jcl:10"
+        },
+        {
+          "dd": "ACCTIN",
+          "datasets": [
+            "ACCT.MASTER(0)"
+          ],
+          "disp": "SHR",
+          "file": "ACCT-IN",
+          "uses": [
+            "read"
+          ],
+          "copybook": "ACCTMAST",
+          "source": "pangaea/jobs/START.jcl:11"
+        },
+        {
+          "dd": "ACCTOUT",
+          "datasets": [
+            "ACCT.ONLINE(+1)"
+          ],
+          "disp": "NEW",
+          "indexed": true,
+          "file": "ONLINE-OUT",
+          "uses": [
+            "write"
+          ],
+          "copybook": "ACCTONL",
+          "source": "pangaea/jobs/START.jcl:12"
+        },
+        {
+          "dd": "HOLDOUT",
+          "datasets": [
+            "HOLD.ONLINE(+1)"
+          ],
+          "disp": "NEW",
+          "indexed": true,
+          "file": "HOLD-OUT",
+          "uses": [
+            "write"
+          ],
+          "copybook": "HOLDREC",
+          "source": "pangaea/jobs/START.jcl:14"
+        },
+        {
+          "dd": "LOADRPT",
+          "sysout": true,
+          "file": "REPORT-OUT",
+          "uses": [
+            "write"
+          ],
+          "source": "pangaea/jobs/START.jcl:16"
+        }
+      ]
+    },
+    {
+      "step": "CARDS",
+      "program": "CARDLOAD",
+      "cond": "(4,LT)",
+      "source": "pangaea/jobs/START.jcl:17",
+      "dds": [
+        {
+          "dd": "BANKCTL",
+          "datasets": [
+            "BANK.CONTROL(0)"
+          ],
+          "disp": "SHR",
+          "file": "CONTROL-FILE",
+          "uses": [
+            "read"
+          ],
+          "copybook": "BANKCTL",
+          "source": "pangaea/jobs/START.jcl:18"
+        },
+        {
+          "dd": "CARDIN",
+          "datasets": [
+            "CARD.MASTER(0)"
+          ],
+          "disp": "SHR",
+          "file": "CARD-IN",
+          "uses": [
+            "read"
+          ],
+          "copybook": "CARDREC",
+          "source": "pangaea/jobs/START.jcl:19"
+        },
+        {
+          "dd": "CARDOUT",
+          "datasets": [
+            "CARD.ONLINE(+1)"
+          ],
+          "disp": "NEW",
+          "indexed": true,
+          "file": "ONLINE-OUT",
+          "uses": [
+            "write"
+          ],
+          "copybook": "CARDREC",
+          "source": "pangaea/jobs/START.jcl:20"
+        },
+        {
+          "dd": "LOADRPT",
+          "sysout": true,
+          "file": "REPORT-OUT",
+          "uses": [
+            "write"
+          ],
+          "source": "pangaea/jobs/START.jcl:22"
+        }
+      ]
+    }
+  ],
+  "datasets": [
+    {
+      "dataset": "BANK.CONTROL(0)",
+      "copybook": "BANKCTL",
+      "readBy": [
+        "LOAD",
+        "CARDS"
+      ]
+    },
+    {
+      "dataset": "ACCT.MASTER(0)",
+      "copybook": "ACCTMAST",
+      "readBy": [
+        "LOAD"
+      ]
+    },
+    {
+      "dataset": "ACCT.ONLINE(+1)",
+      "copybook": "ACCTONL",
+      "writtenBy": [
+        "LOAD"
+      ]
+    },
+    {
+      "dataset": "HOLD.ONLINE(+1)",
+      "copybook": "HOLDREC",
+      "writtenBy": [
+        "LOAD"
+      ]
+    },
+    {
+      "dataset": "CARD.MASTER(0)",
+      "copybook": "CARDREC",
+      "readBy": [
+        "CARDS"
+      ]
+    },
+    {
+      "dataset": "CARD.ONLINE(+1)",
+      "copybook": "CARDREC",
+      "writtenBy": [
+        "CARDS"
+      ]
+    }
+  ]
+}
