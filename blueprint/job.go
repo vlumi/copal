@@ -141,6 +141,21 @@ func datasetBase(name string) string {
 	return base
 }
 
+// DatasetCopybooks maps each dataset the system's jobs name, by its name
+// without generation, to the copybook that describes its records, where it
+// is known. Temporary datasets are left out.
+func (s *System) DatasetCopybooks() map[string]string {
+	copybooks := map[string]string{}
+	for _, job := range s.Jobs {
+		for _, d := range job.Datasets {
+			if d.Copybook != "" && !strings.HasPrefix(d.Name, "&&") {
+				copybooks[datasetBase(d.Name)] = d.Copybook
+			}
+		}
+	}
+	return copybooks
+}
+
 // describeDatasets names each dataset's record layout from every job: the
 // copybook of the record a program declares for a file bound to the
 // dataset, in any generation. Two programs that describe one dataset with
