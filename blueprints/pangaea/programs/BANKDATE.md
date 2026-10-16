@@ -25,10 +25,10 @@ Program [BANKDATE.cbl](../../../pangaea/programs/BANKDATE.cbl): 2 files, 2 parag
 
 ## Files
 
-| File | Kind | Assigned to | Organization | Status field | Records |
-| --- | --- | --- | --- | --- | --- |
-| CONTROL-IN | FD | BANKIN | SEQUENTIAL | WS-IN-STATUS | BANK-CONTROL-RECORD |
-| CONTROL-OUT | FD | BANKOUT | SEQUENTIAL | WS-OUT-STATUS | CONTROL-OUT-RECORD |
+| File | Kind | Assigned to | Organization | Status field | Opened | Records |
+| --- | --- | --- | --- | --- | --- | --- |
+| CONTROL-IN | FD | BANKIN | SEQUENTIAL | WS-IN-STATUS | INPUT | BANK-CONTROL-RECORD |
+| CONTROL-OUT | FD | BANKOUT | SEQUENTIAL | WS-OUT-STATUS | OUTPUT | CONTROL-OUT-RECORD |
 
 ## Flow
 

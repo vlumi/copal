@@ -33,12 +33,12 @@ Program [GLSUM.cbl](../../../pangaea/programs/GLSUM.cbl): 4 files, 9 paragraphs.
 
 ## Files
 
-| File | Kind | Assigned to | Organization | Status field | Records |
-| --- | --- | --- | --- | --- | --- |
-| ACCR-IN | FD | ACCRIN | SEQUENTIAL | WS-ACCR-IN-STATUS | ACCRUAL-RECORD |
-| AUDIT-IN | FD | AUDIT | SEQUENTIAL | WS-AUDIT-STATUS | AUDIT-RECORD |
-| GL-OUT | FD | GLOUT | SEQUENTIAL | WS-GL-STATUS | GL-SUMMARY-RECORD |
-| REPORT-OUT | FD | GLRPT | LINE SEQUENTIAL | WS-REPORT-STATUS | REPORT-LINE |
+| File | Kind | Assigned to | Organization | Status field | Opened | Records |
+| --- | --- | --- | --- | --- | --- | --- |
+| ACCR-IN | FD | ACCRIN | SEQUENTIAL | WS-ACCR-IN-STATUS | INPUT | ACCRUAL-RECORD |
+| AUDIT-IN | FD | AUDIT | SEQUENTIAL | WS-AUDIT-STATUS | INPUT | AUDIT-RECORD |
+| GL-OUT | FD | GLOUT | SEQUENTIAL | WS-GL-STATUS | OUTPUT | GL-SUMMARY-RECORD |
+| REPORT-OUT | FD | GLRPT | LINE SEQUENTIAL | WS-REPORT-STATUS | OUTPUT | REPORT-LINE |
 
 ## Flow
 

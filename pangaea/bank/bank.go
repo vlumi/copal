@@ -12,9 +12,9 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/vlumi/copal/jcl"
 	"github.com/vlumi/copal/pangaea/dataset"
 	"github.com/vlumi/copal/pangaea/generate"
-	"github.com/vlumi/copal/pangaea/jcl"
 	"github.com/vlumi/copal/pangaea/runner"
 	"github.com/vlumi/copal/record"
 )

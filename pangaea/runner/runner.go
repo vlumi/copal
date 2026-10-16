@@ -14,8 +14,8 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/vlumi/copal/jcl"
 	"github.com/vlumi/copal/pangaea/dataset"
-	"github.com/vlumi/copal/pangaea/jcl"
 )
 
 // JobLog is the file in the sysout directory that lists each step's outcome.

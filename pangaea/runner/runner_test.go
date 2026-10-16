@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/vlumi/copal/jcl"
 	"github.com/vlumi/copal/pangaea/dataset"
-	"github.com/vlumi/copal/pangaea/jcl"
 )
 
 // newRunner sets up a runner whose programs are shell scripts.

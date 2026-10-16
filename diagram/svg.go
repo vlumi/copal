@@ -97,8 +97,11 @@ func (l *layout) writeNode(b *strings.Builder, s *slot, n Node) {
 	if n.Title != "" {
 		fmt.Fprintf(b, "<title>%s</title>", label(n.Title))
 	}
-	top := l.top(s)
-	fmt.Fprintf(b, `<rect class="%s" x="%d" y="%d" width="%d" height="%d" rx="4"/>`, class, s.x, top, s.width, boxHeight)
+	top, radius := l.top(s), 4
+	if n.Rounded {
+		radius = boxHeight / 2
+	}
+	fmt.Fprintf(b, `<rect class="%s" x="%d" y="%d" width="%d" height="%d" rx="%d"/>`, class, s.x, top, s.width, boxHeight, radius)
 	fmt.Fprintf(b, `<text class="label" x="%d" y="%d" text-anchor="middle">%s</text>`, s.center(), top+boxHeight/2+4, label(n.Label))
 	b.WriteString(end + "\n")
 }

@@ -11,8 +11,9 @@ import (
 )
 
 // Render returns the system's blueprints as files by path: an index in
-// README.md, programs/NAME and copybooks/NAME as .md and .json, and each
-// program's paragraph diagram as programs/NAME.svg. Links
+// README.md, programs/NAME, copybooks/NAME and jobs/NAME as .md and .json,
+// each program's paragraph diagram as programs/NAME.svg and each job's
+// network as jobs/NAME.svg. Links
 // to the source are relative to dir, where the blueprints are to be
 // written, so the source paths must be relative to the same working
 // directory as dir.
@@ -32,6 +33,16 @@ func (s *System) Render(dir, title string) (map[string][]byte, error) {
 		if err := renderBoth(files, dir, "copybooks", c.Name, c, copybookMarkdown); err != nil {
 			return nil, err
 		}
+	}
+	for _, job := range s.Jobs {
+		if err := renderBoth(files, dir, "jobs", job.Name, job, jobMarkdown); err != nil {
+			return nil, err
+		}
+		svg, err := jobDiagram(filepath.Join(dir, "jobs"), job).SVG()
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", job.Name, err)
+		}
+		files[filepath.Join("jobs", job.Name+".svg")] = svg
 	}
 	return files, nil
 }
@@ -83,6 +94,13 @@ func (s *System) indexMarkdown(dir, title string) string {
 		b.WriteString(row(fmt.Sprintf("[%s](copybooks/%s.md)", c.Name, c.Name), strings.Join(records, ", "),
 			programLinks(c.UsedBy, "programs/")))
 	}
+	if len(s.Jobs) > 0 {
+		b.WriteString("\n## Jobs\n\n| Job | Source | Steps | Findings |\n| --- | --- | --: | --: |\n")
+		for _, job := range s.Jobs {
+			b.WriteString(row(fmt.Sprintf("[%s](jobs/%s.md)", job.Name, job.Name), sourceLink(dir, job.Source, false),
+				strconv.Itoa(len(job.Steps)), strconv.Itoa(len(job.Findings))))
+		}
+	}
 	return b.String()
 }
 
@@ -98,9 +116,9 @@ func programMarkdown(dir string, p Program) string {
 		}
 	}
 
-	b.WriteString("\n## Files\n\n| File | Kind | Assigned to | Organization | Status field | Records |\n| --- | --- | --- | --- | --- | --- |\n")
+	b.WriteString("\n## Files\n\n| File | Kind | Assigned to | Organization | Status field | Opened | Records |\n| --- | --- | --- | --- | --- | --- | --- |\n")
 	for _, f := range p.Files {
-		b.WriteString(row(f.Name, f.Kind, f.Assign, f.Organization, f.Status, strings.Join(f.Records, ", ")))
+		b.WriteString(row(f.Name, f.Kind, f.Assign, f.Organization, f.Status, strings.Join(f.Opened, ", "), strings.Join(f.Records, ", ")))
 	}
 
 	fmt.Fprintf(&b, "\n## Flow\n\n![The paragraphs of %s and how control moves between them](%s.svg)\n", p.Name, p.Name)

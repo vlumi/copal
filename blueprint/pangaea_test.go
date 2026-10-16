@@ -15,7 +15,11 @@ func TestPangaea(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	system, err := Analyze(programs, "pangaea/copybooks")
+	jobs, err := filepath.Glob("pangaea/jobs/*.jcl")
+	if err != nil {
+		t.Fatal(err)
+	}
+	system, err := Analyze(append(programs, jobs...), "pangaea/copybooks")
 	if err != nil {
 		t.Fatal(err)
 	}

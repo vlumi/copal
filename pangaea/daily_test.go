@@ -9,9 +9,9 @@ import (
 	"testing"
 
 	"github.com/vlumi/copal/internal/golden"
+	"github.com/vlumi/copal/jcl"
 	"github.com/vlumi/copal/pangaea/compile"
 	"github.com/vlumi/copal/pangaea/dataset"
-	"github.com/vlumi/copal/pangaea/jcl"
 	"github.com/vlumi/copal/pangaea/runner"
 )
 
