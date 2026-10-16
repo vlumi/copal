@@ -216,7 +216,7 @@ func walkOrder(n int, edges []indexedEdge) []int {
 
 // assignLayers puts each node below the lowest node with an edge to it, by
 // the edge's span: the length of the longest path to it. A node no edge
-// points to goes just above the highest node it points to, next to what it
+// points to goes as low as the spans of its edges allow, next to what it
 // feeds.
 func (l *layout) assignLayers(g Graph, edges []indexedEdge, order []int) {
 	layer := make([]int, len(g.Nodes))
@@ -237,15 +237,13 @@ func (l *layout) assignLayers(g Graph, edges []indexedEdge, order []int) {
 		if pointedTo[v] {
 			continue
 		}
-		highest := -1
+		lowest := -1
 		for _, e := range edges {
-			if e.from == v && (highest < 0 || layer[e.to] < highest) {
-				highest = layer[e.to]
+			if e.from == v && (lowest < 0 || layer[e.to]-e.span < lowest) {
+				lowest = layer[e.to] - e.span
 			}
 		}
-		if highest > 0 {
-			layer[v] = highest - 1
-		}
+		layer[v] = max(layer[v], lowest)
 	}
 	for i, n := range g.Nodes {
 		lines := strings.Split(n.Label, "\n")

@@ -2,6 +2,7 @@ package rules
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 	"testing"
 
@@ -43,6 +44,10 @@ func TestTables(t *testing.T) {
 	}
 	var got []string
 	for _, table := range Tables(p) {
+		if table.Paragraph == "WIDE-PARA" {
+			checkWide(t, table)
+			continue
+		}
 		got = append(got, layout(table))
 	}
 	want := []string{
@@ -74,5 +79,20 @@ Y N | WS-RATE(WS-I) > 0
 	}
 	if strings.Join(got, "\n") != strings.Join(want, "\n") {
 		t.Errorf("got\n%s\nwant\n%s", strings.Join(got, "\n"), strings.Join(want, "\n"))
+	}
+}
+
+// checkWide checks a paragraph whose decisions make more paths than a
+// table holds: the decision that would go over is shown as an action, and
+// what comes after it is still there.
+func checkWide(t *testing.T, table Table) {
+	t.Helper()
+	if len(table.Rules) != maxPaths {
+		t.Errorf("%d rules, want %d", len(table.Rules), maxPaths)
+	}
+	for _, want := range []string{"IF B = 1", "DISPLAY 'AFTER'"} {
+		if !slices.Contains(table.Actions, want) {
+			t.Errorf("no action %q in %q", want, table.Actions)
+		}
 	}
 }

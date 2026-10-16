@@ -14,3 +14,9 @@ func TestWithContents(t *testing.T) {
 		t.Errorf("a short document got contents:\n%s", got)
 	}
 }
+
+func TestRowEscapesPipes(t *testing.T) {
+	if got, want := row("VALUE '|'", "", "x"), "| VALUE '\\|' | | x |\n"; got != want {
+		t.Errorf("row %q, want %q", got, want)
+	}
+}

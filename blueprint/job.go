@@ -55,7 +55,7 @@ type DD struct {
 	Sysout   bool     `json:"sysout,omitempty"`
 	Dummy    bool     `json:"dummy,omitempty"`
 	File     string   `json:"file,omitempty"`
-	Use      string   `json:"use,omitempty"`
+	Uses     []string `json:"uses,omitempty"`
 	// Copybook is the copybook of the record the program declares for the
 	// file, when it declares it with one.
 	Copybook string `json:"copybook,omitempty"`
@@ -71,6 +71,17 @@ const (
 )
 
 var uses = map[string]string{"INPUT": useRead, "OUTPUT": useWrite, "EXTEND": useAppend, "I-O": useUpdate}
+
+// reads reports whether the step reads the DD's datasets.
+func (dd DD) reads() bool {
+	return slices.Contains(dd.Uses, useRead) || slices.Contains(dd.Uses, useUpdate)
+}
+
+// writes reports whether the step writes the DD's datasets, from scratch,
+// by appending or by updating them.
+func (dd DD) writes() bool {
+	return slices.ContainsFunc(dd.Uses, func(u string) bool { return u != useRead })
+}
 
 func analyzeJob(path string, programs []Program) (Job, error) {
 	data, err := os.ReadFile(path)
@@ -121,12 +132,11 @@ func jobDatasets(job Job) []Dataset {
 					datasets = append(datasets, Dataset{Name: name})
 					i = len(datasets) - 1
 				}
-				switch dd.Use {
-				case "":
-				case useRead:
-					addOnce(&datasets[i].ReadBy, step.Name)
-				default:
+				if dd.writes() {
 					addOnce(&datasets[i].WrittenBy, step.Name)
+				}
+				if dd.reads() {
+					addOnce(&datasets[i].ReadBy, step.Name)
 				}
 			}
 		}
@@ -227,21 +237,18 @@ func bind(dd *DD, step string, p Program) []string {
 	f := p.Files[i]
 	dd.File = f.Name
 	dd.Copybook = fileCopybook(p, f)
-	var modes []string
 	for _, mode := range f.Opened {
-		modes = append(modes, uses[mode])
+		dd.Uses = append(dd.Uses, uses[mode])
 	}
-	dd.Use = strings.Join(modes, ", ")
 	if len(dd.Datasets) == 0 {
 		return nil
 	}
-	writes := slices.Contains(modes, useWrite) || slices.Contains(modes, useAppend) || slices.Contains(modes, useUpdate)
 	switch {
-	case writes && (dd.Disp == "SHR" || dd.Disp == ""):
+	case dd.writes() && (dd.Disp == "SHR" || dd.Disp == ""):
 		return []string{fmt.Sprintf("Step %s: %s writes DD %s, a dataset it shares with DISP=SHR.", step, p.Name, dd.Name)}
-	case !writes && len(modes) > 0 && (dd.Disp == "NEW" || dd.Disp == "MOD"):
+	case dd.reads() && !dd.writes() && (dd.Disp == "NEW" || dd.Disp == "MOD"):
 		return []string{fmt.Sprintf("Step %s: %s only reads DD %s, which it creates with DISP=%s.", step, p.Name, dd.Name, dd.Disp)}
-	case slices.Contains(modes, useAppend) && dd.Disp != "MOD":
+	case slices.Contains(dd.Uses, useAppend) && dd.Disp != "MOD":
 		return []string{fmt.Sprintf("Step %s: %s appends to DD %s, which is not DISP=MOD.", step, p.Name, dd.Name)}
 	}
 	return nil
@@ -299,12 +306,13 @@ func temporaryFindings(job Job) []string {
 				if !slices.Contains(order, ds) {
 					order = append(order, ds)
 				}
-				switch {
-				case dd.Use == useRead && !written[ds]:
-					findings = append(findings, fmt.Sprintf("Step %s reads %s before any step writes it.", step.Name, ds))
-				case dd.Use == useRead:
+				if dd.reads() {
+					if !written[ds] {
+						findings = append(findings, fmt.Sprintf("Step %s reads %s before any step writes it.", step.Name, ds))
+					}
 					read[ds] = true
-				case dd.Use != "":
+				}
+				if dd.writes() {
 					written[ds] = true
 				}
 			}
@@ -369,11 +377,8 @@ func JobGraph(job Job, notes JobNotes) diagram.Graph {
 	for _, step := range job.Steps {
 		for _, dd := range step.DDs {
 			for _, ds := range dd.Datasets {
-				if dd.Use == useRead {
-					read[ds] = true
-				} else if dd.Use != "" {
-					written[ds] = true
-				}
+				read[ds] = read[ds] || dd.reads()
+				written[ds] = written[ds] || dd.writes()
 			}
 		}
 	}
@@ -405,7 +410,7 @@ func JobGraph(job Job, notes JobNotes) diagram.Graph {
 	for i, step := range job.Steps {
 		id := "step " + step.Name
 		for _, dd := range step.DDs {
-			if dd.Use == useRead {
+			if dd.reads() {
 				for _, ds := range dd.Datasets {
 					g.Edges = append(g.Edges, diagram.Edge{From: addDataset(ds, step, dd), To: id})
 				}
@@ -423,7 +428,7 @@ func JobGraph(job Job, notes JobNotes) diagram.Graph {
 			g.Edges = append(g.Edges, diagram.Edge{From: "step " + job.Steps[i-1].Name, To: id, Style: diagram.Dotted, Span: 2})
 		}
 		for _, dd := range step.DDs {
-			if dd.Use != useRead && dd.Use != "" {
+			if dd.writes() {
 				for _, ds := range dd.Datasets {
 					g.Edges = append(g.Edges, diagram.Edge{From: id, To: addDataset(ds, step, dd)})
 				}
@@ -437,7 +442,7 @@ func JobGraph(job Job, notes JobNotes) diagram.Graph {
 // one drawn once between them.
 func feeds(step, next Step, read, written map[string]bool) bool {
 	for _, out := range step.DDs {
-		if out.Use == useRead || out.Use == "" {
+		if !out.writes() {
 			continue
 		}
 		for _, ds := range out.Datasets {
@@ -445,7 +450,7 @@ func feeds(step, next Step, read, written map[string]bool) bool {
 				continue
 			}
 			for _, in := range next.DDs {
-				if in.Use == useRead && slices.Contains(in.Datasets, ds) {
+				if in.reads() && slices.Contains(in.Datasets, ds) {
 					return true
 				}
 			}
@@ -490,11 +495,10 @@ func jobMarkdown(dir string, job Job) string {
 		}
 		var reads, writes []string
 		for _, dd := range step.DDs {
-			switch dd.Use {
-			case "":
-			case useRead:
+			if dd.reads() {
 				reads = append(reads, dd.Datasets...)
-			default:
+			}
+			if dd.writes() {
 				writes = append(writes, dd.Datasets...)
 			}
 		}
@@ -512,7 +516,7 @@ func jobMarkdown(dir string, job Job) string {
 			case dd.Dummy:
 				datasets = "dummy"
 			}
-			b.WriteString(row(dd.Name, datasets, dd.Disp, dd.File, copybookLink(dd.Copybook), dd.Use))
+			b.WriteString(row(dd.Name, datasets, dd.Disp, dd.File, copybookLink(dd.Copybook), strings.Join(dd.Uses, ", ")))
 		}
 	}
 	b.WriteString("\n## Datasets\n\nEach dataset the job names, the copybook that describes its records, " +

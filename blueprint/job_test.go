@@ -32,7 +32,27 @@ func TestJobFindings(t *testing.T) {
 	if !slices.Equal(job.Findings, want) {
 		t.Errorf("findings\n%q\nwant\n%q", job.Findings, want)
 	}
-	if dd := job.Steps[0].DDs[0]; dd.File != "IN-FILE" || dd.Use != "read" || !slices.Equal(dd.Datasets, []string{"A"}) {
+	if dd := job.Steps[0].DDs[0]; dd.File != "IN-FILE" || !slices.Equal(dd.Uses, []string{"read"}) || !slices.Equal(dd.Datasets, []string{"A"}) {
 		t.Errorf("first DD %+v", dd)
+	}
+}
+
+// A file opened both ways reads and writes its dataset; one opened I-O
+// updates it, which is both.
+func TestDDReadsAndWrites(t *testing.T) {
+	for _, c := range []struct {
+		uses          []string
+		reads, writes bool
+	}{
+		{[]string{"read"}, true, false},
+		{[]string{"write"}, false, true},
+		{[]string{"read", "write"}, true, true},
+		{[]string{"update"}, true, true},
+		{nil, false, false},
+	} {
+		dd := DD{Uses: c.uses}
+		if dd.reads() != c.reads || dd.writes() != c.writes {
+			t.Errorf("%q: reads %v, writes %v, want %v, %v", c.uses, dd.reads(), dd.writes(), c.reads, c.writes)
+		}
 	}
 }

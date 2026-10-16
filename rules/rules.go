@@ -6,10 +6,11 @@
 // READ, RETURN and the like: AT END, INVALID KEY, ON SIZE ERROR. The WHENs
 // of an EVALUATE are tried in order, so a path through one is also a path
 // past those before it; an EVALUATE without WHEN OTHER has a path for when
-// nothing matches. An IF without ELSE whose THEN ends in a jump, such as
-// GO TO, has the rest of the paragraph as its ELSE, as in the IF ... GO TO
-// chains of old code. The body of an inline PERFORM is a table of its own,
-// for one pass through the loop.
+// nothing matches. A path ends at a statement that ends unconditionally,
+// such as GO TO or STOP RUN, so that in the IF ... GO TO chains of old
+// code the rest of the paragraph runs only on the paths that did not jump.
+// The body of an inline PERFORM is a table of its own, for one pass
+// through the loop.
 package rules
 
 import (
@@ -63,10 +64,12 @@ type test struct {
 	outcome   bool
 }
 
-// path is one way through a list of statements.
+// path is one way through a list of statements. An ended path has left
+// them, by a jump or by stopping the run, and takes no more actions.
 type path struct {
 	tests   []test
 	actions []string
+	ended   bool
 }
 
 // extractor follows the paths of one paragraph, collecting the tables of
@@ -79,18 +82,15 @@ type extractor struct {
 // paths lists the ways through a list of statements.
 func (e *extractor) paths(statements []cobol.Statement) []path {
 	paths := []path{{}}
-	for i, s := range statements {
+	for _, s := range statements {
 		var alternatives []path
 		switch {
 		case s.Verb == "IF":
-			then := s.Branches[0].Statements
 			var otherwise []cobol.Statement
 			if len(s.Branches) > 1 {
 				otherwise = s.Branches[1].Statements
-			} else if structure.EndsUnconditionally(then) {
-				otherwise = statements[i+1:]
 			}
-			alternatives = append(e.under(s.Condition, true, then), e.under(s.Condition, false, otherwise)...)
+			alternatives = append(e.under(s.Condition, true, s.Branches[0].Statements), e.under(s.Condition, false, otherwise)...)
 		case s.Verb == "EVALUATE":
 			alternatives = e.cases(s)
 		case s.Verb == "SEARCH":
@@ -102,17 +102,15 @@ func (e *extractor) paths(statements []cobol.Statement) []path {
 		case len(s.Branches) > 0:
 			alternatives = e.phrases(s)
 		}
+		action := []path{{actions: []string{s.Text}, ended: structure.EndsUnconditionally([]cobol.Statement{s})}}
 		if alternatives == nil {
-			alternatives = []path{{actions: []string{s.Text}}}
+			alternatives = action
 		}
 		next := cross(paths, alternatives)
 		if len(next) > maxPaths {
-			next = cross(paths, []path{{actions: []string{s.Text}}})
+			next = cross(paths, action)
 		}
 		paths = next
-		if s.Verb == "IF" && len(s.Branches) == 1 && structure.EndsUnconditionally(s.Branches[0].Statements) {
-			break
-		}
 	}
 	return paths
 }
@@ -161,10 +159,14 @@ func (e *extractor) phrases(s cobol.Statement) []path {
 }
 
 // cross follows each path with each of the next, leaving out those that
-// would test one condition both ways.
+// would test one condition both ways. An ended path stays as it is.
 func cross(paths, next []path) []path {
 	var out []path
 	for _, p := range paths {
+		if p.ended {
+			out = append(out, p)
+			continue
+		}
 	nextPath:
 		for _, n := range next {
 			tests := slices.Clone(p.tests)
@@ -177,7 +179,7 @@ func cross(paths, next []path) []path {
 					continue nextPath
 				}
 			}
-			out = append(out, path{tests: tests, actions: append(slices.Clone(p.actions), n.actions...)})
+			out = append(out, path{tests: tests, actions: append(slices.Clone(p.actions), n.actions...), ended: n.ended})
 		}
 	}
 	return out

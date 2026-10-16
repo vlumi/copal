@@ -152,3 +152,18 @@ func TestLayoutMultilineLabels(t *testing.T) {
 		t.Errorf("C at %d, B at %d: C not centered on the layer", l.top(c), l.top(b))
 	}
 }
+
+// A source whose edge spans two layers keeps the layer between free.
+func TestLayoutSourceKeepsSpan(t *testing.T) {
+	g := Graph{
+		Nodes: []Node{{ID: "ROOT", Label: "ROOT"}, {ID: "MID", Label: "MID"}, {ID: "END", Label: "END"}, {ID: "SRC", Label: "SRC"}},
+		Edges: []Edge{{From: "ROOT", To: "MID"}, {From: "MID", To: "END"}, {From: "SRC", To: "END", Span: 2}},
+	}
+	l, err := newLayout(g)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if src, end := l.nodes[3].layer, l.nodes[2].layer; end-src != 2 {
+		t.Errorf("SRC on layer %d, END on %d: want 2 layers between", src, end)
+	}
+}
