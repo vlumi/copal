@@ -171,10 +171,15 @@ func Analyze(paths []string, copybookDir string) (*System, error) {
 		s.Programs = append(s.Programs, program)
 	}
 	slices.SortFunc(s.Programs, func(a, b Program) int { return strings.Compare(a.Name, b.Name) })
-	copybookPaths, err := filepath.Glob(filepath.Join(copybookDir, "*.cpy"))
-	if err != nil {
-		return nil, err
+	var copybookPaths []string
+	for _, ext := range cobol.CopybookExtensions {
+		paths, err := filepath.Glob(filepath.Join(copybookDir, "*"+ext))
+		if err != nil {
+			return nil, err
+		}
+		copybookPaths = append(copybookPaths, paths...)
 	}
+	slices.Sort(copybookPaths)
 	for _, path := range copybookPaths {
 		copybook, err := analyzeCopybook(path, copybookDir, s.Programs)
 		if err != nil {

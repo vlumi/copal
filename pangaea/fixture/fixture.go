@@ -33,7 +33,8 @@ type Codec struct {
 }
 
 // NewCodec finds the datasets with packed decimal fields among those the
-// system's jobs name, and their layouts from the copybooks in dir.
+// system's jobs name, and their layouts from the system's copybooks, which
+// copy others from dir.
 func NewCodec(system *blueprint.System, dir string) (*Codec, error) {
 	c := &Codec{layouts: map[string]*record.Layout{}}
 	for base, name := range system.DatasetCopybooks() {
@@ -41,7 +42,7 @@ func NewCodec(system *blueprint.System, dir string) (*Codec, error) {
 			if cb.Name != name || len(cb.Records) == 0 {
 				continue
 			}
-			l, err := record.FromCopybook(filepath.Join(dir, name+".cpy"), []string{dir}, cb.Records[0].Name)
+			l, err := record.FromCopybook(cb.Source, []string{dir}, cb.Records[0].Name)
 			if err != nil {
 				return nil, err
 			}

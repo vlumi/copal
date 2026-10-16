@@ -16,7 +16,7 @@ func accruals(t *testing.T) *Codec {
 	t.Helper()
 	system := &blueprint.System{
 		Jobs:      []blueprint.Job{{Datasets: []blueprint.Dataset{{Name: "ACCT.ACCRUAL(+1)", Copybook: "ACCRREC"}}}},
-		Copybooks: []blueprint.Copybook{{Name: "ACCRREC", Records: []blueprint.Record{{Field: blueprint.Field{Name: "ACCRUAL-RECORD"}}}}},
+		Copybooks: []blueprint.Copybook{{Name: "ACCRREC", Source: "../copybooks/ACCRREC.cpy", Records: []blueprint.Record{{Field: blueprint.Field{Name: "ACCRUAL-RECORD"}}}}},
 	}
 	codec, err := NewCodec(system, "../copybooks")
 	if err != nil {
