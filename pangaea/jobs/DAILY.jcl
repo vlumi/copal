@@ -4,13 +4,15 @@
 //* AND POST WHAT A CLOSED MONTH OWES, THEN SORT AND POST THE      *
 //* DAY'S TRANSACTIONS, THE TRANSFER CREDITS AND RETURNS THEY LEAD *
 //* TO, APPLY THE DAY'S ACCOUNT MAINTENANCE, LOAD THE ONLINE       *
-//* ACCOUNT FILE, AND MOVE TO THE NEXT BUSINESS DAY.               *
+//* ACCOUNT FILE, MOVE TO THE NEXT BUSINESS DAY, AND LOAD THE      *
+//* ONLINE CARD FILE FOR IT.                                       *
 //*                                                                *
 //* READS   BANK.CONTROL(0)  ACCT.MASTER(0)  TRAN.DAILY(0)         *
 //*         ACCT.ACCRUAL(0)  ACCT.MAINT(0)    BANK.RATES           *
+//*         CARD.MASTER(0)                                         *
 //* WRITES  BANK.CONTROL(+1) ACCT.MASTER(+1) ACCT.ACCRUAL(+1)      *
 //*         TRAN.AUDIT(+1)   TRAN.REJECTS(+1) MAINT.REJECTS(+1)    *
-//*         ACCT.ONLINE(+1)                                        *
+//*         ACCT.ONLINE(+1)  CARD.ONLINE(+1)                       *
 //*                                                                *
 //* A STEP RUNS ONLY IF NO EARLIER STEP ENDED WITH RC ABOVE 4, SO  *
 //* A RUN THAT FAILS LEAVES THE BUSINESS DATE WHERE IT WAS.        *
@@ -139,3 +141,13 @@
 //BANKIN   DD DSN=BANK.CONTROL(0),DISP=SHR
 //BANKOUT  DD DSN=BANK.CONTROL(+1),DISP=NEW,
 //            DCB=(RECFM=FB,LRECL=80)
+//*----------------------------------------------------------------*
+//* LOAD THE CARDS INTO THE ONLINE CARD FILE FOR THE NEXT BUSINESS *
+//* DAY, LEAVING OUT THOSE THAT HAVE EXPIRED BY THEN               *
+//*----------------------------------------------------------------*
+//CARDS    EXEC PGM=CARDLOAD,COND=(4,LT)
+//BANKCTL  DD DSN=BANK.CONTROL(+1),DISP=SHR
+//CARDIN   DD DSN=CARD.MASTER(0),DISP=SHR
+//CARDOUT  DD DSN=CARD.ONLINE(+1),DISP=NEW,
+//            RECORG=KS,LRECL=80
+//LOADRPT  DD SYSOUT=*

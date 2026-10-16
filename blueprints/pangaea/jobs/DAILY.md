@@ -5,19 +5,21 @@ DAILY BATCH: VALIDATE THE DAY'S TRANSACTIONS, ACCRUE INTEREST
 AND POST WHAT A CLOSED MONTH OWES, THEN SORT AND POST THE
 DAY'S TRANSACTIONS, THE TRANSFER CREDITS AND RETURNS THEY LEAD
 TO, APPLY THE DAY'S ACCOUNT MAINTENANCE, LOAD THE ONLINE
-ACCOUNT FILE, AND MOVE TO THE NEXT BUSINESS DAY.
+ACCOUNT FILE, MOVE TO THE NEXT BUSINESS DAY, AND LOAD THE
+ONLINE CARD FILE FOR IT.
 
 READS   BANK.CONTROL(0)  ACCT.MASTER(0)  TRAN.DAILY(0)
         ACCT.ACCRUAL(0)  ACCT.MAINT(0)    BANK.RATES
+        CARD.MASTER(0)
 WRITES  BANK.CONTROL(+1) ACCT.MASTER(+1) ACCT.ACCRUAL(+1)
         TRAN.AUDIT(+1)   TRAN.REJECTS(+1) MAINT.REJECTS(+1)
-        ACCT.ONLINE(+1)
+        ACCT.ONLINE(+1)  CARD.ONLINE(+1)
 
 A STEP RUNS ONLY IF NO EARLIER STEP ENDED WITH RC ABOVE 4, SO
 A RUN THAT FAILS LEAVES THE BUSINESS DATE WHERE IT WAS.
 ```
 
-Job [DAILY.jcl](../../../pangaea/jobs/DAILY.jcl): 13 steps.
+Job [DAILY.jcl](../../../pangaea/jobs/DAILY.jcl): 14 steps.
 
 ## Contents
 
@@ -36,6 +38,7 @@ Job [DAILY.jcl](../../../pangaea/jobs/DAILY.jcl): 13 steps.
   - [MAINT](#maint)
   - [LOAD](#load)
   - [NEXTDAY](#nextday)
+  - [CARDS](#cards)
 - [Datasets](#datasets)
 - [Findings](#findings)
 
@@ -47,19 +50,20 @@ Job [DAILY.jcl](../../../pangaea/jobs/DAILY.jcl): 13 steps.
 
 | Step | Program | Reads | Writes | Bypassed by | Description | Source |
 | --- | --- | --- | --- | --- | --- | --- |
-| VALID | [TXVALID](../programs/TXVALID.md) | BANK.CONTROL(0), TRAN.DAILY(0) | &&VALID, TRAN.REJECTS(+1) | | VALIDATE THE DAY'S TRANSACTION FILE | [DAILY.jcl:21](../../../pangaea/jobs/DAILY.jcl#L21) |
-| ACCRUE | [INTACCR](../programs/INTACCR.md) | BANK.CONTROL(0), BANK.RATES, ACCT.MASTER(0), ACCT.ACCRUAL(0) | ACCT.ACCRUAL(+1) | COND=(4,LT) | ACCRUE INTEREST UP TO TODAY ON THE OPENING BALANCES. WHEN A MONTH HAS CLOSED, POST ITS INTEREST AND FEES. THE CHARGES COME IN MASTER ORDER, SO THEY ARE POSTED WITHOUT A SORT. | [DAILY.jcl:34](../../../pangaea/jobs/DAILY.jcl#L34) |
-| CHARGE | [MONCHG](../programs/MONCHG.md) | BANK.CONTROL(0), ACCT.MASTER(0), ACCT.ACCRUAL(+1) | &&MONTHLY | COND=(4,LT) | | [DAILY.jcl:42](../../../pangaea/jobs/DAILY.jcl#L42) |
-| POSTMO | [TXPOST](../programs/TXPOST.md) | BANK.CONTROL(0), ACCT.MASTER(0), &&MONTHLY | &&CHARGED, TRAN.AUDIT(+1), TRAN.REJECTS(+1) | COND=(4,LT) | | [DAILY.jcl:49](../../../pangaea/jobs/DAILY.jcl#L49) |
-| SORT | [TXSORT](../programs/TXSORT.md) | &&VALID | &&SORTED | COND=(4,LT) | SORT THE DAY'S TRANSACTIONS INTO ACCOUNT ORDER AND POST THEM | [DAILY.jcl:63](../../../pangaea/jobs/DAILY.jcl#L63) |
-| POST | [TXPOST](../programs/TXPOST.md) | BANK.CONTROL(0), &&CHARGED, &&SORTED | &&POSTED, TRAN.AUDIT(+1), TRAN.REJECTS(+1), &&CREDITS | COND=(4,LT) | | [DAILY.jcl:67](../../../pangaea/jobs/DAILY.jcl#L67) |
-| SORTCR | [TXSORT](../programs/TXSORT.md) | &&CREDITS | &&CREDSORT | COND=(4,LT) | SORT AND POST THE CREDITS OF THE TRANSFERS THAT POSTED | [DAILY.jcl:81](../../../pangaea/jobs/DAILY.jcl#L81) |
-| POSTCR | [TXPOST](../programs/TXPOST.md) | BANK.CONTROL(0), &&POSTED, &&CREDSORT | &&CREDITED, TRAN.AUDIT(+1), TRAN.REJECTS(+1), &&RETURNS | COND=(4,LT) | | [DAILY.jcl:85](../../../pangaea/jobs/DAILY.jcl#L85) |
-| SORTRT | [TXSORT](../programs/TXSORT.md) | &&RETURNS | &&RETSORT | COND=(4,LT) | SORT AND POST THE RETURNS OF THE CREDITS THAT COULD NOT POST | [DAILY.jcl:99](../../../pangaea/jobs/DAILY.jcl#L99) |
-| POSTRT | [TXPOST](../programs/TXPOST.md) | BANK.CONTROL(0), &&CREDITED, &&RETSORT | &&RETURNED, TRAN.AUDIT(+1), TRAN.REJECTS(+1) | COND=(4,LT) | | [DAILY.jcl:103](../../../pangaea/jobs/DAILY.jcl#L103) |
-| MAINT | [ACCTMNT](../programs/ACCTMNT.md) | BANK.CONTROL(0), &&RETURNED, ACCT.MAINT(0) | ACCT.MASTER(+1), MAINT.REJECTS(+1) | COND=(4,LT) | APPLY THE DAY'S ACCOUNT MAINTENANCE, WRITING THE NEW MASTER | [DAILY.jcl:116](../../../pangaea/jobs/DAILY.jcl#L116) |
-| LOAD | [ACCTLOAD](../programs/ACCTLOAD.md) | BANK.CONTROL(0), ACCT.MASTER(+1) | ACCT.ONLINE(+1) | COND=(4,LT) | LOAD THE NEW MASTER INTO THE ONLINE ACCOUNT FILE, WHICH THE CARD AND ATM AUTHORIZATIONS READ DURING THE NEXT BUSINESS DAY | [DAILY.jcl:129](../../../pangaea/jobs/DAILY.jcl#L129) |
-| NEXTDAY | [BANKDATE](../programs/BANKDATE.md) | BANK.CONTROL(0) | BANK.CONTROL(+1) | COND=(4,LT) | MOVE TO THE NEXT BUSINESS DAY | [DAILY.jcl:138](../../../pangaea/jobs/DAILY.jcl#L138) |
+| VALID | [TXVALID](../programs/TXVALID.md) | BANK.CONTROL(0), TRAN.DAILY(0) | &&VALID, TRAN.REJECTS(+1) | | VALIDATE THE DAY'S TRANSACTION FILE | [DAILY.jcl:23](../../../pangaea/jobs/DAILY.jcl#L23) |
+| ACCRUE | [INTACCR](../programs/INTACCR.md) | BANK.CONTROL(0), BANK.RATES, ACCT.MASTER(0), ACCT.ACCRUAL(0) | ACCT.ACCRUAL(+1) | COND=(4,LT) | ACCRUE INTEREST UP TO TODAY ON THE OPENING BALANCES. WHEN A MONTH HAS CLOSED, POST ITS INTEREST AND FEES. THE CHARGES COME IN MASTER ORDER, SO THEY ARE POSTED WITHOUT A SORT. | [DAILY.jcl:36](../../../pangaea/jobs/DAILY.jcl#L36) |
+| CHARGE | [MONCHG](../programs/MONCHG.md) | BANK.CONTROL(0), ACCT.MASTER(0), ACCT.ACCRUAL(+1) | &&MONTHLY | COND=(4,LT) | | [DAILY.jcl:44](../../../pangaea/jobs/DAILY.jcl#L44) |
+| POSTMO | [TXPOST](../programs/TXPOST.md) | BANK.CONTROL(0), ACCT.MASTER(0), &&MONTHLY | &&CHARGED, TRAN.AUDIT(+1), TRAN.REJECTS(+1) | COND=(4,LT) | | [DAILY.jcl:51](../../../pangaea/jobs/DAILY.jcl#L51) |
+| SORT | [TXSORT](../programs/TXSORT.md) | &&VALID | &&SORTED | COND=(4,LT) | SORT THE DAY'S TRANSACTIONS INTO ACCOUNT ORDER AND POST THEM | [DAILY.jcl:65](../../../pangaea/jobs/DAILY.jcl#L65) |
+| POST | [TXPOST](../programs/TXPOST.md) | BANK.CONTROL(0), &&CHARGED, &&SORTED | &&POSTED, TRAN.AUDIT(+1), TRAN.REJECTS(+1), &&CREDITS | COND=(4,LT) | | [DAILY.jcl:69](../../../pangaea/jobs/DAILY.jcl#L69) |
+| SORTCR | [TXSORT](../programs/TXSORT.md) | &&CREDITS | &&CREDSORT | COND=(4,LT) | SORT AND POST THE CREDITS OF THE TRANSFERS THAT POSTED | [DAILY.jcl:83](../../../pangaea/jobs/DAILY.jcl#L83) |
+| POSTCR | [TXPOST](../programs/TXPOST.md) | BANK.CONTROL(0), &&POSTED, &&CREDSORT | &&CREDITED, TRAN.AUDIT(+1), TRAN.REJECTS(+1), &&RETURNS | COND=(4,LT) | | [DAILY.jcl:87](../../../pangaea/jobs/DAILY.jcl#L87) |
+| SORTRT | [TXSORT](../programs/TXSORT.md) | &&RETURNS | &&RETSORT | COND=(4,LT) | SORT AND POST THE RETURNS OF THE CREDITS THAT COULD NOT POST | [DAILY.jcl:101](../../../pangaea/jobs/DAILY.jcl#L101) |
+| POSTRT | [TXPOST](../programs/TXPOST.md) | BANK.CONTROL(0), &&CREDITED, &&RETSORT | &&RETURNED, TRAN.AUDIT(+1), TRAN.REJECTS(+1) | COND=(4,LT) | | [DAILY.jcl:105](../../../pangaea/jobs/DAILY.jcl#L105) |
+| MAINT | [ACCTMNT](../programs/ACCTMNT.md) | BANK.CONTROL(0), &&RETURNED, ACCT.MAINT(0) | ACCT.MASTER(+1), MAINT.REJECTS(+1) | COND=(4,LT) | APPLY THE DAY'S ACCOUNT MAINTENANCE, WRITING THE NEW MASTER | [DAILY.jcl:118](../../../pangaea/jobs/DAILY.jcl#L118) |
+| LOAD | [ACCTLOAD](../programs/ACCTLOAD.md) | BANK.CONTROL(0), ACCT.MASTER(+1) | ACCT.ONLINE(+1) | COND=(4,LT) | LOAD THE NEW MASTER INTO THE ONLINE ACCOUNT FILE, WHICH THE CARD AND ATM AUTHORIZATIONS READ DURING THE NEXT BUSINESS DAY | [DAILY.jcl:131](../../../pangaea/jobs/DAILY.jcl#L131) |
+| NEXTDAY | [BANKDATE](../programs/BANKDATE.md) | BANK.CONTROL(0) | BANK.CONTROL(+1) | COND=(4,LT) | MOVE TO THE NEXT BUSINESS DAY | [DAILY.jcl:140](../../../pangaea/jobs/DAILY.jcl#L140) |
+| CARDS | [CARDLOAD](../programs/CARDLOAD.md) | BANK.CONTROL(+1), CARD.MASTER(0) | CARD.ONLINE(+1) | COND=(4,LT) | LOAD THE CARDS INTO THE ONLINE CARD FILE FOR THE NEXT BUSINESS DAY, LEAVING OUT THOSE THAT HAVE EXPIRED BY THEN | [DAILY.jcl:148](../../../pangaea/jobs/DAILY.jcl#L148) |
 
 ### VALID
 
@@ -192,6 +196,15 @@ Job [DAILY.jcl](../../../pangaea/jobs/DAILY.jcl): 13 steps.
 | BANKIN | BANK.CONTROL(0) | SHR | CONTROL-IN | [BANKCTL](../copybooks/BANKCTL.md) | read |
 | BANKOUT | BANK.CONTROL(+1) | NEW | CONTROL-OUT | [BANKCTL](../copybooks/BANKCTL.md) | write |
 
+### CARDS
+
+| DD | Dataset | DISP | File | Copybook | Use |
+| --- | --- | --- | --- | --- | --- |
+| BANKCTL | BANK.CONTROL(+1) | SHR | CONTROL-FILE | [BANKCTL](../copybooks/BANKCTL.md) | read |
+| CARDIN | CARD.MASTER(0) | SHR | CARD-IN | [CARDREC](../copybooks/CARDREC.md) | read |
+| CARDOUT | CARD.ONLINE(+1) (indexed) | NEW | ONLINE-OUT | [CARDREC](../copybooks/CARDREC.md) | write |
+| LOADRPT | job output | | REPORT-OUT | | write |
+
 ## Datasets
 
 Each dataset the job names, the copybook that describes its records, from the programs that read or write it in any job, and the steps that write and read it.
@@ -221,7 +234,9 @@ Each dataset the job names, the copybook that describes its records, from the pr
 | ACCT.MASTER(+1) | [ACCTMAST](../copybooks/ACCTMAST.md) | MAINT | LOAD |
 | MAINT.REJECTS(+1) | [REJREC](../copybooks/REJREC.md) | MAINT | |
 | ACCT.ONLINE(+1) | [ACCTONL](../copybooks/ACCTONL.md) | LOAD | |
-| BANK.CONTROL(+1) | [BANKCTL](../copybooks/BANKCTL.md) | NEXTDAY | |
+| BANK.CONTROL(+1) | [BANKCTL](../copybooks/BANKCTL.md) | NEXTDAY | CARDS |
+| CARD.MASTER(0) | [CARDREC](../copybooks/CARDREC.md) | | CARDS |
+| CARD.ONLINE(+1) | [CARDREC](../copybooks/CARDREC.md) | CARDS | |
 
 ## Findings
 

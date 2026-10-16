@@ -169,3 +169,37 @@ func TestMaintenanceIsInAccountOrder(t *testing.T) {
 		t.Error("no accounts opened in a month")
 	}
 }
+
+func TestCards(t *testing.T) {
+	g := generator(t)
+	date := NewDate(2026, time.September, 1)
+	master, err := g.Master(500, date)
+	if err != nil {
+		t.Fatal(err)
+	}
+	accounts, err := g.ReadAccounts(master)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cards, err := g.Cards(accounts, date)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(cards) < 200 {
+		t.Fatalf("%d cards for %d accounts", len(cards), len(accounts))
+	}
+	previous := int64(0)
+	for _, c := range cards {
+		no, err := g.Layouts.Card.Number(c, "CR-CARD-NO")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if no <= previous || no/1_000_000_000_000 != cardPrefix {
+			t.Errorf("card %d after %d", no, previous)
+		}
+		previous = no
+	}
+	if got := cardNumber(1); got != 9100000000000018 {
+		t.Errorf("card number of serial 1 is %d, want 9100000000000018, which passes the Luhn check", got)
+	}
+}

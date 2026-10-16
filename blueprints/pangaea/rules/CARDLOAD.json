@@ -1,0 +1,178 @@
+{
+  "program": "CARDLOAD",
+  "tables": [
+    {
+      "paragraph": "1000-INITIALIZE",
+      "source": "pangaea/programs/CARDLOAD.cbl:92",
+      "conditions": [
+        "WS-FILE-STATUSES = ALL '0'",
+        "READ CONTROL-FILE AT END"
+      ],
+      "actions": [
+        "OPEN INPUT CONTROL-FILE CARD-IN OUTPUT ONLINE-OUT REPORT-OUT",
+        "DISPLAY 'CARDLOAD: CANNOT OPEN FILES ' WS-FILE-STATUSES",
+        "MOVE 16 TO RETURN-CODE",
+        "STOP RUN",
+        "READ CONTROL-FILE",
+        "MOVE 'NO BANK CONTROL RECORD' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT",
+        "MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE",
+        "PERFORM 1200-READ-CARD"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            4,
+            7,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "1200-READ-CARD",
+      "source": "pangaea/programs/CARDLOAD.cbl:108",
+      "conditions": [
+        "READ CARD-IN AT END"
+      ],
+      "actions": [
+        "READ CARD-IN",
+        "SET MASTER-AT-END TO TRUE",
+        "ADD 1 TO WS-READ-COUNT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2000-LOAD-CARD",
+      "source": "pangaea/programs/CARDLOAD.cbl:117",
+      "conditions": [
+        "CR-EXPIRY-MONTH \u003c WS-BUSINESS-MONTH",
+        "CR-BLOCKED"
+      ],
+      "actions": [
+        "ADD 1 TO WS-EXPIRED-COUNT",
+        "PERFORM 1200-READ-CARD",
+        "ADD 1 TO WS-BLOCKED-COUNT",
+        "PERFORM 2100-WRITE-ONLINE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            2,
+            3,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            3,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "2100-WRITE-ONLINE",
+      "source": "pangaea/programs/CARDLOAD.cbl:128",
+      "conditions": [
+        "WRITE ONLINE-CARD FROM CARD-RECORD INVALID KEY"
+      ],
+      "actions": [
+        "WRITE ONLINE-CARD FROM CARD-RECORD",
+        "MOVE 'MASTER NOT IN CARD NUMBER ORDER' TO WS-ABORT-MESSAGE",
+        "PERFORM 9900-ABORT",
+        "ADD 1 TO WS-LOADED-COUNT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            3
+          ]
+        }
+      ]
+    }
+  ]
+}

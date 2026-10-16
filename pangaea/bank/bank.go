@@ -84,6 +84,10 @@ func (b Bank) Reset(seed uint64, accounts int) error {
 	if err != nil {
 		return err
 	}
+	cards, err := g.Cards(opened, StartDate)
+	if err != nil {
+		return err
+	}
 	for _, d := range []struct {
 		dsn     string
 		layout  *record.Layout
@@ -93,6 +97,7 @@ func (b Bank) Reset(seed uint64, accounts int) error {
 		{dataset.GenerationName("BANK.CONTROL", 1), g.Layouts.Control, [][]byte{control}},
 		{dataset.GenerationName("ACCT.ACCRUAL", 1), g.Layouts.Accrual, accruals},
 		{"BANK.RATES", g.Layouts.Rate, rates},
+		{dataset.GenerationName("CARD.MASTER", 1), g.Layouts.Card, cards},
 	} {
 		if err := store.Write(d.dsn, d.layout.Length, d.records); err != nil {
 			return err

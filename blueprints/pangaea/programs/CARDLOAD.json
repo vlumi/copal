@@ -1,0 +1,1162 @@
+{
+  "program": "CARDLOAD",
+  "source": "pangaea/programs/CARDLOAD.cbl",
+  "description": [
+    "CARDLOAD: LOAD THE ONLINE CARD FILE",
+    "",
+    "WRITES THE CARD MASTER'S CARDS TO A NEW INDEXED ONLINE CARD",
+    "FILE FOR THE NEXT BUSINESS DAY, THE DATE OF THE NEW BANK",
+    "CONTROL RECORD. CARDS THAT HAVE EXPIRED BY THAT DAY ARE LEFT",
+    "OUT, SO THAT AUTHORIZATIONS FIND NO SUCH CARD; BLOCKED CARDS",
+    "ARE LOADED, FOR THE AUTHORIZATIONS TO DECLINE. THE MASTER IS",
+    "IN CARD NUMBER ORDER, SO THE FILE IS WRITTEN IN KEY ORDER,",
+    "SEQUENTIALLY.",
+    "",
+    "RETURN CODES: 0 LOADED, 16 MASTER OUT OF ORDER OR I/O.",
+    "",
+    "MODIFICATION HISTORY",
+    "DATE       BY  CHANGE",
+    "2003-05-19 MV  CR-0342 ORIGINAL VERSION."
+  ],
+  "identification": [
+    {
+      "paragraph": "AUTHOR",
+      "text": "M. VARGA, ONLINE SYSTEMS."
+    },
+    {
+      "paragraph": "INSTALLATION",
+      "text": "FIRST BANK OF PANGAEA, DATA CENTER."
+    },
+    {
+      "paragraph": "DATE-WRITTEN",
+      "text": "2003-05-19."
+    }
+  ],
+  "files": [
+    {
+      "name": "CONTROL-FILE",
+      "kind": "FD",
+      "assign": "BANKCTL",
+      "organization": "SEQUENTIAL",
+      "status": "WS-CONTROL-STATUS",
+      "opened": [
+        "INPUT"
+      ],
+      "records": [
+        "BANK-CONTROL-RECORD"
+      ],
+      "source": "pangaea/programs/CARDLOAD.cbl:27"
+    },
+    {
+      "name": "CARD-IN",
+      "kind": "FD",
+      "assign": "CARDIN",
+      "organization": "SEQUENTIAL",
+      "status": "WS-CARD-IN-STATUS",
+      "opened": [
+        "INPUT"
+      ],
+      "records": [
+        "CARD-RECORD"
+      ],
+      "source": "pangaea/programs/CARDLOAD.cbl:30"
+    },
+    {
+      "name": "ONLINE-OUT",
+      "kind": "FD",
+      "assign": "CARDOUT",
+      "organization": "INDEXED",
+      "recordKey": "OC-CARD-NO",
+      "status": "WS-ONLINE-STATUS",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "ONLINE-CARD"
+      ],
+      "source": "pangaea/programs/CARDLOAD.cbl:33"
+    },
+    {
+      "name": "REPORT-OUT",
+      "kind": "FD",
+      "assign": "LOADRPT",
+      "organization": "LINE SEQUENTIAL",
+      "status": "WS-REPORT-STATUS",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "REPORT-LINE"
+      ],
+      "source": "pangaea/programs/CARDLOAD.cbl:38"
+    }
+  ],
+  "records": [
+    {
+      "section": "file",
+      "file": "CONTROL-FILE",
+      "copybook": "BANKCTL",
+      "level": 1,
+      "name": "BANK-CONTROL-RECORD",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "description": "BANKCTL: BANK CONTROL RECORD, ONE PER FILE THE BUSINESS DATE THE BATCH RUNS FOR, NEVER THE CLOCK.",
+      "source": "pangaea/copybooks/BANKCTL.cpy:5",
+      "fields": [
+        {
+          "level": 5,
+          "name": "BC-BUSINESS-DATE",
+          "start": 1,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/BANKCTL.cpy:6"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 9,
+          "length": 72,
+          "picture": "X(72)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/BANKCTL.cpy:7"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "CARD-IN",
+      "copybook": "CARDREC",
+      "level": 1,
+      "name": "CARD-RECORD",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "description": "CARDREC: CARD RECORD, 80 BYTES THE CARD MASTER, IN CARD NUMBER ORDER, AND THE ONLINE CARD FILE LOADED FROM IT EACH NIGHT, INDEXED BY CARD NUMBER. A CARD IS VALID TO THE END OF ITS EXPIRY MONTH. THE AUTHORIZATIONS KEEP THE TOTALS OF THE DAY OF CR-TOTALS-DATE, AND THE ATM WITHDRAWALS OF ITS MONTH, AND START THEM OVER ON A NEW DAY. MODIFICATION HISTORY DATE       BY  CHANGE 2003-05-19 MV  CR-0342 ORIGINAL VERSION.",
+      "source": "pangaea/copybooks/CARDREC.cpy:13",
+      "fields": [
+        {
+          "level": 5,
+          "name": "CR-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "picture": "9(16)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 16,
+          "source": "pangaea/copybooks/CARDREC.cpy:14"
+        },
+        {
+          "level": 5,
+          "name": "CR-ACCT-NO",
+          "start": 17,
+          "length": 10,
+          "picture": "9(10)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 10,
+          "source": "pangaea/copybooks/CARDREC.cpy:15"
+        },
+        {
+          "level": 5,
+          "name": "CR-CUST-NO",
+          "start": 27,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/CARDREC.cpy:16"
+        },
+        {
+          "level": 5,
+          "name": "CR-STATUS",
+          "start": 35,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "conditions": [
+            {
+              "name": "CR-ACTIVE",
+              "values": [
+                "'A'"
+              ],
+              "source": "pangaea/copybooks/CARDREC.cpy:18"
+            },
+            {
+              "name": "CR-BLOCKED",
+              "values": [
+                "'B'"
+              ],
+              "source": "pangaea/copybooks/CARDREC.cpy:19"
+            }
+          ],
+          "source": "pangaea/copybooks/CARDREC.cpy:17"
+        },
+        {
+          "level": 5,
+          "name": "CR-EXPIRY-MONTH",
+          "start": 36,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 6,
+          "source": "pangaea/copybooks/CARDREC.cpy:20"
+        },
+        {
+          "level": 5,
+          "name": "CR-PURCHASE-LIMIT",
+          "start": 42,
+          "length": 7,
+          "picture": "9(5)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 7,
+          "scale": 2,
+          "description": "DAILY LIMITS.",
+          "source": "pangaea/copybooks/CARDREC.cpy:22"
+        },
+        {
+          "level": 5,
+          "name": "CR-CASH-LIMIT",
+          "start": 49,
+          "length": 7,
+          "picture": "9(5)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 7,
+          "scale": 2,
+          "source": "pangaea/copybooks/CARDREC.cpy:23"
+        },
+        {
+          "level": 5,
+          "name": "CR-TOTALS-DATE",
+          "start": 56,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/CARDREC.cpy:24"
+        },
+        {
+          "level": 5,
+          "name": "CR-DAY-PURCHASES",
+          "start": 64,
+          "length": 7,
+          "picture": "9(5)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 7,
+          "scale": 2,
+          "source": "pangaea/copybooks/CARDREC.cpy:25"
+        },
+        {
+          "level": 5,
+          "name": "CR-DAY-CASH",
+          "start": 71,
+          "length": 7,
+          "picture": "9(5)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 7,
+          "scale": 2,
+          "source": "pangaea/copybooks/CARDREC.cpy:26"
+        },
+        {
+          "level": 5,
+          "name": "CR-MONTH-WITHDRAWALS",
+          "start": 78,
+          "length": 3,
+          "picture": "9(3)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 3,
+          "source": "pangaea/copybooks/CARDREC.cpy:27"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "ONLINE-OUT",
+      "level": 1,
+      "name": "ONLINE-CARD",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "source": "pangaea/programs/CARDLOAD.cbl:49",
+      "fields": [
+        {
+          "level": 5,
+          "name": "OC-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "picture": "9(16)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 16,
+          "source": "pangaea/programs/CARDLOAD.cbl:50"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 17,
+          "length": 64,
+          "picture": "X(64)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/CARDLOAD.cbl:51"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "REPORT-OUT",
+      "level": 1,
+      "name": "REPORT-LINE",
+      "start": 1,
+      "length": 80,
+      "picture": "X(80)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "source": "pangaea/programs/CARDLOAD.cbl:53"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-FILE-STATUSES",
+      "start": 1,
+      "length": 8,
+      "category": "group",
+      "source": "pangaea/programs/CARDLOAD.cbl:56",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-CONTROL-STATUS",
+          "start": 1,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/CARDLOAD.cbl:57"
+        },
+        {
+          "level": 5,
+          "name": "WS-CARD-IN-STATUS",
+          "start": 3,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/CARDLOAD.cbl:58"
+        },
+        {
+          "level": 5,
+          "name": "WS-ONLINE-STATUS",
+          "start": 5,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/CARDLOAD.cbl:59"
+        },
+        {
+          "level": 5,
+          "name": "WS-REPORT-STATUS",
+          "start": 7,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/CARDLOAD.cbl:60"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-BUSINESS-DATE",
+      "start": 1,
+      "length": 8,
+      "picture": "9(8)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "digits": 8,
+      "source": "pangaea/programs/CARDLOAD.cbl:62"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-BUSINESS-DATE-PARTS",
+      "start": 1,
+      "length": 8,
+      "category": "group",
+      "redefines": "WS-BUSINESS-DATE",
+      "source": "pangaea/programs/CARDLOAD.cbl:63",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-BUSINESS-MONTH",
+          "start": 1,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 6,
+          "source": "pangaea/programs/CARDLOAD.cbl:64"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 7,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 2,
+          "source": "pangaea/programs/CARDLOAD.cbl:65"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ABORT-MESSAGE",
+      "start": 1,
+      "length": 40,
+      "picture": "X(40)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "source": "pangaea/programs/CARDLOAD.cbl:66"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-MASTER-END-SW",
+      "start": 1,
+      "length": 1,
+      "picture": "X",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "values": [
+        "'N'"
+      ],
+      "conditions": [
+        {
+          "name": "MASTER-AT-END",
+          "values": [
+            "'Y'"
+          ],
+          "source": "pangaea/programs/CARDLOAD.cbl:68"
+        }
+      ],
+      "source": "pangaea/programs/CARDLOAD.cbl:67"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-TOTALS",
+      "start": 1,
+      "length": 32,
+      "category": "group",
+      "source": "pangaea/programs/CARDLOAD.cbl:70",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-READ-COUNT",
+          "start": 1,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/CARDLOAD.cbl:71"
+        },
+        {
+          "level": 5,
+          "name": "WS-LOADED-COUNT",
+          "start": 9,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/CARDLOAD.cbl:72"
+        },
+        {
+          "level": 5,
+          "name": "WS-BLOCKED-COUNT",
+          "start": 17,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/CARDLOAD.cbl:73"
+        },
+        {
+          "level": 5,
+          "name": "WS-EXPIRED-COUNT",
+          "start": 25,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/CARDLOAD.cbl:74"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REPORT-COUNT-LINE",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "source": "pangaea/programs/CARDLOAD.cbl:76",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-RC-LABEL",
+          "start": 1,
+          "length": 30,
+          "picture": "X(30)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/CARDLOAD.cbl:77"
+        },
+        {
+          "level": 5,
+          "name": "WS-RC-VALUE",
+          "start": 31,
+          "length": 10,
+          "picture": "ZZ,ZZZ,ZZ9",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "source": "pangaea/programs/CARDLOAD.cbl:78"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 41,
+          "length": 40,
+          "picture": "X(40)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "SPACES"
+          ],
+          "source": "pangaea/programs/CARDLOAD.cbl:79"
+        }
+      ]
+    }
+  ],
+  "paragraphs": [
+    {
+      "name": "0000-MAIN",
+      "description": "LOAD EVERY CARD, THEN REPORT.",
+      "source": "pangaea/programs/CARDLOAD.cbl:83",
+      "performs": [
+        {
+          "target": "1000-INITIALIZE",
+          "source": "pangaea/programs/CARDLOAD.cbl:84"
+        },
+        {
+          "target": "2000-LOAD-CARD",
+          "source": "pangaea/programs/CARDLOAD.cbl:85"
+        },
+        {
+          "target": "8000-WRITE-REPORT",
+          "source": "pangaea/programs/CARDLOAD.cbl:86"
+        },
+        {
+          "target": "9000-CLOSE-FILES",
+          "source": "pangaea/programs/CARDLOAD.cbl:87"
+        }
+      ],
+      "reads": [
+        "WS-MASTER-END-SW"
+      ],
+      "writes": [
+        "RETURN-CODE"
+      ]
+    },
+    {
+      "name": "1000-INITIALIZE",
+      "description": "OPEN THE FILES, READ THE DAY TO LOAD FOR AND THE FIRST CARD.",
+      "source": "pangaea/programs/CARDLOAD.cbl:92",
+      "performs": [
+        {
+          "target": "9900-ABORT",
+          "source": "pangaea/programs/CARDLOAD.cbl:103"
+        },
+        {
+          "target": "1200-READ-CARD",
+          "source": "pangaea/programs/CARDLOAD.cbl:106"
+        }
+      ],
+      "performedBy": [
+        "0000-MAIN"
+      ],
+      "reads": [
+        "WS-FILE-STATUSES",
+        "BC-BUSINESS-DATE"
+      ],
+      "writes": [
+        "RETURN-CODE",
+        "BANK-CONTROL-RECORD",
+        "WS-ABORT-MESSAGE",
+        "WS-BUSINESS-DATE"
+      ]
+    },
+    {
+      "name": "1200-READ-CARD",
+      "source": "pangaea/programs/CARDLOAD.cbl:108",
+      "performedBy": [
+        "1000-INITIALIZE",
+        "2000-LOAD-CARD"
+      ],
+      "reads": [
+        "WS-READ-COUNT"
+      ],
+      "writes": [
+        "CARD-RECORD",
+        "WS-MASTER-END-SW",
+        "WS-READ-COUNT"
+      ]
+    },
+    {
+      "name": "2000-LOAD-CARD",
+      "description": "WRITE A CARD THAT HAS NOT EXPIRED TO THE ONLINE FILE.",
+      "source": "pangaea/programs/CARDLOAD.cbl:117",
+      "performs": [
+        {
+          "target": "2100-WRITE-ONLINE",
+          "source": "pangaea/programs/CARDLOAD.cbl:124"
+        },
+        {
+          "target": "1200-READ-CARD",
+          "source": "pangaea/programs/CARDLOAD.cbl:126"
+        }
+      ],
+      "performedBy": [
+        "0000-MAIN"
+      ],
+      "reads": [
+        "CR-EXPIRY-MONTH",
+        "WS-BUSINESS-MONTH",
+        "WS-EXPIRED-COUNT",
+        "CR-STATUS",
+        "WS-BLOCKED-COUNT"
+      ],
+      "writes": [
+        "WS-EXPIRED-COUNT",
+        "WS-BLOCKED-COUNT"
+      ]
+    },
+    {
+      "name": "2100-WRITE-ONLINE",
+      "source": "pangaea/programs/CARDLOAD.cbl:128",
+      "performs": [
+        {
+          "target": "9900-ABORT",
+          "source": "pangaea/programs/CARDLOAD.cbl:133"
+        }
+      ],
+      "performedBy": [
+        "2000-LOAD-CARD"
+      ],
+      "reads": [
+        "CARD-RECORD",
+        "WS-LOADED-COUNT"
+      ],
+      "writes": [
+        "ONLINE-CARD",
+        "WS-ABORT-MESSAGE",
+        "WS-LOADED-COUNT"
+      ]
+    },
+    {
+      "name": "8000-WRITE-REPORT",
+      "description": "WRITE THE LOAD REPORT.",
+      "source": "pangaea/programs/CARDLOAD.cbl:138",
+      "performedBy": [
+        "0000-MAIN"
+      ],
+      "reads": [
+        "WS-BUSINESS-DATE",
+        "WS-READ-COUNT",
+        "WS-REPORT-COUNT-LINE",
+        "WS-LOADED-COUNT",
+        "WS-BLOCKED-COUNT",
+        "WS-EXPIRED-COUNT"
+      ],
+      "writes": [
+        "REPORT-LINE",
+        "WS-RC-LABEL",
+        "WS-RC-VALUE"
+      ]
+    },
+    {
+      "name": "9000-CLOSE-FILES",
+      "description": "CLOSE ALL FILES.",
+      "source": "pangaea/programs/CARDLOAD.cbl:160",
+      "performedBy": [
+        "0000-MAIN",
+        "9900-ABORT"
+      ]
+    },
+    {
+      "name": "9900-ABORT",
+      "description": "STOP THE RUN WITH RETURN CODE 16, SAYING WHY.",
+      "source": "pangaea/programs/CARDLOAD.cbl:164",
+      "performs": [
+        {
+          "target": "9000-CLOSE-FILES",
+          "source": "pangaea/programs/CARDLOAD.cbl:166"
+        }
+      ],
+      "performedBy": [
+        "1000-INITIALIZE",
+        "2100-WRITE-ONLINE"
+      ],
+      "reads": [
+        "WS-ABORT-MESSAGE"
+      ],
+      "writes": [
+        "RETURN-CODE"
+      ]
+    }
+  ],
+  "lineage": [
+    {
+      "from": "0",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "0000-MAIN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/CARDLOAD.cbl:88"
+    },
+    {
+      "from": "16",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/CARDLOAD.cbl:97"
+    },
+    {
+      "from": "CONTROL-FILE",
+      "to": "BANK-CONTROL-RECORD",
+      "fromFile": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "READ",
+      "source": "pangaea/programs/CARDLOAD.cbl:100"
+    },
+    {
+      "from": "'NO BANK CONTROL RECORD'",
+      "to": "WS-ABORT-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/CARDLOAD.cbl:102"
+    },
+    {
+      "from": "BC-BUSINESS-DATE",
+      "to": "WS-BUSINESS-DATE",
+      "paragraph": "1000-INITIALIZE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/CARDLOAD.cbl:105"
+    },
+    {
+      "from": "CARD-IN",
+      "to": "CARD-RECORD",
+      "fromFile": true,
+      "paragraph": "1200-READ-CARD",
+      "verb": "READ",
+      "source": "pangaea/programs/CARDLOAD.cbl:109"
+    },
+    {
+      "from": "condition MASTER-AT-END",
+      "to": "WS-MASTER-END-SW",
+      "fromLiteral": true,
+      "paragraph": "1200-READ-CARD",
+      "verb": "SET",
+      "source": "pangaea/programs/CARDLOAD.cbl:111"
+    },
+    {
+      "from": "1",
+      "to": "WS-READ-COUNT",
+      "fromLiteral": true,
+      "paragraph": "1200-READ-CARD",
+      "verb": "ADD",
+      "source": "pangaea/programs/CARDLOAD.cbl:113"
+    },
+    {
+      "from": "1",
+      "to": "WS-EXPIRED-COUNT",
+      "fromLiteral": true,
+      "paragraph": "2000-LOAD-CARD",
+      "verb": "ADD",
+      "source": "pangaea/programs/CARDLOAD.cbl:119"
+    },
+    {
+      "from": "1",
+      "to": "WS-BLOCKED-COUNT",
+      "fromLiteral": true,
+      "paragraph": "2000-LOAD-CARD",
+      "verb": "ADD",
+      "source": "pangaea/programs/CARDLOAD.cbl:122"
+    },
+    {
+      "from": "CARD-RECORD",
+      "to": "ONLINE-CARD",
+      "paragraph": "2100-WRITE-ONLINE",
+      "verb": "WRITE",
+      "source": "pangaea/programs/CARDLOAD.cbl:129"
+    },
+    {
+      "from": "ONLINE-CARD",
+      "to": "ONLINE-OUT",
+      "toFile": true,
+      "paragraph": "2100-WRITE-ONLINE",
+      "verb": "WRITE",
+      "source": "pangaea/programs/CARDLOAD.cbl:129"
+    },
+    {
+      "from": "'MASTER NOT IN CARD NUMBER ORDER'",
+      "to": "WS-ABORT-MESSAGE",
+      "fromLiteral": true,
+      "paragraph": "2100-WRITE-ONLINE",
+      "verb": "MOVE",
+      "source": "pangaea/programs/CARDLOAD.cbl:131"
+    },
+    {
+      "from": "1",
+      "to": "WS-LOADED-COUNT",
+      "fromLiteral": true,
+      "paragraph": "2100-WRITE-ONLINE",
+      "verb": "ADD",
+      "source": "pangaea/programs/CARDLOAD.cbl:135"
+    },
+    {
+      "from": "SPACES",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/CARDLOAD.cbl:139"
+    },
+    {
+      "from": "'CARDLOAD ONLINE CARD LOAD        BUSINESS DATE '",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "STRING",
+      "source": "pangaea/programs/CARDLOAD.cbl:140"
+    },
+    {
+      "from": "WS-BUSINESS-DATE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "STRING",
+      "source": "pangaea/programs/CARDLOAD.cbl:140"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/CARDLOAD.cbl:143"
+    },
+    {
+      "from": "SPACES",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/CARDLOAD.cbl:144"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/CARDLOAD.cbl:145"
+    },
+    {
+      "from": "'CARDS READ'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/CARDLOAD.cbl:146"
+    },
+    {
+      "from": "WS-READ-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/CARDLOAD.cbl:147"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/CARDLOAD.cbl:148"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/CARDLOAD.cbl:148"
+    },
+    {
+      "from": "'CARDS LOADED'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/CARDLOAD.cbl:149"
+    },
+    {
+      "from": "WS-LOADED-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/CARDLOAD.cbl:150"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/CARDLOAD.cbl:151"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/CARDLOAD.cbl:151"
+    },
+    {
+      "from": "'  OF WHICH BLOCKED'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/CARDLOAD.cbl:152"
+    },
+    {
+      "from": "WS-BLOCKED-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/CARDLOAD.cbl:153"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/CARDLOAD.cbl:154"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/CARDLOAD.cbl:154"
+    },
+    {
+      "from": "'EXPIRED CARDS LEFT OUT'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/CARDLOAD.cbl:155"
+    },
+    {
+      "from": "WS-EXPIRED-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/CARDLOAD.cbl:156"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/CARDLOAD.cbl:157"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/CARDLOAD.cbl:157"
+    },
+    {
+      "from": "16",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "9900-ABORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/CARDLOAD.cbl:167"
+    }
+  ],
+  "outputs": [
+    {
+      "file": "ONLINE-OUT",
+      "record": "CARD-RECORD",
+      "fields": [
+        {
+          "name": "CR-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "origins": [
+            "file CARD-IN CR-CARD-NO"
+          ]
+        },
+        {
+          "name": "CR-ACCT-NO",
+          "start": 17,
+          "length": 10,
+          "origins": [
+            "file CARD-IN CR-ACCT-NO"
+          ]
+        },
+        {
+          "name": "CR-CUST-NO",
+          "start": 27,
+          "length": 8,
+          "origins": [
+            "file CARD-IN CR-CUST-NO"
+          ]
+        },
+        {
+          "name": "CR-STATUS",
+          "start": 35,
+          "length": 1,
+          "origins": [
+            "file CARD-IN CR-STATUS"
+          ]
+        },
+        {
+          "name": "CR-EXPIRY-MONTH",
+          "start": 36,
+          "length": 6,
+          "origins": [
+            "file CARD-IN CR-EXPIRY-MONTH"
+          ]
+        },
+        {
+          "name": "CR-PURCHASE-LIMIT",
+          "start": 42,
+          "length": 7,
+          "origins": [
+            "file CARD-IN CR-PURCHASE-LIMIT"
+          ]
+        },
+        {
+          "name": "CR-CASH-LIMIT",
+          "start": 49,
+          "length": 7,
+          "origins": [
+            "file CARD-IN CR-CASH-LIMIT"
+          ]
+        },
+        {
+          "name": "CR-TOTALS-DATE",
+          "start": 56,
+          "length": 8,
+          "origins": [
+            "file CARD-IN CR-TOTALS-DATE"
+          ]
+        },
+        {
+          "name": "CR-DAY-PURCHASES",
+          "start": 64,
+          "length": 7,
+          "origins": [
+            "file CARD-IN CR-DAY-PURCHASES"
+          ]
+        },
+        {
+          "name": "CR-DAY-CASH",
+          "start": 71,
+          "length": 7,
+          "origins": [
+            "file CARD-IN CR-DAY-CASH"
+          ]
+        },
+        {
+          "name": "CR-MONTH-WITHDRAWALS",
+          "start": 78,
+          "length": 3,
+          "origins": [
+            "file CARD-IN CR-MONTH-WITHDRAWALS"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "REPORT-OUT",
+      "record": "WS-REPORT-COUNT-LINE",
+      "fields": [
+        {
+          "name": "WS-RC-LABEL",
+          "start": 1,
+          "length": 30,
+          "origins": [
+            "literal '  OF WHICH BLOCKED'",
+            "literal 'CARDS LOADED'",
+            "literal 'CARDS READ'",
+            "literal 'EXPIRED CARDS LEFT OUT'"
+          ]
+        },
+        {
+          "name": "WS-RC-VALUE",
+          "start": 31,
+          "length": 10,
+          "origins": [
+            "initial value of WS-BLOCKED-COUNT",
+            "initial value of WS-EXPIRED-COUNT",
+            "initial value of WS-LOADED-COUNT",
+            "initial value of WS-READ-COUNT",
+            "literal 1"
+          ]
+        }
+      ]
+    }
+  ]
+}
