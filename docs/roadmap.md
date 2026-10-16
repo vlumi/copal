@@ -73,12 +73,13 @@ Worth having, but late and small. A bank that only has a batch misses the coupli
 
 - A debit card authorization API over HTTP: authorize, reverse, and a balance enquiry.
 - The authorization rule lives in COBOL, as a called program in the style of an online transaction, so Copal reads it like the rest of the bank. A thin server around it does the HTTP and nothing else.
-- Authorizations do not touch the master. They append holds to an online log, and the available balance is the master balance minus open holds.
-- At end of day the online log becomes a transaction file with header and trailer, the daily batch posts it, and holds are released.
+- The account master becomes an indexed file keyed by account number: the daily batch still reads it in key order, authorizations read single accounts by key.
+- Authorizations do not update the master. They write holds to an indexed file keyed by account and hold number, and the available balance is the master balance minus open holds.
+- At end of day the holds are read in key order into a transaction file with header and trailer, the daily batch posts it, and the holds are released.
 - During the batch window the API answers that the bank is closed.
 - A traffic simulator that swipes cards at a configurable rate, and live updates in the console (server-sent events) so balances and holds move while you watch.
 
-Open decisions for this milestone: how the server calls COBOL (a process per request, or libcob in-process), and whether the online log is a sequential file appended under a lock or one of GnuCOBOL's indexed files.
+Open decision for this milestone: how the server calls COBOL (a process per request, or libcob in-process).
 
 Done when: with the simulator running, the console shows available balances dropping during the day, the API closes for the batch, and the next morning the card transactions appear in the master.
 
