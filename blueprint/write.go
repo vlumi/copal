@@ -288,66 +288,75 @@ func writeDataFlow(b *strings.Builder, dir string, p Program) {
 	b.WriteString("\n## Lineage\n\nWhere each data item's values come from, grouped by the record they go into. " +
 		"A data item links to the record it belongs to.\n")
 	records := recordsByItem(p)
-	type group struct {
-		title, intro string
-		edges        []Lineage
-	}
-	var groups []*group
-	byTitle := map[string]*group{}
-	for _, e := range p.Lineage {
-		title, intro := "Into other data items", "Data items the program does not declare, such as special registers and index names.\n\n"
-		switch r, ok := records[e.To]; {
-		case e.ToFile:
-			title, intro = "Into files", "Records written to files.\n\n"
-		case ok:
-			title, intro = "Into "+r.Name, "Record ["+r.Name+"](#"+headingAnchor(r.Name)+")"
-			if r.Copybook != "" {
-				intro += ", from copybook " + copybookLink(r.Copybook)
-			}
-			intro += ".\n\n"
-		}
-		g, ok := byTitle[title]
-		if !ok {
-			g = &group{title: title, intro: intro}
-			byTitle[title] = g
-			groups = append(groups, g)
-		}
-		g.edges = append(g.edges, e)
-	}
-	order := func(g *group) int {
-		switch g.title {
-		case "Into files":
-			return len(p.Records) + 1
-		case "Into other data items":
-			return len(p.Records) + 2
-		}
-		return slices.IndexFunc(p.Records, func(r Record) bool { return "Into "+r.Name == g.title })
-	}
-	slices.SortStableFunc(groups, func(x, y *group) int { return order(x) - order(y) })
-	item := func(name string, file bool) string {
-		if file {
-			return "file " + name
-		}
-		r, ok := records[name]
-		switch {
-		case ok && r.Name == name:
-			return fmt.Sprintf("[%s](#%s)", name, headingAnchor(r.Name))
-		case ok:
-			return fmt.Sprintf("[%s](#%s \"in %s\")", name, headingAnchor(r.Name), r.Name)
-		}
-		return name
-	}
-	for _, g := range groups {
+	for _, g := range groupLineage(p, records) {
 		fmt.Fprintf(b, "\n### %s\n\n%s| Into | From | Statement | Paragraph | Source |\n| --- | --- | --- | --- | --- |\n", g.title, g.intro)
-		slices.SortStableFunc(g.edges, func(x, y Lineage) int { return strings.Compare(x.To, y.To) })
 		for _, e := range g.edges {
 			to := e.To
 			if e.ToFile {
 				to = "file " + to
 			}
-			b.WriteString(row(to, item(e.From, e.FromFile), e.Verb, e.Paragraph, sourceLink(dir, e.Source, true)))
+			b.WriteString(row(to, lineageItem(e.From, e.FromFile, records), e.Verb, e.Paragraph, sourceLink(dir, e.Source, true)))
 		}
 	}
+}
+
+// lineageGroup is the lineage into one record, into files, or into data
+// items the program does not declare.
+type lineageGroup struct {
+	title, intro string
+	edges        []Lineage
+}
+
+// groupLineage groups a program's lineage by what it goes into: each
+// record in the order the program declares them, then files, then other
+// data items. Within a group, the lineage is ordered by the item written.
+func groupLineage(p Program, records map[string]Record) []lineageGroup {
+	groups := make([]lineageGroup, len(p.Records)+2)
+	files, other := len(p.Records), len(p.Records)+1
+	groups[files] = lineageGroup{title: "Into files", intro: "Records written to files.\n\n"}
+	groups[other] = lineageGroup{title: "Into other data items",
+		intro: "Data items the program does not declare, such as special registers and index names.\n\n"}
+	for i, r := range p.Records {
+		intro := "Record [" + r.Name + "](#" + headingAnchor(r.Name) + ")"
+		if r.Copybook != "" {
+			intro += ", from copybook " + copybookLink(r.Copybook)
+		}
+		groups[i] = lineageGroup{title: "Into " + r.Name, intro: intro + ".\n\n"}
+	}
+	for _, e := range p.Lineage {
+		i := other
+		if r, ok := records[e.To]; e.ToFile {
+			i = files
+		} else if ok {
+			i = slices.IndexFunc(p.Records, func(pr Record) bool { return pr.Name == r.Name })
+		}
+		groups[i].edges = append(groups[i].edges, e)
+	}
+	var nonEmpty []lineageGroup
+	for _, g := range groups {
+		if len(g.edges) > 0 {
+			slices.SortStableFunc(g.edges, func(x, y Lineage) int { return strings.Compare(x.To, y.To) })
+			nonEmpty = append(nonEmpty, g)
+		}
+	}
+	return nonEmpty
+}
+
+// lineageItem writes where a value comes from: a file, or a data item
+// linked to the record it belongs to, with the record's name on hover when
+// the item is a field of it.
+func lineageItem(name string, file bool, records map[string]Record) string {
+	if file {
+		return "file " + name
+	}
+	r, ok := records[name]
+	switch {
+	case ok && r.Name == name:
+		return fmt.Sprintf("[%s](#%s)", name, headingAnchor(r.Name))
+	case ok:
+		return fmt.Sprintf("[%s](#%s \"in %s\")", name, headingAnchor(r.Name), r.Name)
+	}
+	return name
 }
 
 // recordsByItem maps every data item the program declares to the record it
