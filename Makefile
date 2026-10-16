@@ -46,6 +46,12 @@ bank-reset:  ## Reset the running bank to a generated start (SEED, ACCOUNTS)
 bank-days: pangaea-build  ## Run the bank's next N business days
 	go run ./cmd/pangaea days -n $(N)
 
+ADDR ?= localhost:8080
+
+.PHONY: console
+console: pangaea-build  ## Serve the bank console in the browser (ADDR)
+	go run ./cmd/pangaea console -addr $(ADDR)
+
 .PHONY: blueprints
 blueprints:  ## Regenerate Pangaea's blueprints with Copal
 	rm -rf blueprints/pangaea

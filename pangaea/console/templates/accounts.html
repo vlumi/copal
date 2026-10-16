@@ -1,0 +1,18 @@
+{{define "title"}}Accounts{{end}}
+{{define "content"}}
+{{with .View}}
+<h1>Accounts</h1>
+<form method="get" action="/accounts" class="search">
+  <input name="q" value="{{.Query}}" placeholder="Account number, customer number or name" autofocus>
+  <button>Search</button>
+</form>
+<p class="note">{{count .Found}} of {{count .Total}} accounts{{if lt (len .Accounts) .Found}}, the first {{len .Accounts}} shown{{end}}.</p>
+<table>
+  <thead><tr><th class="num">Account</th><th class="num">Customer</th><th>Name</th><th>Type</th><th>Status</th><th class="num">Balance</th><th class="num">Overdraft limit</th><th>Last activity</th></tr></thead>
+  <tbody>
+  {{range .Accounts}}<tr><td class="num">{{template "account-link" .No}}</td><td class="num"><a href="/accounts?q={{.Customer}}">{{.Customer}}</a></td><td>{{.Name}}</td><td>{{.Type}}</td><td>{{.Status}}</td><td class="num{{if lt .Balance 0}} debit{{end}}">{{money .Balance}}</td><td class="num">{{money .Limit}}</td><td>{{date .LastActivity}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{end}}
+{{end}}

@@ -6,17 +6,20 @@
 //	pangaea run     run a job
 //	pangaea reset   reset the running bank to a generated starting point
 //	pangaea days    run the running bank's next business days
+//	pangaea console serve the bank console, a web window onto the running bank
 package main
 
 import (
 	"bytes"
 	"flag"
 	"fmt"
+	"net/http"
 	"os"
 	"strings"
 
 	"github.com/vlumi/copal/pangaea/bank"
 	"github.com/vlumi/copal/pangaea/compile"
+	"github.com/vlumi/copal/pangaea/console"
 	"github.com/vlumi/copal/pangaea/dataset"
 	"github.com/vlumi/copal/pangaea/jcl"
 	"github.com/vlumi/copal/pangaea/runner"
@@ -29,6 +32,7 @@ const usage = `usage:
   pangaea run -datasets dir -sysout dir [-programs dir] job.jcl
   pangaea reset [-bank dir] [-seed n] [-accounts n]
   pangaea days [-bank dir] [-n days]
+  pangaea console [-bank dir] [-addr host:port]
 `
 
 func main() {
@@ -37,12 +41,13 @@ func main() {
 		os.Exit(2)
 	}
 	commands := map[string]func([]string) error{
-		"build":  build,
-		"load":   load,
-		"unload": unload,
-		"run":    run,
-		"reset":  reset,
-		"days":   days,
+		"build":   build,
+		"load":    load,
+		"unload":  unload,
+		"run":     run,
+		"reset":   reset,
+		"days":    days,
+		"console": serveConsole,
 	}
 	command, ok := commands[os.Args[1]]
 	if !ok {
@@ -167,4 +172,16 @@ func days(args []string) error {
 		}
 		fmt.Printf("%s  %5d transactions  %4d rejects  RC=%04d\n", d.Date, d.Transactions, d.Rejects, rc)
 	})
+}
+
+func serveConsole(args []string) error {
+	flags, b := bankFlags("console")
+	addr := flags.String("addr", "localhost:8080", "address to serve on")
+	_ = flags.Parse(args)
+	c, err := console.New(*b)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("the bank console is at http://%s/\n", *addr)
+	return http.ListenAndServe(*addr, c.Handler())
 }

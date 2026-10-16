@@ -1,0 +1,54 @@
+{{define "base"}}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{template "title" .}} · First Bank of Pangaea</title>
+<link rel="stylesheet" href="/static/console.css">
+<script src="/static/console.js" defer></script>
+</head>
+<body>
+<header>
+  <a class="bank" href="/">First Bank of Pangaea</a>
+  <nav>
+    <a href="/accounts">Accounts</a>
+    <a href="/compare">Compare</a>
+  </nav>
+  {{if .History.Master}}<span class="today">Business date <strong>{{.History.Date}}</strong> · seed {{.History.Seed}}</span>{{end}}
+</header>
+<main>
+{{template "content" .}}
+</main>
+</body>
+</html>
+{{end}}
+
+{{define "reset"}}
+<form method="post" action="/reset" class="action" data-busy="Resetting…">
+  <label>Seed <input name="seed" type="number" min="0" value="{{.}}" required></label>
+  <label>Accounts <input name="accounts" type="number" min="10" max="100000" value="3000" required></label>
+  <button>Reset the bank</button>
+</form>
+{{end}}
+
+{{define "account-link"}}<a href="/accounts/{{.}}">{{.}}</a>{{end}}
+
+{{define "transactions"}}
+<table>
+  <thead><tr><th class="num">ID</th><th class="num">Account</th><th>Code</th><th class="num">Amount</th><th>Description</th><th class="num">Counter account</th></tr></thead>
+  <tbody>
+  {{range .}}<tr><td class="num">{{.ID}}</td><td class="num">{{template "account-link" .Account}}</td><td>{{.Code}}</td><td class="num">{{money .Amount}}</td><td>{{.Description}}</td><td class="num">{{if .Counter}}{{template "account-link" .Counter}}{{end}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{end}}
+
+{{define "postings"}}
+<table>
+  <thead><tr><th>Date</th><th class="num">Transaction</th><th class="num">Account</th><th>Code</th><th class="num">Amount</th><th class="num">Balance before</th><th class="num">Balance after</th></tr></thead>
+  <tbody>
+  {{range .}}<tr><td>{{date .Date}}</td><td class="num">{{.TranID}}</td><td class="num">{{template "account-link" .Account}}</td><td>{{.Code}}</td><td class="num{{if lt .Amount 0}} debit{{end}}">{{money .Amount}}</td><td class="num">{{money .Before}}</td><td class="num">{{money .After}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{end}}

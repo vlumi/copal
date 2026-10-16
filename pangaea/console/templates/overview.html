@@ -1,0 +1,31 @@
+{{define "title"}}The bank{{end}}
+{{define "content"}}
+{{with .View}}
+<h1>The bank on {{.History.Date}}</h1>
+<dl class="facts">
+  <div><dt>Accounts</dt><dd>{{count .Balances.Accounts}}</dd></div>
+  <div><dt>Balances</dt><dd>{{money .Balances.Total}}</dd></div>
+  <div><dt>Days run</dt><dd>{{len .History.Days}}</dd></div>
+  <div><dt>Master</dt><dd><code>{{.History.Master}}</code></dd></div>
+</dl>
+<div class="actions">
+  <form method="post" action="/run" class="action" data-busy="Running…">
+    <label>Business days <input name="days" type="number" min="1" max="25" value="1" required></label>
+    <button>Run</button>
+  </form>
+  {{template "reset" .History.Seed}}
+</div>
+<h2>Days</h2>
+{{if .Days}}
+<table>
+  <thead><tr><th>Business day</th><th class="num">Transactions</th><th class="num">Postings</th><th class="num">Rejects</th><th>Worst step</th><th></th></tr></thead>
+  <tbody>
+  {{range .Days}}<tr><td><a href="/days/{{.Day.Date}}">{{.Day.Date}}</a></td><td class="num">{{count .Transactions}}</td><td class="num">{{count .Postings}}</td><td class="num">{{count .Rejects}}</td><td>{{.Worst}}</td><td><a href="/compare?from={{.Day.Date}}">what changed</a></td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{else}}
+<p>No days run yet.</p>
+{{end}}
+{{end}}
+{{end}}
