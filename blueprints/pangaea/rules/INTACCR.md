@@ -33,7 +33,7 @@ The business rules of [INTACCR](../programs/INTACCR.md), paragraph by paragraph:
 | → `MOVE 0 TO RETURN-CODE` | 7 | 5 |
 | → `STOP RUN` | 8 | 6 |
 
-Source: [INTACCR.cbl:155](../../../pangaea/programs/INTACCR.cbl#L155).
+Source: [INTACCR.cbl:156](../../../pangaea/programs/INTACCR.cbl#L156).
 
 ## 1000-INITIALIZE
 
@@ -54,7 +54,7 @@ Source: [INTACCR.cbl:155](../../../pangaea/programs/INTACCR.cbl#L155).
 | → `PERFORM 1200-READ-MASTER` | | 8 | 6 |
 | → `PERFORM 1300-READ-ACCRUAL` | | 9 | 7 |
 
-Source: [INTACCR.cbl:169](../../../pangaea/programs/INTACCR.cbl#L169).
+Source: [INTACCR.cbl:170](../../../pangaea/programs/INTACCR.cbl#L170).
 
 ## 1100-LOAD-RATES
 
@@ -66,7 +66,7 @@ Source: [INTACCR.cbl:169](../../../pangaea/programs/INTACCR.cbl#L169).
 | → `MOVE 'CANNOT READ THE RATES' TO WS-ABORT-MESSAGE` | 3 | |
 | → `PERFORM 9900-ABORT` | 4 | |
 
-Source: [INTACCR.cbl:189](../../../pangaea/programs/INTACCR.cbl#L189).
+Source: [INTACCR.cbl:190](../../../pangaea/programs/INTACCR.cbl#L190).
 
 ## 1100-LOAD-RATES, in its loop
 
@@ -84,7 +84,7 @@ Each pass of `PERFORM UNTIL WS-RATE-STATUS NOT = '00'`.
 | → `MOVE RT-ANNUAL-RATE TO WS-RT-ANNUAL-RATE(WS-RATE-COUNT)` | 7 | 5 |
 | → `READ RATE-FILE` | 8 | 6 |
 
-Source: [INTACCR.cbl:191](../../../pangaea/programs/INTACCR.cbl#L191).
+Source: [INTACCR.cbl:192](../../../pangaea/programs/INTACCR.cbl#L192).
 
 ## 1200-READ-MASTER
 
@@ -94,7 +94,7 @@ Source: [INTACCR.cbl:191](../../../pangaea/programs/INTACCR.cbl#L191).
 | → `READ ACCT-IN` | 1 | 1 |
 | → `SET MASTER-AT-END TO TRUE` | 2 | |
 
-Source: [INTACCR.cbl:209](../../../pangaea/programs/INTACCR.cbl#L209).
+Source: [INTACCR.cbl:210](../../../pangaea/programs/INTACCR.cbl#L210).
 
 ## 1300-READ-ACCRUAL
 
@@ -105,7 +105,7 @@ Source: [INTACCR.cbl:209](../../../pangaea/programs/INTACCR.cbl#L209).
 | → `MOVE HIGH-VALUES TO WS-ACCRUAL-KEY` | 2 | |
 | → `MOVE AI-ACCT-NO TO WS-ACCRUAL-KEY` | | 2 |
 
-Source: [INTACCR.cbl:216](../../../pangaea/programs/INTACCR.cbl#L216).
+Source: [INTACCR.cbl:217](../../../pangaea/programs/INTACCR.cbl#L217).
 
 ## 1400-TAKE-ACCRUAL
 
@@ -123,7 +123,7 @@ Source: [INTACCR.cbl:216](../../../pangaea/programs/INTACCR.cbl#L216).
 | → `MOVE 'AN ACCRUAL FOR NO ACCOUNT' TO WS-ABORT-MESSAGE` | | | 1 |
 | → `PERFORM 9900-ABORT` | | | 2 |
 
-Source: [INTACCR.cbl:226](../../../pangaea/programs/INTACCR.cbl#L226).
+Source: [INTACCR.cbl:227](../../../pangaea/programs/INTACCR.cbl#L227).
 
 ## 2000-ACCRUE-ACCOUNT
 
@@ -145,7 +145,7 @@ Source: [INTACCR.cbl:226](../../../pangaea/programs/INTACCR.cbl#L226).
 | → `ADD 1 TO WS-ACCOUNT-COUNT` | 14 | 10 |
 | → `PERFORM 1200-READ-MASTER` | 15 | 11 |
 
-Source: [INTACCR.cbl:244](../../../pangaea/programs/INTACCR.cbl#L244).
+Source: [INTACCR.cbl:245](../../../pangaea/programs/INTACCR.cbl#L245).
 
 ## 2100-FIND-RATE
 
@@ -157,7 +157,7 @@ Source: [INTACCR.cbl:244](../../../pangaea/programs/INTACCR.cbl#L244).
 | → `MOVE 'NO RATE FOR AN ACCOUNT TYPE' TO WS-ABORT-MESSAGE` | 3 | |
 | → `PERFORM 9900-ABORT` | 4 | |
 
-Source: [INTACCR.cbl:266](../../../pangaea/programs/INTACCR.cbl#L266).
+Source: [INTACCR.cbl:267](../../../pangaea/programs/INTACCR.cbl#L267).
 
 ## 2100-FIND-RATE, in its loop
 
@@ -171,7 +171,7 @@ Each pass of `PERFORM VARYING WS-RX FROM 1 BY 1 UNTIL WS-RX > WS-RATE-COUNT`.
 | `WS-RT-CREDIT(WS-RX) AND WS-RT-FLOOR(WS-RX) NOT > AM-BALANCE AND (NOT RATE-FOUND OR WS-RT-FLOOR(WS-RX) > WS-BEST-FLOOR)` | | | Y | N | |
 | → `PERFORM 2110-TAKE-RATE` | 1 | | 1 | | |
 
-Source: [INTACCR.cbl:268](../../../pangaea/programs/INTACCR.cbl#L268).
+Source: [INTACCR.cbl:269](../../../pangaea/programs/INTACCR.cbl#L269).
 
 ## 2200-FIND-MONTH-START
 
@@ -186,7 +186,7 @@ Source: [INTACCR.cbl:268](../../../pangaea/programs/INTACCR.cbl#L268).
 | → `COMPUTE WS-MONTH-START-DAY = FUNCTION INTEGER-OF-DATE(WS-MONTH-START-DATE)` | 6 | 5 |
 | → `COMPUTE WS-MS-MONTH = WS-TH-MONTH + 1` | | 3 |
 
-Source: [INTACCR.cbl:297](../../../pangaea/programs/INTACCR.cbl#L297).
+Source: [INTACCR.cbl:298](../../../pangaea/programs/INTACCR.cbl#L298).
 
 ## 2300-ACCRUE-DAYS
 
@@ -200,7 +200,7 @@ Source: [INTACCR.cbl:297](../../../pangaea/programs/INTACCR.cbl#L297).
 | → `ADD WS-INCREMENT TO WS-DEBIT-ACCRUED` | 5 | |
 | → `ADD WS-INCREMENT TO WS-CREDIT-ACCRUED` | | 5 |
 
-Source: [INTACCR.cbl:311](../../../pangaea/programs/INTACCR.cbl#L311).
+Source: [INTACCR.cbl:312](../../../pangaea/programs/INTACCR.cbl#L312).
 
 ## 2400-CLOSE-MONTH
 
@@ -216,7 +216,7 @@ Source: [INTACCR.cbl:311](../../../pangaea/programs/INTACCR.cbl#L311).
 | → `ADD AC-DUE TO WS-DEBIT-DUE` | 7 | |
 | → `ADD AC-DUE TO WS-CREDIT-DUE` | | 7 |
 
-Source: [INTACCR.cbl:326](../../../pangaea/programs/INTACCR.cbl#L326).
+Source: [INTACCR.cbl:327](../../../pangaea/programs/INTACCR.cbl#L327).
 
 ## 8000-WRITE-REPORT
 
@@ -245,4 +245,4 @@ Source: [INTACCR.cbl:326](../../../pangaea/programs/INTACCR.cbl#L326).
 | → `MOVE 'DEBIT INTEREST DUE' TO WS-RA-LABEL` | | 29 |
 | → `MOVE WS-DEBIT-DUE TO WS-RA-VALUE` | | 30 |
 
-Source: [INTACCR.cbl:340](../../../pangaea/programs/INTACCR.cbl#L340).
+Source: [INTACCR.cbl:341](../../../pangaea/programs/INTACCR.cbl#L341).

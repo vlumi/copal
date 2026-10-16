@@ -29,7 +29,7 @@ The business rules of [GLSUM](../programs/GLSUM.md), paragraph by paragraph: eac
 | → `STOP RUN` | 7 | 7 | 5 | 5 |
 | → `MOVE 0 TO RETURN-CODE` | | 6 | | 4 |
 
-Source: [GLSUM.cbl:160](../../../pangaea/programs/GLSUM.cbl#L160).
+Source: [GLSUM.cbl:161](../../../pangaea/programs/GLSUM.cbl#L161).
 
 ## 1000-INITIALIZE
 
@@ -51,7 +51,7 @@ Source: [GLSUM.cbl:160](../../../pangaea/programs/GLSUM.cbl#L160).
 | → `PERFORM VARYING WS-TX FROM 1 BY 1 UNTIL WS-TX > WS-LEDGER-COUNT` | | 8 | 7 | 7 | 6 |
 | → `COMPUTE WS-NM-MONTH = WS-CM-MONTH + 1` | | | 6 | | 5 |
 
-Source: [GLSUM.cbl:177](../../../pangaea/programs/GLSUM.cbl#L177).
+Source: [GLSUM.cbl:178](../../../pangaea/programs/GLSUM.cbl#L178).
 
 ## 2000-POST-MONTH
 
@@ -63,7 +63,7 @@ Source: [GLSUM.cbl:177](../../../pangaea/programs/GLSUM.cbl#L177).
 | → `MOVE 'CANNOT READ THE AUDIT TRAILS' TO WS-ABORT-MESSAGE` | 3 | |
 | → `PERFORM 9900-ABORT` | 4 | |
 
-Source: [GLSUM.cbl:204](../../../pangaea/programs/GLSUM.cbl#L204).
+Source: [GLSUM.cbl:205](../../../pangaea/programs/GLSUM.cbl#L205).
 
 ## 2000-POST-MONTH, in its loop
 
@@ -77,7 +77,7 @@ Each pass of `PERFORM UNTIL WS-AUDIT-STATUS NOT = '00'`.
 | → `PERFORM 2100-POST-TO-LEDGER` | 3 | |
 | → `READ AUDIT-IN` | 4 | 3 |
 
-Source: [GLSUM.cbl:206](../../../pangaea/programs/GLSUM.cbl#L206).
+Source: [GLSUM.cbl:207](../../../pangaea/programs/GLSUM.cbl#L207).
 
 ## 2100-POST-TO-LEDGER
 
@@ -103,7 +103,7 @@ Source: [GLSUM.cbl:206](../../../pangaea/programs/GLSUM.cbl#L206).
 | → `MOVE 'UNKNOWN TRANSACTION CODE' TO WS-ABORT-MESSAGE` | | | 3 | 3 |
 | → `PERFORM 9900-ABORT` | | | 4 | 4 |
 
-Source: [GLSUM.cbl:223](../../../pangaea/programs/GLSUM.cbl#L223).
+Source: [GLSUM.cbl:224](../../../pangaea/programs/GLSUM.cbl#L224).
 
 ## 2200-FIND-ACCOUNT
 
@@ -116,7 +116,7 @@ Source: [GLSUM.cbl:223](../../../pangaea/programs/GLSUM.cbl#L223).
 | → `MOVE 'UNKNOWN LEDGER ACCOUNT' TO WS-ABORT-MESSAGE` | | 3 |
 | → `PERFORM 9900-ABORT` | | 4 |
 
-Source: [GLSUM.cbl:250](../../../pangaea/programs/GLSUM.cbl#L250).
+Source: [GLSUM.cbl:251](../../../pangaea/programs/GLSUM.cbl#L251).
 
 ## 3000-WRITE-LEDGER
 
@@ -127,7 +127,7 @@ Source: [GLSUM.cbl:250](../../../pangaea/programs/GLSUM.cbl#L250).
 | → `MOVE 'LEDGER OUT OF BALANCE' TO WS-ABORT-MESSAGE` | 2 | |
 | → `PERFORM 9900-ABORT` | 3 | |
 
-Source: [GLSUM.cbl:262](../../../pangaea/programs/GLSUM.cbl#L262).
+Source: [GLSUM.cbl:263](../../../pangaea/programs/GLSUM.cbl#L263).
 
 ## 3000-WRITE-LEDGER, in its loop
 
@@ -150,7 +150,7 @@ Each pass of `PERFORM VARYING WS-LX FROM 1 BY 1 UNTIL WS-LX > WS-LEDGER-COUNT`.
 | → `COMPUTE WS-DEPOSITS-CHANGE = WS-LT-CREDITS(WS-TX) - WS-LT-DEBITS(WS-TX)` | 11 | | |
 | → `COMPUTE WS-TRANSIT-NET = WS-LT-DEBITS(WS-TX) - WS-LT-CREDITS(WS-TX)` | | 11 | |
 
-Source: [GLSUM.cbl:263](../../../pangaea/programs/GLSUM.cbl#L263).
+Source: [GLSUM.cbl:264](../../../pangaea/programs/GLSUM.cbl#L264).
 
 ## 8000-WRITE-REPORT
 
@@ -182,4 +182,4 @@ Source: [GLSUM.cbl:263](../../../pangaea/programs/GLSUM.cbl#L263).
 | → `MOVE 'LEDGER IN BALANCE' TO REPORT-LINE` | 33 | | 30 | |
 | → `MOVE 'TRANSFERS IN TRANSIT DO NOT NET TO ZERO' TO REPORT-LINE` | | 33 | | 30 |
 
-Source: [GLSUM.cbl:290](../../../pangaea/programs/GLSUM.cbl#L290).
+Source: [GLSUM.cbl:291](../../../pangaea/programs/GLSUM.cbl#L291).
