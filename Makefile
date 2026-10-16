@@ -55,7 +55,7 @@ console: pangaea-build  ## Serve the bank console in the browser (ADDR)
 .PHONY: blueprints
 blueprints:  ## Regenerate Pangaea's blueprints with Copal
 	rm -rf blueprints/pangaea
-	go run ./cmd/copal -copybooks pangaea/copybooks -out blueprints/pangaea -title pangaea pangaea/programs/*.cbl
+	go run ./cmd/copal -copybooks pangaea/copybooks -out blueprints/pangaea -title pangaea pangaea/programs/*.cbl pangaea/jobs/*.jcl
 
 .PHONY: ci
 ci: toolchain lint-md lint-go test  ## Full local CI

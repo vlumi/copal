@@ -1,0 +1,119 @@
+{
+  "job": "MONTHLY",
+  "source": "pangaea/jobs/MONTHLY.jcl",
+  "description": [
+    "MONTH-END: THE STATEMENTS AND THE GENERAL LEDGER SUMMARY OF",
+    "THE MONTH THAT CLOSED. THE SCHEDULER RUNS IT ON THE FIRST",
+    "BUSINESS DAY OF EVERY MONTH, AFTER THE DAILY BATCH HAS POSTED",
+    "THE MONTH'S INTEREST AND FEES. ON THE FIRST DAY OF A NEW BANK",
+    "NO MONTH HAS CLOSED, AND IT PRINTS NOTHING.",
+    "",
+    "READS   ACCT.ACCRUAL(0)  ACCT.MASTER(-1)  TRAN.AUDIT",
+    "WRITES  GL.SUMMARY(+1)"
+  ],
+  "steps": [
+    {
+      "step": "STMT",
+      "program": "STMTPRT",
+      "description": [
+        "PRINT THE STATEMENTS FROM EVERY AUDIT TRAIL AND THE MASTER THE",
+        "CLOSED MONTH ENDED WITH, BEFORE THE DAILY BATCH OF TODAY"
+      ],
+      "source": "pangaea/jobs/MONTHLY.jcl:16",
+      "dds": [
+        {
+          "dd": "ACCRIN",
+          "datasets": [
+            "ACCT.ACCRUAL(0)"
+          ],
+          "disp": "SHR",
+          "file": "ACCR-IN",
+          "use": "read",
+          "source": "pangaea/jobs/MONTHLY.jcl:17"
+        },
+        {
+          "dd": "ACCTIN",
+          "datasets": [
+            "ACCT.MASTER(-1)"
+          ],
+          "disp": "SHR",
+          "file": "ACCT-IN",
+          "use": "read",
+          "source": "pangaea/jobs/MONTHLY.jcl:18"
+        },
+        {
+          "dd": "AUDIT",
+          "datasets": [
+            "TRAN.AUDIT"
+          ],
+          "disp": "SHR",
+          "file": "AUDIT-IN",
+          "use": "read",
+          "source": "pangaea/jobs/MONTHLY.jcl:19"
+        },
+        {
+          "dd": "STMTOUT",
+          "sysout": true,
+          "file": "STMT-OUT",
+          "use": "write",
+          "source": "pangaea/jobs/MONTHLY.jcl:20"
+        },
+        {
+          "dd": "STMTRPT",
+          "sysout": true,
+          "file": "REPORT-OUT",
+          "use": "write",
+          "source": "pangaea/jobs/MONTHLY.jcl:21"
+        }
+      ]
+    },
+    {
+      "step": "LEDGER",
+      "program": "GLSUM",
+      "cond": "(4,LT)",
+      "description": [
+        "SUMMARIZE THE MONTH'S POSTINGS FOR THE GENERAL LEDGER"
+      ],
+      "source": "pangaea/jobs/MONTHLY.jcl:25",
+      "dds": [
+        {
+          "dd": "ACCRIN",
+          "datasets": [
+            "ACCT.ACCRUAL(0)"
+          ],
+          "disp": "SHR",
+          "file": "ACCR-IN",
+          "use": "read",
+          "source": "pangaea/jobs/MONTHLY.jcl:26"
+        },
+        {
+          "dd": "AUDIT",
+          "datasets": [
+            "TRAN.AUDIT"
+          ],
+          "disp": "SHR",
+          "file": "AUDIT-IN",
+          "use": "read",
+          "source": "pangaea/jobs/MONTHLY.jcl:27"
+        },
+        {
+          "dd": "GLOUT",
+          "datasets": [
+            "GL.SUMMARY(+1)"
+          ],
+          "disp": "NEW",
+          "file": "GL-OUT",
+          "use": "write",
+          "source": "pangaea/jobs/MONTHLY.jcl:28"
+        },
+        {
+          "dd": "GLRPT",
+          "sysout": true,
+          "file": "REPORT-OUT",
+          "use": "write",
+          "source": "pangaea/jobs/MONTHLY.jcl:30"
+        }
+      ]
+    }
+  ]
+}

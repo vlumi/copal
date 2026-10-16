@@ -1,6 +1,6 @@
 // Package blueprint assembles the analysis of a COBOL system into
-// blueprints: one per program and one per copybook, written as Markdown for
-// people and as JSON for tools.
+// blueprints: one per program, per copybook and per job, written as
+// Markdown for people and as JSON for tools.
 package blueprint
 
 import (
@@ -15,10 +15,12 @@ import (
 	"github.com/vlumi/copal/structure"
 )
 
-// System is the analysis of a set of programs and the copybooks they use.
+// System is the analysis of a set of programs, the copybooks they use and
+// the jobs that run them.
 type System struct {
 	Programs  []Program
 	Copybooks []Copybook
+	Jobs      []Job
 }
 
 // Program is the blueprint of one program.
@@ -130,9 +132,18 @@ type Copybook struct {
 	UsedBy      []string `json:"usedBy"`
 }
 
-// Analyze reads the programs and every copybook in copybookDir.
-func Analyze(programPaths []string, copybookDir string) (*System, error) {
+// Analyze reads the programs, the jobs, which are the paths ending in
+// .jcl, and every copybook in copybookDir.
+func Analyze(paths []string, copybookDir string) (*System, error) {
 	s := &System{}
+	var programPaths, jobPaths []string
+	for _, path := range paths {
+		if strings.EqualFold(filepath.Ext(path), ".jcl") {
+			jobPaths = append(jobPaths, path)
+		} else {
+			programPaths = append(programPaths, path)
+		}
+	}
 	for _, path := range programPaths {
 		program, err := analyzeProgram(path, copybookDir)
 		if err != nil {
@@ -152,6 +163,14 @@ func Analyze(programPaths []string, copybookDir string) (*System, error) {
 		}
 		s.Copybooks = append(s.Copybooks, copybook)
 	}
+	for _, path := range jobPaths {
+		job, err := analyzeJob(path, s.Programs)
+		if err != nil {
+			return nil, err
+		}
+		s.Jobs = append(s.Jobs, job)
+	}
+	slices.SortFunc(s.Jobs, func(a, b Job) int { return strings.Compare(a.Name, b.Name) })
 	return s, nil
 }
 

@@ -1,6 +1,6 @@
 // Command copal reads a COBOL system and writes its blueprints.
 //
-//	copal -copybooks dir -out dir [-title name] program.cbl...
+//	copal -copybooks dir -out dir [-title name] program.cbl... [job.jcl...]
 package main
 
 import (
@@ -17,7 +17,7 @@ func main() {
 	title := flag.String("title", "", "name of the system, for the index")
 	flag.Parse()
 	if *copybooks == "" || *out == "" || flag.NArg() == 0 {
-		fmt.Fprintln(os.Stderr, "usage: copal -copybooks dir -out dir [-title name] program.cbl...")
+		fmt.Fprintln(os.Stderr, "usage: copal -copybooks dir -out dir [-title name] program.cbl... [job.jcl...]")
 		os.Exit(2)
 	}
 	system, err := blueprint.Analyze(flag.Args(), *copybooks)
