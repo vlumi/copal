@@ -8,7 +8,7 @@ It is developed against **the First Bank of Pangaea**, a small but working COBOL
 
 Copal does not translate COBOL into anything. It produces the understanding a translation needs, and later the tests a rewrite has to pass.
 
-**Status:** nothing built yet. [docs/brief.md](docs/brief.md) has the plan and [docs/roadmap.md](docs/roadmap.md) the order of work.
+**Status:** Pangaea runs a minimal daily batch (validate, sort, post) on a small fixture, checked against golden outputs. Copal itself is not started. [docs/brief.md](docs/brief.md) has the plan and [docs/roadmap.md](docs/roadmap.md) the order of work.
 
 ## The names
 

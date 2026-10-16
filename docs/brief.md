@@ -50,10 +50,14 @@ The hard part of moving a COBOL core system to anything newer is rarely the tran
 
 - Graph rendering: Graphviz (`dot`) or hand-laid SVG. Blueprints are golden files, so the rendering has to be reproducible: Graphviz layouts can change between versions (Homebrew and Ubuntu ship different ones), which argues for checking in the `dot` source rather than the SVG, or for hand-laid SVG. Decide when the first diagram is drawn.
 
-## First tasks besides the code
+## Besides the code
 
-- A GitHub Actions workflow that runs the same checks as `make ci` (GnuCOBOL 3.2 from apt in an Ubuntu 26.04 container; Ubuntu 24.04 has only 3.1.2), so the history shows green builds and the check exists for branch protection once the repository is public.
+- The GitHub Actions workflow runs `make ci` in an Ubuntu 26.04 container, the first Ubuntu with GnuCOBOL 3.2 in apt (24.04 has only 3.1.2), so the history shows green builds and the check exists for branch protection once the repository is public.
 - Keep the README's status line current as parts start working.
+
+## Debt
+
+- Fixtures and golden files hold records as text, which works only while every field is display. `COMP-3` arrives with month-end, and those datasets need another representation: hex, or fields decoded through Copal's record layouts.
 
 ## Toolchain
 
