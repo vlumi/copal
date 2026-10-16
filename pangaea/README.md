@@ -21,10 +21,11 @@ The Go packages around the COBOL are the bank's machine room, not the bank: [jcl
 4. **TXSORT** sorts the valid details into account number order.
 5. **TXPOST** matches them against the account master and writes a new master, an audit trail record per posting, and the transactions it could not post: unknown or closed accounts, withdrawals and transfers from frozen accounts or beyond the overdraft limit. It checks that the new master's balances equal the old ones plus what it posted.
 6. **TXSORT** and **TXPOST** again, for the transfer credits: a transfer that posted debits its sender in step 5 and writes a credit for the receiving account, which posts here.
-7. **TXSORT** and **TXPOST** a third time, for the returns: a credit to an unknown or closed account goes back to its sender. This pass writes the day's new master.
-8. **BANKDATE** writes the bank control record for the next business day, Monday to Friday.
+7. **TXSORT** and **TXPOST** a third time, for the returns: a credit to an unknown or closed account goes back to its sender.
+8. **ACCTMNT** applies the branches' account maintenance requests, in account order, and writes the day's new master: it opens accounts, closes empty ones, freezes and unfreezes them, and changes overdraft limits, and rejects what the rules do not allow. It is the bank's oldest style of code, from 1988: `PERFORM ... THRU` ranges that jump to their exit paragraph with `GO TO` and run on from one paragraph into the next.
+9. **BANKDATE** writes the bank control record for the next business day, Monday to Friday.
 
-The day's inputs are the current generations, (0), of the bank control record, the account master, the accruals and the transaction file, and the rate table; it writes the next generations, (+1), of the control record, the master and the accruals, and the day's audit trail and rejects. Everything in between is temporary. So a month's interest and fees are posted on the first business day of the next month, as the batch's first postings.
+The day's inputs are the current generations, (0), of the bank control record, the account master, the accruals, the transaction file and the maintenance requests, and the rate table; it writes the next generations, (+1), of the control record, the master and the accruals, and the day's audit trail and the rejects of both transactions and maintenance. Everything in between is temporary. So a month's interest and fees are posted on the first business day of the next month, as the batch's first postings.
 
 `make pangaea-daily` runs it on the fixture in `testdata/daily` and shows the reports; the fixture in `testdata/month-end` closes October and runs the month-end job after it.
 
@@ -39,7 +40,7 @@ The two programs share the transaction code table, [CODETAB](copybooks/CODETAB.c
 
 ## The running bank
 
-`make bank-reset` makes a new bank in `pangaea/run/bank`: about three thousand accounts for two thousand customers, generated from a seed (`SEED=1`, `ACCOUNTS=3000` by default), on business day 2026-09-01. `make bank-days N=5` runs the next five business days: for each it generates the branches' transaction file for the day and runs the daily batch on it, and on the first business day of a month the month-end job too.
+`make bank-reset` makes a new bank in `pangaea/run/bank`: about three thousand accounts for two thousand customers, generated from a seed (`SEED=1`, `ACCOUNTS=3000` by default), on business day 2026-09-01. `make bank-days N=5` runs the next five business days: for each it generates the branches' transaction and maintenance files for the day and runs the daily batch on them, and on the first business day of a month the month-end job too.
 
 Every generation stays cataloged in `pangaea/run/bank/datasets`, so the history of the master, the audit trail and the rejects is all there; each day's job log and reports are in `pangaea/run/bank/sysout/DATE`. The same seed always gives the same bank, day after day.
 
