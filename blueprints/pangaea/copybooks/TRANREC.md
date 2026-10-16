@@ -13,15 +13,20 @@ CREDIT (TC) ON THE RECEIVING ONE. A CREDIT THAT CANNOT POST
 GOES BACK AS A RETURNED TRANSFER (RT). TC AND RT ARE MADE BY
 POSTING, NEVER RECEIVED IN THE DAILY FILE.
 
+WHEN A MONTH CLOSES, THE BANK CREDITS ITS INTEREST (IN),
+CHARGES OVERDRAFT INTEREST (OD) AND THE MAINTENANCE FEE (MF).
+THESE TOO ARE NEVER RECEIVED IN THE DAILY FILE.
+
 MODIFICATION HISTORY
 DATE       BY  CHANGE
 1987-03-12 JA  ORIGINAL VERSION.
 1991-06-03 PK  CR-0117 ACCOUNT NUMBER HASH IN THE TRAILER.
 1996-04-15 PK  CR-0233 TRANSFERS: COUNTER ACCOUNT, FROM THE
                FILLER.
+2001-09-03 TL  CR-0298 MONTH-END INTEREST AND FEE CODES.
 ```
 
-Copybook [TRANREC.cpy](../../../pangaea/copybooks/TRANREC.cpy), used by [TXPOST](../programs/TXPOST.md), [TXVALID](../programs/TXVALID.md).
+Copybook [TRANREC.cpy](../../../pangaea/copybooks/TRANREC.cpy), used by [MONCHG](../programs/MONCHG.md), [TXPOST](../programs/TXPOST.md), [TXVALID](../programs/TXVALID.md).
 
 ## TRAN-RECORD
 
@@ -29,34 +34,37 @@ Copybook [TRANREC.cpy](../../../pangaea/copybooks/TRANREC.cpy), used by [TXPOST]
 
 | Level | Field | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | TRAN-RECORD | 1 | 80 | | | | [TRANREC.cpy:21](../../../pangaea/copybooks/TRANREC.cpy#L21) |
-| 05 | TR-REC-TYPE | 1 | 1 | X | | | [TRANREC.cpy:22](../../../pangaea/copybooks/TRANREC.cpy#L22) |
-| 88 | TR-HEADER | | | | | VALUE 'H' | [TRANREC.cpy:23](../../../pangaea/copybooks/TRANREC.cpy#L23) |
-| 88 | TR-DETAIL | | | | | VALUE 'D' | [TRANREC.cpy:24](../../../pangaea/copybooks/TRANREC.cpy#L24) |
-| 88 | TR-TRAILER | | | | | VALUE 'T' | [TRANREC.cpy:25](../../../pangaea/copybooks/TRANREC.cpy#L25) |
-| 05 | TR-BODY | 2 | 79 | X(79) | | | [TRANREC.cpy:26](../../../pangaea/copybooks/TRANREC.cpy#L26) |
-| 05 | TR-HEADER-BODY | 2 | 79 | | | REDEFINES TR-BODY | [TRANREC.cpy:27](../../../pangaea/copybooks/TRANREC.cpy#L27) |
-| 10 | TH-BUSINESS-DATE | 2 | 8 | 9(8) | | | [TRANREC.cpy:28](../../../pangaea/copybooks/TRANREC.cpy#L28) |
-| 10 | TH-SOURCE | 10 | 8 | X(8) | | | [TRANREC.cpy:29](../../../pangaea/copybooks/TRANREC.cpy#L29) |
-| 10 | TH-FILE-SEQ | 18 | 6 | 9(6) | | | [TRANREC.cpy:30](../../../pangaea/copybooks/TRANREC.cpy#L30) |
-| 10 | FILLER | 24 | 57 | X(57) | | | [TRANREC.cpy:31](../../../pangaea/copybooks/TRANREC.cpy#L31) |
-| 05 | TR-DETAIL-BODY | 2 | 79 | | | REDEFINES TR-BODY | [TRANREC.cpy:32](../../../pangaea/copybooks/TRANREC.cpy#L32) |
-| 10 | TD-TRAN-ID | 2 | 10 | 9(10) | | | [TRANREC.cpy:33](../../../pangaea/copybooks/TRANREC.cpy#L33) |
-| 10 | TD-ACCT-NO | 12 | 10 | 9(10) | | | [TRANREC.cpy:34](../../../pangaea/copybooks/TRANREC.cpy#L34) |
-| 10 | TD-TRAN-CODE | 22 | 2 | XX | | | [TRANREC.cpy:35](../../../pangaea/copybooks/TRANREC.cpy#L35) |
-| 88 | TD-DEPOSIT | | | | | VALUE 'DP' | [TRANREC.cpy:36](../../../pangaea/copybooks/TRANREC.cpy#L36) |
-| 88 | TD-WITHDRAWAL | | | | | VALUE 'WD' | [TRANREC.cpy:37](../../../pangaea/copybooks/TRANREC.cpy#L37) |
-| 88 | TD-FEE | | | | | VALUE 'FE' | [TRANREC.cpy:38](../../../pangaea/copybooks/TRANREC.cpy#L38) |
-| 88 | TD-TRANSFER | | | | | VALUE 'TR' | [TRANREC.cpy:39](../../../pangaea/copybooks/TRANREC.cpy#L39) |
-| 88 | TD-TRANSFER-CREDIT | | | | | VALUE 'TC' | [TRANREC.cpy:40](../../../pangaea/copybooks/TRANREC.cpy#L40) |
-| 88 | TD-TRANSFER-RETURN | | | | | VALUE 'RT' | [TRANREC.cpy:41](../../../pangaea/copybooks/TRANREC.cpy#L41) |
-| 88 | TD-KNOWN-CODE | | | | | VALUE 'DP', 'WD', 'FE', 'TR' | [TRANREC.cpy:42](../../../pangaea/copybooks/TRANREC.cpy#L42) |
-| 10 | TD-AMOUNT | 24 | 11 | 9(9)V99 | | | [TRANREC.cpy:43](../../../pangaea/copybooks/TRANREC.cpy#L43) |
-| 10 | TD-DESCRIPTION | 35 | 20 | X(20) | | | [TRANREC.cpy:44](../../../pangaea/copybooks/TRANREC.cpy#L44) |
-| 10 | TD-COUNTER-ACCT-NO | 55 | 10 | 9(10) | | | [TRANREC.cpy:45](../../../pangaea/copybooks/TRANREC.cpy#L45) |
-| 10 | FILLER | 65 | 16 | X(16) | | | [TRANREC.cpy:46](../../../pangaea/copybooks/TRANREC.cpy#L46) |
-| 05 | TR-TRAILER-BODY | 2 | 79 | | | REDEFINES TR-BODY | [TRANREC.cpy:47](../../../pangaea/copybooks/TRANREC.cpy#L47) |
-| 10 | TT-DETAIL-COUNT | 2 | 8 | 9(8) | | | [TRANREC.cpy:48](../../../pangaea/copybooks/TRANREC.cpy#L48) |
-| 10 | TT-AMOUNT-TOTAL | 10 | 15 | 9(13)V99 | | | [TRANREC.cpy:49](../../../pangaea/copybooks/TRANREC.cpy#L49) |
-| 10 | TT-ACCT-HASH | 25 | 15 | 9(15) | | | [TRANREC.cpy:50](../../../pangaea/copybooks/TRANREC.cpy#L50) |
-| 10 | FILLER | 40 | 41 | X(41) | | | [TRANREC.cpy:51](../../../pangaea/copybooks/TRANREC.cpy#L51) |
+| 01 | TRAN-RECORD | 1 | 80 | | | | [TRANREC.cpy:26](../../../pangaea/copybooks/TRANREC.cpy#L26) |
+| 05 | TR-REC-TYPE | 1 | 1 | X | | | [TRANREC.cpy:27](../../../pangaea/copybooks/TRANREC.cpy#L27) |
+| 88 | TR-HEADER | | | | | VALUE 'H' | [TRANREC.cpy:28](../../../pangaea/copybooks/TRANREC.cpy#L28) |
+| 88 | TR-DETAIL | | | | | VALUE 'D' | [TRANREC.cpy:29](../../../pangaea/copybooks/TRANREC.cpy#L29) |
+| 88 | TR-TRAILER | | | | | VALUE 'T' | [TRANREC.cpy:30](../../../pangaea/copybooks/TRANREC.cpy#L30) |
+| 05 | TR-BODY | 2 | 79 | X(79) | | | [TRANREC.cpy:31](../../../pangaea/copybooks/TRANREC.cpy#L31) |
+| 05 | TR-HEADER-BODY | 2 | 79 | | | REDEFINES TR-BODY | [TRANREC.cpy:32](../../../pangaea/copybooks/TRANREC.cpy#L32) |
+| 10 | TH-BUSINESS-DATE | 2 | 8 | 9(8) | | | [TRANREC.cpy:33](../../../pangaea/copybooks/TRANREC.cpy#L33) |
+| 10 | TH-SOURCE | 10 | 8 | X(8) | | | [TRANREC.cpy:34](../../../pangaea/copybooks/TRANREC.cpy#L34) |
+| 10 | TH-FILE-SEQ | 18 | 6 | 9(6) | | | [TRANREC.cpy:35](../../../pangaea/copybooks/TRANREC.cpy#L35) |
+| 10 | FILLER | 24 | 57 | X(57) | | | [TRANREC.cpy:36](../../../pangaea/copybooks/TRANREC.cpy#L36) |
+| 05 | TR-DETAIL-BODY | 2 | 79 | | | REDEFINES TR-BODY | [TRANREC.cpy:37](../../../pangaea/copybooks/TRANREC.cpy#L37) |
+| 10 | TD-TRAN-ID | 2 | 10 | 9(10) | | | [TRANREC.cpy:38](../../../pangaea/copybooks/TRANREC.cpy#L38) |
+| 10 | TD-ACCT-NO | 12 | 10 | 9(10) | | | [TRANREC.cpy:39](../../../pangaea/copybooks/TRANREC.cpy#L39) |
+| 10 | TD-TRAN-CODE | 22 | 2 | XX | | | [TRANREC.cpy:40](../../../pangaea/copybooks/TRANREC.cpy#L40) |
+| 88 | TD-DEPOSIT | | | | | VALUE 'DP' | [TRANREC.cpy:41](../../../pangaea/copybooks/TRANREC.cpy#L41) |
+| 88 | TD-WITHDRAWAL | | | | | VALUE 'WD' | [TRANREC.cpy:42](../../../pangaea/copybooks/TRANREC.cpy#L42) |
+| 88 | TD-FEE | | | | | VALUE 'FE' | [TRANREC.cpy:43](../../../pangaea/copybooks/TRANREC.cpy#L43) |
+| 88 | TD-TRANSFER | | | | | VALUE 'TR' | [TRANREC.cpy:44](../../../pangaea/copybooks/TRANREC.cpy#L44) |
+| 88 | TD-TRANSFER-CREDIT | | | | | VALUE 'TC' | [TRANREC.cpy:45](../../../pangaea/copybooks/TRANREC.cpy#L45) |
+| 88 | TD-TRANSFER-RETURN | | | | | VALUE 'RT' | [TRANREC.cpy:46](../../../pangaea/copybooks/TRANREC.cpy#L46) |
+| 88 | TD-INTEREST | | | | | VALUE 'IN' | [TRANREC.cpy:47](../../../pangaea/copybooks/TRANREC.cpy#L47) |
+| 88 | TD-OVERDRAFT-INTEREST | | | | | VALUE 'OD' | [TRANREC.cpy:48](../../../pangaea/copybooks/TRANREC.cpy#L48) |
+| 88 | TD-MAINTENANCE-FEE | | | | | VALUE 'MF' | [TRANREC.cpy:49](../../../pangaea/copybooks/TRANREC.cpy#L49) |
+| 88 | TD-KNOWN-CODE | | | | | VALUE 'DP', 'WD', 'FE', 'TR' | [TRANREC.cpy:50](../../../pangaea/copybooks/TRANREC.cpy#L50) |
+| 10 | TD-AMOUNT | 24 | 11 | 9(9)V99 | | | [TRANREC.cpy:51](../../../pangaea/copybooks/TRANREC.cpy#L51) |
+| 10 | TD-DESCRIPTION | 35 | 20 | X(20) | | | [TRANREC.cpy:52](../../../pangaea/copybooks/TRANREC.cpy#L52) |
+| 10 | TD-COUNTER-ACCT-NO | 55 | 10 | 9(10) | | | [TRANREC.cpy:53](../../../pangaea/copybooks/TRANREC.cpy#L53) |
+| 10 | FILLER | 65 | 16 | X(16) | | | [TRANREC.cpy:54](../../../pangaea/copybooks/TRANREC.cpy#L54) |
+| 05 | TR-TRAILER-BODY | 2 | 79 | | | REDEFINES TR-BODY | [TRANREC.cpy:55](../../../pangaea/copybooks/TRANREC.cpy#L55) |
+| 10 | TT-DETAIL-COUNT | 2 | 8 | 9(8) | | | [TRANREC.cpy:56](../../../pangaea/copybooks/TRANREC.cpy#L56) |
+| 10 | TT-AMOUNT-TOTAL | 10 | 15 | 9(13)V99 | | | [TRANREC.cpy:57](../../../pangaea/copybooks/TRANREC.cpy#L57) |
+| 10 | TT-ACCT-HASH | 25 | 15 | 9(15) | | | [TRANREC.cpy:58](../../../pangaea/copybooks/TRANREC.cpy#L58) |
+| 10 | FILLER | 40 | 41 | X(41) | | | [TRANREC.cpy:59](../../../pangaea/copybooks/TRANREC.cpy#L59) |

@@ -16,15 +16,17 @@ The Go packages around the COBOL are the bank's machine room, not the bank: [jcl
 [DAILY.jcl](jobs/DAILY.jcl) runs one business day. A step runs only if no earlier step ended with a return code (RC) above 4.
 
 1. **TXVALID** checks the day's transaction file: a header for the business date in the bank control record, details, and a trailer whose detail count, amount total and account number hash match the details. A file that fails is rejected as a whole (RC 12). Details with a bad account number, transaction code, amount or transfer counter account go to the rejects (RC 4).
-2. **TXSORT** sorts the valid details into account number order.
-3. **TXPOST** matches them against the account master and writes a new master, an audit trail record per posting, and the transactions it could not post: unknown or closed accounts, withdrawals and transfers from frozen accounts or beyond the overdraft limit. It checks that the new master's balances equal the old ones plus what it posted.
-4. **TXSORT** and **TXPOST** again, for the transfer credits: a transfer that posted debits its sender in step 3 and writes a credit for the receiving account, which posts here.
-5. **TXSORT** and **TXPOST** a third time, for the returns: a credit to an unknown or closed account goes back to its sender. This pass writes the day's new master.
-6. **BANKDATE** writes the bank control record for the next business day, Monday to Friday.
+2. **INTACCR** accrues interest for the calendar days since the last business day, on the balances that stood over them, at the rate table's rate for the account type and balance tier, or its debit rate below zero. Accruals are packed decimal to six decimals. When the days cross into a new month, the old month's interest becomes due, rounded to the cent.
+3. **MONCHG**, on the day a month closes, writes its interest credits, overdraft interest and the maintenance fee of open current accounts below 1,000.00 as transactions, in account order, and **TXPOST** posts them without a sort. On other days there are none, and TXPOST copies the master.
+4. **TXSORT** sorts the valid details into account number order.
+5. **TXPOST** matches them against the account master and writes a new master, an audit trail record per posting, and the transactions it could not post: unknown or closed accounts, withdrawals and transfers from frozen accounts or beyond the overdraft limit. It checks that the new master's balances equal the old ones plus what it posted.
+6. **TXSORT** and **TXPOST** again, for the transfer credits: a transfer that posted debits its sender in step 5 and writes a credit for the receiving account, which posts here.
+7. **TXSORT** and **TXPOST** a third time, for the returns: a credit to an unknown or closed account goes back to its sender. This pass writes the day's new master.
+8. **BANKDATE** writes the bank control record for the next business day, Monday to Friday.
 
-The day's inputs are the current generations, (0), of the bank control record, the account master and the transaction file; it writes the next generations, (+1), of the control record and the master, and the day's audit trail and rejects. Everything in between is temporary.
+The day's inputs are the current generations, (0), of the bank control record, the account master, the accruals and the transaction file, and the rate table; it writes the next generations, (+1), of the control record, the master and the accruals, and the day's audit trail and rejects. Everything in between is temporary. So a month's interest and fees are posted on the first business day of the next month, as the batch's first postings.
 
-`make pangaea-daily` runs it on the fixture in `testdata/daily` and shows the reports. `make test` runs it on every fixture and compares with the golden files; `make pangaea-golden` rewrites them after a deliberate change.
+`make pangaea-daily` runs it on the fixture in `testdata/daily` and shows the reports; the fixture in `testdata/month-end` closes October. `make test` runs it on every fixture and compares with the golden files; `make pangaea-golden` rewrites them after a deliberate change.
 
 ## The running bank
 

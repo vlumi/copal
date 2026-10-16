@@ -18,6 +18,8 @@ type Layouts struct {
 	Master  *record.Layout
 	Tran    *record.Layout
 	Control *record.Layout
+	Rate    *record.Layout
+	Accrual *record.Layout
 }
 
 // LoadLayouts reads the layouts from Pangaea's copybooks.
@@ -31,6 +33,8 @@ func LoadLayouts(copybookDir string) (*Layouts, error) {
 		{&l.Master, "ACCTMAST", "ACCT-MASTER-RECORD"},
 		{&l.Tran, "TRANREC", "TRAN-RECORD"},
 		{&l.Control, "BANKCTL", "BANK-CONTROL-RECORD"},
+		{&l.Rate, "RATEREC", "RATE-RECORD"},
+		{&l.Accrual, "ACCRREC", "ACCRUAL-RECORD"},
 	} {
 		layout, err := record.FromCopybook(filepath.Join(copybookDir, c.copybook+".cpy"), []string{copybookDir}, c.name)
 		if err != nil {

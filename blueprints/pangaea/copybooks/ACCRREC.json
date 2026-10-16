@@ -1,0 +1,102 @@
+{
+  "copybook": "ACCRREC",
+  "source": "pangaea/copybooks/ACCRREC.cpy",
+  "description": [
+    "ACCRREC: INTEREST ACCRUAL RECORD, 40 BYTES",
+    "ONE PER ACCOUNT, IN ACCOUNT NUMBER ORDER LIKE THE MASTER.",
+    "INTEREST IS ACCRUED FOR EVERY CALENDAR DAY BEFORE THE THROUGH",
+    "DATE, TO SIX DECIMALS, AND IS NEGATIVE FOR AN OVERDRAWN",
+    "BALANCE. WHEN A MONTH CLOSES, ITS INTEREST BECOMES DUE,",
+    "ROUNDED TO THE CENT; THE FRACTION STAYS ACCRUED.",
+    "THE DUE MONTH IS ZERO ON THE DAYS NO MONTH CLOSES.",
+    "",
+    "MODIFICATION HISTORY",
+    "DATE       BY  CHANGE",
+    "2001-09-03 TL  CR-0298 ORIGINAL VERSION."
+  ],
+  "records": [
+    {
+      "level": 1,
+      "name": "ACCRUAL-RECORD",
+      "start": 1,
+      "length": 40,
+      "category": "group",
+      "source": "pangaea/copybooks/ACCRREC.cpy:14",
+      "fields": [
+        {
+          "level": 5,
+          "name": "AC-ACCT-NO",
+          "start": 1,
+          "length": 10,
+          "picture": "9(10)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 10,
+          "source": "pangaea/copybooks/ACCRREC.cpy:15"
+        },
+        {
+          "level": 5,
+          "name": "AC-THROUGH-DATE",
+          "start": 11,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/ACCRREC.cpy:16"
+        },
+        {
+          "level": 5,
+          "name": "AC-ACCRUED",
+          "start": 19,
+          "length": 7,
+          "picture": "S9(7)V9(6)",
+          "usage": "COMP-3",
+          "category": "numeric",
+          "digits": 13,
+          "scale": 6,
+          "signed": true,
+          "source": "pangaea/copybooks/ACCRREC.cpy:17"
+        },
+        {
+          "level": 5,
+          "name": "AC-DUE",
+          "start": 26,
+          "length": 5,
+          "picture": "S9(7)V99",
+          "usage": "COMP-3",
+          "category": "numeric",
+          "digits": 9,
+          "scale": 2,
+          "signed": true,
+          "source": "pangaea/copybooks/ACCRREC.cpy:18"
+        },
+        {
+          "level": 5,
+          "name": "AC-DUE-MONTH",
+          "start": 31,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 6,
+          "source": "pangaea/copybooks/ACCRREC.cpy:19"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 37,
+          "length": 4,
+          "picture": "X(4)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/ACCRREC.cpy:20"
+        }
+      ]
+    }
+  ],
+  "usedBy": [
+    "INTACCR",
+    "MONCHG"
+  ]
+}

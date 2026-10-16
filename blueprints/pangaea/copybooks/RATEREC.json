@@ -1,0 +1,101 @@
+{
+  "copybook": "RATEREC",
+  "source": "pangaea/copybooks/RATEREC.cpy",
+  "description": [
+    "RATEREC: INTEREST RATE TABLE RECORD, 20 BYTES",
+    "ONE RECORD PER RATE: CREDIT RATES IN TIERS BY BALANCE, ONE",
+    "DEBIT RATE FOR BALANCES BELOW ZERO, PER ACCOUNT TYPE. A",
+    "BALANCE EARNS THE RATE OF THE HIGHEST TIER IT REACHES, ON THE",
+    "WHOLE BALANCE. RATES ARE ANNUAL FRACTIONS: 0.015 IS 1.5%.",
+    "",
+    "MODIFICATION HISTORY",
+    "DATE       BY  CHANGE",
+    "2001-09-03 TL  CR-0298 ORIGINAL VERSION."
+  ],
+  "records": [
+    {
+      "level": 1,
+      "name": "RATE-RECORD",
+      "start": 1,
+      "length": 20,
+      "category": "group",
+      "source": "pangaea/copybooks/RATEREC.cpy:12",
+      "fields": [
+        {
+          "level": 5,
+          "name": "RT-ACCT-TYPE",
+          "start": 1,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/RATEREC.cpy:13"
+        },
+        {
+          "level": 5,
+          "name": "RT-KIND",
+          "start": 2,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "conditions": [
+            {
+              "name": "RT-CREDIT",
+              "values": [
+                "'C'"
+              ],
+              "source": "pangaea/copybooks/RATEREC.cpy:15"
+            },
+            {
+              "name": "RT-DEBIT",
+              "values": [
+                "'D'"
+              ],
+              "source": "pangaea/copybooks/RATEREC.cpy:16"
+            }
+          ],
+          "source": "pangaea/copybooks/RATEREC.cpy:14"
+        },
+        {
+          "level": 5,
+          "name": "RT-FLOOR",
+          "start": 3,
+          "length": 7,
+          "picture": "S9(11)V99",
+          "usage": "COMP-3",
+          "category": "numeric",
+          "digits": 13,
+          "scale": 2,
+          "signed": true,
+          "source": "pangaea/copybooks/RATEREC.cpy:17"
+        },
+        {
+          "level": 5,
+          "name": "RT-ANNUAL-RATE",
+          "start": 10,
+          "length": 4,
+          "picture": "9V9(6)",
+          "usage": "COMP-3",
+          "category": "numeric",
+          "digits": 7,
+          "scale": 6,
+          "source": "pangaea/copybooks/RATEREC.cpy:18"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 14,
+          "length": 7,
+          "picture": "X(7)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/RATEREC.cpy:19"
+        }
+      ]
+    }
+  ],
+  "usedBy": [
+    "INTACCR"
+  ]
+}
