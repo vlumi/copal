@@ -10,3 +10,10 @@
 //REJECTS  DD DSN=TRAN.VALID.REJECTS,DISP=NEW,
 //            DCB=(RECFM=FB,LRECL=100)
 //VALRPT   DD SYSOUT=*
+//*----------------------------------------------------------------*
+//* SORT THE VALID TRANSACTIONS INTO ACCOUNT ORDER                 *
+//*----------------------------------------------------------------*
+//SORT     EXEC PGM=TXSORT,COND=(4,LT)
+//TRANIN   DD DSN=TRAN.VALID,DISP=OLD
+//TRANOUT  DD DSN=TRAN.SORTED,DISP=NEW,
+//            DCB=(RECFM=FB,LRECL=80)
