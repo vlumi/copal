@@ -13,5 +13,18 @@ Copal reads legacy COBOL batch systems and produces design blueprints from them:
 - Comments: minimal, English, en-US spelling.
 - Markdown paragraphs are one line each; the editor wraps. `.markdownlint.jsonc` encodes this.
 - Diagrams are generated as SVG or PNG, not Mermaid: the editor in use does not render Mermaid.
-- Routine operations are make targets with a `##` description, so plain `make` lists them. Run `make ci` before every push to `main` and only push when it passes; a push that changes only Markdown needs none.
-- Commit and push to `main` directly when something works; frequent small commits, no pull requests.
+- Routine operations are make targets with a `##` description, so plain `make` lists them; scripts do the work, the Makefile names it.
+
+## Commits and pull requests
+
+- Incremental, honest history: each commit is one coherent step, by concern, that builds and passes on its own. No huge blobs, no fix-up churn ("fix typo in previous commit"); squash locally before pushing.
+- Commit messages describe the step, not the process.
+- Every concrete chunk of work is a branch and a pull request against `main`, sized by concern, rebased on `main` before pushing. Rewriting and force-pushing an open PR branch to keep its history clean is fine; `main` is never rewritten and never committed to directly.
+- Run `make ci` before opening or updating a pull request and only push when it passes; a change to Markdown alone needs none.
+- Merge commits only, so the by-concern commits stay visible on `main`; branches are deleted on merge. While the repository is private, GitHub's free plan allows neither auto-merge nor branch protection, so merge with `gh pr merge --merge` once the local `make ci` has passed. When the repository goes public, enable auto-merge, protect `main` with the hosted CI job as a required check, and merge with `gh pr merge --auto --merge`, which then waits for it.
+
+## Code
+
+- This is a showcase: the code should read well to a stranger. Idiomatic for its language, small functions with names that say what they do, clear package boundaries, no dead code, no speculative abstractions.
+- Build iteratively: working first, then dedicated cleanup commits. Do not gold-plate mid-feature; record debt worth a cleanup pass in docs/brief.md.
+- Every analysis step is covered by tests, and by the golden blueprints for Pangaea. Linters and formatters run in `make ci` and stay clean.

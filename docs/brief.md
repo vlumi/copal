@@ -45,6 +45,11 @@ The hard part of moving a COBOL core system to anything newer is rarely the tran
 - Graph rendering: Graphviz (`dot`) or hand-laid SVG.
 - How far Pangaea goes before Copal starts: suggested order is a minimal daily batch first (two or three programs, one copybook), Copal's layout and structure extraction on that, then grow both together.
 
+## First tasks besides the code
+
+- A GitHub Actions workflow that runs the same checks as `make ci` (GnuCOBOL from apt on Ubuntu), so the history shows green builds and the check exists for branch protection once the repository is public.
+- Keep the README's status line current as parts start working.
+
 ## Toolchain
 
 GnuCOBOL 3.2 from Homebrew (`cobc -x` for executables, `-free` is not used: Pangaea is fixed-format on purpose). Go latest stable or the JDK chosen above. `make ci` builds Pangaea, runs its batches against the golden outputs, runs Copal's tests and regenerates the blueprints to compare against the golden ones.
