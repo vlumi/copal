@@ -24,7 +24,7 @@ The Go packages around the COBOL are the bank's machine room, not the bank: [jcl
 ## Conventions
 
 - Datasets are files of fixed-length records without delimiters, like a mainframe's `RECFM=FB`. The catalog in each dataset directory lists their record lengths. Fixtures and golden files hold the same records as text, one per line.
-- Signed numbers are zoned decimal with the sign overpunched on the last digit, EBCDIC style: `{ABCDEFGHI` for +0 to +9, `}JKLMNOPQR` for -0 to -9. So 1,520.00 is `000000015200{` and -150.00 is `000000001500}`.
+- Signed numbers are zoned decimal with an overpunched sign, EBCDIC style: the last digit is replaced by one character that carries both the digit and the sign, so the field is as long as its digits. `{ABCDEFGHI` stand for +0 to +9, `}JKLMNOPQR` for -0 to -9. In a 13-digit balance, `PIC S9(11)V99`, 55,000.01 is `0000005500001` with its last digit 1 written as `A`: `000000550000A`. -150.05 is `000000001500N`.
 - A program knows its files by DD name (`ASSIGN TO TRANIN`); the runner binds each DD to its dataset through the `DD_TRANIN` environment variable.
 - Programs never read the clock. The business date comes from the bank control record.
 - Return codes: 0 fine, 4 warnings such as rejected records, 12 input rejected, 16 the program could not do its job.
