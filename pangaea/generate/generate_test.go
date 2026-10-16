@@ -130,3 +130,40 @@ func TestRatesAndAccruals(t *testing.T) {
 		t.Errorf("accrued %d, %v", accrued, err)
 	}
 }
+
+func TestMaintenanceIsInAccountOrder(t *testing.T) {
+	g := generator(t)
+	date := NewDate(2026, 9, 1)
+	master, err := g.Master(500, date)
+	if err != nil {
+		t.Fatal(err)
+	}
+	accounts, err := g.ReadAccounts(master)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var opened int
+	for day := range 30 {
+		requests, err := g.Maintenance(date.AddDays(day), accounts)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var previous int64
+		for _, r := range requests {
+			no, err := g.Layouts.Maint.Number(r, "MR-ACCT-NO")
+			if err != nil {
+				t.Fatal(err)
+			}
+			if no < previous {
+				t.Fatalf("%s: account %d after %d", date.AddDays(day), no, previous)
+			}
+			previous = no
+			if kind, _ := g.Layouts.Maint.Text(r, "MR-REQUEST-TYPE"); kind == "O" && no > accounts[len(accounts)-1].No {
+				opened++
+			}
+		}
+	}
+	if opened == 0 {
+		t.Error("no accounts opened in a month")
+	}
+}

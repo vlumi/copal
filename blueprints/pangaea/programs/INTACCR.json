@@ -14,14 +14,17 @@
     "WHEN THE DAYS CROSS INTO A NEW MONTH, THE DAYS OF THE OLD",
     "MONTH ARE ACCRUED FIRST AND ITS INTEREST BECOMES DUE, ROUNDED",
     "TO THE CENT, TO BE CREDITED OR CHARGED. THE ACCRUALS ARE READ",
-    "IN STEP WITH THE MASTER, ONE FOR EACH ACCOUNT.",
+    "IN STEP WITH THE MASTER, ONE FOR EACH ACCOUNT. AN ACCOUNT",
+    "OPENED SINCE THE LAST RUN HAS NONE YET AND STARTS ACCRUING",
+    "TODAY.",
     "",
     "RETURN CODES: 0 ACCRUED,",
-    "              16 FILES OUT OF STEP, NO RATE, OR I/O.",
+    "              16 AN ACCRUAL FOR NO ACCOUNT, NO RATE, OR I/O.",
     "",
     "MODIFICATION HISTORY",
     "DATE       BY  CHANGE",
-    "2001-09-03 TL  CR-0298 ORIGINAL VERSION."
+    "2001-09-03 TL  CR-0298 ORIGINAL VERSION.",
+    "2002-02-11 TL  CR-0311 ACCOUNTS OPENED SINCE THE LAST RUN."
   ],
   "identification": [
     {
@@ -47,7 +50,7 @@
       "records": [
         "BANK-CONTROL-RECORD"
       ],
-      "source": "pangaea/programs/INTACCR.cbl:32"
+      "source": "pangaea/programs/INTACCR.cbl:35"
     },
     {
       "name": "RATE-FILE",
@@ -58,7 +61,7 @@
       "records": [
         "RATE-RECORD"
       ],
-      "source": "pangaea/programs/INTACCR.cbl:35"
+      "source": "pangaea/programs/INTACCR.cbl:38"
     },
     {
       "name": "ACCT-IN",
@@ -69,7 +72,7 @@
       "records": [
         "ACCT-MASTER-RECORD"
       ],
-      "source": "pangaea/programs/INTACCR.cbl:38"
+      "source": "pangaea/programs/INTACCR.cbl:41"
     },
     {
       "name": "ACCR-IN",
@@ -78,9 +81,9 @@
       "organization": "SEQUENTIAL",
       "status": "WS-ACCR-IN-STATUS",
       "records": [
-        "ACCRUAL-RECORD"
+        "ACCR-IN-RECORD"
       ],
-      "source": "pangaea/programs/INTACCR.cbl:41"
+      "source": "pangaea/programs/INTACCR.cbl:44"
     },
     {
       "name": "ACCR-OUT",
@@ -91,7 +94,7 @@
       "records": [
         "ACCR-OUT-RECORD"
       ],
-      "source": "pangaea/programs/INTACCR.cbl:44"
+      "source": "pangaea/programs/INTACCR.cbl:47"
     },
     {
       "name": "REPORT-OUT",
@@ -102,7 +105,7 @@
       "records": [
         "REPORT-LINE"
       ],
-      "source": "pangaea/programs/INTACCR.cbl:47"
+      "source": "pangaea/programs/INTACCR.cbl:50"
     }
   ],
   "records": [
@@ -391,6 +394,200 @@
     {
       "section": "file",
       "file": "ACCR-IN",
+      "level": 1,
+      "name": "ACCR-IN-RECORD",
+      "start": 1,
+      "length": 40,
+      "category": "group",
+      "source": "pangaea/programs/INTACCR.cbl:63",
+      "fields": [
+        {
+          "level": 5,
+          "name": "AI-ACCT-NO",
+          "start": 1,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/INTACCR.cbl:64"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 11,
+          "length": 30,
+          "picture": "X(30)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/INTACCR.cbl:65"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "ACCR-OUT",
+      "level": 1,
+      "name": "ACCR-OUT-RECORD",
+      "start": 1,
+      "length": 40,
+      "picture": "X(40)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "source": "pangaea/programs/INTACCR.cbl:67"
+    },
+    {
+      "section": "file",
+      "file": "REPORT-OUT",
+      "level": 1,
+      "name": "REPORT-LINE",
+      "start": 1,
+      "length": 80,
+      "picture": "X(80)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "source": "pangaea/programs/INTACCR.cbl:69"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-FILE-STATUSES",
+      "start": 1,
+      "length": 12,
+      "category": "group",
+      "source": "pangaea/programs/INTACCR.cbl:72",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-CONTROL-STATUS",
+          "start": 1,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/INTACCR.cbl:73"
+        },
+        {
+          "level": 5,
+          "name": "WS-RATE-STATUS",
+          "start": 3,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/INTACCR.cbl:74"
+        },
+        {
+          "level": 5,
+          "name": "WS-ACCT-IN-STATUS",
+          "start": 5,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/INTACCR.cbl:75"
+        },
+        {
+          "level": 5,
+          "name": "WS-ACCR-IN-STATUS",
+          "start": 7,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/INTACCR.cbl:76"
+        },
+        {
+          "level": 5,
+          "name": "WS-ACCR-OUT-STATUS",
+          "start": 9,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/INTACCR.cbl:77"
+        },
+        {
+          "level": 5,
+          "name": "WS-REPORT-STATUS",
+          "start": 11,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/programs/INTACCR.cbl:78"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-BUSINESS-DATE",
+      "start": 1,
+      "length": 8,
+      "picture": "9(8)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "digits": 8,
+      "source": "pangaea/programs/INTACCR.cbl:80"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ABORT-MESSAGE",
+      "start": 1,
+      "length": 40,
+      "picture": "X(40)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "source": "pangaea/programs/INTACCR.cbl:81"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-END-SWITCHES",
+      "start": 1,
+      "length": 1,
+      "category": "group",
+      "source": "pangaea/programs/INTACCR.cbl:82",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-MASTER-END-SW",
+          "start": 1,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "values": [
+            "'N'"
+          ],
+          "conditions": [
+            {
+              "name": "MASTER-AT-END",
+              "values": [
+                "'Y'"
+              ],
+              "source": "pangaea/programs/INTACCR.cbl:84"
+            }
+          ],
+          "source": "pangaea/programs/INTACCR.cbl:83"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ACCRUAL-KEY",
+      "start": 1,
+      "length": 10,
+      "picture": "X(10)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "description": "THE ACCOUNT NUMBER OF THE NEXT ACCRUAL: HIGH-VALUES AT THE END.",
+      "source": "pangaea/programs/INTACCR.cbl:86"
+    },
+    {
+      "section": "working-storage",
       "copybook": "ACCRREC",
       "level": 1,
       "name": "ACCRUAL-RECORD",
@@ -472,179 +669,6 @@
       ]
     },
     {
-      "section": "file",
-      "file": "ACCR-OUT",
-      "level": 1,
-      "name": "ACCR-OUT-RECORD",
-      "start": 1,
-      "length": 40,
-      "picture": "X(40)",
-      "usage": "DISPLAY",
-      "category": "alphanumeric",
-      "source": "pangaea/programs/INTACCR.cbl:62"
-    },
-    {
-      "section": "file",
-      "file": "REPORT-OUT",
-      "level": 1,
-      "name": "REPORT-LINE",
-      "start": 1,
-      "length": 80,
-      "picture": "X(80)",
-      "usage": "DISPLAY",
-      "category": "alphanumeric",
-      "source": "pangaea/programs/INTACCR.cbl:64"
-    },
-    {
-      "section": "working-storage",
-      "level": 1,
-      "name": "WS-FILE-STATUSES",
-      "start": 1,
-      "length": 12,
-      "category": "group",
-      "source": "pangaea/programs/INTACCR.cbl:67",
-      "fields": [
-        {
-          "level": 5,
-          "name": "WS-CONTROL-STATUS",
-          "start": 1,
-          "length": 2,
-          "picture": "XX",
-          "usage": "DISPLAY",
-          "category": "alphanumeric",
-          "source": "pangaea/programs/INTACCR.cbl:68"
-        },
-        {
-          "level": 5,
-          "name": "WS-RATE-STATUS",
-          "start": 3,
-          "length": 2,
-          "picture": "XX",
-          "usage": "DISPLAY",
-          "category": "alphanumeric",
-          "source": "pangaea/programs/INTACCR.cbl:69"
-        },
-        {
-          "level": 5,
-          "name": "WS-ACCT-IN-STATUS",
-          "start": 5,
-          "length": 2,
-          "picture": "XX",
-          "usage": "DISPLAY",
-          "category": "alphanumeric",
-          "source": "pangaea/programs/INTACCR.cbl:70"
-        },
-        {
-          "level": 5,
-          "name": "WS-ACCR-IN-STATUS",
-          "start": 7,
-          "length": 2,
-          "picture": "XX",
-          "usage": "DISPLAY",
-          "category": "alphanumeric",
-          "source": "pangaea/programs/INTACCR.cbl:71"
-        },
-        {
-          "level": 5,
-          "name": "WS-ACCR-OUT-STATUS",
-          "start": 9,
-          "length": 2,
-          "picture": "XX",
-          "usage": "DISPLAY",
-          "category": "alphanumeric",
-          "source": "pangaea/programs/INTACCR.cbl:72"
-        },
-        {
-          "level": 5,
-          "name": "WS-REPORT-STATUS",
-          "start": 11,
-          "length": 2,
-          "picture": "XX",
-          "usage": "DISPLAY",
-          "category": "alphanumeric",
-          "source": "pangaea/programs/INTACCR.cbl:73"
-        }
-      ]
-    },
-    {
-      "section": "working-storage",
-      "level": 1,
-      "name": "WS-BUSINESS-DATE",
-      "start": 1,
-      "length": 8,
-      "picture": "9(8)",
-      "usage": "DISPLAY",
-      "category": "numeric",
-      "digits": 8,
-      "source": "pangaea/programs/INTACCR.cbl:75"
-    },
-    {
-      "section": "working-storage",
-      "level": 1,
-      "name": "WS-ABORT-MESSAGE",
-      "start": 1,
-      "length": 40,
-      "picture": "X(40)",
-      "usage": "DISPLAY",
-      "category": "alphanumeric",
-      "source": "pangaea/programs/INTACCR.cbl:76"
-    },
-    {
-      "section": "working-storage",
-      "level": 1,
-      "name": "WS-END-SWITCHES",
-      "start": 1,
-      "length": 2,
-      "category": "group",
-      "source": "pangaea/programs/INTACCR.cbl:77",
-      "fields": [
-        {
-          "level": 5,
-          "name": "WS-MASTER-END-SW",
-          "start": 1,
-          "length": 1,
-          "picture": "X",
-          "usage": "DISPLAY",
-          "category": "alphanumeric",
-          "values": [
-            "'N'"
-          ],
-          "conditions": [
-            {
-              "name": "MASTER-AT-END",
-              "values": [
-                "'Y'"
-              ],
-              "source": "pangaea/programs/INTACCR.cbl:79"
-            }
-          ],
-          "source": "pangaea/programs/INTACCR.cbl:78"
-        },
-        {
-          "level": 5,
-          "name": "WS-ACCRUAL-END-SW",
-          "start": 2,
-          "length": 1,
-          "picture": "X",
-          "usage": "DISPLAY",
-          "category": "alphanumeric",
-          "values": [
-            "'N'"
-          ],
-          "conditions": [
-            {
-              "name": "ACCRUALS-AT-END",
-              "values": [
-                "'Y'"
-              ],
-              "source": "pangaea/programs/INTACCR.cbl:81"
-            }
-          ],
-          "source": "pangaea/programs/INTACCR.cbl:80"
-        }
-      ]
-    },
-    {
       "section": "working-storage",
       "level": 1,
       "name": "WS-RATE-COUNT",
@@ -658,7 +682,7 @@
         "0"
       ],
       "description": "THE RATE TABLE, AS MANY RATES AS THE RATE FILE HOLDS.",
-      "source": "pangaea/programs/INTACCR.cbl:84"
+      "source": "pangaea/programs/INTACCR.cbl:92"
     },
     {
       "section": "working-storage",
@@ -667,7 +691,7 @@
       "start": 1,
       "length": 260,
       "category": "group",
-      "source": "pangaea/programs/INTACCR.cbl:85",
+      "source": "pangaea/programs/INTACCR.cbl:93",
       "fields": [
         {
           "level": 5,
@@ -678,7 +702,7 @@
           "occurs": 20,
           "occursMin": 1,
           "dependingOn": "WS-RATE-COUNT",
-          "source": "pangaea/programs/INTACCR.cbl:86",
+          "source": "pangaea/programs/INTACCR.cbl:94",
           "fields": [
             {
               "level": 10,
@@ -688,7 +712,7 @@
               "picture": "X",
               "usage": "DISPLAY",
               "category": "alphanumeric",
-              "source": "pangaea/programs/INTACCR.cbl:88"
+              "source": "pangaea/programs/INTACCR.cbl:96"
             },
             {
               "level": 10,
@@ -704,17 +728,17 @@
                   "values": [
                     "'C'"
                   ],
-                  "source": "pangaea/programs/INTACCR.cbl:90"
+                  "source": "pangaea/programs/INTACCR.cbl:98"
                 },
                 {
                   "name": "WS-RT-DEBIT",
                   "values": [
                     "'D'"
                   ],
-                  "source": "pangaea/programs/INTACCR.cbl:91"
+                  "source": "pangaea/programs/INTACCR.cbl:99"
                 }
               ],
-              "source": "pangaea/programs/INTACCR.cbl:89"
+              "source": "pangaea/programs/INTACCR.cbl:97"
             },
             {
               "level": 10,
@@ -727,7 +751,7 @@
               "digits": 13,
               "scale": 2,
               "signed": true,
-              "source": "pangaea/programs/INTACCR.cbl:92"
+              "source": "pangaea/programs/INTACCR.cbl:100"
             },
             {
               "level": 10,
@@ -739,7 +763,7 @@
               "category": "numeric",
               "digits": 7,
               "scale": 6,
-              "source": "pangaea/programs/INTACCR.cbl:93"
+              "source": "pangaea/programs/INTACCR.cbl:101"
             }
           ]
         }
@@ -755,7 +779,7 @@
       "usage": "DISPLAY",
       "category": "numeric",
       "digits": 2,
-      "source": "pangaea/programs/INTACCR.cbl:94"
+      "source": "pangaea/programs/INTACCR.cbl:102"
     },
     {
       "section": "working-storage",
@@ -769,7 +793,7 @@
       "digits": 7,
       "scale": 6,
       "description": "THE RATE FOR THE ACCOUNT IN HAND, AND THE TIER IT CAME FROM.",
-      "source": "pangaea/programs/INTACCR.cbl:97"
+      "source": "pangaea/programs/INTACCR.cbl:105"
     },
     {
       "section": "working-storage",
@@ -786,10 +810,10 @@
           "values": [
             "'Y'"
           ],
-          "source": "pangaea/programs/INTACCR.cbl:99"
+          "source": "pangaea/programs/INTACCR.cbl:107"
         }
       ],
-      "source": "pangaea/programs/INTACCR.cbl:98"
+      "source": "pangaea/programs/INTACCR.cbl:106"
     },
     {
       "section": "working-storage",
@@ -803,7 +827,7 @@
       "digits": 13,
       "scale": 2,
       "signed": true,
-      "source": "pangaea/programs/INTACCR.cbl:100"
+      "source": "pangaea/programs/INTACCR.cbl:108"
     },
     {
       "section": "working-storage",
@@ -816,7 +840,7 @@
       "category": "numeric",
       "digits": 7,
       "description": "DAYS COUNT FROM 1601-01-01, AS FUNCTION INTEGER-OF-DATE GIVES.",
-      "source": "pangaea/programs/INTACCR.cbl:103"
+      "source": "pangaea/programs/INTACCR.cbl:111"
     },
     {
       "section": "working-storage",
@@ -828,7 +852,7 @@
       "usage": "DISPLAY",
       "category": "numeric",
       "digits": 7,
-      "source": "pangaea/programs/INTACCR.cbl:104"
+      "source": "pangaea/programs/INTACCR.cbl:112"
     },
     {
       "section": "working-storage",
@@ -840,7 +864,7 @@
       "usage": "DISPLAY",
       "category": "numeric",
       "digits": 7,
-      "source": "pangaea/programs/INTACCR.cbl:105"
+      "source": "pangaea/programs/INTACCR.cbl:113"
     },
     {
       "section": "working-storage",
@@ -852,7 +876,7 @@
       "usage": "DISPLAY",
       "category": "numeric",
       "digits": 3,
-      "source": "pangaea/programs/INTACCR.cbl:106"
+      "source": "pangaea/programs/INTACCR.cbl:114"
     },
     {
       "section": "working-storage",
@@ -861,7 +885,7 @@
       "start": 1,
       "length": 8,
       "category": "group",
-      "source": "pangaea/programs/INTACCR.cbl:107",
+      "source": "pangaea/programs/INTACCR.cbl:115",
       "fields": [
         {
           "level": 5,
@@ -872,7 +896,7 @@
           "usage": "DISPLAY",
           "category": "numeric",
           "digits": 4,
-          "source": "pangaea/programs/INTACCR.cbl:108"
+          "source": "pangaea/programs/INTACCR.cbl:116"
         },
         {
           "level": 5,
@@ -883,7 +907,7 @@
           "usage": "DISPLAY",
           "category": "numeric",
           "digits": 2,
-          "source": "pangaea/programs/INTACCR.cbl:109"
+          "source": "pangaea/programs/INTACCR.cbl:117"
         },
         {
           "level": 5,
@@ -894,7 +918,7 @@
           "usage": "DISPLAY",
           "category": "numeric",
           "digits": 2,
-          "source": "pangaea/programs/INTACCR.cbl:110"
+          "source": "pangaea/programs/INTACCR.cbl:118"
         }
       ]
     },
@@ -906,7 +930,7 @@
       "length": 8,
       "category": "group",
       "description": "THE FIRST DAY OF THE MONTH AFTER THE LAST ACCRUAL.",
-      "source": "pangaea/programs/INTACCR.cbl:112",
+      "source": "pangaea/programs/INTACCR.cbl:120",
       "fields": [
         {
           "level": 5,
@@ -917,7 +941,7 @@
           "usage": "DISPLAY",
           "category": "numeric",
           "digits": 4,
-          "source": "pangaea/programs/INTACCR.cbl:113"
+          "source": "pangaea/programs/INTACCR.cbl:121"
         },
         {
           "level": 5,
@@ -928,7 +952,7 @@
           "usage": "DISPLAY",
           "category": "numeric",
           "digits": 2,
-          "source": "pangaea/programs/INTACCR.cbl:114"
+          "source": "pangaea/programs/INTACCR.cbl:122"
         },
         {
           "level": 5,
@@ -939,7 +963,7 @@
           "usage": "DISPLAY",
           "category": "numeric",
           "digits": 2,
-          "source": "pangaea/programs/INTACCR.cbl:115"
+          "source": "pangaea/programs/INTACCR.cbl:123"
         }
       ]
     },
@@ -954,7 +978,7 @@
       "category": "numeric",
       "digits": 8,
       "redefines": "WS-MONTH-START",
-      "source": "pangaea/programs/INTACCR.cbl:116"
+      "source": "pangaea/programs/INTACCR.cbl:124"
     },
     {
       "section": "working-storage",
@@ -969,7 +993,7 @@
       "scale": 8,
       "signed": true,
       "description": "THE BALANCE TIMES THE RATE TIMES THE DAYS, EXACT, BEFORE IT IS DIVIDED BY THE DAYS OF A YEAR AND ROUNDED.",
-      "source": "pangaea/programs/INTACCR.cbl:121"
+      "source": "pangaea/programs/INTACCR.cbl:129"
     },
     {
       "section": "working-storage",
@@ -983,7 +1007,7 @@
       "digits": 13,
       "scale": 6,
       "signed": true,
-      "source": "pangaea/programs/INTACCR.cbl:122"
+      "source": "pangaea/programs/INTACCR.cbl:130"
     },
     {
       "section": "working-storage",
@@ -992,7 +1016,7 @@
       "start": 1,
       "length": 6,
       "category": "group",
-      "source": "pangaea/programs/INTACCR.cbl:123",
+      "source": "pangaea/programs/INTACCR.cbl:131",
       "fields": [
         {
           "level": 5,
@@ -1003,7 +1027,7 @@
           "usage": "DISPLAY",
           "category": "numeric",
           "digits": 4,
-          "source": "pangaea/programs/INTACCR.cbl:124"
+          "source": "pangaea/programs/INTACCR.cbl:132"
         },
         {
           "level": 5,
@@ -1014,7 +1038,7 @@
           "usage": "DISPLAY",
           "category": "numeric",
           "digits": 2,
-          "source": "pangaea/programs/INTACCR.cbl:125"
+          "source": "pangaea/programs/INTACCR.cbl:133"
         }
       ]
     },
@@ -1023,9 +1047,9 @@
       "level": 1,
       "name": "WS-TOTALS",
       "start": 1,
-      "length": 44,
+      "length": 52,
       "category": "group",
-      "source": "pangaea/programs/INTACCR.cbl:127",
+      "source": "pangaea/programs/INTACCR.cbl:135",
       "fields": [
         {
           "level": 5,
@@ -1039,27 +1063,25 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/INTACCR.cbl:128"
+          "source": "pangaea/programs/INTACCR.cbl:136"
+        },
+        {
+          "level": 5,
+          "name": "WS-STARTED-COUNT",
+          "start": 9,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/INTACCR.cbl:137"
         },
         {
           "level": 5,
           "name": "WS-CREDIT-ACCRUED",
-          "start": 9,
-          "length": 8,
-          "picture": "S9(9)V9(6)",
-          "usage": "COMP-3",
-          "category": "numeric",
-          "digits": 15,
-          "scale": 6,
-          "signed": true,
-          "values": [
-            "0"
-          ],
-          "source": "pangaea/programs/INTACCR.cbl:129"
-        },
-        {
-          "level": 5,
-          "name": "WS-DEBIT-ACCRUED",
           "start": 17,
           "length": 8,
           "picture": "S9(9)V9(6)",
@@ -1071,12 +1093,28 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/INTACCR.cbl:130"
+          "source": "pangaea/programs/INTACCR.cbl:138"
+        },
+        {
+          "level": 5,
+          "name": "WS-DEBIT-ACCRUED",
+          "start": 25,
+          "length": 8,
+          "picture": "S9(9)V9(6)",
+          "usage": "COMP-3",
+          "category": "numeric",
+          "digits": 15,
+          "scale": 6,
+          "signed": true,
+          "values": [
+            "0"
+          ],
+          "source": "pangaea/programs/INTACCR.cbl:139"
         },
         {
           "level": 5,
           "name": "WS-CREDIT-DUE",
-          "start": 25,
+          "start": 33,
           "length": 7,
           "picture": "S9(11)V99",
           "usage": "COMP-3",
@@ -1087,12 +1125,12 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/INTACCR.cbl:131"
+          "source": "pangaea/programs/INTACCR.cbl:140"
         },
         {
           "level": 5,
           "name": "WS-DEBIT-DUE",
-          "start": 32,
+          "start": 40,
           "length": 7,
           "picture": "S9(11)V99",
           "usage": "COMP-3",
@@ -1103,12 +1141,12 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/INTACCR.cbl:132"
+          "source": "pangaea/programs/INTACCR.cbl:141"
         },
         {
           "level": 5,
           "name": "WS-CLOSED-MONTH",
-          "start": 39,
+          "start": 47,
           "length": 6,
           "picture": "9(6)",
           "usage": "DISPLAY",
@@ -1117,7 +1155,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/INTACCR.cbl:133"
+          "source": "pangaea/programs/INTACCR.cbl:142"
         }
       ]
     },
@@ -1128,7 +1166,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
-      "source": "pangaea/programs/INTACCR.cbl:135",
+      "source": "pangaea/programs/INTACCR.cbl:144",
       "fields": [
         {
           "level": 5,
@@ -1138,7 +1176,7 @@
           "picture": "X(30)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/programs/INTACCR.cbl:136"
+          "source": "pangaea/programs/INTACCR.cbl:145"
         },
         {
           "level": 5,
@@ -1148,7 +1186,7 @@
           "picture": "ZZ,ZZZ,ZZ9",
           "usage": "DISPLAY",
           "category": "numeric-edited",
-          "source": "pangaea/programs/INTACCR.cbl:137"
+          "source": "pangaea/programs/INTACCR.cbl:146"
         },
         {
           "level": 5,
@@ -1161,7 +1199,7 @@
           "values": [
             "SPACES"
           ],
-          "source": "pangaea/programs/INTACCR.cbl:138"
+          "source": "pangaea/programs/INTACCR.cbl:147"
         }
       ]
     },
@@ -1172,7 +1210,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
-      "source": "pangaea/programs/INTACCR.cbl:139",
+      "source": "pangaea/programs/INTACCR.cbl:148",
       "fields": [
         {
           "level": 5,
@@ -1182,7 +1220,7 @@
           "picture": "X(30)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "source": "pangaea/programs/INTACCR.cbl:140"
+          "source": "pangaea/programs/INTACCR.cbl:149"
         },
         {
           "level": 5,
@@ -1192,7 +1230,7 @@
           "picture": "ZZZ,ZZZ,ZZ9.999999-",
           "usage": "DISPLAY",
           "category": "numeric-edited",
-          "source": "pangaea/programs/INTACCR.cbl:141"
+          "source": "pangaea/programs/INTACCR.cbl:150"
         },
         {
           "level": 5,
@@ -1205,7 +1243,7 @@
           "values": [
             "SPACES"
           ],
-          "source": "pangaea/programs/INTACCR.cbl:142"
+          "source": "pangaea/programs/INTACCR.cbl:151"
         }
       ]
     }
@@ -1214,42 +1252,50 @@
     {
       "name": "0000-MAIN",
       "description": "ACCRUE EVERY ACCOUNT, THEN REPORT.",
-      "source": "pangaea/programs/INTACCR.cbl:146",
+      "source": "pangaea/programs/INTACCR.cbl:155",
       "performs": [
         {
           "target": "1000-INITIALIZE",
-          "source": "pangaea/programs/INTACCR.cbl:147"
+          "source": "pangaea/programs/INTACCR.cbl:156"
         },
         {
           "target": "2000-ACCRUE-ACCOUNT",
-          "source": "pangaea/programs/INTACCR.cbl:148"
+          "source": "pangaea/programs/INTACCR.cbl:157"
+        },
+        {
+          "target": "9900-ABORT",
+          "source": "pangaea/programs/INTACCR.cbl:161"
         },
         {
           "target": "8000-WRITE-REPORT",
-          "source": "pangaea/programs/INTACCR.cbl:150"
+          "source": "pangaea/programs/INTACCR.cbl:163"
         },
         {
           "target": "9000-CLOSE-FILES",
-          "source": "pangaea/programs/INTACCR.cbl:151"
+          "source": "pangaea/programs/INTACCR.cbl:164"
         }
       ]
     },
     {
       "name": "1000-INITIALIZE",
       "description": "OPEN THE FILES, LOAD THE RATES AND READ THE FIRST ACCOUNT.",
-      "source": "pangaea/programs/INTACCR.cbl:156",
+      "source": "pangaea/programs/INTACCR.cbl:169",
       "performs": [
         {
           "target": "9900-ABORT",
-          "source": "pangaea/programs/INTACCR.cbl:167"
+          "source": "pangaea/programs/INTACCR.cbl:180"
         },
         {
           "target": "1100-LOAD-RATES",
-          "source": "pangaea/programs/INTACCR.cbl:171"
+          "source": "pangaea/programs/INTACCR.cbl:184"
         },
         {
-          "target": "1200-READ-ACCOUNT",
-          "source": "pangaea/programs/INTACCR.cbl:172"
+          "target": "1200-READ-MASTER",
+          "source": "pangaea/programs/INTACCR.cbl:185"
+        },
+        {
+          "target": "1300-READ-ACCRUAL",
+          "source": "pangaea/programs/INTACCR.cbl:186"
         }
       ],
       "performedBy": [
@@ -1259,15 +1305,15 @@
     {
       "name": "1100-LOAD-RATES",
       "description": "READ THE RATE FILE INTO THE RATE TABLE.",
-      "source": "pangaea/programs/INTACCR.cbl:175",
+      "source": "pangaea/programs/INTACCR.cbl:189",
       "performs": [
         {
           "target": "9900-ABORT",
-          "source": "pangaea/programs/INTACCR.cbl:180"
+          "source": "pangaea/programs/INTACCR.cbl:194"
         },
         {
           "target": "9900-ABORT",
-          "source": "pangaea/programs/INTACCR.cbl:191"
+          "source": "pangaea/programs/INTACCR.cbl:205"
         }
       ],
       "performedBy": [
@@ -1275,48 +1321,73 @@
       ]
     },
     {
-      "name": "1200-READ-ACCOUNT",
-      "description": "READ THE NEXT ACCOUNT AND ITS ACCRUAL, WHICH MUST MATCH.",
-      "source": "pangaea/programs/INTACCR.cbl:195",
-      "performs": [
-        {
-          "target": "9900-ABORT",
-          "source": "pangaea/programs/INTACCR.cbl:211"
-        }
-      ],
+      "name": "1200-READ-MASTER",
+      "description": "READ THE NEXT ACCOUNT.",
+      "source": "pangaea/programs/INTACCR.cbl:209",
       "performedBy": [
         "1000-INITIALIZE",
         "2000-ACCRUE-ACCOUNT"
       ]
     },
     {
-      "name": "2000-ACCRUE-ACCOUNT",
-      "description": "ACCRUE ONE ACCOUNT UP TO THE BUSINESS DATE. IF A MONTH CLOSED ON THE WAY, ACCRUE ITS DAYS FIRST AND MAKE ITS INTEREST DUE.",
-      "source": "pangaea/programs/INTACCR.cbl:217",
+      "name": "1300-READ-ACCRUAL",
+      "description": "READ THE NEXT ACCRUAL.",
+      "source": "pangaea/programs/INTACCR.cbl:216",
+      "performedBy": [
+        "1000-INITIALIZE",
+        "1400-TAKE-ACCRUAL"
+      ]
+    },
+    {
+      "name": "1400-TAKE-ACCRUAL",
+      "description": "TAKE THE ACCOUNT'S ACCRUAL, OR START ONE FOR AN ACCOUNT OPENED SINCE THE LAST RUN: NOTHING ACCRUED, THROUGH TODAY.",
+      "source": "pangaea/programs/INTACCR.cbl:226",
       "performs": [
         {
-          "target": "2100-FIND-RATE",
-          "source": "pangaea/programs/INTACCR.cbl:218"
-        },
-        {
-          "target": "2200-FIND-MONTH-START",
-          "source": "pangaea/programs/INTACCR.cbl:222"
-        },
-        {
-          "target": "2300-ACCRUE-DAYS",
-          "source": "pangaea/programs/INTACCR.cbl:225"
-        },
-        {
-          "target": "2400-CLOSE-MONTH",
-          "source": "pangaea/programs/INTACCR.cbl:226"
-        },
-        {
-          "target": "2300-ACCRUE-DAYS",
+          "target": "1300-READ-ACCRUAL",
           "source": "pangaea/programs/INTACCR.cbl:230"
         },
         {
-          "target": "1200-READ-ACCOUNT",
-          "source": "pangaea/programs/INTACCR.cbl:234"
+          "target": "9900-ABORT",
+          "source": "pangaea/programs/INTACCR.cbl:239"
+        }
+      ],
+      "performedBy": [
+        "2000-ACCRUE-ACCOUNT"
+      ]
+    },
+    {
+      "name": "2000-ACCRUE-ACCOUNT",
+      "description": "ACCRUE ONE ACCOUNT UP TO THE BUSINESS DATE. IF A MONTH CLOSED ON THE WAY, ACCRUE ITS DAYS FIRST AND MAKE ITS INTEREST DUE.",
+      "source": "pangaea/programs/INTACCR.cbl:244",
+      "performs": [
+        {
+          "target": "1400-TAKE-ACCRUAL",
+          "source": "pangaea/programs/INTACCR.cbl:245"
+        },
+        {
+          "target": "2100-FIND-RATE",
+          "source": "pangaea/programs/INTACCR.cbl:246"
+        },
+        {
+          "target": "2200-FIND-MONTH-START",
+          "source": "pangaea/programs/INTACCR.cbl:250"
+        },
+        {
+          "target": "2300-ACCRUE-DAYS",
+          "source": "pangaea/programs/INTACCR.cbl:253"
+        },
+        {
+          "target": "2400-CLOSE-MONTH",
+          "source": "pangaea/programs/INTACCR.cbl:254"
+        },
+        {
+          "target": "2300-ACCRUE-DAYS",
+          "source": "pangaea/programs/INTACCR.cbl:258"
+        },
+        {
+          "target": "1200-READ-MASTER",
+          "source": "pangaea/programs/INTACCR.cbl:262"
         }
       ],
       "performedBy": [
@@ -1326,19 +1397,19 @@
     {
       "name": "2100-FIND-RATE",
       "description": "FIND THE ACCOUNT'S RATE: BELOW ZERO THE DEBIT RATE OF ITS TYPE, OTHERWISE THE CREDIT RATE OF THE HIGHEST TIER IT REACHES.",
-      "source": "pangaea/programs/INTACCR.cbl:238",
+      "source": "pangaea/programs/INTACCR.cbl:266",
       "performs": [
         {
           "target": "2110-TAKE-RATE",
-          "source": "pangaea/programs/INTACCR.cbl:245"
+          "source": "pangaea/programs/INTACCR.cbl:273"
         },
         {
           "target": "2110-TAKE-RATE",
-          "source": "pangaea/programs/INTACCR.cbl:252"
+          "source": "pangaea/programs/INTACCR.cbl:280"
         },
         {
           "target": "9900-ABORT",
-          "source": "pangaea/programs/INTACCR.cbl:259"
+          "source": "pangaea/programs/INTACCR.cbl:287"
         }
       ],
       "performedBy": [
@@ -1348,7 +1419,7 @@
     {
       "name": "2110-TAKE-RATE",
       "description": "TAKE THE RATE IN HAND AS THE ACCOUNT'S, SO FAR.",
-      "source": "pangaea/programs/INTACCR.cbl:263",
+      "source": "pangaea/programs/INTACCR.cbl:291",
       "performedBy": [
         "2100-FIND-RATE"
       ]
@@ -1356,7 +1427,7 @@
     {
       "name": "2200-FIND-MONTH-START",
       "description": "THE FIRST DAY OF THE MONTH AFTER THE THROUGH DATE.",
-      "source": "pangaea/programs/INTACCR.cbl:269",
+      "source": "pangaea/programs/INTACCR.cbl:297",
       "performedBy": [
         "2000-ACCRUE-ACCOUNT"
       ]
@@ -1364,7 +1435,7 @@
     {
       "name": "2300-ACCRUE-DAYS",
       "description": "ACCRUE THE OPENING BALANCE AT THE ACCOUNT'S RATE FOR THE DAYS.",
-      "source": "pangaea/programs/INTACCR.cbl:283",
+      "source": "pangaea/programs/INTACCR.cbl:311",
       "performedBy": [
         "2000-ACCRUE-ACCOUNT"
       ]
@@ -1372,7 +1443,7 @@
     {
       "name": "2400-CLOSE-MONTH",
       "description": "MAKE THE CLOSED MONTH'S INTEREST DUE, TO THE CENT, AND KEEP THE FRACTION ACCRUED.",
-      "source": "pangaea/programs/INTACCR.cbl:298",
+      "source": "pangaea/programs/INTACCR.cbl:326",
       "performedBy": [
         "2000-ACCRUE-ACCOUNT"
       ]
@@ -1380,7 +1451,7 @@
     {
       "name": "8000-WRITE-REPORT",
       "description": "WRITE THE ACCRUAL REPORT.",
-      "source": "pangaea/programs/INTACCR.cbl:312",
+      "source": "pangaea/programs/INTACCR.cbl:340",
       "performedBy": [
         "0000-MAIN"
       ]
@@ -1388,7 +1459,7 @@
     {
       "name": "9000-CLOSE-FILES",
       "description": "CLOSE ALL FILES.",
-      "source": "pangaea/programs/INTACCR.cbl:351",
+      "source": "pangaea/programs/INTACCR.cbl:382",
       "performedBy": [
         "0000-MAIN",
         "9900-ABORT"
@@ -1397,17 +1468,18 @@
     {
       "name": "9900-ABORT",
       "description": "STOP THE RUN WITH RETURN CODE 16, SAYING WHY.",
-      "source": "pangaea/programs/INTACCR.cbl:356",
+      "source": "pangaea/programs/INTACCR.cbl:387",
       "performs": [
         {
           "target": "9000-CLOSE-FILES",
-          "source": "pangaea/programs/INTACCR.cbl:358"
+          "source": "pangaea/programs/INTACCR.cbl:389"
         }
       ],
       "performedBy": [
+        "0000-MAIN",
         "1000-INITIALIZE",
         "1100-LOAD-RATES",
-        "1200-READ-ACCOUNT",
+        "1400-TAKE-ACCRUAL",
         "2100-FIND-RATE"
       ]
     }

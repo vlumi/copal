@@ -1,0 +1,153 @@
+{
+  "copybook": "MAINTREC",
+  "source": "pangaea/copybooks/MAINTREC.cpy",
+  "description": [
+    "MAINTREC: ACCOUNT MAINTENANCE REQUEST, 80 BYTES",
+    "THE BRANCHES' REQUESTS TO OPEN AN ACCOUNT, CLOSE ONE, FREEZE",
+    "OR UNFREEZE ONE, OR CHANGE ITS OVERDRAFT LIMIT, IN ACCOUNT",
+    "NUMBER AND REQUEST ID ORDER. AN OPENING CARRIES THE NEW",
+    "ACCOUNT'S CUSTOMER, NAME AND TYPE; A LIMIT CHANGE THE NEW",
+    "LIMIT.",
+    "",
+    "MODIFICATION HISTORY",
+    "DATE       BY  CHANGE",
+    "1988-05-09 JA  CR-0031 ORIGINAL VERSION."
+  ],
+  "records": [
+    {
+      "level": 1,
+      "name": "MAINT-REQUEST",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "source": "pangaea/copybooks/MAINTREC.cpy:13",
+      "fields": [
+        {
+          "level": 5,
+          "name": "MR-REQUEST-ID",
+          "start": 1,
+          "length": 10,
+          "picture": "9(10)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 10,
+          "source": "pangaea/copybooks/MAINTREC.cpy:14"
+        },
+        {
+          "level": 5,
+          "name": "MR-REQUEST-TYPE",
+          "start": 11,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "conditions": [
+            {
+              "name": "MR-OPEN",
+              "values": [
+                "'O'"
+              ],
+              "source": "pangaea/copybooks/MAINTREC.cpy:16"
+            },
+            {
+              "name": "MR-CLOSE",
+              "values": [
+                "'C'"
+              ],
+              "source": "pangaea/copybooks/MAINTREC.cpy:17"
+            },
+            {
+              "name": "MR-FREEZE",
+              "values": [
+                "'F'"
+              ],
+              "source": "pangaea/copybooks/MAINTREC.cpy:18"
+            },
+            {
+              "name": "MR-UNFREEZE",
+              "values": [
+                "'U'"
+              ],
+              "source": "pangaea/copybooks/MAINTREC.cpy:19"
+            },
+            {
+              "name": "MR-LIMIT",
+              "values": [
+                "'L'"
+              ],
+              "source": "pangaea/copybooks/MAINTREC.cpy:20"
+            }
+          ],
+          "source": "pangaea/copybooks/MAINTREC.cpy:15"
+        },
+        {
+          "level": 5,
+          "name": "MR-ACCT-NO",
+          "start": 12,
+          "length": 10,
+          "picture": "9(10)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 10,
+          "source": "pangaea/copybooks/MAINTREC.cpy:21"
+        },
+        {
+          "level": 5,
+          "name": "MR-CUST-NO",
+          "start": 22,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 8,
+          "source": "pangaea/copybooks/MAINTREC.cpy:22"
+        },
+        {
+          "level": 5,
+          "name": "MR-SHORT-NAME",
+          "start": 30,
+          "length": 20,
+          "picture": "X(20)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/MAINTREC.cpy:23"
+        },
+        {
+          "level": 5,
+          "name": "MR-ACCT-TYPE",
+          "start": 50,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/MAINTREC.cpy:24"
+        },
+        {
+          "level": 5,
+          "name": "MR-OVERDRAFT-LIMIT",
+          "start": 51,
+          "length": 9,
+          "picture": "9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "digits": 9,
+          "scale": 2,
+          "source": "pangaea/copybooks/MAINTREC.cpy:25"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 60,
+          "length": 21,
+          "picture": "X(21)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "source": "pangaea/copybooks/MAINTREC.cpy:26"
+        }
+      ]
+    }
+  ],
+  "usedBy": [
+    "ACCTMNT"
+  ]
+}

@@ -3,12 +3,13 @@
 //* DAILY BATCH: VALIDATE THE DAY'S TRANSACTIONS, ACCRUE INTEREST  *
 //* AND POST WHAT A CLOSED MONTH OWES, THEN SORT AND POST THE      *
 //* DAY'S TRANSACTIONS, THE TRANSFER CREDITS AND RETURNS THEY LEAD *
-//* TO, AND MOVE TO THE NEXT BUSINESS DAY.                         *
+//* TO, APPLY THE DAY'S ACCOUNT MAINTENANCE, AND MOVE TO THE NEXT  *
+//* BUSINESS DAY.                                                  *
 //*                                                                *
 //* READS   BANK.CONTROL(0)  ACCT.MASTER(0)  TRAN.DAILY(0)         *
-//*         ACCT.ACCRUAL(0)  BANK.RATES                            *
+//*         ACCT.ACCRUAL(0)  ACCT.MAINT(0)    BANK.RATES           *
 //* WRITES  BANK.CONTROL(+1) ACCT.MASTER(+1) ACCT.ACCRUAL(+1)      *
-//*         TRAN.AUDIT(+1)   TRAN.REJECTS(+1)                      *
+//*         TRAN.AUDIT(+1)   TRAN.REJECTS(+1) MAINT.REJECTS(+1)    *
 //*                                                                *
 //* A STEP RUNS ONLY IF NO EARLIER STEP ENDED WITH RC ABOVE 4, SO  *
 //* A RUN THAT FAILS LEAVES THE BUSINESS DATE WHERE IT WAS.        *
@@ -92,8 +93,7 @@
 //            DCB=(RECFM=FB,LRECL=80)
 //POSTRPT  DD SYSOUT=*
 //*----------------------------------------------------------------*
-//* SORT AND POST THE RETURNS OF THE CREDITS THAT COULD NOT POST,  *
-//* WRITING THE NEW MASTER                                         *
+//* SORT AND POST THE RETURNS OF THE CREDITS THAT COULD NOT POST   *
 //*----------------------------------------------------------------*
 //SORTRT   EXEC PGM=TXSORT,COND=(4,LT)
 //TRANIN   DD DSN=&&RETURNS,DISP=OLD
@@ -103,12 +103,24 @@
 //BANKCTL  DD DSN=BANK.CONTROL(0),DISP=SHR
 //ACCTIN   DD DSN=&&CREDITED,DISP=OLD
 //TRANIN   DD DSN=&&RETSORT,DISP=OLD
-//ACCTOUT  DD DSN=ACCT.MASTER(+1),DISP=NEW,
+//ACCTOUT  DD DSN=&&RETURNED,DISP=NEW,
 //            DCB=(RECFM=FB,LRECL=100)
 //AUDIT    DD DSN=TRAN.AUDIT(+1),DISP=MOD
 //REJECTS  DD DSN=TRAN.REJECTS(+1),DISP=MOD
 //LEGS     DD DUMMY
 //POSTRPT  DD SYSOUT=*
+//*----------------------------------------------------------------*
+//* APPLY THE DAY'S ACCOUNT MAINTENANCE, WRITING THE NEW MASTER    *
+//*----------------------------------------------------------------*
+//MAINT    EXEC PGM=ACCTMNT,COND=(4,LT)
+//BANKCTL  DD DSN=BANK.CONTROL(0),DISP=SHR
+//ACCTIN   DD DSN=&&RETURNED,DISP=OLD
+//MAINTIN  DD DSN=ACCT.MAINT(0),DISP=SHR
+//ACCTOUT  DD DSN=ACCT.MASTER(+1),DISP=NEW,
+//            DCB=(RECFM=FB,LRECL=100)
+//REJECTS  DD DSN=MAINT.REJECTS(+1),DISP=NEW,
+//            DCB=(RECFM=FB,LRECL=100)
+//MNTRPT   DD SYSOUT=*
 //*----------------------------------------------------------------*
 //* MOVE TO THE NEXT BUSINESS DAY                                  *
 //*----------------------------------------------------------------*

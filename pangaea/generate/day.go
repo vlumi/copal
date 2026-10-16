@@ -48,6 +48,7 @@ func (g *Generator) Day(date Date, fileSeq int64, accounts []Account) ([][]byte,
 // customerBusiness adds what each customer does today with their accounts.
 func (d *day) customerBusiness(g *Generator) {
 	current, savings := map[int64]Account{}, map[int64]Account{}
+	seen := map[int64]bool{}
 	var customers, landlords []int64
 	for _, a := range d.accounts {
 		accounts := current
@@ -60,7 +61,8 @@ func (d *day) customerBusiness(g *Generator) {
 				landlords = append(landlords, a.No)
 			}
 		}
-		if len(customers) == 0 || customers[len(customers)-1] != a.Customer {
+		if !seen[a.Customer] {
+			seen[a.Customer] = true
 			customers = append(customers, a.Customer)
 		}
 	}
