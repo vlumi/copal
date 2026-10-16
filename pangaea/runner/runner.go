@@ -44,14 +44,7 @@ type Result struct {
 }
 
 func (r Result) String() string {
-	outcome := fmt.Sprintf("RC=%04d", r.RC)
-	switch {
-	case r.Bypassed:
-		outcome = "BYPASSED"
-	case r.Abended:
-		outcome = "ABENDED"
-	}
-	return fmt.Sprintf("%-8s %-8s %s", r.Step, r.Program, outcome)
+	return fmt.Sprintf("%-8s %-8s %s", r.Step, r.Program, r.Outcome())
 }
 
 // Run executes the job's steps in order. A step is bypassed when its COND
