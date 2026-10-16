@@ -46,7 +46,7 @@ func New(b bank.Bank, system *blueprint.System, blueprints string) (*Server, err
 		return nil, err
 	}
 	s := &Server{bank: b, layouts: layouts, system: system, blueprints: blueprints, pages: map[string]*template.Template{}}
-	funcs := template.FuncMap{"money": money, "count": count, "date": date}
+	funcs := template.FuncMap{"money": money, "count": count, "date": date, "legend": func() string { return blueprint.NetworkLegend }}
 	for _, page := range []string{"overview", "nobank", "accounts", "account", "day", "compare", "error"} {
 		t, err := template.New("").Funcs(funcs).ParseFS(files, "templates/base.html", "templates/"+page+".html")
 		if err != nil {

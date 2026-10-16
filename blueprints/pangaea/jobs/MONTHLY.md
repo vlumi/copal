@@ -25,7 +25,7 @@ Job [MONTHLY.jcl](../../../pangaea/jobs/MONTHLY.jcl): 2 steps.
 
 ![The steps of MONTHLY and the datasets they read and write](MONTHLY.svg)
 
-Boxes are steps, with the program each runs; rounded boxes are datasets, as the job names them. Arrows run from the datasets a step reads to the step, and from the step to the datasets it writes; dotted ones from a step to the next where no dataset leads from one to the other.
+White boxes are steps, with the program each runs. Shaded, rounded ones are datasets, as the job names them: NAME(0) is a generation data group's current generation, NAME(+1) the next, which the job writes. A dashed outline, and a name starting with &&, mark a temporary dataset, which lives only while the job runs. A dataset is drawn next to each step that uses it, unless one step writes what another reads. Arrows run from the datasets a step reads to the step, and from the step to the datasets it writes; dotted ones from a step to the next where no dataset leads from one to the other.
 
 ## Steps
 
