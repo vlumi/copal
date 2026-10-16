@@ -36,7 +36,7 @@ func outputs(p Program, flow dataflow.Flow) []Output {
 		}
 		record := e.From
 		for _, from := range p.Lineage {
-			if (from.Verb == "WRITE" || from.Verb == "RELEASE") && from.To == e.From && !from.FromLiteral {
+			if (from.Verb == "WRITE" || from.Verb == "REWRITE" || from.Verb == "RELEASE") && from.To == e.From && !from.FromLiteral {
 				record = from.From
 			}
 		}

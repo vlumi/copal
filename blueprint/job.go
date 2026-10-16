@@ -277,7 +277,7 @@ func fileCopybook(p Program, f File) string {
 	}
 	for _, e := range p.Lineage {
 		switch {
-		case (e.Verb == "WRITE" || e.Verb == "RELEASE") && slices.Contains(f.Records, e.To) && copybooks[e.From] != "":
+		case (e.Verb == "WRITE" || e.Verb == "REWRITE" || e.Verb == "RELEASE") && slices.Contains(f.Records, e.To) && copybooks[e.From] != "":
 			return copybooks[e.From]
 		case (e.Verb == "READ" || e.Verb == "RETURN") && slices.Contains(f.Records, e.From) && copybooks[e.To] != "":
 			return copybooks[e.To]

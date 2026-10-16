@@ -33,7 +33,7 @@ type Paragraph struct {
 
 // Edge is one statement moving a value from one item into another. From
 // is a file for the records a READ or RETURN fills, and To a file for the
-// record a WRITE or RELEASE sends to it. From is a literal, as written,
+// record a WRITE, REWRITE or RELEASE sends to it. From is a literal, as written,
 // for a value the statement gives itself, such as MOVE 'TXPOST' TO
 // RJ-PROGRAM or SET TD-INTEREST TO TRUE, written as "condition
 // TD-INTEREST".
@@ -154,7 +154,7 @@ func (n *names) uses(s cobol.Statement) (reads, writes []string) {
 // lineageVerbs move values from what they read into what they write.
 var lineageVerbs = map[string]bool{
 	"MOVE": true, "ADD": true, "SUBTRACT": true, "MULTIPLY": true, "DIVIDE": true, "COMPUTE": true,
-	"STRING": true, "SET": true, "WRITE": true, "RELEASE": true, "READ": true, "RETURN": true,
+	"STRING": true, "SET": true, "WRITE": true, "REWRITE": true, "RELEASE": true, "READ": true, "RETURN": true,
 }
 
 // edges lists the values a statement moves. A data item operand moves its
@@ -206,7 +206,7 @@ func (n *names) edges(paragraph string, s cobol.Statement) []Edge {
 				}
 			}
 		}
-	case "WRITE", "RELEASE":
+	case "WRITE", "REWRITE", "RELEASE":
 		for _, record := range s.Writes {
 			if file, ok := n.files[record.Name]; ok {
 				add(Edge{From: record.Name, To: file, ToFile: true})
