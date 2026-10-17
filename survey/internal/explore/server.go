@@ -364,5 +364,5 @@ func sourceText(source string) string {
 
 func svg(g diagram.Graph) (template.HTML, error) {
 	b, err := g.SVG()
-	return template.HTML(b), err //nolint:gosec // drawn by Copal, its labels escaped
+	return template.HTML(b), err //nolint:gosec // drawn by the survey, its labels escaped
 }

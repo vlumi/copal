@@ -6,7 +6,7 @@ import (
 )
 
 // TestJobFindings analyzes a job that does not fit its program in every
-// way Copal looks for.
+// way the survey looks for.
 func TestJobFindings(t *testing.T) {
 	program := Program{Name: "COPY", Files: []File{
 		{Name: "IN-FILE", Kind: "FD", Assign: "IN", Opened: []string{"INPUT"}},

@@ -1,6 +1,6 @@
 // Package console is a window onto the running bank: web pages that show
 // its accounts, each business day's files and what the days changed, read
-// through the record layouts Copal computes from the copybooks. It never
+// through the record layouts computed from the copybooks. It never
 // writes the bank's files; its reset and run buttons call the bank's own
 // operations, the same ones the make targets run.
 package console

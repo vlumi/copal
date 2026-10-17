@@ -41,7 +41,7 @@ type Server struct {
 	busy sync.RWMutex
 }
 
-// New makes a console for the bank. The system is Copal's analysis of the
+// New makes a console for the bank. The system is the survey of the
 // bank's programs and jobs, whose blueprints are in the blueprints
 // directory.
 func New(b bank.Bank, system *blueprint.System, blueprints string) (*Server, error) {

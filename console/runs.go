@@ -97,7 +97,7 @@ func (l *Ledger) jobRun(dir string) (JobRun, error) {
 		ProgramLink:  func(name string) string { return "/blueprints/programs/" + name + ".md" },
 		CopybookLink: func(name string) string { return "/blueprints/copybooks/" + name + ".md" },
 	}).SVG()
-	run.Network = template.HTML(svg) //nolint:gosec // drawn by Copal, its labels escaped
+	run.Network = template.HTML(svg) //nolint:gosec // drawn by the survey, its labels escaped
 	return run, err
 }
 

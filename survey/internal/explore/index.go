@@ -1,4 +1,4 @@
-// Package explore serves Copal's analysis of a system as a web app, for
+// Package explore serves the survey of a system as a web app, for
 // moving through it rather than reading one blueprint at a time: from a
 // job's network to a step, its program, a paragraph, a record and a
 // field, where every name is a link and a search finds any of them. The

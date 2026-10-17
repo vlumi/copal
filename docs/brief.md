@@ -6,7 +6,7 @@ Written 2026-10-16 for the session that starts this project. Nothing is built ye
 
 The hard part of moving a COBOL core system to anything newer is rarely the translation. It is knowing what the system does: record layouts nobody has documented, programs that hand each other fixed-format files in a fixed order with header and trailer records mixed in, business rules spread across conditions, and a job network that only the operations team can draw. Without that understanding, nobody can prove a rewrite produces the same results, so the rewrite keeps the old shape and its old bottlenecks. Copal is a hobby-scale exploration of that problem: derive the understanding from the source, deterministically.
 
-## Two parts
+## The parts
 
 **Pangaea**, the specimen. A small COBOL batch bank, written for this project (AI-written is fine), that compiles and runs with GnuCOBOL 3.2 (`brew install gnucobol`). Roughly ten programs and a few thousand lines:
 
@@ -15,19 +15,23 @@ The hard part of moving a COBOL core system to anything newer is rarely the tran
 - Daily batch: validate transactions, sort, post to the master, write rejects and an audit trail, produce the next day's master.
 - Online channel: card purchases and ATM withdrawals authorized during the day by COBOL programs behind a thin HTTP server, writing holds that the night's batch posts. Closed during the batch window.
 - Month-end: interest accrual and posting, fees, statements, a general-ledger summary.
-- A job network file in a small JCL-like format (steps, programs, input and output datasets, conditions on return codes), and a runner that executes it. GnuCOBOL has no JCL; the network file is also what Copal reads to draw the job graph.
+- A job network file in a small JCL-like format (steps, programs, input and output datasets, conditions on return codes), and a runner that executes it. GnuCOBOL has no JCL; the network file is also what the survey reads to draw the job graph.
 - A data generator for test input, and golden outputs checked in.
 - Deliberate nasties, because they are what makes real systems hard to analyze: `REDEFINES`, `OCCURS` (and `OCCURS DEPENDING ON` once), level-88 conditions, `PERFORM THRU`, a few `GO TO`s, `COMP-3` packed decimal, `COPY ... REPLACING`, header, detail and trailer records in one file distinguished by a record-type field, and at least one job that only works because an earlier job sorted its input.
 
-**Copal**, the analyzer. Deterministic, no models at this stage.
+**Survey**, the analyzer. Deterministic, no models at this stage.
 
-1. **Parse.** Fixed-format source (sequence area, indicator column, area A and B), `COPY` expansion with `REPLACING`, and the subset of COBOL that Pangaea uses. Copal has its own parser for this subset; see Decisions for why.
+1. **Parse.** Fixed-format source (sequence area, indicator column, area A and B), `COPY` expansion with `REPLACING`, and the subset of COBOL that Pangaea uses. Survey has its own parser for this subset; see Decisions for why.
 2. **Record layouts.** From the copybooks and data divisions: every field with level, name, offset, length, `PIC`, usage and redefinitions. This is the map of the fixed-format interchange between jobs.
 3. **Program structure.** Paragraphs and sections, the `PERFORM` graph (including `THRU` ranges and fall-through), and the control flow within paragraphs.
 4. **Data flow.** For each paragraph, the fields it reads and writes; field-to-field lineage through `MOVE`, `COMPUTE` and arithmetic verbs.
 5. **Business rules.** Conditions on fields, including level-88 names, extracted as decision tables per program.
 6. **File I/O and the job network.** Which program opens which file in which mode, joined with the job network file into one graph of steps and datasets: the batch network, drawn.
 7. **Blueprints.** Markdown documents per program and per job network, with diagrams generated as SVG (Graphviz or hand-laid). Checked in as golden files for Pangaea.
+
+**Bedrock**, the language layer both stand on: reading COBOL source and JCL, laying out records from copybooks, reading and writing records by field. Neither of that is analysis, and the bank's machine room needs it as much as the survey does.
+
+**The console**, built for the modernization: a web window that runs the bank and shows each run as the survey draws it. The one part that knows both the bank and the survey.
 
 ## Later, not now
 
@@ -44,9 +48,10 @@ The hard part of moving a COBOL core system to anything newer is rarely the tran
 
 - Storage is files, the way mainframe batch stored it. Everything passed between batch steps is a sequential file of fixed-length records. The online channel reads indexed files (`ORGANIZATION INDEXED`, GnuCOBOL's counterpart of a VSAM KSDS, `RECORG=KS` in Pangaea's JCL). The account master stays a sequential generation data group, and each night's batch loads the new master into an indexed online account file, `ACCT.ONLINE(+1)`, which the authorizations read by account number and on which they keep the day's holds total; that way the batch keeps its generations and its back-out of a failed day, and the online day starts from a file of its own. Cards and card holds are indexed files too, keyed by card number and by account and hold number. GnuCOBOL's indexed handler here is Berkeley DB, and a KSDS is one Berkeley DB file. Its bytes carry a file ID of their own, so indexed datasets are not golden files and have no text form: the report of the program that loads one stands for it. No embedded SQL: it needs a precompiler and a database server on top of GnuCOBOL, and it moves the layouts out of copybooks into a schema, which is a different analysis problem. No IMS or IDMS: neither has a usable open implementation for GnuCOBOL.
 - The online server calls COBOL through a long-running dispatcher, AUTHSRV, a COBOL program that reads fixed-format requests on its standard input, CALLs the authorization program the request names, and writes the response on its standard output, one request at a time, as a transaction monitor would. The Go server speaks HTTP on one side and the pipes on the other. A process per request would start a COBOL runtime for every card swipe, and libcob in-process would need cgo; the dispatcher needs neither and keeps the authorization programs plain called programs with a LINKAGE SECTION.
-- Copal is written in Go and parses COBOL itself. ProLeap and cobol-rekt were both evaluated on a sample with `COPY ... REPLACING`, `REDEFINES`, `OCCURS DEPENDING ON`, level-88s, `COMP-3`, `PERFORM THRU` and `GO TO`. Both parse it correctly, and neither is enough for Copal. Neither maps positions back to the source file and copybook: ProLeap reports lines of the expanded text, cobol-rekt's JSON has no positions at all. Neither computes record layouts: ProLeap has no offsets or lengths, cobol-rekt gives `COMP-3` fields their display size and fails on `OCCURS 0 TO n`. Neither has data flow Copal could trust: ProLeap has none, cobol-rekt records `ADD A TO B` as modifying A. cobol-rekt's output is also not reproducible as shipped, because it uses random IDs. ProLeap has had no code change since January 2024. Either one would add a JVM and a vendored jar to the toolchain, and Copal would still have to write the layout engine, the `PERFORM` range graph and the data flow itself. Copal needs to cover only the subset Pangaea uses, and Pangaea is written alongside it, so a hand-written parser in Go is the smaller dependency and keeps positions exact. The standard library is enough to start with.
-- Diagrams are SVG laid out by Copal itself, not by Graphviz. Blueprints are golden files, so the rendering has to be byte-for-byte reproducible, and Graphviz's layout changes between versions (Homebrew and Ubuntu ship different ones). Copal's graphs are small enough for a simple layered layout.
-- Pangaea grows in the order of [roadmap.md](roadmap.md): a minimal daily batch first, Copal's layout and structure extraction on that, then both together.
+- Survey is written in Go and parses COBOL itself. ProLeap and cobol-rekt were both evaluated on a sample with `COPY ... REPLACING`, `REDEFINES`, `OCCURS DEPENDING ON`, level-88s, `COMP-3`, `PERFORM THRU` and `GO TO`. Both parse it correctly, and neither is enough for the survey. Neither maps positions back to the source file and copybook: ProLeap reports lines of the expanded text, cobol-rekt's JSON has no positions at all. Neither computes record layouts: ProLeap has no offsets or lengths, cobol-rekt gives `COMP-3` fields their display size and fails on `OCCURS 0 TO n`. Neither has data flow the survey could trust: ProLeap has none, cobol-rekt records `ADD A TO B` as modifying A. cobol-rekt's output is also not reproducible as shipped, because it uses random IDs. ProLeap has had no code change since January 2024. Either one would add a JVM and a vendored jar to the toolchain, and the survey would still have to write the layout engine, the `PERFORM` range graph and the data flow itself. Survey needs to cover only the subset Pangaea uses, and Pangaea is written alongside it, so a hand-written parser in Go is the smaller dependency and keeps positions exact. The standard library is enough to start with.
+- Diagrams are SVG laid out by the survey itself, not by Graphviz. Blueprints are golden files, so the rendering has to be byte-for-byte reproducible, and Graphviz's layout changes between versions (Homebrew and Ubuntu ship different ones). The survey's graphs are small enough for a simple layered layout.
+- Pangaea grows in the order of [roadmap.md](roadmap.md): a minimal daily batch first, the survey's layout and structure extraction on that, then both together.
+- The repository holds siblings, not a tool with a specimen inside it. Pangaea is a legacy bank and must not depend on the tool that surveys it, so what both need, reading COBOL and JCL and laying out records, is a layer of its own, `bedrock`, and what is built on both, the console, sits beside them. One Go module: two modules with a workspace would make the sibling relation formal, but add toolchain friction for nothing a reader gains, and the survey's tests read `pangaea/` as their fixture across that boundary. The project is Copal; its parts have names of their own.
 
 ## Besides the code
 
@@ -59,4 +64,4 @@ The hard part of moving a COBOL core system to anything newer is rarely the tran
 
 ## Toolchain
 
-GnuCOBOL 3.2 from Homebrew (`cobc -x` for executables, `-free` is not used: Pangaea is fixed-format on purpose). Go, latest stable. `make ci` builds Pangaea, runs its batches against the golden outputs, runs Copal's tests and regenerates the blueprints to compare against the golden ones.
+GnuCOBOL 3.2 from Homebrew (`cobc -x` for executables, `-free` is not used: Pangaea is fixed-format on purpose). Go, latest stable. `make ci` builds Pangaea, runs its batches against the golden outputs, runs the survey's tests and regenerates the blueprints to compare against the golden ones.

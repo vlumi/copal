@@ -1,6 +1,6 @@
 # The First Bank of Pangaea
 
-A small COBOL bank, the specimen Copal is developed against: a nightly batch, and an online day of card and ATM authorizations. Fiction written for this project.
+A small COBOL bank, the specimen the survey is developed against: a nightly batch, and an online day of card and ATM authorizations. Fiction written for this project. The bank knows nothing of the survey; the [console](../console/) is where the two meet.
 
 ## Layout
 
@@ -9,7 +9,7 @@ A small COBOL bank, the specimen Copal is developed against: a nightly batch, an
 - [jobs/](jobs/): job files in a small subset of JCL, run by the Go runner in [runner/](runner/): the daily batch, the month-end job, the online day, and the job that opens a new bank.
 - [testdata/](testdata/): fixtures, each an `input` directory of datasets to start from and a `golden` directory of the datasets, job log and reports a run produces.
 
-The Go packages around the COBOL are the bank's machine room, not the bank: [jcl/](../jcl/) parses job files (Copal reads them too, so it lives outside Pangaea), [dataset/](dataset/) keeps the datasets and their catalog, [runner/](runner/) runs jobs and [compile/](compile/) compiles the programs. [layouts/](layouts/) loads the record layouts Copal computes from the copybooks, [generate/](generate/) makes up customers and their business, and [bank/](bank/) runs the bank day after day, and [console/](console/) shows it in the browser. `cmd/pangaea` puts them on the command line.
+The Go packages around the COBOL are the bank's machine room, not the bank: [dataset/](dataset/) keeps the datasets and their catalog, [runner/](runner/) runs jobs and [compile/](compile/) compiles the programs. [records/](records/) loads the record layouts computed from the copybooks and says which describes each dataset, [generate/](generate/) makes up customers and their business, [bank/](bank/) runs the bank day after day, [online/](online/) serves the online day over HTTP and [simulate/](simulate/) sends it card traffic. [cmd/pangaea](cmd/pangaea/) puts them on the command line. Reading JCL and laying out records come from [bedrock](../bedrock/), the language layer the survey uses too.
 
 ## The daily batch
 
@@ -61,27 +61,17 @@ When the requests end, at the start of the batch window, **HOLDEXT** extracts th
 
 Every generation stays cataloged in `pangaea/run/bank/datasets`, so the history of the master, the audit trail and the rejects is all there; each day's job log and reports are in `pangaea/run/bank/sysout/DATE`. The same seed always gives the same bank, day after day. A business day's batch goes through whole or not at all: if a job of it fails, the bank backs the batch out, deleting every dataset it cataloged and moving its job logs and reports to `sysout/DATE.failed`, and the next run starts the batch afresh. The online day stays as it ran.
 
-The generator ([generate/](generate/)) reads and writes records through the layouts Copal computes from the copybooks, so it never hand-codes a record format. Customers have habits that follow from the seed: a salary on the 25th, rent on the first business day of the month, savings after payday, cash, deposits and transfers to other customers. Branches make the odd mistake, and customers sometimes try to spend money they do not have, so a few percent of each day ends up in the rejects.
+The generator ([generate/](generate/)) reads and writes records through the layouts computed from the copybooks, so it never hand-codes a record format. Customers have habits that follow from the seed: a salary on the 25th, rent on the first business day of the month, savings after payday, cash, deposits and transfers to other customers. Branches make the odd mistake, and customers sometimes try to spend money they do not have, so a few percent of each day ends up in the rejects.
 
 ## The console
 
-`make console` serves a window onto the running bank at <http://localhost:8080/> (`ADDR` to change it):
-
-- the bank today: its business date, accounts and balances, and every day it has run, with each day's worst return code;
-- accounts, searched by account number, customer number or name, and for each account its master record field by field, every posting and every reject since the reset;
-- each business day: every job it ran, the daily batch and on the first business day of a month the month-end job, each drawn as Copal draws its network, with every step's return code and every dataset's records, and with its reports; then the transaction file's control totals against its details, the rejects of transactions and of maintenance requests, the audit trail and the transaction file;
-- what changed between any two days' openings: balances, status changes and new accounts, reconciled against the postings in the audit trails in between;
-- the online day as it happens: every authorization as it is answered, approved or declined, and the balances and available balances of the accounts as they move, followed as server-sent events.
-
-It reads every record through the layouts Copal computes from the copybooks, the same way the generator writes them. Its buttons reset the bank and run business days by calling the same code as `make bank-reset` and `make bank-days`; the console itself never writes the bank's files.
-
-The console also serves the online channel, under `/api/`: it opens the business day's online day as it starts, closes it for the batch when you run days, during which the channel answers that the bank is closed, and opens the next day's after. `make simulate` sends it card traffic, five requests a second by default (`RATE`): purchases, withdrawals, balance enquiries and the odd reversal, for the bank's cards, each with a spending habit of its own, so that some run into their daily limits and some accounts out of money. Interrupting the console closes the online day and extracts its holds.
+The [console](../console/) is a web window onto the running bank, its online channel and its survey. It lives beside the bank, since it knows the survey too.
 
 ## Conventions
 
 - Datasets are files of fixed-length records without delimiters, like a mainframe's record format FB (fixed, blocked). The catalog in each dataset directory lists their record lengths (LRECL). Fixtures and golden files hold the same records as text, one per line.
 - A generation data group (GDG) keeps every version of a dataset: `ACCT.MASTER.G0007V00` is the seventh master. A job names them relative to the newest when it started: `ACCT.MASTER(0)` is the current one, `ACCT.MASTER(+1)` the one it writes. A temporary dataset, `&&SORTED`, lives only while its job runs. Named by its base alone, `TRAN.AUDIT`, a group is every generation it had when the job started, newest first, read as one file. So is a concatenation: a DD statement without a name adds its dataset to the one above.
-- A dataset whose records hold packed decimal fields is written in fixtures and golden files field by field, decoded through the record layout Copal finds for it: `NAME.fields`, a line per field with its value and a blank line between records, such as `AC-ACCRUED -0.048081`. Any other record with bytes that are not printable is written in hex, the way COBOL writes a hex literal: `X'00012C'`.
+- A dataset whose records hold packed decimal fields is written in fixtures and golden files field by field, decoded through its record layout: `NAME.fields`, a line per field with its value and a blank line between records, such as `AC-ACCRUED -0.048081`. Any other record with bytes that are not printable is written in hex, the way COBOL writes a hex literal: `X'00012C'`.
 - Packed decimal (`COMP-3`, `PACKED-DECIMAL`) holds two digits a byte and the sign in the last half-byte: C positive, D negative, F unsigned. In `PIC S9(3)V99 COMP-3`, 12.00 is the three bytes `X'01200C'`.
 - Signed display numbers are zoned decimal with an overpunched sign, EBCDIC style: the last digit is replaced by one character that carries both the digit and the sign, so the field is as long as its digits. `{ABCDEFGHI` stand for +0 to +9, `}JKLMNOPQR` for -0 to -9. In a 13-digit balance, `PIC S9(11)V99`, 55,000.01 is `0000005500001` with its last digit 1 written as `A`: `000000550000A`. -150.05 is `000000001500N`.
 - A program knows its files by DD name (`ASSIGN TO TRANIN`); the runner binds each DD to its dataset through the `DD_TRANIN` environment variable.
