@@ -18,14 +18,14 @@
 </dl>
 <p class="note">The first that fits is the field's kind. A key is only what a program says is one: a field a file is read by in sequence, however it is named, is not. A date is told by its name, containing DATE, MONTH, TIMESTAMP or YYMM: the one rule here that reads a name.</p>
 {{range .Records}}
-<h2>{{.Name}}</h2>
+<h2>{{.Name}} <span class="note">· <a href="{{entity .Name}}">as an entity</a></span></h2>
 <table>
   <thead><tr><th class="num">Level</th><th>Field</th><th class="num">Start</th><th class="num">Length</th><th>Picture</th><th>Usage</th><th>Source</th></tr></thead>
-  <tbody>{{template "layout" .Field}}</tbody>
+  <tbody>{{template "layout" (layoutOf .Name .Field)}}</tbody>
 </table>
 {{end}}
 {{end}}
 {{end}}
 
-{{define "layout"}}<tr><td class="num">{{printf "%02d" .Level}}</td><td>{{.Name}} {{template "badge" .Kind}}</td><td class="num">{{.Start}}</td><td class="num">{{.Length}}</td><td><code>{{.Picture}}</code></td><td>{{.Usage}}</td><td>{{template "src" .Source}}</td></tr>
-{{range .Fields}}{{template "layout" .}}{{end}}{{end}}
+{{define "layout"}}{{with .Field}}<tr><td class="num">{{printf "%02d" .Level}}</td><td>{{if or (eq .Level 1) (eq .Name "FILLER")}}{{.Name}}{{else}}<a href="{{entityField $.Record .Name}}">{{.Name}}</a>{{end}} {{template "badge" .Kind}}</td><td class="num">{{.Start}}</td><td class="num">{{.Length}}</td><td><code>{{.Picture}}</code></td><td>{{.Usage}}</td><td>{{template "src" .Source}}</td></tr>
+{{range .Fields}}{{template "layout" (layoutOf $.Record .)}}{{end}}{{end}}{{end}}

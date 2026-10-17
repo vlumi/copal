@@ -7,6 +7,11 @@
       "conditions": [
         "WS-REJECT-COUNT \u003e 0"
       ],
+      "conditionRefs": [
+        [
+          "WS-REJECT-COUNT"
+        ]
+      ],
       "actions": [
         "PERFORM 1000-INITIALIZE",
         "PERFORM 2000-MATCH UNTIL WS-MASTER-KEY = HIGH-VALUES AND WS-TRAN-KEY = HIGH-VALUES",
@@ -54,6 +59,19 @@
       "conditions": [
         "WS-CONTROL-STATUS NOT = '00' OR WS-ACCT-IN-STATUS NOT = '00' OR WS-TRAN-IN-STATUS NOT = '00' OR WS-ACCT-OUT-STATUS NOT = '00' OR NOT AUDIT-OPENED OR NOT REJECTS-OPENED OR WS-LEGS-STATUS NOT = '00' OR WS-REPORT-STATUS NOT = '00'",
         "READ CONTROL-FILE AT END"
+      ],
+      "conditionRefs": [
+        [
+          "WS-CONTROL-STATUS",
+          "WS-ACCT-IN-STATUS",
+          "WS-TRAN-IN-STATUS",
+          "WS-ACCT-OUT-STATUS",
+          "WS-AUDIT-STATUS",
+          "WS-REJECT-STATUS",
+          "WS-LEGS-STATUS",
+          "WS-REPORT-STATUS"
+        ],
+        null
       ],
       "actions": [
         "OPEN INPUT CONTROL-FILE ACCT-IN TRAN-IN OUTPUT ACCT-OUT LEGS-OUT REPORT-OUT EXTEND AUDIT-OUT REJECT-OUT",
@@ -120,6 +138,13 @@
         "READ ACCT-IN AT END",
         "WS-MASTER-KEY \u003e WS-PREV-MASTER-KEY"
       ],
+      "conditionRefs": [
+        null,
+        [
+          "WS-MASTER-KEY",
+          "WS-PREV-MASTER-KEY"
+        ]
+      ],
       "actions": [
         "READ ACCT-IN",
         "MOVE HIGH-VALUES TO WS-MASTER-KEY",
@@ -178,6 +203,13 @@
         "READ TRAN-IN AT END",
         "WS-TRAN-ORDER-KEY \u003e WS-PREV-TRAN-ORDER-KEY"
       ],
+      "conditionRefs": [
+        null,
+        [
+          "WS-TRAN-ORDER-KEY",
+          "WS-PREV-TRAN-ORDER-KEY"
+        ]
+      ],
       "actions": [
         "READ TRAN-IN",
         "MOVE HIGH-VALUES TO WS-TRAN-KEY",
@@ -233,6 +265,16 @@
         "WS-TRAN-KEY \u003c WS-MASTER-KEY",
         "WS-TRAN-KEY = WS-MASTER-KEY"
       ],
+      "conditionRefs": [
+        [
+          "WS-TRAN-KEY",
+          "WS-MASTER-KEY"
+        ],
+        [
+          "WS-TRAN-KEY",
+          "WS-MASTER-KEY"
+        ]
+      ],
       "actions": [
         "SET RJ-NO-ACCOUNT TO TRUE",
         "PERFORM 3900-REJECT-TRAN",
@@ -285,6 +327,26 @@
         "TD-CARD-PURCHASE OR TD-ATM-WITHDRAWAL",
         "AM-FROZEN",
         "TD-WITHDRAWAL OR TD-TRANSFER"
+      ],
+      "conditionRefs": [
+        [
+          "AM-STATUS"
+        ],
+        [
+          "TD-TRAN-CODE"
+        ],
+        [
+          "TD-TRAN-CODE"
+        ],
+        [
+          "TD-TRAN-CODE"
+        ],
+        [
+          "AM-STATUS"
+        ],
+        [
+          "TD-TRAN-CODE"
+        ]
       ],
       "actions": [
         "MOVE AM-BALANCE TO WS-BALANCE-BEFORE",
@@ -405,6 +467,15 @@
         "WS-NEW-BALANCE \u003c WS-BALANCE-FLOOR",
         "TD-TRANSFER"
       ],
+      "conditionRefs": [
+        [
+          "WS-NEW-BALANCE",
+          "WS-BALANCE-FLOOR"
+        ],
+        [
+          "TD-TRAN-CODE"
+        ]
+      ],
       "actions": [
         "COMPUTE WS-NEW-BALANCE = AM-BALANCE - TD-AMOUNT",
         "COMPUTE WS-BALANCE-FLOOR = 0 - AM-OVERDRAFT-LIMIT",
@@ -466,6 +537,11 @@
       "conditions": [
         "TD-TRANSFER"
       ],
+      "conditionRefs": [
+        [
+          "TD-TRAN-CODE"
+        ]
+      ],
       "actions": [
         "MOVE TRAN-RECORD TO WS-SAVED-TRAN",
         "SET TD-TRANSFER-CREDIT TO TRUE",
@@ -516,6 +592,11 @@
       "conditions": [
         "TD-TRANSFER-CREDIT"
       ],
+      "conditionRefs": [
+        [
+          "TD-TRAN-CODE"
+        ]
+      ],
       "actions": [
         "MOVE 'TXPOST' TO RJ-PROGRAM",
         "MOVE TRAN-RECORD TO RJ-TRAN",
@@ -554,6 +635,14 @@
       "source": "pangaea/programs/TXPOST.cbl:373",
       "conditions": [
         "WS-EXPECTED-TOTAL NOT = WS-CLOSING-TOTAL OR WS-MASTERS-WRITTEN NOT = WS-MASTERS-READ"
+      ],
+      "conditionRefs": [
+        [
+          "WS-EXPECTED-TOTAL",
+          "WS-CLOSING-TOTAL",
+          "WS-MASTERS-WRITTEN",
+          "WS-MASTERS-READ"
+        ]
       ],
       "actions": [
         "MOVE WS-OPENING-TOTAL TO WS-EXPECTED-TOTAL",

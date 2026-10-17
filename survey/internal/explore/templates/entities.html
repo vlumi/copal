@@ -1,0 +1,12 @@
+{{define "title"}}Entities{{end}}
+{{define "content"}}
+<h1>Entities</h1>
+<p class="note">An entity is a record a copybook describes: what the system keeps or passes, whatever program or file it is in. Its datasets are those whose records its copybook describes.</p>
+<table>
+  <thead><tr><th>Entity</th><th>Copybook</th><th>Datasets</th><th class="num">Fields</th><th>Programs</th></tr></thead>
+  <tbody>
+  {{range .View}}<tr><td><a href="{{entity .Record}}">{{.Record}}</a></td><td><a href="{{copybook .Copybook}}">{{.Copybook}}</a></td><td>{{range $i, $d := .Datasets}}{{if $i}}, {{end}}<a href="{{dataset $d}}">{{$d}}</a>{{end}}</td><td class="num">{{len .Fields}}</td><td>{{range $i, $p := .Programs}}{{if $i}}, {{end}}<a href="{{program $p}}">{{$p}}</a>{{end}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{end}}

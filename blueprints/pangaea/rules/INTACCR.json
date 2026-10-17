@@ -7,6 +7,11 @@
       "conditions": [
         "WS-ACCRUAL-KEY = HIGH-VALUES"
       ],
+      "conditionRefs": [
+        [
+          "WS-ACCRUAL-KEY"
+        ]
+      ],
       "actions": [
         "PERFORM 1000-INITIALIZE",
         "PERFORM 2000-ACCRUE-ACCOUNT UNTIL MASTER-AT-END",
@@ -54,6 +59,12 @@
       "conditions": [
         "WS-FILE-STATUSES = ALL '0'",
         "READ CONTROL-FILE AT END"
+      ],
+      "conditionRefs": [
+        [
+          "WS-FILE-STATUSES"
+        ],
+        null
       ],
       "actions": [
         "OPEN INPUT CONTROL-FILE RATE-FILE ACCT-IN ACCR-IN OUTPUT ACCR-OUT REPORT-OUT",
@@ -122,6 +133,11 @@
       "conditions": [
         "WS-RATE-STATUS = '10'"
       ],
+      "conditionRefs": [
+        [
+          "WS-RATE-STATUS"
+        ]
+      ],
       "actions": [
         "READ RATE-FILE",
         "PERFORM UNTIL WS-RATE-STATUS NOT = '00'",
@@ -157,6 +173,11 @@
       "source": "pangaea/programs/INTACCR.cbl:192",
       "conditions": [
         "WS-RATE-COUNT = 20"
+      ],
+      "conditionRefs": [
+        [
+          "WS-RATE-COUNT"
+        ]
       ],
       "actions": [
         "MOVE 'MORE THAN 20 RATES' TO WS-ABORT-MESSAGE",
@@ -205,6 +226,9 @@
       "conditions": [
         "READ ACCT-IN AT END"
       ],
+      "conditionRefs": [
+        null
+      ],
       "actions": [
         "READ ACCT-IN",
         "SET MASTER-AT-END TO TRUE"
@@ -234,6 +258,9 @@
       "source": "pangaea/programs/INTACCR.cbl:217",
       "conditions": [
         "READ ACCR-IN AT END"
+      ],
+      "conditionRefs": [
+        null
       ],
       "actions": [
         "READ ACCR-IN",
@@ -267,6 +294,16 @@
       "conditions": [
         "WS-ACCRUAL-KEY = AM-ACCT-NO",
         "WS-ACCRUAL-KEY \u003e AM-ACCT-NO"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ACCRUAL-KEY",
+          "AM-ACCT-NO"
+        ],
+        [
+          "WS-ACCRUAL-KEY",
+          "AM-ACCT-NO"
+        ]
       ],
       "actions": [
         "MOVE ACCR-IN-RECORD TO ACCRUAL-RECORD",
@@ -320,6 +357,12 @@
       "source": "pangaea/programs/INTACCR.cbl:245",
       "conditions": [
         "WS-MONTH-START-DAY \u003e WS-TODAY"
+      ],
+      "conditionRefs": [
+        [
+          "WS-MONTH-START-DAY",
+          "WS-TODAY"
+        ]
       ],
       "actions": [
         "PERFORM 1400-TAKE-ACCRUAL",
@@ -386,6 +429,11 @@
       "conditions": [
         "RATE-FOUND"
       ],
+      "conditionRefs": [
+        [
+          "WS-RATE-FOUND-SW"
+        ]
+      ],
       "actions": [
         "MOVE 'N' TO WS-RATE-FOUND-SW",
         "PERFORM VARYING WS-RX FROM 1 BY 1 UNTIL WS-RX \u003e WS-RATE-COUNT",
@@ -424,6 +472,28 @@
         "AM-BALANCE \u003c 0",
         "WS-RT-DEBIT(WS-RX)",
         "WS-RT-CREDIT(WS-RX) AND WS-RT-FLOOR(WS-RX) NOT \u003e AM-BALANCE AND (NOT RATE-FOUND OR WS-RT-FLOOR(WS-RX) \u003e WS-BEST-FLOOR)"
+      ],
+      "conditionRefs": [
+        [
+          "WS-RT-ACCT-TYPE",
+          "WS-RX",
+          "AM-ACCT-TYPE"
+        ],
+        [
+          "AM-BALANCE"
+        ],
+        [
+          "WS-RT-KIND",
+          "WS-RX"
+        ],
+        [
+          "WS-RT-KIND",
+          "WS-RX",
+          "WS-RT-FLOOR",
+          "AM-BALANCE",
+          "WS-RATE-FOUND-SW",
+          "WS-BEST-FLOOR"
+        ]
       ],
       "actions": [
         "PERFORM 2110-TAKE-RATE"
@@ -486,6 +556,11 @@
       "conditions": [
         "WS-TH-MONTH = 12"
       ],
+      "conditionRefs": [
+        [
+          "WS-TH-MONTH"
+        ]
+      ],
       "actions": [
         "MOVE AC-THROUGH-DATE TO WS-THROUGH-DATE",
         "MOVE WS-TH-YEAR TO WS-MS-YEAR",
@@ -529,6 +604,11 @@
       "conditions": [
         "WS-INCREMENT \u003c 0"
       ],
+      "conditionRefs": [
+        [
+          "WS-INCREMENT"
+        ]
+      ],
       "actions": [
         "MULTIPLY AM-BALANCE BY WS-ACCOUNT-RATE GIVING WS-INTEREST-PRODUCT",
         "MULTIPLY WS-DAYS BY WS-INTEREST-PRODUCT",
@@ -569,6 +649,11 @@
       "source": "pangaea/programs/INTACCR.cbl:327",
       "conditions": [
         "AC-DUE \u003c 0"
+      ],
+      "conditionRefs": [
+        [
+          "AC-DUE"
+        ]
       ],
       "actions": [
         "COMPUTE AC-DUE ROUNDED = AC-ACCRUED",
@@ -616,6 +701,11 @@
       "source": "pangaea/programs/INTACCR.cbl:341",
       "conditions": [
         "WS-CLOSED-MONTH = 0"
+      ],
+      "conditionRefs": [
+        [
+          "WS-CLOSED-MONTH"
+        ]
       ],
       "actions": [
         "MOVE SPACES TO REPORT-LINE",

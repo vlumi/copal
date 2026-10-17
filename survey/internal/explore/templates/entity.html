@@ -1,0 +1,37 @@
+{{define "title"}}{{.View.Entity.Record}}{{end}}
+{{define "content"}}
+{{with .View}}{{$e := .Entity}}
+<h1><span class="kind">entity</span> {{$e.Record}}</h1>
+<p class="crumbs">described by copybook <a href="{{copybook $e.Copybook}}">{{$e.Copybook}}</a> · <a href="/entities">all entities</a></p>
+<h2>Datasets</h2>
+{{if .Datasets}}
+<table>
+  <thead><tr><th>Dataset</th><th>Kind</th><th>Written by</th><th>Read by</th></tr></thead>
+  <tbody>
+  {{range .Datasets}}<tr><td><a href="{{dataset .Name}}">{{.Name}}</a></td><td>{{template "datasetBadges" .}}</td><td>{{template "steps" .WrittenBy}}</td><td>{{template "steps" .ReadBy}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{else}}<p class="note">No dataset: no program reads or writes a file of it in a job.</p>{{end}}
+<h2>Programs</h2>
+<ul class="names">{{range .Programs}}<li><a href="{{program .Name}}">{{.Name}}</a> {{template "badge" .Kind}}</li>{{else}}<li class="note">none</li>{{end}}</ul>
+{{with .Machines}}
+<h2>State machines</h2>
+<p class="note">For each code field, its states are its condition names. A transition is a path through a paragraph's decisions that finds the field in one state, by its condition name or its value, and sets it to another, by SET or by MOVE of a value; a path that sets a state without finding the field in one starts from any state, and so does a paragraph that decides nothing. The decisions of one paragraph are not followed into another: a state tested in one paragraph and set in the paragraph it performs is drawn from any state.</p>
+{{range .}}<h3 id="states-{{.Field.Name}}"><a href="{{entityField .Record .Field.Name}}">{{.Field.Name}}</a></h3>
+{{template "states" .}}{{end}}
+{{end}}
+<h2>Fields</h2>
+<p class="note">Who reads, writes and decides on each field, by name: a statement that moves the whole record counts for the record, not for each field.</p>
+<table>
+  <thead><tr><th>Field</th><th>Read by</th><th>Written by</th><th>Decided on by</th></tr></thead>
+  <tbody>
+  {{range .Fields}}<tr><td><a href="{{entityField $e.Record .Field.Name}}">{{.Field.Name}}</a> {{template "badge" .Field.Kind}}</td>
+    <td>{{template "users" .Readers}}</td><td>{{template "users" .Writers}}</td><td>{{template "users" .Deciders}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{end}}
+{{end}}
+
+{{define "users"}}{{range $i, $u := .}}{{if $i}}, {{end}}<a href="{{field $u.Program $u.Field}}">{{$u.Program}}</a>{{end}}{{end}}

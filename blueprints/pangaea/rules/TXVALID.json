@@ -8,6 +8,14 @@
         "FILE-IS-GOOD",
         "WS-REJECT-COUNT \u003e 0"
       ],
+      "conditionRefs": [
+        [
+          "WS-FILE-ERROR"
+        ],
+        [
+          "WS-REJECT-COUNT"
+        ]
+      ],
       "actions": [
         "PERFORM 1000-OPEN-FILES",
         "PERFORM 2000-READ-HEADER",
@@ -76,6 +84,16 @@
         "WS-CONTROL-STATUS NOT = '00' OR WS-TRAN-IN-STATUS NOT = '00' OR WS-TRAN-OUT-STATUS NOT = '00' OR NOT REJECTS-OPENED OR WS-REPORT-STATUS NOT = '00'",
         "READ CONTROL-FILE AT END"
       ],
+      "conditionRefs": [
+        [
+          "WS-CONTROL-STATUS",
+          "WS-TRAN-IN-STATUS",
+          "WS-TRAN-OUT-STATUS",
+          "WS-REJECT-STATUS",
+          "WS-REPORT-STATUS"
+        ],
+        null
+      ],
       "actions": [
         "OPEN INPUT CONTROL-FILE TRAN-IN OUTPUT TRAN-OUT REPORT-OUT EXTEND REJECT-OUT",
         "DISPLAY 'TXVALID: CANNOT OPEN FILES ' WS-FILE-STATUSES",
@@ -135,6 +153,22 @@
         "TR-HEADER",
         "TH-BUSINESS-DATE = WS-BUSINESS-DATE",
         "NOT TH-FROM-BRANCHES AND NOT TH-FROM-CARDS"
+      ],
+      "conditionRefs": [
+        null,
+        [
+          "WS-FILE-ERROR"
+        ],
+        [
+          "TR-REC-TYPE"
+        ],
+        [
+          "TH-BUSINESS-DATE",
+          "WS-BUSINESS-DATE"
+        ],
+        [
+          "TH-SOURCE"
+        ]
       ],
       "actions": [
         "READ TRAN-IN",
@@ -298,6 +332,17 @@
         "FILE-IS-GOOD",
         "TR-HEADER"
       ],
+      "conditionRefs": [
+        [
+          "TR-REC-TYPE"
+        ],
+        [
+          "WS-FILE-ERROR"
+        ],
+        [
+          "TR-REC-TYPE"
+        ]
+      ],
       "actions": [
         "PERFORM 3200-VALIDATE-DETAIL",
         "PERFORM 3100-READ-NEXT",
@@ -379,6 +424,9 @@
       "conditions": [
         "READ TRAN-IN AT END"
       ],
+      "conditionRefs": [
+        null
+      ],
       "actions": [
         "READ TRAN-IN",
         "MOVE 'NO TRAILER' TO WS-FILE-ERROR"
@@ -413,6 +461,29 @@
         "DETAIL-IS-VALID",
         "TD-AMOUNT IS NOT NUMERIC OR TD-AMOUNT = ZERO",
         "TD-TRANSFER AND (TD-COUNTER-ACCT-NO IS NOT NUMERIC OR TD-COUNTER-ACCT-NO = TD-ACCT-NO)"
+      ],
+      "conditionRefs": [
+        [
+          "TD-AMOUNT"
+        ],
+        [
+          "TD-ACCT-NO"
+        ],
+        [
+          "WS-SOURCE",
+          "TD-TRAN-CODE"
+        ],
+        [
+          "WS-DETAIL-STATE"
+        ],
+        [
+          "TD-AMOUNT"
+        ],
+        [
+          "TD-TRAN-CODE",
+          "TD-COUNTER-ACCT-NO",
+          "TD-ACCT-NO"
+        ]
       ],
       "actions": [
         "ADD 1 TO WS-DETAIL-COUNT",
@@ -809,6 +880,24 @@
         "TT-AMOUNT-TOTAL = WS-AMOUNT-TOTAL",
         "TT-ACCT-HASH = WS-ACCT-HASH"
       ],
+      "conditionRefs": [
+        [
+          "TT-DETAIL-COUNT",
+          "WS-DETAIL-COUNT"
+        ],
+        [
+          "WS-FILE-ERROR"
+        ],
+        null,
+        [
+          "TT-AMOUNT-TOTAL",
+          "WS-AMOUNT-TOTAL"
+        ],
+        [
+          "TT-ACCT-HASH",
+          "WS-ACCT-HASH"
+        ]
+      ],
       "actions": [
         "MOVE 'TRAILER DETAIL COUNT DIFFERS' TO WS-FILE-ERROR",
         "READ TRAN-IN",
@@ -976,6 +1065,11 @@
       "source": "pangaea/programs/TXVALID.cbl:268",
       "conditions": [
         "FILE-IS-GOOD"
+      ],
+      "conditionRefs": [
+        [
+          "WS-FILE-ERROR"
+        ]
       ],
       "actions": [
         "MOVE SPACES TO REPORT-LINE",

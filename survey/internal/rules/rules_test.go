@@ -43,10 +43,14 @@ func TestTables(t *testing.T) {
 		t.Fatal(err)
 	}
 	var got []string
+	var refs [][]string
 	for _, table := range Tables(p) {
 		if table.Paragraph == "WIDE-PARA" {
 			checkWide(t, table)
 			continue
+		}
+		if table.Paragraph == "FEE-PARA" || table.Loop != "" {
+			refs = append(refs, table.Refs...)
 		}
 		got = append(got, layout(table))
 	}
@@ -79,6 +83,10 @@ Y N | WS-RATE(WS-I) > 0
 	}
 	if strings.Join(got, "\n") != strings.Join(want, "\n") {
 		t.Errorf("got\n%s\nwant\n%s", strings.Join(got, "\n"), strings.Join(want, "\n"))
+	}
+	wantRefs := [][]string{{"AM-CLOSED"}, {"AM-CURRENT", "AM-OPEN"}, {"AM-BALANCE"}, {"WS-RATE", "WS-I"}}
+	if !slices.EqualFunc(refs, wantRefs, slices.Equal) {
+		t.Errorf("condition refs %q, want %q", refs, wantRefs)
 	}
 }
 

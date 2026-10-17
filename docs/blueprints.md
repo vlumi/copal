@@ -6,7 +6,9 @@ Every blueprint exists twice: as Markdown, for reading, and as JSON next to it, 
 
 ## The index
 
-`README.md` lists the programs with their kind, files, paragraphs and decision tables, the copybooks with their records and the programs that use them, the jobs with their steps and findings, and the system's datasets. `datasets.json` next to it has the datasets for tools.
+`README.md` lists the programs with their kind, files, paragraphs and decision tables, the copybooks with their records and the programs that use them, the jobs with their steps and findings, and the system's datasets. `datasets.json` next to it has the datasets for tools, and `entities.json` the entities.
+
+An entity is a record a copybook describes. For each one, `entities.json` has the datasets its copybook describes, the programs that use it, and for each field, what each program does with it under its own name for it: the paragraphs that read and write it and the decisions on it. A program's record is the copybook's where it is declared at the same place, so a copy with `REPLACING` counts. For a code field, it also has the state machine: the condition names are the states, and a transition is a rule of a decision table that finds the field in one state, by its condition name or `FIELD = 'value'`, and sets another, by `SET` or `MOVE 'value'`. A rule that sets a state without finding the field in one, or a paragraph that decides nothing and sets one, starts from `any`. A value moved in from another field is listed as a copy, not a transition.
 
 A program is **main**, or **called** when it is passed items with `PROCEDURE DIVISION USING`.
 
@@ -60,7 +62,7 @@ Its description, the programs that use it, and the layout of each record in it, 
 
 ## Decision tables, `rules/NAME.md`
 
-One table per paragraph that decides anything, and one per inline loop. Each column is one path through the paragraph. The rows above the line are the conditions, with `Y` or `N` where the path tests them and blank where it does not; the rows below, marked with an arrow, are the actions, numbered in the order the path takes them. A path through an `EVALUATE` is also a path past the `WHEN`s before it, and a path ends at a `GO TO` or `STOP RUN`. A paragraph with more paths than a table can show has a decision shown as an action instead, so the table stays readable.
+One table per paragraph that decides anything, and one per inline loop. Each column is one path through the paragraph; the JSON adds, for each condition, the data items it decides on, a condition name counting as its field. The rows above the line are the conditions, with `Y` or `N` where the path tests them and blank where it does not; the rows below, marked with an arrow, are the actions, numbered in the order the path takes them. A path through an `EVALUATE` is also a path past the `WHEN`s before it, and a path ends at a `GO TO` or `STOP RUN`. A paragraph with more paths than a table can show has a decision shown as an action instead, so the table stays readable.
 
 ## Diagrams
 

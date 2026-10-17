@@ -36,7 +36,7 @@ func New(system *blueprint.System, title string) (*Server, error) {
 	s := &Server{title: title, index: newIndex(system), pages: map[string]*template.Template{}}
 	funcs := template.FuncMap{
 		"program": programLink, "paragraph": paragraphLink, "field": fieldLink, "copybook": copybookLink,
-		"job": jobLink, "step": stepLink, "dataset": datasetLink, "source": sourceLink,
+		"job": jobLink, "entity": entityLink, "entityField": entityFieldLink, "step": stepLink, "dataset": datasetLink, "source": sourceLink,
 		"sourceText": sourceText, "base": datasetBase, "join": strings.Join,
 		"add":     func(a, b int) int { return a + b },
 		"hop":     hopID,
@@ -45,8 +45,13 @@ func New(system *blueprint.System, title string) (*Server, error) {
 		"lineage": func(program string, fields map[string]bool, rows []blueprint.Lineage) lineageTable {
 			return lineageTable{Program: program, Fields: fields, Rows: rows}
 		},
+		"layoutOf": func(record string, f blueprint.Field) layoutRow { return layoutRow{Record: record, Field: f} },
+		"decisions": func(program string, rows []blueprint.Decision) decisionTable {
+			return decisionTable{Program: program, Rows: rows}
+		},
 	}
-	for _, page := range []string{"index", "search", "job", "step", "dataset", "program", "paragraph", "field", "copybook", "source", "trace", "error"} {
+	for _, page := range []string{"index", "search", "job", "step", "dataset", "program", "paragraph", "field", "copybook",
+		"entities", "entity", "entityfield", "source", "trace", "error"} {
 		t, err := template.New("").Funcs(funcs).ParseFS(files, "templates/base.html", "templates/"+page+".html")
 		if err != nil {
 			return nil, err
@@ -70,6 +75,9 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /programs/{program}/paragraphs/{paragraph}", s.view("paragraph", s.paragraph))
 	mux.HandleFunc("GET /programs/{program}/fields/{field}", s.view("field", s.field))
 	mux.HandleFunc("GET /copybooks/{copybook}", s.view("copybook", s.copybook))
+	mux.HandleFunc("GET /entities", s.view("entities", s.entities))
+	mux.HandleFunc("GET /entities/{record}", s.view("entity", s.entity))
+	mux.HandleFunc("GET /entities/{record}/fields/{field}", s.view("entityfield", s.entityField))
 	mux.HandleFunc("GET /source/{path...}", s.view("source", s.source))
 	mux.HandleFunc("GET /trace", s.view("trace", s.trace))
 	return mux
@@ -110,6 +118,19 @@ type lineageTable struct {
 	Program string
 	Fields  map[string]bool
 	Rows    []blueprint.Lineage
+}
+
+// layoutRow is a field of a copybook's record, for the layout template.
+type layoutRow struct {
+	Record string
+	Field  blueprint.Field
+}
+
+// decisionTable is a program's decisions on a field, for the decisions
+// template.
+type decisionTable struct {
+	Program string
+	Rows    []blueprint.Decision
 }
 
 // HomeView lists the system's parts.
@@ -248,8 +269,8 @@ func (s *Server) paragraph(r *http.Request) (any, error) {
 }
 
 // FieldView is a data item of a program: where it is, the paragraphs that
-// read and write it, and the statements that move values into it and out
-// of it.
+// read and write it, the statements that move values into it and out of
+// it, and the decisions on it.
 type FieldView struct {
 	Program   *blueprint.Program
 	Record    blueprint.Record
@@ -259,7 +280,10 @@ type FieldView struct {
 	WrittenBy []string
 	Into      []blueprint.Lineage
 	OutOf     []blueprint.Lineage
-	Fields    map[string]bool
+	Decisions []blueprint.Decision
+	// Entity is the field of an entity it is, if its record is one.
+	Entity *EntityFieldRef
+	Fields map[string]bool
 }
 
 func (s *Server) field(r *http.Request) (any, error) {
@@ -286,6 +310,10 @@ func (s *Server) field(r *http.Request) (any, error) {
 		if slices.Contains(para.Writes, name) {
 			v.WrittenBy = append(v.WrittenBy, para.Name)
 		}
+	}
+	v.Decisions = p.Decisions(name)
+	if ref, ok := s.index.entityFields[[2]string{p.Name, name}]; ok {
+		v.Entity = &ref
 	}
 	for _, e := range p.Lineage {
 		if e.To == name && !e.ToFile {
@@ -325,6 +353,126 @@ func (s *Server) copybook(r *http.Request) (any, error) {
 		return nil, fmt.Errorf("copybook %s: %w", r.PathValue("copybook"), errNotFound)
 	}
 	return c, nil
+}
+
+func (s *Server) entities(*http.Request) (any, error) {
+	return s.index.system.Entities, nil
+}
+
+// EntityView is an entity: the datasets it describes, with their kinds,
+// the programs that use it, and its fields with the programs that read,
+// write and decide on each.
+type EntityView struct {
+	Entity   *blueprint.Entity
+	Datasets []*blueprint.SystemDataset
+	Programs []*blueprint.Program
+	Fields   []EntityFieldUses
+	Machines []StateView
+}
+
+// StateView is a code field's state machine, drawn.
+type StateView struct {
+	Record  string
+	Field   blueprint.EntityField
+	Diagram template.HTML
+}
+
+func stateView(record string, f blueprint.EntityField) (StateView, error) {
+	v := StateView{Record: record, Field: f}
+	if len(f.States.Transitions) == 0 {
+		return v, nil
+	}
+	var err error
+	v.Diagram, err = svg(blueprint.StateGraph(*f.States))
+	return v, err
+}
+
+// EntityFieldUses is a field of an entity and the programs that use it,
+// by what they do with it.
+type EntityFieldUses struct {
+	Field                      blueprint.EntityField
+	Readers, Writers, Deciders []blueprint.FieldUse
+}
+
+func (s *Server) entity(r *http.Request) (any, error) {
+	e, ok := s.index.entities[r.PathValue("record")]
+	if !ok {
+		return nil, fmt.Errorf("entity %s: %w", r.PathValue("record"), errNotFound)
+	}
+	v := EntityView{Entity: e}
+	for _, name := range e.Datasets {
+		v.Datasets = append(v.Datasets, s.index.systemDatasets[name])
+	}
+	for _, name := range e.Programs {
+		v.Programs = append(v.Programs, s.index.programs[name])
+	}
+	for _, f := range e.Fields {
+		row := EntityFieldUses{Field: f}
+		for _, u := range f.Uses {
+			if len(u.ReadBy) > 0 {
+				row.Readers = append(row.Readers, u)
+			}
+			if len(u.WrittenBy) > 0 {
+				row.Writers = append(row.Writers, u)
+			}
+			if len(u.Decisions) > 0 {
+				row.Deciders = append(row.Deciders, u)
+			}
+		}
+		v.Fields = append(v.Fields, row)
+		if f.States != nil {
+			m, err := stateView(e.Record, f)
+			if err != nil {
+				return nil, err
+			}
+			v.Machines = append(v.Machines, m)
+		}
+	}
+	return v, nil
+}
+
+// EntityFieldView is a field of an entity across every program that uses
+// the entity: its layout in the copybook, and each program's use of it.
+type EntityFieldView struct {
+	Entity  *blueprint.Entity
+	Layout  blueprint.Field
+	Field   blueprint.EntityField
+	Used    []blueprint.FieldUse
+	Unused  []string
+	Machine *StateView
+}
+
+func (s *Server) entityField(r *http.Request) (any, error) {
+	e, ok := s.index.entities[r.PathValue("record")]
+	if !ok {
+		return nil, fmt.Errorf("entity %s: %w", r.PathValue("record"), errNotFound)
+	}
+	f, ok := e.Field(r.PathValue("field"))
+	if !ok {
+		return nil, fmt.Errorf("field %s of %s: %w", r.PathValue("field"), e.Record, errNotFound)
+	}
+	v := EntityFieldView{Entity: e, Field: f}
+	if f.States != nil {
+		m, err := stateView(e.Record, f)
+		if err != nil {
+			return nil, err
+		}
+		v.Machine = &m
+	}
+	c := s.index.copybooks[e.Copybook]
+	for _, rec := range c.Records {
+		if rec.Name == e.Record {
+			_, v.Layout, _ = findField(rec.Field, f.Name)
+		}
+	}
+	for _, u := range f.Uses {
+		if len(u.ReadBy)+len(u.WrittenBy)+len(u.Decisions) > 0 {
+			v.Used = append(v.Used, u)
+		} else {
+			v.Unused = append(v.Unused, u.Program)
+		}
+	}
+	return v, nil
 }
 
 // SourceView is a source file, by line.

@@ -23,6 +23,10 @@ type index struct {
 	datasets map[string][]DatasetUse
 	// runs are the job steps that run each program.
 	runs map[string][]blueprint.StepRef
+	// entities are the system's entities by record, and entityFields the
+	// field of an entity each program's field is, by program and field.
+	entities     map[string]*blueprint.Entity
+	entityFields map[[2]string]EntityFieldRef
 	// systemDatasets are the system's datasets by name.
 	systemDatasets map[string]*blueprint.SystemDataset
 	sources        map[string]bool
@@ -42,6 +46,11 @@ type DatasetUse struct {
 	Uses     []string
 }
 
+// EntityFieldRef names a field of an entity.
+type EntityFieldRef struct {
+	Record, Field string
+}
+
 // Name is anything the search finds: its kind, its name, what it belongs
 // to, its page, and the badge of the kind of program, field or dataset it
 // is.
@@ -52,7 +61,8 @@ type Name struct {
 func newIndex(s *blueprint.System) *index {
 	x := &index{system: s, programs: map[string]*blueprint.Program{}, jobs: map[string]*blueprint.Job{},
 		copybooks: map[string]*blueprint.Copybook{}, datasets: map[string][]DatasetUse{},
-		runs: map[string][]blueprint.StepRef{}, systemDatasets: map[string]*blueprint.SystemDataset{}, sources: map[string]bool{}}
+		runs: map[string][]blueprint.StepRef{}, entities: map[string]*blueprint.Entity{},
+		entityFields: map[[2]string]EntityFieldRef{}, systemDatasets: map[string]*blueprint.SystemDataset{}, sources: map[string]bool{}}
 	for i := range s.Programs {
 		p := &s.Programs[i]
 		x.programs[p.Name] = p
@@ -89,6 +99,15 @@ func newIndex(s *blueprint.System) *index {
 					x.datasets[base] = append(x.datasets[base], DatasetUse{StepRef: ref, Dataset: ds, DD: dd.Name,
 						Disp: dd.Disp, Program: step.Program, File: dd.File, Copybook: dd.Copybook, Uses: dd.Uses})
 				}
+			}
+		}
+	}
+	for i := range s.Entities {
+		e := &s.Entities[i]
+		x.entities[e.Record] = e
+		for _, f := range e.Fields {
+			for _, u := range f.Uses {
+				x.entityFields[[2]string{u.Program, u.Field}] = EntityFieldRef{Record: e.Record, Field: f.Name}
 			}
 		}
 	}

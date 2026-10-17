@@ -8,6 +8,14 @@
         "WS-CLOSED-MONTH-NUMBER = 0",
         "SORT-RETURN = 0"
       ],
+      "conditionRefs": [
+        [
+          "WS-CLOSED-MONTH-NUMBER"
+        ],
+        [
+          "SORT-RETURN"
+        ]
+      ],
       "actions": [
         "PERFORM 1000-INITIALIZE",
         "SORT STMT-SORT ON ASCENDING KEY SR-ACCT-NO SR-DATE SR-SEQ INPUT PROCEDURE IS 2000-SELECT-POSTINGS OUTPUT PROCEDURE IS 3000-PRINT-STATEMENTS",
@@ -71,6 +79,15 @@
         "WS-FILE-STATUSES = ALL '0'",
         "READ ACCR-IN AT END",
         "WS-CM-MONTH = 12"
+      ],
+      "conditionRefs": [
+        [
+          "WS-FILE-STATUSES"
+        ],
+        null,
+        [
+          "WS-CM-MONTH"
+        ]
       ],
       "actions": [
         "OPEN INPUT ACCR-IN ACCT-IN AUDIT-IN OUTPUT STMT-OUT REPORT-OUT",
@@ -167,6 +184,11 @@
       "conditions": [
         "WS-AUDIT-STATUS = '10'"
       ],
+      "conditionRefs": [
+        [
+          "WS-AUDIT-STATUS"
+        ]
+      ],
       "actions": [
         "READ AUDIT-IN",
         "PERFORM UNTIL WS-AUDIT-STATUS NOT = '00'",
@@ -202,6 +224,14 @@
       "source": "pangaea/programs/STMTPRT.cbl:251",
       "conditions": [
         "WS-POSTING-MONTH = WS-CLOSED-MONTH OR (WS-POSTING-MONTH = WS-NEXT-MONTH AND WS-MONTH-END-CODE)"
+      ],
+      "conditionRefs": [
+        [
+          "WS-POSTING-MONTH",
+          "WS-CLOSED-MONTH",
+          "WS-NEXT-MONTH",
+          "WS-POSTING-CODE"
+        ]
       ],
       "actions": [
         "ADD 1 TO WS-SEQ",
@@ -242,6 +272,11 @@
       "conditions": [
         "POSTINGS-AT-END"
       ],
+      "conditionRefs": [
+        [
+          "WS-POSTING-END-SW"
+        ]
+      ],
       "actions": [
         "PERFORM 3100-RETURN-POSTING",
         "PERFORM 3200-READ-MASTER",
@@ -281,6 +316,12 @@
       "conditions": [
         "WS-POSTING-KEY \u003c AM-ACCT-NO"
       ],
+      "conditionRefs": [
+        [
+          "WS-POSTING-KEY",
+          "AM-ACCT-NO"
+        ]
+      ],
       "actions": [
         "MOVE 'POSTINGS FOR NO ACCOUNT' TO WS-ABORT-MESSAGE",
         "PERFORM 9900-ABORT",
@@ -316,6 +357,9 @@
       "conditions": [
         "RETURN STMT-SORT AT END"
       ],
+      "conditionRefs": [
+        null
+      ],
       "actions": [
         "RETURN STMT-SORT",
         "SET POSTINGS-AT-END TO TRUE",
@@ -350,6 +394,9 @@
       "conditions": [
         "READ ACCT-IN AT END"
       ],
+      "conditionRefs": [
+        null
+      ],
       "actions": [
         "READ ACCT-IN",
         "SET MASTER-AT-END TO TRUE",
@@ -382,6 +429,18 @@
       "conditions": [
         "AM-CLOSED AND AM-BALANCE = 0 AND WS-POSTING-KEY NOT = AM-ACCT-NO",
         "WS-POSTING-KEY = AM-ACCT-NO"
+      ],
+      "conditionRefs": [
+        [
+          "AM-STATUS",
+          "AM-BALANCE",
+          "WS-POSTING-KEY",
+          "AM-ACCT-NO"
+        ],
+        [
+          "WS-POSTING-KEY",
+          "AM-ACCT-NO"
+        ]
       ],
       "actions": [
         "EXIT PARAGRAPH",
@@ -468,6 +527,18 @@
         "AM-SAVINGS AND AM-FROZEN",
         "AM-SAVINGS",
         "AM-FROZEN"
+      ],
+      "conditionRefs": [
+        [
+          "AM-ACCT-TYPE",
+          "AM-STATUS"
+        ],
+        [
+          "AM-ACCT-TYPE"
+        ],
+        [
+          "AM-STATUS"
+        ]
       ],
       "actions": [
         "WRITE STMT-LINE FROM WS-RULE-LINE",
@@ -590,6 +661,16 @@
         "ST-CODE(ST-CX) = SR-TRAN-CODE",
         "SR-AMOUNT \u003c 0"
       ],
+      "conditionRefs": [
+        [
+          "ST-CODE",
+          "ST-CX",
+          "SR-TRAN-CODE"
+        ],
+        [
+          "SR-AMOUNT"
+        ]
+      ],
       "actions": [
         "MOVE SR-DATE TO WS-DATE",
         "MOVE WS-DATE-YEAR TO WS-PL-YEAR",
@@ -705,6 +786,15 @@
       "conditions": [
         "WS-CLOSED-MONTH-NUMBER = 0",
         "WS-PRINTED-COUNT = WS-SELECTED-COUNT"
+      ],
+      "conditionRefs": [
+        [
+          "WS-CLOSED-MONTH-NUMBER"
+        ],
+        [
+          "WS-PRINTED-COUNT",
+          "WS-SELECTED-COUNT"
+        ]
       ],
       "actions": [
         "MOVE 'STMTPRT  MONTHLY STATEMENTS' TO REPORT-LINE",

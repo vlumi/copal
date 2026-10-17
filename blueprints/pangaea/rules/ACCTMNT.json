@@ -8,6 +8,15 @@
         "WS-BALANCES-OUT = WS-BALANCES-IN",
         "WS-REJECT-COUNT \u003e 0"
       ],
+      "conditionRefs": [
+        [
+          "WS-BALANCES-OUT",
+          "WS-BALANCES-IN"
+        ],
+        [
+          "WS-REJECT-COUNT"
+        ]
+      ],
       "actions": [
         "PERFORM 1000-INITIALIZE",
         "PERFORM 2000-NEXT-ACCOUNT THRU 2999-EXIT UNTIL WS-MASTER-KEY = HIGH-VALUES AND WS-REQUEST-KEY = HIGH-VALUES",
@@ -89,6 +98,12 @@
         "WS-FILE-STATUSES = ALL '0'",
         "READ CONTROL-FILE AT END"
       ],
+      "conditionRefs": [
+        [
+          "WS-FILE-STATUSES"
+        ],
+        null
+      ],
       "actions": [
         "OPEN INPUT CONTROL-FILE ACCT-IN MAINT-IN OUTPUT ACCT-OUT REJECT-OUT REPORT-OUT",
         "DISPLAY 'ACCTMNT: CANNOT OPEN FILES ' WS-FILE-STATUSES",
@@ -154,6 +169,13 @@
         "READ ACCT-IN AT END",
         "WS-MASTER-KEY \u003e WS-PREV-MASTER-KEY"
       ],
+      "conditionRefs": [
+        null,
+        [
+          "WS-MASTER-KEY",
+          "WS-PREV-MASTER-KEY"
+        ]
+      ],
       "actions": [
         "READ ACCT-IN",
         "MOVE HIGH-VALUES TO WS-MASTER-KEY",
@@ -210,6 +232,13 @@
       "conditions": [
         "READ MAINT-IN AT END",
         "WS-REQUEST-ORDER-KEY \u003e WS-PREV-REQUEST-ORDER-KEY"
+      ],
+      "conditionRefs": [
+        null,
+        [
+          "WS-REQUEST-ORDER-KEY",
+          "WS-PREV-REQUEST-ORDER-KEY"
+        ]
       ],
       "actions": [
         "READ MAINT-IN",
@@ -270,6 +299,16 @@
       "conditions": [
         "WS-REQUEST-KEY \u003c WS-MASTER-KEY",
         "WS-MASTER-KEY = WS-ACTIVE-KEY"
+      ],
+      "conditionRefs": [
+        [
+          "WS-REQUEST-KEY",
+          "WS-MASTER-KEY"
+        ],
+        [
+          "WS-MASTER-KEY",
+          "WS-ACTIVE-KEY"
+        ]
       ],
       "actions": [
         "MOVE WS-MASTER-KEY TO WS-ACTIVE-KEY",
@@ -339,6 +378,12 @@
       "conditions": [
         "WS-REQUEST-KEY = WS-ACTIVE-KEY"
       ],
+      "conditionRefs": [
+        [
+          "WS-REQUEST-KEY",
+          "WS-ACTIVE-KEY"
+        ]
+      ],
       "actions": [
         "GO TO 2800-WRITE-HELD",
         "PERFORM 2200-APPLY-REQUEST THRU 2299-EXIT",
@@ -377,6 +422,29 @@
         "MR-FREEZE",
         "MR-UNFREEZE",
         "MR-LIMIT"
+      ],
+      "conditionRefs": [
+        [
+          "MR-REQUEST-TYPE"
+        ],
+        [
+          "WS-HELD-SW"
+        ],
+        [
+          "AM-STATUS"
+        ],
+        [
+          "MR-REQUEST-TYPE"
+        ],
+        [
+          "MR-REQUEST-TYPE"
+        ],
+        [
+          "MR-REQUEST-TYPE"
+        ],
+        [
+          "MR-REQUEST-TYPE"
+        ]
       ],
       "actions": [
         "GO TO 2210-OPEN",
@@ -514,6 +582,14 @@
         "ACCOUNT-HELD",
         "AM-SAVINGS"
       ],
+      "conditionRefs": [
+        [
+          "WS-HELD-SW"
+        ],
+        [
+          "AM-ACCT-TYPE"
+        ]
+      ],
       "actions": [
         "SET RJ-EXISTS TO TRUE",
         "GO TO 2290-REJECT",
@@ -591,6 +667,11 @@
       "conditions": [
         "AM-BALANCE = 0"
       ],
+      "conditionRefs": [
+        [
+          "AM-BALANCE"
+        ]
+      ],
       "actions": [
         "SET RJ-HAS-BALANCE TO TRUE",
         "GO TO 2290-REJECT",
@@ -628,6 +709,11 @@
       "conditions": [
         "AM-OPEN"
       ],
+      "conditionRefs": [
+        [
+          "AM-STATUS"
+        ]
+      ],
       "actions": [
         "SET RJ-BAD-STATUS TO TRUE",
         "GO TO 2290-REJECT",
@@ -662,6 +748,11 @@
       "source": "pangaea/programs/ACCTMNT.cbl:275",
       "conditions": [
         "AM-FROZEN"
+      ],
+      "conditionRefs": [
+        [
+          "AM-STATUS"
+        ]
       ],
       "actions": [
         "SET RJ-BAD-STATUS TO TRUE",
@@ -698,6 +789,11 @@
       "conditions": [
         "AM-CURRENT"
       ],
+      "conditionRefs": [
+        [
+          "AM-ACCT-TYPE"
+        ]
+      ],
       "actions": [
         "SET RJ-BAD-TYPE TO TRUE",
         "GO TO 2290-REJECT",
@@ -732,6 +828,11 @@
       "source": "pangaea/programs/ACCTMNT.cbl:302",
       "conditions": [
         "ACCOUNT-HELD"
+      ],
+      "conditionRefs": [
+        [
+          "WS-HELD-SW"
+        ]
       ],
       "actions": [
         "WRITE ACCT-OUT-RECORD FROM ACCT-MASTER-RECORD",

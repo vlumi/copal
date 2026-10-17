@@ -8,6 +8,12 @@
         "WS-FILE-STATUSES = ALL '0'",
         "READ CONTROL-FILE AT END"
       ],
+      "conditionRefs": [
+        [
+          "WS-FILE-STATUSES"
+        ],
+        null
+      ],
       "actions": [
         "OPEN INPUT CONTROL-FILE CARD-IN OUTPUT ONLINE-OUT REPORT-OUT",
         "DISPLAY 'CARDLOAD: CANNOT OPEN FILES ' WS-FILE-STATUSES",
@@ -66,6 +72,9 @@
       "conditions": [
         "READ CARD-IN AT END"
       ],
+      "conditionRefs": [
+        null
+      ],
       "actions": [
         "READ CARD-IN",
         "SET MASTER-AT-END TO TRUE",
@@ -98,6 +107,15 @@
       "conditions": [
         "CR-EXPIRY-MONTH \u003c WS-BUSINESS-MONTH",
         "CR-BLOCKED"
+      ],
+      "conditionRefs": [
+        [
+          "CR-EXPIRY-MONTH",
+          "WS-BUSINESS-MONTH"
+        ],
+        [
+          "CR-STATUS"
+        ]
       ],
       "actions": [
         "ADD 1 TO WS-EXPIRED-COUNT",
@@ -144,6 +162,9 @@
       "source": "pangaea/programs/CARDLOAD.cbl:128",
       "conditions": [
         "WRITE ONLINE-CARD FROM CARD-RECORD INVALID KEY"
+      ],
+      "conditionRefs": [
+        null
       ],
       "actions": [
         "WRITE ONLINE-CARD FROM CARD-RECORD",

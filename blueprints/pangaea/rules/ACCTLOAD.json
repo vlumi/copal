@@ -8,6 +8,12 @@
         "WS-FILE-STATUSES = ALL '0'",
         "READ CONTROL-FILE AT END"
       ],
+      "conditionRefs": [
+        [
+          "WS-FILE-STATUSES"
+        ],
+        null
+      ],
       "actions": [
         "OPEN INPUT CONTROL-FILE ACCT-IN OUTPUT ONLINE-OUT HOLD-OUT REPORT-OUT",
         "DISPLAY 'ACCTLOAD: CANNOT OPEN FILES ' WS-FILE-STATUSES",
@@ -66,6 +72,9 @@
       "conditions": [
         "READ ACCT-IN AT END"
       ],
+      "conditionRefs": [
+        null
+      ],
       "actions": [
         "READ ACCT-IN",
         "SET MASTER-AT-END TO TRUE",
@@ -98,6 +107,11 @@
       "conditions": [
         "AM-CLOSED"
       ],
+      "conditionRefs": [
+        [
+          "AM-STATUS"
+        ]
+      ],
       "actions": [
         "ADD 1 TO WS-CLOSED-COUNT",
         "PERFORM 1200-READ-ACCOUNT",
@@ -129,6 +143,9 @@
       "source": "pangaea/programs/ACCTLOAD.cbl:133",
       "conditions": [
         "WRITE ACCT-ONLINE-RECORD INVALID KEY"
+      ],
+      "conditionRefs": [
+        null
       ],
       "actions": [
         "MOVE SPACES TO ACCT-ONLINE-RECORD",

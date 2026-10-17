@@ -217,3 +217,73 @@ func TestExternal(t *testing.T) {
 		t.Errorf("a highlight does not show on an external node:\n%s", svg)
 	}
 }
+
+// Edges both ways between two nodes are drawn side by side, not over
+// each other.
+func TestEdgesBothWays(t *testing.T) {
+	g := Graph{Nodes: []Node{{ID: "a", Label: "OPEN"}, {ID: "b", Label: "FROZEN"}},
+		Edges: []Edge{{From: "a", To: "b"}, {From: "b", To: "a"}}}
+	l, err := newLayout(g)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(l.edges) != 2 || l.edges[0].topLane == l.edges[1].topLane || l.edges[0].lowerLane == l.edges[1].lowerLane {
+		t.Errorf("edges %+v", l.edges)
+	}
+	var b strings.Builder
+	for _, e := range l.edges {
+		l.writeEdge(&b, e)
+	}
+	d := func(path string) string {
+		_, after, _ := strings.Cut(path, ` d="`)
+		line, _, _ := strings.Cut(after, `"`)
+		return line
+	}
+	paths := strings.Split(strings.TrimSpace(b.String()), "\n")
+	if len(paths) != 2 || d(paths[0]) == d(paths[1]) {
+		t.Errorf("edges drawn over each other:\n%s", b.String())
+	}
+}
+
+// An edge's label is written on a waypoint of its own, as wide and tall
+// as the label, so that labels side by side do not overlap.
+func TestEdgeLabels(t *testing.T) {
+	g := Graph{Nodes: []Node{{ID: "a", Label: "A"}, {ID: "b", Label: "B"}, {ID: "c", Label: "C"}},
+		Edges: []Edge{
+			{From: "a", To: "b", Label: "P 1000-ONE\nQ 2000-TWO\nR 3000-THREE"},
+			{From: "a", To: "c", Label: "S 4000-FOUR"},
+			{From: "c", To: "a", Label: "T 5000-FIVE-BACK"},
+		}}
+	l, err := newLayout(g)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var waypoints []*slot
+	for _, e := range l.edges {
+		w := e.chain[len(e.chain)/2]
+		if w.node >= 0 || w.width < labelWidth(e.label) || w.height < len(e.label)*lineHeight {
+			t.Errorf("label %q on %+v", e.label, w)
+		}
+		waypoints = append(waypoints, w)
+	}
+	for i, w := range waypoints {
+		for _, v := range waypoints[i+1:] {
+			if w.layer == v.layer && w.x < v.x+v.width && v.x < w.x+w.width {
+				t.Errorf("labels overlap: %+v and %+v", w, v)
+			}
+		}
+	}
+	svg, err := g.SVG()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{">Q 2000-TWO</text>", ">T 5000-FIVE-BACK</text>"} {
+		if !strings.Contains(string(svg), want) {
+			t.Errorf("no %s in\n%s", want, svg)
+		}
+	}
+	again, _ := g.SVG()
+	if string(again) != string(svg) {
+		t.Error("labels drawn differently twice")
+	}
+}

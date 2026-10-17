@@ -8,6 +8,12 @@
         "WS-FILE-STATUSES = ALL '0'",
         "READ CONTROL-FILE AT END"
       ],
+      "conditionRefs": [
+        [
+          "WS-FILE-STATUSES"
+        ],
+        null
+      ],
       "actions": [
         "OPEN INPUT CONTROL-FILE ACCT-IN ACCR-IN OUTPUT TRAN-OUT REPORT-OUT",
         "DISPLAY 'MONCHG: CANNOT OPEN FILES ' WS-FILE-STATUSES",
@@ -71,6 +77,20 @@
         "READ ACCR-IN AT END",
         "MASTER-AT-END AND ACCRUALS-AT-END",
         "MASTER-AT-END OR ACCRUALS-AT-END OR AC-ACCT-NO NOT = AM-ACCT-NO"
+      ],
+      "conditionRefs": [
+        null,
+        null,
+        [
+          "WS-MASTER-END-SW",
+          "WS-ACCRUAL-END-SW"
+        ],
+        [
+          "WS-MASTER-END-SW",
+          "WS-ACCRUAL-END-SW",
+          "AC-ACCT-NO",
+          "AM-ACCT-NO"
+        ]
       ],
       "actions": [
         "READ ACCT-IN",
@@ -258,6 +278,11 @@
       "conditions": [
         "AC-DUE-MONTH = 0"
       ],
+      "conditionRefs": [
+        [
+          "AC-DUE-MONTH"
+        ]
+      ],
       "actions": [
         "MOVE AC-DUE-MONTH TO WS-CLOSED-MONTH",
         "MOVE WS-CM-YYMM TO WS-TI-YYMM",
@@ -294,6 +319,14 @@
       "conditions": [
         "AC-DUE \u003e 0",
         "AC-DUE \u003c 0"
+      ],
+      "conditionRefs": [
+        [
+          "AC-DUE"
+        ],
+        [
+          "AC-DUE"
+        ]
       ],
       "actions": [
         "SET TD-INTEREST TO TRUE",
@@ -356,6 +389,16 @@
         "AM-ACCT-TYPE = 'C' AND AM-STATUS = 'O'",
         "AM-BALANCE \u003c WS-FEE-WAIVER-BALANCE"
       ],
+      "conditionRefs": [
+        [
+          "AM-ACCT-TYPE",
+          "AM-STATUS"
+        ],
+        [
+          "AM-BALANCE",
+          "WS-FEE-WAIVER-BALANCE"
+        ]
+      ],
       "actions": [
         "SET TD-MAINTENANCE-FEE TO TRUE",
         "MOVE WS-MAINTENANCE-FEE TO TD-AMOUNT",
@@ -406,6 +449,11 @@
       "source": "pangaea/programs/MONCHG.cbl:220",
       "conditions": [
         "WS-CLOSED-MONTH = 0"
+      ],
+      "conditionRefs": [
+        [
+          "WS-CLOSED-MONTH"
+        ]
       ],
       "actions": [
         "MOVE SPACES TO REPORT-LINE",
