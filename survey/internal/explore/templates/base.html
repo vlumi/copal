@@ -27,6 +27,19 @@
 
 {{define "src"}}<a href="{{source .}}">{{sourceText .}}</a>{{end}}
 
+{{define "states"}}{{$m := .Field.States}}
+{{if .Diagram}}<div class="diagram">{{.Diagram}}</div>
+<table>
+  <thead><tr><th>From</th><th>To</th><th>Program</th><th>Paragraph</th><th>Source</th></tr></thead>
+  <tbody>
+  {{range $m.Transitions}}<tr><td>{{.From}}</td><td>{{.To}}</td><td><a href="{{program .Program}}">{{.Program}}</a></td><td><a href="{{paragraph .Program .Paragraph}}">{{.Paragraph}}</a></td><td>{{template "src" .Source}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{else}}<p><strong>No transitions.</strong> No program sets {{.Field.Name}} to one of its states, {{range $i, $s := $m.States}}{{if $i}}, {{end}}{{$s.Name}}{{end}}: nothing in the system changes it{{if $m.Copies}} but by copying it from another field{{end}}.</p>{{end}}
+{{with $m.Copies}}<p class="note">Not drawn, as the state they give is whatever the other field holds: {{range $i, $c := .}}{{if $i}}; {{end}}<a href="{{program $c.Program}}">{{$c.Program}}</a> moves {{$c.From}} into it in <a href="{{paragraph $c.Program $c.Paragraph}}">{{$c.Paragraph}}</a>{{end}}.</p>{{end}}
+{{end}}
+
 {{define "decisions"}}
 <table>
   <thead><tr><th>Paragraph</th><th>Conditions</th><th>Source</th></tr></thead>

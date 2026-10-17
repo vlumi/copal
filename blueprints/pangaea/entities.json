@@ -484,7 +484,31 @@
             "program": "TXPOST",
             "field": "AM-ACCT-TYPE"
           }
-        ]
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "AM-CURRENT",
+              "values": [
+                "'C'"
+              ]
+            },
+            {
+              "name": "AM-SAVINGS",
+              "values": [
+                "'S'"
+              ]
+            }
+          ],
+          "copies": [
+            {
+              "program": "ACCTMNT",
+              "from": "MR-ACCT-TYPE",
+              "paragraph": "2210-OPEN",
+              "source": "pangaea/programs/ACCTMNT.cbl:244"
+            }
+          ]
+        }
       },
       {
         "name": "AM-STATUS",
@@ -607,7 +631,59 @@
               }
             ]
           }
-        ]
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "AM-OPEN",
+              "values": [
+                "'O'"
+              ]
+            },
+            {
+              "name": "AM-FROZEN",
+              "values": [
+                "'F'"
+              ]
+            },
+            {
+              "name": "AM-CLOSED",
+              "values": [
+                "'X'"
+              ]
+            }
+          ],
+          "transitions": [
+            {
+              "from": "any",
+              "to": "AM-OPEN",
+              "program": "ACCTMNT",
+              "paragraph": "2210-OPEN",
+              "source": "pangaea/programs/ACCTMNT.cbl:245"
+            },
+            {
+              "from": "any",
+              "to": "AM-CLOSED",
+              "program": "ACCTMNT",
+              "paragraph": "2220-CLOSE",
+              "source": "pangaea/programs/ACCTMNT.cbl:260"
+            },
+            {
+              "from": "AM-OPEN",
+              "to": "AM-FROZEN",
+              "program": "ACCTMNT",
+              "paragraph": "2230-FREEZE",
+              "source": "pangaea/programs/ACCTMNT.cbl:270"
+            },
+            {
+              "from": "AM-FROZEN",
+              "to": "AM-OPEN",
+              "program": "ACCTMNT",
+              "paragraph": "2240-UNFREEZE",
+              "source": "pangaea/programs/ACCTMNT.cbl:279"
+            }
+          ]
+        }
       },
       {
         "name": "AM-OPEN-DATE",
@@ -980,7 +1056,31 @@
             "program": "AUTHSRV",
             "field": "AO-ACCT-TYPE"
           }
-        ]
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "AO-CURRENT",
+              "values": [
+                "'C'"
+              ]
+            },
+            {
+              "name": "AO-SAVINGS",
+              "values": [
+                "'S'"
+              ]
+            }
+          ],
+          "copies": [
+            {
+              "program": "ACCTLOAD",
+              "from": "AM-ACCT-TYPE",
+              "paragraph": "2100-WRITE-ONLINE",
+              "source": "pangaea/programs/ACCTLOAD.cbl:138"
+            }
+          ]
+        }
       },
       {
         "name": "AO-STATUS",
@@ -1049,7 +1149,31 @@
             "program": "AUTHSRV",
             "field": "AO-STATUS"
           }
-        ]
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "AO-OPEN",
+              "values": [
+                "'O'"
+              ]
+            },
+            {
+              "name": "AO-FROZEN",
+              "values": [
+                "'F'"
+              ]
+            }
+          ],
+          "copies": [
+            {
+              "program": "ACCTLOAD",
+              "from": "AM-STATUS",
+              "paragraph": "2100-WRITE-ONLINE",
+              "source": "pangaea/programs/ACCTLOAD.cbl:139"
+            }
+          ]
+        }
       },
       {
         "name": "AO-BALANCE",
@@ -1506,7 +1630,35 @@
               }
             ]
           }
-        ]
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "RQ-PURCHASE",
+              "values": [
+                "'PURC'"
+              ]
+            },
+            {
+              "name": "RQ-REVERSAL",
+              "values": [
+                "'REVS'"
+              ]
+            },
+            {
+              "name": "RQ-WITHDRAWAL",
+              "values": [
+                "'WDRL'"
+              ]
+            },
+            {
+              "name": "RQ-BALANCE-ENQUIRY",
+              "values": [
+                "'BALQ'"
+              ]
+            }
+          ]
+        }
       },
       {
         "name": "RQ-CARD-NO",
@@ -1754,7 +1906,228 @@
               }
             ]
           }
-        ]
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "RS-APPROVED",
+              "values": [
+                "'00'"
+              ]
+            },
+            {
+              "name": "RS-INVALID-REQUEST",
+              "values": [
+                "'12'"
+              ]
+            },
+            {
+              "name": "RS-INVALID-AMOUNT",
+              "values": [
+                "'13'"
+              ]
+            },
+            {
+              "name": "RS-NO-SUCH-CARD",
+              "values": [
+                "'14'"
+              ]
+            },
+            {
+              "name": "RS-NO-SUCH-AUTH",
+              "values": [
+                "'25'"
+              ]
+            },
+            {
+              "name": "RS-INSUFFICIENT-FUNDS",
+              "values": [
+                "'51'"
+              ]
+            },
+            {
+              "name": "RS-OVER-LIMIT",
+              "values": [
+                "'61'"
+              ]
+            },
+            {
+              "name": "RS-CARD-BLOCKED",
+              "values": [
+                "'62'"
+              ]
+            },
+            {
+              "name": "RS-ACCOUNT-NOT-OPEN",
+              "values": [
+                "'78'"
+              ]
+            }
+          ],
+          "transitions": [
+            {
+              "from": "any",
+              "to": "RS-CARD-BLOCKED",
+              "program": "ATMBAL",
+              "paragraph": "0000-MAIN",
+              "source": "pangaea/programs/ATMBAL.cbl:37"
+            },
+            {
+              "from": "any",
+              "to": "RS-ACCOUNT-NOT-OPEN",
+              "program": "ATMBAL",
+              "paragraph": "0000-MAIN",
+              "source": "pangaea/programs/ATMBAL.cbl:40"
+            },
+            {
+              "from": "any",
+              "to": "RS-APPROVED",
+              "program": "ATMBAL",
+              "paragraph": "0000-MAIN",
+              "source": "pangaea/programs/ATMBAL.cbl:43"
+            },
+            {
+              "from": "any",
+              "to": "RS-CARD-BLOCKED",
+              "program": "ATMWDL",
+              "paragraph": "0000-MAIN",
+              "source": "pangaea/programs/ATMWDL.cbl:60"
+            },
+            {
+              "from": "any",
+              "to": "RS-ACCOUNT-NOT-OPEN",
+              "program": "ATMWDL",
+              "paragraph": "0000-MAIN",
+              "source": "pangaea/programs/ATMWDL.cbl:63"
+            },
+            {
+              "from": "any",
+              "to": "RS-INVALID-AMOUNT",
+              "program": "ATMWDL",
+              "paragraph": "0000-MAIN",
+              "source": "pangaea/programs/ATMWDL.cbl:67"
+            },
+            {
+              "from": "any",
+              "to": "RS-OVER-LIMIT",
+              "program": "ATMWDL",
+              "paragraph": "0000-MAIN",
+              "source": "pangaea/programs/ATMWDL.cbl:70"
+            },
+            {
+              "from": "any",
+              "to": "RS-INSUFFICIENT-FUNDS",
+              "program": "ATMWDL",
+              "paragraph": "0000-MAIN",
+              "source": "pangaea/programs/ATMWDL.cbl:73"
+            },
+            {
+              "from": "any",
+              "to": "RS-APPROVED",
+              "program": "ATMWDL",
+              "paragraph": "2000-APPROVE",
+              "source": "pangaea/programs/ATMWDL.cbl:105"
+            },
+            {
+              "from": "any",
+              "to": "RS-CARD-BLOCKED",
+              "program": "AUTHPUR",
+              "paragraph": "0000-MAIN",
+              "source": "pangaea/programs/AUTHPUR.cbl:45"
+            },
+            {
+              "from": "any",
+              "to": "RS-ACCOUNT-NOT-OPEN",
+              "program": "AUTHPUR",
+              "paragraph": "0000-MAIN",
+              "source": "pangaea/programs/AUTHPUR.cbl:48"
+            },
+            {
+              "from": "any",
+              "to": "RS-INVALID-AMOUNT",
+              "program": "AUTHPUR",
+              "paragraph": "0000-MAIN",
+              "source": "pangaea/programs/AUTHPUR.cbl:51"
+            },
+            {
+              "from": "any",
+              "to": "RS-OVER-LIMIT",
+              "program": "AUTHPUR",
+              "paragraph": "0000-MAIN",
+              "source": "pangaea/programs/AUTHPUR.cbl:54"
+            },
+            {
+              "from": "any",
+              "to": "RS-INSUFFICIENT-FUNDS",
+              "program": "AUTHPUR",
+              "paragraph": "0000-MAIN",
+              "source": "pangaea/programs/AUTHPUR.cbl:57"
+            },
+            {
+              "from": "any",
+              "to": "RS-APPROVED",
+              "program": "AUTHPUR",
+              "paragraph": "2000-APPROVE",
+              "source": "pangaea/programs/AUTHPUR.cbl:87"
+            },
+            {
+              "from": "any",
+              "to": "RS-NO-SUCH-AUTH",
+              "program": "AUTHREV",
+              "paragraph": "0000-MAIN",
+              "source": "pangaea/programs/AUTHREV.cbl:40"
+            },
+            {
+              "from": "any",
+              "to": "RS-INVALID-REQUEST",
+              "program": "AUTHREV",
+              "paragraph": "0000-MAIN",
+              "source": "pangaea/programs/AUTHREV.cbl:43"
+            },
+            {
+              "from": "any",
+              "to": "RS-APPROVED",
+              "program": "AUTHREV",
+              "paragraph": "2000-APPROVE",
+              "source": "pangaea/programs/AUTHREV.cbl:61"
+            },
+            {
+              "from": "RS-APPROVED",
+              "to": "RS-INVALID-REQUEST",
+              "program": "AUTHSRV",
+              "paragraph": "2100-AUTHORIZE",
+              "source": "pangaea/programs/AUTHSRV.cbl:167"
+            },
+            {
+              "from": "any",
+              "to": "RS-INVALID-REQUEST",
+              "program": "AUTHSRV",
+              "paragraph": "2100-AUTHORIZE",
+              "source": "pangaea/programs/AUTHSRV.cbl:167"
+            },
+            {
+              "from": "any",
+              "to": "RS-NO-SUCH-CARD",
+              "program": "AUTHSRV",
+              "paragraph": "2200-READ-CARD-AND-ACCOUNT",
+              "source": "pangaea/programs/AUTHSRV.cbl:207"
+            },
+            {
+              "from": "any",
+              "to": "RS-ACCOUNT-NOT-OPEN",
+              "program": "AUTHSRV",
+              "paragraph": "2200-READ-CARD-AND-ACCOUNT",
+              "source": "pangaea/programs/AUTHSRV.cbl:213"
+            },
+            {
+              "from": "any",
+              "to": "RS-NO-SUCH-AUTH",
+              "program": "AUTHSRV",
+              "paragraph": "2300-READ-HOLD",
+              "source": "pangaea/programs/AUTHSRV.cbl:224"
+            }
+          ]
+        }
       },
       {
         "name": "RS-AUTH-CODE",
@@ -2348,7 +2721,23 @@
               }
             ]
           }
-        ]
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "CR-ACTIVE",
+              "values": [
+                "'A'"
+              ]
+            },
+            {
+              "name": "CR-BLOCKED",
+              "values": [
+                "'B'"
+              ]
+            }
+          ]
+        }
       },
       {
         "name": "CR-EXPIRY-MONTH",
@@ -3149,7 +3538,39 @@
               }
             ]
           }
-        ]
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "HD-PURCHASE",
+              "values": [
+                "'P'"
+              ]
+            },
+            {
+              "name": "HD-WITHDRAWAL",
+              "values": [
+                "'W'"
+              ]
+            }
+          ],
+          "transitions": [
+            {
+              "from": "any",
+              "to": "HD-WITHDRAWAL",
+              "program": "ATMWDL",
+              "paragraph": "2000-APPROVE",
+              "source": "pangaea/programs/ATMWDL.cbl:98"
+            },
+            {
+              "from": "any",
+              "to": "HD-PURCHASE",
+              "program": "AUTHPUR",
+              "paragraph": "2000-APPROVE",
+              "source": "pangaea/programs/AUTHPUR.cbl:80"
+            }
+          ]
+        }
       },
       {
         "name": "HD-STATUS",
@@ -3216,7 +3637,46 @@
               }
             ]
           }
-        ]
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "HD-OPEN",
+              "values": [
+                "'O'"
+              ]
+            },
+            {
+              "name": "HD-REVERSED",
+              "values": [
+                "'R'"
+              ]
+            }
+          ],
+          "transitions": [
+            {
+              "from": "any",
+              "to": "HD-OPEN",
+              "program": "ATMWDL",
+              "paragraph": "2000-APPROVE",
+              "source": "pangaea/programs/ATMWDL.cbl:99"
+            },
+            {
+              "from": "any",
+              "to": "HD-OPEN",
+              "program": "AUTHPUR",
+              "paragraph": "2000-APPROVE",
+              "source": "pangaea/programs/AUTHPUR.cbl:81"
+            },
+            {
+              "from": "any",
+              "to": "HD-REVERSED",
+              "program": "AUTHREV",
+              "paragraph": "2000-APPROVE",
+              "source": "pangaea/programs/AUTHREV.cbl:60"
+            }
+          ]
+        }
       },
       {
         "name": "HD-AMOUNT",
@@ -3518,7 +3978,41 @@
               }
             ]
           }
-        ]
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "MR-OPEN",
+              "values": [
+                "'O'"
+              ]
+            },
+            {
+              "name": "MR-CLOSE",
+              "values": [
+                "'C'"
+              ]
+            },
+            {
+              "name": "MR-FREEZE",
+              "values": [
+                "'F'"
+              ]
+            },
+            {
+              "name": "MR-UNFREEZE",
+              "values": [
+                "'U'"
+              ]
+            },
+            {
+              "name": "MR-LIMIT",
+              "values": [
+                "'L'"
+              ]
+            }
+          ]
+        }
       },
       {
         "name": "MR-ACCT-NO",
@@ -3623,7 +4117,23 @@
               "1100-LOAD-RATES"
             ]
           }
-        ]
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "RT-CREDIT",
+              "values": [
+                "'C'"
+              ]
+            },
+            {
+              "name": "RT-DEBIT",
+              "values": [
+                "'D'"
+              ]
+            }
+          ]
+        }
       },
       {
         "name": "RT-FLOOR",
@@ -3726,7 +4236,204 @@
               "3200-VALIDATE-DETAIL"
             ]
           }
-        ]
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "RJ-BAD-ACCOUNT",
+              "values": [
+                "'ACCT'"
+              ]
+            },
+            {
+              "name": "RJ-BAD-COUNTER",
+              "values": [
+                "'CTRA'"
+              ]
+            },
+            {
+              "name": "RJ-BAD-CODE",
+              "values": [
+                "'CODE'"
+              ]
+            },
+            {
+              "name": "RJ-BAD-AMOUNT",
+              "values": [
+                "'AMNT'"
+              ]
+            },
+            {
+              "name": "RJ-BAD-TYPE",
+              "values": [
+                "'TYPE'"
+              ]
+            },
+            {
+              "name": "RJ-NO-ACCOUNT",
+              "values": [
+                "'UNKN'"
+              ]
+            },
+            {
+              "name": "RJ-CLOSED",
+              "values": [
+                "'CLSD'"
+              ]
+            },
+            {
+              "name": "RJ-FROZEN",
+              "values": [
+                "'FRZN'"
+              ]
+            },
+            {
+              "name": "RJ-NO-FUNDS",
+              "values": [
+                "'FUND'"
+              ]
+            },
+            {
+              "name": "RJ-EXISTS",
+              "values": [
+                "'EXST'"
+              ]
+            },
+            {
+              "name": "RJ-HAS-BALANCE",
+              "values": [
+                "'BALN'"
+              ]
+            },
+            {
+              "name": "RJ-BAD-STATUS",
+              "values": [
+                "'STAT'"
+              ]
+            }
+          ],
+          "transitions": [
+            {
+              "from": "any",
+              "to": "RJ-NO-ACCOUNT",
+              "program": "ACCTMNT",
+              "paragraph": "2200-APPLY-REQUEST",
+              "source": "pangaea/programs/ACCTMNT.cbl:219"
+            },
+            {
+              "from": "any",
+              "to": "RJ-CLOSED",
+              "program": "ACCTMNT",
+              "paragraph": "2200-APPLY-REQUEST",
+              "source": "pangaea/programs/ACCTMNT.cbl:222"
+            },
+            {
+              "from": "any",
+              "to": "RJ-BAD-TYPE",
+              "program": "ACCTMNT",
+              "paragraph": "2200-APPLY-REQUEST",
+              "source": "pangaea/programs/ACCTMNT.cbl:232"
+            },
+            {
+              "from": "any",
+              "to": "RJ-EXISTS",
+              "program": "ACCTMNT",
+              "paragraph": "2210-OPEN",
+              "source": "pangaea/programs/ACCTMNT.cbl:238"
+            },
+            {
+              "from": "any",
+              "to": "RJ-HAS-BALANCE",
+              "program": "ACCTMNT",
+              "paragraph": "2220-CLOSE",
+              "source": "pangaea/programs/ACCTMNT.cbl:258"
+            },
+            {
+              "from": "any",
+              "to": "RJ-BAD-STATUS",
+              "program": "ACCTMNT",
+              "paragraph": "2230-FREEZE",
+              "source": "pangaea/programs/ACCTMNT.cbl:268"
+            },
+            {
+              "from": "any",
+              "to": "RJ-BAD-STATUS",
+              "program": "ACCTMNT",
+              "paragraph": "2240-UNFREEZE",
+              "source": "pangaea/programs/ACCTMNT.cbl:277"
+            },
+            {
+              "from": "any",
+              "to": "RJ-BAD-TYPE",
+              "program": "ACCTMNT",
+              "paragraph": "2250-LIMIT",
+              "source": "pangaea/programs/ACCTMNT.cbl:286"
+            },
+            {
+              "from": "any",
+              "to": "RJ-NO-ACCOUNT",
+              "program": "TXPOST",
+              "paragraph": "2000-MATCH",
+              "source": "pangaea/programs/TXPOST.cbl:244"
+            },
+            {
+              "from": "any",
+              "to": "RJ-CLOSED",
+              "program": "TXPOST",
+              "paragraph": "3000-APPLY-TRAN",
+              "source": "pangaea/programs/TXPOST.cbl:260"
+            },
+            {
+              "from": "any",
+              "to": "RJ-FROZEN",
+              "program": "TXPOST",
+              "paragraph": "3000-APPLY-TRAN",
+              "source": "pangaea/programs/TXPOST.cbl:276"
+            },
+            {
+              "from": "any",
+              "to": "RJ-NO-FUNDS",
+              "program": "TXPOST",
+              "paragraph": "3200-POST-DEBIT",
+              "source": "pangaea/programs/TXPOST.cbl:297"
+            },
+            {
+              "from": "any",
+              "to": "RJ-BAD-TYPE",
+              "program": "TXVALID",
+              "paragraph": "3000-READ-DETAILS",
+              "source": "pangaea/programs/TXVALID.cbl:189"
+            },
+            {
+              "from": "any",
+              "to": "RJ-BAD-CODE",
+              "program": "TXVALID",
+              "paragraph": "3200-VALIDATE-DETAIL",
+              "source": "pangaea/programs/TXVALID.cbl:220"
+            },
+            {
+              "from": "any",
+              "to": "RJ-BAD-AMOUNT",
+              "program": "TXVALID",
+              "paragraph": "3200-VALIDATE-DETAIL",
+              "source": "pangaea/programs/TXVALID.cbl:224"
+            },
+            {
+              "from": "any",
+              "to": "RJ-BAD-COUNTER",
+              "program": "TXVALID",
+              "paragraph": "3200-VALIDATE-DETAIL",
+              "source": "pangaea/programs/TXVALID.cbl:229"
+            },
+            {
+              "from": "any",
+              "to": "RJ-BAD-ACCOUNT",
+              "program": "TXVALID",
+              "paragraph": "3200-VALIDATE-DETAIL",
+              "source": "pangaea/programs/TXVALID.cbl:216"
+            }
+          ]
+        }
       },
       {
         "name": "RJ-TRAN",
@@ -3829,7 +4536,59 @@
               }
             ]
           }
-        ]
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "TR-HEADER",
+              "values": [
+                "'H'"
+              ]
+            },
+            {
+              "name": "TR-DETAIL",
+              "values": [
+                "'D'"
+              ]
+            },
+            {
+              "name": "TR-TRAILER",
+              "values": [
+                "'T'"
+              ]
+            }
+          ],
+          "transitions": [
+            {
+              "from": "any",
+              "to": "TR-HEADER",
+              "program": "HOLDEXT",
+              "paragraph": "1000-INITIALIZE",
+              "source": "pangaea/programs/HOLDEXT.cbl:117"
+            },
+            {
+              "from": "any",
+              "to": "TR-DETAIL",
+              "program": "HOLDEXT",
+              "paragraph": "2000-EXTRACT-HOLD",
+              "source": "pangaea/programs/HOLDEXT.cbl:143"
+            },
+            {
+              "from": "any",
+              "to": "TR-TRAILER",
+              "program": "HOLDEXT",
+              "paragraph": "3000-WRITE-TRAILER",
+              "source": "pangaea/programs/HOLDEXT.cbl:176"
+            },
+            {
+              "from": "any",
+              "to": "TR-DETAIL",
+              "program": "MONCHG",
+              "paragraph": "2900-WRITE-TRAN",
+              "source": "pangaea/programs/MONCHG.cbl:213"
+            }
+          ]
+        }
       },
       {
         "name": "TR-BODY",
@@ -3947,7 +4706,32 @@
               }
             ]
           }
-        ]
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "TH-FROM-BRANCHES",
+              "values": [
+                "'BRANCHES'"
+              ]
+            },
+            {
+              "name": "TH-FROM-CARDS",
+              "values": [
+                "'CARDS'"
+              ]
+            }
+          ],
+          "transitions": [
+            {
+              "from": "any",
+              "to": "TH-FROM-CARDS",
+              "program": "HOLDEXT",
+              "paragraph": "1000-INITIALIZE",
+              "source": "pangaea/programs/HOLDEXT.cbl:119"
+            }
+          ]
+        }
       },
       {
         "name": "TH-FILE-SEQ",
@@ -4163,7 +4947,158 @@
               }
             ]
           }
-        ]
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "TD-DEPOSIT",
+              "values": [
+                "'DP'"
+              ]
+            },
+            {
+              "name": "TD-WITHDRAWAL",
+              "values": [
+                "'WD'"
+              ]
+            },
+            {
+              "name": "TD-FEE",
+              "values": [
+                "'FE'"
+              ]
+            },
+            {
+              "name": "TD-TRANSFER",
+              "values": [
+                "'TR'"
+              ]
+            },
+            {
+              "name": "TD-TRANSFER-CREDIT",
+              "values": [
+                "'TC'"
+              ]
+            },
+            {
+              "name": "TD-TRANSFER-RETURN",
+              "values": [
+                "'RT'"
+              ]
+            },
+            {
+              "name": "TD-INTEREST",
+              "values": [
+                "'IN'"
+              ]
+            },
+            {
+              "name": "TD-OVERDRAFT-INTEREST",
+              "values": [
+                "'OD'"
+              ]
+            },
+            {
+              "name": "TD-MAINTENANCE-FEE",
+              "values": [
+                "'MF'"
+              ]
+            },
+            {
+              "name": "TD-CARD-PURCHASE",
+              "values": [
+                "'CP'"
+              ]
+            },
+            {
+              "name": "TD-ATM-WITHDRAWAL",
+              "values": [
+                "'AW'"
+              ]
+            },
+            {
+              "name": "TD-ATM-FEE",
+              "values": [
+                "'AF'"
+              ]
+            },
+            {
+              "name": "TD-KNOWN-CODE",
+              "values": [
+                "'DP'",
+                "'WD'",
+                "'FE'",
+                "'TR'"
+              ]
+            },
+            {
+              "name": "TD-CARD-CODE",
+              "values": [
+                "'CP'",
+                "'AW'",
+                "'AF'"
+              ]
+            }
+          ],
+          "transitions": [
+            {
+              "from": "any",
+              "to": "TD-CARD-PURCHASE",
+              "program": "HOLDEXT",
+              "paragraph": "2000-EXTRACT-HOLD",
+              "source": "pangaea/programs/HOLDEXT.cbl:149"
+            },
+            {
+              "from": "any",
+              "to": "TD-ATM-FEE",
+              "program": "HOLDEXT",
+              "paragraph": "2000-EXTRACT-HOLD",
+              "source": "pangaea/programs/HOLDEXT.cbl:157"
+            },
+            {
+              "from": "any",
+              "to": "TD-ATM-WITHDRAWAL",
+              "program": "HOLDEXT",
+              "paragraph": "2000-EXTRACT-HOLD",
+              "source": "pangaea/programs/HOLDEXT.cbl:151"
+            },
+            {
+              "from": "any",
+              "to": "TD-INTEREST",
+              "program": "MONCHG",
+              "paragraph": "2100-SETTLE-INTEREST",
+              "source": "pangaea/programs/MONCHG.cbl:175"
+            },
+            {
+              "from": "any",
+              "to": "TD-OVERDRAFT-INTEREST",
+              "program": "MONCHG",
+              "paragraph": "2100-SETTLE-INTEREST",
+              "source": "pangaea/programs/MONCHG.cbl:182"
+            },
+            {
+              "from": "any",
+              "to": "TD-MAINTENANCE-FEE",
+              "program": "MONCHG",
+              "paragraph": "2200-CHARGE-FEE",
+              "source": "pangaea/programs/MONCHG.cbl:198"
+            },
+            {
+              "from": "TD-TRANSFER",
+              "to": "TD-TRANSFER-CREDIT",
+              "program": "TXPOST",
+              "paragraph": "3500-WRITE-LEG",
+              "source": "pangaea/programs/TXPOST.cbl:331"
+            },
+            {
+              "from": "any",
+              "to": "TD-TRANSFER-RETURN",
+              "program": "TXPOST",
+              "paragraph": "3500-WRITE-LEG",
+              "source": "pangaea/programs/TXPOST.cbl:333"
+            }
+          ]
+        }
       },
       {
         "name": "TD-AMOUNT",

@@ -367,6 +367,24 @@ type EntityView struct {
 	Datasets []*blueprint.SystemDataset
 	Programs []*blueprint.Program
 	Fields   []EntityFieldUses
+	Machines []StateView
+}
+
+// StateView is a code field's state machine, drawn.
+type StateView struct {
+	Record  string
+	Field   blueprint.EntityField
+	Diagram template.HTML
+}
+
+func stateView(record string, f blueprint.EntityField) (StateView, error) {
+	v := StateView{Record: record, Field: f}
+	if len(f.States.Transitions) == 0 {
+		return v, nil
+	}
+	var err error
+	v.Diagram, err = svg(blueprint.StateGraph(*f.States))
+	return v, err
 }
 
 // EntityFieldUses is a field of an entity and the programs that use it,
@@ -402,6 +420,13 @@ func (s *Server) entity(r *http.Request) (any, error) {
 			}
 		}
 		v.Fields = append(v.Fields, row)
+		if f.States != nil {
+			m, err := stateView(e.Record, f)
+			if err != nil {
+				return nil, err
+			}
+			v.Machines = append(v.Machines, m)
+		}
 	}
 	return v, nil
 }
@@ -409,11 +434,12 @@ func (s *Server) entity(r *http.Request) (any, error) {
 // EntityFieldView is a field of an entity across every program that uses
 // the entity: its layout in the copybook, and each program's use of it.
 type EntityFieldView struct {
-	Entity *blueprint.Entity
-	Layout blueprint.Field
-	Field  blueprint.EntityField
-	Used   []blueprint.FieldUse
-	Unused []string
+	Entity  *blueprint.Entity
+	Layout  blueprint.Field
+	Field   blueprint.EntityField
+	Used    []blueprint.FieldUse
+	Unused  []string
+	Machine *StateView
 }
 
 func (s *Server) entityField(r *http.Request) (any, error) {
@@ -426,6 +452,13 @@ func (s *Server) entityField(r *http.Request) (any, error) {
 		return nil, fmt.Errorf("field %s of %s: %w", r.PathValue("field"), e.Record, errNotFound)
 	}
 	v := EntityFieldView{Entity: e, Field: f}
+	if f.States != nil {
+		m, err := stateView(e.Record, f)
+		if err != nil {
+			return nil, err
+		}
+		v.Machine = &m
+	}
 	c := s.index.copybooks[e.Copybook]
 	for _, rec := range c.Records {
 		if rec.Name == e.Record {

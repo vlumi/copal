@@ -13,12 +13,14 @@ type Entity struct {
 	Fields   []EntityField `json:"fields"`
 }
 
-// EntityField is a field of an entity, FILLER left out, with its kind
-// and its uses, one for each program that uses the entity.
+// EntityField is a field of an entity, FILLER left out, with its kind,
+// its uses, one for each program that uses the entity, and for a code
+// field, its state machine.
 type EntityField struct {
-	Name string     `json:"name"`
-	Kind string     `json:"kind"`
-	Uses []FieldUse `json:"uses,omitempty"`
+	Name   string        `json:"name"`
+	Kind   string        `json:"kind"`
+	Uses   []FieldUse    `json:"uses,omitempty"`
+	States *StateMachine `json:"states,omitempty"`
 }
 
 // FieldUse is what a program does with a field of an entity: the name it
@@ -44,16 +46,24 @@ func entities(copybooks []Copybook, programs []Program) []Entity {
 			e := Entity{Record: r.Name, Copybook: c.Name}
 			fields := entityFields(r.Field)
 			for _, f := range fields {
-				e.Fields = append(e.Fields, EntityField{Name: f.Name, Kind: f.Kind})
+				ef := EntityField{Name: f.Name, Kind: f.Kind}
+				if f.Kind == KindCode {
+					ef.States = newStateMachine(f)
+				}
+				e.Fields = append(e.Fields, ef)
 			}
-			for _, p := range programs {
+			for k := range programs {
+				p := &programs[k]
 				i := slices.IndexFunc(p.Records, func(pr Record) bool { return pr.Copybook == c.Name && pr.Source == r.Source })
 				if i < 0 {
 					continue
 				}
 				e.Programs = append(e.Programs, p.Name)
 				for j, f := range entityFields(p.Records[i].Field) {
-					e.Fields[j].Uses = append(e.Fields[j].Uses, fieldUse(p, f.Name))
+					e.Fields[j].Uses = append(e.Fields[j].Uses, fieldUse(*p, f.Name))
+					if m := e.Fields[j].States; m != nil {
+						m.add(newCodeField(p, f, fields[j]))
+					}
 				}
 			}
 			list = append(list, e)
