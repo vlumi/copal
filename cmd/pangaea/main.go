@@ -23,8 +23,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/vlumi/copal/bedrock/jcl"
 	"github.com/vlumi/copal/blueprint"
-	"github.com/vlumi/copal/jcl"
 	"github.com/vlumi/copal/pangaea/bank"
 	"github.com/vlumi/copal/pangaea/compile"
 	"github.com/vlumi/copal/pangaea/console"

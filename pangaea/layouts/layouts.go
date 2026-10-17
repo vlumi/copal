@@ -6,7 +6,7 @@ package layouts
 import (
 	"path/filepath"
 
-	"github.com/vlumi/copal/record"
+	"github.com/vlumi/copal/bedrock/record"
 )
 
 // Layouts are the bank's record layouts.

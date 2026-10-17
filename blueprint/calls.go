@@ -5,7 +5,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/vlumi/copal/cobol"
+	"github.com/vlumi/copal/bedrock/cobol"
 )
 
 // Call is a CALL statement naming the program it calls, with the items it

@@ -9,10 +9,10 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/vlumi/copal/bedrock/record"
 	"github.com/vlumi/copal/blueprint"
 	"github.com/vlumi/copal/pangaea/dataset"
 	"github.com/vlumi/copal/pangaea/layouts"
-	"github.com/vlumi/copal/record"
 )
 
 // Ledger reads the bank's datasets through the layouts, and its jobs' runs

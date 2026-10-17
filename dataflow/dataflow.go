@@ -12,8 +12,8 @@ package dataflow
 import (
 	"slices"
 
-	"github.com/vlumi/copal/cobol"
-	"github.com/vlumi/copal/layout"
+	"github.com/vlumi/copal/bedrock/cobol"
+	"github.com/vlumi/copal/bedrock/layout"
 )
 
 // Flow is what a program does with its data.

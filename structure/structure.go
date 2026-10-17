@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"slices"
 
-	"github.com/vlumi/copal/cobol"
+	"github.com/vlumi/copal/bedrock/cobol"
 )
 
 // Paragraph is a paragraph with the PERFORM and GO TO statements in it,

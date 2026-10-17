@@ -9,10 +9,10 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/vlumi/copal/cobol"
+	"github.com/vlumi/copal/bedrock/cobol"
+	"github.com/vlumi/copal/bedrock/layout"
 	"github.com/vlumi/copal/dataflow"
 	"github.com/vlumi/copal/fileio"
-	"github.com/vlumi/copal/layout"
 	"github.com/vlumi/copal/rules"
 	"github.com/vlumi/copal/structure"
 )

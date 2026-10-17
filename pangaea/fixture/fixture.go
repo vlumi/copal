@@ -17,10 +17,10 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/vlumi/copal/bedrock/layout"
+	"github.com/vlumi/copal/bedrock/record"
 	"github.com/vlumi/copal/blueprint"
-	"github.com/vlumi/copal/layout"
 	"github.com/vlumi/copal/pangaea/dataset"
-	"github.com/vlumi/copal/record"
 )
 
 // FieldsExtension marks a dataset written field by field.

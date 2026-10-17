@@ -5,7 +5,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/vlumi/copal/cobol"
+	"github.com/vlumi/copal/bedrock/cobol"
 )
 
 func TestUses(t *testing.T) {

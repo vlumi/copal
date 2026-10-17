@@ -5,9 +5,9 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/vlumi/copal/cobol"
+	"github.com/vlumi/copal/bedrock/cobol"
+	"github.com/vlumi/copal/bedrock/jcl"
 	"github.com/vlumi/copal/diagram"
-	"github.com/vlumi/copal/jcl"
 )
 
 // Job is the blueprint of a job: its steps, the datasets each step's DD

@@ -17,7 +17,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/vlumi/copal/cobol"
+	"github.com/vlumi/copal/bedrock/cobol"
 	"github.com/vlumi/copal/structure"
 )
 

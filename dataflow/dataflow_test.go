@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/vlumi/copal/cobol"
-	"github.com/vlumi/copal/layout"
+	"github.com/vlumi/copal/bedrock/cobol"
+	"github.com/vlumi/copal/bedrock/layout"
 )
 
 func TestAnalyze(t *testing.T) {

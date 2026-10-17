@@ -4,7 +4,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/vlumi/copal/layout"
+	"github.com/vlumi/copal/bedrock/layout"
 )
 
 // Origin is where a data item's values come from in the end: a field of a

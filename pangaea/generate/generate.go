@@ -9,8 +9,8 @@ import (
 	"math/rand/v2"
 	"slices"
 
+	"github.com/vlumi/copal/bedrock/record"
 	"github.com/vlumi/copal/pangaea/layouts"
-	"github.com/vlumi/copal/record"
 )
 
 // Generator makes up the bank's records for one seed.
