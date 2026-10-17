@@ -1,0 +1,19 @@
+{{define "title"}}Schedule{{end}}
+{{define "content"}}
+{{with .View}}
+<h1>The order of the jobs</h1>
+<p class="note">Derived from the generations of the datasets the jobs write and read: a job that writes a new generation, NAME(+1), runs before a job that reads the current one, NAME(0), an earlier one, NAME(-1), or every generation by its name. The survey derives the order from the data and cannot know the calendar: how often a job runs, on which days, or that one runs only once, is in the operations guide, not in the files.</p>
+<div class="diagram">{{.Diagram}}</div>
+<h2>The order, in words</h2>
+<ul>
+{{range .Order}}{{if ne .Before .After}}<li><a href="{{job .Before}}">{{.Before}}</a> runs before <a href="{{job .After}}">{{.After}}</a>: it writes a new generation of {{template "datasetList" .Datasets}}, which {{.After}} reads.</li>
+{{end}}{{end}}
+{{range .Order}}{{if eq .Before .After}}<li><a href="{{job .Before}}">{{.Before}}</a> runs before its own next run: it reads the generation of {{template "datasetList" .Datasets}} that its last run wrote.</li>
+{{end}}{{end}}
+{{range .Cycles}}{{$c := .}}<li>{{range $i, $j := .}}{{if $i}}{{if eq (add $i 1) (len $c)}} and {{else}}, {{end}}{{end}}<a href="{{job $j}}">{{$j}}</a>{{end}} run in a cycle: each runs both before and after the others, as the jobs of a day that repeats do. The diagram draws the cycle with one of its edges turned back.</li>
+{{end}}
+</ul>
+{{end}}
+{{end}}
+
+{{define "datasetList"}}{{range $i, $d := .}}{{if $i}}, {{end}}<a href="{{dataset $d}}">{{$d}}</a>{{end}}{{end}}
