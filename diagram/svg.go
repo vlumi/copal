@@ -17,6 +17,9 @@ const style = `<style>
 .edge.dotted { stroke-dasharray: 1 3 }
 .head { fill: #8c959f }
 .legend { fill: #f6f8fa; stroke: #d0d7de }
+.box.highlight { stroke: #c2410c; stroke-width: 2.5 }
+.edge.highlight { stroke: #c2410c; stroke-width: 2 }
+.head.highlight { fill: #c2410c }
 @media (prefers-color-scheme: dark) {
   .box { fill: #161b22; stroke: #8b949e }
   .box.data { fill: #1f2a3a; stroke: #6e7681 }
@@ -24,6 +27,8 @@ const style = `<style>
   .edge { stroke: #6e7681 }
   .head { fill: #6e7681 }
   .legend { fill: #0d1117; stroke: #30363d }
+  .box.highlight, .edge.highlight { stroke: #fb923c }
+  .head.highlight { fill: #fb923c }
 }
 </style>
 `
@@ -45,9 +50,13 @@ func (g Graph) SVG() ([]byte, error) {
 		`font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12">`+"\n",
 		l.width, l.height, l.width, l.height)
 	b.WriteString(style)
-	fmt.Fprintf(&b, `<defs><marker id="arrow" viewBox="0 0 %d 8" refX="0" refY="4" markerUnits="userSpaceOnUse" `+
-		`markerWidth="%d" markerHeight="8" orient="auto-start-reverse"><path class="head" d="M0,0 L%d,4 L0,8 z"/></marker></defs>`+"\n",
-		arrowLength, arrowLength, arrowLength)
+	b.WriteString("<defs>")
+	for _, m := range []struct{ id, class string }{{"arrow", "head"}, {"arrow-highlight", "head highlight"}} {
+		fmt.Fprintf(&b, `<marker id="%s" viewBox="0 0 %d 8" refX="0" refY="4" markerUnits="userSpaceOnUse" `+
+			`markerWidth="%d" markerHeight="8" orient="auto-start-reverse"><path class="%s" d="M0,0 L%d,4 L0,8 z"/></marker>`,
+			m.id, arrowLength, arrowLength, m.class, arrowLength)
+	}
+	b.WriteString("</defs>\n")
 	for _, e := range l.edges {
 		l.writeEdge(&b, e)
 	}
@@ -89,14 +98,17 @@ func (l *layout) writeEdge(b *strings.Builder, e routedEdge) {
 			path += fmt.Sprintf(" L%d,%d", x, y)
 		}
 	}
-	class, marker := "edge", "marker-end"
+	class, marker, arrow := "edge", "marker-end", "arrow"
 	if e.style != Solid {
 		class += " " + string(e.style)
+	}
+	if e.highlight {
+		class, arrow = class+" highlight", "arrow-highlight"
 	}
 	if e.reversed {
 		marker = "marker-start"
 	}
-	fmt.Fprintf(b, `<path class="%s" d="%s" %s="url(#arrow)"/>`+"\n", class, path, marker)
+	fmt.Fprintf(b, `<path class="%s" d="%s" %s="url(#%s)"/>`+"\n", class, path, marker, arrow)
 }
 
 func (l *layout) writeNode(b *strings.Builder, s *slot, n Node) {
@@ -104,7 +116,7 @@ func (l *layout) writeNode(b *strings.Builder, s *slot, n Node) {
 	for _, c := range []struct {
 		set  bool
 		name string
-	}{{n.Emphasis, "emphasis"}, {n.Data, "data"}, {n.Dashed, "dashed"}} {
+	}{{n.Emphasis, "emphasis"}, {n.Data, "data"}, {n.Dashed, "dashed"}, {n.Highlight, "highlight"}} {
 		if c.set {
 			class += " " + c.name
 		}

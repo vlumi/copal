@@ -167,3 +167,21 @@ func TestLayoutSourceKeepsSpan(t *testing.T) {
 		t.Errorf("SRC on layer %d, END on %d: want 2 layers between", src, end)
 	}
 }
+
+// A highlighted node and edge are drawn in the accent color, the edge
+// with an arrowhead of its own.
+func TestHighlight(t *testing.T) {
+	g := Graph{
+		Nodes: []Node{{ID: "a", Label: "A", Highlight: true}, {ID: "b", Label: "B"}},
+		Edges: []Edge{{From: "a", To: "b", Highlight: true}},
+	}
+	svg, err := g.SVG()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{`class="box highlight"`, `class="edge highlight"`, `marker-end="url(#arrow-highlight)"`} {
+		if !strings.Contains(string(svg), want) {
+			t.Errorf("no %s in\n%s", want, svg)
+		}
+	}
+}
