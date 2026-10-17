@@ -1,0 +1,37 @@
+{{define "base"}}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{template "title" .}} · {{.Title}}</title>
+<link rel="stylesheet" href="/static/explore.css">
+<script src="/static/explore.js" defer></script>
+</head>
+<body>
+<header>
+  <a class="system" href="/">{{.Title}}</a>
+  <form action="/search"><input name="q" type="search" placeholder="Find a job, program, field…" aria-label="Search"></form>
+</header>
+<main>
+{{template "content" .}}
+</main>
+</body>
+</html>
+{{end}}
+
+{{define "src"}}<a href="{{source .}}">{{sourceText .}}</a>{{end}}
+
+{{define "lineage"}}
+<table>
+  <thead><tr><th>From</th><th>To</th><th>Statement</th><th>Paragraph</th><th>Source</th></tr></thead>
+  <tbody>
+  {{range .Rows}}<tr>
+    <td>{{if .FromFile}}file {{.From}}{{else if .FromLiteral}}<code>{{.From}}</code>{{else if index $.Fields .From}}<a href="{{field $.Program .From}}">{{.From}}</a>{{else}}{{.From}}{{end}}</td>
+    <td>{{if .ToFile}}file {{.To}}{{else if index $.Fields .To}}<a href="{{field $.Program .To}}">{{.To}}</a>{{else}}{{.To}}{{end}}</td>
+    <td>{{.Verb}}</td>
+    <td><a href="{{paragraph $.Program .Paragraph}}">{{.Paragraph}}</a></td>
+    <td>{{template "src" .Source}}</td>
+  </tr>{{end}}
+  </tbody>
+</table>
+{{end}}

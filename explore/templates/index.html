@@ -1,0 +1,15 @@
+{{define "title"}}Overview{{end}}
+{{define "content"}}
+{{with .View}}
+<h1>{{$.Title}}</h1>
+<p class="note">{{len .System.Jobs}} jobs, {{len .System.Programs}} programs, {{len .System.Copybooks}} copybooks and {{len .Datasets}} datasets. Every name is a link; search finds any of them, down to paragraphs and fields.</p>
+<h2>Jobs</h2>
+<ul class="names">{{range .System.Jobs}}<li><a href="{{job .Name}}">{{.Name}}</a> <span class="note">{{len .Steps}} steps</span></li>{{end}}</ul>
+<h2>Programs</h2>
+<ul class="names">{{range .System.Programs}}<li><a href="{{program .Name}}">{{.Name}}</a></li>{{end}}</ul>
+<h2>Copybooks</h2>
+<ul class="names">{{range .System.Copybooks}}<li><a href="{{copybook .Name}}">{{.Name}}</a></li>{{end}}</ul>
+<h2>Datasets</h2>
+<ul class="names">{{range .Datasets}}<li><a href="{{dataset .}}">{{.}}</a></li>{{end}}</ul>
+{{end}}
+{{end}}

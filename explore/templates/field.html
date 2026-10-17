@@ -1,0 +1,26 @@
+{{define "title"}}{{.View.Field.Name}} of {{.View.Program.Name}}{{end}}
+{{define "content"}}
+{{with .View}}{{$p := .Program.Name}}
+<h1><span class="kind">field</span> {{.Field.Name}}</h1>
+<p class="crumbs">of <a href="{{program $p}}">{{$p}}</a>, {{range .Path}}in <a href="{{field $p .Name}}">{{.Name}}</a>, {{end}}{{with .Record}}{{if .File}}a record of file {{.File}}{{else}}{{.Section}}{{end}}{{with .Copybook}}, from copybook <a href="{{copybook .}}">{{.}}</a>{{end}}{{end}} · {{template "src" .Field.Source}}</p>
+{{with .Field}}
+<table>
+  <tbody>
+  <tr><th>Level</th><td>{{printf "%02d" .Level}}</td></tr>
+  <tr><th>Bytes</th><td>{{.Start}} to {{add .Start (add .Length -1)}}, {{.Length}} long</td></tr>
+  {{with .Picture}}<tr><th>Picture</th><td><code>{{.}}</code>{{with $.View.Field.Usage}} {{.}}{{end}}</td></tr>{{end}}
+  {{with .Redefines}}<tr><th>Redefines</th><td><a href="{{field $p .}}">{{.}}</a></td></tr>{{end}}
+  {{if .Occurs}}<tr><th>Occurs</th><td>{{.Occurs}}{{with .DependingOn}}, depending on <a href="{{field $p .}}">{{.}}</a>{{end}}</td></tr>{{end}}
+  {{with .Values}}<tr><th>Value</th><td><code>{{join . ", "}}</code></td></tr>{{end}}
+  {{with .Description}}<tr><th>Description</th><td>{{.}}</td></tr>{{end}}
+  {{with .Conditions}}<tr><th>Conditions</th><td>{{range $i, $c := .}}{{if $i}}, {{end}}{{$c.Name}} <code>{{join $c.Values ", "}}</code>{{end}}</td></tr>{{end}}
+  {{with .Fields}}<tr><th>Fields</th><td>{{range $i, $f := .}}{{if $i}}, {{end}}<a href="{{field $p $f.Name}}">{{$f.Name}}</a>{{end}}</td></tr>{{end}}
+  </tbody>
+</table>
+{{end}}
+<h2>Paragraphs</h2>
+<p>Written by {{range $i, $x := .WrittenBy}}{{if $i}}, {{end}}<a href="{{paragraph $p $x}}">{{$x}}</a>{{else}}none{{end}}; read by {{range $i, $x := .ReadBy}}{{if $i}}, {{end}}<a href="{{paragraph $p $x}}">{{$x}}</a>{{else}}none{{end}}.</p>
+{{if .Into}}<h2>Values moved into it</h2>{{template "lineage" (lineage $p .Fields .Into)}}{{end}}
+{{if .OutOf}}<h2>Values moved out of it</h2>{{template "lineage" (lineage $p .Fields .OutOf)}}{{end}}
+{{end}}
+{{end}}

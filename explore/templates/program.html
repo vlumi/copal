@@ -1,0 +1,46 @@
+{{define "title"}}{{.View.Program.Name}}{{end}}
+{{define "content"}}
+{{with .View}}{{$p := .Program}}
+<h1><span class="kind">program</span> {{$p.Name}}</h1>
+<p class="crumbs">{{template "src" $p.Source}}{{if .Runs}} · run by {{range $i, $r := .Runs}}{{if $i}}, {{end}}<a href="{{step $r}}">{{$r.Step}}</a> of {{$r.Job}}{{end}}{{end}}{{if $p.CalledBy}} · called by {{range $i, $c := $p.CalledBy}}{{if $i}}, {{end}}<a href="{{program $c}}">{{$c}}</a>{{end}}{{end}}</p>
+{{if $p.Description}}<pre class="description">{{join $p.Description "\n"}}</pre>{{end}}
+<h2>Flow</h2>
+<div class="diagram">{{.Flow}}</div>
+{{if $p.Files}}
+<h2>Files</h2>
+<table>
+  <thead><tr><th>File</th><th>Assigned to</th><th>Organization</th><th>Opened</th><th>Records</th><th>Source</th></tr></thead>
+  <tbody>
+  {{range $p.Files}}<tr><td>{{.Name}}</td><td>{{.Assign}}</td><td>{{.Organization}}{{with .RecordKey}}, key <a href="{{field $p.Name .}}">{{.}}</a>{{end}}</td><td>{{join .Opened ", "}}</td><td>{{range $i, $r := .Records}}{{if $i}}, {{end}}<a href="{{field $p.Name $r}}">{{$r}}</a>{{end}}</td><td>{{template "src" .Source}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{end}}
+{{if $p.Calls}}
+<h2>Calls</h2>
+<table>
+  <thead><tr><th>Program</th><th>Passing</th><th>Paragraph</th><th>Source</th></tr></thead>
+  <tbody>
+  {{range $p.Calls}}<tr><td>{{if .External}}{{.Program}} (not analyzed){{else}}<a href="{{program .Program}}">{{.Program}}</a>{{end}}</td><td>{{range $i, $u := .Using}}{{if $i}}, {{end}}<a href="{{field $p.Name $u}}">{{$u}}</a>{{end}}</td><td><a href="{{paragraph $p.Name .Paragraph}}">{{.Paragraph}}</a></td><td>{{template "src" .Source}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{end}}
+<h2>Paragraphs</h2>
+<table>
+  <thead><tr><th>Paragraph</th><th>Description</th><th>Source</th></tr></thead>
+  <tbody>
+  {{range $p.Paragraphs}}<tr><td><a href="{{paragraph $p.Name .Name}}">{{.Name}}</a></td><td>{{.Description}}</td><td>{{template "src" .Source}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+<h2>Records</h2>
+<table>
+  <thead><tr><th>Record</th><th>Section</th><th>File</th><th class="num">Length</th><th>Copybook</th></tr></thead>
+  <tbody>
+  {{range $p.Records}}<tr><td><a href="{{field $p.Name .Name}}">{{.Name}}</a></td><td>{{.Section}}</td><td>{{.File}}</td><td class="num">{{.Length}}</td><td>{{with .Copybook}}<a href="{{copybook .}}">{{.}}</a>{{end}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{end}}
+{{end}}

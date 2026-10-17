@@ -1,0 +1,18 @@
+{{define "title"}}{{.View.Name}}{{end}}
+{{define "content"}}
+{{with .View}}
+<h1><span class="kind">copybook</span> {{.Name}}</h1>
+<p class="crumbs">{{template "src" .Source}} · used by {{range $i, $u := .UsedBy}}{{if $i}}, {{end}}<a href="{{program $u}}">{{$u}}</a>{{else}}no program{{end}}</p>
+{{if .Description}}<pre class="description">{{join .Description "\n"}}</pre>{{end}}
+{{range .Records}}
+<h2>{{.Name}}</h2>
+<table>
+  <thead><tr><th class="num">Level</th><th>Field</th><th class="num">Start</th><th class="num">Length</th><th>Picture</th><th>Usage</th><th>Source</th></tr></thead>
+  <tbody>{{template "layout" .Field}}</tbody>
+</table>
+{{end}}
+{{end}}
+{{end}}
+
+{{define "layout"}}<tr><td class="num">{{printf "%02d" .Level}}</td><td>{{.Name}}</td><td class="num">{{.Start}}</td><td class="num">{{.Length}}</td><td><code>{{.Picture}}</code></td><td>{{.Usage}}</td><td>{{template "src" .Source}}</td></tr>
+{{range .Fields}}{{template "layout" .}}{{end}}{{end}}

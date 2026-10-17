@@ -1,0 +1,20 @@
+{{define "title"}}{{.View.Paragraph.Name}} of {{.View.Program.Name}}{{end}}
+{{define "content"}}
+{{with .View}}{{$p := .Program.Name}}{{with .Paragraph}}
+<h1><span class="kind">paragraph</span> {{.Name}}</h1>
+<p class="crumbs">of <a href="{{program $p}}">{{$p}}</a> · {{template "src" .Source}}</p>
+{{if .Description}}<p>{{.Description}}</p>{{end}}
+<table>
+  <tbody>
+  <tr><th>Performs</th><td>{{range $i, $x := .Performs}}{{if $i}}, {{end}}<a href="{{paragraph $p $x.Target}}">{{$x.Target}}</a>{{with $x.Thru}} thru <a href="{{paragraph $p .}}">{{.}}</a>{{end}}{{end}}</td></tr>
+  <tr><th>Goes to</th><td>{{range $i, $x := .GoTos}}{{if $i}}, {{end}}<a href="{{paragraph $p $x.Target}}">{{$x.Target}}</a>{{end}}{{with .FallsInto}}{{if $.View.Paragraph.GoTos}}, {{end}}<a href="{{paragraph $p .}}">{{.}}</a> (falls into){{end}}</td></tr>
+  <tr><th>Performed by</th><td>{{range $i, $x := .PerformedBy}}{{if $i}}, {{end}}<a href="{{paragraph $p $x}}">{{$x}}</a>{{end}}</td></tr>
+  <tr><th>Reached by</th><td>{{range $i, $x := .ReachedBy}}{{if $i}}, {{end}}<a href="{{paragraph $p $x}}">{{$x}}</a>{{end}}</td></tr>
+  <tr><th>Reads</th><td>{{range $i, $x := .Reads}}{{if $i}}, {{end}}{{if index $.View.Fields $x}}<a href="{{field $p $x}}">{{$x}}</a>{{else}}{{$x}}{{end}}{{end}}</td></tr>
+  <tr><th>Writes</th><td>{{range $i, $x := .Writes}}{{if $i}}, {{end}}{{if index $.View.Fields $x}}<a href="{{field $p $x}}">{{$x}}</a>{{else}}{{$x}}{{end}}{{end}}</td></tr>
+  </tbody>
+</table>
+{{end}}
+{{if .Lineage}}<h2>Values moved</h2>{{template "lineage" (lineage $p .Fields .Lineage)}}{{end}}
+{{end}}
+{{end}}

@@ -95,8 +95,8 @@ Done when: with the simulator running, the console shows available balances drop
 
 Static blueprints are good for reading one program or job at a time, but understanding a system means moving through it: from the job network to a step, its program, a paragraph, a record, a field, and following a value across programs through the datasets between them. The explorer is a web app for that, a second reader of the same analysis the blueprints are written from.
 
-- `copal explore` serves the analysis of any system Copal reads, not just Pangaea, locally, in the browser.
-- Every name is a link: jobs, steps, datasets, programs, paragraphs, records, fields, copybooks. Search finds any of them, and history goes back and forth.
+- `copal explore` serves the analysis of any system Copal reads, not just Pangaea, locally, in the browser (done).
+- Every name is a link: jobs, steps, datasets, programs, paragraphs, records, fields, copybooks. Search finds any of them, and history goes back and forth (done).
 - The job networks and program flows are Copal's own diagrams, with pan and zoom.
 - Lineage across programs: pick a field and see where its values come from and where they go, through the statements of each program and through the datasets that pass records from step to step, highlighted on the diagrams. This needs lineage by storage position, through groups and redefinitions, joined across programs by the copybook that describes each dataset.
 - Server-rendered pages with a little script, like the bank console; no frontend build.
