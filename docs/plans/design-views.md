@@ -144,6 +144,8 @@ The JCL does not say which job runs when; the operations guide does. But the gen
 
 Checks: `START` before `ONLINE`; `ONLINE` before `DAILY` through `TRAN.CARD`; `DAILY` before `MONTHLY` through `TRAN.AUDIT` and `ACCT.ACCRUAL`; `DAILY` before the next `ONLINE` through `BANK.CONTROL`, `ACCT.ONLINE`, `CARD.ONLINE` and `HOLD.ONLINE`.
 
+As built: all hold, `DAILY` before `MONTHLY` also through `ACCT.MASTER`, read as `ACCT.MASTER(-1)`. The data also says `DAILY` before `START`, through `ACCT.MASTER` and `BANK.CONTROL`, which `START` reads as their current generations; so `START`, `ONLINE` and `DAILY` come out as one cycle. That `START` runs once, before everything else, is in the operations guide, like the calendar, and the page and survey/README.md say so. `DAILY` before its own next run, through the master, the accruals and the control record, is said in words, as a diagram draws no edge from a box to itself.
+
 One pull request.
 
 ## Finishing
