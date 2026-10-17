@@ -85,9 +85,11 @@ func TestPages(t *testing.T) {
 		"/jobs/DAILY":                            {"<svg", `href="/jobs/DAILY/steps/POST"`, `href="/datasets/ACCT.MASTER"`},
 		"/datasets/ACCT.MASTER":                  {"ACCTMAST", "MAINT", "ACCT.MASTER(0)"},
 		"/programs/AUTHSRV":                      {"<svg", `href="/programs/AUTHPUR"`, "run by"},
-		"/programs/TXPOST/fields/AM-BALANCE":     {"S9(11)V99", "Values moved into it", "3200-POST-DEBIT"},
+		"/programs/TXPOST/fields/AM-BALANCE":     {"S9(11)V99", "Values moved into it", "3200-POST-DEBIT", "Follow its values back"},
 		"/programs/TXPOST/paragraphs/0000-MAIN":  {"Performs", "1000-INITIALIZE"},
 		"/source/pangaea/copybooks/ACCTMAST.cpy": {`id="L1"`, "ACCT-MASTER-RECORD"},
+		"/trace?program=STMTPRT&field=WS-RA-VALUE": {"TRAN.DAILY(0)", "which no job writes", `class="box highlight"`,
+			`href="#hop-DAILY-VALID-TXVALID-TD-AMOUNT"`, `id="hop-DAILY-VALID-TXVALID-TD-AMOUNT"`, "HOLDEXT", "through the sort of SORT of DAILY"},
 	} {
 		resp, err := http.Get(server.URL + path)
 		if err != nil {
@@ -104,7 +106,8 @@ func TestPages(t *testing.T) {
 			}
 		}
 	}
-	for _, path := range []string{"/programs/NOPE", "/jobs/DAILY/steps/NOPE", "/source/go.mod", "/programs/TXPOST/fields/NOPE"} {
+	for _, path := range []string{"/programs/NOPE", "/jobs/DAILY/steps/NOPE", "/source/go.mod", "/programs/TXPOST/fields/NOPE",
+		"/trace?program=TXPOST&field=NOPE"} {
 		resp, err := http.Get(server.URL + path)
 		if err != nil {
 			t.Fatal(err)

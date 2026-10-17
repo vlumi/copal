@@ -38,12 +38,14 @@ type Hop struct {
 // Source is a field a program reads from a file, and where the bytes it
 // reads were written: the datasets the step binds to the file, and the
 // fields that other steps, or the program itself before a sort, wrote over
-// those bytes. External is set for a dataset no step writes, which comes
-// from outside the system.
+// those bytes. Sorts are the steps whose sorts passed the records on, with
+// the datasets they read, and External the datasets no step writes, which
+// come from outside the system.
 type Source struct {
 	File, Field string
 	Datasets    []string
 	Writers     []Node
+	Sorts       []Node
 	External    []string
 }
 
@@ -162,6 +164,7 @@ func (t tracer) fromFile(src *Source, n Node, p *blueprint.Program, file string,
 			}
 			at := Node{Job: w.job, Step: w.step, Program: q.Name}
 			if sort, ok := givenBy(q, w.file); ok {
+				src.Sorts = append(src.Sorts, at)
 				for _, using := range sort.Using {
 					t.fromFile(src, at, q, using, start, length, depth+1)
 				}

@@ -371,6 +371,15 @@ type JobNotes struct {
 	ProgramLink  func(string) string
 	DatasetLink  func(string) string
 	CopybookLink func(string) string
+	Path         *JobPath
+}
+
+// JobPath is a path through a job to highlight: its steps, and the
+// datasets each step reads or writes on it, by the step's name and the
+// dataset's as the job names it.
+type JobPath struct {
+	Steps    map[string]bool
+	Datasets map[[2]string]bool
 }
 
 // JobGraph is the graph of a job's steps and the datasets between them,
@@ -391,6 +400,20 @@ func JobGraph(job Job, notes JobNotes) diagram.Graph {
 		copybooks[d.Name] = d.Copybook
 	}
 	g := diagram.Graph{Legend: networkKeys}
+	path := notes.Path
+	if path == nil {
+		path = &JobPath{}
+	} else {
+		g.Legend = append(slices.Clone(networkKeys), diagram.NodeKey(diagram.Node{Highlight: true}, "on the path followed"))
+	}
+	highlighted := map[string]bool{}
+	edge := func(from, to, step, ds string) diagram.Edge {
+		e := diagram.Edge{From: from, To: to, Highlight: path.Datasets[[2]string{step, ds}]}
+		if e.Highlight {
+			highlighted[from], highlighted[to] = true, true
+		}
+		return e
+	}
 	read, written := map[string]bool{}, map[string]bool{}
 	for _, step := range job.Steps {
 		for _, dd := range step.DDs {
@@ -433,11 +456,12 @@ func JobGraph(job Job, notes JobNotes) diagram.Graph {
 		for _, dd := range step.DDs {
 			if dd.reads() {
 				for _, ds := range dd.Datasets {
-					g.Edges = append(g.Edges, diagram.Edge{From: addDataset(ds, step, dd), To: id})
+					g.Edges = append(g.Edges, edge(addDataset(ds, step, dd), id, step.Name, ds))
 				}
 			}
 		}
-		node := diagram.Node{ID: id, Label: step.Name + "\nprogram " + step.Program, Title: strings.Join(step.Description, " ")}
+		node := diagram.Node{ID: id, Label: step.Name + "\nprogram " + step.Program, Title: strings.Join(step.Description, " "),
+			Highlight: path.Steps[step.Name]}
 		if notes.Step != nil {
 			node.Label = withNote(node.Label, notes.Step(step))
 		}
@@ -454,9 +478,14 @@ func JobGraph(job Job, notes JobNotes) diagram.Graph {
 		for _, dd := range step.DDs {
 			if dd.writes() {
 				for _, ds := range dd.Datasets {
-					g.Edges = append(g.Edges, diagram.Edge{From: id, To: addDataset(ds, step, dd)})
+					g.Edges = append(g.Edges, edge(id, addDataset(ds, step, dd), step.Name, ds))
 				}
 			}
+		}
+	}
+	for i := range g.Nodes {
+		if g.Nodes[i].Data && highlighted[g.Nodes[i].ID] {
+			g.Nodes[i].Highlight = true
 		}
 	}
 	return g
