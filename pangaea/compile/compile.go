@@ -9,7 +9,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/vlumi/copal/cobol"
+	"github.com/vlumi/copal/bedrock/cobol"
 )
 
 // flags make GnuCOBOL behave like an IBM compiler: IBM dialect, and signed

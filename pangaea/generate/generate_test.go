@@ -5,12 +5,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/vlumi/copal/pangaea/layouts"
+	"github.com/vlumi/copal/pangaea/records"
 )
 
 func generator(t *testing.T) *Generator {
 	t.Helper()
-	l, err := layouts.Load("../copybooks")
+	l, err := records.Load("../copybooks")
 	if err != nil {
 		t.Fatal(err)
 	}

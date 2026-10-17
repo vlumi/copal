@@ -12,12 +12,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/vlumi/copal/jcl"
+	"github.com/vlumi/copal/bedrock/jcl"
+	"github.com/vlumi/copal/bedrock/record"
 	"github.com/vlumi/copal/pangaea/dataset"
 	"github.com/vlumi/copal/pangaea/generate"
-	"github.com/vlumi/copal/pangaea/layouts"
+	"github.com/vlumi/copal/pangaea/records"
 	"github.com/vlumi/copal/pangaea/runner"
-	"github.com/vlumi/copal/record"
 )
 
 // StartDate is the first business day of every reset bank.
@@ -345,7 +345,7 @@ func (b Bank) open() (*generate.Generator, *dataset.Store, error) {
 }
 
 func (b Bank) generator(seed uint64) (*generate.Generator, error) {
-	bankLayouts, err := layouts.Load(b.Copybooks)
+	bankLayouts, err := records.Load(b.Copybooks)
 	if err != nil {
 		return nil, err
 	}

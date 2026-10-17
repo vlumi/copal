@@ -8,12 +8,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/vlumi/copal/blueprint"
+	"github.com/vlumi/copal/bedrock/jcl"
 	"github.com/vlumi/copal/internal/golden"
-	"github.com/vlumi/copal/jcl"
 	"github.com/vlumi/copal/pangaea/compile"
 	"github.com/vlumi/copal/pangaea/dataset"
 	"github.com/vlumi/copal/pangaea/fixture"
+	"github.com/vlumi/copal/pangaea/records"
 	"github.com/vlumi/copal/pangaea/runner"
 )
 
@@ -102,22 +102,13 @@ func runFixture(t *testing.T, codec *fixture.Codec, programs, fixtureDir string)
 	golden.CompareDir(t, sysout, filepath.Join(fixtureDir, "golden", "sysout"))
 }
 
-// newCodec reads Pangaea's programs and jobs with Copal, to write the
-// datasets with packed decimal fields field by field.
+// newCodec writes the datasets with packed decimal fields field by field.
 func newCodec(t *testing.T) *fixture.Codec {
-	paths, err := filepath.Glob("programs/*.cbl")
+	l, err := records.Load("copybooks")
 	if err != nil {
 		t.Fatal(err)
 	}
-	system, err := blueprint.Analyze(append(paths, "jobs/DAILY.jcl", "jobs/MONTHLY.jcl"), "copybooks")
-	if err != nil {
-		t.Fatal(err)
-	}
-	codec, err := fixture.NewCodec(system, "copybooks")
-	if err != nil {
-		t.Fatal(err)
-	}
-	return codec
+	return fixture.NewCodec(l)
 }
 
 // fixtureJobs lists the jobs a fixture runs: those in its JOBS file, or

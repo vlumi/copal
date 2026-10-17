@@ -9,13 +9,13 @@ import (
 	"math/rand/v2"
 	"slices"
 
-	"github.com/vlumi/copal/pangaea/layouts"
-	"github.com/vlumi/copal/record"
+	"github.com/vlumi/copal/bedrock/record"
+	"github.com/vlumi/copal/pangaea/records"
 )
 
 // Generator makes up the bank's records for one seed.
 type Generator struct {
-	Layouts *layouts.Layouts
+	Layouts *records.Layouts
 	Seed    uint64
 }
 

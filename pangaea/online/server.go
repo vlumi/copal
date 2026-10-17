@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/vlumi/copal/pangaea/bank"
-	"github.com/vlumi/copal/pangaea/layouts"
+	"github.com/vlumi/copal/pangaea/records"
 	"github.com/vlumi/copal/pangaea/runner"
 )
 
@@ -17,7 +17,7 @@ import (
 // online day runs, closed during the batch window between them.
 type Server struct {
 	Bank    bank.Bank
-	Layouts *layouts.Layouts
+	Layouts *records.Layouts
 	// Clock gives the time of day that stamps each request.
 	Clock func() time.Time
 

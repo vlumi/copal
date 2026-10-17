@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/vlumi/copal/jcl"
+	"github.com/vlumi/copal/bedrock/jcl"
 	"github.com/vlumi/copal/pangaea/dataset"
 )
 

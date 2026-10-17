@@ -18,13 +18,17 @@ lint-md:  ## Lint the Markdown files
 lint-go:  ## Lint the Go code and check its formatting
 	golangci-lint run ./...
 
+.PHONY: lint-deps
+lint-deps:  ## Check that the dependencies between the parts run one way
+	@scripts/check-deps.sh
+
 .PHONY: test
 test:  ## Run the tests
 	go test ./...
 
 .PHONY: pangaea-build
 pangaea-build:  ## Compile Pangaea's COBOL programs
-	go run ./cmd/pangaea build
+	go run ./pangaea/cmd/pangaea build
 
 .PHONY: pangaea-daily
 pangaea-daily:  ## Run the daily batch on the fixture and show its reports
@@ -40,40 +44,40 @@ N ?= 1
 
 .PHONY: bank-reset
 bank-reset:  ## Reset the running bank to a generated start (SEED, ACCOUNTS)
-	go run ./cmd/pangaea reset -seed $(SEED) -accounts $(ACCOUNTS)
+	go run ./pangaea/cmd/pangaea reset -seed $(SEED) -accounts $(ACCOUNTS)
 
 .PHONY: bank-days
 bank-days: pangaea-build  ## Run the bank's next N business days
-	go run ./cmd/pangaea days -n $(N)
+	go run ./pangaea/cmd/pangaea days -n $(N)
 
 ADDR ?= localhost:8080
 
 .PHONY: console
 console: pangaea-build  ## Serve the bank console in the browser (ADDR)
-	go run ./cmd/pangaea console -addr $(ADDR)
+	go run ./console/cmd/console -addr $(ADDR)
 
 ONLINE_ADDR ?= localhost:8081
 
 .PHONY: online
 online: pangaea-build  ## Serve the bank's online day until interrupted (ONLINE_ADDR)
-	go run ./cmd/pangaea online -addr $(ONLINE_ADDR)
+	go run ./pangaea/cmd/pangaea online -addr $(ONLINE_ADDR)
 
 RATE ?= 5
 
 .PHONY: simulate
 simulate:  ## Send card traffic to the console's online channel until interrupted (RATE)
-	go run ./cmd/pangaea simulate -api http://$(ADDR)/api -rate $(RATE)
+	go run ./pangaea/cmd/pangaea simulate -api http://$(ADDR)/api -rate $(RATE)
 
 .PHONY: blueprints
-blueprints:  ## Regenerate Pangaea's blueprints with Copal
+blueprints:  ## Regenerate Pangaea's blueprints with Survey
 	rm -rf blueprints/pangaea
-	go run ./cmd/copal blueprints -copybooks pangaea/copybooks -out blueprints/pangaea -title pangaea pangaea/programs/*.cbl pangaea/jobs/*.jcl
+	go run ./survey/cmd/survey blueprints -copybooks pangaea/copybooks -out blueprints/pangaea -title pangaea pangaea/programs/*.cbl pangaea/jobs/*.jcl
 
 EXPLORE_ADDR ?= localhost:8090
 
 .PHONY: explore
 explore:  ## Explore Pangaea's analysis in the browser (EXPLORE_ADDR)
-	go run ./cmd/copal explore -copybooks pangaea/copybooks -addr $(EXPLORE_ADDR) -title "the First Bank of Pangaea" pangaea/programs/*.cbl pangaea/jobs/*.jcl
+	go run ./survey/cmd/survey explore -copybooks pangaea/copybooks -addr $(EXPLORE_ADDR) -title "the First Bank of Pangaea" pangaea/programs/*.cbl pangaea/jobs/*.jcl
 
 .PHONY: ci
-ci: toolchain lint-md lint-go test  ## Full local CI
+ci: toolchain lint-md lint-go lint-deps test  ## Full local CI
