@@ -29,7 +29,7 @@ type Card struct {
 
 // Simulator sends made-up requests to the online channel's API.
 type Simulator struct {
-	API    string // the API's base URL, such as http://localhost:8080/api
+	API    string // the API's base URL, such as http://127.0.0.1:8080/api
 	Client *http.Client
 	Cards  []Card
 	rand   *rand.Rand
@@ -132,6 +132,10 @@ func (s *Simulator) Send(ctx context.Context) (Request, error) {
 	defer func() { _ = resp.Body.Close() }()
 	if err := json.NewDecoder(resp.Body).Decode(&r.Response); err != nil {
 		return Request{}, fmt.Errorf("%s: %s: %w", path, resp.Status, err)
+	}
+	if r.Response.Result == "" {
+		return Request{}, fmt.Errorf("%s%s answered %s with no result: not the online channel; is the console at %s?",
+			s.API, path, resp.Status, s.API)
 	}
 	if path == "/purchase" && r.Response.Approved {
 		s.remember(purchase{card: r.Card, authCode: r.Response.AuthCode, merchant: body["merchant"]})

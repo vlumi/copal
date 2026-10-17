@@ -11,7 +11,7 @@ survey blueprints -copybooks dir -out dir [-title name] program.cbl... [job.jcl.
 survey explore -copybooks dir [-addr host:port] [-title name] program.cbl... [job.jcl...]
 ```
 
-Point it at the programs and the jobs, and tell it where the copybooks are. `blueprints` writes a directory of Markdown for people and JSON for tools, with SVG diagrams, and an index; [docs/blueprints.md](../docs/blueprints.md) explains how to read them. `explore` serves the same analysis as a web app, at `localhost:8090` by default, where every job, step, dataset, program, paragraph, field and copybook is a page and a link, a search finds any of them, and a field's values can be followed back across programs and job steps to the input they came from, highlighted on the diagrams.
+Point it at the programs and the jobs, and tell it where the copybooks are. `blueprints` writes a directory of Markdown for people and JSON for tools, with SVG diagrams, and an index; [docs/blueprints.md](../docs/blueprints.md) explains how to read them. `explore` serves the same analysis as a web app, at `127.0.0.1:8090` by default, where every job, step, dataset, program, paragraph, field and copybook is a page and a link, a search finds any of them, and a field's values can be followed back across programs and job steps to the input they came from, highlighted on the diagrams.
 
 For the First Bank of Pangaea, `make blueprints` regenerates [blueprints/pangaea/](../blueprints/pangaea/README.md) and `make explore` serves the explorer.
 

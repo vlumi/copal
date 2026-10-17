@@ -53,7 +53,7 @@ func writeBlueprints(args []string) error {
 func serveExplorer(args []string) error {
 	flags := flag.NewFlagSet("explore", flag.ExitOnError)
 	copybooks := flags.String("copybooks", "", "directory of the copybooks")
-	addr := flags.String("addr", "localhost:8090", "address to serve on")
+	addr := flags.String("addr", "127.0.0.1:8090", "address to serve on")
 	title := flags.String("title", "the system", "name of the system")
 	_ = flags.Parse(args)
 	if *copybooks == "" || flags.NArg() == 0 {
