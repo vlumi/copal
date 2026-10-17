@@ -189,17 +189,17 @@ func copybookMarkdown(dir string, c Copybook) string {
 // writeLayout writes a record's fields as a table, one row per field and
 // condition name, in source order.
 func writeLayout(b *strings.Builder, dir string, record Field) {
-	b.WriteString("| Level | Field | Start | Length | Picture | Usage | Notes | Source |\n| --: | --- | --: | --: | --- | --- | --- | --- |\n")
+	b.WriteString("| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |\n| --: | --- | --- | --: | --: | --- | --- | --- | --- |\n")
 	var field func(f Field)
 	field = func(f Field) {
 		usage := f.Usage
 		if usage == "DISPLAY" {
 			usage = ""
 		}
-		b.WriteString(row(fmt.Sprintf("%02d", f.Level), f.Name, strconv.Itoa(f.Start), strconv.Itoa(f.Length),
+		b.WriteString(row(fmt.Sprintf("%02d", f.Level), f.Name, f.Kind, strconv.Itoa(f.Start), strconv.Itoa(f.Length),
 			f.Picture, usage, fieldNotes(f), sourceLink(dir, f.Source, true)))
 		for _, c := range f.Conditions {
-			b.WriteString(row("88", c.Name, "", "", "", "", "VALUE "+strings.Join(c.Values, ", "), sourceLink(dir, c.Source, true)))
+			b.WriteString(row("88", c.Name, "", "", "", "", "", "VALUE "+strings.Join(c.Values, ", "), sourceLink(dir, c.Source, true)))
 		}
 		for _, child := range f.Fields {
 			field(child)

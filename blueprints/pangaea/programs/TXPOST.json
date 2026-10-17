@@ -183,6 +183,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
+      "kind": "group",
       "description": "BANKCTL: BANK CONTROL RECORD, ONE PER FILE THE BUSINESS DATE THE BATCH RUNS FOR, NEVER THE CLOCK.",
       "source": "pangaea/copybooks/BANKCTL.cpy:5",
       "fields": [
@@ -194,6 +195,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "date",
           "digits": 8,
           "source": "pangaea/copybooks/BANKCTL.cpy:6"
         },
@@ -205,6 +207,7 @@
           "picture": "X(72)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "filler",
           "source": "pangaea/copybooks/BANKCTL.cpy:7"
         }
       ]
@@ -218,6 +221,7 @@
       "start": 1,
       "length": 100,
       "category": "group",
+      "kind": "group",
       "description": "ACCTMAST: ACCOUNT MASTER RECORD, 100 BYTES IN ACCOUNT NUMBER ORDER. THE BALANCE MAY GO BELOW ZERO DOWN TO THE OVERDRAFT LIMIT, AND BELOW THAT ONLY BY FEES. MODIFICATION HISTORY DATE       BY  CHANGE 1987-03-12 JA  ORIGINAL VERSION. 1994-11-14 PK  CR-0201 OVERDRAFT LIMIT, FROM THE FILLER. 1999-01-11 SL  Y2K: 8-DIGIT DATES.",
       "source": "pangaea/copybooks/ACCTMAST.cpy:12",
       "fields": [
@@ -229,6 +233,7 @@
           "picture": "9(10)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 10,
           "source": "pangaea/copybooks/ACCTMAST.cpy:13"
         },
@@ -240,6 +245,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 8,
           "source": "pangaea/copybooks/ACCTMAST.cpy:14"
         },
@@ -251,6 +257,7 @@
           "picture": "X(20)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/copybooks/ACCTMAST.cpy:15"
         },
         {
@@ -261,6 +268,7 @@
           "picture": "X",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "code",
           "conditions": [
             {
               "name": "AM-CURRENT",
@@ -287,6 +295,7 @@
           "picture": "X",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "code",
           "conditions": [
             {
               "name": "AM-OPEN",
@@ -320,6 +329,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "date",
           "digits": 8,
           "source": "pangaea/copybooks/ACCTMAST.cpy:23"
         },
@@ -331,6 +341,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "date",
           "digits": 8,
           "source": "pangaea/copybooks/ACCTMAST.cpy:24"
         },
@@ -342,6 +353,7 @@
           "picture": "S9(11)V99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "amount",
           "digits": 13,
           "scale": 2,
           "signed": true,
@@ -355,6 +367,7 @@
           "picture": "9(7)V99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "amount",
           "digits": 9,
           "scale": 2,
           "source": "pangaea/copybooks/ACCTMAST.cpy:26"
@@ -367,6 +380,7 @@
           "picture": "X(22)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "filler",
           "source": "pangaea/copybooks/ACCTMAST.cpy:27"
         }
       ]
@@ -380,6 +394,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
+      "kind": "group",
       "description": "TRANREC: DAILY TRANSACTION FILE RECORD, 80 BYTES ONE HEADER, THE DETAILS, ONE TRAILER, TOLD APART BY THE RECORD TYPE. THE BODY IS REDEFINED FOR EACH RECORD TYPE. THE TRAILER CARRIES THE SENDER'S CONTROL TOTALS: THE DETAIL COUNT, THE SUM OF AMOUNTS AND THE SUM OF ACCOUNT NUMBERS. A TRANSFER (TR) NAMES THE ACCOUNT IT GOES TO. POSTING SPLITS IT IN TWO: THE DEBIT ON THE SENDING ACCOUNT, THEN A TRANSFER CREDIT (TC) ON THE RECEIVING ONE. A CREDIT THAT CANNOT POST GOES BACK AS A RETURNED TRANSFER (RT). TC AND RT ARE MADE BY POSTING, NEVER RECEIVED IN THE DAILY FILE. WHEN A MONTH CLOSES, THE BANK CREDITS ITS INTEREST (IN), CHARGES OVERDRAFT INTEREST (OD) AND THE MAINTENANCE FEE (MF). THESE TOO ARE NEVER RECEIVED IN THE DAILY FILE. THE CARD FILE, FROM THE ONLINE DAY'S HOLDS, HAS THE SAME FORM AND ITS OWN SOURCE: CARD PURCHASES (CP), ATM WITHDRAWALS (AW) AND ATM FEES (AF), WHICH WERE AUTHORIZED WHEN THEY WERE MADE. MODIFICATION HISTORY DATE       BY  CHANGE 1987-03-12 JA  ORIGINAL VERSION. 1991-06-03 PK  CR-0117 ACCOUNT NUMBER HASH IN THE TRAILER. 1996-04-15 PK  CR-0233 TRANSFERS: COUNTER ACCOUNT, FROM THE FILLER. 2001-09-03 TL  CR-0298 MONTH-END INTEREST AND FEE CODES. 2003-05-19 MV  CR-0342 THE CARD FILE AND ITS CODES.",
       "source": "pangaea/copybooks/TRANREC.cpy:31",
       "fields": [
@@ -391,6 +406,7 @@
           "picture": "X",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "code",
           "conditions": [
             {
               "name": "TR-HEADER",
@@ -424,6 +440,7 @@
           "picture": "X(79)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/copybooks/TRANREC.cpy:36"
         },
         {
@@ -432,6 +449,7 @@
           "start": 2,
           "length": 79,
           "category": "group",
+          "kind": "group",
           "redefines": "TR-BODY",
           "source": "pangaea/copybooks/TRANREC.cpy:37",
           "fields": [
@@ -443,6 +461,7 @@
               "picture": "9(8)",
               "usage": "DISPLAY",
               "category": "numeric",
+              "kind": "date",
               "digits": 8,
               "source": "pangaea/copybooks/TRANREC.cpy:38"
             },
@@ -454,6 +473,7 @@
               "picture": "X(8)",
               "usage": "DISPLAY",
               "category": "alphanumeric",
+              "kind": "code",
               "conditions": [
                 {
                   "name": "TH-FROM-BRANCHES",
@@ -480,6 +500,7 @@
               "picture": "9(6)",
               "usage": "DISPLAY",
               "category": "numeric",
+              "kind": "number",
               "digits": 6,
               "source": "pangaea/copybooks/TRANREC.cpy:42"
             },
@@ -491,6 +512,7 @@
               "picture": "X(57)",
               "usage": "DISPLAY",
               "category": "alphanumeric",
+              "kind": "filler",
               "source": "pangaea/copybooks/TRANREC.cpy:43"
             }
           ]
@@ -501,6 +523,7 @@
           "start": 2,
           "length": 79,
           "category": "group",
+          "kind": "group",
           "redefines": "TR-BODY",
           "source": "pangaea/copybooks/TRANREC.cpy:44",
           "fields": [
@@ -512,6 +535,7 @@
               "picture": "9(10)",
               "usage": "DISPLAY",
               "category": "numeric",
+              "kind": "number",
               "digits": 10,
               "source": "pangaea/copybooks/TRANREC.cpy:45"
             },
@@ -523,6 +547,7 @@
               "picture": "9(10)",
               "usage": "DISPLAY",
               "category": "numeric",
+              "kind": "number",
               "digits": 10,
               "source": "pangaea/copybooks/TRANREC.cpy:46"
             },
@@ -534,6 +559,7 @@
               "picture": "XX",
               "usage": "DISPLAY",
               "category": "alphanumeric",
+              "kind": "code",
               "conditions": [
                 {
                   "name": "TD-DEPOSIT",
@@ -649,6 +675,7 @@
               "picture": "9(9)V99",
               "usage": "DISPLAY",
               "category": "numeric",
+              "kind": "amount",
               "digits": 11,
               "scale": 2,
               "source": "pangaea/copybooks/TRANREC.cpy:62"
@@ -661,6 +688,7 @@
               "picture": "X(20)",
               "usage": "DISPLAY",
               "category": "alphanumeric",
+              "kind": "text",
               "source": "pangaea/copybooks/TRANREC.cpy:63"
             },
             {
@@ -671,6 +699,7 @@
               "picture": "9(10)",
               "usage": "DISPLAY",
               "category": "numeric",
+              "kind": "number",
               "digits": 10,
               "source": "pangaea/copybooks/TRANREC.cpy:64"
             },
@@ -682,6 +711,7 @@
               "picture": "X(16)",
               "usage": "DISPLAY",
               "category": "alphanumeric",
+              "kind": "filler",
               "source": "pangaea/copybooks/TRANREC.cpy:65"
             }
           ]
@@ -692,6 +722,7 @@
           "start": 2,
           "length": 79,
           "category": "group",
+          "kind": "group",
           "redefines": "TR-BODY",
           "source": "pangaea/copybooks/TRANREC.cpy:66",
           "fields": [
@@ -703,6 +734,7 @@
               "picture": "9(8)",
               "usage": "DISPLAY",
               "category": "numeric",
+              "kind": "number",
               "digits": 8,
               "source": "pangaea/copybooks/TRANREC.cpy:67"
             },
@@ -714,6 +746,7 @@
               "picture": "9(13)V99",
               "usage": "DISPLAY",
               "category": "numeric",
+              "kind": "amount",
               "digits": 15,
               "scale": 2,
               "source": "pangaea/copybooks/TRANREC.cpy:68"
@@ -726,6 +759,7 @@
               "picture": "9(15)",
               "usage": "DISPLAY",
               "category": "numeric",
+              "kind": "number",
               "digits": 15,
               "source": "pangaea/copybooks/TRANREC.cpy:69"
             },
@@ -737,6 +771,7 @@
               "picture": "X(41)",
               "usage": "DISPLAY",
               "category": "alphanumeric",
+              "kind": "filler",
               "source": "pangaea/copybooks/TRANREC.cpy:70"
             }
           ]
@@ -753,6 +788,7 @@
       "picture": "X(100)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
+      "kind": "text",
       "source": "pangaea/programs/TXPOST.cbl:88"
     },
     {
@@ -765,6 +801,7 @@
       "picture": "X(100)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
+      "kind": "text",
       "source": "pangaea/programs/TXPOST.cbl:90"
     },
     {
@@ -777,6 +814,7 @@
       "picture": "X(100)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
+      "kind": "text",
       "source": "pangaea/programs/TXPOST.cbl:92"
     },
     {
@@ -789,6 +827,7 @@
       "picture": "X(80)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
+      "kind": "text",
       "source": "pangaea/programs/TXPOST.cbl:94"
     },
     {
@@ -801,6 +840,7 @@
       "picture": "X(80)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
+      "kind": "text",
       "source": "pangaea/programs/TXPOST.cbl:96"
     },
     {
@@ -810,6 +850,7 @@
       "start": 1,
       "length": 16,
       "category": "group",
+      "kind": "group",
       "source": "pangaea/programs/TXPOST.cbl:99",
       "fields": [
         {
@@ -820,6 +861,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/TXPOST.cbl:100"
         },
         {
@@ -830,6 +872,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/TXPOST.cbl:101"
         },
         {
@@ -840,6 +883,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/TXPOST.cbl:102"
         },
         {
@@ -850,6 +894,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/TXPOST.cbl:103"
         },
         {
@@ -860,6 +905,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "code",
           "conditions": [
             {
               "name": "AUDIT-OPENED",
@@ -880,6 +926,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "code",
           "conditions": [
             {
               "name": "REJECTS-OPENED",
@@ -900,6 +947,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/TXPOST.cbl:108"
         },
         {
@@ -910,6 +958,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/TXPOST.cbl:109"
         }
       ]
@@ -923,6 +972,7 @@
       "picture": "9(8)",
       "usage": "DISPLAY",
       "category": "numeric",
+      "kind": "date",
       "digits": 8,
       "source": "pangaea/programs/TXPOST.cbl:111"
     },
@@ -935,6 +985,7 @@
       "picture": "X(40)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
+      "kind": "text",
       "source": "pangaea/programs/TXPOST.cbl:112"
     },
     {
@@ -946,6 +997,7 @@
       "picture": "X(10)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
+      "kind": "text",
       "description": "MATCH KEYS: HIGH-VALUES ONCE A FILE IS AT ITS END.",
       "source": "pangaea/programs/TXPOST.cbl:115"
     },
@@ -958,6 +1010,7 @@
       "picture": "X(10)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
+      "kind": "text",
       "source": "pangaea/programs/TXPOST.cbl:116"
     },
     {
@@ -969,6 +1022,7 @@
       "picture": "X(10)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
+      "kind": "text",
       "values": [
         "LOW-VALUES"
       ],
@@ -981,6 +1035,7 @@
       "start": 1,
       "length": 20,
       "category": "group",
+      "kind": "group",
       "source": "pangaea/programs/TXPOST.cbl:118",
       "fields": [
         {
@@ -991,6 +1046,7 @@
           "picture": "X(10)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/TXPOST.cbl:119"
         },
         {
@@ -1001,6 +1057,7 @@
           "picture": "X(10)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/TXPOST.cbl:120"
         }
       ]
@@ -1014,6 +1071,7 @@
       "picture": "X(20)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
+      "kind": "text",
       "values": [
         "LOW-VALUES"
       ],
@@ -1026,6 +1084,7 @@
       "start": 1,
       "length": 50,
       "category": "group",
+      "kind": "group",
       "source": "pangaea/programs/TXPOST.cbl:123",
       "fields": [
         {
@@ -1036,6 +1095,7 @@
           "picture": "S9(11)V99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "amount",
           "digits": 13,
           "scale": 2,
           "signed": true,
@@ -1049,6 +1109,7 @@
           "picture": "S9(11)V99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "amount",
           "digits": 13,
           "scale": 2,
           "signed": true,
@@ -1062,6 +1123,7 @@
           "picture": "S9(11)V99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "amount",
           "digits": 13,
           "scale": 2,
           "signed": true,
@@ -1075,6 +1137,7 @@
           "picture": "S9(9)V99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "amount",
           "digits": 11,
           "scale": 2,
           "signed": true,
@@ -1091,6 +1154,7 @@
       "picture": "X(80)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
+      "kind": "text",
       "description": "A LEG IS WRITTEN FROM THE TRANSACTION RECORD ITSELF, TURNED AROUND; THE TRANSACTION IS SAVED HERE AND PUT BACK AFTER.",
       "source": "pangaea/programs/TXPOST.cbl:131"
     },
@@ -1103,6 +1167,7 @@
       "picture": "9(10)",
       "usage": "DISPLAY",
       "category": "numeric",
+      "kind": "number",
       "digits": 10,
       "source": "pangaea/programs/TXPOST.cbl:132"
     },
@@ -1113,6 +1178,7 @@
       "start": 1,
       "length": 130,
       "category": "group",
+      "kind": "group",
       "source": "pangaea/programs/TXPOST.cbl:134",
       "fields": [
         {
@@ -1123,6 +1189,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 8,
           "values": [
             "0"
@@ -1137,6 +1204,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 8,
           "values": [
             "0"
@@ -1151,6 +1219,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 8,
           "values": [
             "0"
@@ -1165,6 +1234,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 8,
           "values": [
             "0"
@@ -1179,6 +1249,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 8,
           "values": [
             "0"
@@ -1193,6 +1264,7 @@
           "picture": "S9(13)V99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "amount",
           "digits": 15,
           "scale": 2,
           "signed": true,
@@ -1209,6 +1281,7 @@
           "picture": "9(13)V99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "amount",
           "digits": 15,
           "scale": 2,
           "values": [
@@ -1224,6 +1297,7 @@
           "picture": "9(13)V99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "amount",
           "digits": 15,
           "scale": 2,
           "values": [
@@ -1239,6 +1313,7 @@
           "picture": "9(13)V99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "amount",
           "digits": 15,
           "scale": 2,
           "values": [
@@ -1254,6 +1329,7 @@
           "picture": "S9(13)V99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "amount",
           "digits": 15,
           "scale": 2,
           "signed": true,
@@ -1270,6 +1346,7 @@
           "picture": "S9(13)V99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "amount",
           "digits": 15,
           "scale": 2,
           "signed": true,
@@ -1288,6 +1365,7 @@
       "start": 1,
       "length": 100,
       "category": "group",
+      "kind": "group",
       "description": "AUDITREC: AUDIT TRAIL RECORD, 100 BYTES, ONE PER POSTING THE AMOUNT IS SIGNED: CREDITS POSITIVE, DEBITS NEGATIVE.",
       "source": "pangaea/copybooks/AUDITREC.cpy:5",
       "fields": [
@@ -1299,6 +1377,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "date",
           "digits": 8,
           "source": "pangaea/copybooks/AUDITREC.cpy:6"
         },
@@ -1310,6 +1389,7 @@
           "picture": "9(10)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 10,
           "source": "pangaea/copybooks/AUDITREC.cpy:7"
         },
@@ -1321,6 +1401,7 @@
           "picture": "9(10)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 10,
           "source": "pangaea/copybooks/AUDITREC.cpy:8"
         },
@@ -1332,6 +1413,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/copybooks/AUDITREC.cpy:9"
         },
         {
@@ -1342,6 +1424,7 @@
           "picture": "S9(9)V99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "amount",
           "digits": 11,
           "scale": 2,
           "signed": true,
@@ -1355,6 +1438,7 @@
           "picture": "S9(11)V99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "amount",
           "digits": 13,
           "scale": 2,
           "signed": true,
@@ -1368,6 +1452,7 @@
           "picture": "S9(11)V99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "amount",
           "digits": 13,
           "scale": 2,
           "signed": true,
@@ -1381,6 +1466,7 @@
           "picture": "X(33)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "filler",
           "source": "pangaea/copybooks/AUDITREC.cpy:13"
         }
       ]
@@ -1393,6 +1479,7 @@
       "start": 1,
       "length": 100,
       "category": "group",
+      "kind": "group",
       "description": "REJREC: REJECTED TRANSACTION, 100 BYTES THE TRANSACTION AS RECEIVED, WITH THE STEP THAT REJECTED IT AND WHY. ACCOUNT MAINTENANCE REJECTS ITS REQUESTS IN THE SAME FORM, THE REQUEST IN PLACE OF THE TRANSACTION. MODIFICATION HISTORY DATE       BY  CHANGE 1987-03-12 JA  ORIGINAL VERSION. 1988-05-09 JA  CR-0031 ACCOUNT MAINTENANCE REASONS.",
       "source": "pangaea/copybooks/REJREC.cpy:12",
       "fields": [
@@ -1404,6 +1491,7 @@
           "picture": "X(8)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/copybooks/REJREC.cpy:13"
         },
         {
@@ -1414,6 +1502,7 @@
           "picture": "X(4)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "code",
           "conditions": [
             {
               "name": "RJ-BAD-ACCOUNT",
@@ -1510,6 +1599,7 @@
           "picture": "X(80)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/copybooks/REJREC.cpy:27"
         },
         {
@@ -1520,6 +1610,7 @@
           "picture": "X(8)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "filler",
           "source": "pangaea/copybooks/REJREC.cpy:28"
         }
       ]
@@ -1531,6 +1622,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
+      "kind": "group",
       "source": "pangaea/programs/TXPOST.cbl:151",
       "fields": [
         {
@@ -1541,6 +1633,7 @@
           "picture": "X(30)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/TXPOST.cbl:152"
         },
         {
@@ -1551,6 +1644,7 @@
           "picture": "ZZ,ZZZ,ZZ9",
           "usage": "DISPLAY",
           "category": "numeric-edited",
+          "kind": "edited",
           "source": "pangaea/programs/TXPOST.cbl:153"
         },
         {
@@ -1561,6 +1655,7 @@
           "picture": "X(40)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "filler",
           "values": [
             "SPACES"
           ],
@@ -1575,6 +1670,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
+      "kind": "group",
       "source": "pangaea/programs/TXPOST.cbl:155",
       "fields": [
         {
@@ -1585,6 +1681,7 @@
           "picture": "X(30)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/TXPOST.cbl:156"
         },
         {
@@ -1595,6 +1692,7 @@
           "picture": "Z,ZZZ,ZZZ,ZZZ,ZZ9.99-",
           "usage": "DISPLAY",
           "category": "numeric-edited",
+          "kind": "edited",
           "source": "pangaea/programs/TXPOST.cbl:157"
         },
         {
@@ -1605,6 +1703,7 @@
           "picture": "X(29)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "filler",
           "values": [
             "SPACES"
           ],

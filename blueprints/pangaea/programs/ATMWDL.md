@@ -194,57 +194,57 @@ Record [HOLD-RECORD](#hold-record), from copybook [HOLDREC](../copybooks/HOLDREC
 
 Working storage. 2 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-NOTE | 1 | 2 | 99 | | VALUE 20 | [ATMWDL.cbl:28](../../../pangaea/programs/ATMWDL.cbl#L28) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-NOTE | number | 1 | 2 | 99 | | VALUE 20 | [ATMWDL.cbl:28](../../../pangaea/programs/ATMWDL.cbl#L28) |
 
 ### WS-FREE-WITHDRAWALS
 
 Working storage. 3 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-FREE-WITHDRAWALS | 1 | 3 | 9(3) | | VALUE 4 | [ATMWDL.cbl:29](../../../pangaea/programs/ATMWDL.cbl#L29) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-FREE-WITHDRAWALS | number | 1 | 3 | 9(3) | | VALUE 4 | [ATMWDL.cbl:29](../../../pangaea/programs/ATMWDL.cbl#L29) |
 
 ### WS-ATM-FEE
 
 Working storage. 3 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-ATM-FEE | 1 | 3 | 9V99 | | VALUE 2.00 | [ATMWDL.cbl:30](../../../pangaea/programs/ATMWDL.cbl#L30) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-ATM-FEE | amount | 1 | 3 | 9V99 | | VALUE 2.00 | [ATMWDL.cbl:30](../../../pangaea/programs/ATMWDL.cbl#L30) |
 
 ### WS-AVAILABLE
 
 Working storage. 13 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-AVAILABLE | 1 | 13 | S9(11)V99 | | | [ATMWDL.cbl:31](../../../pangaea/programs/ATMWDL.cbl#L31) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-AVAILABLE | amount | 1 | 13 | S9(11)V99 | | | [ATMWDL.cbl:31](../../../pangaea/programs/ATMWDL.cbl#L31) |
 
 ### WS-DAY-CASH
 
 Working storage. 9 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-DAY-CASH | 1 | 9 | 9(7)V99 | | | [ATMWDL.cbl:32](../../../pangaea/programs/ATMWDL.cbl#L32) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-DAY-CASH | amount | 1 | 9 | 9(7)V99 | | | [ATMWDL.cbl:32](../../../pangaea/programs/ATMWDL.cbl#L32) |
 
 ### WS-FEE
 
 Working storage. 3 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-FEE | 1 | 3 | 9V99 | | | [ATMWDL.cbl:33](../../../pangaea/programs/ATMWDL.cbl#L33) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-FEE | amount | 1 | 3 | 9V99 | | | [ATMWDL.cbl:33](../../../pangaea/programs/ATMWDL.cbl#L33) |
 
 ### WS-TO-HOLD
 
 Working storage. 9 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-TO-HOLD | 1 | 9 | 9(7)V99 | | | [ATMWDL.cbl:34](../../../pangaea/programs/ATMWDL.cbl#L34) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-TO-HOLD | amount | 1 | 9 | 9(7)V99 | | | [ATMWDL.cbl:34](../../../pangaea/programs/ATMWDL.cbl#L34) |
 
 ### AUTH-REQUEST
 

@@ -135,9 +135,9 @@ Record [HOLD-RECORD](#hold-record), from copybook [HOLDREC](../copybooks/HOLDREC
 
 Working storage. 13 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-AVAILABLE | 1 | 13 | S9(11)V99 | | | [AUTHREV.cbl:24](../../../pangaea/programs/AUTHREV.cbl#L24) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-AVAILABLE | amount | 1 | 13 | S9(11)V99 | | | [AUTHREV.cbl:24](../../../pangaea/programs/AUTHREV.cbl#L24) |
 
 ### AUTH-REQUEST
 

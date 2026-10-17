@@ -529,75 +529,75 @@ File ACCT-IN. 100 bytes, layout in copybook [ACCTMAST](../copybooks/ACCTMAST.md)
 
 File ACCR-IN. 40 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | ACCR-IN-RECORD | 1 | 40 | | | | [INTACCR.cbl:64](../../../pangaea/programs/INTACCR.cbl#L64) |
-| 05 | AI-ACCT-NO | 1 | 10 | X(10) | | | [INTACCR.cbl:65](../../../pangaea/programs/INTACCR.cbl#L65) |
-| 05 | FILLER | 11 | 30 | X(30) | | | [INTACCR.cbl:66](../../../pangaea/programs/INTACCR.cbl#L66) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | ACCR-IN-RECORD | group | 1 | 40 | | | | [INTACCR.cbl:64](../../../pangaea/programs/INTACCR.cbl#L64) |
+| 05 | AI-ACCT-NO | text | 1 | 10 | X(10) | | | [INTACCR.cbl:65](../../../pangaea/programs/INTACCR.cbl#L65) |
+| 05 | FILLER | filler | 11 | 30 | X(30) | | | [INTACCR.cbl:66](../../../pangaea/programs/INTACCR.cbl#L66) |
 
 ### ACCR-OUT-RECORD
 
 File ACCR-OUT. 40 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | ACCR-OUT-RECORD | 1 | 40 | X(40) | | | [INTACCR.cbl:68](../../../pangaea/programs/INTACCR.cbl#L68) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | ACCR-OUT-RECORD | text | 1 | 40 | X(40) | | | [INTACCR.cbl:68](../../../pangaea/programs/INTACCR.cbl#L68) |
 
 ### REPORT-LINE
 
 File REPORT-OUT. 80 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | REPORT-LINE | 1 | 80 | X(80) | | | [INTACCR.cbl:70](../../../pangaea/programs/INTACCR.cbl#L70) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | REPORT-LINE | text | 1 | 80 | X(80) | | | [INTACCR.cbl:70](../../../pangaea/programs/INTACCR.cbl#L70) |
 
 ### WS-FILE-STATUSES
 
 Working storage. 12 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-FILE-STATUSES | 1 | 12 | | | | [INTACCR.cbl:73](../../../pangaea/programs/INTACCR.cbl#L73) |
-| 05 | WS-CONTROL-STATUS | 1 | 2 | XX | | | [INTACCR.cbl:74](../../../pangaea/programs/INTACCR.cbl#L74) |
-| 05 | WS-RATE-STATUS | 3 | 2 | XX | | | [INTACCR.cbl:75](../../../pangaea/programs/INTACCR.cbl#L75) |
-| 05 | WS-ACCT-IN-STATUS | 5 | 2 | XX | | | [INTACCR.cbl:76](../../../pangaea/programs/INTACCR.cbl#L76) |
-| 05 | WS-ACCR-IN-STATUS | 7 | 2 | XX | | | [INTACCR.cbl:77](../../../pangaea/programs/INTACCR.cbl#L77) |
-| 05 | WS-ACCR-OUT-STATUS | 9 | 2 | XX | | | [INTACCR.cbl:78](../../../pangaea/programs/INTACCR.cbl#L78) |
-| 05 | WS-REPORT-STATUS | 11 | 2 | XX | | | [INTACCR.cbl:79](../../../pangaea/programs/INTACCR.cbl#L79) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-FILE-STATUSES | group | 1 | 12 | | | | [INTACCR.cbl:73](../../../pangaea/programs/INTACCR.cbl#L73) |
+| 05 | WS-CONTROL-STATUS | text | 1 | 2 | XX | | | [INTACCR.cbl:74](../../../pangaea/programs/INTACCR.cbl#L74) |
+| 05 | WS-RATE-STATUS | text | 3 | 2 | XX | | | [INTACCR.cbl:75](../../../pangaea/programs/INTACCR.cbl#L75) |
+| 05 | WS-ACCT-IN-STATUS | text | 5 | 2 | XX | | | [INTACCR.cbl:76](../../../pangaea/programs/INTACCR.cbl#L76) |
+| 05 | WS-ACCR-IN-STATUS | text | 7 | 2 | XX | | | [INTACCR.cbl:77](../../../pangaea/programs/INTACCR.cbl#L77) |
+| 05 | WS-ACCR-OUT-STATUS | text | 9 | 2 | XX | | | [INTACCR.cbl:78](../../../pangaea/programs/INTACCR.cbl#L78) |
+| 05 | WS-REPORT-STATUS | text | 11 | 2 | XX | | | [INTACCR.cbl:79](../../../pangaea/programs/INTACCR.cbl#L79) |
 
 ### WS-BUSINESS-DATE
 
 Working storage. 8 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-BUSINESS-DATE | 1 | 8 | 9(8) | | | [INTACCR.cbl:81](../../../pangaea/programs/INTACCR.cbl#L81) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-BUSINESS-DATE | date | 1 | 8 | 9(8) | | | [INTACCR.cbl:81](../../../pangaea/programs/INTACCR.cbl#L81) |
 
 ### WS-ABORT-MESSAGE
 
 Working storage. 40 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-ABORT-MESSAGE | 1 | 40 | X(40) | | | [INTACCR.cbl:82](../../../pangaea/programs/INTACCR.cbl#L82) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-ABORT-MESSAGE | text | 1 | 40 | X(40) | | | [INTACCR.cbl:82](../../../pangaea/programs/INTACCR.cbl#L82) |
 
 ### WS-END-SWITCHES
 
 Working storage. 1 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-END-SWITCHES | 1 | 1 | | | | [INTACCR.cbl:83](../../../pangaea/programs/INTACCR.cbl#L83) |
-| 05 | WS-MASTER-END-SW | 1 | 1 | X | | VALUE 'N' | [INTACCR.cbl:84](../../../pangaea/programs/INTACCR.cbl#L84) |
-| 88 | MASTER-AT-END | | | | | VALUE 'Y' | [INTACCR.cbl:85](../../../pangaea/programs/INTACCR.cbl#L85) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-END-SWITCHES | group | 1 | 1 | | | | [INTACCR.cbl:83](../../../pangaea/programs/INTACCR.cbl#L83) |
+| 05 | WS-MASTER-END-SW | code | 1 | 1 | X | | VALUE 'N' | [INTACCR.cbl:84](../../../pangaea/programs/INTACCR.cbl#L84) |
+| 88 | MASTER-AT-END | | | | | | VALUE 'Y' | [INTACCR.cbl:85](../../../pangaea/programs/INTACCR.cbl#L85) |
 
 ### WS-ACCRUAL-KEY
 
 Working storage. 10 bytes. THE ACCOUNT NUMBER OF THE NEXT ACCRUAL: HIGH-VALUES AT THE END.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-ACCRUAL-KEY | 1 | 10 | X(10) | | | [INTACCR.cbl:87](../../../pangaea/programs/INTACCR.cbl#L87) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-ACCRUAL-KEY | text | 1 | 10 | X(10) | | | [INTACCR.cbl:87](../../../pangaea/programs/INTACCR.cbl#L87) |
 
 ### ACCRUAL-RECORD
 
@@ -607,179 +607,179 @@ Working storage. 40 bytes, layout in copybook [ACCRREC](../copybooks/ACCRREC.md)
 
 Working storage. 2 bytes. THE RATE TABLE, AS MANY RATES AS THE RATE FILE HOLDS.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-RATE-COUNT | 1 | 2 | 99 | | VALUE 0 | [INTACCR.cbl:93](../../../pangaea/programs/INTACCR.cbl#L93) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-RATE-COUNT | number | 1 | 2 | 99 | | VALUE 0 | [INTACCR.cbl:93](../../../pangaea/programs/INTACCR.cbl#L93) |
 
 ### WS-RATE-TABLE
 
 Working storage. 260 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-RATE-TABLE | 1 | 260 | | | | [INTACCR.cbl:94](../../../pangaea/programs/INTACCR.cbl#L94) |
-| 05 | WS-RATE | 1 | 13 | | | OCCURS 1 TO 20 DEPENDING ON WS-RATE-COUNT | [INTACCR.cbl:95](../../../pangaea/programs/INTACCR.cbl#L95) |
-| 10 | WS-RT-ACCT-TYPE | 1 | 1 | X | | | [INTACCR.cbl:97](../../../pangaea/programs/INTACCR.cbl#L97) |
-| 10 | WS-RT-KIND | 2 | 1 | X | | | [INTACCR.cbl:98](../../../pangaea/programs/INTACCR.cbl#L98) |
-| 88 | WS-RT-CREDIT | | | | | VALUE 'C' | [INTACCR.cbl:99](../../../pangaea/programs/INTACCR.cbl#L99) |
-| 88 | WS-RT-DEBIT | | | | | VALUE 'D' | [INTACCR.cbl:100](../../../pangaea/programs/INTACCR.cbl#L100) |
-| 10 | WS-RT-FLOOR | 3 | 7 | S9(11)V99 | COMP-3 | | [INTACCR.cbl:101](../../../pangaea/programs/INTACCR.cbl#L101) |
-| 10 | WS-RT-ANNUAL-RATE | 10 | 4 | 9V9(6) | COMP-3 | | [INTACCR.cbl:102](../../../pangaea/programs/INTACCR.cbl#L102) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-RATE-TABLE | group | 1 | 260 | | | | [INTACCR.cbl:94](../../../pangaea/programs/INTACCR.cbl#L94) |
+| 05 | WS-RATE | group | 1 | 13 | | | OCCURS 1 TO 20 DEPENDING ON WS-RATE-COUNT | [INTACCR.cbl:95](../../../pangaea/programs/INTACCR.cbl#L95) |
+| 10 | WS-RT-ACCT-TYPE | text | 1 | 1 | X | | | [INTACCR.cbl:97](../../../pangaea/programs/INTACCR.cbl#L97) |
+| 10 | WS-RT-KIND | code | 2 | 1 | X | | | [INTACCR.cbl:98](../../../pangaea/programs/INTACCR.cbl#L98) |
+| 88 | WS-RT-CREDIT | | | | | | VALUE 'C' | [INTACCR.cbl:99](../../../pangaea/programs/INTACCR.cbl#L99) |
+| 88 | WS-RT-DEBIT | | | | | | VALUE 'D' | [INTACCR.cbl:100](../../../pangaea/programs/INTACCR.cbl#L100) |
+| 10 | WS-RT-FLOOR | amount | 3 | 7 | S9(11)V99 | COMP-3 | | [INTACCR.cbl:101](../../../pangaea/programs/INTACCR.cbl#L101) |
+| 10 | WS-RT-ANNUAL-RATE | amount | 10 | 4 | 9V9(6) | COMP-3 | | [INTACCR.cbl:102](../../../pangaea/programs/INTACCR.cbl#L102) |
 
 ### WS-RX
 
 Working storage. 2 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-RX | 1 | 2 | 99 | | | [INTACCR.cbl:103](../../../pangaea/programs/INTACCR.cbl#L103) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-RX | number | 1 | 2 | 99 | | | [INTACCR.cbl:103](../../../pangaea/programs/INTACCR.cbl#L103) |
 
 ### WS-ACCOUNT-RATE
 
 Working storage. 4 bytes. THE RATE FOR THE ACCOUNT IN HAND, AND THE TIER IT CAME FROM.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-ACCOUNT-RATE | 1 | 4 | 9V9(6) | COMP-3 | | [INTACCR.cbl:106](../../../pangaea/programs/INTACCR.cbl#L106) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-ACCOUNT-RATE | amount | 1 | 4 | 9V9(6) | COMP-3 | | [INTACCR.cbl:106](../../../pangaea/programs/INTACCR.cbl#L106) |
 
 ### WS-RATE-FOUND-SW
 
 Working storage. 1 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-RATE-FOUND-SW | 1 | 1 | X | | | [INTACCR.cbl:107](../../../pangaea/programs/INTACCR.cbl#L107) |
-| 88 | RATE-FOUND | | | | | VALUE 'Y' | [INTACCR.cbl:108](../../../pangaea/programs/INTACCR.cbl#L108) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-RATE-FOUND-SW | code | 1 | 1 | X | | | [INTACCR.cbl:107](../../../pangaea/programs/INTACCR.cbl#L107) |
+| 88 | RATE-FOUND | | | | | | VALUE 'Y' | [INTACCR.cbl:108](../../../pangaea/programs/INTACCR.cbl#L108) |
 
 ### WS-BEST-FLOOR
 
 Working storage. 7 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-BEST-FLOOR | 1 | 7 | S9(11)V99 | COMP-3 | | [INTACCR.cbl:109](../../../pangaea/programs/INTACCR.cbl#L109) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-BEST-FLOOR | amount | 1 | 7 | S9(11)V99 | COMP-3 | | [INTACCR.cbl:109](../../../pangaea/programs/INTACCR.cbl#L109) |
 
 ### WS-TODAY
 
 Working storage. 7 bytes. DAYS COUNT FROM 1601-01-01, AS FUNCTION INTEGER-OF-DATE GIVES.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-TODAY | 1 | 7 | 9(7) | | | [INTACCR.cbl:112](../../../pangaea/programs/INTACCR.cbl#L112) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-TODAY | number | 1 | 7 | 9(7) | | | [INTACCR.cbl:112](../../../pangaea/programs/INTACCR.cbl#L112) |
 
 ### WS-FROM-DAY
 
 Working storage. 7 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-FROM-DAY | 1 | 7 | 9(7) | | | [INTACCR.cbl:113](../../../pangaea/programs/INTACCR.cbl#L113) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-FROM-DAY | number | 1 | 7 | 9(7) | | | [INTACCR.cbl:113](../../../pangaea/programs/INTACCR.cbl#L113) |
 
 ### WS-MONTH-START-DAY
 
 Working storage. 7 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-MONTH-START-DAY | 1 | 7 | 9(7) | | | [INTACCR.cbl:114](../../../pangaea/programs/INTACCR.cbl#L114) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-MONTH-START-DAY | number | 1 | 7 | 9(7) | | | [INTACCR.cbl:114](../../../pangaea/programs/INTACCR.cbl#L114) |
 
 ### WS-DAYS
 
 Working storage. 3 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-DAYS | 1 | 3 | 9(3) | | | [INTACCR.cbl:115](../../../pangaea/programs/INTACCR.cbl#L115) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-DAYS | number | 1 | 3 | 9(3) | | | [INTACCR.cbl:115](../../../pangaea/programs/INTACCR.cbl#L115) |
 
 ### WS-THROUGH-DATE
 
 Working storage. 8 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-THROUGH-DATE | 1 | 8 | | | | [INTACCR.cbl:116](../../../pangaea/programs/INTACCR.cbl#L116) |
-| 05 | WS-TH-YEAR | 1 | 4 | 9(4) | | | [INTACCR.cbl:117](../../../pangaea/programs/INTACCR.cbl#L117) |
-| 05 | WS-TH-MONTH | 5 | 2 | 99 | | | [INTACCR.cbl:118](../../../pangaea/programs/INTACCR.cbl#L118) |
-| 05 | WS-TH-DAY | 7 | 2 | 99 | | | [INTACCR.cbl:119](../../../pangaea/programs/INTACCR.cbl#L119) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-THROUGH-DATE | group | 1 | 8 | | | | [INTACCR.cbl:116](../../../pangaea/programs/INTACCR.cbl#L116) |
+| 05 | WS-TH-YEAR | number | 1 | 4 | 9(4) | | | [INTACCR.cbl:117](../../../pangaea/programs/INTACCR.cbl#L117) |
+| 05 | WS-TH-MONTH | number | 5 | 2 | 99 | | | [INTACCR.cbl:118](../../../pangaea/programs/INTACCR.cbl#L118) |
+| 05 | WS-TH-DAY | number | 7 | 2 | 99 | | | [INTACCR.cbl:119](../../../pangaea/programs/INTACCR.cbl#L119) |
 
 ### WS-MONTH-START
 
 Working storage. 8 bytes. THE FIRST DAY OF THE MONTH AFTER THE LAST ACCRUAL.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-MONTH-START | 1 | 8 | | | | [INTACCR.cbl:121](../../../pangaea/programs/INTACCR.cbl#L121) |
-| 05 | WS-MS-YEAR | 1 | 4 | 9(4) | | | [INTACCR.cbl:122](../../../pangaea/programs/INTACCR.cbl#L122) |
-| 05 | WS-MS-MONTH | 5 | 2 | 99 | | | [INTACCR.cbl:123](../../../pangaea/programs/INTACCR.cbl#L123) |
-| 05 | WS-MS-DAY | 7 | 2 | 99 | | | [INTACCR.cbl:124](../../../pangaea/programs/INTACCR.cbl#L124) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-MONTH-START | group | 1 | 8 | | | | [INTACCR.cbl:121](../../../pangaea/programs/INTACCR.cbl#L121) |
+| 05 | WS-MS-YEAR | number | 1 | 4 | 9(4) | | | [INTACCR.cbl:122](../../../pangaea/programs/INTACCR.cbl#L122) |
+| 05 | WS-MS-MONTH | number | 5 | 2 | 99 | | | [INTACCR.cbl:123](../../../pangaea/programs/INTACCR.cbl#L123) |
+| 05 | WS-MS-DAY | number | 7 | 2 | 99 | | | [INTACCR.cbl:124](../../../pangaea/programs/INTACCR.cbl#L124) |
 
 ### WS-MONTH-START-DATE
 
 Working storage. 8 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-MONTH-START-DATE | 1 | 8 | 9(8) | | REDEFINES WS-MONTH-START | [INTACCR.cbl:125](../../../pangaea/programs/INTACCR.cbl#L125) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-MONTH-START-DATE | date | 1 | 8 | 9(8) | | REDEFINES WS-MONTH-START | [INTACCR.cbl:125](../../../pangaea/programs/INTACCR.cbl#L125) |
 
 ### WS-INTEREST-PRODUCT
 
 Working storage. 11 bytes. THE BALANCE TIMES THE RATE TIMES THE DAYS, EXACT, BEFORE IT IS DIVIDED BY THE DAYS OF A YEAR AND ROUNDED.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-INTEREST-PRODUCT | 1 | 11 | S9(13)V9(8) | COMP-3 | | [INTACCR.cbl:130](../../../pangaea/programs/INTACCR.cbl#L130) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-INTEREST-PRODUCT | amount | 1 | 11 | S9(13)V9(8) | COMP-3 | | [INTACCR.cbl:130](../../../pangaea/programs/INTACCR.cbl#L130) |
 
 ### WS-INCREMENT
 
 Working storage. 7 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-INCREMENT | 1 | 7 | S9(7)V9(6) | COMP-3 | | [INTACCR.cbl:131](../../../pangaea/programs/INTACCR.cbl#L131) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-INCREMENT | amount | 1 | 7 | S9(7)V9(6) | COMP-3 | | [INTACCR.cbl:131](../../../pangaea/programs/INTACCR.cbl#L131) |
 
 ### WS-DUE-MONTH
 
 Working storage. 6 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-DUE-MONTH | 1 | 6 | | | | [INTACCR.cbl:132](../../../pangaea/programs/INTACCR.cbl#L132) |
-| 05 | WS-DM-YEAR | 1 | 4 | 9(4) | | | [INTACCR.cbl:133](../../../pangaea/programs/INTACCR.cbl#L133) |
-| 05 | WS-DM-MONTH | 5 | 2 | 99 | | | [INTACCR.cbl:134](../../../pangaea/programs/INTACCR.cbl#L134) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-DUE-MONTH | group | 1 | 6 | | | | [INTACCR.cbl:132](../../../pangaea/programs/INTACCR.cbl#L132) |
+| 05 | WS-DM-YEAR | number | 1 | 4 | 9(4) | | | [INTACCR.cbl:133](../../../pangaea/programs/INTACCR.cbl#L133) |
+| 05 | WS-DM-MONTH | number | 5 | 2 | 99 | | | [INTACCR.cbl:134](../../../pangaea/programs/INTACCR.cbl#L134) |
 
 ### WS-TOTALS
 
 Working storage. 52 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-TOTALS | 1 | 52 | | | | [INTACCR.cbl:136](../../../pangaea/programs/INTACCR.cbl#L136) |
-| 05 | WS-ACCOUNT-COUNT | 1 | 8 | 9(8) | | VALUE 0 | [INTACCR.cbl:137](../../../pangaea/programs/INTACCR.cbl#L137) |
-| 05 | WS-STARTED-COUNT | 9 | 8 | 9(8) | | VALUE 0 | [INTACCR.cbl:138](../../../pangaea/programs/INTACCR.cbl#L138) |
-| 05 | WS-CREDIT-ACCRUED | 17 | 8 | S9(9)V9(6) | COMP-3 | VALUE 0 | [INTACCR.cbl:139](../../../pangaea/programs/INTACCR.cbl#L139) |
-| 05 | WS-DEBIT-ACCRUED | 25 | 8 | S9(9)V9(6) | COMP-3 | VALUE 0 | [INTACCR.cbl:140](../../../pangaea/programs/INTACCR.cbl#L140) |
-| 05 | WS-CREDIT-DUE | 33 | 7 | S9(11)V99 | COMP-3 | VALUE 0 | [INTACCR.cbl:141](../../../pangaea/programs/INTACCR.cbl#L141) |
-| 05 | WS-DEBIT-DUE | 40 | 7 | S9(11)V99 | COMP-3 | VALUE 0 | [INTACCR.cbl:142](../../../pangaea/programs/INTACCR.cbl#L142) |
-| 05 | WS-CLOSED-MONTH | 47 | 6 | 9(6) | | VALUE 0 | [INTACCR.cbl:143](../../../pangaea/programs/INTACCR.cbl#L143) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-TOTALS | group | 1 | 52 | | | | [INTACCR.cbl:136](../../../pangaea/programs/INTACCR.cbl#L136) |
+| 05 | WS-ACCOUNT-COUNT | number | 1 | 8 | 9(8) | | VALUE 0 | [INTACCR.cbl:137](../../../pangaea/programs/INTACCR.cbl#L137) |
+| 05 | WS-STARTED-COUNT | number | 9 | 8 | 9(8) | | VALUE 0 | [INTACCR.cbl:138](../../../pangaea/programs/INTACCR.cbl#L138) |
+| 05 | WS-CREDIT-ACCRUED | amount | 17 | 8 | S9(9)V9(6) | COMP-3 | VALUE 0 | [INTACCR.cbl:139](../../../pangaea/programs/INTACCR.cbl#L139) |
+| 05 | WS-DEBIT-ACCRUED | amount | 25 | 8 | S9(9)V9(6) | COMP-3 | VALUE 0 | [INTACCR.cbl:140](../../../pangaea/programs/INTACCR.cbl#L140) |
+| 05 | WS-CREDIT-DUE | amount | 33 | 7 | S9(11)V99 | COMP-3 | VALUE 0 | [INTACCR.cbl:141](../../../pangaea/programs/INTACCR.cbl#L141) |
+| 05 | WS-DEBIT-DUE | amount | 40 | 7 | S9(11)V99 | COMP-3 | VALUE 0 | [INTACCR.cbl:142](../../../pangaea/programs/INTACCR.cbl#L142) |
+| 05 | WS-CLOSED-MONTH | date | 47 | 6 | 9(6) | | VALUE 0 | [INTACCR.cbl:143](../../../pangaea/programs/INTACCR.cbl#L143) |
 
 ### WS-REPORT-COUNT-LINE
 
 Working storage. 80 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-REPORT-COUNT-LINE | 1 | 80 | | | | [INTACCR.cbl:145](../../../pangaea/programs/INTACCR.cbl#L145) |
-| 05 | WS-RC-LABEL | 1 | 30 | X(30) | | | [INTACCR.cbl:146](../../../pangaea/programs/INTACCR.cbl#L146) |
-| 05 | WS-RC-VALUE | 31 | 10 | ZZ,ZZZ,ZZ9 | | | [INTACCR.cbl:147](../../../pangaea/programs/INTACCR.cbl#L147) |
-| 05 | FILLER | 41 | 40 | X(40) | | VALUE SPACES | [INTACCR.cbl:148](../../../pangaea/programs/INTACCR.cbl#L148) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-REPORT-COUNT-LINE | group | 1 | 80 | | | | [INTACCR.cbl:145](../../../pangaea/programs/INTACCR.cbl#L145) |
+| 05 | WS-RC-LABEL | text | 1 | 30 | X(30) | | | [INTACCR.cbl:146](../../../pangaea/programs/INTACCR.cbl#L146) |
+| 05 | WS-RC-VALUE | edited | 31 | 10 | ZZ,ZZZ,ZZ9 | | | [INTACCR.cbl:147](../../../pangaea/programs/INTACCR.cbl#L147) |
+| 05 | FILLER | filler | 41 | 40 | X(40) | | VALUE SPACES | [INTACCR.cbl:148](../../../pangaea/programs/INTACCR.cbl#L148) |
 
 ### WS-REPORT-AMOUNT-LINE
 
 Working storage. 80 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-REPORT-AMOUNT-LINE | 1 | 80 | | | | [INTACCR.cbl:149](../../../pangaea/programs/INTACCR.cbl#L149) |
-| 05 | WS-RA-LABEL | 1 | 30 | X(30) | | | [INTACCR.cbl:150](../../../pangaea/programs/INTACCR.cbl#L150) |
-| 05 | WS-RA-VALUE | 31 | 19 | ZZZ,ZZZ,ZZ9.999999- | | | [INTACCR.cbl:151](../../../pangaea/programs/INTACCR.cbl#L151) |
-| 05 | FILLER | 50 | 31 | X(31) | | VALUE SPACES | [INTACCR.cbl:152](../../../pangaea/programs/INTACCR.cbl#L152) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-REPORT-AMOUNT-LINE | group | 1 | 80 | | | | [INTACCR.cbl:149](../../../pangaea/programs/INTACCR.cbl#L149) |
+| 05 | WS-RA-LABEL | text | 1 | 30 | X(30) | | | [INTACCR.cbl:150](../../../pangaea/programs/INTACCR.cbl#L150) |
+| 05 | WS-RA-VALUE | edited | 31 | 19 | ZZZ,ZZZ,ZZ9.999999- | | | [INTACCR.cbl:151](../../../pangaea/programs/INTACCR.cbl#L151) |
+| 05 | FILLER | filler | 50 | 31 | X(31) | | VALUE SPACES | [INTACCR.cbl:152](../../../pangaea/programs/INTACCR.cbl#L152) |

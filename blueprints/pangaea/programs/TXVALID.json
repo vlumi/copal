@@ -127,6 +127,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
+      "kind": "group",
       "description": "BANKCTL: BANK CONTROL RECORD, ONE PER FILE THE BUSINESS DATE THE BATCH RUNS FOR, NEVER THE CLOCK.",
       "source": "pangaea/copybooks/BANKCTL.cpy:5",
       "fields": [
@@ -138,6 +139,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "date",
           "digits": 8,
           "source": "pangaea/copybooks/BANKCTL.cpy:6"
         },
@@ -149,6 +151,7 @@
           "picture": "X(72)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "filler",
           "source": "pangaea/copybooks/BANKCTL.cpy:7"
         }
       ]
@@ -162,6 +165,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
+      "kind": "group",
       "description": "TRANREC: DAILY TRANSACTION FILE RECORD, 80 BYTES ONE HEADER, THE DETAILS, ONE TRAILER, TOLD APART BY THE RECORD TYPE. THE BODY IS REDEFINED FOR EACH RECORD TYPE. THE TRAILER CARRIES THE SENDER'S CONTROL TOTALS: THE DETAIL COUNT, THE SUM OF AMOUNTS AND THE SUM OF ACCOUNT NUMBERS. A TRANSFER (TR) NAMES THE ACCOUNT IT GOES TO. POSTING SPLITS IT IN TWO: THE DEBIT ON THE SENDING ACCOUNT, THEN A TRANSFER CREDIT (TC) ON THE RECEIVING ONE. A CREDIT THAT CANNOT POST GOES BACK AS A RETURNED TRANSFER (RT). TC AND RT ARE MADE BY POSTING, NEVER RECEIVED IN THE DAILY FILE. WHEN A MONTH CLOSES, THE BANK CREDITS ITS INTEREST (IN), CHARGES OVERDRAFT INTEREST (OD) AND THE MAINTENANCE FEE (MF). THESE TOO ARE NEVER RECEIVED IN THE DAILY FILE. THE CARD FILE, FROM THE ONLINE DAY'S HOLDS, HAS THE SAME FORM AND ITS OWN SOURCE: CARD PURCHASES (CP), ATM WITHDRAWALS (AW) AND ATM FEES (AF), WHICH WERE AUTHORIZED WHEN THEY WERE MADE. MODIFICATION HISTORY DATE       BY  CHANGE 1987-03-12 JA  ORIGINAL VERSION. 1991-06-03 PK  CR-0117 ACCOUNT NUMBER HASH IN THE TRAILER. 1996-04-15 PK  CR-0233 TRANSFERS: COUNTER ACCOUNT, FROM THE FILLER. 2001-09-03 TL  CR-0298 MONTH-END INTEREST AND FEE CODES. 2003-05-19 MV  CR-0342 THE CARD FILE AND ITS CODES.",
       "source": "pangaea/copybooks/TRANREC.cpy:31",
       "fields": [
@@ -173,6 +177,7 @@
           "picture": "X",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "code",
           "conditions": [
             {
               "name": "TR-HEADER",
@@ -206,6 +211,7 @@
           "picture": "X(79)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/copybooks/TRANREC.cpy:36"
         },
         {
@@ -214,6 +220,7 @@
           "start": 2,
           "length": 79,
           "category": "group",
+          "kind": "group",
           "redefines": "TR-BODY",
           "source": "pangaea/copybooks/TRANREC.cpy:37",
           "fields": [
@@ -225,6 +232,7 @@
               "picture": "9(8)",
               "usage": "DISPLAY",
               "category": "numeric",
+              "kind": "date",
               "digits": 8,
               "source": "pangaea/copybooks/TRANREC.cpy:38"
             },
@@ -236,6 +244,7 @@
               "picture": "X(8)",
               "usage": "DISPLAY",
               "category": "alphanumeric",
+              "kind": "code",
               "conditions": [
                 {
                   "name": "TH-FROM-BRANCHES",
@@ -262,6 +271,7 @@
               "picture": "9(6)",
               "usage": "DISPLAY",
               "category": "numeric",
+              "kind": "number",
               "digits": 6,
               "source": "pangaea/copybooks/TRANREC.cpy:42"
             },
@@ -273,6 +283,7 @@
               "picture": "X(57)",
               "usage": "DISPLAY",
               "category": "alphanumeric",
+              "kind": "filler",
               "source": "pangaea/copybooks/TRANREC.cpy:43"
             }
           ]
@@ -283,6 +294,7 @@
           "start": 2,
           "length": 79,
           "category": "group",
+          "kind": "group",
           "redefines": "TR-BODY",
           "source": "pangaea/copybooks/TRANREC.cpy:44",
           "fields": [
@@ -294,6 +306,7 @@
               "picture": "9(10)",
               "usage": "DISPLAY",
               "category": "numeric",
+              "kind": "number",
               "digits": 10,
               "source": "pangaea/copybooks/TRANREC.cpy:45"
             },
@@ -305,6 +318,7 @@
               "picture": "9(10)",
               "usage": "DISPLAY",
               "category": "numeric",
+              "kind": "number",
               "digits": 10,
               "source": "pangaea/copybooks/TRANREC.cpy:46"
             },
@@ -316,6 +330,7 @@
               "picture": "XX",
               "usage": "DISPLAY",
               "category": "alphanumeric",
+              "kind": "code",
               "conditions": [
                 {
                   "name": "TD-DEPOSIT",
@@ -431,6 +446,7 @@
               "picture": "9(9)V99",
               "usage": "DISPLAY",
               "category": "numeric",
+              "kind": "amount",
               "digits": 11,
               "scale": 2,
               "source": "pangaea/copybooks/TRANREC.cpy:62"
@@ -443,6 +459,7 @@
               "picture": "X(20)",
               "usage": "DISPLAY",
               "category": "alphanumeric",
+              "kind": "text",
               "source": "pangaea/copybooks/TRANREC.cpy:63"
             },
             {
@@ -453,6 +470,7 @@
               "picture": "9(10)",
               "usage": "DISPLAY",
               "category": "numeric",
+              "kind": "number",
               "digits": 10,
               "source": "pangaea/copybooks/TRANREC.cpy:64"
             },
@@ -464,6 +482,7 @@
               "picture": "X(16)",
               "usage": "DISPLAY",
               "category": "alphanumeric",
+              "kind": "filler",
               "source": "pangaea/copybooks/TRANREC.cpy:65"
             }
           ]
@@ -474,6 +493,7 @@
           "start": 2,
           "length": 79,
           "category": "group",
+          "kind": "group",
           "redefines": "TR-BODY",
           "source": "pangaea/copybooks/TRANREC.cpy:66",
           "fields": [
@@ -485,6 +505,7 @@
               "picture": "9(8)",
               "usage": "DISPLAY",
               "category": "numeric",
+              "kind": "number",
               "digits": 8,
               "source": "pangaea/copybooks/TRANREC.cpy:67"
             },
@@ -496,6 +517,7 @@
               "picture": "9(13)V99",
               "usage": "DISPLAY",
               "category": "numeric",
+              "kind": "amount",
               "digits": 15,
               "scale": 2,
               "source": "pangaea/copybooks/TRANREC.cpy:68"
@@ -508,6 +530,7 @@
               "picture": "9(15)",
               "usage": "DISPLAY",
               "category": "numeric",
+              "kind": "number",
               "digits": 15,
               "source": "pangaea/copybooks/TRANREC.cpy:69"
             },
@@ -519,6 +542,7 @@
               "picture": "X(41)",
               "usage": "DISPLAY",
               "category": "alphanumeric",
+              "kind": "filler",
               "source": "pangaea/copybooks/TRANREC.cpy:70"
             }
           ]
@@ -535,6 +559,7 @@
       "picture": "X(80)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
+      "kind": "text",
       "source": "pangaea/programs/TXVALID.cbl:63"
     },
     {
@@ -547,6 +572,7 @@
       "picture": "X(100)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
+      "kind": "text",
       "source": "pangaea/programs/TXVALID.cbl:65"
     },
     {
@@ -559,6 +585,7 @@
       "picture": "X(80)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
+      "kind": "text",
       "source": "pangaea/programs/TXVALID.cbl:67"
     },
     {
@@ -568,6 +595,7 @@
       "start": 1,
       "length": 10,
       "category": "group",
+      "kind": "group",
       "source": "pangaea/programs/TXVALID.cbl:70",
       "fields": [
         {
@@ -578,6 +606,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/TXVALID.cbl:71"
         },
         {
@@ -588,6 +617,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "code",
           "conditions": [
             {
               "name": "TRAN-IN-EOF",
@@ -607,6 +637,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/TXVALID.cbl:74"
         },
         {
@@ -617,6 +648,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "code",
           "conditions": [
             {
               "name": "REJECTS-OPENED",
@@ -637,6 +669,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/TXVALID.cbl:77"
         }
       ]
@@ -650,6 +683,7 @@
       "picture": "9(8)",
       "usage": "DISPLAY",
       "category": "numeric",
+      "kind": "date",
       "digits": 8,
       "source": "pangaea/programs/TXVALID.cbl:79"
     },
@@ -662,6 +696,7 @@
       "picture": "X(8)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
+      "kind": "code",
       "conditions": [
         {
           "name": "FROM-BRANCHES",
@@ -688,6 +723,7 @@
       "start": 1,
       "length": 100,
       "category": "group",
+      "kind": "group",
       "description": "REJREC: REJECTED TRANSACTION, 100 BYTES THE TRANSACTION AS RECEIVED, WITH THE STEP THAT REJECTED IT AND WHY. ACCOUNT MAINTENANCE REJECTS ITS REQUESTS IN THE SAME FORM, THE REQUEST IN PLACE OF THE TRANSACTION. MODIFICATION HISTORY DATE       BY  CHANGE 1987-03-12 JA  ORIGINAL VERSION. 1988-05-09 JA  CR-0031 ACCOUNT MAINTENANCE REASONS.",
       "source": "pangaea/copybooks/REJREC.cpy:12",
       "fields": [
@@ -699,6 +735,7 @@
           "picture": "X(8)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/copybooks/REJREC.cpy:13"
         },
         {
@@ -709,6 +746,7 @@
           "picture": "X(4)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "code",
           "conditions": [
             {
               "name": "RJ-BAD-ACCOUNT",
@@ -805,6 +843,7 @@
           "picture": "X(80)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/copybooks/REJREC.cpy:27"
         },
         {
@@ -815,6 +854,7 @@
           "picture": "X(8)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "filler",
           "source": "pangaea/copybooks/REJREC.cpy:28"
         }
       ]
@@ -828,6 +868,7 @@
       "picture": "X(40)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
+      "kind": "code",
       "values": [
         "SPACES"
       ],
@@ -851,6 +892,7 @@
       "picture": "X",
       "usage": "DISPLAY",
       "category": "alphanumeric",
+      "kind": "code",
       "conditions": [
         {
           "name": "DETAIL-IS-VALID",
@@ -876,6 +918,7 @@
       "start": 1,
       "length": 54,
       "category": "group",
+      "kind": "group",
       "source": "pangaea/programs/TXVALID.cbl:93",
       "fields": [
         {
@@ -886,6 +929,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 8,
           "values": [
             "0"
@@ -900,6 +944,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 8,
           "values": [
             "0"
@@ -914,6 +959,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 8,
           "values": [
             "0"
@@ -928,6 +974,7 @@
           "picture": "9(13)V99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "amount",
           "digits": 15,
           "scale": 2,
           "values": [
@@ -943,6 +990,7 @@
           "picture": "9(15)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 15,
           "values": [
             "0"
@@ -958,6 +1006,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
+      "kind": "group",
       "source": "pangaea/programs/TXVALID.cbl:100",
       "fields": [
         {
@@ -968,6 +1017,7 @@
           "picture": "X(30)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/TXVALID.cbl:101"
         },
         {
@@ -978,6 +1028,7 @@
           "picture": "ZZ,ZZZ,ZZ9",
           "usage": "DISPLAY",
           "category": "numeric-edited",
+          "kind": "edited",
           "source": "pangaea/programs/TXVALID.cbl:102"
         },
         {
@@ -988,6 +1039,7 @@
           "picture": "X(40)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "filler",
           "values": [
             "SPACES"
           ],
@@ -1002,6 +1054,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
+      "kind": "group",
       "source": "pangaea/programs/TXVALID.cbl:104",
       "fields": [
         {
@@ -1012,6 +1065,7 @@
           "picture": "X(30)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/TXVALID.cbl:105"
         },
         {
@@ -1022,6 +1076,7 @@
           "picture": "Z,ZZZ,ZZZ,ZZZ,ZZ9.99",
           "usage": "DISPLAY",
           "category": "numeric-edited",
+          "kind": "edited",
           "source": "pangaea/programs/TXVALID.cbl:106"
         },
         {
@@ -1032,6 +1087,7 @@
           "picture": "X(30)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "filler",
           "values": [
             "SPACES"
           ],

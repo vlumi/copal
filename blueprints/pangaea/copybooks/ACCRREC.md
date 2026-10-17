@@ -20,12 +20,12 @@ Copybook [ACCRREC.cpy](../../../pangaea/copybooks/ACCRREC.cpy), used by [GLSUM](
 
 40 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | ACCRUAL-RECORD | 1 | 40 | | | | [ACCRREC.cpy:14](../../../pangaea/copybooks/ACCRREC.cpy#L14) |
-| 05 | AC-ACCT-NO | 1 | 10 | 9(10) | | | [ACCRREC.cpy:15](../../../pangaea/copybooks/ACCRREC.cpy#L15) |
-| 05 | AC-THROUGH-DATE | 11 | 8 | 9(8) | | | [ACCRREC.cpy:16](../../../pangaea/copybooks/ACCRREC.cpy#L16) |
-| 05 | AC-ACCRUED | 19 | 7 | S9(7)V9(6) | COMP-3 | | [ACCRREC.cpy:17](../../../pangaea/copybooks/ACCRREC.cpy#L17) |
-| 05 | AC-DUE | 26 | 5 | S9(7)V99 | COMP-3 | | [ACCRREC.cpy:18](../../../pangaea/copybooks/ACCRREC.cpy#L18) |
-| 05 | AC-DUE-MONTH | 31 | 6 | 9(6) | | | [ACCRREC.cpy:19](../../../pangaea/copybooks/ACCRREC.cpy#L19) |
-| 05 | FILLER | 37 | 4 | X(4) | | | [ACCRREC.cpy:20](../../../pangaea/copybooks/ACCRREC.cpy#L20) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | ACCRUAL-RECORD | group | 1 | 40 | | | | [ACCRREC.cpy:14](../../../pangaea/copybooks/ACCRREC.cpy#L14) |
+| 05 | AC-ACCT-NO | number | 1 | 10 | 9(10) | | | [ACCRREC.cpy:15](../../../pangaea/copybooks/ACCRREC.cpy#L15) |
+| 05 | AC-THROUGH-DATE | date | 11 | 8 | 9(8) | | | [ACCRREC.cpy:16](../../../pangaea/copybooks/ACCRREC.cpy#L16) |
+| 05 | AC-ACCRUED | amount | 19 | 7 | S9(7)V9(6) | COMP-3 | | [ACCRREC.cpy:17](../../../pangaea/copybooks/ACCRREC.cpy#L17) |
+| 05 | AC-DUE | amount | 26 | 5 | S9(7)V99 | COMP-3 | | [ACCRREC.cpy:18](../../../pangaea/copybooks/ACCRREC.cpy#L18) |
+| 05 | AC-DUE-MONTH | date | 31 | 6 | 9(6) | | | [ACCRREC.cpy:19](../../../pangaea/copybooks/ACCRREC.cpy#L19) |
+| 05 | FILLER | filler | 37 | 4 | X(4) | | | [ACCRREC.cpy:20](../../../pangaea/copybooks/ACCRREC.cpy#L20) |

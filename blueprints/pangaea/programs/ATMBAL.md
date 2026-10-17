@@ -98,9 +98,9 @@ Record [AUTH-RESPONSE](#auth-response), from copybook [AUTHMSG](../copybooks/AUT
 
 Working storage. 13 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-AVAILABLE | 1 | 13 | S9(11)V99 | | | [ATMBAL.cbl:21](../../../pangaea/programs/ATMBAL.cbl#L21) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-AVAILABLE | amount | 1 | 13 | S9(11)V99 | | | [ATMBAL.cbl:21](../../../pangaea/programs/ATMBAL.cbl#L21) |
 
 ### AUTH-REQUEST
 

@@ -314,46 +314,46 @@ File HOLD-FILE. 100 bytes, layout in copybook [HOLDREC](../copybooks/HOLDREC.md)
 
 File TRAN-OUT. 80 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | TRAN-OUT-RECORD | 1 | 80 | X(80) | | | [HOLDEXT.cbl:52](../../../pangaea/programs/HOLDEXT.cbl#L52) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | TRAN-OUT-RECORD | text | 1 | 80 | X(80) | | | [HOLDEXT.cbl:52](../../../pangaea/programs/HOLDEXT.cbl#L52) |
 
 ### REPORT-LINE
 
 File REPORT-OUT. 80 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | REPORT-LINE | 1 | 80 | X(80) | | | [HOLDEXT.cbl:54](../../../pangaea/programs/HOLDEXT.cbl#L54) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | REPORT-LINE | text | 1 | 80 | X(80) | | | [HOLDEXT.cbl:54](../../../pangaea/programs/HOLDEXT.cbl#L54) |
 
 ### WS-FILE-STATUSES
 
 Working storage. 8 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-FILE-STATUSES | 1 | 8 | | | | [HOLDEXT.cbl:57](../../../pangaea/programs/HOLDEXT.cbl#L57) |
-| 05 | WS-CONTROL-STATUS | 1 | 2 | XX | | | [HOLDEXT.cbl:58](../../../pangaea/programs/HOLDEXT.cbl#L58) |
-| 05 | WS-HOLD-STATUS | 3 | 2 | XX | | | [HOLDEXT.cbl:59](../../../pangaea/programs/HOLDEXT.cbl#L59) |
-| 05 | WS-TRAN-OUT-STATUS | 5 | 2 | XX | | | [HOLDEXT.cbl:60](../../../pangaea/programs/HOLDEXT.cbl#L60) |
-| 05 | WS-REPORT-STATUS | 7 | 2 | XX | | | [HOLDEXT.cbl:61](../../../pangaea/programs/HOLDEXT.cbl#L61) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-FILE-STATUSES | group | 1 | 8 | | | | [HOLDEXT.cbl:57](../../../pangaea/programs/HOLDEXT.cbl#L57) |
+| 05 | WS-CONTROL-STATUS | text | 1 | 2 | XX | | | [HOLDEXT.cbl:58](../../../pangaea/programs/HOLDEXT.cbl#L58) |
+| 05 | WS-HOLD-STATUS | text | 3 | 2 | XX | | | [HOLDEXT.cbl:59](../../../pangaea/programs/HOLDEXT.cbl#L59) |
+| 05 | WS-TRAN-OUT-STATUS | text | 5 | 2 | XX | | | [HOLDEXT.cbl:60](../../../pangaea/programs/HOLDEXT.cbl#L60) |
+| 05 | WS-REPORT-STATUS | text | 7 | 2 | XX | | | [HOLDEXT.cbl:61](../../../pangaea/programs/HOLDEXT.cbl#L61) |
 
 ### WS-ABORT-MESSAGE
 
 Working storage. 40 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-ABORT-MESSAGE | 1 | 40 | X(40) | | | [HOLDEXT.cbl:63](../../../pangaea/programs/HOLDEXT.cbl#L63) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-ABORT-MESSAGE | text | 1 | 40 | X(40) | | | [HOLDEXT.cbl:63](../../../pangaea/programs/HOLDEXT.cbl#L63) |
 
 ### WS-HOLDS-END-SW
 
 Working storage. 1 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-HOLDS-END-SW | 1 | 1 | X | | VALUE 'N' | [HOLDEXT.cbl:64](../../../pangaea/programs/HOLDEXT.cbl#L64) |
-| 88 | END-OF-HOLDS | | | | | VALUE 'Y' | [HOLDEXT.cbl:65](../../../pangaea/programs/HOLDEXT.cbl#L65) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-HOLDS-END-SW | code | 1 | 1 | X | | VALUE 'N' | [HOLDEXT.cbl:64](../../../pangaea/programs/HOLDEXT.cbl#L64) |
+| 88 | END-OF-HOLDS | | | | | | VALUE 'Y' | [HOLDEXT.cbl:65](../../../pangaea/programs/HOLDEXT.cbl#L65) |
 
 ### TRAN-RECORD
 
@@ -363,45 +363,45 @@ Working storage. 80 bytes, layout in copybook [TRANREC](../copybooks/TRANREC.md)
 
 Working storage. 10 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-TRAN-ID | 1 | 10 | | | | [HOLDEXT.cbl:69](../../../pangaea/programs/HOLDEXT.cbl#L69) |
-| 05 | FILLER | 1 | 1 | 9 | | VALUE 9 | [HOLDEXT.cbl:70](../../../pangaea/programs/HOLDEXT.cbl#L70) |
-| 05 | WS-TI-HOLD-NO | 2 | 6 | 9(6) | | | [HOLDEXT.cbl:71](../../../pangaea/programs/HOLDEXT.cbl#L71) |
-| 05 | FILLER | 8 | 2 | 99 | | VALUE 0 | [HOLDEXT.cbl:72](../../../pangaea/programs/HOLDEXT.cbl#L72) |
-| 05 | WS-TI-PART | 10 | 1 | 9 | | | [HOLDEXT.cbl:73](../../../pangaea/programs/HOLDEXT.cbl#L73) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-TRAN-ID | group | 1 | 10 | | | | [HOLDEXT.cbl:69](../../../pangaea/programs/HOLDEXT.cbl#L69) |
+| 05 | FILLER | filler | 1 | 1 | 9 | | VALUE 9 | [HOLDEXT.cbl:70](../../../pangaea/programs/HOLDEXT.cbl#L70) |
+| 05 | WS-TI-HOLD-NO | number | 2 | 6 | 9(6) | | | [HOLDEXT.cbl:71](../../../pangaea/programs/HOLDEXT.cbl#L71) |
+| 05 | FILLER | filler | 8 | 2 | 99 | | VALUE 0 | [HOLDEXT.cbl:72](../../../pangaea/programs/HOLDEXT.cbl#L72) |
+| 05 | WS-TI-PART | number | 10 | 1 | 9 | | | [HOLDEXT.cbl:73](../../../pangaea/programs/HOLDEXT.cbl#L73) |
 
 ### WS-TOTALS
 
 Working storage. 54 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-TOTALS | 1 | 54 | | | | [HOLDEXT.cbl:75](../../../pangaea/programs/HOLDEXT.cbl#L75) |
-| 05 | WS-HOLD-COUNT | 1 | 8 | 9(8) | | VALUE 0 | [HOLDEXT.cbl:76](../../../pangaea/programs/HOLDEXT.cbl#L76) |
-| 05 | WS-REVERSED-COUNT | 9 | 8 | 9(8) | | VALUE 0 | [HOLDEXT.cbl:77](../../../pangaea/programs/HOLDEXT.cbl#L77) |
-| 05 | WS-DETAIL-COUNT | 17 | 8 | 9(8) | | VALUE 0 | [HOLDEXT.cbl:78](../../../pangaea/programs/HOLDEXT.cbl#L78) |
-| 05 | WS-AMOUNT-TOTAL | 25 | 15 | 9(13)V99 | | VALUE 0 | [HOLDEXT.cbl:79](../../../pangaea/programs/HOLDEXT.cbl#L79) |
-| 05 | WS-ACCT-HASH | 40 | 15 | 9(15) | | VALUE 0 | [HOLDEXT.cbl:80](../../../pangaea/programs/HOLDEXT.cbl#L80) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-TOTALS | group | 1 | 54 | | | | [HOLDEXT.cbl:75](../../../pangaea/programs/HOLDEXT.cbl#L75) |
+| 05 | WS-HOLD-COUNT | number | 1 | 8 | 9(8) | | VALUE 0 | [HOLDEXT.cbl:76](../../../pangaea/programs/HOLDEXT.cbl#L76) |
+| 05 | WS-REVERSED-COUNT | number | 9 | 8 | 9(8) | | VALUE 0 | [HOLDEXT.cbl:77](../../../pangaea/programs/HOLDEXT.cbl#L77) |
+| 05 | WS-DETAIL-COUNT | number | 17 | 8 | 9(8) | | VALUE 0 | [HOLDEXT.cbl:78](../../../pangaea/programs/HOLDEXT.cbl#L78) |
+| 05 | WS-AMOUNT-TOTAL | amount | 25 | 15 | 9(13)V99 | | VALUE 0 | [HOLDEXT.cbl:79](../../../pangaea/programs/HOLDEXT.cbl#L79) |
+| 05 | WS-ACCT-HASH | number | 40 | 15 | 9(15) | | VALUE 0 | [HOLDEXT.cbl:80](../../../pangaea/programs/HOLDEXT.cbl#L80) |
 
 ### WS-REPORT-COUNT-LINE
 
 Working storage. 80 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-REPORT-COUNT-LINE | 1 | 80 | | | | [HOLDEXT.cbl:82](../../../pangaea/programs/HOLDEXT.cbl#L82) |
-| 05 | WS-RC-LABEL | 1 | 30 | X(30) | | | [HOLDEXT.cbl:83](../../../pangaea/programs/HOLDEXT.cbl#L83) |
-| 05 | WS-RC-VALUE | 31 | 10 | ZZ,ZZZ,ZZ9 | | | [HOLDEXT.cbl:84](../../../pangaea/programs/HOLDEXT.cbl#L84) |
-| 05 | FILLER | 41 | 40 | X(40) | | VALUE SPACES | [HOLDEXT.cbl:85](../../../pangaea/programs/HOLDEXT.cbl#L85) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-REPORT-COUNT-LINE | group | 1 | 80 | | | | [HOLDEXT.cbl:82](../../../pangaea/programs/HOLDEXT.cbl#L82) |
+| 05 | WS-RC-LABEL | text | 1 | 30 | X(30) | | | [HOLDEXT.cbl:83](../../../pangaea/programs/HOLDEXT.cbl#L83) |
+| 05 | WS-RC-VALUE | edited | 31 | 10 | ZZ,ZZZ,ZZ9 | | | [HOLDEXT.cbl:84](../../../pangaea/programs/HOLDEXT.cbl#L84) |
+| 05 | FILLER | filler | 41 | 40 | X(40) | | VALUE SPACES | [HOLDEXT.cbl:85](../../../pangaea/programs/HOLDEXT.cbl#L85) |
 
 ### WS-REPORT-AMOUNT-LINE
 
 Working storage. 80 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-REPORT-AMOUNT-LINE | 1 | 80 | | | | [HOLDEXT.cbl:86](../../../pangaea/programs/HOLDEXT.cbl#L86) |
-| 05 | WS-RA-LABEL | 1 | 30 | X(30) | | | [HOLDEXT.cbl:87](../../../pangaea/programs/HOLDEXT.cbl#L87) |
-| 05 | WS-RA-VALUE | 31 | 20 | Z,ZZZ,ZZZ,ZZZ,ZZ9.99 | | | [HOLDEXT.cbl:88](../../../pangaea/programs/HOLDEXT.cbl#L88) |
-| 05 | FILLER | 51 | 30 | X(30) | | VALUE SPACES | [HOLDEXT.cbl:89](../../../pangaea/programs/HOLDEXT.cbl#L89) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-REPORT-AMOUNT-LINE | group | 1 | 80 | | | | [HOLDEXT.cbl:86](../../../pangaea/programs/HOLDEXT.cbl#L86) |
+| 05 | WS-RA-LABEL | text | 1 | 30 | X(30) | | | [HOLDEXT.cbl:87](../../../pangaea/programs/HOLDEXT.cbl#L87) |
+| 05 | WS-RA-VALUE | edited | 31 | 20 | Z,ZZZ,ZZZ,ZZZ,ZZ9.99 | | | [HOLDEXT.cbl:88](../../../pangaea/programs/HOLDEXT.cbl#L88) |
+| 05 | FILLER | filler | 51 | 30 | X(30) | | VALUE SPACES | [HOLDEXT.cbl:89](../../../pangaea/programs/HOLDEXT.cbl#L89) |
