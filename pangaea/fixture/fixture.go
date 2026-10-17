@@ -1,9 +1,9 @@
 // Package fixture loads Pangaea's fixtures and writes its golden datasets
 // as text that reads and diffs well. Most datasets are text already, one
 // record per line. A dataset whose records hold packed decimal fields is
-// written field by field instead, decoded through the record layout Copal
-// finds for it: NAME.fields, a line per field with its value, and a blank
-// line between records.
+// written field by field instead, decoded through its record layout:
+// NAME.fields, a line per field with its value, and a blank line between
+// records.
 package fixture
 
 import (
@@ -20,7 +20,7 @@ import (
 	"github.com/vlumi/copal/bedrock/layout"
 	"github.com/vlumi/copal/bedrock/record"
 	"github.com/vlumi/copal/pangaea/dataset"
-	"github.com/vlumi/copal/survey/blueprint"
+	"github.com/vlumi/copal/pangaea/records"
 )
 
 // FieldsExtension marks a dataset written field by field.
@@ -32,26 +32,15 @@ type Codec struct {
 	layouts map[string]*record.Layout
 }
 
-// NewCodec finds the datasets with packed decimal fields among those the
-// system's jobs name, and their layouts from the system's copybooks, which
-// copy others from dir.
-func NewCodec(system *blueprint.System, dir string) (*Codec, error) {
+// NewCodec finds the datasets with packed decimal fields among the bank's.
+func NewCodec(l *records.Layouts) *Codec {
 	c := &Codec{layouts: map[string]*record.Layout{}}
-	for base, name := range system.DatasetCopybooks() {
-		for _, cb := range system.Copybooks {
-			if cb.Name != name || len(cb.Records) == 0 {
-				continue
-			}
-			l, err := record.FromCopybook(cb.Source, []string{dir}, cb.Records[0].Name)
-			if err != nil {
-				return nil, err
-			}
-			if packed(l) {
-				c.layouts[base] = l
-			}
+	for base, layout := range l.Datasets() {
+		if packed(layout) {
+			c.layouts[base] = layout
 		}
 	}
-	return c, nil
+	return c
 }
 
 func packed(l *record.Layout) bool {

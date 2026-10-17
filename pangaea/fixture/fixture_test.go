@@ -7,22 +7,18 @@ import (
 	"testing"
 
 	"github.com/vlumi/copal/pangaea/dataset"
-	"github.com/vlumi/copal/survey/blueprint"
+	"github.com/vlumi/copal/pangaea/records"
 )
 
-// accruals is a system whose job names one dataset of accrual records,
-// which hold packed decimal fields.
+// accruals is the bank's codec, whose accrual records hold packed decimal
+// fields.
 func accruals(t *testing.T) *Codec {
 	t.Helper()
-	system := &blueprint.System{
-		Jobs:      []blueprint.Job{{Datasets: []blueprint.Dataset{{Name: "ACCT.ACCRUAL(+1)", Copybook: "ACCRREC"}}}},
-		Copybooks: []blueprint.Copybook{{Name: "ACCRREC", Source: "../copybooks/ACCRREC.cpy", Records: []blueprint.Record{{Field: blueprint.Field{Name: "ACCRUAL-RECORD"}}}}},
-	}
-	codec, err := NewCodec(system, "../copybooks")
+	l, err := records.Load("../copybooks")
 	if err != nil {
 		t.Fatal(err)
 	}
-	return codec
+	return NewCodec(l)
 }
 
 const accrual = `AC-ACCT-NO 10006
