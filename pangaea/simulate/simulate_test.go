@@ -2,7 +2,10 @@ package simulate
 
 import (
 	"context"
+	"math/rand/v2"
+	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
@@ -63,5 +66,20 @@ func TestSimulator(t *testing.T) {
 		if paths[path] == 0 {
 			t.Errorf("no %s among %v", path, paths)
 		}
+	}
+}
+
+// A server that is not the online channel, answering JSON without a
+// result, is an error, not a run of empty responses.
+func TestSimulatorRefusesOtherServers(t *testing.T) {
+	other := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUpgradeRequired)
+		_, _ = w.Write([]byte(`{"title":"Upgrade Required","status":426}`))
+	}))
+	defer other.Close()
+	s := &Simulator{API: other.URL, Client: other.Client(), Cards: []Card{{No: 9100000000000018, Purchase: 1000}}, rand: rand.New(rand.NewPCG(1, 0))}
+	if _, err := s.Send(context.Background()); err == nil || !strings.Contains(err.Error(), "not the online channel") {
+		t.Errorf("sent to another server: %v", err)
 	}
 }
