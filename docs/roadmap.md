@@ -112,13 +112,13 @@ The explorer shows the system the way the code is organized. Designing a replace
 - Entities: a page per copybook record with its datasets, its users, who reads and writes each field, and for each code field its state machine, derived from the decision tables (done).
 - Ownership: programs grouped by the entities they write, drawn; the first draft of a service decomposition (done).
 - The boundary: the system's inputs and outputs, files, reports and streams, in one place (done).
-- Forward lineage: from a field to everything its values reach, the mirror of the trail back, on the same diagrams.
+- Forward lineage: from a field to everything its values reach, the mirror of the trail back, on the same diagrams (done).
 - The order of jobs, derived from the generations they write and read.
 
 Done when: starting from the entities page, you can name the system's data model, its state machines, who owns each entity, its contracts with the outside, and what a change to an input field touches, without opening a program.
 
 ## Later
 
-The explorer's lineage goes back, not yet forward: where a field's values go. It does not yet follow values into a called program and back through its LINKAGE SECTION, nor from SYSIN through ACCEPT, so the online day's holds stop at AUTHSRV. A program's outputs keep only the first record type it writes to a file.
+The explorer's lineage does not yet follow values into a called program and back through its LINKAGE SECTION, nor from SYSIN through ACCEPT, so the online day's holds stop at AUTHSRV. A program's outputs keep only the first record type it writes to a file.
 
 From the brief, once the above stands: test data derived from the extracted conditions so every branch is reached, run through GnuCOBOL as the oracle a rewrite has to match; data that respects cross-record rules; and only then a model for naming and prose.
