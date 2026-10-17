@@ -38,9 +38,9 @@ func New(system *blueprint.System, title string) (*Server, error) {
 		"program": programLink, "paragraph": paragraphLink, "field": fieldLink, "copybook": copybookLink,
 		"job": jobLink, "entity": entityLink, "entityField": entityFieldLink, "step": stepLink, "dataset": datasetLink, "source": sourceLink,
 		"sourceText": sourceText, "base": datasetBase, "join": strings.Join,
-		"add":     func(a, b int) int { return a + b },
-		"hop":     hopID,
-		"trace":   traceLink,
+		"add":   func(a, b int) int { return a + b },
+		"hop":   hopID,
+		"trace": traceLink, "forward": forwardLink,
 		"stepRef": func(job, step string) blueprint.StepRef { return blueprint.StepRef{Job: job, Step: step} },
 		"lineage": func(program string, fields map[string]bool, rows []blueprint.Lineage) lineageTable {
 			return lineageTable{Program: program, Fields: fields, Rows: rows}
