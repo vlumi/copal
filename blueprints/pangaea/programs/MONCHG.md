@@ -383,11 +383,11 @@ Working storage. 10 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-FILE-STATUSES | group | 1 | 10 | | | | [MONCHG.cbl:61](../../../pangaea/programs/MONCHG.cbl#L61) |
-| 05 | WS-CONTROL-STATUS | text | 1 | 2 | XX | | | [MONCHG.cbl:62](../../../pangaea/programs/MONCHG.cbl#L62) |
-| 05 | WS-ACCT-IN-STATUS | text | 3 | 2 | XX | | | [MONCHG.cbl:63](../../../pangaea/programs/MONCHG.cbl#L63) |
-| 05 | WS-ACCR-IN-STATUS | text | 5 | 2 | XX | | | [MONCHG.cbl:64](../../../pangaea/programs/MONCHG.cbl#L64) |
-| 05 | WS-TRAN-OUT-STATUS | text | 7 | 2 | XX | | | [MONCHG.cbl:65](../../../pangaea/programs/MONCHG.cbl#L65) |
-| 05 | WS-REPORT-STATUS | text | 9 | 2 | XX | | | [MONCHG.cbl:66](../../../pangaea/programs/MONCHG.cbl#L66) |
+| 05 | ├ WS-CONTROL-STATUS | text | 1 | 2 | XX | | | [MONCHG.cbl:62](../../../pangaea/programs/MONCHG.cbl#L62) |
+| 05 | ├ WS-ACCT-IN-STATUS | text | 3 | 2 | XX | | | [MONCHG.cbl:63](../../../pangaea/programs/MONCHG.cbl#L63) |
+| 05 | ├ WS-ACCR-IN-STATUS | text | 5 | 2 | XX | | | [MONCHG.cbl:64](../../../pangaea/programs/MONCHG.cbl#L64) |
+| 05 | ├ WS-TRAN-OUT-STATUS | text | 7 | 2 | XX | | | [MONCHG.cbl:65](../../../pangaea/programs/MONCHG.cbl#L65) |
+| 05 | └ WS-REPORT-STATUS | text | 9 | 2 | XX | | | [MONCHG.cbl:66](../../../pangaea/programs/MONCHG.cbl#L66) |
 
 ### WS-BUSINESS-DATE
 
@@ -412,10 +412,10 @@ Working storage. 2 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-END-SWITCHES | group | 1 | 2 | | | | [MONCHG.cbl:70](../../../pangaea/programs/MONCHG.cbl#L70) |
-| 05 | WS-MASTER-END-SW | code | 1 | 1 | X | | VALUE 'N' | [MONCHG.cbl:71](../../../pangaea/programs/MONCHG.cbl#L71) |
-| 88 | MASTER-AT-END | | | | | | VALUE 'Y' | [MONCHG.cbl:72](../../../pangaea/programs/MONCHG.cbl#L72) |
-| 05 | WS-ACCRUAL-END-SW | code | 2 | 1 | X | | VALUE 'N' | [MONCHG.cbl:73](../../../pangaea/programs/MONCHG.cbl#L73) |
-| 88 | ACCRUALS-AT-END | | | | | | VALUE 'Y' | [MONCHG.cbl:74](../../../pangaea/programs/MONCHG.cbl#L74) |
+| 05 | ├ WS-MASTER-END-SW | code | 1 | 1 | X | | VALUE 'N' | [MONCHG.cbl:71](../../../pangaea/programs/MONCHG.cbl#L71) |
+| 88 | │ └ MASTER-AT-END | | | | | | VALUE 'Y' | [MONCHG.cbl:72](../../../pangaea/programs/MONCHG.cbl#L72) |
+| 05 | └ WS-ACCRUAL-END-SW | code | 2 | 1 | X | | VALUE 'N' | [MONCHG.cbl:73](../../../pangaea/programs/MONCHG.cbl#L73) |
+| 88 |   └ ACCRUALS-AT-END | | | | | | VALUE 'Y' | [MONCHG.cbl:74](../../../pangaea/programs/MONCHG.cbl#L74) |
 
 ### WS-MAINTENANCE-FEE
 
@@ -448,8 +448,8 @@ Working storage. 6 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-CLOSED-MONTH-PARTS | group | 1 | 6 | | | REDEFINES WS-CLOSED-MONTH | [MONCHG.cbl:81](../../../pangaea/programs/MONCHG.cbl#L81) |
-| 05 | WS-CM-CENTURY | number | 1 | 2 | 99 | | | [MONCHG.cbl:82](../../../pangaea/programs/MONCHG.cbl#L82) |
-| 05 | WS-CM-YYMM | number | 3 | 4 | 9(4) | | | [MONCHG.cbl:83](../../../pangaea/programs/MONCHG.cbl#L83) |
+| 05 | ├ WS-CM-CENTURY | number | 1 | 2 | 99 | | | [MONCHG.cbl:82](../../../pangaea/programs/MONCHG.cbl#L82) |
+| 05 | └ WS-CM-YYMM | number | 3 | 4 | 9(4) | | | [MONCHG.cbl:83](../../../pangaea/programs/MONCHG.cbl#L83) |
 
 ### WS-TRAN-ID
 
@@ -458,9 +458,9 @@ Working storage. 10 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-TRAN-ID | group | 1 | 10 | | | | [MONCHG.cbl:84](../../../pangaea/programs/MONCHG.cbl#L84) |
-| 05 | FILLER | filler | 1 | 2 | 99 | | VALUE 0 | [MONCHG.cbl:85](../../../pangaea/programs/MONCHG.cbl#L85) |
-| 05 | WS-TI-YYMM | number | 3 | 4 | 9(4) | | | [MONCHG.cbl:86](../../../pangaea/programs/MONCHG.cbl#L86) |
-| 05 | WS-TI-SEQ | number | 7 | 4 | 9(4) | | VALUE 0 | [MONCHG.cbl:87](../../../pangaea/programs/MONCHG.cbl#L87) |
+| 05 | ├ FILLER | filler | 1 | 2 | 99 | | VALUE 0 | [MONCHG.cbl:85](../../../pangaea/programs/MONCHG.cbl#L85) |
+| 05 | ├ WS-TI-YYMM | number | 3 | 4 | 9(4) | | | [MONCHG.cbl:86](../../../pangaea/programs/MONCHG.cbl#L86) |
+| 05 | └ WS-TI-SEQ | number | 7 | 4 | 9(4) | | VALUE 0 | [MONCHG.cbl:87](../../../pangaea/programs/MONCHG.cbl#L87) |
 
 ### TRAN-RECORD
 
@@ -473,13 +473,13 @@ Working storage. 71 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-TOTALS | group | 1 | 71 | | | | [MONCHG.cbl:91](../../../pangaea/programs/MONCHG.cbl#L91) |
-| 05 | WS-INTEREST-COUNT | number | 1 | 8 | 9(8) | | VALUE 0 | [MONCHG.cbl:92](../../../pangaea/programs/MONCHG.cbl#L92) |
-| 05 | WS-INTEREST-TOTAL | amount | 9 | 13 | 9(11)V99 | | VALUE 0 | [MONCHG.cbl:93](../../../pangaea/programs/MONCHG.cbl#L93) |
-| 05 | WS-OVERDRAFT-COUNT | number | 22 | 8 | 9(8) | | VALUE 0 | [MONCHG.cbl:94](../../../pangaea/programs/MONCHG.cbl#L94) |
-| 05 | WS-OVERDRAFT-TOTAL | amount | 30 | 13 | 9(11)V99 | | VALUE 0 | [MONCHG.cbl:95](../../../pangaea/programs/MONCHG.cbl#L95) |
-| 05 | WS-FEE-COUNT | number | 43 | 8 | 9(8) | | VALUE 0 | [MONCHG.cbl:96](../../../pangaea/programs/MONCHG.cbl#L96) |
-| 05 | WS-FEE-TOTAL | amount | 51 | 13 | 9(11)V99 | | VALUE 0 | [MONCHG.cbl:97](../../../pangaea/programs/MONCHG.cbl#L97) |
-| 05 | WS-WAIVED-COUNT | number | 64 | 8 | 9(8) | | VALUE 0 | [MONCHG.cbl:98](../../../pangaea/programs/MONCHG.cbl#L98) |
+| 05 | ├ WS-INTEREST-COUNT | number | 1 | 8 | 9(8) | | VALUE 0 | [MONCHG.cbl:92](../../../pangaea/programs/MONCHG.cbl#L92) |
+| 05 | ├ WS-INTEREST-TOTAL | amount | 9 | 13 | 9(11)V99 | | VALUE 0 | [MONCHG.cbl:93](../../../pangaea/programs/MONCHG.cbl#L93) |
+| 05 | ├ WS-OVERDRAFT-COUNT | number | 22 | 8 | 9(8) | | VALUE 0 | [MONCHG.cbl:94](../../../pangaea/programs/MONCHG.cbl#L94) |
+| 05 | ├ WS-OVERDRAFT-TOTAL | amount | 30 | 13 | 9(11)V99 | | VALUE 0 | [MONCHG.cbl:95](../../../pangaea/programs/MONCHG.cbl#L95) |
+| 05 | ├ WS-FEE-COUNT | number | 43 | 8 | 9(8) | | VALUE 0 | [MONCHG.cbl:96](../../../pangaea/programs/MONCHG.cbl#L96) |
+| 05 | ├ WS-FEE-TOTAL | amount | 51 | 13 | 9(11)V99 | | VALUE 0 | [MONCHG.cbl:97](../../../pangaea/programs/MONCHG.cbl#L97) |
+| 05 | └ WS-WAIVED-COUNT | number | 64 | 8 | 9(8) | | VALUE 0 | [MONCHG.cbl:98](../../../pangaea/programs/MONCHG.cbl#L98) |
 
 ### WS-REPORT-COUNT-LINE
 
@@ -488,9 +488,9 @@ Working storage. 80 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-REPORT-COUNT-LINE | group | 1 | 80 | | | | [MONCHG.cbl:100](../../../pangaea/programs/MONCHG.cbl#L100) |
-| 05 | WS-RC-LABEL | text | 1 | 30 | X(30) | | | [MONCHG.cbl:101](../../../pangaea/programs/MONCHG.cbl#L101) |
-| 05 | WS-RC-VALUE | edited | 31 | 10 | ZZ,ZZZ,ZZ9 | | | [MONCHG.cbl:102](../../../pangaea/programs/MONCHG.cbl#L102) |
-| 05 | FILLER | filler | 41 | 40 | X(40) | | VALUE SPACES | [MONCHG.cbl:103](../../../pangaea/programs/MONCHG.cbl#L103) |
+| 05 | ├ WS-RC-LABEL | text | 1 | 30 | X(30) | | | [MONCHG.cbl:101](../../../pangaea/programs/MONCHG.cbl#L101) |
+| 05 | ├ WS-RC-VALUE | edited | 31 | 10 | ZZ,ZZZ,ZZ9 | | | [MONCHG.cbl:102](../../../pangaea/programs/MONCHG.cbl#L102) |
+| 05 | └ FILLER | filler | 41 | 40 | X(40) | | VALUE SPACES | [MONCHG.cbl:103](../../../pangaea/programs/MONCHG.cbl#L103) |
 
 ### WS-REPORT-AMOUNT-LINE
 
@@ -499,6 +499,6 @@ Working storage. 80 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-REPORT-AMOUNT-LINE | group | 1 | 80 | | | | [MONCHG.cbl:104](../../../pangaea/programs/MONCHG.cbl#L104) |
-| 05 | WS-RA-LABEL | text | 1 | 30 | X(30) | | | [MONCHG.cbl:105](../../../pangaea/programs/MONCHG.cbl#L105) |
-| 05 | WS-RA-VALUE | edited | 31 | 21 | Z,ZZZ,ZZZ,ZZZ,ZZ9.99- | | | [MONCHG.cbl:106](../../../pangaea/programs/MONCHG.cbl#L106) |
-| 05 | FILLER | filler | 52 | 29 | X(29) | | VALUE SPACES | [MONCHG.cbl:107](../../../pangaea/programs/MONCHG.cbl#L107) |
+| 05 | ├ WS-RA-LABEL | text | 1 | 30 | X(30) | | | [MONCHG.cbl:105](../../../pangaea/programs/MONCHG.cbl#L105) |
+| 05 | ├ WS-RA-VALUE | edited | 31 | 21 | Z,ZZZ,ZZZ,ZZZ,ZZ9.99- | | | [MONCHG.cbl:106](../../../pangaea/programs/MONCHG.cbl#L106) |
+| 05 | └ FILLER | filler | 52 | 29 | X(29) | | VALUE SPACES | [MONCHG.cbl:107](../../../pangaea/programs/MONCHG.cbl#L107) |

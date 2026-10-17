@@ -47,7 +47,7 @@ In order:
 - **Lineage:** every statement that moves a value into a data item, grouped by the record the item belongs to: from which item, literal or file, by which verb, in which paragraph.
 - **Inputs:** in the JSON, for every record the program reads from a file, where the values of each field go: the data items they reach and the files they are written to. The mirror of the field origins, which the explorer's forward lineage follows from.
 - **Field origins:** for every field of every record the program writes to a file, where its values come from in the end: the fields of the files it reads, literals and initial values, followed through every statement and through the bytes that groups and redefinitions share.
-- **Records:** the layout of every record, field by field, with kind, position, length, picture, usage and notes; a record from a copybook points at the copybook's blueprint instead.
+- **Records:** the layout of every record, field by field, with kind, position, length, picture, usage and notes. The fields are drawn as the tree the levels declare, condition names under their field, and a field that redefines the one above it hangs from a double branch, `╞`, with the redefined field's notes naming every field that redefines it; a record from a copybook points at the copybook's blueprint instead.
 
 ## A copybook, `copybooks/NAME.md`
 

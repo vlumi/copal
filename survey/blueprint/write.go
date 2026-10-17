@@ -212,22 +212,19 @@ func copybookMarkdown(dir string, c Copybook) string {
 // condition name, in source order.
 func writeLayout(b *strings.Builder, dir string, record Field) {
 	b.WriteString("| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |\n| --: | --- | --- | --: | --: | --- | --- | --- | --- |\n")
-	var field func(f Field)
-	field = func(f Field) {
+	for _, r := range LayoutRows(record) {
+		if r.Field == nil {
+			b.WriteString(row("88", r.Prefix+r.Name, "", "", "", "", "", "VALUE "+strings.Join(r.Values, ", "), sourceLink(dir, r.Source, true)))
+			continue
+		}
+		f := r.Field
 		usage := f.Usage
 		if usage == "DISPLAY" {
 			usage = ""
 		}
-		b.WriteString(row(fmt.Sprintf("%02d", f.Level), f.Name, f.Kind, strconv.Itoa(f.Start), strconv.Itoa(f.Length),
-			f.Picture, usage, fieldNotes(f), sourceLink(dir, f.Source, true)))
-		for _, c := range f.Conditions {
-			b.WriteString(row("88", c.Name, "", "", "", "", "", "VALUE "+strings.Join(c.Values, ", "), sourceLink(dir, c.Source, true)))
-		}
-		for _, child := range f.Fields {
-			field(child)
-		}
+		b.WriteString(row(fmt.Sprintf("%02d", f.Level), r.Prefix+f.Name, f.Kind, strconv.Itoa(f.Start), strconv.Itoa(f.Length),
+			f.Picture, usage, fieldNotes(*f), sourceLink(dir, f.Source, true)))
 	}
-	field(record)
 }
 
 // row writes one table row; an empty cell is a single space.
@@ -267,6 +264,11 @@ func sentence(description string) string {
 	return " " + description
 }
 
+// FieldNotes describes what a field's layout entry says besides its
+// picture: its description, what it redefines and what redefines it, how
+// it repeats and what indexes it.
+func FieldNotes(f Field) string { return fieldNotes(f) }
+
 func fieldNotes(f Field) string {
 	var notes []string
 	if f.Description != "" && f.Level != 1 {
@@ -274,6 +276,9 @@ func fieldNotes(f Field) string {
 	}
 	if f.Redefines != "" {
 		notes = append(notes, "REDEFINES "+f.Redefines)
+	}
+	if len(f.RedefinedBy) > 0 {
+		notes = append(notes, "redefined by "+strings.Join(f.RedefinedBy, ", "))
 	}
 	switch {
 	case f.DependingOn != "":

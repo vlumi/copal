@@ -21,19 +21,19 @@ Copybook [REJREC.cpy](../../../pangaea/copybooks/REJREC.cpy), used by [ACCTMNT](
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | REJECT-RECORD | group | 1 | 100 | | | | [REJREC.cpy:12](../../../pangaea/copybooks/REJREC.cpy#L12) |
-| 05 | RJ-PROGRAM | text | 1 | 8 | X(8) | | | [REJREC.cpy:13](../../../pangaea/copybooks/REJREC.cpy#L13) |
-| 05 | RJ-REASON | code | 9 | 4 | X(4) | | | [REJREC.cpy:14](../../../pangaea/copybooks/REJREC.cpy#L14) |
-| 88 | RJ-BAD-ACCOUNT | | | | | | VALUE 'ACCT' | [REJREC.cpy:15](../../../pangaea/copybooks/REJREC.cpy#L15) |
-| 88 | RJ-BAD-COUNTER | | | | | | VALUE 'CTRA' | [REJREC.cpy:16](../../../pangaea/copybooks/REJREC.cpy#L16) |
-| 88 | RJ-BAD-CODE | | | | | | VALUE 'CODE' | [REJREC.cpy:17](../../../pangaea/copybooks/REJREC.cpy#L17) |
-| 88 | RJ-BAD-AMOUNT | | | | | | VALUE 'AMNT' | [REJREC.cpy:18](../../../pangaea/copybooks/REJREC.cpy#L18) |
-| 88 | RJ-BAD-TYPE | | | | | | VALUE 'TYPE' | [REJREC.cpy:19](../../../pangaea/copybooks/REJREC.cpy#L19) |
-| 88 | RJ-NO-ACCOUNT | | | | | | VALUE 'UNKN' | [REJREC.cpy:20](../../../pangaea/copybooks/REJREC.cpy#L20) |
-| 88 | RJ-CLOSED | | | | | | VALUE 'CLSD' | [REJREC.cpy:21](../../../pangaea/copybooks/REJREC.cpy#L21) |
-| 88 | RJ-FROZEN | | | | | | VALUE 'FRZN' | [REJREC.cpy:22](../../../pangaea/copybooks/REJREC.cpy#L22) |
-| 88 | RJ-NO-FUNDS | | | | | | VALUE 'FUND' | [REJREC.cpy:23](../../../pangaea/copybooks/REJREC.cpy#L23) |
-| 88 | RJ-EXISTS | | | | | | VALUE 'EXST' | [REJREC.cpy:24](../../../pangaea/copybooks/REJREC.cpy#L24) |
-| 88 | RJ-HAS-BALANCE | | | | | | VALUE 'BALN' | [REJREC.cpy:25](../../../pangaea/copybooks/REJREC.cpy#L25) |
-| 88 | RJ-BAD-STATUS | | | | | | VALUE 'STAT' | [REJREC.cpy:26](../../../pangaea/copybooks/REJREC.cpy#L26) |
-| 05 | RJ-TRAN | text | 13 | 80 | X(80) | | | [REJREC.cpy:27](../../../pangaea/copybooks/REJREC.cpy#L27) |
-| 05 | FILLER | filler | 93 | 8 | X(8) | | | [REJREC.cpy:28](../../../pangaea/copybooks/REJREC.cpy#L28) |
+| 05 | ├ RJ-PROGRAM | text | 1 | 8 | X(8) | | | [REJREC.cpy:13](../../../pangaea/copybooks/REJREC.cpy#L13) |
+| 05 | ├ RJ-REASON | code | 9 | 4 | X(4) | | | [REJREC.cpy:14](../../../pangaea/copybooks/REJREC.cpy#L14) |
+| 88 | │ ├ RJ-BAD-ACCOUNT | | | | | | VALUE 'ACCT' | [REJREC.cpy:15](../../../pangaea/copybooks/REJREC.cpy#L15) |
+| 88 | │ ├ RJ-BAD-COUNTER | | | | | | VALUE 'CTRA' | [REJREC.cpy:16](../../../pangaea/copybooks/REJREC.cpy#L16) |
+| 88 | │ ├ RJ-BAD-CODE | | | | | | VALUE 'CODE' | [REJREC.cpy:17](../../../pangaea/copybooks/REJREC.cpy#L17) |
+| 88 | │ ├ RJ-BAD-AMOUNT | | | | | | VALUE 'AMNT' | [REJREC.cpy:18](../../../pangaea/copybooks/REJREC.cpy#L18) |
+| 88 | │ ├ RJ-BAD-TYPE | | | | | | VALUE 'TYPE' | [REJREC.cpy:19](../../../pangaea/copybooks/REJREC.cpy#L19) |
+| 88 | │ ├ RJ-NO-ACCOUNT | | | | | | VALUE 'UNKN' | [REJREC.cpy:20](../../../pangaea/copybooks/REJREC.cpy#L20) |
+| 88 | │ ├ RJ-CLOSED | | | | | | VALUE 'CLSD' | [REJREC.cpy:21](../../../pangaea/copybooks/REJREC.cpy#L21) |
+| 88 | │ ├ RJ-FROZEN | | | | | | VALUE 'FRZN' | [REJREC.cpy:22](../../../pangaea/copybooks/REJREC.cpy#L22) |
+| 88 | │ ├ RJ-NO-FUNDS | | | | | | VALUE 'FUND' | [REJREC.cpy:23](../../../pangaea/copybooks/REJREC.cpy#L23) |
+| 88 | │ ├ RJ-EXISTS | | | | | | VALUE 'EXST' | [REJREC.cpy:24](../../../pangaea/copybooks/REJREC.cpy#L24) |
+| 88 | │ ├ RJ-HAS-BALANCE | | | | | | VALUE 'BALN' | [REJREC.cpy:25](../../../pangaea/copybooks/REJREC.cpy#L25) |
+| 88 | │ └ RJ-BAD-STATUS | | | | | | VALUE 'STAT' | [REJREC.cpy:26](../../../pangaea/copybooks/REJREC.cpy#L26) |
+| 05 | ├ RJ-TRAN | text | 13 | 80 | X(80) | | | [REJREC.cpy:27](../../../pangaea/copybooks/REJREC.cpy#L27) |
+| 05 | └ FILLER | filler | 93 | 8 | X(8) | | | [REJREC.cpy:28](../../../pangaea/copybooks/REJREC.cpy#L28) |

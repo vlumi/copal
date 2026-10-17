@@ -141,6 +141,7 @@ type Field struct {
 	DependingOn string      `json:"dependingOn,omitempty"`
 	IndexedBy   []string    `json:"indexedBy,omitempty"`
 	Redefines   string      `json:"redefines,omitempty"`
+	RedefinedBy []string    `json:"redefinedBy,omitempty"` // the fields that redefine this one, in order
 	Values      []string    `json:"values,omitempty"`
 	Description string      `json:"description,omitempty"`
 	Conditions  []Condition `json:"conditions,omitempty"`
@@ -420,6 +421,16 @@ func newField(f *layout.Field, keys map[string]bool) Field {
 	}
 	for _, child := range f.Children {
 		field.Fields = append(field.Fields, newField(child, keys))
+	}
+	for _, child := range field.Fields {
+		if child.Redefines == "" {
+			continue
+		}
+		for i := range field.Fields {
+			if field.Fields[i].Name == child.Redefines {
+				field.Fields[i].RedefinedBy = append(field.Fields[i].RedefinedBy, child.Name)
+			}
+		}
 	}
 	return field
 }

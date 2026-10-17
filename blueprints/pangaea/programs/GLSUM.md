@@ -403,10 +403,10 @@ Working storage. 8 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-FILE-STATUSES | group | 1 | 8 | | | | [GLSUM.cbl:60](../../../pangaea/programs/GLSUM.cbl#L60) |
-| 05 | WS-ACCR-IN-STATUS | text | 1 | 2 | XX | | | [GLSUM.cbl:61](../../../pangaea/programs/GLSUM.cbl#L61) |
-| 05 | WS-AUDIT-STATUS | text | 3 | 2 | XX | | | [GLSUM.cbl:62](../../../pangaea/programs/GLSUM.cbl#L62) |
-| 05 | WS-GL-STATUS | text | 5 | 2 | XX | | | [GLSUM.cbl:63](../../../pangaea/programs/GLSUM.cbl#L63) |
-| 05 | WS-REPORT-STATUS | text | 7 | 2 | XX | | | [GLSUM.cbl:64](../../../pangaea/programs/GLSUM.cbl#L64) |
+| 05 | ├ WS-ACCR-IN-STATUS | text | 1 | 2 | XX | | | [GLSUM.cbl:61](../../../pangaea/programs/GLSUM.cbl#L61) |
+| 05 | ├ WS-AUDIT-STATUS | text | 3 | 2 | XX | | | [GLSUM.cbl:62](../../../pangaea/programs/GLSUM.cbl#L62) |
+| 05 | ├ WS-GL-STATUS | text | 5 | 2 | XX | | | [GLSUM.cbl:63](../../../pangaea/programs/GLSUM.cbl#L63) |
+| 05 | └ WS-REPORT-STATUS | text | 7 | 2 | XX | | | [GLSUM.cbl:64](../../../pangaea/programs/GLSUM.cbl#L64) |
 
 ### WS-ABORT-MESSAGE
 
@@ -423,8 +423,8 @@ Working storage. 6 bytes. THE MONTH THAT CLOSED AND THE ONE AFTER IT, AS IN STMT
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-CLOSED-MONTH | group | 1 | 6 | | | | [GLSUM.cbl:69](../../../pangaea/programs/GLSUM.cbl#L69) |
-| 05 | WS-CM-YEAR | number | 1 | 4 | 9(4) | | | [GLSUM.cbl:70](../../../pangaea/programs/GLSUM.cbl#L70) |
-| 05 | WS-CM-MONTH | number | 5 | 2 | 99 | | | [GLSUM.cbl:71](../../../pangaea/programs/GLSUM.cbl#L71) |
+| 05 | ├ WS-CM-YEAR | number | 1 | 4 | 9(4) | | | [GLSUM.cbl:70](../../../pangaea/programs/GLSUM.cbl#L70) |
+| 05 | └ WS-CM-MONTH | number | 5 | 2 | 99 | | | [GLSUM.cbl:71](../../../pangaea/programs/GLSUM.cbl#L71) |
 
 ### WS-CLOSED-MONTH-NUMBER
 
@@ -441,8 +441,8 @@ Working storage. 6 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-NEXT-MONTH | group | 1 | 6 | | | | [GLSUM.cbl:74](../../../pangaea/programs/GLSUM.cbl#L74) |
-| 05 | WS-NM-YEAR | number | 1 | 4 | 9(4) | | | [GLSUM.cbl:75](../../../pangaea/programs/GLSUM.cbl#L75) |
-| 05 | WS-NM-MONTH | number | 5 | 2 | 99 | | | [GLSUM.cbl:76](../../../pangaea/programs/GLSUM.cbl#L76) |
+| 05 | ├ WS-NM-YEAR | number | 1 | 4 | 9(4) | | | [GLSUM.cbl:75](../../../pangaea/programs/GLSUM.cbl#L75) |
+| 05 | └ WS-NM-MONTH | number | 5 | 2 | 99 | | | [GLSUM.cbl:76](../../../pangaea/programs/GLSUM.cbl#L76) |
 
 ### WS-POSTING-MONTH
 
@@ -459,7 +459,7 @@ Working storage. 2 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-POSTING-CODE | code | 1 | 2 | XX | | | [GLSUM.cbl:78](../../../pangaea/programs/GLSUM.cbl#L78) |
-| 88 | WS-MONTH-END-CODE | | | | | | VALUE 'IN', 'OD', 'MF' | [GLSUM.cbl:79](../../../pangaea/programs/GLSUM.cbl#L79) |
+| 88 | └ WS-MONTH-END-CODE | | | | | | VALUE 'IN', 'OD', 'MF' | [GLSUM.cbl:79](../../../pangaea/programs/GLSUM.cbl#L79) |
 
 ### GS-CODE-VALUES
 
@@ -484,20 +484,20 @@ Working storage. 196 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-LEDGER-VALUES | group | 1 | 196 | | | | [GLSUM.cbl:86](../../../pangaea/programs/GLSUM.cbl#L86) |
-| 05 | FILLER | filler | 1 | 4 | 9(4) | | VALUE 1000 | [GLSUM.cbl:87](../../../pangaea/programs/GLSUM.cbl#L87) |
-| 05 | FILLER | filler | 5 | 24 | X(24) | | VALUE 'CASH' | [GLSUM.cbl:88](../../../pangaea/programs/GLSUM.cbl#L88) |
-| 05 | FILLER | filler | 29 | 4 | 9(4) | | VALUE 2000 | [GLSUM.cbl:89](../../../pangaea/programs/GLSUM.cbl#L89) |
-| 05 | FILLER | filler | 33 | 24 | X(24) | | VALUE 'CUSTOMER DEPOSITS' | [GLSUM.cbl:90](../../../pangaea/programs/GLSUM.cbl#L90) |
-| 05 | FILLER | filler | 57 | 4 | 9(4) | | VALUE 2100 | [GLSUM.cbl:92](../../../pangaea/programs/GLSUM.cbl#L92) |
-| 05 | FILLER | filler | 61 | 24 | X(24) | | VALUE 'CARD SETTLEMENT' | [GLSUM.cbl:93](../../../pangaea/programs/GLSUM.cbl#L93) |
-| 05 | FILLER | filler | 85 | 4 | 9(4) | | VALUE 2900 | [GLSUM.cbl:95](../../../pangaea/programs/GLSUM.cbl#L95) |
-| 05 | FILLER | filler | 89 | 24 | X(24) | | VALUE 'TRANSFERS IN TRANSIT' | [GLSUM.cbl:96](../../../pangaea/programs/GLSUM.cbl#L96) |
-| 05 | FILLER | filler | 113 | 4 | 9(4) | | VALUE 4000 | [GLSUM.cbl:98](../../../pangaea/programs/GLSUM.cbl#L98) |
-| 05 | FILLER | filler | 117 | 24 | X(24) | | VALUE 'INTEREST INCOME' | [GLSUM.cbl:99](../../../pangaea/programs/GLSUM.cbl#L99) |
-| 05 | FILLER | filler | 141 | 4 | 9(4) | | VALUE 4100 | [GLSUM.cbl:101](../../../pangaea/programs/GLSUM.cbl#L101) |
-| 05 | FILLER | filler | 145 | 24 | X(24) | | VALUE 'FEE INCOME' | [GLSUM.cbl:102](../../../pangaea/programs/GLSUM.cbl#L102) |
-| 05 | FILLER | filler | 169 | 4 | 9(4) | | VALUE 5000 | [GLSUM.cbl:104](../../../pangaea/programs/GLSUM.cbl#L104) |
-| 05 | FILLER | filler | 173 | 24 | X(24) | | VALUE 'INTEREST EXPENSE' | [GLSUM.cbl:105](../../../pangaea/programs/GLSUM.cbl#L105) |
+| 05 | ├ FILLER | filler | 1 | 4 | 9(4) | | VALUE 1000 | [GLSUM.cbl:87](../../../pangaea/programs/GLSUM.cbl#L87) |
+| 05 | ├ FILLER | filler | 5 | 24 | X(24) | | VALUE 'CASH' | [GLSUM.cbl:88](../../../pangaea/programs/GLSUM.cbl#L88) |
+| 05 | ├ FILLER | filler | 29 | 4 | 9(4) | | VALUE 2000 | [GLSUM.cbl:89](../../../pangaea/programs/GLSUM.cbl#L89) |
+| 05 | ├ FILLER | filler | 33 | 24 | X(24) | | VALUE 'CUSTOMER DEPOSITS' | [GLSUM.cbl:90](../../../pangaea/programs/GLSUM.cbl#L90) |
+| 05 | ├ FILLER | filler | 57 | 4 | 9(4) | | VALUE 2100 | [GLSUM.cbl:92](../../../pangaea/programs/GLSUM.cbl#L92) |
+| 05 | ├ FILLER | filler | 61 | 24 | X(24) | | VALUE 'CARD SETTLEMENT' | [GLSUM.cbl:93](../../../pangaea/programs/GLSUM.cbl#L93) |
+| 05 | ├ FILLER | filler | 85 | 4 | 9(4) | | VALUE 2900 | [GLSUM.cbl:95](../../../pangaea/programs/GLSUM.cbl#L95) |
+| 05 | ├ FILLER | filler | 89 | 24 | X(24) | | VALUE 'TRANSFERS IN TRANSIT' | [GLSUM.cbl:96](../../../pangaea/programs/GLSUM.cbl#L96) |
+| 05 | ├ FILLER | filler | 113 | 4 | 9(4) | | VALUE 4000 | [GLSUM.cbl:98](../../../pangaea/programs/GLSUM.cbl#L98) |
+| 05 | ├ FILLER | filler | 117 | 24 | X(24) | | VALUE 'INTEREST INCOME' | [GLSUM.cbl:99](../../../pangaea/programs/GLSUM.cbl#L99) |
+| 05 | ├ FILLER | filler | 141 | 4 | 9(4) | | VALUE 4100 | [GLSUM.cbl:101](../../../pangaea/programs/GLSUM.cbl#L101) |
+| 05 | ├ FILLER | filler | 145 | 24 | X(24) | | VALUE 'FEE INCOME' | [GLSUM.cbl:102](../../../pangaea/programs/GLSUM.cbl#L102) |
+| 05 | ├ FILLER | filler | 169 | 4 | 9(4) | | VALUE 5000 | [GLSUM.cbl:104](../../../pangaea/programs/GLSUM.cbl#L104) |
+| 05 | └ FILLER | filler | 173 | 24 | X(24) | | VALUE 'INTEREST EXPENSE' | [GLSUM.cbl:105](../../../pangaea/programs/GLSUM.cbl#L105) |
 
 ### WS-LEDGER
 
@@ -506,9 +506,9 @@ Working storage. 196 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-LEDGER | group | 1 | 196 | | | REDEFINES WS-LEDGER-VALUES | [GLSUM.cbl:107](../../../pangaea/programs/GLSUM.cbl#L107) |
-| 05 | WS-LEDGER-ENTRY | group | 1 | 28 | | | OCCURS 7; INDEXED BY WS-LX | [GLSUM.cbl:108](../../../pangaea/programs/GLSUM.cbl#L108) |
-| 10 | WS-LE-ACCOUNT | number | 1 | 4 | 9(4) | | | [GLSUM.cbl:110](../../../pangaea/programs/GLSUM.cbl#L110) |
-| 10 | WS-LE-NAME | text | 5 | 24 | X(24) | | | [GLSUM.cbl:111](../../../pangaea/programs/GLSUM.cbl#L111) |
+| 05 | └ WS-LEDGER-ENTRY | group | 1 | 28 | | | OCCURS 7; INDEXED BY WS-LX | [GLSUM.cbl:108](../../../pangaea/programs/GLSUM.cbl#L108) |
+| 10 |   ├ WS-LE-ACCOUNT | number | 1 | 4 | 9(4) | | | [GLSUM.cbl:110](../../../pangaea/programs/GLSUM.cbl#L110) |
+| 10 |   └ WS-LE-NAME | text | 5 | 24 | X(24) | | | [GLSUM.cbl:111](../../../pangaea/programs/GLSUM.cbl#L111) |
 
 ### WS-LEDGER-TOTALS
 
@@ -517,9 +517,9 @@ Working storage. 112 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-LEDGER-TOTALS | group | 1 | 112 | | | | [GLSUM.cbl:112](../../../pangaea/programs/GLSUM.cbl#L112) |
-| 05 | WS-LEDGER-TOTAL | group | 1 | 16 | | | OCCURS 7; INDEXED BY WS-TX | [GLSUM.cbl:113](../../../pangaea/programs/GLSUM.cbl#L113) |
-| 10 | WS-LT-DEBITS | amount | 1 | 8 | S9(13)V99 | COMP-3 | | [GLSUM.cbl:115](../../../pangaea/programs/GLSUM.cbl#L115) |
-| 10 | WS-LT-CREDITS | amount | 9 | 8 | S9(13)V99 | COMP-3 | | [GLSUM.cbl:116](../../../pangaea/programs/GLSUM.cbl#L116) |
+| 05 | └ WS-LEDGER-TOTAL | group | 1 | 16 | | | OCCURS 7; INDEXED BY WS-TX | [GLSUM.cbl:113](../../../pangaea/programs/GLSUM.cbl#L113) |
+| 10 |   ├ WS-LT-DEBITS | amount | 1 | 8 | S9(13)V99 | COMP-3 | | [GLSUM.cbl:115](../../../pangaea/programs/GLSUM.cbl#L115) |
+| 10 |   └ WS-LT-CREDITS | amount | 9 | 8 | S9(13)V99 | COMP-3 | | [GLSUM.cbl:116](../../../pangaea/programs/GLSUM.cbl#L116) |
 
 ### WS-DEPOSITS-ACCOUNT
 
@@ -544,10 +544,10 @@ Working storage. 23 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-POSTING | group | 1 | 23 | | | | [GLSUM.cbl:120](../../../pangaea/programs/GLSUM.cbl#L120) |
-| 05 | WS-AMOUNT | amount | 1 | 11 | S9(9)V99 | | | [GLSUM.cbl:121](../../../pangaea/programs/GLSUM.cbl#L121) |
-| 05 | WS-DEBIT-ACCOUNT | number | 12 | 4 | 9(4) | | | [GLSUM.cbl:122](../../../pangaea/programs/GLSUM.cbl#L122) |
-| 05 | WS-CREDIT-ACCOUNT | number | 16 | 4 | 9(4) | | | [GLSUM.cbl:123](../../../pangaea/programs/GLSUM.cbl#L123) |
-| 05 | WS-WANTED-ACCOUNT | number | 20 | 4 | 9(4) | | | [GLSUM.cbl:124](../../../pangaea/programs/GLSUM.cbl#L124) |
+| 05 | ├ WS-AMOUNT | amount | 1 | 11 | S9(9)V99 | | | [GLSUM.cbl:121](../../../pangaea/programs/GLSUM.cbl#L121) |
+| 05 | ├ WS-DEBIT-ACCOUNT | number | 12 | 4 | 9(4) | | | [GLSUM.cbl:122](../../../pangaea/programs/GLSUM.cbl#L122) |
+| 05 | ├ WS-CREDIT-ACCOUNT | number | 16 | 4 | 9(4) | | | [GLSUM.cbl:123](../../../pangaea/programs/GLSUM.cbl#L123) |
+| 05 | └ WS-WANTED-ACCOUNT | number | 20 | 4 | 9(4) | | | [GLSUM.cbl:124](../../../pangaea/programs/GLSUM.cbl#L124) |
 
 ### WS-TOTALS
 
@@ -556,11 +556,11 @@ Working storage. 68 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-TOTALS | group | 1 | 68 | | | | [GLSUM.cbl:126](../../../pangaea/programs/GLSUM.cbl#L126) |
-| 05 | WS-POSTING-COUNT | number | 1 | 8 | 9(8) | | VALUE 0 | [GLSUM.cbl:127](../../../pangaea/programs/GLSUM.cbl#L127) |
-| 05 | WS-DEBIT-TOTAL | amount | 9 | 15 | S9(13)V99 | | VALUE 0 | [GLSUM.cbl:128](../../../pangaea/programs/GLSUM.cbl#L128) |
-| 05 | WS-CREDIT-TOTAL | amount | 24 | 15 | S9(13)V99 | | VALUE 0 | [GLSUM.cbl:129](../../../pangaea/programs/GLSUM.cbl#L129) |
-| 05 | WS-DEPOSITS-CHANGE | amount | 39 | 15 | S9(13)V99 | | VALUE 0 | [GLSUM.cbl:130](../../../pangaea/programs/GLSUM.cbl#L130) |
-| 05 | WS-TRANSIT-NET | amount | 54 | 15 | S9(13)V99 | | VALUE 0 | [GLSUM.cbl:131](../../../pangaea/programs/GLSUM.cbl#L131) |
+| 05 | ├ WS-POSTING-COUNT | number | 1 | 8 | 9(8) | | VALUE 0 | [GLSUM.cbl:127](../../../pangaea/programs/GLSUM.cbl#L127) |
+| 05 | ├ WS-DEBIT-TOTAL | amount | 9 | 15 | S9(13)V99 | | VALUE 0 | [GLSUM.cbl:128](../../../pangaea/programs/GLSUM.cbl#L128) |
+| 05 | ├ WS-CREDIT-TOTAL | amount | 24 | 15 | S9(13)V99 | | VALUE 0 | [GLSUM.cbl:129](../../../pangaea/programs/GLSUM.cbl#L129) |
+| 05 | ├ WS-DEPOSITS-CHANGE | amount | 39 | 15 | S9(13)V99 | | VALUE 0 | [GLSUM.cbl:130](../../../pangaea/programs/GLSUM.cbl#L130) |
+| 05 | └ WS-TRANSIT-NET | amount | 54 | 15 | S9(13)V99 | | VALUE 0 | [GLSUM.cbl:131](../../../pangaea/programs/GLSUM.cbl#L131) |
 
 ### WS-HEADING-LINE
 
@@ -569,11 +569,11 @@ Working storage. 80 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-HEADING-LINE | group | 1 | 80 | | | | [GLSUM.cbl:133](../../../pangaea/programs/GLSUM.cbl#L133) |
-| 05 | FILLER | filler | 1 | 30 | X(30) | | VALUE 'ACCOUNT' | [GLSUM.cbl:134](../../../pangaea/programs/GLSUM.cbl#L134) |
-| 05 | FILLER | filler | 31 | 18 | X(18) | | VALUE '            DEBITS' | [GLSUM.cbl:135](../../../pangaea/programs/GLSUM.cbl#L135) |
-| 05 | FILLER | filler | 49 | 2 | X(2) | | VALUE SPACES | [GLSUM.cbl:137](../../../pangaea/programs/GLSUM.cbl#L137) |
-| 05 | FILLER | filler | 51 | 18 | X(18) | | VALUE '           CREDITS' | [GLSUM.cbl:138](../../../pangaea/programs/GLSUM.cbl#L138) |
-| 05 | FILLER | filler | 69 | 12 | X(12) | | VALUE SPACES | [GLSUM.cbl:140](../../../pangaea/programs/GLSUM.cbl#L140) |
+| 05 | ├ FILLER | filler | 1 | 30 | X(30) | | VALUE 'ACCOUNT' | [GLSUM.cbl:134](../../../pangaea/programs/GLSUM.cbl#L134) |
+| 05 | ├ FILLER | filler | 31 | 18 | X(18) | | VALUE '            DEBITS' | [GLSUM.cbl:135](../../../pangaea/programs/GLSUM.cbl#L135) |
+| 05 | ├ FILLER | filler | 49 | 2 | X(2) | | VALUE SPACES | [GLSUM.cbl:137](../../../pangaea/programs/GLSUM.cbl#L137) |
+| 05 | ├ FILLER | filler | 51 | 18 | X(18) | | VALUE '           CREDITS' | [GLSUM.cbl:138](../../../pangaea/programs/GLSUM.cbl#L138) |
+| 05 | └ FILLER | filler | 69 | 12 | X(12) | | VALUE SPACES | [GLSUM.cbl:140](../../../pangaea/programs/GLSUM.cbl#L140) |
 
 ### WS-LEDGER-LINE
 
@@ -582,13 +582,13 @@ Working storage. 82 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-LEDGER-LINE | group | 1 | 82 | | | | [GLSUM.cbl:141](../../../pangaea/programs/GLSUM.cbl#L141) |
-| 05 | WS-LL-ACCOUNT | text | 1 | 4 | X(4) | | | [GLSUM.cbl:142](../../../pangaea/programs/GLSUM.cbl#L142) |
-| 05 | FILLER | filler | 5 | 1 | X(1) | | VALUE SPACES | [GLSUM.cbl:143](../../../pangaea/programs/GLSUM.cbl#L143) |
-| 05 | WS-LL-NAME | text | 6 | 25 | X(25) | | | [GLSUM.cbl:144](../../../pangaea/programs/GLSUM.cbl#L144) |
-| 05 | WS-LL-DEBITS | edited | 31 | 20 | Z,ZZZ,ZZZ,ZZZ,ZZ9.99 | | | [GLSUM.cbl:145](../../../pangaea/programs/GLSUM.cbl#L145) |
-| 05 | FILLER | filler | 51 | 2 | X(2) | | VALUE SPACES | [GLSUM.cbl:146](../../../pangaea/programs/GLSUM.cbl#L146) |
-| 05 | WS-LL-CREDITS | edited | 53 | 20 | Z,ZZZ,ZZZ,ZZZ,ZZ9.99 | | | [GLSUM.cbl:147](../../../pangaea/programs/GLSUM.cbl#L147) |
-| 05 | FILLER | filler | 73 | 10 | X(10) | | VALUE SPACES | [GLSUM.cbl:148](../../../pangaea/programs/GLSUM.cbl#L148) |
+| 05 | ├ WS-LL-ACCOUNT | text | 1 | 4 | X(4) | | | [GLSUM.cbl:142](../../../pangaea/programs/GLSUM.cbl#L142) |
+| 05 | ├ FILLER | filler | 5 | 1 | X(1) | | VALUE SPACES | [GLSUM.cbl:143](../../../pangaea/programs/GLSUM.cbl#L143) |
+| 05 | ├ WS-LL-NAME | text | 6 | 25 | X(25) | | | [GLSUM.cbl:144](../../../pangaea/programs/GLSUM.cbl#L144) |
+| 05 | ├ WS-LL-DEBITS | edited | 31 | 20 | Z,ZZZ,ZZZ,ZZZ,ZZ9.99 | | | [GLSUM.cbl:145](../../../pangaea/programs/GLSUM.cbl#L145) |
+| 05 | ├ FILLER | filler | 51 | 2 | X(2) | | VALUE SPACES | [GLSUM.cbl:146](../../../pangaea/programs/GLSUM.cbl#L146) |
+| 05 | ├ WS-LL-CREDITS | edited | 53 | 20 | Z,ZZZ,ZZZ,ZZZ,ZZ9.99 | | | [GLSUM.cbl:147](../../../pangaea/programs/GLSUM.cbl#L147) |
+| 05 | └ FILLER | filler | 73 | 10 | X(10) | | VALUE SPACES | [GLSUM.cbl:148](../../../pangaea/programs/GLSUM.cbl#L148) |
 
 ### WS-REPORT-COUNT-LINE
 
@@ -597,9 +597,9 @@ Working storage. 80 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-REPORT-COUNT-LINE | group | 1 | 80 | | | | [GLSUM.cbl:149](../../../pangaea/programs/GLSUM.cbl#L149) |
-| 05 | WS-RC-LABEL | text | 1 | 30 | X(30) | | | [GLSUM.cbl:150](../../../pangaea/programs/GLSUM.cbl#L150) |
-| 05 | WS-RC-VALUE | edited | 31 | 10 | ZZ,ZZZ,ZZ9 | | | [GLSUM.cbl:151](../../../pangaea/programs/GLSUM.cbl#L151) |
-| 05 | FILLER | filler | 41 | 40 | X(40) | | VALUE SPACES | [GLSUM.cbl:152](../../../pangaea/programs/GLSUM.cbl#L152) |
+| 05 | ├ WS-RC-LABEL | text | 1 | 30 | X(30) | | | [GLSUM.cbl:150](../../../pangaea/programs/GLSUM.cbl#L150) |
+| 05 | ├ WS-RC-VALUE | edited | 31 | 10 | ZZ,ZZZ,ZZ9 | | | [GLSUM.cbl:151](../../../pangaea/programs/GLSUM.cbl#L151) |
+| 05 | └ FILLER | filler | 41 | 40 | X(40) | | VALUE SPACES | [GLSUM.cbl:152](../../../pangaea/programs/GLSUM.cbl#L152) |
 
 ### WS-REPORT-AMOUNT-LINE
 
@@ -608,6 +608,6 @@ Working storage. 80 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-REPORT-AMOUNT-LINE | group | 1 | 80 | | | | [GLSUM.cbl:153](../../../pangaea/programs/GLSUM.cbl#L153) |
-| 05 | WS-RA-LABEL | text | 1 | 30 | X(30) | | | [GLSUM.cbl:154](../../../pangaea/programs/GLSUM.cbl#L154) |
-| 05 | WS-RA-VALUE | edited | 31 | 21 | Z,ZZZ,ZZZ,ZZZ,ZZ9.99- | | | [GLSUM.cbl:155](../../../pangaea/programs/GLSUM.cbl#L155) |
-| 05 | FILLER | filler | 52 | 29 | X(29) | | VALUE SPACES | [GLSUM.cbl:156](../../../pangaea/programs/GLSUM.cbl#L156) |
+| 05 | ├ WS-RA-LABEL | text | 1 | 30 | X(30) | | | [GLSUM.cbl:154](../../../pangaea/programs/GLSUM.cbl#L154) |
+| 05 | ├ WS-RA-VALUE | edited | 31 | 21 | Z,ZZZ,ZZZ,ZZZ,ZZ9.99- | | | [GLSUM.cbl:155](../../../pangaea/programs/GLSUM.cbl#L155) |
+| 05 | └ FILLER | filler | 52 | 29 | X(29) | | VALUE SPACES | [GLSUM.cbl:156](../../../pangaea/programs/GLSUM.cbl#L156) |

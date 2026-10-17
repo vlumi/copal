@@ -23,10 +23,10 @@ Copybook [RATEREC.cpy](../../../pangaea/copybooks/RATEREC.cpy), used by [INTACCR
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | RATE-RECORD | group | 1 | 20 | | | | [RATEREC.cpy:14](../../../pangaea/copybooks/RATEREC.cpy#L14) |
-| 05 | RT-ACCT-TYPE | text | 1 | 1 | X | | | [RATEREC.cpy:15](../../../pangaea/copybooks/RATEREC.cpy#L15) |
-| 05 | RT-KIND | code | 2 | 1 | X | | | [RATEREC.cpy:16](../../../pangaea/copybooks/RATEREC.cpy#L16) |
-| 88 | RT-CREDIT | | | | | | VALUE 'C' | [RATEREC.cpy:17](../../../pangaea/copybooks/RATEREC.cpy#L17) |
-| 88 | RT-DEBIT | | | | | | VALUE 'D' | [RATEREC.cpy:18](../../../pangaea/copybooks/RATEREC.cpy#L18) |
-| 05 | RT-FLOOR | amount | 3 | 7 | S9(11)V99 | COMP-3 | | [RATEREC.cpy:19](../../../pangaea/copybooks/RATEREC.cpy#L19) |
-| 05 | RT-ANNUAL-RATE | amount | 10 | 4 | 9V9(6) | COMP-3 | | [RATEREC.cpy:20](../../../pangaea/copybooks/RATEREC.cpy#L20) |
-| 05 | FILLER | filler | 14 | 7 | X(7) | | | [RATEREC.cpy:21](../../../pangaea/copybooks/RATEREC.cpy#L21) |
+| 05 | ├ RT-ACCT-TYPE | text | 1 | 1 | X | | | [RATEREC.cpy:15](../../../pangaea/copybooks/RATEREC.cpy#L15) |
+| 05 | ├ RT-KIND | code | 2 | 1 | X | | | [RATEREC.cpy:16](../../../pangaea/copybooks/RATEREC.cpy#L16) |
+| 88 | │ ├ RT-CREDIT | | | | | | VALUE 'C' | [RATEREC.cpy:17](../../../pangaea/copybooks/RATEREC.cpy#L17) |
+| 88 | │ └ RT-DEBIT | | | | | | VALUE 'D' | [RATEREC.cpy:18](../../../pangaea/copybooks/RATEREC.cpy#L18) |
+| 05 | ├ RT-FLOOR | amount | 3 | 7 | S9(11)V99 | COMP-3 | | [RATEREC.cpy:19](../../../pangaea/copybooks/RATEREC.cpy#L19) |
+| 05 | ├ RT-ANNUAL-RATE | amount | 10 | 4 | 9V9(6) | COMP-3 | | [RATEREC.cpy:20](../../../pangaea/copybooks/RATEREC.cpy#L20) |
+| 05 | └ FILLER | filler | 14 | 7 | X(7) | | | [RATEREC.cpy:21](../../../pangaea/copybooks/RATEREC.cpy#L21) |

@@ -20,12 +20,12 @@
 {{range .Records}}
 <h2>{{.Name}} <span class="note">· <a href="{{entity .Name}}">as an entity</a></span></h2>
 <table>
-  <thead><tr><th class="num">Level</th><th>Field</th><th class="num">Start</th><th class="num">Length</th><th>Picture</th><th>Usage</th><th>Source</th></tr></thead>
+  <thead><tr><th class="num">Level</th><th>Field</th><th class="num">Start</th><th class="num">Length</th><th>Picture</th><th>Usage</th><th>Notes</th><th>Source</th></tr></thead>
   <tbody>{{template "layout" (layoutOf .Name .Field)}}</tbody>
 </table>
 {{end}}
 {{end}}
 {{end}}
 
-{{define "layout"}}{{with .Field}}<tr><td class="num">{{printf "%02d" .Level}}</td><td>{{if or (eq .Level 1) (eq .Name "FILLER")}}{{.Name}}{{else}}<a href="{{entityField $.Record .Name}}">{{.Name}}</a>{{end}} {{template "badge" .Kind}}</td><td class="num">{{.Start}}</td><td class="num">{{.Length}}</td><td><code>{{.Picture}}</code></td><td>{{.Usage}}</td><td>{{template "src" .Source}}</td></tr>
-{{range .Fields}}{{template "layout" (layoutOf $.Record .)}}{{end}}{{end}}{{end}}
+{{define "layout"}}{{$record := .Record}}{{range layoutRows .Field}}<tr><td class="num">{{printf "%02d" .Level}}</td><td><span class="tree">{{.Prefix}}</span>{{if .Field}}{{if or (eq .Level 1) (eq .Name "FILLER")}}{{.Name}}{{else}}<a href="{{entityField $record .Name}}">{{.Name}}</a>{{end}} {{template "badge" .Field.Kind}}{{else}}{{.Name}}{{end}}</td>{{if .Field}}<td class="num">{{.Field.Start}}</td><td class="num">{{.Field.Length}}</td><td><code>{{.Field.Picture}}</code></td><td>{{.Field.Usage}}</td><td>{{notes .Field}}</td>{{else}}<td></td><td></td><td></td><td></td><td>VALUE <code>{{join .Values ", "}}</code></td>{{end}}<td>{{template "src" .Source}}</td></tr>
+{{end}}{{end}}

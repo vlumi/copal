@@ -389,13 +389,13 @@ Working storage. 10 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-FILE-STATUSES | group | 1 | 10 | | | | [TXVALID.cbl:70](../../../pangaea/programs/TXVALID.cbl#L70) |
-| 05 | WS-CONTROL-STATUS | text | 1 | 2 | XX | | | [TXVALID.cbl:71](../../../pangaea/programs/TXVALID.cbl#L71) |
-| 05 | WS-TRAN-IN-STATUS | code | 3 | 2 | XX | | | [TXVALID.cbl:72](../../../pangaea/programs/TXVALID.cbl#L72) |
-| 88 | TRAN-IN-EOF | | | | | | VALUE '10' | [TXVALID.cbl:73](../../../pangaea/programs/TXVALID.cbl#L73) |
-| 05 | WS-TRAN-OUT-STATUS | text | 5 | 2 | XX | | | [TXVALID.cbl:74](../../../pangaea/programs/TXVALID.cbl#L74) |
-| 05 | WS-REJECT-STATUS | code | 7 | 2 | XX | | | [TXVALID.cbl:75](../../../pangaea/programs/TXVALID.cbl#L75) |
-| 88 | REJECTS-OPENED | | | | | | VALUE '00', '05' | [TXVALID.cbl:76](../../../pangaea/programs/TXVALID.cbl#L76) |
-| 05 | WS-REPORT-STATUS | text | 9 | 2 | XX | | | [TXVALID.cbl:77](../../../pangaea/programs/TXVALID.cbl#L77) |
+| 05 | ├ WS-CONTROL-STATUS | text | 1 | 2 | XX | | | [TXVALID.cbl:71](../../../pangaea/programs/TXVALID.cbl#L71) |
+| 05 | ├ WS-TRAN-IN-STATUS | code | 3 | 2 | XX | | | [TXVALID.cbl:72](../../../pangaea/programs/TXVALID.cbl#L72) |
+| 88 | │ └ TRAN-IN-EOF | | | | | | VALUE '10' | [TXVALID.cbl:73](../../../pangaea/programs/TXVALID.cbl#L73) |
+| 05 | ├ WS-TRAN-OUT-STATUS | text | 5 | 2 | XX | | | [TXVALID.cbl:74](../../../pangaea/programs/TXVALID.cbl#L74) |
+| 05 | ├ WS-REJECT-STATUS | code | 7 | 2 | XX | | | [TXVALID.cbl:75](../../../pangaea/programs/TXVALID.cbl#L75) |
+| 88 | │ └ REJECTS-OPENED | | | | | | VALUE '00', '05' | [TXVALID.cbl:76](../../../pangaea/programs/TXVALID.cbl#L76) |
+| 05 | └ WS-REPORT-STATUS | text | 9 | 2 | XX | | | [TXVALID.cbl:77](../../../pangaea/programs/TXVALID.cbl#L77) |
 
 ### WS-BUSINESS-DATE
 
@@ -412,8 +412,8 @@ Working storage. 8 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-SOURCE | code | 1 | 8 | X(8) | | | [TXVALID.cbl:80](../../../pangaea/programs/TXVALID.cbl#L80) |
-| 88 | FROM-BRANCHES | | | | | | VALUE 'BRANCHES' | [TXVALID.cbl:81](../../../pangaea/programs/TXVALID.cbl#L81) |
-| 88 | FROM-CARDS | | | | | | VALUE 'CARDS' | [TXVALID.cbl:82](../../../pangaea/programs/TXVALID.cbl#L82) |
+| 88 | ├ FROM-BRANCHES | | | | | | VALUE 'BRANCHES' | [TXVALID.cbl:81](../../../pangaea/programs/TXVALID.cbl#L81) |
+| 88 | └ FROM-CARDS | | | | | | VALUE 'CARDS' | [TXVALID.cbl:82](../../../pangaea/programs/TXVALID.cbl#L82) |
 
 ### REJECT-RECORD
 
@@ -426,7 +426,7 @@ Working storage. 40 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-FILE-ERROR | code | 1 | 40 | X(40) | | VALUE SPACES | [TXVALID.cbl:86](../../../pangaea/programs/TXVALID.cbl#L86) |
-| 88 | FILE-IS-GOOD | | | | | | VALUE SPACES | [TXVALID.cbl:87](../../../pangaea/programs/TXVALID.cbl#L87) |
+| 88 | └ FILE-IS-GOOD | | | | | | VALUE SPACES | [TXVALID.cbl:87](../../../pangaea/programs/TXVALID.cbl#L87) |
 
 ### WS-DETAIL-STATE
 
@@ -435,8 +435,8 @@ Working storage. 1 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-DETAIL-STATE | code | 1 | 1 | X | | | [TXVALID.cbl:89](../../../pangaea/programs/TXVALID.cbl#L89) |
-| 88 | DETAIL-IS-VALID | | | | | | VALUE 'Y' | [TXVALID.cbl:90](../../../pangaea/programs/TXVALID.cbl#L90) |
-| 88 | DETAIL-IS-REJECTED | | | | | | VALUE 'N' | [TXVALID.cbl:91](../../../pangaea/programs/TXVALID.cbl#L91) |
+| 88 | ├ DETAIL-IS-VALID | | | | | | VALUE 'Y' | [TXVALID.cbl:90](../../../pangaea/programs/TXVALID.cbl#L90) |
+| 88 | └ DETAIL-IS-REJECTED | | | | | | VALUE 'N' | [TXVALID.cbl:91](../../../pangaea/programs/TXVALID.cbl#L91) |
 
 ### WS-TOTALS
 
@@ -445,11 +445,11 @@ Working storage. 54 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-TOTALS | group | 1 | 54 | | | | [TXVALID.cbl:93](../../../pangaea/programs/TXVALID.cbl#L93) |
-| 05 | WS-DETAIL-COUNT | number | 1 | 8 | 9(8) | | VALUE 0 | [TXVALID.cbl:94](../../../pangaea/programs/TXVALID.cbl#L94) |
-| 05 | WS-VALID-COUNT | number | 9 | 8 | 9(8) | | VALUE 0 | [TXVALID.cbl:95](../../../pangaea/programs/TXVALID.cbl#L95) |
-| 05 | WS-REJECT-COUNT | number | 17 | 8 | 9(8) | | VALUE 0 | [TXVALID.cbl:96](../../../pangaea/programs/TXVALID.cbl#L96) |
-| 05 | WS-AMOUNT-TOTAL | amount | 25 | 15 | 9(13)V99 | | VALUE 0 | [TXVALID.cbl:97](../../../pangaea/programs/TXVALID.cbl#L97) |
-| 05 | WS-ACCT-HASH | number | 40 | 15 | 9(15) | | VALUE 0 | [TXVALID.cbl:98](../../../pangaea/programs/TXVALID.cbl#L98) |
+| 05 | ├ WS-DETAIL-COUNT | number | 1 | 8 | 9(8) | | VALUE 0 | [TXVALID.cbl:94](../../../pangaea/programs/TXVALID.cbl#L94) |
+| 05 | ├ WS-VALID-COUNT | number | 9 | 8 | 9(8) | | VALUE 0 | [TXVALID.cbl:95](../../../pangaea/programs/TXVALID.cbl#L95) |
+| 05 | ├ WS-REJECT-COUNT | number | 17 | 8 | 9(8) | | VALUE 0 | [TXVALID.cbl:96](../../../pangaea/programs/TXVALID.cbl#L96) |
+| 05 | ├ WS-AMOUNT-TOTAL | amount | 25 | 15 | 9(13)V99 | | VALUE 0 | [TXVALID.cbl:97](../../../pangaea/programs/TXVALID.cbl#L97) |
+| 05 | └ WS-ACCT-HASH | number | 40 | 15 | 9(15) | | VALUE 0 | [TXVALID.cbl:98](../../../pangaea/programs/TXVALID.cbl#L98) |
 
 ### WS-REPORT-COUNT-LINE
 
@@ -458,9 +458,9 @@ Working storage. 80 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-REPORT-COUNT-LINE | group | 1 | 80 | | | | [TXVALID.cbl:100](../../../pangaea/programs/TXVALID.cbl#L100) |
-| 05 | WS-RC-LABEL | text | 1 | 30 | X(30) | | | [TXVALID.cbl:101](../../../pangaea/programs/TXVALID.cbl#L101) |
-| 05 | WS-RC-VALUE | edited | 31 | 10 | ZZ,ZZZ,ZZ9 | | | [TXVALID.cbl:102](../../../pangaea/programs/TXVALID.cbl#L102) |
-| 05 | FILLER | filler | 41 | 40 | X(40) | | VALUE SPACES | [TXVALID.cbl:103](../../../pangaea/programs/TXVALID.cbl#L103) |
+| 05 | ├ WS-RC-LABEL | text | 1 | 30 | X(30) | | | [TXVALID.cbl:101](../../../pangaea/programs/TXVALID.cbl#L101) |
+| 05 | ├ WS-RC-VALUE | edited | 31 | 10 | ZZ,ZZZ,ZZ9 | | | [TXVALID.cbl:102](../../../pangaea/programs/TXVALID.cbl#L102) |
+| 05 | └ FILLER | filler | 41 | 40 | X(40) | | VALUE SPACES | [TXVALID.cbl:103](../../../pangaea/programs/TXVALID.cbl#L103) |
 
 ### WS-REPORT-AMOUNT-LINE
 
@@ -469,6 +469,6 @@ Working storage. 80 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-REPORT-AMOUNT-LINE | group | 1 | 80 | | | | [TXVALID.cbl:104](../../../pangaea/programs/TXVALID.cbl#L104) |
-| 05 | WS-RA-LABEL | text | 1 | 30 | X(30) | | | [TXVALID.cbl:105](../../../pangaea/programs/TXVALID.cbl#L105) |
-| 05 | WS-RA-VALUE | edited | 31 | 20 | Z,ZZZ,ZZZ,ZZZ,ZZ9.99 | | | [TXVALID.cbl:106](../../../pangaea/programs/TXVALID.cbl#L106) |
-| 05 | FILLER | filler | 51 | 30 | X(30) | | VALUE SPACES | [TXVALID.cbl:107](../../../pangaea/programs/TXVALID.cbl#L107) |
+| 05 | ├ WS-RA-LABEL | text | 1 | 30 | X(30) | | | [TXVALID.cbl:105](../../../pangaea/programs/TXVALID.cbl#L105) |
+| 05 | ├ WS-RA-VALUE | edited | 31 | 20 | Z,ZZZ,ZZZ,ZZZ,ZZ9.99 | | | [TXVALID.cbl:106](../../../pangaea/programs/TXVALID.cbl#L106) |
+| 05 | └ FILLER | filler | 51 | 30 | X(30) | | VALUE SPACES | [TXVALID.cbl:107](../../../pangaea/programs/TXVALID.cbl#L107) |
