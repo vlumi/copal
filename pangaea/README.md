@@ -4,6 +4,8 @@ A small COBOL bank, the specimen the survey is developed against: a nightly batc
 
 ## Layout
 
+[docs/](docs/) is the bank's own documentation, in its operations team's voice: the business day, the job schedule, the datasets and the authorization service.
+
 - [copybooks/](copybooks/): record layouts, one copybook per record.
 - [programs/](programs/): the COBOL programs, fixed-format, compiled with GnuCOBOL 3.2 in IBM dialect.
 - [jobs/](jobs/): job files in a small subset of JCL, run by the Go runner in [runner/](runner/): the daily batch, the month-end job, the online day, and the job that opens a new bank.
