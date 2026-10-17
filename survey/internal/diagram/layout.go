@@ -102,11 +102,15 @@ type layout struct {
 
 // routedEdge is an edge as a chain of slots, from top to bottom through any
 // waypoints. The arrow points at the bottom end unless the edge is reversed.
+// Lanes number the edges that leave its top box for the same slot, and
+// that enter its bottom box from the same slot, as edges both ways between
+// two nodes do, so that they are drawn side by side.
 type routedEdge struct {
-	chain     []*slot
-	style     Style
-	highlight bool
-	reversed  bool
+	chain              []*slot
+	style              Style
+	highlight          bool
+	reversed           bool
+	topLane, lowerLane int
 }
 
 func newLayout(g Graph) (*layout, error) {
@@ -277,6 +281,7 @@ func (l *layout) add(s *slot) {
 // route links the slots of each edge, adding a waypoint on every layer an
 // edge passes through.
 func (l *layout) route(edges []indexedEdge) {
+	lanes := map[[2]*slot]int{}
 	for _, e := range edges {
 		from, to := l.nodes[e.from], l.nodes[e.to]
 		chain := []*slot{from}
@@ -290,7 +295,13 @@ func (l *layout) route(edges []indexedEdge) {
 			chain[i-1].below = append(chain[i-1].below, chain[i])
 			chain[i].above = append(chain[i].above, chain[i-1])
 		}
-		l.edges = append(l.edges, routedEdge{chain: chain, style: e.style, highlight: e.highlight, reversed: e.reversed})
+		top, lower := [2]*slot{chain[0], chain[1]}, [2]*slot{chain[len(chain)-2], chain[len(chain)-1]}
+		l.edges = append(l.edges, routedEdge{chain: chain, style: e.style, highlight: e.highlight, reversed: e.reversed,
+			topLane: lanes[top], lowerLane: lanes[lower]})
+		lanes[top]++
+		if lower != top {
+			lanes[lower]++
+		}
 	}
 }
 
@@ -460,14 +471,15 @@ func (l *layout) bottom(s *slot) int {
 }
 
 // port spreads the edges that leave or enter a box along its bottom or top
-// side, in the order of the boxes at their other end.
-func port(s *slot, others []*slot, other *slot) int {
+// side, in the order of the boxes at their other end, and of their lanes
+// where several go to the same box.
+func port(s *slot, others []*slot, other *slot, lane int) int {
 	if s.node < 0 || len(others) < 2 {
 		return s.center()
 	}
 	sorted := slices.Clone(others)
 	slices.SortStableFunc(sorted, func(a, b *slot) int { return a.center() - b.center() })
-	k := slices.Index(sorted, other)
+	k := slices.Index(sorted, other) + lane
 	return s.x + s.width*(k+1)/(len(sorted)+1)
 }
 

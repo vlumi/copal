@@ -81,14 +81,18 @@ const arrowLength = 8
 // the arrowhead's base takes over, and arrives there vertically.
 func (l *layout) writeEdge(b *strings.Builder, e routedEdge) {
 	from, last := e.chain[0], len(e.chain)-1
-	x, y := port(from, from.below, e.chain[1]), l.bottom(from)
+	x, y := port(from, from.below, e.chain[1], e.topLane), l.bottom(from)
 	if e.reversed {
 		y += arrowLength
 	}
 	path := fmt.Sprintf("M%d,%d", x, y)
 	for i := 1; i <= last; i++ {
 		s := e.chain[i]
-		nx, ny := port(s, s.above, e.chain[i-1]), l.top(s)
+		lane := 0
+		if i == last {
+			lane = e.lowerLane
+		}
+		nx, ny := port(s, s.above, e.chain[i-1], lane), l.top(s)
 		if i == last && !e.reversed {
 			ny -= arrowLength
 		}

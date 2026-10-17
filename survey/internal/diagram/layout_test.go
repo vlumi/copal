@@ -217,3 +217,30 @@ func TestExternal(t *testing.T) {
 		t.Errorf("a highlight does not show on an external node:\n%s", svg)
 	}
 }
+
+// Edges both ways between two nodes are drawn side by side, not over
+// each other.
+func TestEdgesBothWays(t *testing.T) {
+	g := Graph{Nodes: []Node{{ID: "a", Label: "OPEN"}, {ID: "b", Label: "FROZEN"}},
+		Edges: []Edge{{From: "a", To: "b"}, {From: "b", To: "a"}}}
+	l, err := newLayout(g)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(l.edges) != 2 || l.edges[0].topLane == l.edges[1].topLane || l.edges[0].lowerLane == l.edges[1].lowerLane {
+		t.Errorf("edges %+v", l.edges)
+	}
+	var b strings.Builder
+	for _, e := range l.edges {
+		l.writeEdge(&b, e)
+	}
+	d := func(path string) string {
+		_, after, _ := strings.Cut(path, ` d="`)
+		line, _, _ := strings.Cut(after, `"`)
+		return line
+	}
+	paths := strings.Split(strings.TrimSpace(b.String()), "\n")
+	if len(paths) != 2 || d(paths[0]) == d(paths[1]) {
+		t.Errorf("edges drawn over each other:\n%s", b.String())
+	}
+}
