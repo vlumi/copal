@@ -1,10 +1,10 @@
 # The First Bank of Pangaea
 
-<img src="brand/seal.png" alt="The seal of the First Bank of Pangaea: a Dimetrodon on the supercontinent, since before the continents" width="200" align="right">
-
 A small COBOL bank, the specimen the survey is developed against: a nightly batch, and an online day of card and ATM authorizations. Fiction written for this project. The bank knows nothing of the survey; the [console](../console/) is where the two meet.
 
 ## Layout
+
+<img src="brand/seal.png" alt="The seal of the First Bank of Pangaea: a Dimetrodon on the supercontinent, since before the continents" width="200" align="right">
 
 [docs/](docs/) is the bank's own documentation, in its operations team's voice: the business day, the job schedule, the datasets and the authorization service.
 
