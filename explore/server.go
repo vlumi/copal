@@ -208,7 +208,9 @@ func (s *Server) program(r *http.Request) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	flow, err := svg(blueprint.FlowGraph(*p, func(para blueprint.Paragraph) string { return paragraphLink(p.Name, para.Name) }))
+	flow, err := svg(blueprint.FlowGraph(*p, blueprint.FlowNotes{
+		Link: func(para blueprint.Paragraph) string { return paragraphLink(p.Name, para.Name) },
+	}))
 	return ProgramView{Program: p, Flow: flow, Runs: s.index.runs[p.Name]}, err
 }
 

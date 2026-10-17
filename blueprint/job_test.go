@@ -72,3 +72,26 @@ func TestSysin(t *testing.T) {
 		t.Errorf("findings %q, want %q", job.Findings, want)
 	}
 }
+
+// A path through a job highlights its steps, the edges between them and
+// the datasets on it, and those datasets.
+func TestJobGraphPath(t *testing.T) {
+	job := Job{Name: "J", Steps: []Step{
+		{Name: "A", Program: "P", DDs: []DD{{Name: "OUT", Datasets: []string{"&&T"}, Uses: []string{"write"}}}},
+		{Name: "B", Program: "Q", DDs: []DD{{Name: "IN", Datasets: []string{"&&T"}, Uses: []string{"read"}},
+			{Name: "LOG", Datasets: []string{"L"}, Uses: []string{"write"}}}},
+	}}
+	g := JobGraph(job, JobNotes{Path: &JobPath{Steps: map[string]bool{"B": true}, Datasets: map[[2]string]bool{{"B", "&&T"}: true}}})
+	highlighted := map[string]bool{}
+	for _, n := range g.Nodes {
+		highlighted[n.ID] = n.Highlight
+	}
+	if !highlighted["step B"] || highlighted["step A"] || !highlighted["dataset &&T"] || highlighted["dataset L at B"] {
+		t.Errorf("highlighted %v", highlighted)
+	}
+	for _, e := range g.Edges {
+		if want := e.From == "dataset &&T" && e.To == "step B"; e.Highlight != want {
+			t.Errorf("edge %s to %s highlighted %v", e.From, e.To, e.Highlight)
+		}
+	}
+}
