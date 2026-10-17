@@ -260,86 +260,86 @@ File CARD-IN. 80 bytes, layout in copybook [CARDREC](../copybooks/CARDREC.md).
 
 File ONLINE-OUT. 80 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | ONLINE-CARD | 1 | 80 | | | | [CARDLOAD.cbl:49](../../../pangaea/programs/CARDLOAD.cbl#L49) |
-| 05 | OC-CARD-NO | 1 | 16 | 9(16) | | | [CARDLOAD.cbl:50](../../../pangaea/programs/CARDLOAD.cbl#L50) |
-| 05 | FILLER | 17 | 64 | X(64) | | | [CARDLOAD.cbl:51](../../../pangaea/programs/CARDLOAD.cbl#L51) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | ONLINE-CARD | group | 1 | 80 | | | | [CARDLOAD.cbl:49](../../../pangaea/programs/CARDLOAD.cbl#L49) |
+| 05 | OC-CARD-NO | key | 1 | 16 | 9(16) | | | [CARDLOAD.cbl:50](../../../pangaea/programs/CARDLOAD.cbl#L50) |
+| 05 | FILLER | filler | 17 | 64 | X(64) | | | [CARDLOAD.cbl:51](../../../pangaea/programs/CARDLOAD.cbl#L51) |
 
 ### REPORT-LINE
 
 File REPORT-OUT. 80 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | REPORT-LINE | 1 | 80 | X(80) | | | [CARDLOAD.cbl:53](../../../pangaea/programs/CARDLOAD.cbl#L53) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | REPORT-LINE | text | 1 | 80 | X(80) | | | [CARDLOAD.cbl:53](../../../pangaea/programs/CARDLOAD.cbl#L53) |
 
 ### WS-FILE-STATUSES
 
 Working storage. 8 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-FILE-STATUSES | 1 | 8 | | | | [CARDLOAD.cbl:56](../../../pangaea/programs/CARDLOAD.cbl#L56) |
-| 05 | WS-CONTROL-STATUS | 1 | 2 | XX | | | [CARDLOAD.cbl:57](../../../pangaea/programs/CARDLOAD.cbl#L57) |
-| 05 | WS-CARD-IN-STATUS | 3 | 2 | XX | | | [CARDLOAD.cbl:58](../../../pangaea/programs/CARDLOAD.cbl#L58) |
-| 05 | WS-ONLINE-STATUS | 5 | 2 | XX | | | [CARDLOAD.cbl:59](../../../pangaea/programs/CARDLOAD.cbl#L59) |
-| 05 | WS-REPORT-STATUS | 7 | 2 | XX | | | [CARDLOAD.cbl:60](../../../pangaea/programs/CARDLOAD.cbl#L60) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-FILE-STATUSES | group | 1 | 8 | | | | [CARDLOAD.cbl:56](../../../pangaea/programs/CARDLOAD.cbl#L56) |
+| 05 | WS-CONTROL-STATUS | text | 1 | 2 | XX | | | [CARDLOAD.cbl:57](../../../pangaea/programs/CARDLOAD.cbl#L57) |
+| 05 | WS-CARD-IN-STATUS | text | 3 | 2 | XX | | | [CARDLOAD.cbl:58](../../../pangaea/programs/CARDLOAD.cbl#L58) |
+| 05 | WS-ONLINE-STATUS | text | 5 | 2 | XX | | | [CARDLOAD.cbl:59](../../../pangaea/programs/CARDLOAD.cbl#L59) |
+| 05 | WS-REPORT-STATUS | text | 7 | 2 | XX | | | [CARDLOAD.cbl:60](../../../pangaea/programs/CARDLOAD.cbl#L60) |
 
 ### WS-BUSINESS-DATE
 
 Working storage. 8 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-BUSINESS-DATE | 1 | 8 | 9(8) | | | [CARDLOAD.cbl:62](../../../pangaea/programs/CARDLOAD.cbl#L62) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-BUSINESS-DATE | date | 1 | 8 | 9(8) | | | [CARDLOAD.cbl:62](../../../pangaea/programs/CARDLOAD.cbl#L62) |
 
 ### WS-BUSINESS-DATE-PARTS
 
 Working storage. 8 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-BUSINESS-DATE-PARTS | 1 | 8 | | | REDEFINES WS-BUSINESS-DATE | [CARDLOAD.cbl:63](../../../pangaea/programs/CARDLOAD.cbl#L63) |
-| 05 | WS-BUSINESS-MONTH | 1 | 6 | 9(6) | | | [CARDLOAD.cbl:64](../../../pangaea/programs/CARDLOAD.cbl#L64) |
-| 05 | FILLER | 7 | 2 | 99 | | | [CARDLOAD.cbl:65](../../../pangaea/programs/CARDLOAD.cbl#L65) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-BUSINESS-DATE-PARTS | group | 1 | 8 | | | REDEFINES WS-BUSINESS-DATE | [CARDLOAD.cbl:63](../../../pangaea/programs/CARDLOAD.cbl#L63) |
+| 05 | WS-BUSINESS-MONTH | date | 1 | 6 | 9(6) | | | [CARDLOAD.cbl:64](../../../pangaea/programs/CARDLOAD.cbl#L64) |
+| 05 | FILLER | filler | 7 | 2 | 99 | | | [CARDLOAD.cbl:65](../../../pangaea/programs/CARDLOAD.cbl#L65) |
 
 ### WS-ABORT-MESSAGE
 
 Working storage. 40 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-ABORT-MESSAGE | 1 | 40 | X(40) | | | [CARDLOAD.cbl:66](../../../pangaea/programs/CARDLOAD.cbl#L66) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-ABORT-MESSAGE | text | 1 | 40 | X(40) | | | [CARDLOAD.cbl:66](../../../pangaea/programs/CARDLOAD.cbl#L66) |
 
 ### WS-MASTER-END-SW
 
 Working storage. 1 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-MASTER-END-SW | 1 | 1 | X | | VALUE 'N' | [CARDLOAD.cbl:67](../../../pangaea/programs/CARDLOAD.cbl#L67) |
-| 88 | MASTER-AT-END | | | | | VALUE 'Y' | [CARDLOAD.cbl:68](../../../pangaea/programs/CARDLOAD.cbl#L68) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-MASTER-END-SW | code | 1 | 1 | X | | VALUE 'N' | [CARDLOAD.cbl:67](../../../pangaea/programs/CARDLOAD.cbl#L67) |
+| 88 | MASTER-AT-END | | | | | | VALUE 'Y' | [CARDLOAD.cbl:68](../../../pangaea/programs/CARDLOAD.cbl#L68) |
 
 ### WS-TOTALS
 
 Working storage. 32 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-TOTALS | 1 | 32 | | | | [CARDLOAD.cbl:70](../../../pangaea/programs/CARDLOAD.cbl#L70) |
-| 05 | WS-READ-COUNT | 1 | 8 | 9(8) | | VALUE 0 | [CARDLOAD.cbl:71](../../../pangaea/programs/CARDLOAD.cbl#L71) |
-| 05 | WS-LOADED-COUNT | 9 | 8 | 9(8) | | VALUE 0 | [CARDLOAD.cbl:72](../../../pangaea/programs/CARDLOAD.cbl#L72) |
-| 05 | WS-BLOCKED-COUNT | 17 | 8 | 9(8) | | VALUE 0 | [CARDLOAD.cbl:73](../../../pangaea/programs/CARDLOAD.cbl#L73) |
-| 05 | WS-EXPIRED-COUNT | 25 | 8 | 9(8) | | VALUE 0 | [CARDLOAD.cbl:74](../../../pangaea/programs/CARDLOAD.cbl#L74) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-TOTALS | group | 1 | 32 | | | | [CARDLOAD.cbl:70](../../../pangaea/programs/CARDLOAD.cbl#L70) |
+| 05 | WS-READ-COUNT | number | 1 | 8 | 9(8) | | VALUE 0 | [CARDLOAD.cbl:71](../../../pangaea/programs/CARDLOAD.cbl#L71) |
+| 05 | WS-LOADED-COUNT | number | 9 | 8 | 9(8) | | VALUE 0 | [CARDLOAD.cbl:72](../../../pangaea/programs/CARDLOAD.cbl#L72) |
+| 05 | WS-BLOCKED-COUNT | number | 17 | 8 | 9(8) | | VALUE 0 | [CARDLOAD.cbl:73](../../../pangaea/programs/CARDLOAD.cbl#L73) |
+| 05 | WS-EXPIRED-COUNT | number | 25 | 8 | 9(8) | | VALUE 0 | [CARDLOAD.cbl:74](../../../pangaea/programs/CARDLOAD.cbl#L74) |
 
 ### WS-REPORT-COUNT-LINE
 
 Working storage. 80 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-REPORT-COUNT-LINE | 1 | 80 | | | | [CARDLOAD.cbl:76](../../../pangaea/programs/CARDLOAD.cbl#L76) |
-| 05 | WS-RC-LABEL | 1 | 30 | X(30) | | | [CARDLOAD.cbl:77](../../../pangaea/programs/CARDLOAD.cbl#L77) |
-| 05 | WS-RC-VALUE | 31 | 10 | ZZ,ZZZ,ZZ9 | | | [CARDLOAD.cbl:78](../../../pangaea/programs/CARDLOAD.cbl#L78) |
-| 05 | FILLER | 41 | 40 | X(40) | | VALUE SPACES | [CARDLOAD.cbl:79](../../../pangaea/programs/CARDLOAD.cbl#L79) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-REPORT-COUNT-LINE | group | 1 | 80 | | | | [CARDLOAD.cbl:76](../../../pangaea/programs/CARDLOAD.cbl#L76) |
+| 05 | WS-RC-LABEL | text | 1 | 30 | X(30) | | | [CARDLOAD.cbl:77](../../../pangaea/programs/CARDLOAD.cbl#L77) |
+| 05 | WS-RC-VALUE | edited | 31 | 10 | ZZ,ZZZ,ZZ9 | | | [CARDLOAD.cbl:78](../../../pangaea/programs/CARDLOAD.cbl#L78) |
+| 05 | FILLER | filler | 41 | 40 | X(40) | | VALUE SPACES | [CARDLOAD.cbl:79](../../../pangaea/programs/CARDLOAD.cbl#L79) |

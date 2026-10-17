@@ -1,5 +1,6 @@
 {
   "program": "ACCTLOAD",
+  "kind": "main",
   "source": "pangaea/programs/ACCTLOAD.cbl",
   "description": [
     "ACCTLOAD: LOAD THE ONLINE ACCOUNT FILE",
@@ -116,6 +117,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
+      "kind": "group",
       "description": "BANKCTL: BANK CONTROL RECORD, ONE PER FILE THE BUSINESS DATE THE BATCH RUNS FOR, NEVER THE CLOCK.",
       "source": "pangaea/copybooks/BANKCTL.cpy:5",
       "fields": [
@@ -127,6 +129,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "date",
           "digits": 8,
           "source": "pangaea/copybooks/BANKCTL.cpy:6"
         },
@@ -138,6 +141,7 @@
           "picture": "X(72)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "filler",
           "source": "pangaea/copybooks/BANKCTL.cpy:7"
         }
       ]
@@ -151,6 +155,7 @@
       "start": 1,
       "length": 100,
       "category": "group",
+      "kind": "group",
       "description": "ACCTMAST: ACCOUNT MASTER RECORD, 100 BYTES IN ACCOUNT NUMBER ORDER. THE BALANCE MAY GO BELOW ZERO DOWN TO THE OVERDRAFT LIMIT, AND BELOW THAT ONLY BY FEES. MODIFICATION HISTORY DATE       BY  CHANGE 1987-03-12 JA  ORIGINAL VERSION. 1994-11-14 PK  CR-0201 OVERDRAFT LIMIT, FROM THE FILLER. 1999-01-11 SL  Y2K: 8-DIGIT DATES.",
       "source": "pangaea/copybooks/ACCTMAST.cpy:12",
       "fields": [
@@ -162,6 +167,7 @@
           "picture": "9(10)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 10,
           "source": "pangaea/copybooks/ACCTMAST.cpy:13"
         },
@@ -173,6 +179,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 8,
           "source": "pangaea/copybooks/ACCTMAST.cpy:14"
         },
@@ -184,6 +191,7 @@
           "picture": "X(20)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/copybooks/ACCTMAST.cpy:15"
         },
         {
@@ -194,6 +202,7 @@
           "picture": "X",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "code",
           "conditions": [
             {
               "name": "AM-CURRENT",
@@ -220,6 +229,7 @@
           "picture": "X",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "code",
           "conditions": [
             {
               "name": "AM-OPEN",
@@ -253,6 +263,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "date",
           "digits": 8,
           "source": "pangaea/copybooks/ACCTMAST.cpy:23"
         },
@@ -264,6 +275,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "date",
           "digits": 8,
           "source": "pangaea/copybooks/ACCTMAST.cpy:24"
         },
@@ -275,6 +287,7 @@
           "picture": "S9(11)V99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "amount",
           "digits": 13,
           "scale": 2,
           "signed": true,
@@ -288,6 +301,7 @@
           "picture": "9(7)V99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "amount",
           "digits": 9,
           "scale": 2,
           "source": "pangaea/copybooks/ACCTMAST.cpy:26"
@@ -300,6 +314,7 @@
           "picture": "X(22)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "filler",
           "source": "pangaea/copybooks/ACCTMAST.cpy:27"
         }
       ]
@@ -313,6 +328,7 @@
       "start": 1,
       "length": 100,
       "category": "group",
+      "kind": "group",
       "description": "ACCTONL: ONLINE ACCOUNT RECORD, 100 BYTES INDEXED BY ACCOUNT NUMBER. LOADED FROM THE MASTER EACH NIGHT BY ACCTLOAD; DURING THE DAY THE AUTHORIZATIONS ADD WHAT THEY APPROVE TO THE HOLDS, AND THE AVAILABLE BALANCE IS THE BALANCE PLUS THE OVERDRAFT LIMIT LESS THE HOLDS. MODIFICATION HISTORY DATE       BY  CHANGE 2003-05-19 MV  CR-0342 ORIGINAL VERSION.",
       "source": "pangaea/copybooks/ACCTONL.cpy:12",
       "fields": [
@@ -324,6 +340,7 @@
           "picture": "9(10)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "key",
           "digits": 10,
           "source": "pangaea/copybooks/ACCTONL.cpy:13"
         },
@@ -335,6 +352,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 8,
           "source": "pangaea/copybooks/ACCTONL.cpy:14"
         },
@@ -346,6 +364,7 @@
           "picture": "X(20)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/copybooks/ACCTONL.cpy:15"
         },
         {
@@ -356,6 +375,7 @@
           "picture": "X",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "code",
           "conditions": [
             {
               "name": "AO-CURRENT",
@@ -382,6 +402,7 @@
           "picture": "X",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "code",
           "conditions": [
             {
               "name": "AO-OPEN",
@@ -408,6 +429,7 @@
           "picture": "S9(11)V99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "amount",
           "digits": 13,
           "scale": 2,
           "signed": true,
@@ -422,6 +444,7 @@
           "picture": "9(7)V99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "amount",
           "digits": 9,
           "scale": 2,
           "source": "pangaea/copybooks/ACCTONL.cpy:24"
@@ -434,6 +457,7 @@
           "picture": "S9(11)V99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "amount",
           "digits": 13,
           "scale": 2,
           "signed": true,
@@ -447,6 +471,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "date",
           "digits": 8,
           "source": "pangaea/copybooks/ACCTONL.cpy:26"
         },
@@ -458,6 +483,7 @@
           "picture": "X(17)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "filler",
           "source": "pangaea/copybooks/ACCTONL.cpy:27"
         }
       ]
@@ -471,6 +497,7 @@
       "start": 1,
       "length": 100,
       "category": "group",
+      "kind": "group",
       "description": "HOLDREC: HOLD RECORD, 100 BYTES AN AMOUNT AUTHORIZED ONLINE AND NOT YET POSTED: A CARD PURCHASE OR AN ATM WITHDRAWAL AND ITS FEE. INDEXED BY ACCOUNT AND HOLD NUMBER, THE AUTHORIZATION CODE, WHICH NUMBERS THE DAY'S HOLDS FROM 1. A REVERSED PURCHASE STAYS, MARKED. MODIFICATION HISTORY DATE       BY  CHANGE 2003-05-19 MV  CR-0342 ORIGINAL VERSION. 2007-02-05 MV  CR-0415 ATM FEE.",
       "source": "pangaea/copybooks/HOLDREC.cpy:13",
       "fields": [
@@ -480,6 +507,7 @@
           "start": 1,
           "length": 16,
           "category": "group",
+          "kind": "group",
           "source": "pangaea/copybooks/HOLDREC.cpy:14",
           "fields": [
             {
@@ -490,6 +518,7 @@
               "picture": "9(10)",
               "usage": "DISPLAY",
               "category": "numeric",
+              "kind": "number",
               "digits": 10,
               "source": "pangaea/copybooks/HOLDREC.cpy:15"
             },
@@ -501,6 +530,7 @@
               "picture": "9(6)",
               "usage": "DISPLAY",
               "category": "numeric",
+              "kind": "number",
               "digits": 6,
               "source": "pangaea/copybooks/HOLDREC.cpy:16"
             }
@@ -514,6 +544,7 @@
           "picture": "9(16)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 16,
           "source": "pangaea/copybooks/HOLDREC.cpy:17"
         },
@@ -525,6 +556,7 @@
           "picture": "X",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "code",
           "conditions": [
             {
               "name": "HD-PURCHASE",
@@ -551,6 +583,7 @@
           "picture": "X",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "code",
           "conditions": [
             {
               "name": "HD-OPEN",
@@ -577,6 +610,7 @@
           "picture": "9(7)V99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "amount",
           "digits": 9,
           "scale": 2,
           "source": "pangaea/copybooks/HOLDREC.cpy:24"
@@ -589,6 +623,7 @@
           "picture": "9(3)V99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "amount",
           "digits": 5,
           "scale": 2,
           "source": "pangaea/copybooks/HOLDREC.cpy:25"
@@ -601,6 +636,7 @@
           "picture": "X(20)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/copybooks/HOLDREC.cpy:26"
         },
         {
@@ -611,6 +647,7 @@
           "picture": "9(14)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "date",
           "digits": 14,
           "source": "pangaea/copybooks/HOLDREC.cpy:27"
         },
@@ -622,6 +659,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "date",
           "digits": 8,
           "source": "pangaea/copybooks/HOLDREC.cpy:28"
         },
@@ -633,6 +671,7 @@
           "picture": "X(10)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "filler",
           "source": "pangaea/copybooks/HOLDREC.cpy:29"
         }
       ]
@@ -647,6 +686,7 @@
       "picture": "X(80)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
+      "kind": "text",
       "source": "pangaea/programs/ACCTLOAD.cbl:58"
     },
     {
@@ -656,6 +696,7 @@
       "start": 1,
       "length": 10,
       "category": "group",
+      "kind": "group",
       "source": "pangaea/programs/ACCTLOAD.cbl:61",
       "fields": [
         {
@@ -666,6 +707,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/ACCTLOAD.cbl:62"
         },
         {
@@ -676,6 +718,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/ACCTLOAD.cbl:63"
         },
         {
@@ -686,6 +729,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/ACCTLOAD.cbl:64"
         },
         {
@@ -696,6 +740,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/ACCTLOAD.cbl:65"
         },
         {
@@ -706,6 +751,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/ACCTLOAD.cbl:66"
         }
       ]
@@ -719,6 +765,7 @@
       "picture": "9(8)",
       "usage": "DISPLAY",
       "category": "numeric",
+      "kind": "date",
       "digits": 8,
       "source": "pangaea/programs/ACCTLOAD.cbl:68"
     },
@@ -731,6 +778,7 @@
       "picture": "X(40)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
+      "kind": "text",
       "source": "pangaea/programs/ACCTLOAD.cbl:69"
     },
     {
@@ -742,6 +790,7 @@
       "picture": "X",
       "usage": "DISPLAY",
       "category": "alphanumeric",
+      "kind": "code",
       "values": [
         "'N'"
       ],
@@ -763,6 +812,7 @@
       "start": 1,
       "length": 37,
       "category": "group",
+      "kind": "group",
       "source": "pangaea/programs/ACCTLOAD.cbl:73",
       "fields": [
         {
@@ -773,6 +823,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 8,
           "values": [
             "0"
@@ -787,6 +838,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 8,
           "values": [
             "0"
@@ -801,6 +853,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 8,
           "values": [
             "0"
@@ -815,6 +868,7 @@
           "picture": "S9(11)V99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "amount",
           "digits": 13,
           "scale": 2,
           "signed": true,
@@ -832,6 +886,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
+      "kind": "group",
       "source": "pangaea/programs/ACCTLOAD.cbl:79",
       "fields": [
         {
@@ -842,6 +897,7 @@
           "picture": "X(30)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/ACCTLOAD.cbl:80"
         },
         {
@@ -852,6 +908,7 @@
           "picture": "ZZ,ZZZ,ZZ9",
           "usage": "DISPLAY",
           "category": "numeric-edited",
+          "kind": "edited",
           "source": "pangaea/programs/ACCTLOAD.cbl:81"
         },
         {
@@ -862,6 +919,7 @@
           "picture": "X(40)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "filler",
           "values": [
             "SPACES"
           ],
@@ -876,6 +934,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
+      "kind": "group",
       "source": "pangaea/programs/ACCTLOAD.cbl:83",
       "fields": [
         {
@@ -886,6 +945,7 @@
           "picture": "X(30)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/ACCTLOAD.cbl:84"
         },
         {
@@ -896,6 +956,7 @@
           "picture": "Z,ZZZ,ZZZ,ZZZ,ZZ9.99-",
           "usage": "DISPLAY",
           "category": "numeric-edited",
+          "kind": "edited",
           "source": "pangaea/programs/ACCTLOAD.cbl:85"
         },
         {
@@ -906,6 +967,7 @@
           "picture": "X(29)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "filler",
           "values": [
             "SPACES"
           ],

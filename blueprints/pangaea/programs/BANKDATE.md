@@ -151,39 +151,39 @@ File CONTROL-IN. 80 bytes, layout in copybook [BANKCTL](../copybooks/BANKCTL.md)
 
 File CONTROL-OUT. 80 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | CONTROL-OUT-RECORD | 1 | 80 | X(80) | | | [BANKDATE.cbl:38](../../../pangaea/programs/BANKDATE.cbl#L38) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | CONTROL-OUT-RECORD | text | 1 | 80 | X(80) | | | [BANKDATE.cbl:38](../../../pangaea/programs/BANKDATE.cbl#L38) |
 
 ### WS-IN-STATUS
 
 Working storage. 2 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-IN-STATUS | 1 | 2 | XX | | | [BANKDATE.cbl:41](../../../pangaea/programs/BANKDATE.cbl#L41) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-IN-STATUS | text | 1 | 2 | XX | | | [BANKDATE.cbl:41](../../../pangaea/programs/BANKDATE.cbl#L41) |
 
 ### WS-OUT-STATUS
 
 Working storage. 2 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-OUT-STATUS | 1 | 2 | XX | | | [BANKDATE.cbl:42](../../../pangaea/programs/BANKDATE.cbl#L42) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-OUT-STATUS | text | 1 | 2 | XX | | | [BANKDATE.cbl:42](../../../pangaea/programs/BANKDATE.cbl#L42) |
 
 ### WS-DAY-NUMBER
 
 Working storage. 7 bytes. DAY NUMBERS COUNT FROM 1601-01-01, A MONDAY, SO A DAY NUMBER MODULO 7 IS 1 ON MONDAYS, 6 ON SATURDAYS AND 0 ON SUNDAYS.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-DAY-NUMBER | 1 | 7 | 9(7) | | | [BANKDATE.cbl:46](../../../pangaea/programs/BANKDATE.cbl#L46) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-DAY-NUMBER | number | 1 | 7 | 9(7) | | | [BANKDATE.cbl:46](../../../pangaea/programs/BANKDATE.cbl#L46) |
 
 ### WS-WEEKDAY
 
 Working storage. 1 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-WEEKDAY | 1 | 1 | 9 | | | [BANKDATE.cbl:47](../../../pangaea/programs/BANKDATE.cbl#L47) |
-| 88 | WEEKEND | | | | | VALUE 6, 0 | [BANKDATE.cbl:48](../../../pangaea/programs/BANKDATE.cbl#L48) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-WEEKDAY | code | 1 | 1 | 9 | | | [BANKDATE.cbl:47](../../../pangaea/programs/BANKDATE.cbl#L47) |
+| 88 | WEEKEND | | | | | | VALUE 6, 0 | [BANKDATE.cbl:48](../../../pangaea/programs/BANKDATE.cbl#L48) |

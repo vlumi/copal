@@ -1,5 +1,6 @@
 {
   "program": "INTACCR",
+  "kind": "main",
   "source": "pangaea/programs/INTACCR.cbl",
   "description": [
     "INTACCR: ACCRUE INTEREST",
@@ -137,6 +138,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
+      "kind": "group",
       "description": "BANKCTL: BANK CONTROL RECORD, ONE PER FILE THE BUSINESS DATE THE BATCH RUNS FOR, NEVER THE CLOCK.",
       "source": "pangaea/copybooks/BANKCTL.cpy:5",
       "fields": [
@@ -148,6 +150,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "date",
           "digits": 8,
           "source": "pangaea/copybooks/BANKCTL.cpy:6"
         },
@@ -159,6 +162,7 @@
           "picture": "X(72)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "filler",
           "source": "pangaea/copybooks/BANKCTL.cpy:7"
         }
       ]
@@ -172,6 +176,7 @@
       "start": 1,
       "length": 20,
       "category": "group",
+      "kind": "group",
       "description": "RATEREC: INTEREST RATE TABLE RECORD, 20 BYTES ONE RECORD PER RATE: CREDIT RATES IN TIERS BY BALANCE, ONE DEBIT RATE FOR BALANCES BELOW ZERO, PER ACCOUNT TYPE. A BALANCE EARNS THE RATE OF THE HIGHEST TIER IT REACHES, ON THE WHOLE BALANCE. RATES ARE ANNUAL FRACTIONS: 0.015 IS 1.5%. MODIFICATION HISTORY DATE       BY  CHANGE -1754      HAM ORIGINAL VERSION, ON CLAY, IN BABYLON: AT MOST 20% A YEAR ON SILVER, 33 1/3% ON GRAIN. 2001-09-03 TL  CR-0298 IN COBOL, WITH TIERS. GRAIN DROPPED.",
       "source": "pangaea/copybooks/RATEREC.cpy:14",
       "fields": [
@@ -183,6 +188,7 @@
           "picture": "X",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/copybooks/RATEREC.cpy:15"
         },
         {
@@ -193,6 +199,7 @@
           "picture": "X",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "code",
           "conditions": [
             {
               "name": "RT-CREDIT",
@@ -219,6 +226,7 @@
           "picture": "S9(11)V99",
           "usage": "COMP-3",
           "category": "numeric",
+          "kind": "amount",
           "digits": 13,
           "scale": 2,
           "signed": true,
@@ -232,6 +240,7 @@
           "picture": "9V9(6)",
           "usage": "COMP-3",
           "category": "numeric",
+          "kind": "amount",
           "digits": 7,
           "scale": 6,
           "source": "pangaea/copybooks/RATEREC.cpy:20"
@@ -244,6 +253,7 @@
           "picture": "X(7)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "filler",
           "source": "pangaea/copybooks/RATEREC.cpy:21"
         }
       ]
@@ -257,6 +267,7 @@
       "start": 1,
       "length": 100,
       "category": "group",
+      "kind": "group",
       "description": "ACCTMAST: ACCOUNT MASTER RECORD, 100 BYTES IN ACCOUNT NUMBER ORDER. THE BALANCE MAY GO BELOW ZERO DOWN TO THE OVERDRAFT LIMIT, AND BELOW THAT ONLY BY FEES. MODIFICATION HISTORY DATE       BY  CHANGE 1987-03-12 JA  ORIGINAL VERSION. 1994-11-14 PK  CR-0201 OVERDRAFT LIMIT, FROM THE FILLER. 1999-01-11 SL  Y2K: 8-DIGIT DATES.",
       "source": "pangaea/copybooks/ACCTMAST.cpy:12",
       "fields": [
@@ -268,6 +279,7 @@
           "picture": "9(10)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 10,
           "source": "pangaea/copybooks/ACCTMAST.cpy:13"
         },
@@ -279,6 +291,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 8,
           "source": "pangaea/copybooks/ACCTMAST.cpy:14"
         },
@@ -290,6 +303,7 @@
           "picture": "X(20)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/copybooks/ACCTMAST.cpy:15"
         },
         {
@@ -300,6 +314,7 @@
           "picture": "X",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "code",
           "conditions": [
             {
               "name": "AM-CURRENT",
@@ -326,6 +341,7 @@
           "picture": "X",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "code",
           "conditions": [
             {
               "name": "AM-OPEN",
@@ -359,6 +375,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "date",
           "digits": 8,
           "source": "pangaea/copybooks/ACCTMAST.cpy:23"
         },
@@ -370,6 +387,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "date",
           "digits": 8,
           "source": "pangaea/copybooks/ACCTMAST.cpy:24"
         },
@@ -381,6 +399,7 @@
           "picture": "S9(11)V99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "amount",
           "digits": 13,
           "scale": 2,
           "signed": true,
@@ -394,6 +413,7 @@
           "picture": "9(7)V99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "amount",
           "digits": 9,
           "scale": 2,
           "source": "pangaea/copybooks/ACCTMAST.cpy:26"
@@ -406,6 +426,7 @@
           "picture": "X(22)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "filler",
           "source": "pangaea/copybooks/ACCTMAST.cpy:27"
         }
       ]
@@ -418,6 +439,7 @@
       "start": 1,
       "length": 40,
       "category": "group",
+      "kind": "group",
       "source": "pangaea/programs/INTACCR.cbl:64",
       "fields": [
         {
@@ -428,6 +450,7 @@
           "picture": "X(10)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/INTACCR.cbl:65"
         },
         {
@@ -438,6 +461,7 @@
           "picture": "X(30)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "filler",
           "source": "pangaea/programs/INTACCR.cbl:66"
         }
       ]
@@ -452,6 +476,7 @@
       "picture": "X(40)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
+      "kind": "text",
       "source": "pangaea/programs/INTACCR.cbl:68"
     },
     {
@@ -464,6 +489,7 @@
       "picture": "X(80)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
+      "kind": "text",
       "source": "pangaea/programs/INTACCR.cbl:70"
     },
     {
@@ -473,6 +499,7 @@
       "start": 1,
       "length": 12,
       "category": "group",
+      "kind": "group",
       "source": "pangaea/programs/INTACCR.cbl:73",
       "fields": [
         {
@@ -483,6 +510,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/INTACCR.cbl:74"
         },
         {
@@ -493,6 +521,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/INTACCR.cbl:75"
         },
         {
@@ -503,6 +532,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/INTACCR.cbl:76"
         },
         {
@@ -513,6 +543,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/INTACCR.cbl:77"
         },
         {
@@ -523,6 +554,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/INTACCR.cbl:78"
         },
         {
@@ -533,6 +565,7 @@
           "picture": "XX",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/INTACCR.cbl:79"
         }
       ]
@@ -546,6 +579,7 @@
       "picture": "9(8)",
       "usage": "DISPLAY",
       "category": "numeric",
+      "kind": "date",
       "digits": 8,
       "source": "pangaea/programs/INTACCR.cbl:81"
     },
@@ -558,6 +592,7 @@
       "picture": "X(40)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
+      "kind": "text",
       "source": "pangaea/programs/INTACCR.cbl:82"
     },
     {
@@ -567,6 +602,7 @@
       "start": 1,
       "length": 1,
       "category": "group",
+      "kind": "group",
       "source": "pangaea/programs/INTACCR.cbl:83",
       "fields": [
         {
@@ -577,6 +613,7 @@
           "picture": "X",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "code",
           "values": [
             "'N'"
           ],
@@ -602,6 +639,7 @@
       "picture": "X(10)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
+      "kind": "text",
       "description": "THE ACCOUNT NUMBER OF THE NEXT ACCRUAL: HIGH-VALUES AT THE END.",
       "source": "pangaea/programs/INTACCR.cbl:87"
     },
@@ -613,6 +651,7 @@
       "start": 1,
       "length": 40,
       "category": "group",
+      "kind": "group",
       "description": "ACCRREC: INTEREST ACCRUAL RECORD, 40 BYTES ONE PER ACCOUNT, IN ACCOUNT NUMBER ORDER LIKE THE MASTER. INTEREST IS ACCRUED FOR EVERY CALENDAR DAY BEFORE THE THROUGH DATE, TO SIX DECIMALS, AND IS NEGATIVE FOR AN OVERDRAWN BALANCE. WHEN A MONTH CLOSES, ITS INTEREST BECOMES DUE, ROUNDED TO THE CENT; THE FRACTION STAYS ACCRUED. THE DUE MONTH IS ZERO ON THE DAYS NO MONTH CLOSES. MODIFICATION HISTORY DATE       BY  CHANGE 2001-09-03 TL  CR-0298 ORIGINAL VERSION.",
       "source": "pangaea/copybooks/ACCRREC.cpy:14",
       "fields": [
@@ -624,6 +663,7 @@
           "picture": "9(10)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 10,
           "source": "pangaea/copybooks/ACCRREC.cpy:15"
         },
@@ -635,6 +675,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "date",
           "digits": 8,
           "source": "pangaea/copybooks/ACCRREC.cpy:16"
         },
@@ -646,6 +687,7 @@
           "picture": "S9(7)V9(6)",
           "usage": "COMP-3",
           "category": "numeric",
+          "kind": "amount",
           "digits": 13,
           "scale": 6,
           "signed": true,
@@ -659,6 +701,7 @@
           "picture": "S9(7)V99",
           "usage": "COMP-3",
           "category": "numeric",
+          "kind": "amount",
           "digits": 9,
           "scale": 2,
           "signed": true,
@@ -672,6 +715,7 @@
           "picture": "9(6)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "date",
           "digits": 6,
           "source": "pangaea/copybooks/ACCRREC.cpy:19"
         },
@@ -683,6 +727,7 @@
           "picture": "X(4)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "filler",
           "source": "pangaea/copybooks/ACCRREC.cpy:20"
         }
       ]
@@ -696,6 +741,7 @@
       "picture": "99",
       "usage": "DISPLAY",
       "category": "numeric",
+      "kind": "number",
       "digits": 2,
       "values": [
         "0"
@@ -710,6 +756,7 @@
       "start": 1,
       "length": 260,
       "category": "group",
+      "kind": "group",
       "source": "pangaea/programs/INTACCR.cbl:94",
       "fields": [
         {
@@ -718,6 +765,7 @@
           "start": 1,
           "length": 13,
           "category": "group",
+          "kind": "group",
           "occurs": 20,
           "occursMin": 1,
           "dependingOn": "WS-RATE-COUNT",
@@ -731,6 +779,7 @@
               "picture": "X",
               "usage": "DISPLAY",
               "category": "alphanumeric",
+              "kind": "text",
               "source": "pangaea/programs/INTACCR.cbl:97"
             },
             {
@@ -741,6 +790,7 @@
               "picture": "X",
               "usage": "DISPLAY",
               "category": "alphanumeric",
+              "kind": "code",
               "conditions": [
                 {
                   "name": "WS-RT-CREDIT",
@@ -767,6 +817,7 @@
               "picture": "S9(11)V99",
               "usage": "COMP-3",
               "category": "numeric",
+              "kind": "amount",
               "digits": 13,
               "scale": 2,
               "signed": true,
@@ -780,6 +831,7 @@
               "picture": "9V9(6)",
               "usage": "COMP-3",
               "category": "numeric",
+              "kind": "amount",
               "digits": 7,
               "scale": 6,
               "source": "pangaea/programs/INTACCR.cbl:102"
@@ -797,6 +849,7 @@
       "picture": "99",
       "usage": "DISPLAY",
       "category": "numeric",
+      "kind": "number",
       "digits": 2,
       "source": "pangaea/programs/INTACCR.cbl:103"
     },
@@ -809,6 +862,7 @@
       "picture": "9V9(6)",
       "usage": "COMP-3",
       "category": "numeric",
+      "kind": "amount",
       "digits": 7,
       "scale": 6,
       "description": "THE RATE FOR THE ACCOUNT IN HAND, AND THE TIER IT CAME FROM.",
@@ -823,6 +877,7 @@
       "picture": "X",
       "usage": "DISPLAY",
       "category": "alphanumeric",
+      "kind": "code",
       "conditions": [
         {
           "name": "RATE-FOUND",
@@ -843,6 +898,7 @@
       "picture": "S9(11)V99",
       "usage": "COMP-3",
       "category": "numeric",
+      "kind": "amount",
       "digits": 13,
       "scale": 2,
       "signed": true,
@@ -857,6 +913,7 @@
       "picture": "9(7)",
       "usage": "DISPLAY",
       "category": "numeric",
+      "kind": "number",
       "digits": 7,
       "description": "DAYS COUNT FROM 1601-01-01, AS FUNCTION INTEGER-OF-DATE GIVES.",
       "source": "pangaea/programs/INTACCR.cbl:112"
@@ -870,6 +927,7 @@
       "picture": "9(7)",
       "usage": "DISPLAY",
       "category": "numeric",
+      "kind": "number",
       "digits": 7,
       "source": "pangaea/programs/INTACCR.cbl:113"
     },
@@ -882,6 +940,7 @@
       "picture": "9(7)",
       "usage": "DISPLAY",
       "category": "numeric",
+      "kind": "number",
       "digits": 7,
       "source": "pangaea/programs/INTACCR.cbl:114"
     },
@@ -894,6 +953,7 @@
       "picture": "9(3)",
       "usage": "DISPLAY",
       "category": "numeric",
+      "kind": "number",
       "digits": 3,
       "source": "pangaea/programs/INTACCR.cbl:115"
     },
@@ -904,6 +964,7 @@
       "start": 1,
       "length": 8,
       "category": "group",
+      "kind": "group",
       "source": "pangaea/programs/INTACCR.cbl:116",
       "fields": [
         {
@@ -914,6 +975,7 @@
           "picture": "9(4)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 4,
           "source": "pangaea/programs/INTACCR.cbl:117"
         },
@@ -925,6 +987,7 @@
           "picture": "99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 2,
           "source": "pangaea/programs/INTACCR.cbl:118"
         },
@@ -936,6 +999,7 @@
           "picture": "99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 2,
           "source": "pangaea/programs/INTACCR.cbl:119"
         }
@@ -948,6 +1012,7 @@
       "start": 1,
       "length": 8,
       "category": "group",
+      "kind": "group",
       "description": "THE FIRST DAY OF THE MONTH AFTER THE LAST ACCRUAL.",
       "source": "pangaea/programs/INTACCR.cbl:121",
       "fields": [
@@ -959,6 +1024,7 @@
           "picture": "9(4)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 4,
           "source": "pangaea/programs/INTACCR.cbl:122"
         },
@@ -970,6 +1036,7 @@
           "picture": "99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 2,
           "source": "pangaea/programs/INTACCR.cbl:123"
         },
@@ -981,6 +1048,7 @@
           "picture": "99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 2,
           "source": "pangaea/programs/INTACCR.cbl:124"
         }
@@ -995,6 +1063,7 @@
       "picture": "9(8)",
       "usage": "DISPLAY",
       "category": "numeric",
+      "kind": "date",
       "digits": 8,
       "redefines": "WS-MONTH-START",
       "source": "pangaea/programs/INTACCR.cbl:125"
@@ -1008,6 +1077,7 @@
       "picture": "S9(13)V9(8)",
       "usage": "COMP-3",
       "category": "numeric",
+      "kind": "amount",
       "digits": 21,
       "scale": 8,
       "signed": true,
@@ -1023,6 +1093,7 @@
       "picture": "S9(7)V9(6)",
       "usage": "COMP-3",
       "category": "numeric",
+      "kind": "amount",
       "digits": 13,
       "scale": 6,
       "signed": true,
@@ -1035,6 +1106,7 @@
       "start": 1,
       "length": 6,
       "category": "group",
+      "kind": "group",
       "source": "pangaea/programs/INTACCR.cbl:132",
       "fields": [
         {
@@ -1045,6 +1117,7 @@
           "picture": "9(4)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 4,
           "source": "pangaea/programs/INTACCR.cbl:133"
         },
@@ -1056,6 +1129,7 @@
           "picture": "99",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 2,
           "source": "pangaea/programs/INTACCR.cbl:134"
         }
@@ -1068,6 +1142,7 @@
       "start": 1,
       "length": 52,
       "category": "group",
+      "kind": "group",
       "source": "pangaea/programs/INTACCR.cbl:136",
       "fields": [
         {
@@ -1078,6 +1153,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 8,
           "values": [
             "0"
@@ -1092,6 +1168,7 @@
           "picture": "9(8)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "number",
           "digits": 8,
           "values": [
             "0"
@@ -1106,6 +1183,7 @@
           "picture": "S9(9)V9(6)",
           "usage": "COMP-3",
           "category": "numeric",
+          "kind": "amount",
           "digits": 15,
           "scale": 6,
           "signed": true,
@@ -1122,6 +1200,7 @@
           "picture": "S9(9)V9(6)",
           "usage": "COMP-3",
           "category": "numeric",
+          "kind": "amount",
           "digits": 15,
           "scale": 6,
           "signed": true,
@@ -1138,6 +1217,7 @@
           "picture": "S9(11)V99",
           "usage": "COMP-3",
           "category": "numeric",
+          "kind": "amount",
           "digits": 13,
           "scale": 2,
           "signed": true,
@@ -1154,6 +1234,7 @@
           "picture": "S9(11)V99",
           "usage": "COMP-3",
           "category": "numeric",
+          "kind": "amount",
           "digits": 13,
           "scale": 2,
           "signed": true,
@@ -1170,6 +1251,7 @@
           "picture": "9(6)",
           "usage": "DISPLAY",
           "category": "numeric",
+          "kind": "date",
           "digits": 6,
           "values": [
             "0"
@@ -1185,6 +1267,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
+      "kind": "group",
       "source": "pangaea/programs/INTACCR.cbl:145",
       "fields": [
         {
@@ -1195,6 +1278,7 @@
           "picture": "X(30)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/INTACCR.cbl:146"
         },
         {
@@ -1205,6 +1289,7 @@
           "picture": "ZZ,ZZZ,ZZ9",
           "usage": "DISPLAY",
           "category": "numeric-edited",
+          "kind": "edited",
           "source": "pangaea/programs/INTACCR.cbl:147"
         },
         {
@@ -1215,6 +1300,7 @@
           "picture": "X(40)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "filler",
           "values": [
             "SPACES"
           ],
@@ -1229,6 +1315,7 @@
       "start": 1,
       "length": 80,
       "category": "group",
+      "kind": "group",
       "source": "pangaea/programs/INTACCR.cbl:149",
       "fields": [
         {
@@ -1239,6 +1326,7 @@
           "picture": "X(30)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "text",
           "source": "pangaea/programs/INTACCR.cbl:150"
         },
         {
@@ -1249,6 +1337,7 @@
           "picture": "ZZZ,ZZZ,ZZ9.999999-",
           "usage": "DISPLAY",
           "category": "numeric-edited",
+          "kind": "edited",
           "source": "pangaea/programs/INTACCR.cbl:151"
         },
         {
@@ -1259,6 +1348,7 @@
           "picture": "X(31)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
+          "kind": "filler",
           "values": [
             "SPACES"
           ],

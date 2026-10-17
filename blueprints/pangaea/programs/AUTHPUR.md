@@ -164,17 +164,17 @@ Record [HOLD-RECORD](#hold-record), from copybook [HOLDREC](../copybooks/HOLDREC
 
 Working storage. 13 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-AVAILABLE | 1 | 13 | S9(11)V99 | | | [AUTHPUR.cbl:24](../../../pangaea/programs/AUTHPUR.cbl#L24) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-AVAILABLE | amount | 1 | 13 | S9(11)V99 | | | [AUTHPUR.cbl:24](../../../pangaea/programs/AUTHPUR.cbl#L24) |
 
 ### WS-DAY-PURCHASES
 
 Working storage. 9 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-DAY-PURCHASES | 1 | 9 | 9(7)V99 | | | [AUTHPUR.cbl:25](../../../pangaea/programs/AUTHPUR.cbl#L25) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-DAY-PURCHASES | amount | 1 | 9 | 9(7)V99 | | | [AUTHPUR.cbl:25](../../../pangaea/programs/AUTHPUR.cbl#L25) |
 
 ### AUTH-REQUEST
 

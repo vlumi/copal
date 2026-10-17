@@ -579,164 +579,164 @@ File TRAN-IN. 80 bytes, layout in copybook [TRANREC](../copybooks/TRANREC.md).
 
 File ACCT-OUT. 100 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | ACCT-OUT-RECORD | 1 | 100 | X(100) | | | [TXPOST.cbl:88](../../../pangaea/programs/TXPOST.cbl#L88) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | ACCT-OUT-RECORD | text | 1 | 100 | X(100) | | | [TXPOST.cbl:88](../../../pangaea/programs/TXPOST.cbl#L88) |
 
 ### AUDIT-OUT-RECORD
 
 File AUDIT-OUT. 100 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | AUDIT-OUT-RECORD | 1 | 100 | X(100) | | | [TXPOST.cbl:90](../../../pangaea/programs/TXPOST.cbl#L90) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | AUDIT-OUT-RECORD | text | 1 | 100 | X(100) | | | [TXPOST.cbl:90](../../../pangaea/programs/TXPOST.cbl#L90) |
 
 ### REJECT-OUT-RECORD
 
 File REJECT-OUT. 100 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | REJECT-OUT-RECORD | 1 | 100 | X(100) | | | [TXPOST.cbl:92](../../../pangaea/programs/TXPOST.cbl#L92) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | REJECT-OUT-RECORD | text | 1 | 100 | X(100) | | | [TXPOST.cbl:92](../../../pangaea/programs/TXPOST.cbl#L92) |
 
 ### LEGS-OUT-RECORD
 
 File LEGS-OUT. 80 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | LEGS-OUT-RECORD | 1 | 80 | X(80) | | | [TXPOST.cbl:94](../../../pangaea/programs/TXPOST.cbl#L94) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | LEGS-OUT-RECORD | text | 1 | 80 | X(80) | | | [TXPOST.cbl:94](../../../pangaea/programs/TXPOST.cbl#L94) |
 
 ### REPORT-LINE
 
 File REPORT-OUT. 80 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | REPORT-LINE | 1 | 80 | X(80) | | | [TXPOST.cbl:96](../../../pangaea/programs/TXPOST.cbl#L96) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | REPORT-LINE | text | 1 | 80 | X(80) | | | [TXPOST.cbl:96](../../../pangaea/programs/TXPOST.cbl#L96) |
 
 ### WS-FILE-STATUSES
 
 Working storage. 16 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-FILE-STATUSES | 1 | 16 | | | | [TXPOST.cbl:99](../../../pangaea/programs/TXPOST.cbl#L99) |
-| 05 | WS-CONTROL-STATUS | 1 | 2 | XX | | | [TXPOST.cbl:100](../../../pangaea/programs/TXPOST.cbl#L100) |
-| 05 | WS-ACCT-IN-STATUS | 3 | 2 | XX | | | [TXPOST.cbl:101](../../../pangaea/programs/TXPOST.cbl#L101) |
-| 05 | WS-TRAN-IN-STATUS | 5 | 2 | XX | | | [TXPOST.cbl:102](../../../pangaea/programs/TXPOST.cbl#L102) |
-| 05 | WS-ACCT-OUT-STATUS | 7 | 2 | XX | | | [TXPOST.cbl:103](../../../pangaea/programs/TXPOST.cbl#L103) |
-| 05 | WS-AUDIT-STATUS | 9 | 2 | XX | | | [TXPOST.cbl:104](../../../pangaea/programs/TXPOST.cbl#L104) |
-| 88 | AUDIT-OPENED | | | | | VALUE '00', '05' | [TXPOST.cbl:105](../../../pangaea/programs/TXPOST.cbl#L105) |
-| 05 | WS-REJECT-STATUS | 11 | 2 | XX | | | [TXPOST.cbl:106](../../../pangaea/programs/TXPOST.cbl#L106) |
-| 88 | REJECTS-OPENED | | | | | VALUE '00', '05' | [TXPOST.cbl:107](../../../pangaea/programs/TXPOST.cbl#L107) |
-| 05 | WS-LEGS-STATUS | 13 | 2 | XX | | | [TXPOST.cbl:108](../../../pangaea/programs/TXPOST.cbl#L108) |
-| 05 | WS-REPORT-STATUS | 15 | 2 | XX | | | [TXPOST.cbl:109](../../../pangaea/programs/TXPOST.cbl#L109) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-FILE-STATUSES | group | 1 | 16 | | | | [TXPOST.cbl:99](../../../pangaea/programs/TXPOST.cbl#L99) |
+| 05 | WS-CONTROL-STATUS | text | 1 | 2 | XX | | | [TXPOST.cbl:100](../../../pangaea/programs/TXPOST.cbl#L100) |
+| 05 | WS-ACCT-IN-STATUS | text | 3 | 2 | XX | | | [TXPOST.cbl:101](../../../pangaea/programs/TXPOST.cbl#L101) |
+| 05 | WS-TRAN-IN-STATUS | text | 5 | 2 | XX | | | [TXPOST.cbl:102](../../../pangaea/programs/TXPOST.cbl#L102) |
+| 05 | WS-ACCT-OUT-STATUS | text | 7 | 2 | XX | | | [TXPOST.cbl:103](../../../pangaea/programs/TXPOST.cbl#L103) |
+| 05 | WS-AUDIT-STATUS | code | 9 | 2 | XX | | | [TXPOST.cbl:104](../../../pangaea/programs/TXPOST.cbl#L104) |
+| 88 | AUDIT-OPENED | | | | | | VALUE '00', '05' | [TXPOST.cbl:105](../../../pangaea/programs/TXPOST.cbl#L105) |
+| 05 | WS-REJECT-STATUS | code | 11 | 2 | XX | | | [TXPOST.cbl:106](../../../pangaea/programs/TXPOST.cbl#L106) |
+| 88 | REJECTS-OPENED | | | | | | VALUE '00', '05' | [TXPOST.cbl:107](../../../pangaea/programs/TXPOST.cbl#L107) |
+| 05 | WS-LEGS-STATUS | text | 13 | 2 | XX | | | [TXPOST.cbl:108](../../../pangaea/programs/TXPOST.cbl#L108) |
+| 05 | WS-REPORT-STATUS | text | 15 | 2 | XX | | | [TXPOST.cbl:109](../../../pangaea/programs/TXPOST.cbl#L109) |
 
 ### WS-BUSINESS-DATE
 
 Working storage. 8 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-BUSINESS-DATE | 1 | 8 | 9(8) | | | [TXPOST.cbl:111](../../../pangaea/programs/TXPOST.cbl#L111) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-BUSINESS-DATE | date | 1 | 8 | 9(8) | | | [TXPOST.cbl:111](../../../pangaea/programs/TXPOST.cbl#L111) |
 
 ### WS-ABORT-MESSAGE
 
 Working storage. 40 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-ABORT-MESSAGE | 1 | 40 | X(40) | | | [TXPOST.cbl:112](../../../pangaea/programs/TXPOST.cbl#L112) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-ABORT-MESSAGE | text | 1 | 40 | X(40) | | | [TXPOST.cbl:112](../../../pangaea/programs/TXPOST.cbl#L112) |
 
 ### WS-MASTER-KEY
 
 Working storage. 10 bytes. MATCH KEYS: HIGH-VALUES ONCE A FILE IS AT ITS END.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-MASTER-KEY | 1 | 10 | X(10) | | | [TXPOST.cbl:115](../../../pangaea/programs/TXPOST.cbl#L115) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-MASTER-KEY | text | 1 | 10 | X(10) | | | [TXPOST.cbl:115](../../../pangaea/programs/TXPOST.cbl#L115) |
 
 ### WS-TRAN-KEY
 
 Working storage. 10 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-TRAN-KEY | 1 | 10 | X(10) | | | [TXPOST.cbl:116](../../../pangaea/programs/TXPOST.cbl#L116) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-TRAN-KEY | text | 1 | 10 | X(10) | | | [TXPOST.cbl:116](../../../pangaea/programs/TXPOST.cbl#L116) |
 
 ### WS-PREV-MASTER-KEY
 
 Working storage. 10 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-PREV-MASTER-KEY | 1 | 10 | X(10) | | VALUE LOW-VALUES | [TXPOST.cbl:117](../../../pangaea/programs/TXPOST.cbl#L117) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-PREV-MASTER-KEY | text | 1 | 10 | X(10) | | VALUE LOW-VALUES | [TXPOST.cbl:117](../../../pangaea/programs/TXPOST.cbl#L117) |
 
 ### WS-TRAN-ORDER-KEY
 
 Working storage. 20 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-TRAN-ORDER-KEY | 1 | 20 | | | | [TXPOST.cbl:118](../../../pangaea/programs/TXPOST.cbl#L118) |
-| 05 | WS-TOK-ACCT-NO | 1 | 10 | X(10) | | | [TXPOST.cbl:119](../../../pangaea/programs/TXPOST.cbl#L119) |
-| 05 | WS-TOK-TRAN-ID | 11 | 10 | X(10) | | | [TXPOST.cbl:120](../../../pangaea/programs/TXPOST.cbl#L120) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-TRAN-ORDER-KEY | group | 1 | 20 | | | | [TXPOST.cbl:118](../../../pangaea/programs/TXPOST.cbl#L118) |
+| 05 | WS-TOK-ACCT-NO | text | 1 | 10 | X(10) | | | [TXPOST.cbl:119](../../../pangaea/programs/TXPOST.cbl#L119) |
+| 05 | WS-TOK-TRAN-ID | text | 11 | 10 | X(10) | | | [TXPOST.cbl:120](../../../pangaea/programs/TXPOST.cbl#L120) |
 
 ### WS-PREV-TRAN-ORDER-KEY
 
 Working storage. 20 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-PREV-TRAN-ORDER-KEY | 1 | 20 | X(20) | | VALUE LOW-VALUES | [TXPOST.cbl:121](../../../pangaea/programs/TXPOST.cbl#L121) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-PREV-TRAN-ORDER-KEY | text | 1 | 20 | X(20) | | VALUE LOW-VALUES | [TXPOST.cbl:121](../../../pangaea/programs/TXPOST.cbl#L121) |
 
 ### WS-POSTING
 
 Working storage. 50 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-POSTING | 1 | 50 | | | | [TXPOST.cbl:123](../../../pangaea/programs/TXPOST.cbl#L123) |
-| 05 | WS-BALANCE-BEFORE | 1 | 13 | S9(11)V99 | | | [TXPOST.cbl:124](../../../pangaea/programs/TXPOST.cbl#L124) |
-| 05 | WS-NEW-BALANCE | 14 | 13 | S9(11)V99 | | | [TXPOST.cbl:125](../../../pangaea/programs/TXPOST.cbl#L125) |
-| 05 | WS-BALANCE-FLOOR | 27 | 13 | S9(11)V99 | | | [TXPOST.cbl:126](../../../pangaea/programs/TXPOST.cbl#L126) |
-| 05 | WS-SIGNED-AMOUNT | 40 | 11 | S9(9)V99 | | | [TXPOST.cbl:127](../../../pangaea/programs/TXPOST.cbl#L127) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-POSTING | group | 1 | 50 | | | | [TXPOST.cbl:123](../../../pangaea/programs/TXPOST.cbl#L123) |
+| 05 | WS-BALANCE-BEFORE | amount | 1 | 13 | S9(11)V99 | | | [TXPOST.cbl:124](../../../pangaea/programs/TXPOST.cbl#L124) |
+| 05 | WS-NEW-BALANCE | amount | 14 | 13 | S9(11)V99 | | | [TXPOST.cbl:125](../../../pangaea/programs/TXPOST.cbl#L125) |
+| 05 | WS-BALANCE-FLOOR | amount | 27 | 13 | S9(11)V99 | | | [TXPOST.cbl:126](../../../pangaea/programs/TXPOST.cbl#L126) |
+| 05 | WS-SIGNED-AMOUNT | amount | 40 | 11 | S9(9)V99 | | | [TXPOST.cbl:127](../../../pangaea/programs/TXPOST.cbl#L127) |
 
 ### WS-SAVED-TRAN
 
 Working storage. 80 bytes. A LEG IS WRITTEN FROM THE TRANSACTION RECORD ITSELF, TURNED AROUND; THE TRANSACTION IS SAVED HERE AND PUT BACK AFTER.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-SAVED-TRAN | 1 | 80 | X(80) | | | [TXPOST.cbl:131](../../../pangaea/programs/TXPOST.cbl#L131) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-SAVED-TRAN | text | 1 | 80 | X(80) | | | [TXPOST.cbl:131](../../../pangaea/programs/TXPOST.cbl#L131) |
 
 ### WS-LEG-ACCT-NO
 
 Working storage. 10 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-LEG-ACCT-NO | 1 | 10 | 9(10) | | | [TXPOST.cbl:132](../../../pangaea/programs/TXPOST.cbl#L132) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-LEG-ACCT-NO | number | 1 | 10 | 9(10) | | | [TXPOST.cbl:132](../../../pangaea/programs/TXPOST.cbl#L132) |
 
 ### WS-TOTALS
 
 Working storage. 130 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-TOTALS | 1 | 130 | | | | [TXPOST.cbl:134](../../../pangaea/programs/TXPOST.cbl#L134) |
-| 05 | WS-MASTERS-READ | 1 | 8 | 9(8) | | VALUE 0 | [TXPOST.cbl:135](../../../pangaea/programs/TXPOST.cbl#L135) |
-| 05 | WS-MASTERS-WRITTEN | 9 | 8 | 9(8) | | VALUE 0 | [TXPOST.cbl:136](../../../pangaea/programs/TXPOST.cbl#L136) |
-| 05 | WS-POSTED-COUNT | 17 | 8 | 9(8) | | VALUE 0 | [TXPOST.cbl:137](../../../pangaea/programs/TXPOST.cbl#L137) |
-| 05 | WS-REJECT-COUNT | 25 | 8 | 9(8) | | VALUE 0 | [TXPOST.cbl:138](../../../pangaea/programs/TXPOST.cbl#L138) |
-| 05 | WS-LEG-COUNT | 33 | 8 | 9(8) | | VALUE 0 | [TXPOST.cbl:139](../../../pangaea/programs/TXPOST.cbl#L139) |
-| 05 | WS-OPENING-TOTAL | 41 | 15 | S9(13)V99 | | VALUE 0 | [TXPOST.cbl:140](../../../pangaea/programs/TXPOST.cbl#L140) |
-| 05 | WS-CREDIT-TOTAL | 56 | 15 | 9(13)V99 | | VALUE 0 | [TXPOST.cbl:141](../../../pangaea/programs/TXPOST.cbl#L141) |
-| 05 | WS-DEBIT-TOTAL | 71 | 15 | 9(13)V99 | | VALUE 0 | [TXPOST.cbl:142](../../../pangaea/programs/TXPOST.cbl#L142) |
-| 05 | WS-FEE-TOTAL | 86 | 15 | 9(13)V99 | | VALUE 0 | [TXPOST.cbl:143](../../../pangaea/programs/TXPOST.cbl#L143) |
-| 05 | WS-CLOSING-TOTAL | 101 | 15 | S9(13)V99 | | VALUE 0 | [TXPOST.cbl:144](../../../pangaea/programs/TXPOST.cbl#L144) |
-| 05 | WS-EXPECTED-TOTAL | 116 | 15 | S9(13)V99 | | VALUE 0 | [TXPOST.cbl:145](../../../pangaea/programs/TXPOST.cbl#L145) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-TOTALS | group | 1 | 130 | | | | [TXPOST.cbl:134](../../../pangaea/programs/TXPOST.cbl#L134) |
+| 05 | WS-MASTERS-READ | number | 1 | 8 | 9(8) | | VALUE 0 | [TXPOST.cbl:135](../../../pangaea/programs/TXPOST.cbl#L135) |
+| 05 | WS-MASTERS-WRITTEN | number | 9 | 8 | 9(8) | | VALUE 0 | [TXPOST.cbl:136](../../../pangaea/programs/TXPOST.cbl#L136) |
+| 05 | WS-POSTED-COUNT | number | 17 | 8 | 9(8) | | VALUE 0 | [TXPOST.cbl:137](../../../pangaea/programs/TXPOST.cbl#L137) |
+| 05 | WS-REJECT-COUNT | number | 25 | 8 | 9(8) | | VALUE 0 | [TXPOST.cbl:138](../../../pangaea/programs/TXPOST.cbl#L138) |
+| 05 | WS-LEG-COUNT | number | 33 | 8 | 9(8) | | VALUE 0 | [TXPOST.cbl:139](../../../pangaea/programs/TXPOST.cbl#L139) |
+| 05 | WS-OPENING-TOTAL | amount | 41 | 15 | S9(13)V99 | | VALUE 0 | [TXPOST.cbl:140](../../../pangaea/programs/TXPOST.cbl#L140) |
+| 05 | WS-CREDIT-TOTAL | amount | 56 | 15 | 9(13)V99 | | VALUE 0 | [TXPOST.cbl:141](../../../pangaea/programs/TXPOST.cbl#L141) |
+| 05 | WS-DEBIT-TOTAL | amount | 71 | 15 | 9(13)V99 | | VALUE 0 | [TXPOST.cbl:142](../../../pangaea/programs/TXPOST.cbl#L142) |
+| 05 | WS-FEE-TOTAL | amount | 86 | 15 | 9(13)V99 | | VALUE 0 | [TXPOST.cbl:143](../../../pangaea/programs/TXPOST.cbl#L143) |
+| 05 | WS-CLOSING-TOTAL | amount | 101 | 15 | S9(13)V99 | | VALUE 0 | [TXPOST.cbl:144](../../../pangaea/programs/TXPOST.cbl#L144) |
+| 05 | WS-EXPECTED-TOTAL | amount | 116 | 15 | S9(13)V99 | | VALUE 0 | [TXPOST.cbl:145](../../../pangaea/programs/TXPOST.cbl#L145) |
 
 ### AUDIT-RECORD
 
@@ -750,20 +750,20 @@ Working storage. 100 bytes, layout in copybook [REJREC](../copybooks/REJREC.md).
 
 Working storage. 80 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-REPORT-COUNT-LINE | 1 | 80 | | | | [TXPOST.cbl:151](../../../pangaea/programs/TXPOST.cbl#L151) |
-| 05 | WS-RC-LABEL | 1 | 30 | X(30) | | | [TXPOST.cbl:152](../../../pangaea/programs/TXPOST.cbl#L152) |
-| 05 | WS-RC-VALUE | 31 | 10 | ZZ,ZZZ,ZZ9 | | | [TXPOST.cbl:153](../../../pangaea/programs/TXPOST.cbl#L153) |
-| 05 | FILLER | 41 | 40 | X(40) | | VALUE SPACES | [TXPOST.cbl:154](../../../pangaea/programs/TXPOST.cbl#L154) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-REPORT-COUNT-LINE | group | 1 | 80 | | | | [TXPOST.cbl:151](../../../pangaea/programs/TXPOST.cbl#L151) |
+| 05 | WS-RC-LABEL | text | 1 | 30 | X(30) | | | [TXPOST.cbl:152](../../../pangaea/programs/TXPOST.cbl#L152) |
+| 05 | WS-RC-VALUE | edited | 31 | 10 | ZZ,ZZZ,ZZ9 | | | [TXPOST.cbl:153](../../../pangaea/programs/TXPOST.cbl#L153) |
+| 05 | FILLER | filler | 41 | 40 | X(40) | | VALUE SPACES | [TXPOST.cbl:154](../../../pangaea/programs/TXPOST.cbl#L154) |
 
 ### WS-REPORT-AMOUNT-LINE
 
 Working storage. 80 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-REPORT-AMOUNT-LINE | 1 | 80 | | | | [TXPOST.cbl:155](../../../pangaea/programs/TXPOST.cbl#L155) |
-| 05 | WS-RA-LABEL | 1 | 30 | X(30) | | | [TXPOST.cbl:156](../../../pangaea/programs/TXPOST.cbl#L156) |
-| 05 | WS-RA-VALUE | 31 | 21 | Z,ZZZ,ZZZ,ZZZ,ZZ9.99- | | | [TXPOST.cbl:157](../../../pangaea/programs/TXPOST.cbl#L157) |
-| 05 | FILLER | 52 | 29 | X(29) | | VALUE SPACES | [TXPOST.cbl:158](../../../pangaea/programs/TXPOST.cbl#L158) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-REPORT-AMOUNT-LINE | group | 1 | 80 | | | | [TXPOST.cbl:155](../../../pangaea/programs/TXPOST.cbl#L155) |
+| 05 | WS-RA-LABEL | text | 1 | 30 | X(30) | | | [TXPOST.cbl:156](../../../pangaea/programs/TXPOST.cbl#L156) |
+| 05 | WS-RA-VALUE | edited | 31 | 21 | Z,ZZZ,ZZZ,ZZZ,ZZ9.99- | | | [TXPOST.cbl:157](../../../pangaea/programs/TXPOST.cbl#L157) |
+| 05 | FILLER | filler | 52 | 29 | X(29) | | VALUE SPACES | [TXPOST.cbl:158](../../../pangaea/programs/TXPOST.cbl#L158) |

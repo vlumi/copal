@@ -9,6 +9,7 @@ const style = `<style>
 .box { fill: #ffffff; stroke: #57606a; stroke-width: 1 }
 .box.emphasis { stroke-width: 2.5 }
 .box.data { fill: #e8eef6; stroke: #8c959f }
+.box.external { fill: #fbecd0; stroke: #a16207; stroke-width: 2 }
 .box.dashed { stroke-dasharray: 4 3 }
 .label { fill: #1f2328 }
 .label.first { font-weight: 600 }
@@ -23,6 +24,7 @@ const style = `<style>
 @media (prefers-color-scheme: dark) {
   .box { fill: #161b22; stroke: #8b949e }
   .box.data { fill: #1f2a3a; stroke: #6e7681 }
+  .box.external { fill: #3a2c12; stroke: #d6a64a }
   .label { fill: #e6edf3 }
   .edge { stroke: #6e7681 }
   .head { fill: #6e7681 }
@@ -111,16 +113,22 @@ func (l *layout) writeEdge(b *strings.Builder, e routedEdge) {
 	fmt.Fprintf(b, `<path class="%s" d="%s" %s="url(#%s)"/>`+"\n", class, path, marker, arrow)
 }
 
-func (l *layout) writeNode(b *strings.Builder, s *slot, n Node) {
+// nodeClass is the CSS class of a node's box, which draws it as it is.
+func nodeClass(n Node) string {
 	class := "box"
 	for _, c := range []struct {
 		set  bool
 		name string
-	}{{n.Emphasis, "emphasis"}, {n.Data, "data"}, {n.Dashed, "dashed"}, {n.Highlight, "highlight"}} {
+	}{{n.Emphasis, "emphasis"}, {n.Data, "data"}, {n.External, "external"}, {n.Dashed, "dashed"}, {n.Highlight, "highlight"}} {
 		if c.set {
 			class += " " + c.name
 		}
 	}
+	return class
+}
+
+func (l *layout) writeNode(b *strings.Builder, s *slot, n Node) {
+	class := nodeClass(n)
 	open, end := "<g>", "</g>"
 	if n.Link != "" {
 		open, end = fmt.Sprintf(`<a href="%s">`, escape(n.Link)), "</a>"

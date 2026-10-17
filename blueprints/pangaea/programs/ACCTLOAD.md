@@ -287,78 +287,78 @@ File HOLD-OUT. 100 bytes, layout in copybook [HOLDREC](../copybooks/HOLDREC.md).
 
 File REPORT-OUT. 80 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | REPORT-LINE | 1 | 80 | X(80) | | | [ACCTLOAD.cbl:58](../../../pangaea/programs/ACCTLOAD.cbl#L58) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | REPORT-LINE | text | 1 | 80 | X(80) | | | [ACCTLOAD.cbl:58](../../../pangaea/programs/ACCTLOAD.cbl#L58) |
 
 ### WS-FILE-STATUSES
 
 Working storage. 10 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-FILE-STATUSES | 1 | 10 | | | | [ACCTLOAD.cbl:61](../../../pangaea/programs/ACCTLOAD.cbl#L61) |
-| 05 | WS-CONTROL-STATUS | 1 | 2 | XX | | | [ACCTLOAD.cbl:62](../../../pangaea/programs/ACCTLOAD.cbl#L62) |
-| 05 | WS-ACCT-IN-STATUS | 3 | 2 | XX | | | [ACCTLOAD.cbl:63](../../../pangaea/programs/ACCTLOAD.cbl#L63) |
-| 05 | WS-ONLINE-STATUS | 5 | 2 | XX | | | [ACCTLOAD.cbl:64](../../../pangaea/programs/ACCTLOAD.cbl#L64) |
-| 05 | WS-HOLD-STATUS | 7 | 2 | XX | | | [ACCTLOAD.cbl:65](../../../pangaea/programs/ACCTLOAD.cbl#L65) |
-| 05 | WS-REPORT-STATUS | 9 | 2 | XX | | | [ACCTLOAD.cbl:66](../../../pangaea/programs/ACCTLOAD.cbl#L66) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-FILE-STATUSES | group | 1 | 10 | | | | [ACCTLOAD.cbl:61](../../../pangaea/programs/ACCTLOAD.cbl#L61) |
+| 05 | WS-CONTROL-STATUS | text | 1 | 2 | XX | | | [ACCTLOAD.cbl:62](../../../pangaea/programs/ACCTLOAD.cbl#L62) |
+| 05 | WS-ACCT-IN-STATUS | text | 3 | 2 | XX | | | [ACCTLOAD.cbl:63](../../../pangaea/programs/ACCTLOAD.cbl#L63) |
+| 05 | WS-ONLINE-STATUS | text | 5 | 2 | XX | | | [ACCTLOAD.cbl:64](../../../pangaea/programs/ACCTLOAD.cbl#L64) |
+| 05 | WS-HOLD-STATUS | text | 7 | 2 | XX | | | [ACCTLOAD.cbl:65](../../../pangaea/programs/ACCTLOAD.cbl#L65) |
+| 05 | WS-REPORT-STATUS | text | 9 | 2 | XX | | | [ACCTLOAD.cbl:66](../../../pangaea/programs/ACCTLOAD.cbl#L66) |
 
 ### WS-BUSINESS-DATE
 
 Working storage. 8 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-BUSINESS-DATE | 1 | 8 | 9(8) | | | [ACCTLOAD.cbl:68](../../../pangaea/programs/ACCTLOAD.cbl#L68) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-BUSINESS-DATE | date | 1 | 8 | 9(8) | | | [ACCTLOAD.cbl:68](../../../pangaea/programs/ACCTLOAD.cbl#L68) |
 
 ### WS-ABORT-MESSAGE
 
 Working storage. 40 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-ABORT-MESSAGE | 1 | 40 | X(40) | | | [ACCTLOAD.cbl:69](../../../pangaea/programs/ACCTLOAD.cbl#L69) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-ABORT-MESSAGE | text | 1 | 40 | X(40) | | | [ACCTLOAD.cbl:69](../../../pangaea/programs/ACCTLOAD.cbl#L69) |
 
 ### WS-MASTER-END-SW
 
 Working storage. 1 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-MASTER-END-SW | 1 | 1 | X | | VALUE 'N' | [ACCTLOAD.cbl:70](../../../pangaea/programs/ACCTLOAD.cbl#L70) |
-| 88 | MASTER-AT-END | | | | | VALUE 'Y' | [ACCTLOAD.cbl:71](../../../pangaea/programs/ACCTLOAD.cbl#L71) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-MASTER-END-SW | code | 1 | 1 | X | | VALUE 'N' | [ACCTLOAD.cbl:70](../../../pangaea/programs/ACCTLOAD.cbl#L70) |
+| 88 | MASTER-AT-END | | | | | | VALUE 'Y' | [ACCTLOAD.cbl:71](../../../pangaea/programs/ACCTLOAD.cbl#L71) |
 
 ### WS-TOTALS
 
 Working storage. 37 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-TOTALS | 1 | 37 | | | | [ACCTLOAD.cbl:73](../../../pangaea/programs/ACCTLOAD.cbl#L73) |
-| 05 | WS-READ-COUNT | 1 | 8 | 9(8) | | VALUE 0 | [ACCTLOAD.cbl:74](../../../pangaea/programs/ACCTLOAD.cbl#L74) |
-| 05 | WS-LOADED-COUNT | 9 | 8 | 9(8) | | VALUE 0 | [ACCTLOAD.cbl:75](../../../pangaea/programs/ACCTLOAD.cbl#L75) |
-| 05 | WS-CLOSED-COUNT | 17 | 8 | 9(8) | | VALUE 0 | [ACCTLOAD.cbl:76](../../../pangaea/programs/ACCTLOAD.cbl#L76) |
-| 05 | WS-LOADED-BALANCE | 25 | 13 | S9(11)V99 | | VALUE 0 | [ACCTLOAD.cbl:77](../../../pangaea/programs/ACCTLOAD.cbl#L77) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-TOTALS | group | 1 | 37 | | | | [ACCTLOAD.cbl:73](../../../pangaea/programs/ACCTLOAD.cbl#L73) |
+| 05 | WS-READ-COUNT | number | 1 | 8 | 9(8) | | VALUE 0 | [ACCTLOAD.cbl:74](../../../pangaea/programs/ACCTLOAD.cbl#L74) |
+| 05 | WS-LOADED-COUNT | number | 9 | 8 | 9(8) | | VALUE 0 | [ACCTLOAD.cbl:75](../../../pangaea/programs/ACCTLOAD.cbl#L75) |
+| 05 | WS-CLOSED-COUNT | number | 17 | 8 | 9(8) | | VALUE 0 | [ACCTLOAD.cbl:76](../../../pangaea/programs/ACCTLOAD.cbl#L76) |
+| 05 | WS-LOADED-BALANCE | amount | 25 | 13 | S9(11)V99 | | VALUE 0 | [ACCTLOAD.cbl:77](../../../pangaea/programs/ACCTLOAD.cbl#L77) |
 
 ### WS-REPORT-COUNT-LINE
 
 Working storage. 80 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-REPORT-COUNT-LINE | 1 | 80 | | | | [ACCTLOAD.cbl:79](../../../pangaea/programs/ACCTLOAD.cbl#L79) |
-| 05 | WS-RC-LABEL | 1 | 30 | X(30) | | | [ACCTLOAD.cbl:80](../../../pangaea/programs/ACCTLOAD.cbl#L80) |
-| 05 | WS-RC-VALUE | 31 | 10 | ZZ,ZZZ,ZZ9 | | | [ACCTLOAD.cbl:81](../../../pangaea/programs/ACCTLOAD.cbl#L81) |
-| 05 | FILLER | 41 | 40 | X(40) | | VALUE SPACES | [ACCTLOAD.cbl:82](../../../pangaea/programs/ACCTLOAD.cbl#L82) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-REPORT-COUNT-LINE | group | 1 | 80 | | | | [ACCTLOAD.cbl:79](../../../pangaea/programs/ACCTLOAD.cbl#L79) |
+| 05 | WS-RC-LABEL | text | 1 | 30 | X(30) | | | [ACCTLOAD.cbl:80](../../../pangaea/programs/ACCTLOAD.cbl#L80) |
+| 05 | WS-RC-VALUE | edited | 31 | 10 | ZZ,ZZZ,ZZ9 | | | [ACCTLOAD.cbl:81](../../../pangaea/programs/ACCTLOAD.cbl#L81) |
+| 05 | FILLER | filler | 41 | 40 | X(40) | | VALUE SPACES | [ACCTLOAD.cbl:82](../../../pangaea/programs/ACCTLOAD.cbl#L82) |
 
 ### WS-REPORT-AMOUNT-LINE
 
 Working storage. 80 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-REPORT-AMOUNT-LINE | 1 | 80 | | | | [ACCTLOAD.cbl:83](../../../pangaea/programs/ACCTLOAD.cbl#L83) |
-| 05 | WS-RA-LABEL | 1 | 30 | X(30) | | | [ACCTLOAD.cbl:84](../../../pangaea/programs/ACCTLOAD.cbl#L84) |
-| 05 | WS-RA-VALUE | 31 | 21 | Z,ZZZ,ZZZ,ZZZ,ZZ9.99- | | | [ACCTLOAD.cbl:85](../../../pangaea/programs/ACCTLOAD.cbl#L85) |
-| 05 | FILLER | 52 | 29 | X(29) | | VALUE SPACES | [ACCTLOAD.cbl:86](../../../pangaea/programs/ACCTLOAD.cbl#L86) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-REPORT-AMOUNT-LINE | group | 1 | 80 | | | | [ACCTLOAD.cbl:83](../../../pangaea/programs/ACCTLOAD.cbl#L83) |
+| 05 | WS-RA-LABEL | text | 1 | 30 | X(30) | | | [ACCTLOAD.cbl:84](../../../pangaea/programs/ACCTLOAD.cbl#L84) |
+| 05 | WS-RA-VALUE | edited | 31 | 21 | Z,ZZZ,ZZZ,ZZZ,ZZ9.99- | | | [ACCTLOAD.cbl:85](../../../pangaea/programs/ACCTLOAD.cbl#L85) |
+| 05 | FILLER | filler | 52 | 29 | X(29) | | VALUE SPACES | [ACCTLOAD.cbl:86](../../../pangaea/programs/ACCTLOAD.cbl#L86) |

@@ -185,3 +185,35 @@ func TestHighlight(t *testing.T) {
 		}
 	}
 }
+
+// A legend's sample of a node is drawn as the node is.
+func TestLegendSamples(t *testing.T) {
+	g := Graph{Nodes: []Node{{ID: "a", Label: "A"}}, Legend: []Key{NodeKey(Node{Emphasis: true}, "first")}}
+	svg, err := g.SVG()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := `<rect class="box emphasis" x="`; !strings.Contains(string(svg), want) {
+		t.Errorf("no %s in\n%s", want, svg)
+	}
+}
+
+// An external node has a look of its own, in the legend too, and a
+// highlight still shows on it.
+func TestExternal(t *testing.T) {
+	g := Graph{
+		Nodes:  []Node{{ID: "a", Label: "A", Data: true, External: true}, {ID: "b", Label: "B", External: true, Highlight: true}},
+		Legend: []Key{NodeKey(Node{Data: true, External: true}, "from outside")},
+	}
+	svg, err := g.SVG()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if n := strings.Count(string(svg), `class="box data external"`); n != 2 {
+		t.Errorf("%d external data boxes, want the node and its legend sample:\n%s", n, svg)
+	}
+	style := string(svg[:strings.Index(string(svg), "@media")])
+	if strings.Index(style, ".box.external") > strings.Index(style, ".box.highlight") || !strings.Contains(string(svg), `class="box external highlight"`) {
+		t.Errorf("a highlight does not show on an external node:\n%s", svg)
+	}
+}

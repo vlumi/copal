@@ -80,26 +80,26 @@ Data items the program does not declare, such as special registers and index nam
 
 File TRAN-IN. 80 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | TRAN-IN-RECORD | 1 | 80 | X(80) | | | [TXSORT.cbl:36](../../../pangaea/programs/TXSORT.cbl#L36) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | TRAN-IN-RECORD | text | 1 | 80 | X(80) | | | [TXSORT.cbl:36](../../../pangaea/programs/TXSORT.cbl#L36) |
 
 ### TRAN-OUT-RECORD
 
 File TRAN-OUT. 80 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | TRAN-OUT-RECORD | 1 | 80 | X(80) | | | [TXSORT.cbl:38](../../../pangaea/programs/TXSORT.cbl#L38) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | TRAN-OUT-RECORD | text | 1 | 80 | X(80) | | | [TXSORT.cbl:38](../../../pangaea/programs/TXSORT.cbl#L38) |
 
 ### SORT-RECORD
 
 File SORT-WORK. 80 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | SORT-RECORD | 1 | 80 | | | | [TXSORT.cbl:40](../../../pangaea/programs/TXSORT.cbl#L40) |
-| 05 | SR-REC-TYPE | 1 | 1 | X | | | [TXSORT.cbl:41](../../../pangaea/programs/TXSORT.cbl#L41) |
-| 05 | SR-TRAN-ID | 2 | 10 | 9(10) | | | [TXSORT.cbl:42](../../../pangaea/programs/TXSORT.cbl#L42) |
-| 05 | SR-ACCT-NO | 12 | 10 | 9(10) | | | [TXSORT.cbl:43](../../../pangaea/programs/TXSORT.cbl#L43) |
-| 05 | FILLER | 22 | 59 | X(59) | | | [TXSORT.cbl:44](../../../pangaea/programs/TXSORT.cbl#L44) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | SORT-RECORD | group | 1 | 80 | | | | [TXSORT.cbl:40](../../../pangaea/programs/TXSORT.cbl#L40) |
+| 05 | SR-REC-TYPE | text | 1 | 1 | X | | | [TXSORT.cbl:41](../../../pangaea/programs/TXSORT.cbl#L41) |
+| 05 | SR-TRAN-ID | key | 2 | 10 | 9(10) | | | [TXSORT.cbl:42](../../../pangaea/programs/TXSORT.cbl#L42) |
+| 05 | SR-ACCT-NO | key | 12 | 10 | 9(10) | | | [TXSORT.cbl:43](../../../pangaea/programs/TXSORT.cbl#L43) |
+| 05 | FILLER | filler | 22 | 59 | X(59) | | | [TXSORT.cbl:44](../../../pangaea/programs/TXSORT.cbl#L44) |

@@ -23,11 +23,14 @@ type Job struct {
 }
 
 // Dataset is a dataset a job names, as it names it, with the copybook
-// whose record describes it, as far as the programs that use it say, and
-// the steps that write and read it.
+// whose record describes it, as far as the programs that use it say, its
+// kind and whether it is indexed, across the system, and the steps of the
+// job that write and read it.
 type Dataset struct {
 	Name      string   `json:"dataset"`
 	Copybook  string   `json:"copybook,omitempty"`
+	Kind      string   `json:"kind,omitempty"`
+	Indexed   bool     `json:"indexed,omitempty"`
 	WrittenBy []string `json:"writtenBy,omitempty"`
 	ReadBy    []string `json:"readBy,omitempty"`
 }
@@ -336,6 +339,7 @@ func jobDiagram(job Job) diagram.Graph {
 var networkKeys = []diagram.Key{
 	diagram.NodeKey(diagram.Node{}, "step, the program it runs"),
 	diagram.NodeKey(diagram.Node{Data: true}, "dataset, its record's copybook"),
+	diagram.NodeKey(diagram.Node{Data: true, External: true}, "external dataset, from outside"),
 	diagram.NodeKey(diagram.Node{Data: true, Dashed: true}, "temporary dataset, &&NAME"),
 	diagram.EdgeKey(diagram.Solid, "read or written"),
 	diagram.EdgeKey(diagram.Dotted, "runs next"),
@@ -372,7 +376,8 @@ type JobPath struct {
 // step, and from the step to each dataset it writes, and a dotted one from
 // each step to the next where no dataset leads from one to the other. A
 // step shows its program, and a dataset the copybook that describes its
-// records, when it is known.
+// records, when it is known, and its kind unless it is internal. An
+// external dataset is drawn as one.
 //
 // A dataset that one step writes and another reads is drawn once, between
 // them; one the job only reads is drawn above each step that reads it, and
@@ -380,9 +385,9 @@ type JobPath struct {
 // through the job is not lost among arrows from far away. The job's output
 // and dummy DDs are left out.
 func JobGraph(job Job, notes JobNotes) diagram.Graph {
-	copybooks := map[string]string{}
+	datasets := map[string]Dataset{}
 	for _, d := range job.Datasets {
-		copybooks[d.Name] = d.Copybook
+		datasets[d.Name] = d
 	}
 	g := diagram.Graph{Legend: networkKeys}
 	path := notes.Path
@@ -419,13 +424,15 @@ func JobGraph(job Job, notes JobNotes) diagram.Graph {
 		id := node(ds, step.Name)
 		if !added[id] {
 			added[id] = true
-			n := diagram.Node{ID: id, Label: ds, Data: true, Dashed: strings.HasPrefix(ds, "&&")}
-			if c := copybooks[ds]; c != "" {
-				n.Label += "\ncopybook " + c
+			d := datasets[ds]
+			n := diagram.Node{ID: id, Label: ds, Data: true, External: d.Kind == KindExternal, Dashed: strings.HasPrefix(ds, "&&")}
+			if d.Copybook != "" {
+				n.Label += "\ncopybook " + d.Copybook
 				if notes.CopybookLink != nil {
-					n.Link = notes.CopybookLink(c)
+					n.Link = notes.CopybookLink(d.Copybook)
 				}
 			}
+			n.Label = withNote(n.Label, strings.Join(d.badges(), ", "))
 			if notes.DatasetLink != nil {
 				n.Link = notes.DatasetLink(ds)
 			}

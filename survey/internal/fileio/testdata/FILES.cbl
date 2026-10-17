@@ -17,7 +17,9 @@
        FD  LOG-FILE.
        01  LOG-RECORD                  PIC X(10).
        SD  WORK-SORT.
-       01  WORK-RECORD                 PIC X(10).
+       01  WORK-RECORD.
+           05  WORK-KEY                PIC X(6).
+           05  WORK-SEQ                PIC 9(4).
        FD  SORTED.
        01  SORTED-RECORD               PIC X(10).
        PROCEDURE DIVISION.
@@ -25,7 +27,8 @@
            OPEN INPUT IN-FILE
                 OUTPUT OUT-FILE
                 EXTEND LOG-FILE
-           SORT WORK-SORT ON ASCENDING KEY WORK-RECORD
+           SORT WORK-SORT ON ASCENDING KEY WORK-KEY
+               DESCENDING KEY WORK-SEQ
                USING IN-FILE
                GIVING SORTED
            CLOSE IN-FILE OUT-FILE LOG-FILE

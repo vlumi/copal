@@ -1,7 +1,7 @@
 {{define "title"}}{{.View.Name}}{{end}}
 {{define "content"}}
 {{with .View}}
-<h1><span class="kind">dataset</span> {{.Name}}</h1>
+<h1><span class="kind">dataset</span> {{.Name}}{{with .Dataset}} {{template "datasetBadges" .}}{{end}}</h1>
 <p class="crumbs">{{if .Copybooks}}records described by {{range $i, $c := .Copybooks}}{{if $i}}, {{end}}<a href="{{copybook $c}}">{{$c}}</a>{{end}}{{else}}no copybook describes its records{{end}}</p>
 <h2>Job steps that use it</h2>
 <table>

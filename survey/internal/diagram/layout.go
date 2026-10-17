@@ -24,8 +24,10 @@ type Graph struct {
 // first of several is set in bold. Title is shown on hover and Link is followed
 // on click, where the viewer supports it. An emphasized node is drawn with a
 // heavier border; a data node with round ends and a tinted fill, and a
-// dashed one with a dashed border. A highlighted node, such as one on a
-// path being followed, is drawn in an accent color.
+// dashed one with a dashed border. An external node, such as data that
+// comes from outside the system, is drawn in a warm fill with a heavy
+// border of the same hue. A highlighted node, such as one on a path being
+// followed, is drawn in an accent color.
 type Node struct {
 	ID        string
 	Label     string
@@ -33,6 +35,7 @@ type Node struct {
 	Link      string
 	Emphasis  bool
 	Data      bool
+	External  bool
 	Dashed    bool
 	Highlight bool
 }

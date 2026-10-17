@@ -484,11 +484,11 @@ File CONTROL-FILE. 80 bytes, layout in copybook [BANKCTL](../copybooks/BANKCTL.m
 
 File ACCT-IN. 100 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | ACCT-IN-RECORD | 1 | 100 | | | | [ACCTMNT.cbl:61](../../../pangaea/programs/ACCTMNT.cbl#L61) |
-| 05 | AI-ACCT-NO | 1 | 10 | X(10) | | | [ACCTMNT.cbl:62](../../../pangaea/programs/ACCTMNT.cbl#L62) |
-| 05 | FILLER | 11 | 90 | X(90) | | | [ACCTMNT.cbl:63](../../../pangaea/programs/ACCTMNT.cbl#L63) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | ACCT-IN-RECORD | group | 1 | 100 | | | | [ACCTMNT.cbl:61](../../../pangaea/programs/ACCTMNT.cbl#L61) |
+| 05 | AI-ACCT-NO | text | 1 | 10 | X(10) | | | [ACCTMNT.cbl:62](../../../pangaea/programs/ACCTMNT.cbl#L62) |
+| 05 | FILLER | filler | 11 | 90 | X(90) | | | [ACCTMNT.cbl:63](../../../pangaea/programs/ACCTMNT.cbl#L63) |
 
 ### MAINT-REQUEST
 
@@ -498,115 +498,115 @@ File MAINT-IN. 80 bytes, layout in copybook [MAINTREC](../copybooks/MAINTREC.md)
 
 File ACCT-OUT. 100 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | ACCT-OUT-RECORD | 1 | 100 | X(100) | | | [ACCTMNT.cbl:67](../../../pangaea/programs/ACCTMNT.cbl#L67) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | ACCT-OUT-RECORD | text | 1 | 100 | X(100) | | | [ACCTMNT.cbl:67](../../../pangaea/programs/ACCTMNT.cbl#L67) |
 
 ### REJECT-OUT-RECORD
 
 File REJECT-OUT. 100 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | REJECT-OUT-RECORD | 1 | 100 | X(100) | | | [ACCTMNT.cbl:69](../../../pangaea/programs/ACCTMNT.cbl#L69) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | REJECT-OUT-RECORD | text | 1 | 100 | X(100) | | | [ACCTMNT.cbl:69](../../../pangaea/programs/ACCTMNT.cbl#L69) |
 
 ### REPORT-LINE
 
 File REPORT-OUT. 80 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | REPORT-LINE | 1 | 80 | X(80) | | | [ACCTMNT.cbl:71](../../../pangaea/programs/ACCTMNT.cbl#L71) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | REPORT-LINE | text | 1 | 80 | X(80) | | | [ACCTMNT.cbl:71](../../../pangaea/programs/ACCTMNT.cbl#L71) |
 
 ### WS-FILE-STATUSES
 
 Working storage. 12 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-FILE-STATUSES | 1 | 12 | | | | [ACCTMNT.cbl:74](../../../pangaea/programs/ACCTMNT.cbl#L74) |
-| 05 | WS-CONTROL-STATUS | 1 | 2 | XX | | | [ACCTMNT.cbl:75](../../../pangaea/programs/ACCTMNT.cbl#L75) |
-| 05 | WS-ACCT-IN-STATUS | 3 | 2 | XX | | | [ACCTMNT.cbl:76](../../../pangaea/programs/ACCTMNT.cbl#L76) |
-| 05 | WS-MAINT-IN-STATUS | 5 | 2 | XX | | | [ACCTMNT.cbl:77](../../../pangaea/programs/ACCTMNT.cbl#L77) |
-| 05 | WS-ACCT-OUT-STATUS | 7 | 2 | XX | | | [ACCTMNT.cbl:78](../../../pangaea/programs/ACCTMNT.cbl#L78) |
-| 05 | WS-REJECT-STATUS | 9 | 2 | XX | | | [ACCTMNT.cbl:79](../../../pangaea/programs/ACCTMNT.cbl#L79) |
-| 05 | WS-REPORT-STATUS | 11 | 2 | XX | | | [ACCTMNT.cbl:80](../../../pangaea/programs/ACCTMNT.cbl#L80) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-FILE-STATUSES | group | 1 | 12 | | | | [ACCTMNT.cbl:74](../../../pangaea/programs/ACCTMNT.cbl#L74) |
+| 05 | WS-CONTROL-STATUS | text | 1 | 2 | XX | | | [ACCTMNT.cbl:75](../../../pangaea/programs/ACCTMNT.cbl#L75) |
+| 05 | WS-ACCT-IN-STATUS | text | 3 | 2 | XX | | | [ACCTMNT.cbl:76](../../../pangaea/programs/ACCTMNT.cbl#L76) |
+| 05 | WS-MAINT-IN-STATUS | text | 5 | 2 | XX | | | [ACCTMNT.cbl:77](../../../pangaea/programs/ACCTMNT.cbl#L77) |
+| 05 | WS-ACCT-OUT-STATUS | text | 7 | 2 | XX | | | [ACCTMNT.cbl:78](../../../pangaea/programs/ACCTMNT.cbl#L78) |
+| 05 | WS-REJECT-STATUS | text | 9 | 2 | XX | | | [ACCTMNT.cbl:79](../../../pangaea/programs/ACCTMNT.cbl#L79) |
+| 05 | WS-REPORT-STATUS | text | 11 | 2 | XX | | | [ACCTMNT.cbl:80](../../../pangaea/programs/ACCTMNT.cbl#L80) |
 
 ### WS-BUSINESS-DATE
 
 Working storage. 8 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-BUSINESS-DATE | 1 | 8 | 9(8) | | | [ACCTMNT.cbl:82](../../../pangaea/programs/ACCTMNT.cbl#L82) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-BUSINESS-DATE | date | 1 | 8 | 9(8) | | | [ACCTMNT.cbl:82](../../../pangaea/programs/ACCTMNT.cbl#L82) |
 
 ### WS-ABORT-MESSAGE
 
 Working storage. 40 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-ABORT-MESSAGE | 1 | 40 | X(40) | | | [ACCTMNT.cbl:83](../../../pangaea/programs/ACCTMNT.cbl#L83) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-ABORT-MESSAGE | text | 1 | 40 | X(40) | | | [ACCTMNT.cbl:83](../../../pangaea/programs/ACCTMNT.cbl#L83) |
 
 ### WS-MASTER-KEY
 
 Working storage. 10 bytes. MATCH KEYS: HIGH-VALUES ONCE A FILE IS AT ITS END. THE ACTIVE KEY IS THE LOWER OF THE TWO: THE ACCOUNT BEING WORKED ON.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-MASTER-KEY | 1 | 10 | X(10) | | | [ACCTMNT.cbl:87](../../../pangaea/programs/ACCTMNT.cbl#L87) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-MASTER-KEY | text | 1 | 10 | X(10) | | | [ACCTMNT.cbl:87](../../../pangaea/programs/ACCTMNT.cbl#L87) |
 
 ### WS-REQUEST-KEY
 
 Working storage. 10 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-REQUEST-KEY | 1 | 10 | X(10) | | | [ACCTMNT.cbl:88](../../../pangaea/programs/ACCTMNT.cbl#L88) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-REQUEST-KEY | text | 1 | 10 | X(10) | | | [ACCTMNT.cbl:88](../../../pangaea/programs/ACCTMNT.cbl#L88) |
 
 ### WS-ACTIVE-KEY
 
 Working storage. 10 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-ACTIVE-KEY | 1 | 10 | X(10) | | | [ACCTMNT.cbl:89](../../../pangaea/programs/ACCTMNT.cbl#L89) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-ACTIVE-KEY | text | 1 | 10 | X(10) | | | [ACCTMNT.cbl:89](../../../pangaea/programs/ACCTMNT.cbl#L89) |
 
 ### WS-PREV-MASTER-KEY
 
 Working storage. 10 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-PREV-MASTER-KEY | 1 | 10 | X(10) | | VALUE LOW-VALUES | [ACCTMNT.cbl:90](../../../pangaea/programs/ACCTMNT.cbl#L90) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-PREV-MASTER-KEY | text | 1 | 10 | X(10) | | VALUE LOW-VALUES | [ACCTMNT.cbl:90](../../../pangaea/programs/ACCTMNT.cbl#L90) |
 
 ### WS-REQUEST-ORDER-KEY
 
 Working storage. 20 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-REQUEST-ORDER-KEY | 1 | 20 | | | | [ACCTMNT.cbl:91](../../../pangaea/programs/ACCTMNT.cbl#L91) |
-| 05 | WS-ROK-ACCT-NO | 1 | 10 | X(10) | | | [ACCTMNT.cbl:92](../../../pangaea/programs/ACCTMNT.cbl#L92) |
-| 05 | WS-ROK-REQUEST-ID | 11 | 10 | X(10) | | | [ACCTMNT.cbl:93](../../../pangaea/programs/ACCTMNT.cbl#L93) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-REQUEST-ORDER-KEY | group | 1 | 20 | | | | [ACCTMNT.cbl:91](../../../pangaea/programs/ACCTMNT.cbl#L91) |
+| 05 | WS-ROK-ACCT-NO | text | 1 | 10 | X(10) | | | [ACCTMNT.cbl:92](../../../pangaea/programs/ACCTMNT.cbl#L92) |
+| 05 | WS-ROK-REQUEST-ID | text | 11 | 10 | X(10) | | | [ACCTMNT.cbl:93](../../../pangaea/programs/ACCTMNT.cbl#L93) |
 
 ### WS-PREV-REQUEST-ORDER-KEY
 
 Working storage. 20 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-PREV-REQUEST-ORDER-KEY | 1 | 20 | X(20) | | VALUE LOW-VALUES | [ACCTMNT.cbl:94](../../../pangaea/programs/ACCTMNT.cbl#L94) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-PREV-REQUEST-ORDER-KEY | text | 1 | 20 | X(20) | | VALUE LOW-VALUES | [ACCTMNT.cbl:94](../../../pangaea/programs/ACCTMNT.cbl#L94) |
 
 ### WS-HELD-SW
 
 Working storage. 1 bytes. THE ACCOUNT HELD WHILE ITS REQUESTS APPLY.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-HELD-SW | 1 | 1 | X | | | [ACCTMNT.cbl:97](../../../pangaea/programs/ACCTMNT.cbl#L97) |
-| 88 | ACCOUNT-HELD | | | | | VALUE 'Y' | [ACCTMNT.cbl:98](../../../pangaea/programs/ACCTMNT.cbl#L98) |
-| 88 | NOTHING-HELD | | | | | VALUE 'N' | [ACCTMNT.cbl:99](../../../pangaea/programs/ACCTMNT.cbl#L99) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-HELD-SW | code | 1 | 1 | X | | | [ACCTMNT.cbl:97](../../../pangaea/programs/ACCTMNT.cbl#L97) |
+| 88 | ACCOUNT-HELD | | | | | | VALUE 'Y' | [ACCTMNT.cbl:98](../../../pangaea/programs/ACCTMNT.cbl#L98) |
+| 88 | NOTHING-HELD | | | | | | VALUE 'N' | [ACCTMNT.cbl:99](../../../pangaea/programs/ACCTMNT.cbl#L99) |
 
 ### ACCT-MASTER-RECORD
 
@@ -620,39 +620,39 @@ Working storage. 100 bytes, layout in copybook [REJREC](../copybooks/REJREC.md).
 
 Working storage. 102 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-TOTALS | 1 | 102 | | | | [ACCTMNT.cbl:104](../../../pangaea/programs/ACCTMNT.cbl#L104) |
-| 05 | WS-MASTERS-READ | 1 | 8 | 9(8) | | VALUE 0 | [ACCTMNT.cbl:105](../../../pangaea/programs/ACCTMNT.cbl#L105) |
-| 05 | WS-MASTERS-WRITTEN | 9 | 8 | 9(8) | | VALUE 0 | [ACCTMNT.cbl:106](../../../pangaea/programs/ACCTMNT.cbl#L106) |
-| 05 | WS-REQUEST-COUNT | 17 | 8 | 9(8) | | VALUE 0 | [ACCTMNT.cbl:107](../../../pangaea/programs/ACCTMNT.cbl#L107) |
-| 05 | WS-OPENED-COUNT | 25 | 8 | 9(8) | | VALUE 0 | [ACCTMNT.cbl:108](../../../pangaea/programs/ACCTMNT.cbl#L108) |
-| 05 | WS-CLOSED-COUNT | 33 | 8 | 9(8) | | VALUE 0 | [ACCTMNT.cbl:109](../../../pangaea/programs/ACCTMNT.cbl#L109) |
-| 05 | WS-FROZEN-COUNT | 41 | 8 | 9(8) | | VALUE 0 | [ACCTMNT.cbl:110](../../../pangaea/programs/ACCTMNT.cbl#L110) |
-| 05 | WS-UNFROZEN-COUNT | 49 | 8 | 9(8) | | VALUE 0 | [ACCTMNT.cbl:111](../../../pangaea/programs/ACCTMNT.cbl#L111) |
-| 05 | WS-LIMIT-COUNT | 57 | 8 | 9(8) | | VALUE 0 | [ACCTMNT.cbl:112](../../../pangaea/programs/ACCTMNT.cbl#L112) |
-| 05 | WS-REJECT-COUNT | 65 | 8 | 9(8) | | VALUE 0 | [ACCTMNT.cbl:113](../../../pangaea/programs/ACCTMNT.cbl#L113) |
-| 05 | WS-BALANCES-IN | 73 | 15 | S9(13)V99 | | VALUE 0 | [ACCTMNT.cbl:114](../../../pangaea/programs/ACCTMNT.cbl#L114) |
-| 05 | WS-BALANCES-OUT | 88 | 15 | S9(13)V99 | | VALUE 0 | [ACCTMNT.cbl:115](../../../pangaea/programs/ACCTMNT.cbl#L115) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-TOTALS | group | 1 | 102 | | | | [ACCTMNT.cbl:104](../../../pangaea/programs/ACCTMNT.cbl#L104) |
+| 05 | WS-MASTERS-READ | number | 1 | 8 | 9(8) | | VALUE 0 | [ACCTMNT.cbl:105](../../../pangaea/programs/ACCTMNT.cbl#L105) |
+| 05 | WS-MASTERS-WRITTEN | number | 9 | 8 | 9(8) | | VALUE 0 | [ACCTMNT.cbl:106](../../../pangaea/programs/ACCTMNT.cbl#L106) |
+| 05 | WS-REQUEST-COUNT | number | 17 | 8 | 9(8) | | VALUE 0 | [ACCTMNT.cbl:107](../../../pangaea/programs/ACCTMNT.cbl#L107) |
+| 05 | WS-OPENED-COUNT | number | 25 | 8 | 9(8) | | VALUE 0 | [ACCTMNT.cbl:108](../../../pangaea/programs/ACCTMNT.cbl#L108) |
+| 05 | WS-CLOSED-COUNT | number | 33 | 8 | 9(8) | | VALUE 0 | [ACCTMNT.cbl:109](../../../pangaea/programs/ACCTMNT.cbl#L109) |
+| 05 | WS-FROZEN-COUNT | number | 41 | 8 | 9(8) | | VALUE 0 | [ACCTMNT.cbl:110](../../../pangaea/programs/ACCTMNT.cbl#L110) |
+| 05 | WS-UNFROZEN-COUNT | number | 49 | 8 | 9(8) | | VALUE 0 | [ACCTMNT.cbl:111](../../../pangaea/programs/ACCTMNT.cbl#L111) |
+| 05 | WS-LIMIT-COUNT | number | 57 | 8 | 9(8) | | VALUE 0 | [ACCTMNT.cbl:112](../../../pangaea/programs/ACCTMNT.cbl#L112) |
+| 05 | WS-REJECT-COUNT | number | 65 | 8 | 9(8) | | VALUE 0 | [ACCTMNT.cbl:113](../../../pangaea/programs/ACCTMNT.cbl#L113) |
+| 05 | WS-BALANCES-IN | amount | 73 | 15 | S9(13)V99 | | VALUE 0 | [ACCTMNT.cbl:114](../../../pangaea/programs/ACCTMNT.cbl#L114) |
+| 05 | WS-BALANCES-OUT | amount | 88 | 15 | S9(13)V99 | | VALUE 0 | [ACCTMNT.cbl:115](../../../pangaea/programs/ACCTMNT.cbl#L115) |
 
 ### WS-REPORT-COUNT-LINE
 
 Working storage. 80 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-REPORT-COUNT-LINE | 1 | 80 | | | | [ACCTMNT.cbl:117](../../../pangaea/programs/ACCTMNT.cbl#L117) |
-| 05 | WS-RC-LABEL | 1 | 30 | X(30) | | | [ACCTMNT.cbl:118](../../../pangaea/programs/ACCTMNT.cbl#L118) |
-| 05 | WS-RC-VALUE | 31 | 10 | ZZ,ZZZ,ZZ9 | | | [ACCTMNT.cbl:119](../../../pangaea/programs/ACCTMNT.cbl#L119) |
-| 05 | FILLER | 41 | 40 | X(40) | | VALUE SPACES | [ACCTMNT.cbl:120](../../../pangaea/programs/ACCTMNT.cbl#L120) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-REPORT-COUNT-LINE | group | 1 | 80 | | | | [ACCTMNT.cbl:117](../../../pangaea/programs/ACCTMNT.cbl#L117) |
+| 05 | WS-RC-LABEL | text | 1 | 30 | X(30) | | | [ACCTMNT.cbl:118](../../../pangaea/programs/ACCTMNT.cbl#L118) |
+| 05 | WS-RC-VALUE | edited | 31 | 10 | ZZ,ZZZ,ZZ9 | | | [ACCTMNT.cbl:119](../../../pangaea/programs/ACCTMNT.cbl#L119) |
+| 05 | FILLER | filler | 41 | 40 | X(40) | | VALUE SPACES | [ACCTMNT.cbl:120](../../../pangaea/programs/ACCTMNT.cbl#L120) |
 
 ### WS-REPORT-AMOUNT-LINE
 
 Working storage. 80 bytes.
 
-| Level | Field | Start | Length | Picture | Usage | Notes | Source |
-| --: | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-REPORT-AMOUNT-LINE | 1 | 80 | | | | [ACCTMNT.cbl:121](../../../pangaea/programs/ACCTMNT.cbl#L121) |
-| 05 | WS-RA-LABEL | 1 | 30 | X(30) | | | [ACCTMNT.cbl:122](../../../pangaea/programs/ACCTMNT.cbl#L122) |
-| 05 | WS-RA-VALUE | 31 | 21 | Z,ZZZ,ZZZ,ZZZ,ZZ9.99- | | | [ACCTMNT.cbl:123](../../../pangaea/programs/ACCTMNT.cbl#L123) |
-| 05 | FILLER | 52 | 29 | X(29) | | VALUE SPACES | [ACCTMNT.cbl:124](../../../pangaea/programs/ACCTMNT.cbl#L124) |
+| Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
+| --: | --- | --- | --: | --: | --- | --- | --- | --- |
+| 01 | WS-REPORT-AMOUNT-LINE | group | 1 | 80 | | | | [ACCTMNT.cbl:121](../../../pangaea/programs/ACCTMNT.cbl#L121) |
+| 05 | WS-RA-LABEL | text | 1 | 30 | X(30) | | | [ACCTMNT.cbl:122](../../../pangaea/programs/ACCTMNT.cbl#L122) |
+| 05 | WS-RA-VALUE | edited | 31 | 21 | Z,ZZZ,ZZZ,ZZZ,ZZ9.99- | | | [ACCTMNT.cbl:123](../../../pangaea/programs/ACCTMNT.cbl#L123) |
+| 05 | FILLER | filler | 52 | 29 | X(29) | | VALUE SPACES | [ACCTMNT.cbl:124](../../../pangaea/programs/ACCTMNT.cbl#L124) |

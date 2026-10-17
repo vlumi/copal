@@ -22,20 +22,17 @@ type index struct {
 	// the dataset without its generation.
 	datasets map[string][]DatasetUse
 	// runs are the job steps that run each program.
-	runs    map[string][]StepRef
-	sources map[string]bool
-	names   []Name
-}
-
-// StepRef names a step of a job.
-type StepRef struct {
-	Job, Step string
+	runs map[string][]blueprint.StepRef
+	// systemDatasets are the system's datasets by name.
+	systemDatasets map[string]*blueprint.SystemDataset
+	sources        map[string]bool
+	names          []Name
 }
 
 // DatasetUse is a job step's DD naming a dataset, and how the step's
 // program uses it.
 type DatasetUse struct {
-	StepRef
+	blueprint.StepRef
 	Dataset  string // as the job names it, such as ACCT.MASTER(+1)
 	DD       string
 	Disp     string
@@ -46,27 +43,28 @@ type DatasetUse struct {
 }
 
 // Name is anything the search finds: its kind, its name, what it belongs
-// to, and its page.
+// to, its page, and the badge of the kind of program, field or dataset it
+// is.
 type Name struct {
-	Kind, Name, In, Link string
+	Kind, Name, In, Link, Badge string
 }
 
 func newIndex(s *blueprint.System) *index {
 	x := &index{system: s, programs: map[string]*blueprint.Program{}, jobs: map[string]*blueprint.Job{},
 		copybooks: map[string]*blueprint.Copybook{}, datasets: map[string][]DatasetUse{},
-		runs: map[string][]StepRef{}, sources: map[string]bool{}}
+		runs: map[string][]blueprint.StepRef{}, systemDatasets: map[string]*blueprint.SystemDataset{}, sources: map[string]bool{}}
 	for i := range s.Programs {
 		p := &s.Programs[i]
 		x.programs[p.Name] = p
 		x.sources[p.Source] = true
-		x.add("program", p.Name, "", programLink(p.Name))
+		x.add("program", p.Name, "", programLink(p.Name), p.Kind)
 		for _, para := range p.Paragraphs {
-			x.add("paragraph", para.Name, p.Name, paragraphLink(p.Name, para.Name))
+			x.add("paragraph", para.Name, p.Name, paragraphLink(p.Name, para.Name), "")
 		}
 		for _, r := range p.Records {
 			walkFields(r.Field, func(f blueprint.Field) {
 				x.sources[sourceFile(f.Source)] = true
-				x.add("field", f.Name, p.Name, fieldLink(p.Name, f.Name))
+				x.add("field", f.Name, p.Name, fieldLink(p.Name, f.Name), f.Kind)
 			})
 		}
 	}
@@ -74,28 +72,30 @@ func newIndex(s *blueprint.System) *index {
 		c := &s.Copybooks[i]
 		x.copybooks[c.Name] = c
 		x.sources[c.Source] = true
-		x.add("copybook", c.Name, "", copybookLink(c.Name))
+		x.add("copybook", c.Name, "", copybookLink(c.Name), "")
 	}
 	for i := range s.Jobs {
 		j := &s.Jobs[i]
 		x.jobs[j.Name] = j
 		x.sources[j.Source] = true
-		x.add("job", j.Name, "", jobLink(j.Name))
+		x.add("job", j.Name, "", jobLink(j.Name), "")
 		for _, step := range j.Steps {
-			ref := StepRef{Job: j.Name, Step: step.Name}
-			x.add("step", step.Name, j.Name, stepLink(ref))
+			ref := blueprint.StepRef{Job: j.Name, Step: step.Name}
+			x.add("step", step.Name, j.Name, stepLink(ref), "")
 			x.runs[step.Program] = append(x.runs[step.Program], ref)
 			for _, dd := range step.DDs {
 				for _, ds := range dd.Datasets {
 					base := datasetBase(ds)
-					if _, ok := x.datasets[base]; !ok {
-						x.add("dataset", base, "", datasetLink(base))
-					}
 					x.datasets[base] = append(x.datasets[base], DatasetUse{StepRef: ref, Dataset: ds, DD: dd.Name,
 						Disp: dd.Disp, Program: step.Program, File: dd.File, Copybook: dd.Copybook, Uses: dd.Uses})
 				}
 			}
 		}
+	}
+	for i := range s.Datasets {
+		d := &s.Datasets[i]
+		x.systemDatasets[d.Name] = d
+		x.add("dataset", d.Name, "", datasetLink(d.Name), d.Kind)
 	}
 	slices.SortFunc(x.names, func(a, b Name) int {
 		return strings.Compare(a.Name+" "+a.In+" "+a.Kind, b.Name+" "+b.In+" "+b.Kind)
@@ -103,8 +103,8 @@ func newIndex(s *blueprint.System) *index {
 	return x
 }
 
-func (x *index) add(kind, name, in, link string) {
-	x.names = append(x.names, Name{Kind: kind, Name: name, In: in, Link: link})
+func (x *index) add(kind, name, in, link, badge string) {
+	x.names = append(x.names, Name{Kind: kind, Name: name, In: in, Link: link, Badge: badge})
 }
 
 // search finds the names that contain the query, ignoring case, those

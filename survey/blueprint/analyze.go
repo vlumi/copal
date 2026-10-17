@@ -23,11 +23,14 @@ type System struct {
 	Programs  []Program
 	Copybooks []Copybook
 	Jobs      []Job
+	Datasets  []SystemDataset
 }
 
-// Program is the blueprint of one program.
+// Program is the blueprint of one program. Its Kind is "called" for a
+// program that is passed items when called, "main" for one that is not.
 type Program struct {
 	Name           string           `json:"program"`
+	Kind           string           `json:"kind"`
 	Source         string           `json:"source"`
 	Description    []string         `json:"description,omitempty"`
 	Identification []Identification `json:"identification,omitempty"`
@@ -48,10 +51,11 @@ type Program struct {
 	flow  dataflow.Flow
 }
 
-// Sort is a SORT statement: its work file, and the files it reads with
+// Sort is a SORT statement: its work file, the keys it sorts on, and the files it reads with
 // USING and writes with GIVING, none on a side it has a procedure for.
 type Sort struct {
 	Work   string   `json:"work"`
+	Keys   []string `json:"keys,omitempty"`
 	Using  []string `json:"using,omitempty"`
 	Giving []string `json:"giving,omitempty"`
 	Source string   `json:"source"`
@@ -107,7 +111,8 @@ type Record struct {
 	Field
 }
 
-// Field is one item of a record layout. Start is 1-based.
+// Field is one item of a record layout. Start is 1-based. Kind is what
+// it holds, as fieldKind tells it.
 type Field struct {
 	Level       int         `json:"level"`
 	Name        string      `json:"name"`
@@ -116,6 +121,7 @@ type Field struct {
 	Picture     string      `json:"picture,omitempty"`
 	Usage       string      `json:"usage,omitempty"`
 	Category    string      `json:"category"`
+	Kind        string      `json:"kind"`
 	Digits      int         `json:"digits,omitempty"`
 	Scale       int         `json:"scale,omitempty"`
 	Signed      bool        `json:"signed,omitempty"`
@@ -224,6 +230,8 @@ func Analyze(paths []string, copybookDir string) (*System, error) {
 	}
 	slices.SortFunc(s.Jobs, func(a, b Job) int { return strings.Compare(a.Name, b.Name) })
 	describeDatasets(s.Jobs)
+	s.Datasets = systemDatasets(s.Jobs)
+	classifyJobDatasets(s.Jobs, s.Datasets)
 	return s, nil
 }
 
@@ -243,7 +251,6 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 	}
 	uses := fileio.Uses(p)
 	for i, fd := range p.FileSection {
-		records := laidOut.Files[i].Records
 		file, err := describeFile(p, fd)
 		if err != nil {
 			return Program{}, err
@@ -253,20 +260,29 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 				file.Opened = append(file.Opened, u.Mode)
 			}
 		}
-		for _, r := range records {
+		for _, r := range laidOut.Files[i].Records {
 			file.Records = append(file.Records, r.Name)
-			program.Records = append(program.Records, newRecord(r, "file", fd.Name, path))
 		}
 		program.Files = append(program.Files, file)
 	}
+	for _, s := range fileio.Sorts(p) {
+		program.Sorts = append(program.Sorts, Sort{Work: s.Work, Keys: s.Keys, Using: s.Using, Giving: s.Giving, Source: s.Pos.String()})
+	}
 
+	keys := programKeys(program.Files, program.Sorts)
+	for _, f := range laidOut.Files {
+		for _, r := range f.Records {
+			program.Records = append(program.Records, newRecord(r, "file", f.File, path, keys))
+		}
+	}
 	for _, r := range laidOut.WorkingStorage {
-		program.Records = append(program.Records, newRecord(r, "working-storage", "", path))
+		program.Records = append(program.Records, newRecord(r, "working-storage", "", path, keys))
 	}
 	for _, r := range laidOut.Linkage {
-		program.Records = append(program.Records, newRecord(r, "linkage", "", path))
+		program.Records = append(program.Records, newRecord(r, "linkage", "", path, keys))
 	}
 	program.Using = p.Using
+	program.Kind = programKind(p.Using)
 	program.Calls = programCalls(p)
 	program.ReadsSysin = readsSysin(p)
 
@@ -276,9 +292,6 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 	}
 	flow := dataflow.Analyze(p, laidOut)
 	program.flow = flow
-	for _, s := range fileio.Sorts(p) {
-		program.Sorts = append(program.Sorts, Sort{Work: s.Work, Using: s.Using, Giving: s.Giving, Source: s.Pos.String()})
-	}
 	for i, para := range paragraphs {
 		bp := newParagraph(para)
 		bp.Reads, bp.Writes = flow.Paragraphs[i].Reads, flow.Paragraphs[i].Writes
@@ -324,17 +337,18 @@ func describeFile(p *cobol.Program, fd cobol.FileDescription) (File, error) {
 	return f, nil
 }
 
-// newRecord converts a record layout. A record defined in a copybook names
-// the copybook, so that blueprints can refer to its layout there.
-func newRecord(f *layout.Field, section, file, programPath string) Record {
-	r := Record{Section: section, File: file, Field: newField(f)}
+// newRecord converts a record layout, with the program's keys. A record
+// defined in a copybook names the copybook, so that blueprints can refer
+// to its layout there.
+func newRecord(f *layout.Field, section, file, programPath string, keys map[string]bool) Record {
+	r := Record{Section: section, File: file, Field: newField(f, keys)}
 	if f.Pos.File != programPath {
 		r.Copybook = copybookName(f.Pos.File)
 	}
 	return r
 }
 
-func newField(f *layout.Field) Field {
+func newField(f *layout.Field, keys map[string]bool) Field {
 	field := Field{
 		Level:       f.Level,
 		Name:        f.Name,
@@ -342,6 +356,7 @@ func newField(f *layout.Field) Field {
 		Length:      f.Length,
 		Picture:     f.Picture,
 		Category:    f.Category,
+		Kind:        fieldKind(f, keys),
 		Digits:      f.Digits,
 		Scale:       f.Scale,
 		Signed:      f.Signed,
@@ -361,7 +376,7 @@ func newField(f *layout.Field) Field {
 		field.Conditions = append(field.Conditions, Condition{Name: c.Name, Values: c.Values, Source: c.Pos.String()})
 	}
 	for _, child := range f.Children {
-		field.Fields = append(field.Fields, newField(child))
+		field.Fields = append(field.Fields, newField(child, keys))
 	}
 	return field
 }
@@ -395,8 +410,9 @@ func analyzeCopybook(path, copybookDir string, programs []Program) (Copybook, er
 		return Copybook{}, err
 	}
 	copybook := Copybook{Name: copybookName(path), Source: path, UsedBy: []string{}}
+	keys := copybookKeys(copybook.Name, programs)
 	for _, r := range records {
-		copybook.Records = append(copybook.Records, Record{Field: newField(r)})
+		copybook.Records = append(copybook.Records, Record{Field: newField(r, keys)})
 	}
 	if len(records) > 0 {
 		copybook.Description = cobol.CommentText(records[0].Comment)

@@ -1,0 +1,594 @@
+[
+  {
+    "dataset": "ACCT.ACCRUAL",
+    "copybook": "ACCRREC",
+    "kind": "internal",
+    "writtenBy": [
+      {
+        "job": "DAILY",
+        "step": "ACCRUE"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "DAILY",
+        "step": "ACCRUE"
+      },
+      {
+        "job": "DAILY",
+        "step": "CHARGE"
+      },
+      {
+        "job": "MONTHLY",
+        "step": "STMT"
+      },
+      {
+        "job": "MONTHLY",
+        "step": "LEDGER"
+      }
+    ]
+  },
+  {
+    "dataset": "ACCT.MAINT",
+    "copybook": "MAINTREC",
+    "kind": "external",
+    "readBy": [
+      {
+        "job": "DAILY",
+        "step": "MAINT"
+      }
+    ]
+  },
+  {
+    "dataset": "ACCT.MASTER",
+    "copybook": "ACCTMAST",
+    "kind": "internal",
+    "writtenBy": [
+      {
+        "job": "DAILY",
+        "step": "MAINT"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "DAILY",
+        "step": "ACCRUE"
+      },
+      {
+        "job": "DAILY",
+        "step": "CHARGE"
+      },
+      {
+        "job": "DAILY",
+        "step": "POSTMO"
+      },
+      {
+        "job": "DAILY",
+        "step": "LOAD"
+      },
+      {
+        "job": "MONTHLY",
+        "step": "STMT"
+      },
+      {
+        "job": "START",
+        "step": "LOAD"
+      }
+    ]
+  },
+  {
+    "dataset": "ACCT.ONLINE",
+    "copybook": "ACCTONL",
+    "indexed": true,
+    "kind": "internal",
+    "writtenBy": [
+      {
+        "job": "DAILY",
+        "step": "LOAD"
+      },
+      {
+        "job": "ONLINE",
+        "step": "AUTH"
+      },
+      {
+        "job": "START",
+        "step": "LOAD"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "ONLINE",
+        "step": "AUTH"
+      }
+    ]
+  },
+  {
+    "dataset": "BANK.CONTROL",
+    "copybook": "BANKCTL",
+    "kind": "internal",
+    "writtenBy": [
+      {
+        "job": "DAILY",
+        "step": "NEXTDAY"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "DAILY",
+        "step": "VALID"
+      },
+      {
+        "job": "DAILY",
+        "step": "VALIDC"
+      },
+      {
+        "job": "DAILY",
+        "step": "ACCRUE"
+      },
+      {
+        "job": "DAILY",
+        "step": "CHARGE"
+      },
+      {
+        "job": "DAILY",
+        "step": "POSTMO"
+      },
+      {
+        "job": "DAILY",
+        "step": "POST"
+      },
+      {
+        "job": "DAILY",
+        "step": "POSTCR"
+      },
+      {
+        "job": "DAILY",
+        "step": "POSTRT"
+      },
+      {
+        "job": "DAILY",
+        "step": "MAINT"
+      },
+      {
+        "job": "DAILY",
+        "step": "LOAD"
+      },
+      {
+        "job": "DAILY",
+        "step": "NEXTDAY"
+      },
+      {
+        "job": "DAILY",
+        "step": "CARDS"
+      },
+      {
+        "job": "ONLINE",
+        "step": "AUTH"
+      },
+      {
+        "job": "ONLINE",
+        "step": "EXTRACT"
+      },
+      {
+        "job": "START",
+        "step": "LOAD"
+      },
+      {
+        "job": "START",
+        "step": "CARDS"
+      }
+    ]
+  },
+  {
+    "dataset": "BANK.RATES",
+    "copybook": "RATEREC",
+    "kind": "external",
+    "readBy": [
+      {
+        "job": "DAILY",
+        "step": "ACCRUE"
+      }
+    ]
+  },
+  {
+    "dataset": "CARD.MASTER",
+    "copybook": "CARDREC",
+    "kind": "external",
+    "readBy": [
+      {
+        "job": "DAILY",
+        "step": "CARDS"
+      },
+      {
+        "job": "START",
+        "step": "CARDS"
+      }
+    ]
+  },
+  {
+    "dataset": "CARD.ONLINE",
+    "copybook": "CARDREC",
+    "indexed": true,
+    "kind": "internal",
+    "writtenBy": [
+      {
+        "job": "DAILY",
+        "step": "CARDS"
+      },
+      {
+        "job": "ONLINE",
+        "step": "AUTH"
+      },
+      {
+        "job": "START",
+        "step": "CARDS"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "ONLINE",
+        "step": "AUTH"
+      }
+    ]
+  },
+  {
+    "dataset": "GL.SUMMARY",
+    "copybook": "GLREC",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "MONTHLY",
+        "step": "LEDGER"
+      }
+    ]
+  },
+  {
+    "dataset": "HOLD.ONLINE",
+    "copybook": "HOLDREC",
+    "indexed": true,
+    "kind": "internal",
+    "writtenBy": [
+      {
+        "job": "DAILY",
+        "step": "LOAD"
+      },
+      {
+        "job": "ONLINE",
+        "step": "AUTH"
+      },
+      {
+        "job": "START",
+        "step": "LOAD"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "ONLINE",
+        "step": "AUTH"
+      },
+      {
+        "job": "ONLINE",
+        "step": "EXTRACT"
+      }
+    ]
+  },
+  {
+    "dataset": "MAINT.REJECTS",
+    "copybook": "REJREC",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "DAILY",
+        "step": "MAINT"
+      }
+    ]
+  },
+  {
+    "dataset": "TRAN.AUDIT",
+    "copybook": "AUDITREC",
+    "kind": "internal",
+    "writtenBy": [
+      {
+        "job": "DAILY",
+        "step": "POSTMO"
+      },
+      {
+        "job": "DAILY",
+        "step": "POST"
+      },
+      {
+        "job": "DAILY",
+        "step": "POSTCR"
+      },
+      {
+        "job": "DAILY",
+        "step": "POSTRT"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "MONTHLY",
+        "step": "STMT"
+      },
+      {
+        "job": "MONTHLY",
+        "step": "LEDGER"
+      }
+    ]
+  },
+  {
+    "dataset": "TRAN.CARD",
+    "copybook": "TRANREC",
+    "kind": "internal",
+    "writtenBy": [
+      {
+        "job": "ONLINE",
+        "step": "EXTRACT"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "DAILY",
+        "step": "VALIDC"
+      }
+    ]
+  },
+  {
+    "dataset": "TRAN.DAILY",
+    "copybook": "TRANREC",
+    "kind": "external",
+    "readBy": [
+      {
+        "job": "DAILY",
+        "step": "VALID"
+      }
+    ]
+  },
+  {
+    "dataset": "TRAN.REJECTS",
+    "copybook": "REJREC",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "DAILY",
+        "step": "VALID"
+      },
+      {
+        "job": "DAILY",
+        "step": "VALIDC"
+      },
+      {
+        "job": "DAILY",
+        "step": "POSTMO"
+      },
+      {
+        "job": "DAILY",
+        "step": "POST"
+      },
+      {
+        "job": "DAILY",
+        "step": "POSTCR"
+      },
+      {
+        "job": "DAILY",
+        "step": "POSTRT"
+      }
+    ]
+  },
+  {
+    "dataset": "\u0026\u0026CARDVAL",
+    "copybook": "TRANREC",
+    "temporary": true,
+    "kind": "temporary",
+    "writtenBy": [
+      {
+        "job": "DAILY",
+        "step": "VALIDC"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "DAILY",
+        "step": "SORT"
+      }
+    ]
+  },
+  {
+    "dataset": "\u0026\u0026CHARGED",
+    "copybook": "ACCTMAST",
+    "temporary": true,
+    "kind": "temporary",
+    "writtenBy": [
+      {
+        "job": "DAILY",
+        "step": "POSTMO"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "DAILY",
+        "step": "POST"
+      }
+    ]
+  },
+  {
+    "dataset": "\u0026\u0026CREDITED",
+    "copybook": "ACCTMAST",
+    "temporary": true,
+    "kind": "temporary",
+    "writtenBy": [
+      {
+        "job": "DAILY",
+        "step": "POSTCR"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "DAILY",
+        "step": "POSTRT"
+      }
+    ]
+  },
+  {
+    "dataset": "\u0026\u0026CREDITS",
+    "copybook": "TRANREC",
+    "temporary": true,
+    "kind": "temporary",
+    "writtenBy": [
+      {
+        "job": "DAILY",
+        "step": "POST"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "DAILY",
+        "step": "SORTCR"
+      }
+    ]
+  },
+  {
+    "dataset": "\u0026\u0026CREDSORT",
+    "copybook": "TRANREC",
+    "temporary": true,
+    "kind": "temporary",
+    "writtenBy": [
+      {
+        "job": "DAILY",
+        "step": "SORTCR"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "DAILY",
+        "step": "POSTCR"
+      }
+    ]
+  },
+  {
+    "dataset": "\u0026\u0026MONTHLY",
+    "copybook": "TRANREC",
+    "temporary": true,
+    "kind": "temporary",
+    "writtenBy": [
+      {
+        "job": "DAILY",
+        "step": "CHARGE"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "DAILY",
+        "step": "POSTMO"
+      }
+    ]
+  },
+  {
+    "dataset": "\u0026\u0026POSTED",
+    "copybook": "ACCTMAST",
+    "temporary": true,
+    "kind": "temporary",
+    "writtenBy": [
+      {
+        "job": "DAILY",
+        "step": "POST"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "DAILY",
+        "step": "POSTCR"
+      }
+    ]
+  },
+  {
+    "dataset": "\u0026\u0026RETSORT",
+    "copybook": "TRANREC",
+    "temporary": true,
+    "kind": "temporary",
+    "writtenBy": [
+      {
+        "job": "DAILY",
+        "step": "SORTRT"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "DAILY",
+        "step": "POSTRT"
+      }
+    ]
+  },
+  {
+    "dataset": "\u0026\u0026RETURNED",
+    "copybook": "ACCTMAST",
+    "temporary": true,
+    "kind": "temporary",
+    "writtenBy": [
+      {
+        "job": "DAILY",
+        "step": "POSTRT"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "DAILY",
+        "step": "MAINT"
+      }
+    ]
+  },
+  {
+    "dataset": "\u0026\u0026RETURNS",
+    "copybook": "TRANREC",
+    "temporary": true,
+    "kind": "temporary",
+    "writtenBy": [
+      {
+        "job": "DAILY",
+        "step": "POSTCR"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "DAILY",
+        "step": "SORTRT"
+      }
+    ]
+  },
+  {
+    "dataset": "\u0026\u0026SORTED",
+    "copybook": "TRANREC",
+    "temporary": true,
+    "kind": "temporary",
+    "writtenBy": [
+      {
+        "job": "DAILY",
+        "step": "SORT"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "DAILY",
+        "step": "POST"
+      }
+    ]
+  },
+  {
+    "dataset": "\u0026\u0026VALID",
+    "copybook": "TRANREC",
+    "temporary": true,
+    "kind": "temporary",
+    "writtenBy": [
+      {
+        "job": "DAILY",
+        "step": "VALID"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "DAILY",
+        "step": "SORT"
+      }
+    ]
+  }
+]

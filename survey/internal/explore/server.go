@@ -41,7 +41,7 @@ func New(system *blueprint.System, title string) (*Server, error) {
 		"add":     func(a, b int) int { return a + b },
 		"hop":     hopID,
 		"trace":   traceLink,
-		"stepRef": func(job, step string) StepRef { return StepRef{Job: job, Step: step} },
+		"stepRef": func(job, step string) blueprint.StepRef { return blueprint.StepRef{Job: job, Step: step} },
 		"lineage": func(program string, fields map[string]bool, rows []blueprint.Lineage) lineageTable {
 			return lineageTable{Program: program, Fields: fields, Rows: rows}
 		},
@@ -114,17 +114,11 @@ type lineageTable struct {
 
 // HomeView lists the system's parts.
 type HomeView struct {
-	System   *blueprint.System
-	Datasets []string
+	System *blueprint.System
 }
 
 func (s *Server) home(*http.Request) (any, error) {
-	v := HomeView{System: s.index.system}
-	for name := range s.index.datasets {
-		v.Datasets = append(v.Datasets, name)
-	}
-	slices.Sort(v.Datasets)
-	return v, nil
+	return HomeView{System: s.index.system}, nil
 }
 
 // SearchView is what a search found.
@@ -150,7 +144,7 @@ func (s *Server) job(r *http.Request) (any, error) {
 		return nil, fmt.Errorf("job %s: %w", r.PathValue("job"), errNotFound)
 	}
 	network, err := svg(blueprint.JobGraph(*j, blueprint.JobNotes{
-		StepLink:    func(step blueprint.Step) string { return stepLink(StepRef{Job: j.Name, Step: step.Name}) },
+		StepLink:    func(step blueprint.Step) string { return stepLink(blueprint.StepRef{Job: j.Name, Step: step.Name}) },
 		DatasetLink: func(ds string) string { return datasetLink(datasetBase(ds)) },
 	}))
 	return JobView{Job: j, Network: network}, err
@@ -176,10 +170,11 @@ func (s *Server) step(r *http.Request) (any, error) {
 	return StepView{Job: j, Step: j.Steps[i], Analyzed: analyzed}, nil
 }
 
-// DatasetView is a dataset, the copybooks that describe its records, and
-// every job step that uses it.
+// DatasetView is a dataset, its kind across the system, the copybooks that
+// describe its records, and every job step that uses it.
 type DatasetView struct {
 	Name      string
+	Dataset   *blueprint.SystemDataset
 	Copybooks []string
 	Uses      []DatasetUse
 }
@@ -190,7 +185,7 @@ func (s *Server) dataset(r *http.Request) (any, error) {
 	if !ok {
 		return nil, fmt.Errorf("dataset %s: %w", name, errNotFound)
 	}
-	v := DatasetView{Name: name, Uses: uses}
+	v := DatasetView{Name: name, Dataset: s.index.systemDatasets[name], Uses: uses}
 	for _, u := range uses {
 		if u.Copybook != "" && !slices.Contains(v.Copybooks, u.Copybook) {
 			v.Copybooks = append(v.Copybooks, u.Copybook)
@@ -203,7 +198,7 @@ func (s *Server) dataset(r *http.Request) (any, error) {
 type ProgramView struct {
 	Program *blueprint.Program
 	Flow    template.HTML
-	Runs    []StepRef
+	Runs    []blueprint.StepRef
 }
 
 func (s *Server) program(r *http.Request) (any, error) {

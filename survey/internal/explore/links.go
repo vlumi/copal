@@ -3,6 +3,8 @@ package explore
 import (
 	"net/url"
 	"strings"
+
+	"github.com/vlumi/copal/survey/blueprint"
 )
 
 // The explorer's pages, by what they show.
@@ -21,7 +23,7 @@ func copybookLink(name string) string { return "/copybooks/" + url.PathEscape(na
 
 func jobLink(name string) string { return "/jobs/" + url.PathEscape(name) }
 
-func stepLink(s StepRef) string { return jobLink(s.Job) + "/steps/" + url.PathEscape(s.Step) }
+func stepLink(s blueprint.StepRef) string { return jobLink(s.Job) + "/steps/" + url.PathEscape(s.Step) }
 
 func datasetLink(base string) string { return "/datasets/" + url.PathEscape(base) }
 

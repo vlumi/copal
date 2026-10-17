@@ -29,7 +29,8 @@ func TestSorts(t *testing.T) {
 		t.Fatal(err)
 	}
 	sorts := Sorts(p)
-	if len(sorts) != 1 || sorts[0].Work != "WORK-SORT" || !slices.Equal(sorts[0].Using, []string{"IN-FILE"}) ||
+	if len(sorts) != 1 || sorts[0].Work != "WORK-SORT" || !slices.Equal(sorts[0].Keys, []string{"WORK-KEY", "WORK-SEQ"}) ||
+		!slices.Equal(sorts[0].Using, []string{"IN-FILE"}) ||
 		!slices.Equal(sorts[0].Giving, []string{"SORTED"}) {
 		t.Errorf("sorts %+v", sorts)
 	}

@@ -42,11 +42,13 @@ func Uses(p *cobol.Program) []Use {
 	return uses
 }
 
-// Sort is a SORT statement: its work file, the files it reads with USING
-// and those it writes with GIVING. A sort with an input or output
-// procedure has no files on that side.
+// Sort is a SORT statement: its work file, the fields of the work file's
+// record it sorts on, in order, the files it reads with USING and those it
+// writes with GIVING. A sort with an input or output procedure has no
+// files on that side.
 type Sort struct {
 	Work   string
+	Keys   []string
 	Using  []string
 	Giving []string
 	Pos    cobol.Pos
@@ -61,6 +63,9 @@ func Sorts(p *cobol.Program) []Sort {
 				return
 			}
 			sort := Sort{Work: s.Files[0].Name, Pos: s.Pos}
+			for _, key := range s.Reads {
+				sort.Keys = append(sort.Keys, key.Name)
+			}
 			for _, f := range s.Files[1:] {
 				if f.Mode == Input {
 					sort.Using = append(sort.Using, f.Name)
