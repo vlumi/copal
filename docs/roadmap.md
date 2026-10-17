@@ -108,8 +108,8 @@ Done when: starting from a field in a report, you can follow it back through eve
 The explorer shows the system the way the code is organized. Designing a replacement needs it organized the way the business is. The views, with their plan in [plans/design-views.md](plans/design-views.md):
 
 - Kinds, visible everywhere: amounts, codes, keys, dates and text among fields; main and called programs; external, internal, output and temporary datasets; shown as badges in the explorer, as columns in the blueprints, and as looks of their own in the diagrams (done).
-- Rules by field: every decision on a field across every program, and a page per field of a shared record.
-- Entities: a page per copybook record with its datasets, its users, who reads and writes each field, and for each code field its state machine, derived from the decision tables.
+- Rules by field: every decision on a field across every program, and a page per field of a shared record (done).
+- Entities: a page per copybook record with its datasets, its users, who reads and writes each field, and for each code field its state machine, derived from the decision tables (done).
 - Ownership: programs grouped by the entities they write, drawn; the first draft of a service decomposition.
 - The boundary: the system's inputs and outputs, files, reports and streams, in one place.
 - Forward lineage: from a field to everything its values reach, the mirror of the trail back, on the same diagrams.

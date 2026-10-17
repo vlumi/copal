@@ -11,7 +11,7 @@ survey blueprints -copybooks dir -out dir [-title name] program.cbl... [job.jcl.
 survey explore -copybooks dir [-addr host:port] [-title name] program.cbl... [job.jcl...]
 ```
 
-Point it at the programs and the jobs, and tell it where the copybooks are. `blueprints` writes a directory of Markdown for people and JSON for tools, with SVG diagrams, and an index; [docs/blueprints.md](../docs/blueprints.md) explains how to read them. `explore` serves the same analysis as a web app, at `127.0.0.1:1192` by default, where every job, step, dataset, program, paragraph, field and copybook is a page and a link, each with a badge for its kind, a search finds any of them, and a field's values can be followed back across programs and job steps to the input they came from, highlighted on the diagrams.
+Point it at the programs and the jobs, and tell it where the copybooks are. `blueprints` writes a directory of Markdown for people and JSON for tools, with SVG diagrams, and an index; [docs/blueprints.md](../docs/blueprints.md) explains how to read them. `explore` serves the same analysis as a web app, at `127.0.0.1:1192` by default, where every job, step, dataset, program, paragraph, field and copybook is a page and a link, each with a badge for its kind, a search finds any of them, and a field's values can be followed back across programs and job steps to the input they came from, highlighted on the diagrams. Its design views show the system as the business sees it: the entities, with who reads, writes and decides on each field across the programs, and the state machines of their codes.
 
 For the First Bank of Pangaea, `make blueprints` regenerates [blueprints/pangaea/](../blueprints/pangaea/README.md) and `make explore` serves the explorer.
 
@@ -40,6 +40,7 @@ The analyses run in order, each on the output of the ones before it, and each is
 - Field origins and lineage do not consider the order of statements: a value that every path overwrites still counts as an origin, and so does a field of a record redefined for another record type. Order-aware tracing would need the control flow between statements, which the structure analysis now makes possible.
 - Lineage goes back, not forward, and does not yet follow values into a called program through its `LINKAGE SECTION`, nor in from `SYSIN` through `ACCEPT`. A program's outputs keep only the first record type it writes to a file.
 - The kinds say no more than the code: a field is a key only where a file's `RECORD KEY` or a sort names it, so a key a master file is merely sorted by is a number. The one guess among them is the date, told by its name.
+- An entity's uses are by name: a statement that moves a whole record counts for the record, not for each of its fields. A state machine reads one paragraph's decisions at a time: a state tested in one paragraph and set in the paragraph it performs, or after a jump, is drawn from any state, and so is a state set on a path that only finds the field not in some state. Values copied from another field are listed, not drawn.
 - It reads Pangaea's subset of COBOL and JCL. Breadth is not a goal until the project needs it.
 - No language model is involved. One may come later, for naming and prose, on top of facts the analysis has established.
 

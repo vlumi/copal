@@ -84,6 +84,8 @@ On the explorer's field page, a section **Rules**: every decision table in the p
 
 Checks: `AM-STATUS` across the system shows `TXPOST` deciding in `3000-APPLY-TRAN`, `ACCTMNT` in its maintenance paragraphs, `ACCTLOAD` in `2000-LOAD-ACCOUNT`; `AM-OVERDRAFT-LIMIT` shows `TXPOST`, `ACCTMNT`, `AUTHPUR`, `ATMWDL` and `ATMBAL`.
 
+As built: the `AM-STATUS` check holds, with `MONCHG` and `STMTPRT` deciding on it too. `AM-OVERDRAFT-LIMIT` shows `TXPOST`, `ACCTMNT` and `ACCTLOAD`; the authorization programs use `AO-OVERDRAFT-LIMIT` of the online account, a record of its own copybook, `ACCTONL`, whose page shows `AUTHPUR`, `ATMWDL`, `ATMBAL` and `AUTHREV`. The two are joined by `ACCTLOAD`'s move, which is lineage, not this view.
+
 ### Entities
 
 A new page per copybook record, `/entities/{record}`, and an index at `/entities`. An entity is a record a copybook describes. The page shows: the datasets described by it, with their kinds; the programs that use it, and for each field, who reads and who writes it, as compact lists; the fields with their kinds; and for each `code` field, its **state machine**.
@@ -98,6 +100,8 @@ The state machine is derived from the decision tables and the lineage, determini
 Draw it with `diagram`: states as nodes and transitions as edges. Edges need a label for the program and paragraph, which `diagram.Edge` does not have, so give it an optional `Label string`, drawn at the edge's midpoint, deterministic like the rest, with a test. Put the state machine on the entity page and, for the field itself, on its cross-program page.
 
 Checks: `AM-STATUS` shows `O` to `F` and `F` to `O` from `ACCTMNT`'s freeze and unfreeze, `O` to `X` from close, and an entry to `O` from open; `HD-STATUS` shows `O` to `R` from `AUTHREV`; `CR-STATUS` has no transitions, which is itself a finding worth stating: nothing in the system blocks or unblocks a card.
+
+As built, by the rules above: freeze, unfreeze, open and `CR-STATUS` hold. Close is an entry to `X` from any state: `2220-CLOSE` tests only the balance, and the test that the account is not closed is in `2200-APPLY-REQUEST`, which goes to it; a frozen account can be closed, so `O` to `X` would say less than the code. `HD-STATUS` to `R` is from any state for the same reason: `AUTHREV` tests `HD-REVERSED` in `0000-MAIN`, false, and sets it in `2000-APPROVE`, which it performs. Following decisions across paragraphs would need the paths between them, which the rules do not follow; the page states the limit.
 
 One pull request, commits: condition refs in `rules` and the model; the field page's rules section; the cross-program field page; the entity pages; edge labels in `diagram`; state machines; docs.
 
