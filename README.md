@@ -79,3 +79,7 @@ Copal is young amber: resin that has hardened but not quite fossilized, and the 
 Pangaea is the single supercontinent of the age of the dinosaurs, before it broke into the continents of today. A monolith, waiting to be split.
 
 A survey walks the ground and maps it before anyone builds; bedrock is what everything stands on.
+
+## License
+
+MIT, see [LICENSE](LICENSE). The First Bank of Pangaea, its programs, data and documents included, is fiction written for this project and is covered by the same license.
