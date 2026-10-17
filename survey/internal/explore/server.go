@@ -51,7 +51,7 @@ func New(system *blueprint.System, title string) (*Server, error) {
 		},
 	}
 	for _, page := range []string{"index", "search", "job", "step", "dataset", "program", "paragraph", "field", "copybook",
-		"entities", "entity", "entityfield", "source", "trace", "error"} {
+		"entities", "entity", "entityfield", "ownership", "boundary", "source", "trace", "error"} {
 		t, err := template.New("").Funcs(funcs).ParseFS(files, "templates/base.html", "templates/"+page+".html")
 		if err != nil {
 			return nil, err
@@ -76,6 +76,8 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /programs/{program}/fields/{field}", s.view("field", s.field))
 	mux.HandleFunc("GET /copybooks/{copybook}", s.view("copybook", s.copybook))
 	mux.HandleFunc("GET /entities", s.view("entities", s.entities))
+	mux.HandleFunc("GET /ownership", s.view("ownership", s.ownership))
+	mux.HandleFunc("GET /boundary", s.view("boundary", s.boundary))
 	mux.HandleFunc("GET /entities/{record}", s.view("entity", s.entity))
 	mux.HandleFunc("GET /entities/{record}/fields/{field}", s.view("entityfield", s.entityField))
 	mux.HandleFunc("GET /source/{path...}", s.view("source", s.source))
@@ -357,6 +359,25 @@ func (s *Server) copybook(r *http.Request) (any, error) {
 
 func (s *Server) entities(*http.Request) (any, error) {
 	return s.index.system.Entities, nil
+}
+
+// OwnershipView is the entities kept in datasets, with the programs that
+// write them and those that only read them, drawn.
+type OwnershipView struct {
+	Entities []blueprint.Entity
+	Diagram  template.HTML
+}
+
+func (s *Server) ownership(*http.Request) (any, error) {
+	v := OwnershipView{}
+	for _, e := range s.index.system.Entities {
+		if len(e.WrittenBy)+len(e.ReadBy) > 0 {
+			v.Entities = append(v.Entities, e)
+		}
+	}
+	var err error
+	v.Diagram, err = svg(blueprint.OwnershipGraph(v.Entities, blueprint.OwnershipNotes{EntityLink: entityLink, ProgramLink: programLink}))
+	return v, err
 }
 
 // EntityView is an entity: the datasets it describes, with their kinds,

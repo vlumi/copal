@@ -1,0 +1,48 @@
+{{define "title"}}The boundary{{end}}
+{{define "content"}}
+{{with .View}}
+<h1>The boundary</h1>
+<p class="note">The system's contracts with the outside: the datasets that come in, those that go out, the reports its job steps print, and the in-stream data its programs ACCEPT, with what they DISPLAY in reply. The survey sees the files and the streams, not what is on the other end: the branches' systems that send the day's transactions and the server around AUTHSRV that passes requests in are outside it.</p>
+<h2>Inputs</h2>
+<p class="note">Datasets no step writes, with the steps that read them.</p>
+{{template "boundaryDatasets" .Inputs}}
+{{with .Streams}}
+<h2>In-stream data</h2>
+<p class="note">The SYSIN of each step whose program ACCEPTs, and what the program DISPLAYs to the job's output.</p>
+<table>
+  <thead><tr><th>Job</th><th>Step</th><th>Program</th><th>SYSIN</th><th>Displays</th></tr></thead>
+  <tbody>
+  {{range .}}{{$p := .Program}}<tr><td><a href="{{job .Job}}">{{.Job}}</a></td><td><a href="{{step .StepRef}}">{{.Step}}</a></td><td><a href="{{program $p}}">{{$p}}</a></td>
+    <td>{{if .InStream}}in-stream data{{else}}{{range $i, $d := .Datasets}}{{if $i}}, {{end}}<a href="{{dataset (base $d)}}">{{$d}}</a>{{end}}{{end}}</td>
+    <td>{{range .Displays}}<code>DISPLAY {{join .Items " "}}</code> in <a href="{{paragraph $p .Paragraph}}">{{.Paragraph}}</a><br>{{end}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{end}}
+<h2>Outputs</h2>
+<p class="note">Datasets no step reads, with the steps that write them.</p>
+{{template "boundaryDatasets" .Outputs}}
+<h2>Reports</h2>
+<p class="note">Every DD to the job's output, SYSOUT, with the program's file bound to it and the file's records.</p>
+<table>
+  <thead><tr><th>Job</th><th>Step</th><th>DD</th><th>Program</th><th>File</th><th>Records</th></tr></thead>
+  <tbody>
+  {{range .Reports}}{{$p := .Program}}<tr><td><a href="{{job .Job}}">{{.Job}}</a></td><td><a href="{{step .StepRef}}">{{.Step}}</a></td><td>{{.DD}}</td><td><a href="{{program $p}}">{{$p}}</a></td><td>{{.File}}</td>
+    <td>{{range $i, $r := .Records}}{{if $i}}, {{end}}<a href="{{field $p $r}}">{{$r}}</a>{{end}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{end}}
+{{end}}
+
+{{define "boundaryDatasets"}}
+<table>
+  <thead><tr><th>Dataset</th><th>Copybook</th><th>Entity</th><th>Steps</th></tr></thead>
+  <tbody>
+  {{range .}}<tr><td><a href="{{dataset .Name}}">{{.Name}}</a></td><td>{{with .Copybook}}<a href="{{copybook .}}">{{.}}</a>{{end}}</td>
+    <td>{{range $i, $e := .Entities}}{{if $i}}, {{end}}<a href="{{entity $e}}">{{$e}}</a>{{end}}</td>
+    <td>{{template "steps" (or .WrittenBy .ReadBy)}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{end}}

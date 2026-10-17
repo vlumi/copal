@@ -13,6 +13,7 @@
   </tbody>
 </table>
 {{else}}<p class="note">No dataset: no program reads or writes a file of it in a job.</p>{{end}}
+{{if or $e.WrittenBy $e.ReadBy}}<p><a href="/ownership">Owned</a> by {{range $i, $p := $e.WrittenBy}}{{if $i}}, {{end}}<a href="{{program $p}}">{{$p}}</a>{{else}}no program{{end}}, which write its datasets{{with $e.ReadBy}}; only read by {{range $i, $p := .}}{{if $i}}, {{end}}<a href="{{program $p}}">{{$p}}</a>{{end}}{{end}}.</p>{{end}}
 <h2>Programs</h2>
 <ul class="names">{{range .Programs}}<li><a href="{{program .Name}}">{{.Name}}</a> {{template "badge" .Kind}}</li>{{else}}<li class="note">none</li>{{end}}</ul>
 {{with .Machines}}
