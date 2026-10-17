@@ -40,10 +40,27 @@ type Program struct {
 	Using    []string  `json:"using,omitempty"`
 	Calls    []Call    `json:"calls,omitempty"`
 	CalledBy []string  `json:"calledBy,omitempty"`
+	Sorts    []Sort    `json:"sorts,omitempty"`
 	Lineage  []Lineage `json:"lineage,omitempty"`
 	Outputs  []Output  `json:"outputs,omitempty"`
 	// Rules are the program's decision tables, a blueprint of their own.
 	Rules Rules `json:"-"`
+	flow  dataflow.Flow
+}
+
+// Sort is a SORT statement: its work file, and the files it reads with
+// USING and writes with GIVING, none on a side it has a procedure for.
+type Sort struct {
+	Work   string   `json:"work"`
+	Using  []string `json:"using,omitempty"`
+	Giving []string `json:"giving,omitempty"`
+	Source string   `json:"source"`
+}
+
+// Trace traces where a data item's values come from within the program,
+// through the statements that move them.
+func (p Program) Trace(item string) dataflow.Trace {
+	return p.flow.Trace(item)
 }
 
 // Lineage is one statement moving a value from one data item, or a file,
@@ -258,6 +275,10 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 		return Program{}, err
 	}
 	flow := dataflow.Analyze(p, laidOut)
+	program.flow = flow
+	for _, s := range fileio.Sorts(p) {
+		program.Sorts = append(program.Sorts, Sort{Work: s.Work, Using: s.Using, Giving: s.Giving, Source: s.Pos.String()})
+	}
 	for i, para := range paragraphs {
 		bp := newParagraph(para)
 		bp.Reads, bp.Writes = flow.Paragraphs[i].Reads, flow.Paragraphs[i].Writes
