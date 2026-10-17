@@ -3,14 +3,17 @@ package blueprint
 import "slices"
 
 // Entity is a record a copybook describes: the datasets whose records
-// the copybook describes, and what the programs that use the copybook for
-// a record of their own do with each of its fields.
+// the copybook describes, the programs that write one of them and those
+// that only read them, and what the programs that use the copybook for a
+// record of their own do with each of its fields.
 type Entity struct {
-	Record   string        `json:"record"`
-	Copybook string        `json:"copybook"`
-	Datasets []string      `json:"datasets,omitempty"`
-	Programs []string      `json:"programs,omitempty"`
-	Fields   []EntityField `json:"fields"`
+	Record    string        `json:"record"`
+	Copybook  string        `json:"copybook"`
+	Datasets  []string      `json:"datasets,omitempty"`
+	WrittenBy []string      `json:"writtenBy,omitempty"`
+	ReadBy    []string      `json:"readBy,omitempty"`
+	Programs  []string      `json:"programs,omitempty"`
+	Fields    []EntityField `json:"fields"`
 }
 
 // EntityField is a field of an entity, FILLER left out, with its kind,
@@ -72,14 +75,38 @@ func entities(copybooks []Copybook, programs []Program) []Entity {
 	return list
 }
 
-// describeEntities lists the datasets each entity's copybook describes.
-func describeEntities(entities []Entity, datasets []SystemDataset) {
+// describeEntities lists the datasets each entity's copybook describes,
+// the programs that write any of them, run by the job steps that do, and
+// those that read them without writing any.
+func describeEntities(entities []Entity, datasets []SystemDataset, jobs []Job) {
+	programs := map[StepRef]string{}
+	for _, job := range jobs {
+		for _, step := range job.Steps {
+			programs[StepRef{Job: job.Name, Step: step.Name}] = step.Program
+		}
+	}
 	for i := range entities {
+		e := &entities[i]
+		var readers []string
 		for _, d := range datasets {
-			if d.Copybook == entities[i].Copybook {
-				entities[i].Datasets = append(entities[i].Datasets, d.Name)
+			if d.Copybook != e.Copybook {
+				continue
+			}
+			e.Datasets = append(e.Datasets, d.Name)
+			for _, s := range d.WrittenBy {
+				addOnce(&e.WrittenBy, programs[s])
+			}
+			for _, s := range d.ReadBy {
+				addOnce(&readers, programs[s])
 			}
 		}
+		for _, r := range readers {
+			if !slices.Contains(e.WrittenBy, r) {
+				e.ReadBy = append(e.ReadBy, r)
+			}
+		}
+		slices.Sort(e.WrittenBy)
+		slices.Sort(e.ReadBy)
 	}
 }
 

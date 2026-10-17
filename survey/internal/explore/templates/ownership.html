@@ -1,0 +1,19 @@
+{{define "title"}}Ownership{{end}}
+{{define "content"}}
+{{with .View}}
+<h1>Ownership</h1>
+<p class="note">The programs grouped by the entities they write: a program owns an entity when one of its job steps writes a dataset the entity's copybook describes, and only reads it when its steps read such datasets and write none. This is the first draft of a service decomposition, derived from who writes what; it is not a design.</p>
+<div class="diagram">{{.Diagram}}</div>
+<h2>The groups</h2>
+<table>
+  <thead><tr><th>Entity</th><th>Datasets</th><th>Written by</th><th>Only read by</th></tr></thead>
+  <tbody>
+  {{range .Entities}}<tr><td><a href="{{entity .Record}}">{{.Record}}</a><br><span class="note">copybook <a href="{{copybook .Copybook}}">{{.Copybook}}</a></span></td>
+    <td>{{range $i, $d := .Datasets}}{{if $i}}, {{end}}<a href="{{dataset $d}}">{{$d}}</a>{{end}}</td>
+    <td>{{range $i, $p := .WrittenBy}}{{if $i}}, {{end}}<a href="{{program $p}}">{{$p}}</a>{{else}}<span class="note">no program: it comes from outside</span>{{end}}</td>
+    <td>{{range $i, $p := .ReadBy}}{{if $i}}, {{end}}<a href="{{program $p}}">{{$p}}</a>{{end}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{end}}
+{{end}}
