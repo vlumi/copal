@@ -2604,5 +2604,299 @@
         }
       ]
     }
+  ],
+  "inputs": [
+    {
+      "file": "CONTROL-FILE",
+      "record": "BANK-CONTROL-RECORD",
+      "fields": [
+        {
+          "name": "BC-BUSINESS-DATE",
+          "start": 1,
+          "length": 8,
+          "reaches": [
+            "REPORT-LINE",
+            "file REPORT-OUT"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "HOLD-FILE",
+      "record": "HOLD-RECORD",
+      "fields": [
+        {
+          "name": "HD-ACCT-NO",
+          "start": 1,
+          "length": 10,
+          "reaches": [
+            "file HOLD-FILE"
+          ]
+        },
+        {
+          "name": "HD-HOLD-NO",
+          "start": 11,
+          "length": 6,
+          "reaches": [
+            "WS-LAST-HOLD-NO",
+            "HD-HOLD-NO",
+            "RS-AUTH-CODE",
+            "WS-RC-VALUE",
+            "REPORT-LINE",
+            "file HOLD-FILE",
+            "file REPORT-OUT"
+          ]
+        },
+        {
+          "name": "HD-CARD-NO",
+          "start": 17,
+          "length": 16,
+          "reaches": [
+            "file HOLD-FILE"
+          ]
+        },
+        {
+          "name": "HD-KIND",
+          "start": 33,
+          "length": 1,
+          "reaches": [
+            "file HOLD-FILE"
+          ]
+        },
+        {
+          "name": "HD-STATUS",
+          "start": 34,
+          "length": 1,
+          "reaches": [
+            "file HOLD-FILE"
+          ]
+        },
+        {
+          "name": "HD-AMOUNT",
+          "start": 35,
+          "length": 9,
+          "reaches": [
+            "WS-RELEASED-TOTAL",
+            "WS-HELD-TOTAL",
+            "WS-RA-VALUE",
+            "REPORT-LINE",
+            "file HOLD-FILE",
+            "file REPORT-OUT"
+          ]
+        },
+        {
+          "name": "HD-FEE",
+          "start": 44,
+          "length": 5,
+          "reaches": [
+            "WS-HELD-TOTAL",
+            "WS-RA-VALUE",
+            "REPORT-LINE",
+            "file HOLD-FILE",
+            "file REPORT-OUT"
+          ]
+        },
+        {
+          "name": "HD-TERMINAL",
+          "start": 49,
+          "length": 20,
+          "reaches": [
+            "file HOLD-FILE"
+          ]
+        },
+        {
+          "name": "HD-TIMESTAMP",
+          "start": 69,
+          "length": 14,
+          "reaches": [
+            "file HOLD-FILE"
+          ]
+        },
+        {
+          "name": "HD-BUSINESS-DATE",
+          "start": 83,
+          "length": 8,
+          "reaches": [
+            "file HOLD-FILE"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "CARD-FILE",
+      "record": "CARD-RECORD",
+      "fields": [
+        {
+          "name": "CR-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "reaches": [
+            "file CARD-FILE"
+          ]
+        },
+        {
+          "name": "CR-ACCT-NO",
+          "start": 17,
+          "length": 10,
+          "reaches": [
+            "AO-ACCT-NO",
+            "HD-ACCT-NO",
+            "file CARD-FILE",
+            "file ACCT-FILE",
+            "file HOLD-FILE"
+          ]
+        },
+        {
+          "name": "CR-CUST-NO",
+          "start": 27,
+          "length": 8,
+          "reaches": [
+            "file CARD-FILE"
+          ]
+        },
+        {
+          "name": "CR-STATUS",
+          "start": 35,
+          "length": 1,
+          "reaches": [
+            "file CARD-FILE"
+          ]
+        },
+        {
+          "name": "CR-EXPIRY-MONTH",
+          "start": 36,
+          "length": 6,
+          "reaches": [
+            "file CARD-FILE"
+          ]
+        },
+        {
+          "name": "CR-PURCHASE-LIMIT",
+          "start": 42,
+          "length": 7,
+          "reaches": [
+            "file CARD-FILE"
+          ]
+        },
+        {
+          "name": "CR-CASH-LIMIT",
+          "start": 49,
+          "length": 7,
+          "reaches": [
+            "file CARD-FILE"
+          ]
+        },
+        {
+          "name": "CR-TOTALS-DATE",
+          "start": 56,
+          "length": 8,
+          "reaches": [
+            "file CARD-FILE"
+          ]
+        },
+        {
+          "name": "CR-DAY-PURCHASES",
+          "start": 64,
+          "length": 7,
+          "reaches": [
+            "file CARD-FILE"
+          ]
+        },
+        {
+          "name": "CR-DAY-CASH",
+          "start": 71,
+          "length": 7,
+          "reaches": [
+            "file CARD-FILE"
+          ]
+        },
+        {
+          "name": "CR-MONTH-WITHDRAWALS",
+          "start": 78,
+          "length": 3,
+          "reaches": [
+            "file CARD-FILE"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "ACCT-FILE",
+      "record": "ACCT-ONLINE-RECORD",
+      "fields": [
+        {
+          "name": "AO-ACCT-NO",
+          "start": 1,
+          "length": 10,
+          "reaches": [
+            "file ACCT-FILE"
+          ]
+        },
+        {
+          "name": "AO-CUST-NO",
+          "start": 11,
+          "length": 8,
+          "reaches": [
+            "file ACCT-FILE"
+          ]
+        },
+        {
+          "name": "AO-SHORT-NAME",
+          "start": 19,
+          "length": 20,
+          "reaches": [
+            "file ACCT-FILE"
+          ]
+        },
+        {
+          "name": "AO-ACCT-TYPE",
+          "start": 39,
+          "length": 1,
+          "reaches": [
+            "file ACCT-FILE"
+          ]
+        },
+        {
+          "name": "AO-STATUS",
+          "start": 40,
+          "length": 1,
+          "reaches": [
+            "file ACCT-FILE"
+          ]
+        },
+        {
+          "name": "AO-BALANCE",
+          "start": 41,
+          "length": 13,
+          "reaches": [
+            "file ACCT-FILE"
+          ]
+        },
+        {
+          "name": "AO-OVERDRAFT-LIMIT",
+          "start": 54,
+          "length": 9,
+          "reaches": [
+            "file ACCT-FILE"
+          ]
+        },
+        {
+          "name": "AO-HOLDS",
+          "start": 63,
+          "length": 13,
+          "reaches": [
+            "file ACCT-FILE"
+          ]
+        },
+        {
+          "name": "AO-AS-OF-DATE",
+          "start": 76,
+          "length": 8,
+          "reaches": [
+            "file ACCT-FILE"
+          ]
+        }
+      ]
+    }
   ]
 }

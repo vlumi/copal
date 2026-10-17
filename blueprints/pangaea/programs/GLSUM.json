@@ -3119,5 +3119,107 @@
         }
       ]
     }
+  ],
+  "inputs": [
+    {
+      "file": "ACCR-IN",
+      "record": "ACCRUAL-RECORD",
+      "fields": [
+        {
+          "name": "AC-ACCT-NO",
+          "start": 1,
+          "length": 10
+        },
+        {
+          "name": "AC-THROUGH-DATE",
+          "start": 11,
+          "length": 8
+        },
+        {
+          "name": "AC-ACCRUED",
+          "start": 19,
+          "length": 7
+        },
+        {
+          "name": "AC-DUE",
+          "start": 26,
+          "length": 5
+        },
+        {
+          "name": "AC-DUE-MONTH",
+          "start": 31,
+          "length": 6,
+          "reaches": [
+            "WS-CLOSED-MONTH-NUMBER",
+            "GL-MONTH",
+            "file GL-OUT"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "AUDIT-IN",
+      "record": "AUDIT-RECORD",
+      "fields": [
+        {
+          "name": "AU-BUSINESS-DATE",
+          "start": 1,
+          "length": 8,
+          "reaches": [
+            "WS-POSTING-MONTH"
+          ]
+        },
+        {
+          "name": "AU-TRAN-ID",
+          "start": 9,
+          "length": 10
+        },
+        {
+          "name": "AU-ACCT-NO",
+          "start": 19,
+          "length": 10
+        },
+        {
+          "name": "AU-TRAN-CODE",
+          "start": 29,
+          "length": 2,
+          "reaches": [
+            "WS-POSTING-CODE"
+          ]
+        },
+        {
+          "name": "AU-AMOUNT",
+          "start": 31,
+          "length": 11,
+          "reaches": [
+            "WS-AMOUNT",
+            "WS-LT-DEBITS",
+            "WS-LT-CREDITS",
+            "GL-DEBITS",
+            "WS-DEBIT-TOTAL",
+            "WS-DEPOSITS-CHANGE",
+            "WS-TRANSIT-NET",
+            "WS-LL-DEBITS",
+            "GL-CREDITS",
+            "WS-CREDIT-TOTAL",
+            "WS-LL-CREDITS",
+            "WS-RA-VALUE",
+            "REPORT-LINE",
+            "file GL-OUT",
+            "file REPORT-OUT"
+          ]
+        },
+        {
+          "name": "AU-BALANCE-BEFORE",
+          "start": 42,
+          "length": 13
+        },
+        {
+          "name": "AU-BALANCE-AFTER",
+          "start": 55,
+          "length": 13
+        }
+      ]
+    }
   ]
 }

@@ -2399,5 +2399,126 @@
         }
       ]
     }
+  ],
+  "inputs": [
+    {
+      "file": "CONTROL-FILE",
+      "record": "BANK-CONTROL-RECORD",
+      "fields": [
+        {
+          "name": "BC-BUSINESS-DATE",
+          "start": 1,
+          "length": 8,
+          "reaches": [
+            "WS-BUSINESS-DATE",
+            "REPORT-LINE",
+            "file REPORT-OUT"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "ACCT-IN",
+      "record": "ACCT-MASTER-RECORD",
+      "fields": [
+        {
+          "name": "AM-ACCT-NO",
+          "start": 1,
+          "length": 10,
+          "reaches": [
+            "TD-ACCT-NO",
+            "TRAN-OUT-RECORD",
+            "file TRAN-OUT"
+          ]
+        },
+        {
+          "name": "AM-CUST-NO",
+          "start": 11,
+          "length": 8
+        },
+        {
+          "name": "AM-SHORT-NAME",
+          "start": 19,
+          "length": 20
+        },
+        {
+          "name": "AM-ACCT-TYPE",
+          "start": 39,
+          "length": 1
+        },
+        {
+          "name": "AM-STATUS",
+          "start": 40,
+          "length": 1
+        },
+        {
+          "name": "AM-OPEN-DATE",
+          "start": 41,
+          "length": 8
+        },
+        {
+          "name": "AM-LAST-ACTIVITY-DATE",
+          "start": 49,
+          "length": 8
+        },
+        {
+          "name": "AM-BALANCE",
+          "start": 57,
+          "length": 13
+        },
+        {
+          "name": "AM-OVERDRAFT-LIMIT",
+          "start": 70,
+          "length": 9
+        }
+      ]
+    },
+    {
+      "file": "ACCR-IN",
+      "record": "ACCRUAL-RECORD",
+      "fields": [
+        {
+          "name": "AC-ACCT-NO",
+          "start": 1,
+          "length": 10
+        },
+        {
+          "name": "AC-THROUGH-DATE",
+          "start": 11,
+          "length": 8
+        },
+        {
+          "name": "AC-ACCRUED",
+          "start": 19,
+          "length": 7
+        },
+        {
+          "name": "AC-DUE",
+          "start": 26,
+          "length": 5,
+          "reaches": [
+            "TD-AMOUNT",
+            "WS-INTEREST-TOTAL",
+            "WS-OVERDRAFT-TOTAL",
+            "WS-FEE-TOTAL",
+            "TRAN-OUT-RECORD",
+            "WS-RA-VALUE",
+            "REPORT-LINE",
+            "file TRAN-OUT",
+            "file REPORT-OUT"
+          ]
+        },
+        {
+          "name": "AC-DUE-MONTH",
+          "start": 31,
+          "length": 6,
+          "reaches": [
+            "WS-CLOSED-MONTH",
+            "REPORT-LINE",
+            "file REPORT-OUT"
+          ]
+        }
+      ]
+    }
   ]
 }

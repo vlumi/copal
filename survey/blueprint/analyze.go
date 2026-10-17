@@ -49,6 +49,7 @@ type Program struct {
 	Sorts    []Sort    `json:"sorts,omitempty"`
 	Lineage  []Lineage `json:"lineage,omitempty"`
 	Outputs  []Output  `json:"outputs,omitempty"`
+	Inputs   []Input   `json:"inputs,omitempty"`
 	// Rules are the program's decision tables, a blueprint of their own.
 	Rules Rules `json:"-"`
 	flow  dataflow.Flow
@@ -308,6 +309,7 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 			FromLiteral: e.FromLiteral, Paragraph: e.Paragraph, Verb: e.Verb, Source: e.Pos.String()})
 	}
 	program.Outputs = outputs(program, flow)
+	program.Inputs = inputs(program, flow)
 	program.Rules = newRules(program.Name, rules.Tables(p), program.Records)
 	return program, nil
 }
