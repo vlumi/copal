@@ -25,6 +25,7 @@ type System struct {
 	Jobs      []Job
 	Datasets  []SystemDataset
 	Entities  []Entity
+	Schedule  []JobOrder
 }
 
 // Program is the blueprint of one program. Its Kind is "called" for a
@@ -244,6 +245,7 @@ func Analyze(paths []string, copybookDir string) (*System, error) {
 	s.Datasets = systemDatasets(s.Jobs)
 	classifyJobDatasets(s.Jobs, s.Datasets)
 	describeEntities(s.Entities, s.Datasets, s.Jobs)
+	s.Schedule = jobOrder(s.Jobs)
 	return s, nil
 }
 

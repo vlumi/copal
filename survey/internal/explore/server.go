@@ -51,7 +51,7 @@ func New(system *blueprint.System, title string) (*Server, error) {
 		},
 	}
 	for _, page := range []string{"index", "search", "job", "step", "dataset", "program", "paragraph", "field", "copybook",
-		"entities", "entity", "entityfield", "ownership", "boundary", "source", "trace", "error"} {
+		"entities", "entity", "entityfield", "ownership", "boundary", "schedule", "source", "trace", "error"} {
 		t, err := template.New("").Funcs(funcs).ParseFS(files, "templates/base.html", "templates/"+page+".html")
 		if err != nil {
 			return nil, err
@@ -78,6 +78,7 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /entities", s.view("entities", s.entities))
 	mux.HandleFunc("GET /ownership", s.view("ownership", s.ownership))
 	mux.HandleFunc("GET /boundary", s.view("boundary", s.boundary))
+	mux.HandleFunc("GET /schedule", s.view("schedule", s.schedule))
 	mux.HandleFunc("GET /entities/{record}", s.view("entity", s.entity))
 	mux.HandleFunc("GET /entities/{record}/fields/{field}", s.view("entityfield", s.entityField))
 	mux.HandleFunc("GET /source/{path...}", s.view("source", s.source))
@@ -377,6 +378,21 @@ func (s *Server) ownership(*http.Request) (any, error) {
 	}
 	var err error
 	v.Diagram, err = svg(blueprint.OwnershipGraph(v.Entities, blueprint.OwnershipNotes{EntityLink: entityLink, ProgramLink: programLink}))
+	return v, err
+}
+
+// ScheduleView is the order of the jobs, drawn, and the cycles in it.
+type ScheduleView struct {
+	Order   []blueprint.JobOrder
+	Cycles  [][]string
+	Diagram template.HTML
+}
+
+func (s *Server) schedule(*http.Request) (any, error) {
+	system := s.index.system
+	v := ScheduleView{Order: system.Schedule, Cycles: blueprint.JobCycles(system.Jobs, system.Schedule)}
+	var err error
+	v.Diagram, err = svg(blueprint.ScheduleGraph(system.Jobs, system.Schedule, jobLink))
 	return v, err
 }
 

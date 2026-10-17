@@ -103,7 +103,7 @@ Static blueprints are good for reading one program or job at a time, but underst
 
 Done when: starting from a field in a report, you can follow it back through every program and job step to the input it came from, on the diagrams.
 
-## 9. Design views
+## 9. Design views (done)
 
 The explorer shows the system the way the code is organized. Designing a replacement needs it organized the way the business is. The views, with their plan in [plans/design-views.md](plans/design-views.md):
 
@@ -113,7 +113,7 @@ The explorer shows the system the way the code is organized. Designing a replace
 - Ownership: programs grouped by the entities they write, drawn; the first draft of a service decomposition (done).
 - The boundary: the system's inputs and outputs, files, reports and streams, in one place (done).
 - Forward lineage: from a field to everything its values reach, the mirror of the trail back, on the same diagrams (done).
-- The order of jobs, derived from the generations they write and read.
+- The order of jobs, derived from the generations they write and read (done).
 
 Done when: starting from the entities page, you can name the system's data model, its state machines, who owns each entity, its contracts with the outside, and what a change to an input field touches, without opening a program.
 

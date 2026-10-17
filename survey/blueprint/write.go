@@ -25,6 +25,13 @@ func (s *System) Render(dir, title string) (map[string][]byte, error) {
 		}
 		files["datasets.json"] = append(data, '\n')
 	}
+	if len(s.Schedule) > 0 {
+		data, err := json.MarshalIndent(s.Schedule, "", "  ")
+		if err != nil {
+			return nil, err
+		}
+		files["schedule.json"] = append(data, '\n')
+	}
 	if len(s.Entities) > 0 {
 		data, err := json.MarshalIndent(s.Entities, "", "  ")
 		if err != nil {
