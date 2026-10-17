@@ -51,7 +51,7 @@ func New(system *blueprint.System, title string) (*Server, error) {
 		},
 	}
 	for _, page := range []string{"index", "search", "job", "step", "dataset", "program", "paragraph", "field", "copybook",
-		"entities", "entity", "entityfield", "ownership", "source", "trace", "error"} {
+		"entities", "entity", "entityfield", "ownership", "boundary", "source", "trace", "error"} {
 		t, err := template.New("").Funcs(funcs).ParseFS(files, "templates/base.html", "templates/"+page+".html")
 		if err != nil {
 			return nil, err
@@ -77,6 +77,7 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /copybooks/{copybook}", s.view("copybook", s.copybook))
 	mux.HandleFunc("GET /entities", s.view("entities", s.entities))
 	mux.HandleFunc("GET /ownership", s.view("ownership", s.ownership))
+	mux.HandleFunc("GET /boundary", s.view("boundary", s.boundary))
 	mux.HandleFunc("GET /entities/{record}", s.view("entity", s.entity))
 	mux.HandleFunc("GET /entities/{record}/fields/{field}", s.view("entityfield", s.entityField))
 	mux.HandleFunc("GET /source/{path...}", s.view("source", s.source))

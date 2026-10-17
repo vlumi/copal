@@ -40,6 +40,8 @@ type Program struct {
 	Paragraphs     []Paragraph      `json:"paragraphs"`
 	// ReadsSysin is set for a program that ACCEPTs from the job's SYSIN.
 	ReadsSysin bool `json:"readsSysin,omitempty"`
+	// Displays are the DISPLAY statements to the job's output.
+	Displays []Display `json:"displays,omitempty"`
 	// Using are the linkage items the program is passed when called.
 	Using    []string  `json:"using,omitempty"`
 	Calls    []Call    `json:"calls,omitempty"`
@@ -288,6 +290,7 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 	program.Kind = programKind(p.Using)
 	program.Calls = programCalls(p)
 	program.ReadsSysin = readsSysin(p)
+	program.Displays = displays(p)
 
 	paragraphs, err := structure.Paragraphs(p)
 	if err != nil {
@@ -317,6 +320,33 @@ func readsSysin(p *cobol.Program) bool {
 		})
 	}
 	return reads
+}
+
+// Display is a DISPLAY statement to the job's output: the items and
+// literals it writes, as written.
+type Display struct {
+	Items     []string `json:"items"`
+	Paragraph string   `json:"paragraph"`
+	Source    string   `json:"source"`
+}
+
+// displays lists the program's DISPLAY statements to the job's output,
+// SYSOUT, leaving out those UPON another device.
+func displays(p *cobol.Program) []Display {
+	var list []Display
+	for _, para := range p.Paragraphs {
+		cobol.Walk(para.Statements, func(s cobol.Statement) {
+			if s.Verb != "DISPLAY" || s.Device != "" {
+				return
+			}
+			d := Display{Paragraph: para.Name, Source: s.Pos.String()}
+			for _, op := range s.Reads {
+				d.Items = append(d.Items, op.Text)
+			}
+			list = append(list, d)
+		})
+	}
+	return list
 }
 
 func describeFile(p *cobol.Program, fd cobol.FileDescription) (File, error) {

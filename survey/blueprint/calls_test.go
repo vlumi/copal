@@ -36,3 +36,16 @@ func TestCalls(t *testing.T) {
 		t.Errorf("CALLER blueprint has no %q", want)
 	}
 }
+
+// A program's DISPLAYs to the job's output are listed, those upon another
+// device not.
+func TestDisplays(t *testing.T) {
+	s, err := Analyze([]string{"testdata/REPLY.cbl"}, "testdata/no-copybooks")
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []Display{{Items: []string{"'REPLY: '", "WS-REPLY"}, Paragraph: "MAIN-PARA", Source: "testdata/REPLY.cbl:10"}}
+	if p := s.Programs[0]; !p.ReadsSysin || !reflect.DeepEqual(p.Displays, want) {
+		t.Errorf("reads SYSIN %v, displays %+v, want %+v", p.ReadsSysin, p.Displays, want)
+	}
+}
