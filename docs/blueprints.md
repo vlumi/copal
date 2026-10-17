@@ -8,7 +8,7 @@ Every blueprint exists twice: as Markdown, for reading, and as JSON next to it, 
 
 `README.md` lists the programs with their kind, files, paragraphs and decision tables, the copybooks with their records and the programs that use them, the jobs with their steps and findings, and the system's datasets. `datasets.json` next to it has the datasets for tools, and `entities.json` the entities.
 
-An entity is a record a copybook describes. For each one, `entities.json` has the datasets its copybook describes, the programs that use it, and for each field, what each program does with it under its own name for it: the paragraphs that read and write it and the decisions on it. A program's record is the copybook's where it is declared at the same place, so a copy with `REPLACING` counts. For a code field, it also has the state machine: the condition names are the states, and a transition is a rule of a decision table that finds the field in one state, by its condition name or `FIELD = 'value'`, and sets another, by `SET` or `MOVE 'value'`. A rule that sets a state without finding the field in one, or a paragraph that decides nothing and sets one, starts from `any`. A value moved in from another field is listed as a copy, not a transition.
+An entity is a record a copybook describes. For each one, `entities.json` has the datasets its copybook describes, the programs whose job steps write one of them and those that only read them, which is who owns the entity, the programs that use it, and for each field, what each program does with it under its own name for it: the paragraphs that read and write it and the decisions on it. A program's record is the copybook's where it is declared at the same place, so a copy with `REPLACING` counts. For a code field, it also has the state machine: the condition names are the states, and a transition is a rule of a decision table that finds the field in one state, by its condition name or `FIELD = 'value'`, and sets another, by `SET` or `MOVE 'value'`. A rule that sets a state without finding the field in one, or a paragraph that decides nothing and sets one, starts from `any`. A value moved in from another field is listed as a copy, not a transition.
 
 A program is **main**, or **called** when it is passed items with `PROCEDURE DIVISION USING`.
 
@@ -41,6 +41,7 @@ In order:
 - **Files:** every file the program declares, the DD name it is assigned to, its organization and record key, its status field, the modes it is opened in, and its records.
 - **Flow:** the paragraphs and how control moves between them, `PERFORM` solid, `GO TO` dashed, falling into the next paragraph dotted, with the first paragraph emphasized. Each paragraph links to its source.
 - **Paragraphs:** each with its comment, what it performs and goes to, and what performs or reaches it.
+- **Displays:** in the JSON, the program's `DISPLAY` statements to the job's output.
 - **Calls:** for a program that is called, what it is passed and by whom; for one that calls, what it calls and what it passes.
 - **Data flow:** what each paragraph reads and writes.
 - **Lineage:** every statement that moves a value into a data item, grouped by the record the item belongs to: from which item, literal or file, by which verb, in which paragraph.

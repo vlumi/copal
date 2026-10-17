@@ -113,6 +113,8 @@ A page, `/ownership`, grouping programs by the entities they write: for each ent
 
 Checks: the master is written by `TXPOST` and `ACCTMNT` and read by nine programs; accruals by `INTACCR` alone; holds, cards and the online accounts by `AUTHSRV`, with `ACCTLOAD` and `CARDLOAD` loading them; the ledger by `GLSUM` alone.
 
+As built: all hold but the nine. The master's datasets are only read by four programs, `ACCTLOAD`, `INTACCR`, `MONCHG` and `STMTPRT`; nine is the count of the control record's readers. The diagram draws a reader's edge from the entity to the program, the way the data goes, rather than to the entity: with every edge pointing at the entities, the entities all sat in one row too wide to read, and with the data's direction each entity sits between its writers and its readers.
+
 ### The boundary
 
 A page, `/boundary`, with the system's contracts with the outside: the external datasets with their copybooks, linked to the entity and the layout; the outputs, datasets no step reads; the reports, every SYSOUT DD by job and step, with the program's file and record; and the in-stream data, every SYSIN of a program that ACCEPTs, with what the program DISPLAYs as its reply. State plainly that the survey sees the files and the streams, not what is on the other end: the branches' systems and the HTTP server around `AUTHSRV` are outside it.
