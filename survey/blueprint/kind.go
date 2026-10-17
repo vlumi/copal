@@ -59,6 +59,20 @@ func namedForDate(name string) bool {
 	})
 }
 
+// Program kinds.
+const (
+	KindMain   = "main"
+	KindCalled = "called"
+)
+
+// programKind is called for a program with a USING list, main otherwise.
+func programKind(using []string) string {
+	if len(using) > 0 {
+		return KindCalled
+	}
+	return KindMain
+}
+
 // programKeys are the fields a program names as keys: its files' record
 // keys and its sorts' keys.
 func programKeys(files []File, sorts []Sort) map[string]bool {

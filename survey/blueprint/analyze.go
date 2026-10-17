@@ -25,9 +25,11 @@ type System struct {
 	Jobs      []Job
 }
 
-// Program is the blueprint of one program.
+// Program is the blueprint of one program. Its Kind is "called" for a
+// program that is passed items when called, "main" for one that is not.
 type Program struct {
 	Name           string           `json:"program"`
+	Kind           string           `json:"kind"`
 	Source         string           `json:"source"`
 	Description    []string         `json:"description,omitempty"`
 	Identification []Identification `json:"identification,omitempty"`
@@ -277,6 +279,7 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 		program.Records = append(program.Records, newRecord(r, "linkage", "", path, keys))
 	}
 	program.Using = p.Using
+	program.Kind = programKind(p.Using)
 	program.Calls = programCalls(p)
 	program.ReadsSysin = readsSysin(p)
 

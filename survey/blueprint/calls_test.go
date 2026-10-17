@@ -22,6 +22,9 @@ func TestCalls(t *testing.T) {
 	if want := []string{"CALLER"}; !reflect.DeepEqual(callee.CalledBy, want) {
 		t.Errorf("CALLEE called by %q, want %q", callee.CalledBy, want)
 	}
+	if callee.Kind != KindCalled || caller.Kind != KindMain {
+		t.Errorf("CALLEE is %s, CALLER %s", callee.Kind, caller.Kind)
+	}
 	if callee.Records[0].Section != "linkage" || !reflect.DeepEqual(callee.Using, []string{"LK-REQUEST", "LK-DATE"}) {
 		t.Errorf("CALLEE records %+v, using %q", callee.Records, callee.Using)
 	}
