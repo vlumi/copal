@@ -244,3 +244,39 @@ func TestEdgesBothWays(t *testing.T) {
 		t.Errorf("edges drawn over each other:\n%s", b.String())
 	}
 }
+
+// An edge's label is written at its midpoint, with room made for it: a
+// gap tall enough between the layers it joins, or a waypoint as wide as
+// the label where it passes through a layer.
+func TestEdgeLabels(t *testing.T) {
+	g := Graph{Nodes: []Node{{ID: "a", Label: "A"}, {ID: "b", Label: "B"}, {ID: "c", Label: "C"}},
+		Edges: []Edge{
+			{From: "a", To: "b", Label: "P 1000-ONE\nQ 2000-TWO\nR 3000-THREE"},
+			{From: "b", To: "c"},
+			{From: "a", To: "c", Label: "S 4000-FOUR-AROUND"},
+		}}
+	l, err := newLayout(g)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if gap := l.layerTop[1] - l.layerTop[0] - l.layerHeight[0]; gap < 3*lineHeight+2*arrowLength {
+		t.Errorf("gap %d below a three-line label", gap)
+	}
+	waypoint := l.edges[2].chain[1]
+	if waypoint.node >= 0 || waypoint.width < len("S 4000-FOUR-AROUND")*labelCharWidth {
+		t.Errorf("waypoint %+v too narrow for its label", waypoint)
+	}
+	svg, err := g.SVG()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{">Q 2000-TWO</text>", ">S 4000-FOUR-AROUND</text>"} {
+		if !strings.Contains(string(svg), want) {
+			t.Errorf("no %s in\n%s", want, svg)
+		}
+	}
+	again, _ := g.SVG()
+	if string(again) != string(svg) {
+		t.Error("labels drawn differently twice")
+	}
+}

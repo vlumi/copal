@@ -43,12 +43,14 @@ type Node struct {
 // Edge is an arrow from one node to another, drawn in a style, and in the
 // accent color if it is highlighted. Span is the fewest layers it goes
 // down, 1 when not set: an edge that spans 2 keeps a layer free between
-// its nodes, for others to use.
+// its nodes, for others to use. Label, of one line or several separated
+// by \n, is written at the edge's midpoint, with room made for it.
 type Edge struct {
 	From, To  string
 	Style     Style
 	Span      int
 	Highlight bool
+	Label     string
 }
 
 // Style is how an edge's line is drawn.
@@ -63,14 +65,15 @@ const (
 // Sizes in pixels. Labels are set in a monospace font, so their width
 // follows from their length.
 const (
-	charWidth  = 7
-	boxPadding = 10
-	boxHeight  = 26 // of a box with a one-line label
-	lineHeight = 14
-	layerGap   = 46
-	nodeGap    = 18
-	dummyWidth = 8
-	margin     = 12
+	charWidth      = 7
+	labelCharWidth = 6 // of an edge's label, set smaller
+	boxPadding     = 10
+	boxHeight      = 26 // of a box with a one-line label
+	lineHeight     = 14
+	layerGap       = 46
+	nodeGap        = 18
+	dummyWidth     = 8
+	margin         = 12
 )
 
 // slot is a box or, for an edge that spans several layers, a waypoint the
@@ -89,11 +92,13 @@ type slot struct {
 func (s *slot) center() int { return s.x + s.width/2 }
 
 // layout is the positioned graph. A layer is as tall as its tallest box,
-// and the boxes in it are centered on it.
+// and the boxes in it are centered on it. A gap below a layer is as tall
+// as the labels of the edges that cross it need.
 type layout struct {
 	layers      [][]*slot
 	layerTop    []int
 	layerHeight []int
+	labelLines  map[int]int // by layer, the most label lines in the gap below it
 	nodes       []*slot
 	edges       []routedEdge
 	width       int
@@ -111,6 +116,7 @@ type routedEdge struct {
 	highlight          bool
 	reversed           bool
 	topLane, lowerLane int
+	label              []string
 }
 
 func newLayout(g Graph) (*layout, error) {
@@ -125,7 +131,7 @@ func newLayout(g Graph) (*layout, error) {
 	if err != nil {
 		return nil, err
 	}
-	l := &layout{}
+	l := &layout{labelLines: map[int]int{}}
 	l.assignLayers(g, edges, walkOrder(len(g.Nodes), edges))
 	l.route(edges)
 	l.order()
@@ -139,6 +145,7 @@ type indexedEdge struct {
 	highlight bool
 	span      int
 	reversed  bool // turned around to break a cycle; the arrow points at from
+	label     string
 }
 
 // forwardEdges returns the graph's edges by node index, each once, without
@@ -157,7 +164,7 @@ func forwardEdges(g Graph, index map[string]int) ([]indexedEdge, error) {
 			continue
 		}
 		seen[[2]int{from, to}] = true
-		edges = append(edges, indexedEdge{from: from, to: to, style: e.Style, highlight: e.Highlight, span: max(e.Span, 1)})
+		edges = append(edges, indexedEdge{from: from, to: to, style: e.Style, highlight: e.Highlight, span: max(e.Span, 1), label: e.Label})
 	}
 	back := backEdges(len(g.Nodes), edges)
 	for i := range edges {
@@ -296,13 +303,42 @@ func (l *layout) route(edges []indexedEdge) {
 			chain[i].above = append(chain[i].above, chain[i-1])
 		}
 		top, lower := [2]*slot{chain[0], chain[1]}, [2]*slot{chain[len(chain)-2], chain[len(chain)-1]}
-		l.edges = append(l.edges, routedEdge{chain: chain, style: e.style, highlight: e.highlight, reversed: e.reversed,
-			topLane: lanes[top], lowerLane: lanes[lower]})
+		r := routedEdge{chain: chain, style: e.style, highlight: e.highlight, reversed: e.reversed,
+			topLane: lanes[top], lowerLane: lanes[lower]}
+		if e.label != "" {
+			r.label = strings.Split(e.label, "\n")
+			l.makeRoom(r)
+		}
+		l.edges = append(l.edges, r)
 		lanes[top]++
 		if lower != top {
 			lanes[lower]++
 		}
 	}
+}
+
+// makeRoom makes room for an edge's label: where the edge passes through
+// a layer, its middle waypoint is as wide and tall as the label; where it
+// goes straight to the next layer, the gap between them is as tall.
+func (l *layout) makeRoom(e routedEdge) {
+	if len(e.chain) == 2 {
+		layer := e.chain[0].layer
+		l.labelLines[layer] = max(l.labelLines[layer], len(e.label))
+		return
+	}
+	waypoint := e.chain[len(e.chain)/2]
+	waypoint.width = labelWidth(e.label)
+	waypoint.height = len(e.label) * lineHeight
+}
+
+// labelWidth is the width of an edge's label, with a little room around
+// it.
+func labelWidth(lines []string) int {
+	longest := 0
+	for _, line := range lines {
+		longest = max(longest, len(line))
+	}
+	return longest*labelCharWidth + boxPadding
 }
 
 // order sorts each layer, from the top down, by the mean position of each
@@ -412,7 +448,7 @@ func (l *layout) place() {
 		}
 		l.layerTop = append(l.layerTop, top)
 		l.layerHeight = append(l.layerHeight, height)
-		top += height + layerGap
+		top += height + max(layerGap, l.labelLines[len(l.layerTop)-1]*lineHeight+2*arrowLength+lineHeight)
 	}
 	l.height = top - layerGap + margin
 }

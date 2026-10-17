@@ -18,6 +18,7 @@ const style = `<style>
 .edge.dotted { stroke-dasharray: 1 3 }
 .head { fill: #8c959f }
 .legend { fill: #f6f8fa; stroke: #d0d7de }
+.edge-label { fill: #57606a; font-size: 11px; paint-order: stroke; stroke: #ffffff; stroke-width: 4px; stroke-linejoin: round }
 .box.highlight { stroke: #c2410c; stroke-width: 2.5 }
 .edge.highlight { stroke: #c2410c; stroke-width: 2 }
 .head.highlight { fill: #c2410c }
@@ -29,6 +30,7 @@ const style = `<style>
   .edge { stroke: #6e7681 }
   .head { fill: #6e7681 }
   .legend { fill: #0d1117; stroke: #30363d }
+  .edge-label { fill: #9da5ae; stroke: #0d1117 }
   .box.highlight, .edge.highlight { stroke: #fb923c }
   .head.highlight { fill: #fb923c }
 }
@@ -64,6 +66,9 @@ func (g Graph) SVG() ([]byte, error) {
 	}
 	for _, s := range l.nodes {
 		l.writeNode(&b, s, g.Nodes[s.node])
+	}
+	for _, e := range l.edges {
+		l.writeLabel(&b, e)
 	}
 	if len(g.Legend) > 0 {
 		writeLegend(&b, g.Legend, legendX, margin)
@@ -129,6 +134,26 @@ func nodeClass(n Node) string {
 		}
 	}
 	return class
+}
+
+// writeLabel writes an edge's label at its midpoint: halfway between its
+// ends, where the curve passes, or on its middle waypoint.
+func (l *layout) writeLabel(b *strings.Builder, e routedEdge) {
+	if len(e.label) == 0 {
+		return
+	}
+	var x, y int
+	if from, to := e.chain[0], e.chain[1]; len(e.chain) == 2 {
+		x = (port(from, from.below, to, e.topLane) + port(to, to.above, from, e.lowerLane)) / 2
+		y = (l.bottom(from) + l.top(to)) / 2
+	} else {
+		waypoint := e.chain[len(e.chain)/2]
+		x, y = waypoint.center(), l.layerTop[waypoint.layer]+l.layerHeight[waypoint.layer]/2
+	}
+	top := y - (len(e.label)-1)*lineHeight/2 + 4
+	for i, line := range e.label {
+		fmt.Fprintf(b, `<text class="edge-label" x="%d" y="%d" text-anchor="middle">%s</text>`+"\n", x, top+i*lineHeight, escape(line))
+	}
 }
 
 func (l *layout) writeNode(b *strings.Builder, s *slot, n Node) {
