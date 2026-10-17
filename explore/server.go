@@ -39,12 +39,14 @@ func New(system *blueprint.System, title string) (*Server, error) {
 		"job": jobLink, "step": stepLink, "dataset": datasetLink, "source": sourceLink,
 		"sourceText": sourceText, "base": datasetBase, "join": strings.Join,
 		"add":     func(a, b int) int { return a + b },
+		"hop":     hopID,
+		"trace":   traceLink,
 		"stepRef": func(job, step string) StepRef { return StepRef{Job: job, Step: step} },
 		"lineage": func(program string, fields map[string]bool, rows []blueprint.Lineage) lineageTable {
 			return lineageTable{Program: program, Fields: fields, Rows: rows}
 		},
 	}
-	for _, page := range []string{"index", "search", "job", "step", "dataset", "program", "paragraph", "field", "copybook", "source", "error"} {
+	for _, page := range []string{"index", "search", "job", "step", "dataset", "program", "paragraph", "field", "copybook", "source", "trace", "error"} {
 		t, err := template.New("").Funcs(funcs).ParseFS(files, "templates/base.html", "templates/"+page+".html")
 		if err != nil {
 			return nil, err
@@ -69,6 +71,7 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /programs/{program}/fields/{field}", s.view("field", s.field))
 	mux.HandleFunc("GET /copybooks/{copybook}", s.view("copybook", s.copybook))
 	mux.HandleFunc("GET /source/{path...}", s.view("source", s.source))
+	mux.HandleFunc("GET /trace", s.view("trace", s.trace))
 	return mux
 }
 

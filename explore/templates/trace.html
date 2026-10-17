@@ -1,0 +1,35 @@
+{{define "title"}}Where {{.View.Start.Field}} comes from{{end}}
+{{define "content"}}
+{{with .View}}
+<h1><span class="kind">trail of</span> {{.Start.Field}}</h1>
+<p class="crumbs">its values in <a href="{{program .Start.Program}}">{{.Start.Program}}</a>{{with .Start.Step}}, step {{.}} of {{$.View.Start.Job}}{{end}}, followed back through {{len .Hops}} fields of the programs that move them and the job steps between them{{if .External}}, to {{range $i, $d := .External}}{{if $i}}, {{end}}<a href="{{dataset (base $d)}}">{{$d}}</a>{{end}}, which no job writes: they come from outside{{end}}.</p>
+
+{{range .Jobs}}
+<h2>Job <a href="{{job .Name}}">{{.Name}}</a></h2>
+<div class="diagram">{{.SVG}}</div>
+{{end}}
+
+<h2>The trail</h2>
+{{range .Hops}}{{$p := .Node.Program}}
+<section class="hop" id="{{.ID}}">
+  <h3><a href="{{field $p .Node.Field}}">{{.Node.Field}}</a> in <a href="{{program $p}}">{{$p}}</a>{{if .Node.Step}}, step <a href="{{step (stepRef .Node.Job .Node.Step)}}">{{.Node.Step}}</a> of <a href="{{job .Node.Job}}">{{.Node.Job}}</a>{{end}}</h3>
+  {{if .Statements}}{{template "lineage" (lineage $p .Fields .Statements)}}{{else}}<p class="note">No statement moves a value into it.</p>{{end}}
+  {{with .Starts}}<p>Starts from {{join . "; "}}.</p>{{end}}
+  {{range .Sources}}
+  <p>Reads {{.Field}} from file {{.File}}{{with .Datasets}}, dataset {{range $i, $d := .}}{{if $i}}, {{end}}<a href="{{dataset (base $d)}}">{{$d}}</a>{{end}}{{end}}{{if .Sorts}}, through the sort of {{range $i, $n := .Sorts}}{{if $i}}, {{end}}{{$n.Step}} of {{$n.Job}}{{end}}{{end}}:
+    {{if .Writers}}written as {{range $i, $n := .Writers}}{{if $i}}, {{end}}<a href="#{{hop $n}}">{{$n.Field}}</a> by {{$n.Program}}{{with $n.Step}} in {{.}} of {{$n.Job}}{{end}}{{end}}{{end}}{{if .External}}{{if .Writers}}; {{end}}from outside, as no job writes {{join .External ", "}}{{end}}{{if and (not .Writers) (not .External)}}no step's program writes these bytes{{end}}.</p>
+  {{end}}
+</section>
+{{end}}
+
+{{with .Programs}}
+<h2>Programs on the trail</h2>
+{{range .}}
+<details>
+  <summary><a href="{{program .Name}}">{{.Name}}</a></summary>
+  <div class="diagram">{{.SVG}}</div>
+</details>
+{{end}}
+{{end}}
+{{end}}
+{{end}}
