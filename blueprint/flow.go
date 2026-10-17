@@ -2,11 +2,16 @@ package blueprint
 
 import "github.com/vlumi/copal/diagram"
 
-// flowDiagram is the graph of a program's paragraphs and how control
-// moves between them: PERFORMs solid, GO TOs dashed, and falling into the
-// next paragraph dotted. The entry paragraph is emphasized. Each paragraph
-// links to its source and shows its comment on hover.
+// flowDiagram is the program's flow, each paragraph linking to its source.
 func flowDiagram(dir string, p Program) diagram.Graph {
+	return FlowGraph(p, func(para Paragraph) string { return sourceTarget(dir, para.Source) })
+}
+
+// FlowGraph is the graph of a program's paragraphs and how control moves
+// between them: PERFORMs solid, GO TOs dashed, and falling into the next
+// paragraph dotted. The entry paragraph is emphasized. Each paragraph
+// links where link says and shows its comment on hover.
+func FlowGraph(p Program, link func(Paragraph) string) diagram.Graph {
 	g := diagram.Graph{Legend: []diagram.Key{
 		diagram.NodeKey(diagram.Node{Emphasis: true}, "first paragraph"),
 		diagram.EdgeKey(diagram.Solid, "PERFORM"),
@@ -18,7 +23,7 @@ func flowDiagram(dir string, p Program) diagram.Graph {
 			ID:       para.Name,
 			Label:    para.Name,
 			Title:    para.Description,
-			Link:     sourceTarget(dir, para.Source),
+			Link:     link(para),
 			Emphasis: i == 0,
 		})
 		for _, perform := range para.Performs {

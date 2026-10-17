@@ -361,11 +361,15 @@ var networkKeys = []diagram.Key{
 // JobNotes add to a job's diagram what a run of it did, a line under each
 // step's label, such as its return code, and under the label of each
 // dataset a DD names alone, such as its records; and say where steps and
-// copybooks link to, by name. Any of them may be nil.
+// datasets link to: a step to StepLink's target or else its program's, by
+// name, and a dataset to DatasetLink's or else its copybook's. Any of them
+// may be nil.
 type JobNotes struct {
 	Step         func(Step) string
 	DD           func(Step, DD) string
+	StepLink     func(Step) string
 	ProgramLink  func(string) string
+	DatasetLink  func(string) string
 	CopybookLink func(string) string
 }
 
@@ -414,6 +418,9 @@ func JobGraph(job Job, notes JobNotes) diagram.Graph {
 					n.Link = notes.CopybookLink(c)
 				}
 			}
+			if notes.DatasetLink != nil {
+				n.Link = notes.DatasetLink(ds)
+			}
 			if notes.DD != nil && len(dd.Datasets) == 1 {
 				n.Label = withNote(n.Label, notes.DD(step, dd))
 			}
@@ -434,7 +441,10 @@ func JobGraph(job Job, notes JobNotes) diagram.Graph {
 		if notes.Step != nil {
 			node.Label = withNote(node.Label, notes.Step(step))
 		}
-		if notes.ProgramLink != nil {
+		switch {
+		case notes.StepLink != nil:
+			node.Link = notes.StepLink(step)
+		case notes.ProgramLink != nil:
 			node.Link = notes.ProgramLink(step.Program)
 		}
 		g.Nodes = append(g.Nodes, node)
