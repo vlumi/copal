@@ -8,7 +8,6 @@
 //	pangaea days    run the running bank's next business days
 //	pangaea online  serve the running bank's online day until interrupted
 //	pangaea simulate send card traffic to the online day until interrupted
-//	pangaea console serve the bank console, a web window onto the running bank
 package main
 
 import (
@@ -19,20 +18,17 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/vlumi/copal/bedrock/jcl"
 	"github.com/vlumi/copal/pangaea/bank"
 	"github.com/vlumi/copal/pangaea/compile"
-	"github.com/vlumi/copal/pangaea/console"
 	"github.com/vlumi/copal/pangaea/dataset"
 	"github.com/vlumi/copal/pangaea/online"
 	"github.com/vlumi/copal/pangaea/records"
 	"github.com/vlumi/copal/pangaea/runner"
 	"github.com/vlumi/copal/pangaea/simulate"
-	"github.com/vlumi/copal/survey/blueprint"
 )
 
 const usage = `usage:
@@ -44,7 +40,6 @@ const usage = `usage:
   pangaea days [-bank dir] [-n days]
   pangaea online [-bank dir] [-addr host:port]
   pangaea simulate [-bank dir] [-api url] [-rate n] [-seed n]
-  pangaea console [-bank dir] [-addr host:port] [-src dir] [-blueprints dir]
 `
 
 func main() {
@@ -61,7 +56,6 @@ func main() {
 		"days":     days,
 		"online":   serveOnline,
 		"simulate": simulateTraffic,
-		"console":  serveConsole,
 	}
 	command, ok := commands[os.Args[1]]
 	if !ok {
@@ -231,31 +225,6 @@ func simulateTraffic(args []string) error {
 	defer stop()
 	fmt.Printf("sending %v requests a second to %s; interrupt to stop\n", *rate, *api)
 	return s.Run(ctx, *rate, func(r simulate.Request) { fmt.Println(r) })
-}
-
-func serveConsole(args []string) error {
-	flags, b := bankFlags("console")
-	addr := flags.String("addr", "localhost:8080", "address to serve on")
-	src := flags.String("src", "pangaea/programs", "directory of the COBOL programs")
-	blueprints := flags.String("blueprints", "blueprints/pangaea", "directory of the bank's blueprints")
-	_ = flags.Parse(args)
-	programs, err := filepath.Glob(filepath.Join(*src, "*.cbl"))
-	if err != nil {
-		return err
-	}
-	system, err := blueprint.Analyze(append(programs, b.JobFiles()...), b.Copybooks)
-	if err != nil {
-		return err
-	}
-	c, err := console.New(*b, system, *blueprints)
-	if err != nil {
-		return err
-	}
-	if err := c.Open(); err != nil {
-		return err
-	}
-	fmt.Printf("the bank console is at http://%s/, the online channel at http://%s/api/; interrupt to close it\n", *addr, *addr)
-	return serveUntilInterrupted(*addr, c.Handler(), c.Close)
 }
 
 // serveUntilInterrupted serves until an interrupt, and then calls done.

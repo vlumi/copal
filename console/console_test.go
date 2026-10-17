@@ -19,19 +19,19 @@ import (
 // the browser, then reads every page.
 func TestConsole(t *testing.T) {
 	programs := t.TempDir()
-	if _, err := compile.Programs("../programs", "../copybooks", programs); err != nil {
+	if _, err := compile.Programs("../pangaea/programs", "../pangaea/copybooks", programs); err != nil {
 		t.Fatal(err)
 	}
-	b := bank.Bank{Dir: t.TempDir(), Programs: programs, Copybooks: "../copybooks", Jobs: "../jobs"}
-	sources, err := filepath.Glob("../programs/*.cbl")
+	b := bank.Bank{Dir: t.TempDir(), Programs: programs, Copybooks: "../pangaea/copybooks", Jobs: "../pangaea/jobs"}
+	sources, err := filepath.Glob("../pangaea/programs/*.cbl")
 	if err != nil {
 		t.Fatal(err)
 	}
-	system, err := blueprint.Analyze(append(sources, b.JobFiles()...), "../copybooks")
+	system, err := blueprint.Analyze(append(sources, b.JobFiles()...), "../pangaea/copybooks")
 	if err != nil {
 		t.Fatal(err)
 	}
-	c, err := New(b, system, "../../blueprints/pangaea")
+	c, err := New(b, system, "../blueprints/pangaea")
 	if err != nil {
 		t.Fatal(err)
 	}
