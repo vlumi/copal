@@ -85,10 +85,8 @@ func (l *Ledger) jobRun(dir string) (JobRun, error) {
 		DD: func(s blueprint.Step, dd blueprint.DD) string {
 			n, ok := records[[2]string{s.Name, dd.Name}]
 			switch {
-			case !ok:
+			case !ok || indexed[[2]string{s.Name, dd.Name}]:
 				return ""
-			case indexed[[2]string{s.Name, dd.Name}]:
-				return "indexed"
 			case n == 1:
 				return "1 record"
 			}

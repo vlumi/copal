@@ -231,6 +231,7 @@ func Analyze(paths []string, copybookDir string) (*System, error) {
 	slices.SortFunc(s.Jobs, func(a, b Job) int { return strings.Compare(a.Name, b.Name) })
 	describeDatasets(s.Jobs)
 	s.Datasets = systemDatasets(s.Jobs)
+	classifyJobDatasets(s.Jobs, s.Datasets)
 	return s, nil
 }
 

@@ -90,6 +90,34 @@ func systemDatasets(jobs []Job) []SystemDataset {
 	return datasets
 }
 
+// classifyJobDatasets gives each dataset of each job its kind, and says
+// whether it is indexed, from the system's datasets.
+func classifyJobDatasets(jobs []Job, datasets []SystemDataset) {
+	byName := map[string]SystemDataset{}
+	for _, d := range datasets {
+		byName[d.Name] = d
+	}
+	for j := range jobs {
+		for i, d := range jobs[j].Datasets {
+			system := byName[datasetBase(d.Name)]
+			jobs[j].Datasets[i].Kind, jobs[j].Datasets[i].Indexed = system.Kind, system.Indexed
+		}
+	}
+}
+
+// badges are the words that set a dataset apart: its kind, unless it is
+// internal, and whether it is indexed.
+func (d Dataset) badges() []string {
+	var badges []string
+	if d.Kind != KindInternal && d.Kind != "" {
+		badges = append(badges, d.Kind)
+	}
+	if d.Indexed {
+		badges = append(badges, "indexed")
+	}
+	return badges
+}
+
 func datasetKind(d SystemDataset) string {
 	switch {
 	case d.Temporary:
