@@ -27,6 +27,21 @@ func (f Flow) Affects(item string) Effect {
 	if !ok {
 		return Effect{}
 	}
+	return f.affects(start)
+}
+
+// AffectsBytes follows where the values of some of a data item's bytes go,
+// from start, 1-based, for length, as Affects does: the bytes of a record
+// that a FILLER holds, say, which no field names.
+func (f Flow) AffectsBytes(item string, start, length int) Effect {
+	p, ok := f.storage.places[item]
+	if !ok || start < 1 || start+length-1 > p.length {
+		return Effect{}
+	}
+	return f.affects(place{record: p.record, start: p.start + start - 1, length: length, group: p.group})
+}
+
+func (f Flow) affects(start place) Effect {
 	var effect Effect
 	reached, written := map[string]bool{}, map[Written]bool{}
 	followed := map[int]bool{}
@@ -68,6 +83,14 @@ func (f Flow) Affects(item string) Effect {
 		}
 	}
 	return effect
+}
+
+// Share reports whether two data items share any bytes: one is in the
+// other, they are the same, or one redefines the other.
+func (f Flow) Share(a, b string) bool {
+	pa, okA := f.storage.places[a]
+	pb, okB := f.storage.places[b]
+	return okA && okB && pa.overlaps(pb)
 }
 
 // writtenBytes is where bytes of a record are in the record written to a

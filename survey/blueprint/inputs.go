@@ -29,6 +29,17 @@ func (p Program) Affects(item string) dataflow.Effect {
 	return p.flow.Affects(item)
 }
 
+// AffectsBytes follows where the values of some of a data item's bytes
+// go, from start, 1-based, for length.
+func (p Program) AffectsBytes(item string, start, length int) dataflow.Effect {
+	return p.flow.AffectsBytes(item, start, length)
+}
+
+// Share reports whether two data items of the program share any bytes.
+func (p Program) Share(a, b string) bool {
+	return p.flow.Share(a, b)
+}
+
 // inputs follows the fields of every record the program reads from a
 // file, as outputs traces those it writes. A record read INTO another is
 // described by that one's fields.

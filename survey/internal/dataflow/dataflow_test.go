@@ -147,3 +147,24 @@ func TestAffects(t *testing.T) {
 		}
 	}
 }
+
+// Items share bytes when one is in the other or redefines it.
+func TestShare(t *testing.T) {
+	p, err := cobol.ReadProgram("testdata/ORIGINS.cbl", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	records, err := layout.Program(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	flow := Analyze(p, records)
+	for _, c := range []struct {
+		a, b string
+		want bool
+	}{{"IN-RECORD", "IN-ACCT", true}, {"IN-BODY", "IN-AMOUNT", true}, {"IN-KIND", "IN-ACCT", false}, {"WS-HOLD", "IN-RECORD", false}} {
+		if got := flow.Share(c.a, c.b); got != c.want {
+			t.Errorf("%s and %s share bytes: %v", c.a, c.b, got)
+		}
+	}
+}
