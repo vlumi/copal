@@ -245,32 +245,39 @@ func TestEdgesBothWays(t *testing.T) {
 	}
 }
 
-// An edge's label is written at its midpoint, with room made for it: a
-// gap tall enough between the layers it joins, or a waypoint as wide as
-// the label where it passes through a layer.
+// An edge's label is written on a waypoint of its own, as wide and tall
+// as the label, so that labels side by side do not overlap.
 func TestEdgeLabels(t *testing.T) {
 	g := Graph{Nodes: []Node{{ID: "a", Label: "A"}, {ID: "b", Label: "B"}, {ID: "c", Label: "C"}},
 		Edges: []Edge{
 			{From: "a", To: "b", Label: "P 1000-ONE\nQ 2000-TWO\nR 3000-THREE"},
-			{From: "b", To: "c"},
-			{From: "a", To: "c", Label: "S 4000-FOUR-AROUND"},
+			{From: "a", To: "c", Label: "S 4000-FOUR"},
+			{From: "c", To: "a", Label: "T 5000-FIVE-BACK"},
 		}}
 	l, err := newLayout(g)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if gap := l.layerTop[1] - l.layerTop[0] - l.layerHeight[0]; gap < 3*lineHeight+2*arrowLength {
-		t.Errorf("gap %d below a three-line label", gap)
+	var waypoints []*slot
+	for _, e := range l.edges {
+		w := e.chain[len(e.chain)/2]
+		if w.node >= 0 || w.width < labelWidth(e.label) || w.height < len(e.label)*lineHeight {
+			t.Errorf("label %q on %+v", e.label, w)
+		}
+		waypoints = append(waypoints, w)
 	}
-	waypoint := l.edges[2].chain[1]
-	if waypoint.node >= 0 || waypoint.width < len("S 4000-FOUR-AROUND")*labelCharWidth {
-		t.Errorf("waypoint %+v too narrow for its label", waypoint)
+	for i, w := range waypoints {
+		for _, v := range waypoints[i+1:] {
+			if w.layer == v.layer && w.x < v.x+v.width && v.x < w.x+w.width {
+				t.Errorf("labels overlap: %+v and %+v", w, v)
+			}
+		}
 	}
 	svg, err := g.SVG()
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, want := range []string{">Q 2000-TWO</text>", ">S 4000-FOUR-AROUND</text>"} {
+	for _, want := range []string{">Q 2000-TWO</text>", ">T 5000-FIVE-BACK</text>"} {
 		if !strings.Contains(string(svg), want) {
 			t.Errorf("no %s in\n%s", want, svg)
 		}

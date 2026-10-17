@@ -44,7 +44,9 @@ type Node struct {
 // accent color if it is highlighted. Span is the fewest layers it goes
 // down, 1 when not set: an edge that spans 2 keeps a layer free between
 // its nodes, for others to use. Label, of one line or several separated
-// by \n, is written at the edge's midpoint, with room made for it.
+// by \n, is written at the edge's midpoint, in a layer the edge passes
+// through, where room is made for it beside the other edges' labels: a
+// labeled edge spans at least 2.
 type Edge struct {
 	From, To  string
 	Style     Style
@@ -92,13 +94,11 @@ type slot struct {
 func (s *slot) center() int { return s.x + s.width/2 }
 
 // layout is the positioned graph. A layer is as tall as its tallest box,
-// and the boxes in it are centered on it. A gap below a layer is as tall
-// as the labels of the edges that cross it need.
+// and the boxes in it are centered on it.
 type layout struct {
 	layers      [][]*slot
 	layerTop    []int
 	layerHeight []int
-	labelLines  map[int]int // by layer, the most label lines in the gap below it
 	nodes       []*slot
 	edges       []routedEdge
 	width       int
@@ -131,7 +131,7 @@ func newLayout(g Graph) (*layout, error) {
 	if err != nil {
 		return nil, err
 	}
-	l := &layout{labelLines: map[int]int{}}
+	l := &layout{}
 	l.assignLayers(g, edges, walkOrder(len(g.Nodes), edges))
 	l.route(edges)
 	l.order()
@@ -165,6 +165,9 @@ func forwardEdges(g Graph, index map[string]int) ([]indexedEdge, error) {
 		}
 		seen[[2]int{from, to}] = true
 		edges = append(edges, indexedEdge{from: from, to: to, style: e.Style, highlight: e.Highlight, span: max(e.Span, 1), label: e.Label})
+		if e.Label != "" {
+			edges[len(edges)-1].span = max(e.Span, 2)
+		}
 	}
 	back := backEdges(len(g.Nodes), edges)
 	for i := range edges {
@@ -307,7 +310,8 @@ func (l *layout) route(edges []indexedEdge) {
 			topLane: lanes[top], lowerLane: lanes[lower]}
 		if e.label != "" {
 			r.label = strings.Split(e.label, "\n")
-			l.makeRoom(r)
+			waypoint := r.chain[len(r.chain)/2]
+			waypoint.width, waypoint.height = labelWidth(r.label), len(r.label)*lineHeight
 		}
 		l.edges = append(l.edges, r)
 		lanes[top]++
@@ -315,20 +319,6 @@ func (l *layout) route(edges []indexedEdge) {
 			lanes[lower]++
 		}
 	}
-}
-
-// makeRoom makes room for an edge's label: where the edge passes through
-// a layer, its middle waypoint is as wide and tall as the label; where it
-// goes straight to the next layer, the gap between them is as tall.
-func (l *layout) makeRoom(e routedEdge) {
-	if len(e.chain) == 2 {
-		layer := e.chain[0].layer
-		l.labelLines[layer] = max(l.labelLines[layer], len(e.label))
-		return
-	}
-	waypoint := e.chain[len(e.chain)/2]
-	waypoint.width = labelWidth(e.label)
-	waypoint.height = len(e.label) * lineHeight
 }
 
 // labelWidth is the width of an edge's label, with a little room around
@@ -448,7 +438,7 @@ func (l *layout) place() {
 		}
 		l.layerTop = append(l.layerTop, top)
 		l.layerHeight = append(l.layerHeight, height)
-		top += height + max(layerGap, l.labelLines[len(l.layerTop)-1]*lineHeight+2*arrowLength+lineHeight)
+		top += height + layerGap
 	}
 	l.height = top - layerGap + margin
 }

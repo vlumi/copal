@@ -136,20 +136,13 @@ func nodeClass(n Node) string {
 	return class
 }
 
-// writeLabel writes an edge's label at its midpoint: halfway between its
-// ends, where the curve passes, or on its middle waypoint.
+// writeLabel writes an edge's label on its middle waypoint.
 func (l *layout) writeLabel(b *strings.Builder, e routedEdge) {
 	if len(e.label) == 0 {
 		return
 	}
-	var x, y int
-	if from, to := e.chain[0], e.chain[1]; len(e.chain) == 2 {
-		x = (port(from, from.below, to, e.topLane) + port(to, to.above, from, e.lowerLane)) / 2
-		y = (l.bottom(from) + l.top(to)) / 2
-	} else {
-		waypoint := e.chain[len(e.chain)/2]
-		x, y = waypoint.center(), l.layerTop[waypoint.layer]+l.layerHeight[waypoint.layer]/2
-	}
+	waypoint := e.chain[len(e.chain)/2]
+	x, y := waypoint.center(), l.layerTop[waypoint.layer]+l.layerHeight[waypoint.layer]/2
 	top := y - (len(e.label)-1)*lineHeight/2 + 4
 	for i, line := range e.label {
 		fmt.Fprintf(b, `<text class="edge-label" x="%d" y="%d" text-anchor="middle">%s</text>`+"\n", x, top+i*lineHeight, escape(line))
