@@ -8,6 +8,14 @@
         "WS-CLOSED-MONTH-NUMBER = 0",
         "WS-TRANSIT-NET = 0"
       ],
+      "conditionRefs": [
+        [
+          "WS-CLOSED-MONTH-NUMBER"
+        ],
+        [
+          "WS-TRANSIT-NET"
+        ]
+      ],
       "actions": [
         "PERFORM 1000-INITIALIZE",
         "PERFORM 2000-POST-MONTH",
@@ -84,6 +92,15 @@
         "WS-FILE-STATUSES = ALL '0'",
         "READ ACCR-IN AT END",
         "WS-CM-MONTH = 12"
+      ],
+      "conditionRefs": [
+        [
+          "WS-FILE-STATUSES"
+        ],
+        null,
+        [
+          "WS-CM-MONTH"
+        ]
       ],
       "actions": [
         "OPEN INPUT ACCR-IN AUDIT-IN OUTPUT GL-OUT REPORT-OUT",
@@ -185,6 +202,11 @@
       "conditions": [
         "WS-AUDIT-STATUS = '10'"
       ],
+      "conditionRefs": [
+        [
+          "WS-AUDIT-STATUS"
+        ]
+      ],
       "actions": [
         "READ AUDIT-IN",
         "PERFORM UNTIL WS-AUDIT-STATUS NOT = '00'",
@@ -220,6 +242,14 @@
       "source": "pangaea/programs/GLSUM.cbl:207",
       "conditions": [
         "WS-POSTING-MONTH = WS-CLOSED-MONTH OR (WS-POSTING-MONTH = WS-NEXT-MONTH AND WS-MONTH-END-CODE)"
+      ],
+      "conditionRefs": [
+        [
+          "WS-POSTING-MONTH",
+          "WS-CLOSED-MONTH",
+          "WS-NEXT-MONTH",
+          "WS-POSTING-CODE"
+        ]
       ],
       "actions": [
         "MOVE AU-BUSINESS-DATE(1:6) TO WS-POSTING-MONTH",
@@ -257,6 +287,16 @@
       "conditions": [
         "GS-CODE(GS-CX) = AU-TRAN-CODE",
         "AU-AMOUNT \u003c 0"
+      ],
+      "conditionRefs": [
+        [
+          "GS-CODE",
+          "GS-CX",
+          "AU-TRAN-CODE"
+        ],
+        [
+          "AU-AMOUNT"
+        ]
       ],
       "actions": [
         "SET GS-CX TO 1",
@@ -372,6 +412,13 @@
       "conditions": [
         "WS-LE-ACCOUNT(WS-LX) = WS-WANTED-ACCOUNT"
       ],
+      "conditionRefs": [
+        [
+          "WS-LE-ACCOUNT",
+          "WS-LX",
+          "WS-WANTED-ACCOUNT"
+        ]
+      ],
       "actions": [
         "SET WS-LX TO 1",
         "SEARCH WS-LEDGER-ENTRY",
@@ -409,6 +456,12 @@
       "conditions": [
         "WS-DEBIT-TOTAL = WS-CREDIT-TOTAL"
       ],
+      "conditionRefs": [
+        [
+          "WS-DEBIT-TOTAL",
+          "WS-CREDIT-TOTAL"
+        ]
+      ],
       "actions": [
         "PERFORM VARYING WS-LX FROM 1 BY 1 UNTIL WS-LX \u003e WS-LEDGER-COUNT",
         "MOVE 'LEDGER OUT OF BALANCE' TO WS-ABORT-MESSAGE",
@@ -442,6 +495,18 @@
       "conditions": [
         "WS-LE-ACCOUNT(WS-LX) = WS-DEPOSITS-ACCOUNT",
         "WS-LE-ACCOUNT(WS-LX) = WS-TRANSIT-ACCOUNT"
+      ],
+      "conditionRefs": [
+        [
+          "WS-LE-ACCOUNT",
+          "WS-LX",
+          "WS-DEPOSITS-ACCOUNT"
+        ],
+        [
+          "WS-LE-ACCOUNT",
+          "WS-LX",
+          "WS-TRANSIT-ACCOUNT"
+        ]
       ],
       "actions": [
         "SET WS-TX TO WS-LX",
@@ -522,6 +587,14 @@
       "conditions": [
         "WS-CLOSED-MONTH-NUMBER = 0",
         "WS-TRANSIT-NET = 0"
+      ],
+      "conditionRefs": [
+        [
+          "WS-CLOSED-MONTH-NUMBER"
+        ],
+        [
+          "WS-TRANSIT-NET"
+        ]
       ],
       "actions": [
         "MOVE 'GLSUM    GENERAL LEDGER SUMMARY' TO REPORT-LINE",

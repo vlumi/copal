@@ -8,6 +8,12 @@
         "WS-FILE-STATUSES = ALL '0'",
         "READ CONTROL-FILE AT END"
       ],
+      "conditionRefs": [
+        [
+          "WS-FILE-STATUSES"
+        ],
+        null
+      ],
       "actions": [
         "OPEN INPUT CONTROL-FILE HOLD-FILE OUTPUT TRAN-OUT REPORT-OUT",
         "DISPLAY 'HOLDEXT: CANNOT OPEN FILES ' WS-FILE-STATUSES",
@@ -81,6 +87,9 @@
       "conditions": [
         "READ HOLD-FILE AT END"
       ],
+      "conditionRefs": [
+        null
+      ],
       "actions": [
         "READ HOLD-FILE",
         "SET END-OF-HOLDS TO TRUE",
@@ -115,6 +124,21 @@
         "HD-REVERSED",
         "HD-PURCHASE",
         "HD-FEE \u003e 0"
+      ],
+      "conditionRefs": [
+        [
+          "HD-BUSINESS-DATE",
+          "BC-BUSINESS-DATE"
+        ],
+        [
+          "HD-STATUS"
+        ],
+        [
+          "HD-KIND"
+        ],
+        [
+          "HD-FEE"
+        ]
       ],
       "actions": [
         "MOVE 'A HOLD OF ANOTHER BUSINESS DAY' TO WS-ABORT-MESSAGE",

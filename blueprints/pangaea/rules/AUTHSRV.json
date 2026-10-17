@@ -8,6 +8,12 @@
         "WS-FILE-STATUSES = ALL '0'",
         "READ CONTROL-FILE AT END"
       ],
+      "conditionRefs": [
+        [
+          "WS-FILE-STATUSES"
+        ],
+        null
+      ],
       "actions": [
         "OPEN INPUT CONTROL-FILE I-O ACCT-FILE CARD-FILE HOLD-FILE OUTPUT REPORT-OUT",
         "DISPLAY 'AUTHSRV: CANNOT OPEN FILES ' WS-FILE-STATUSES UPON SYSERR",
@@ -63,6 +69,9 @@
       "conditions": [
         "START HOLD-FILE KEY IS NOT LESS THAN HD-KEY INVALID KEY"
       ],
+      "conditionRefs": [
+        null
+      ],
       "actions": [
         "MOVE LOW-VALUES TO HD-KEY",
         "START HOLD-FILE KEY IS NOT LESS THAN HD-KEY",
@@ -100,6 +109,13 @@
       "conditions": [
         "READ HOLD-FILE NEXT RECORD AT END",
         "HD-HOLD-NO \u003e WS-LAST-HOLD-NO"
+      ],
+      "conditionRefs": [
+        null,
+        [
+          "HD-HOLD-NO",
+          "WS-LAST-HOLD-NO"
+        ]
       ],
       "actions": [
         "READ HOLD-FILE NEXT RECORD",
@@ -144,6 +160,9 @@
       "conditions": [
         "ACCEPT AUTH-REQUEST ON EXCEPTION"
       ],
+      "conditionRefs": [
+        null
+      ],
       "actions": [
         "ACCEPT AUTH-REQUEST",
         "SET END-OF-INPUT TO TRUE",
@@ -184,6 +203,33 @@
         "RQ-BALANCE-ENQUIRY",
         "RQ-REVERSAL",
         "RQ-WITHDRAWAL"
+      ],
+      "conditionRefs": [
+        [
+          "RQ-FUNCTION"
+        ],
+        [
+          "RS-RESULT",
+          "RQ-FUNCTION"
+        ],
+        [
+          "RS-RESULT"
+        ],
+        [
+          "RQ-FUNCTION"
+        ],
+        [
+          "RS-RESULT"
+        ],
+        [
+          "RQ-FUNCTION"
+        ],
+        [
+          "RQ-FUNCTION"
+        ],
+        [
+          "RQ-FUNCTION"
+        ]
       ],
       "actions": [
         "ADD 1 TO WS-REQUEST-COUNT",
@@ -1490,6 +1536,10 @@
         "READ CARD-FILE INVALID KEY",
         "READ ACCT-FILE INVALID KEY"
       ],
+      "conditionRefs": [
+        null,
+        null
+      ],
       "actions": [
         "MOVE RQ-CARD-NO TO CR-CARD-NO",
         "READ CARD-FILE",
@@ -1547,6 +1597,9 @@
       "conditions": [
         "READ HOLD-FILE INVALID KEY"
       ],
+      "conditionRefs": [
+        null
+      ],
       "actions": [
         "MOVE CR-ACCT-NO TO HD-ACCT-NO",
         "MOVE RQ-AUTH-CODE TO HD-HOLD-NO",
@@ -1588,6 +1641,15 @@
         "RQ-REVERSAL",
         "REWRITE HOLD-RECORD INVALID KEY",
         "WRITE HOLD-RECORD INVALID KEY"
+      ],
+      "conditionRefs": [
+        null,
+        null,
+        [
+          "RQ-FUNCTION"
+        ],
+        null,
+        null
       ],
       "actions": [
         "REWRITE ACCT-ONLINE-RECORD",

@@ -12,6 +12,30 @@
         "WS-DAY-CASH \u003e CR-CASH-LIMIT",
         "WS-TO-HOLD \u003e WS-AVAILABLE"
       ],
+      "conditionRefs": [
+        [
+          "CR-MONTH-WITHDRAWALS",
+          "WS-FREE-WITHDRAWALS"
+        ],
+        [
+          "CR-STATUS"
+        ],
+        [
+          "AO-STATUS"
+        ],
+        [
+          "RQ-AMOUNT",
+          "WS-NOTE"
+        ],
+        [
+          "WS-DAY-CASH",
+          "CR-CASH-LIMIT"
+        ],
+        [
+          "WS-TO-HOLD",
+          "WS-AVAILABLE"
+        ]
+      ],
       "actions": [
         "PERFORM 1000-START-CARD-TOTALS",
         "ADD AO-BALANCE AO-OVERDRAFT-LIMIT GIVING WS-AVAILABLE",
@@ -292,6 +316,16 @@
       "conditions": [
         "CR-TOTALS-DATE = BC-BUSINESS-DATE",
         "CR-TOTALS-DATE(1:6) = BC-BUSINESS-DATE(1:6)"
+      ],
+      "conditionRefs": [
+        [
+          "CR-TOTALS-DATE",
+          "BC-BUSINESS-DATE"
+        ],
+        [
+          "CR-TOTALS-DATE",
+          "BC-BUSINESS-DATE"
+        ]
       ],
       "actions": [
         "MOVE 0 TO CR-MONTH-WITHDRAWALS",

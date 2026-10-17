@@ -302,7 +302,7 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 			FromLiteral: e.FromLiteral, Paragraph: e.Paragraph, Verb: e.Verb, Source: e.Pos.String()})
 	}
 	program.Outputs = outputs(program, flow)
-	program.Rules = newRules(program.Name, rules.Tables(p))
+	program.Rules = newRules(program.Name, rules.Tables(p), program.Records)
 	return program, nil
 }
 

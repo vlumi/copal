@@ -21,13 +21,15 @@ import (
 	"github.com/vlumi/copal/survey/internal/structure"
 )
 
-// Table is a decision table: the conditions tested, the actions taken,
-// and the rules, one per path.
+// Table is a decision table: the conditions tested, with the data items
+// and condition names each refers to, the actions taken, and the rules,
+// one per path.
 type Table struct {
 	Paragraph  string
 	Loop       string // the inline PERFORM whose body the table is, if any
 	Pos        cobol.Pos
 	Conditions []string
+	Refs       [][]string // parallel to Conditions
 	Actions    []string
 	Rules      []Rule
 }
@@ -58,9 +60,10 @@ func Tables(p *cobol.Program) []Table {
 	return tables
 }
 
-// test is a condition and its outcome on a path.
+// test is a condition, the names it refers to, and its outcome on a path.
 type test struct {
 	condition string
+	refs      []string
 	outcome   bool
 }
 
@@ -121,7 +124,7 @@ func (e *extractor) under(c *cobol.Condition, outcome bool, statements []cobol.S
 	for c.Op == "NOT" {
 		c, outcome = c.Parts[0], !outcome
 	}
-	return cross([]path{{tests: []test{{c.String(), outcome}}}}, e.paths(statements))
+	return cross([]path{{tests: []test{{c.String(), c.Refs(), outcome}}}}, e.paths(statements))
 }
 
 // cases lists the paths through the WHENs of an EVALUATE or SEARCH: each
@@ -149,10 +152,10 @@ func (e *extractor) phrases(s cobol.Statement) []path {
 	var paths []path
 	for _, b := range s.Branches {
 		kind, negated := strings.CutPrefix(b.Kind, "NOT ")
-		start := []path{{tests: []test{{s.Text + " " + kind, !negated}}, actions: []string{s.Text}}}
+		start := []path{{tests: []test{{condition: s.Text + " " + kind, outcome: !negated}}, actions: []string{s.Text}}}
 		paths = append(paths, cross(start, e.paths(b.Statements))...)
 		if len(s.Branches) == 1 {
-			paths = append(paths, path{tests: []test{{s.Text + " " + kind, negated}}, actions: []string{s.Text}})
+			paths = append(paths, path{tests: []test{{condition: s.Text + " " + kind, outcome: negated}}, actions: []string{s.Text}})
 		}
 	}
 	return paths
@@ -192,6 +195,7 @@ func newTable(paragraph, loop string, pos cobol.Pos, paths []path) (Table, bool)
 		for _, test := range p.tests {
 			if !slices.Contains(t.Conditions, test.condition) {
 				t.Conditions = append(t.Conditions, test.condition)
+				t.Refs = append(t.Refs, test.refs)
 			}
 		}
 		for _, a := range p.actions {
