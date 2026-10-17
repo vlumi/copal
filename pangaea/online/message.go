@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/vlumi/copal/pangaea/layouts"
+	"github.com/vlumi/copal/pangaea/records"
 )
 
 // Functions of a request.
@@ -53,7 +53,7 @@ const (
 
 // encode writes a request as an AUTHMSG request record, stamped with the
 // business date and the time of day, hhmmss.
-func encode(l *layouts.Layouts, r Request, date, timeOfDay int64) ([]byte, error) {
+func encode(l *records.Layouts, r Request, date, timeOfDay int64) ([]byte, error) {
 	record := l.Request.Blank()
 	for name, value := range map[string]int64{
 		"RQ-CARD-NO": r.Card, "RQ-AMOUNT": int64(r.Amount), "RQ-AUTH-CODE": r.AuthCode,
@@ -72,7 +72,7 @@ func encode(l *layouts.Layouts, r Request, date, timeOfDay int64) ([]byte, error
 }
 
 // decode reads an AUTHMSG response record.
-func decode(l *layouts.Layouts, record []byte) (Response, error) {
+func decode(l *records.Layouts, record []byte) (Response, error) {
 	var r Response
 	var err error
 	if r.Result, err = l.Response.Text(record, "RS-RESULT"); err != nil {

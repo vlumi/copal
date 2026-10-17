@@ -1,4 +1,4 @@
-package layouts
+package records
 
 import "testing"
 

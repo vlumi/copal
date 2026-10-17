@@ -8,8 +8,8 @@ import (
 
 	"github.com/vlumi/copal/pangaea/bank"
 	"github.com/vlumi/copal/pangaea/compile"
-	"github.com/vlumi/copal/pangaea/layouts"
 	"github.com/vlumi/copal/pangaea/online"
+	"github.com/vlumi/copal/pangaea/records"
 )
 
 // The simulator's requests reach an online day, which approves some and
@@ -23,7 +23,7 @@ func TestSimulator(t *testing.T) {
 	if err := b.Reset(7, 300); err != nil {
 		t.Fatal(err)
 	}
-	l, err := layouts.Load("../copybooks")
+	l, err := records.Load("../copybooks")
 	if err != nil {
 		t.Fatal(err)
 	}

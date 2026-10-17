@@ -11,7 +11,7 @@ import (
 
 	"github.com/vlumi/copal/pangaea/bank"
 	"github.com/vlumi/copal/pangaea/compile"
-	"github.com/vlumi/copal/pangaea/layouts"
+	"github.com/vlumi/copal/pangaea/records"
 )
 
 func TestCents(t *testing.T) {
@@ -48,7 +48,7 @@ func TestServer(t *testing.T) {
 	if err := b.Reset(7, 300); err != nil {
 		t.Fatal(err)
 	}
-	l, err := layouts.Load("../copybooks")
+	l, err := records.Load("../copybooks")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -108,7 +108,7 @@ func TestServer(t *testing.T) {
 }
 
 // firstCard is the number of the bank's first card that is active.
-func firstCard(t *testing.T, b bank.Bank, l *layouts.Layouts) string {
+func firstCard(t *testing.T, b bank.Bank, l *records.Layouts) string {
 	t.Helper()
 	store, err := b.Datasets()
 	if err != nil {

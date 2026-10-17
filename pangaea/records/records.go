@@ -1,7 +1,7 @@
-// Package layouts loads the record layouts of the First Bank of Pangaea,
+// Package records loads the record layouts of the First Bank of Pangaea,
 // which Copal computes from its copybooks, for the Go code around the bank
 // to read and write its records by field: the generator and the console.
-package layouts
+package records
 
 import (
 	"path/filepath"

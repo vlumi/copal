@@ -28,8 +28,8 @@ import (
 	"github.com/vlumi/copal/pangaea/compile"
 	"github.com/vlumi/copal/pangaea/console"
 	"github.com/vlumi/copal/pangaea/dataset"
-	"github.com/vlumi/copal/pangaea/layouts"
 	"github.com/vlumi/copal/pangaea/online"
+	"github.com/vlumi/copal/pangaea/records"
 	"github.com/vlumi/copal/pangaea/runner"
 	"github.com/vlumi/copal/pangaea/simulate"
 	"github.com/vlumi/copal/survey/blueprint"
@@ -186,7 +186,7 @@ func serveOnline(args []string) error {
 	flags, b := bankFlags("online")
 	addr := flags.String("addr", "localhost:8081", "address to serve on")
 	_ = flags.Parse(args)
-	bankLayouts, err := layouts.Load(b.Copybooks)
+	bankLayouts, err := records.Load(b.Copybooks)
 	if err != nil {
 		return err
 	}
@@ -215,7 +215,7 @@ func simulateTraffic(args []string) error {
 	if *rate <= 0 {
 		return fmt.Errorf("rate %v: more than none a second", *rate)
 	}
-	bankLayouts, err := layouts.Load(b.Copybooks)
+	bankLayouts, err := records.Load(b.Copybooks)
 	if err != nil {
 		return err
 	}

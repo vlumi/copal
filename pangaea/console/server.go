@@ -16,8 +16,8 @@ import (
 	"time"
 
 	"github.com/vlumi/copal/pangaea/bank"
-	"github.com/vlumi/copal/pangaea/layouts"
 	"github.com/vlumi/copal/pangaea/online"
+	"github.com/vlumi/copal/pangaea/records"
 	"github.com/vlumi/copal/survey/blueprint"
 )
 
@@ -31,7 +31,7 @@ const shown = 200
 // programs and jobs, and the bank's online channel.
 type Server struct {
 	bank       bank.Bank
-	layouts    *layouts.Layouts
+	layouts    *records.Layouts
 	system     *blueprint.System
 	blueprints string
 	online     *online.Server
@@ -45,7 +45,7 @@ type Server struct {
 // bank's programs and jobs, whose blueprints are in the blueprints
 // directory.
 func New(b bank.Bank, system *blueprint.System, blueprints string) (*Server, error) {
-	bankLayouts, err := layouts.Load(b.Copybooks)
+	bankLayouts, err := records.Load(b.Copybooks)
 	if err != nil {
 		return nil, err
 	}

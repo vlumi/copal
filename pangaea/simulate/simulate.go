@@ -16,8 +16,8 @@ import (
 	"time"
 
 	"github.com/vlumi/copal/pangaea/dataset"
-	"github.com/vlumi/copal/pangaea/layouts"
 	"github.com/vlumi/copal/pangaea/online"
+	"github.com/vlumi/copal/pangaea/records"
 )
 
 // Card is a card the simulator uses, and how much its holder spends: a
@@ -53,7 +53,7 @@ var (
 
 // New makes a simulator for the cards of the bank's current card master,
 // following from the seed.
-func New(api string, store *dataset.Store, l *layouts.Layouts, seed uint64) (*Simulator, error) {
+func New(api string, store *dataset.Store, l *records.Layouts, seed uint64) (*Simulator, error) {
 	n := store.LatestGeneration("CARD.MASTER")
 	if n == 0 {
 		return nil, fmt.Errorf("the bank has no card master")
