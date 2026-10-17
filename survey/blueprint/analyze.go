@@ -71,6 +71,12 @@ func (p Program) Trace(item string) dataflow.Trace {
 	return p.flow.Trace(item)
 }
 
+// TraceBytes traces where the values of some of a data item's bytes come
+// from, from start, 1-based, for length.
+func (p Program) TraceBytes(item string, start, length int) dataflow.Trace {
+	return p.flow.TraceBytes(item, start, length)
+}
+
 // Lineage is one statement moving a value from one data item, or a file,
 // into another, or into a file.
 type Lineage struct {

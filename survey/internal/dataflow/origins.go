@@ -70,6 +70,16 @@ func newStorage(records *layout.ProgramRecords) *storage {
 	return s
 }
 
+// part is the place of a run of an item's bytes, from start, 1-based, for
+// length.
+func (s *storage) part(item string, start, length int) (place, bool) {
+	p, ok := s.places[item]
+	if !ok || start < 1 || start+length-1 > p.length {
+		return place{}, false
+	}
+	return place{record: p.record, start: p.start + start - 1, length: length, group: p.group}, true
+}
+
 // at is the narrowest item that holds a record's bytes from start, for
 // length; the record itself if no field does.
 func (s *storage) at(record string, start, length int) string {
@@ -110,6 +120,20 @@ func (f Flow) Trace(item string) Trace {
 	if !ok {
 		return Trace{}
 	}
+	return f.trace(start)
+}
+
+// TraceBytes traces where the values of some of a data item's bytes come
+// from, from start, 1-based, for length, as Trace does.
+func (f Flow) TraceBytes(item string, start, length int) Trace {
+	p, ok := f.storage.part(item, start, length)
+	if !ok {
+		return Trace{}
+	}
+	return f.trace(p)
+}
+
+func (f Flow) trace(start place) Trace {
 	found, clearing := map[Origin]bool{}, map[Origin]bool{}
 	followed, cleared := map[int]bool{}, map[int]bool{}
 	visited := map[place]bool{}

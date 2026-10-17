@@ -192,6 +192,9 @@ func (t tracer) runs(n Node) []Node {
 
 func (t tracer) back(n Node, p *blueprint.Program) Hop {
 	hop := Hop{Node: n, Trace: p.Trace(n.Field)}
+	if n.Length > 0 {
+		hop.Trace = p.TraceBytes(n.Field, n.Start, n.Length)
+	}
 	for _, o := range hop.Trace.Origins {
 		if o.File == "" {
 			continue

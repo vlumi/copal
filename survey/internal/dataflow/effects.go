@@ -34,11 +34,11 @@ func (f Flow) Affects(item string) Effect {
 // from start, 1-based, for length, as Affects does: the bytes of a record
 // that a FILLER holds, say, which no field names.
 func (f Flow) AffectsBytes(item string, start, length int) Effect {
-	p, ok := f.storage.places[item]
-	if !ok || start < 1 || start+length-1 > p.length {
+	p, ok := f.storage.part(item, start, length)
+	if !ok {
 		return Effect{}
 	}
-	return f.affects(place{record: p.record, start: p.start + start - 1, length: length, group: p.group})
+	return f.affects(p)
 }
 
 func (f Flow) affects(start place) Effect {

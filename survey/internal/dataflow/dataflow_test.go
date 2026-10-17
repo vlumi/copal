@@ -168,3 +168,27 @@ func TestShare(t *testing.T) {
 		}
 	}
 }
+
+// A run of an item's bytes is traced and followed on its own: the bytes
+// of IN-BODY that IN-ACCT redefines come from the file alone, and go on to
+// WS-OUT-ACCT as well as into WS-HOLD.
+func TestBytes(t *testing.T) {
+	p, err := cobol.ReadProgram("testdata/ORIGINS.cbl", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	records, err := layout.Program(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	flow := Analyze(p, records)
+	if got := fmt.Sprint(flow.TraceBytes("IN-BODY", 1, 5).Origins); got != "[file IN-FILE IN-ACCT]" {
+		t.Errorf("origins of IN-BODY's first bytes: %s", got)
+	}
+	if got := fmt.Sprint(flow.AffectsBytes("IN-BODY", 1, 5).Items); got != "[WS-BODY WS-OUT-ACCT OUT-RECORD]" {
+		t.Errorf("IN-BODY's first bytes reach %s", got)
+	}
+	if e := flow.AffectsBytes("IN-BODY", 7, 5); e.Items != nil {
+		t.Errorf("bytes beyond the item reach %s", e.Items)
+	}
+}
