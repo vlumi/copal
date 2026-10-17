@@ -19,17 +19,58 @@ Survey does not translate COBOL into anything. It produces the understanding a t
 
 ## A quick tour
 
-Everything is a make target; plain `make` lists them. You need GnuCOBOL 3.2 (`brew install gnucobol`), Go and Node for the Markdown linter, and `golangci-lint` for `make ci`.
+Everything is a make target, and plain `make` lists them. You need GnuCOBOL 3.2 (`brew install gnucobol`), Go, Node for the Markdown linter, and `golangci-lint` for `make ci`.
 
-1. `make toolchain` checks the tools are there.
-2. `make pangaea-daily` runs the daily batch on the small fixture and prints its job log and every step's report: the bank in one screen.
-3. `make bank-reset` opens a bank of about three thousand generated accounts on 2026-09-01, and `make bank-days N=5` runs five business days, one line each: transactions, rejects, the worst return code, and the month-end job when a month closes. Everything it made is under `pangaea/run/bank/`.
-4. `make console`, then <http://127.0.0.1:8080/>: the bank today, with buttons to run days and reset. Open a day to see its jobs drawn as networks with each step's return code and each dataset's records, and the reports; open an account for its master record field by field and its postings; **Compare** shows what the days changed, reconciled against the postings.
-5. With the console running, `make simulate` in another terminal sends card and ATM traffic to its online channel. The console's **Online** page shows each authorization as it is answered, approvals and declines, and balances moving. Run a day from the console: the channel answers that the bank is closed for the batch, and the next morning the card purchases and withdrawals are in the master, under the codes CP, AW and AF.
-6. The survey of the bank is checked in: start at [blueprints/pangaea/README.md](blueprints/pangaea/README.md), then a program such as [TXPOST](blueprints/pangaea/programs/TXPOST.md), its [decision tables](blueprints/pangaea/rules/TXPOST.md), and the [DAILY job](blueprints/pangaea/jobs/DAILY.md). `make blueprints` regenerates them; a change to the bank or the analyzer shows as a diff.
-7. `make explore`, then <http://127.0.0.1:8090/>: the same analysis as a web app. Search for `AM-BALANCE`, open it in TXPOST, and follow its values back: the trail runs through every program and job step to the files that come from outside, highlighted on the diagrams.
-8. The bank's own operations guide is in [pangaea/docs/](pangaea/docs/README.md), in its operators' voice; [docs/architecture.md](docs/architecture.md) explains how the four parts fit, and [docs/blueprints.md](docs/blueprints.md) how to read what the survey writes.
-9. `make ci` runs what the hosted build runs: linters, the dependency check, every test and both sets of golden files.
+1. Check that the tools are there.
+
+   ```sh
+   make toolchain
+   ```
+
+2. Run the daily batch on the small fixture. It prints the job log and every step's report: the bank in one screen.
+
+   ```sh
+   make pangaea-daily
+   ```
+
+3. Open a bank of about three thousand generated accounts on 2026-09-01, and run five business days, one line each: transactions, rejects, the worst return code, and the month-end job when a month closes. Everything it made is under `pangaea/run/bank/`.
+
+   ```sh
+   make bank-reset
+   make bank-days N=5
+   ```
+
+4. Serve the console and open <http://127.0.0.1:8080/>: the bank today, with buttons to run days and reset. Open a day to see its jobs drawn as networks with each step's return code and each dataset's records, and the reports; open an account for its master record field by field and its postings; **Compare** shows what the days changed, reconciled against the postings.
+
+   ```sh
+   make console
+   ```
+
+5. With the console running, send it card and ATM traffic from another terminal. The console's **Online** page shows each authorization as it is answered, approvals and declines, and balances moving. Then run a day from the console: the channel answers that the bank is closed for the batch, and the next morning the card purchases and withdrawals are in the master, under the codes CP, AW and AF.
+
+   ```sh
+   make simulate
+   ```
+
+6. Read the survey of the bank, which is checked in: start at [blueprints/pangaea/README.md](blueprints/pangaea/README.md), then a program such as [TXPOST](blueprints/pangaea/programs/TXPOST.md), its [decision tables](blueprints/pangaea/rules/TXPOST.md), and the [DAILY job](blueprints/pangaea/jobs/DAILY.md). Regenerating them shows a change to the bank or the analyzer as a diff.
+
+   ```sh
+   make blueprints
+   ```
+
+7. Serve the explorer and open <http://127.0.0.1:8090/>: the same analysis as a web app. Search for `AM-BALANCE`, open it in TXPOST, and follow its values back: the trail runs through every program and job step to the files that come from outside, highlighted on the diagrams.
+
+   ```sh
+   make explore
+   ```
+
+8. Read the rest: the bank's own operations guide in [pangaea/docs/](pangaea/docs/README.md), in its operators' voice; [docs/architecture.md](docs/architecture.md) on how the four parts fit; [docs/blueprints.md](docs/blueprints.md) on how to read what the survey writes.
+
+9. Run what the hosted build runs: linters, the dependency check, every test and both sets of golden files.
+
+   ```sh
+   make ci
+   ```
 
 ## The names
 
