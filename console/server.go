@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/vlumi/copal/pangaea/bank"
+	"github.com/vlumi/copal/pangaea/brand"
 	"github.com/vlumi/copal/pangaea/online"
 	"github.com/vlumi/copal/pangaea/records"
 	"github.com/vlumi/copal/survey/blueprint"
@@ -68,6 +69,7 @@ func (s *Server) Handler() http.Handler {
 	static, _ := fs.Sub(files, "static")
 	mux := http.NewServeMux()
 	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServerFS(static)))
+	mux.Handle("GET /brand/", http.StripPrefix("/brand/", http.FileServerFS(brand.Files)))
 	mux.HandleFunc("GET /{$}", s.view("overview", s.overview))
 	mux.HandleFunc("GET /accounts", s.view("accounts", s.accounts))
 	mux.HandleFunc("GET /accounts/{no}", s.view("account", s.account))

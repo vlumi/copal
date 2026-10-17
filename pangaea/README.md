@@ -1,5 +1,7 @@
 # The First Bank of Pangaea
 
+<img src="brand/seal.png" alt="The seal of the First Bank of Pangaea: a Dimetrodon on the supercontinent, since before the continents" width="200" align="right">
+
 A small COBOL bank, the specimen the survey is developed against: a nightly batch, and an online day of card and ATM authorizations. Fiction written for this project. The bank knows nothing of the survey; the [console](../console/) is where the two meet.
 
 ## Layout
@@ -10,6 +12,7 @@ A small COBOL bank, the specimen the survey is developed against: a nightly batc
 - [programs/](programs/): the COBOL programs, fixed-format, compiled with GnuCOBOL 3.2 in IBM dialect.
 - [jobs/](jobs/): job files in a small subset of JCL, run by the Go runner in [runner/](runner/): the daily batch, the month-end job, the online day, and the job that opens a new bank.
 - [testdata/](testdata/): fixtures, each an `input` directory of datasets to start from and a `golden` directory of the datasets, job log and reports a run produces.
+- [brand/](brand/): the bank's seal and its mascot, which the console shows.
 
 The Go packages around the COBOL are the bank's machine room, not the bank: [dataset/](dataset/) keeps the datasets and their catalog, [runner/](runner/) runs jobs and [compile/](compile/) compiles the programs. [records/](records/) loads the record layouts computed from the copybooks and says which describes each dataset, [generate/](generate/) makes up customers and their business, [bank/](bank/) runs the bank day after day, [online/](online/) serves the online day over HTTP and [simulate/](simulate/) sends it card traffic. [cmd/pangaea](cmd/pangaea/) puts them on the command line. Reading JCL and laying out records come from [bedrock](../bedrock/), the language layer the survey uses too.
 
