@@ -234,6 +234,7 @@ func Analyze(paths []string, copybookDir string) (*System, error) {
 	describeDatasets(s.Jobs)
 	s.Datasets = systemDatasets(s.Jobs)
 	classifyJobDatasets(s.Jobs, s.Datasets)
+	describeEntities(s.Entities, s.Datasets)
 	return s, nil
 }
 

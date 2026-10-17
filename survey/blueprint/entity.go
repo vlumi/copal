@@ -2,11 +2,13 @@ package blueprint
 
 import "slices"
 
-// Entity is a record a copybook describes, and what the programs that
-// use the copybook for a record of their own do with each of its fields.
+// Entity is a record a copybook describes: the datasets whose records
+// the copybook describes, and what the programs that use the copybook for
+// a record of their own do with each of its fields.
 type Entity struct {
 	Record   string        `json:"record"`
 	Copybook string        `json:"copybook"`
+	Datasets []string      `json:"datasets,omitempty"`
 	Programs []string      `json:"programs,omitempty"`
 	Fields   []EntityField `json:"fields"`
 }
@@ -58,6 +60,17 @@ func entities(copybooks []Copybook, programs []Program) []Entity {
 		}
 	}
 	return list
+}
+
+// describeEntities lists the datasets each entity's copybook describes.
+func describeEntities(entities []Entity, datasets []SystemDataset) {
+	for i := range entities {
+		for _, d := range datasets {
+			if d.Copybook == entities[i].Copybook {
+				entities[i].Datasets = append(entities[i].Datasets, d.Name)
+			}
+		}
+	}
 }
 
 // entityFields lists a record's fields under it, in order, FILLER left

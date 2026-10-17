@@ -51,7 +51,7 @@ func New(system *blueprint.System, title string) (*Server, error) {
 		},
 	}
 	for _, page := range []string{"index", "search", "job", "step", "dataset", "program", "paragraph", "field", "copybook",
-		"entityfield", "source", "trace", "error"} {
+		"entities", "entity", "entityfield", "source", "trace", "error"} {
 		t, err := template.New("").Funcs(funcs).ParseFS(files, "templates/base.html", "templates/"+page+".html")
 		if err != nil {
 			return nil, err
@@ -75,6 +75,8 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /programs/{program}/paragraphs/{paragraph}", s.view("paragraph", s.paragraph))
 	mux.HandleFunc("GET /programs/{program}/fields/{field}", s.view("field", s.field))
 	mux.HandleFunc("GET /copybooks/{copybook}", s.view("copybook", s.copybook))
+	mux.HandleFunc("GET /entities", s.view("entities", s.entities))
+	mux.HandleFunc("GET /entities/{record}", s.view("entity", s.entity))
 	mux.HandleFunc("GET /entities/{record}/fields/{field}", s.view("entityfield", s.entityField))
 	mux.HandleFunc("GET /source/{path...}", s.view("source", s.source))
 	mux.HandleFunc("GET /trace", s.view("trace", s.trace))
@@ -351,6 +353,57 @@ func (s *Server) copybook(r *http.Request) (any, error) {
 		return nil, fmt.Errorf("copybook %s: %w", r.PathValue("copybook"), errNotFound)
 	}
 	return c, nil
+}
+
+func (s *Server) entities(*http.Request) (any, error) {
+	return s.index.system.Entities, nil
+}
+
+// EntityView is an entity: the datasets it describes, with their kinds,
+// the programs that use it, and its fields with the programs that read,
+// write and decide on each.
+type EntityView struct {
+	Entity   *blueprint.Entity
+	Datasets []*blueprint.SystemDataset
+	Programs []*blueprint.Program
+	Fields   []EntityFieldUses
+}
+
+// EntityFieldUses is a field of an entity and the programs that use it,
+// by what they do with it.
+type EntityFieldUses struct {
+	Field                      blueprint.EntityField
+	Readers, Writers, Deciders []blueprint.FieldUse
+}
+
+func (s *Server) entity(r *http.Request) (any, error) {
+	e, ok := s.index.entities[r.PathValue("record")]
+	if !ok {
+		return nil, fmt.Errorf("entity %s: %w", r.PathValue("record"), errNotFound)
+	}
+	v := EntityView{Entity: e}
+	for _, name := range e.Datasets {
+		v.Datasets = append(v.Datasets, s.index.systemDatasets[name])
+	}
+	for _, name := range e.Programs {
+		v.Programs = append(v.Programs, s.index.programs[name])
+	}
+	for _, f := range e.Fields {
+		row := EntityFieldUses{Field: f}
+		for _, u := range f.Uses {
+			if len(u.ReadBy) > 0 {
+				row.Readers = append(row.Readers, u)
+			}
+			if len(u.WrittenBy) > 0 {
+				row.Writers = append(row.Writers, u)
+			}
+			if len(u.Decisions) > 0 {
+				row.Deciders = append(row.Deciders, u)
+			}
+		}
+		v.Fields = append(v.Fields, row)
+	}
+	return v, nil
 }
 
 // EntityFieldView is a field of an entity across every program that uses
