@@ -9,7 +9,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/vlumi/copal/blueprint"
+	"github.com/vlumi/copal/survey/blueprint"
 )
 
 // index looks up the system's parts by name.

@@ -67,13 +67,13 @@ simulate:  ## Send card traffic to the console's online channel until interrupte
 .PHONY: blueprints
 blueprints:  ## Regenerate Pangaea's blueprints with Copal
 	rm -rf blueprints/pangaea
-	go run ./cmd/copal blueprints -copybooks pangaea/copybooks -out blueprints/pangaea -title pangaea pangaea/programs/*.cbl pangaea/jobs/*.jcl
+	go run ./survey/cmd/survey blueprints -copybooks pangaea/copybooks -out blueprints/pangaea -title pangaea pangaea/programs/*.cbl pangaea/jobs/*.jcl
 
 EXPLORE_ADDR ?= localhost:8090
 
 .PHONY: explore
 explore:  ## Explore Pangaea's analysis in the browser (EXPLORE_ADDR)
-	go run ./cmd/copal explore -copybooks pangaea/copybooks -addr $(EXPLORE_ADDR) -title "the First Bank of Pangaea" pangaea/programs/*.cbl pangaea/jobs/*.jcl
+	go run ./survey/cmd/survey explore -copybooks pangaea/copybooks -addr $(EXPLORE_ADDR) -title "the First Bank of Pangaea" pangaea/programs/*.cbl pangaea/jobs/*.jcl
 
 .PHONY: ci
 ci: toolchain lint-md lint-go test  ## Full local CI

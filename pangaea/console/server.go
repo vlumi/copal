@@ -15,10 +15,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/vlumi/copal/blueprint"
 	"github.com/vlumi/copal/pangaea/bank"
 	"github.com/vlumi/copal/pangaea/layouts"
 	"github.com/vlumi/copal/pangaea/online"
+	"github.com/vlumi/copal/survey/blueprint"
 )
 
 //go:embed templates static

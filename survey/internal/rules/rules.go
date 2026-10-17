@@ -18,7 +18,7 @@ import (
 	"strings"
 
 	"github.com/vlumi/copal/bedrock/cobol"
-	"github.com/vlumi/copal/structure"
+	"github.com/vlumi/copal/survey/internal/structure"
 )
 
 // Table is a decision table: the conditions tested, the actions taken,

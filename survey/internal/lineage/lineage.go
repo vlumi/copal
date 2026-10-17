@@ -17,8 +17,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/vlumi/copal/blueprint"
-	"github.com/vlumi/copal/dataflow"
+	"github.com/vlumi/copal/survey/blueprint"
+	"github.com/vlumi/copal/survey/internal/dataflow"
 )
 
 // Node is a field of a program, as a job step runs the program. Job and

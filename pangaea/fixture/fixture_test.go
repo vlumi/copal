@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/vlumi/copal/blueprint"
 	"github.com/vlumi/copal/pangaea/dataset"
+	"github.com/vlumi/copal/survey/blueprint"
 )
 
 // accruals is a system whose job names one dataset of accrual records,

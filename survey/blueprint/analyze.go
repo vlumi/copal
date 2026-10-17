@@ -11,10 +11,10 @@ import (
 
 	"github.com/vlumi/copal/bedrock/cobol"
 	"github.com/vlumi/copal/bedrock/layout"
-	"github.com/vlumi/copal/dataflow"
-	"github.com/vlumi/copal/fileio"
-	"github.com/vlumi/copal/rules"
-	"github.com/vlumi/copal/structure"
+	"github.com/vlumi/copal/survey/internal/dataflow"
+	"github.com/vlumi/copal/survey/internal/fileio"
+	"github.com/vlumi/copal/survey/internal/rules"
+	"github.com/vlumi/copal/survey/internal/structure"
 )
 
 // System is the analysis of a set of programs, the copybooks they use and

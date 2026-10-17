@@ -1,6 +1,6 @@
 package blueprint
 
-import "github.com/vlumi/copal/diagram"
+import "github.com/vlumi/copal/survey/internal/diagram"
 
 // flowDiagram is the program's flow, each paragraph linking to its source.
 func flowDiagram(dir string, p Program) diagram.Graph {

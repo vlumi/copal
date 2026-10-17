@@ -8,9 +8,9 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/vlumi/copal/blueprint"
-	"github.com/vlumi/copal/dataflow"
-	"github.com/vlumi/copal/lineage"
+	"github.com/vlumi/copal/survey/blueprint"
+	"github.com/vlumi/copal/survey/internal/dataflow"
+	"github.com/vlumi/copal/survey/internal/lineage"
 )
 
 // TraceView is a field's values followed back across the system: every

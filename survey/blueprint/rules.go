@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/vlumi/copal/rules"
+	"github.com/vlumi/copal/survey/internal/rules"
 )
 
 // Rules is the blueprint of a program's business rules: its decision

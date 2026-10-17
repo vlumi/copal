@@ -1,8 +1,8 @@
-// Command copal reads a COBOL system and writes its blueprints, or serves
+// Command survey reads a COBOL system and writes its blueprints, or serves
 // its explorer.
 //
-//	copal blueprints -copybooks dir -out dir [-title name] program.cbl... [job.jcl...]
-//	copal explore -copybooks dir [-addr host:port] [-title name] program.cbl... [job.jcl...]
+//	survey blueprints -copybooks dir -out dir [-title name] program.cbl... [job.jcl...]
+//	survey explore -copybooks dir [-addr host:port] [-title name] program.cbl... [job.jcl...]
 package main
 
 import (
@@ -12,13 +12,13 @@ import (
 	"os"
 	"time"
 
-	"github.com/vlumi/copal/blueprint"
-	"github.com/vlumi/copal/explore"
+	"github.com/vlumi/copal/survey/blueprint"
+	"github.com/vlumi/copal/survey/internal/explore"
 )
 
 const usage = `usage:
-  copal blueprints -copybooks dir -out dir [-title name] program.cbl... [job.jcl...]
-  copal explore -copybooks dir [-addr host:port] [-title name] program.cbl... [job.jcl...]
+  survey blueprints -copybooks dir -out dir [-title name] program.cbl... [job.jcl...]
+  survey explore -copybooks dir [-addr host:port] [-title name] program.cbl... [job.jcl...]
 `
 
 func main() {
@@ -28,7 +28,7 @@ func main() {
 		os.Exit(2)
 	}
 	if err := commands[os.Args[1]](os.Args[2:]); err != nil {
-		fmt.Fprintln(os.Stderr, "copal:", err)
+		fmt.Fprintln(os.Stderr, "survey:", err)
 		os.Exit(1)
 	}
 }

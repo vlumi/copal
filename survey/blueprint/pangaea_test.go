@@ -10,7 +10,7 @@ import (
 // TestPangaea generates the blueprints for Pangaea and compares them with
 // the golden ones in blueprints/pangaea. Run with -update to rewrite them.
 func TestPangaea(t *testing.T) {
-	t.Chdir("..")
+	t.Chdir("../..")
 	programs, err := filepath.Glob("pangaea/programs/*.cbl")
 	if err != nil {
 		t.Fatal(err)

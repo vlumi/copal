@@ -14,8 +14,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/vlumi/copal/blueprint"
-	"github.com/vlumi/copal/diagram"
+	"github.com/vlumi/copal/survey/blueprint"
+	"github.com/vlumi/copal/survey/internal/diagram"
 )
 
 //go:embed templates static

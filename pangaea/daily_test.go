@@ -9,12 +9,12 @@ import (
 	"testing"
 
 	"github.com/vlumi/copal/bedrock/jcl"
-	"github.com/vlumi/copal/blueprint"
 	"github.com/vlumi/copal/internal/golden"
 	"github.com/vlumi/copal/pangaea/compile"
 	"github.com/vlumi/copal/pangaea/dataset"
 	"github.com/vlumi/copal/pangaea/fixture"
 	"github.com/vlumi/copal/pangaea/runner"
+	"github.com/vlumi/copal/survey/blueprint"
 )
 
 // TestDaily runs the daily batch on each fixture in testdata, whose input

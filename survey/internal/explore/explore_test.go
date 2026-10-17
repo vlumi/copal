@@ -9,14 +9,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/vlumi/copal/blueprint"
+	"github.com/vlumi/copal/survey/blueprint"
 )
 
 // newPangaea serves the explorer of the First Bank of Pangaea, from the
 // repository's root, where its paths start.
 func newPangaea(t *testing.T) *httptest.Server {
 	t.Helper()
-	t.Chdir("..")
+	t.Chdir("../../..")
 	paths, err := filepath.Glob("pangaea/programs/*.cbl")
 	if err != nil {
 		t.Fatal(err)

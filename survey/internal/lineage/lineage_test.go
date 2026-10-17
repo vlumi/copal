@@ -5,20 +5,20 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/vlumi/copal/blueprint"
+	"github.com/vlumi/copal/survey/blueprint"
 )
 
 func pangaea(t *testing.T) *blueprint.System {
 	t.Helper()
-	programs, err := filepath.Glob("../pangaea/programs/*.cbl")
+	programs, err := filepath.Glob("../../../pangaea/programs/*.cbl")
 	if err != nil {
 		t.Fatal(err)
 	}
-	jobs, err := filepath.Glob("../pangaea/jobs/*.jcl")
+	jobs, err := filepath.Glob("../../../pangaea/jobs/*.jcl")
 	if err != nil {
 		t.Fatal(err)
 	}
-	s, err := blueprint.Analyze(append(programs, jobs...), "../pangaea/copybooks")
+	s, err := blueprint.Analyze(append(programs, jobs...), "../../../pangaea/copybooks")
 	if err != nil {
 		t.Fatal(err)
 	}

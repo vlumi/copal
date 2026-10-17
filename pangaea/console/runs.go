@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"slices"
 
-	"github.com/vlumi/copal/blueprint"
 	"github.com/vlumi/copal/pangaea/runner"
+	"github.com/vlumi/copal/survey/blueprint"
 )
 
 // JobRun is a job a business day ran: its steps' outcomes, its network as

@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/vlumi/copal/dataflow"
+	"github.com/vlumi/copal/survey/internal/dataflow"
 )
 
 // Output is a file a program writes, and where the values of each field of

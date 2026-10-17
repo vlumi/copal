@@ -19,8 +19,8 @@ import (
 
 	"github.com/vlumi/copal/bedrock/layout"
 	"github.com/vlumi/copal/bedrock/record"
-	"github.com/vlumi/copal/blueprint"
 	"github.com/vlumi/copal/pangaea/dataset"
+	"github.com/vlumi/copal/survey/blueprint"
 )
 
 // FieldsExtension marks a dataset written field by field.

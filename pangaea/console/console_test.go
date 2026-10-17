@@ -10,9 +10,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/vlumi/copal/blueprint"
 	"github.com/vlumi/copal/pangaea/bank"
 	"github.com/vlumi/copal/pangaea/compile"
+	"github.com/vlumi/copal/survey/blueprint"
 )
 
 // TestConsole resets a bank and runs two days from the console, as from

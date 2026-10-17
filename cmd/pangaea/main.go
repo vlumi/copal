@@ -24,7 +24,6 @@ import (
 	"time"
 
 	"github.com/vlumi/copal/bedrock/jcl"
-	"github.com/vlumi/copal/blueprint"
 	"github.com/vlumi/copal/pangaea/bank"
 	"github.com/vlumi/copal/pangaea/compile"
 	"github.com/vlumi/copal/pangaea/console"
@@ -33,6 +32,7 @@ import (
 	"github.com/vlumi/copal/pangaea/online"
 	"github.com/vlumi/copal/pangaea/runner"
 	"github.com/vlumi/copal/pangaea/simulate"
+	"github.com/vlumi/copal/survey/blueprint"
 )
 
 const usage = `usage:
