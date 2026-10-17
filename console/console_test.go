@@ -45,7 +45,8 @@ func TestConsole(t *testing.T) {
 	client := server.Client()
 	client.CheckRedirect = func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }
 
-	get(t, server.URL+"/", http.StatusOK, "No bank yet")
+	get(t, server.URL+"/", http.StatusOK, "No bank yet", "/brand/rex.png", `src="/brand/icon.png"`, `href="/brand/icon.png"`)
+	get(t, server.URL+"/brand/icon.png", http.StatusOK)
 	post(t, client, server.URL+"/reset", url.Values{"seed": {"3"}, "accounts": {"200"}}, "/")
 	get(t, server.URL+"/", http.StatusOK, "The bank on 2026-09-01", "No days run yet")
 	post(t, client, server.URL+"/run", url.Values{"days": {"2"}}, "/compare?from=2026-09-01&to=2026-09-03")
