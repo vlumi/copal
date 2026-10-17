@@ -18,6 +18,10 @@ lint-md:  ## Lint the Markdown files
 lint-go:  ## Lint the Go code and check its formatting
 	golangci-lint run ./...
 
+.PHONY: lint-deps
+lint-deps:  ## Check that the dependencies between the parts run one way
+	@scripts/check-deps.sh
+
 .PHONY: test
 test:  ## Run the tests
 	go test ./...
@@ -65,7 +69,7 @@ simulate:  ## Send card traffic to the console's online channel until interrupte
 	go run ./pangaea/cmd/pangaea simulate -api http://$(ADDR)/api -rate $(RATE)
 
 .PHONY: blueprints
-blueprints:  ## Regenerate Pangaea's blueprints with Copal
+blueprints:  ## Regenerate Pangaea's blueprints with Survey
 	rm -rf blueprints/pangaea
 	go run ./survey/cmd/survey blueprints -copybooks pangaea/copybooks -out blueprints/pangaea -title pangaea pangaea/programs/*.cbl pangaea/jobs/*.jcl
 
@@ -76,4 +80,4 @@ explore:  ## Explore Pangaea's analysis in the browser (EXPLORE_ADDR)
 	go run ./survey/cmd/survey explore -copybooks pangaea/copybooks -addr $(EXPLORE_ADDR) -title "the First Bank of Pangaea" pangaea/programs/*.cbl pangaea/jobs/*.jcl
 
 .PHONY: ci
-ci: toolchain lint-md lint-go test  ## Full local CI
+ci: toolchain lint-md lint-go lint-deps test  ## Full local CI
