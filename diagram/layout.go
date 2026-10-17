@@ -24,24 +24,28 @@ type Graph struct {
 // first of several is set in bold. Title is shown on hover and Link is followed
 // on click, where the viewer supports it. An emphasized node is drawn with a
 // heavier border; a data node with round ends and a tinted fill, and a
-// dashed one with a dashed border.
+// dashed one with a dashed border. A highlighted node, such as one on a
+// path being followed, is drawn in an accent color.
 type Node struct {
-	ID       string
-	Label    string
-	Title    string
-	Link     string
-	Emphasis bool
-	Data     bool
-	Dashed   bool
+	ID        string
+	Label     string
+	Title     string
+	Link      string
+	Emphasis  bool
+	Data      bool
+	Dashed    bool
+	Highlight bool
 }
 
-// Edge is an arrow from one node to another, drawn in a style. Span is the
-// fewest layers it goes down, 1 when not set: an edge that spans 2 keeps a
-// layer free between its nodes, for others to use.
+// Edge is an arrow from one node to another, drawn in a style, and in the
+// accent color if it is highlighted. Span is the fewest layers it goes
+// down, 1 when not set: an edge that spans 2 keeps a layer free between
+// its nodes, for others to use.
 type Edge struct {
-	From, To string
-	Style    Style
-	Span     int
+	From, To  string
+	Style     Style
+	Span      int
+	Highlight bool
 }
 
 // Style is how an edge's line is drawn.
@@ -96,9 +100,10 @@ type layout struct {
 // routedEdge is an edge as a chain of slots, from top to bottom through any
 // waypoints. The arrow points at the bottom end unless the edge is reversed.
 type routedEdge struct {
-	chain    []*slot
-	style    Style
-	reversed bool
+	chain     []*slot
+	style     Style
+	highlight bool
+	reversed  bool
 }
 
 func newLayout(g Graph) (*layout, error) {
@@ -122,10 +127,11 @@ func newLayout(g Graph) (*layout, error) {
 }
 
 type indexedEdge struct {
-	from, to int
-	style    Style
-	span     int
-	reversed bool // turned around to break a cycle; the arrow points at from
+	from, to  int
+	style     Style
+	highlight bool
+	span      int
+	reversed  bool // turned around to break a cycle; the arrow points at from
 }
 
 // forwardEdges returns the graph's edges by node index, each once, without
@@ -144,7 +150,7 @@ func forwardEdges(g Graph, index map[string]int) ([]indexedEdge, error) {
 			continue
 		}
 		seen[[2]int{from, to}] = true
-		edges = append(edges, indexedEdge{from: from, to: to, style: e.Style, span: max(e.Span, 1)})
+		edges = append(edges, indexedEdge{from: from, to: to, style: e.Style, highlight: e.Highlight, span: max(e.Span, 1)})
 	}
 	back := backEdges(len(g.Nodes), edges)
 	for i := range edges {
@@ -281,7 +287,7 @@ func (l *layout) route(edges []indexedEdge) {
 			chain[i-1].below = append(chain[i-1].below, chain[i])
 			chain[i].above = append(chain[i].above, chain[i-1])
 		}
-		l.edges = append(l.edges, routedEdge{chain: chain, style: e.style, reversed: e.reversed})
+		l.edges = append(l.edges, routedEdge{chain: chain, style: e.style, highlight: e.highlight, reversed: e.reversed})
 	}
 }
 

@@ -83,7 +83,21 @@ func (s *storage) at(record string, start, length int) string {
 	return best
 }
 
-// Origins traces where a data item's values come from: through every
+// Trace is where a data item's values come from: the origins at the
+// start, and the statements that move them on to the item, as lineage
+// edges, in the order the program declares them.
+type Trace struct {
+	Origins []Origin
+	Edges   []Edge
+}
+
+// Origins is where a data item's values come from in the end, as Trace
+// finds them.
+func (f Flow) Origins(item string) []Origin {
+	return f.Trace(item).Origins
+}
+
+// Trace traces where a data item's values come from: through every
 // statement that moves a value into it or into bytes it shares, a group it
 // is in, a field of it or a field that redefines it, and on through what
 // those statements move from, to the files, literals and initial values
@@ -91,12 +105,13 @@ func (s *storage) at(record string, start, length int) string {
 // of its own length, is followed byte for byte. A literal moved into a
 // whole group around the item, such as MOVE SPACES TO A-RECORD, only
 // clears it, and counts only for an item with no other origin.
-func (f Flow) Origins(item string) []Origin {
+func (f Flow) Trace(item string) Trace {
 	start, ok := f.storage.places[item]
 	if !ok {
-		return nil
+		return Trace{}
 	}
 	found, clearing := map[Origin]bool{}, map[Origin]bool{}
+	followed, cleared := map[int]bool{}, map[int]bool{}
 	visited := map[place]bool{}
 	queue := []place{start}
 	for len(queue) > 0 {
@@ -110,7 +125,7 @@ func (f Flow) Origins(item string) []Origin {
 		if p := f.storage.places[name]; p.value {
 			found[Origin{Item: name}] = true
 		}
-		for _, e := range f.Lineage {
+		for i, e := range f.Lineage {
 			to, ok := f.storage.places[e.To]
 			if e.ToFile || !ok || !to.overlaps(here) {
 				continue
@@ -118,26 +133,35 @@ func (f Flow) Origins(item string) []Origin {
 			switch {
 			case e.FromFile:
 				found[Origin{File: e.From, Item: name}] = true
+				followed[i] = true
 			case e.FromLiteral && to.group && to.length > here.length:
 				clearing[Origin{Literal: e.From}] = true
+				cleared[i] = true
 			case e.FromLiteral:
 				found[Origin{Literal: e.From}] = true
+				followed[i] = true
 			default:
 				if from, ok := f.storage.places[e.From]; ok {
 					queue = append(queue, follow(here, to, from))
+					followed[i] = true
 				}
 			}
 		}
 	}
 	if len(found) == 0 {
-		found = clearing
+		found, followed = clearing, cleared
 	}
-	origins := make([]Origin, 0, len(found))
+	t := Trace{Origins: make([]Origin, 0, len(found))}
 	for o := range found {
-		origins = append(origins, o)
+		t.Origins = append(t.Origins, o)
 	}
-	slices.SortFunc(origins, func(a, b Origin) int { return strings.Compare(a.String(), b.String()) })
-	return origins
+	slices.SortFunc(t.Origins, func(a, b Origin) int { return strings.Compare(a.String(), b.String()) })
+	for i, e := range f.Lineage {
+		if followed[i] {
+			t.Edges = append(t.Edges, e)
+		}
+	}
+	return t
 }
 
 // follow maps bytes of a statement's target back to its source: the same

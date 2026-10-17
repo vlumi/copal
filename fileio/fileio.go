@@ -41,3 +41,35 @@ func Uses(p *cobol.Program) []Use {
 	}
 	return uses
 }
+
+// Sort is a SORT statement: its work file, the files it reads with USING
+// and those it writes with GIVING. A sort with an input or output
+// procedure has no files on that side.
+type Sort struct {
+	Work   string
+	Using  []string
+	Giving []string
+	Pos    cobol.Pos
+}
+
+// Sorts lists the program's SORT statements.
+func Sorts(p *cobol.Program) []Sort {
+	var sorts []Sort
+	for _, para := range p.Paragraphs {
+		cobol.Walk(para.Statements, func(s cobol.Statement) {
+			if s.Verb != "SORT" {
+				return
+			}
+			sort := Sort{Work: s.Files[0].Name, Pos: s.Pos}
+			for _, f := range s.Files[1:] {
+				if f.Mode == Input {
+					sort.Using = append(sort.Using, f.Name)
+				} else {
+					sort.Giving = append(sort.Giving, f.Name)
+				}
+			}
+			sorts = append(sorts, sort)
+		})
+	}
+	return sorts
+}

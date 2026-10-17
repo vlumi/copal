@@ -90,3 +90,29 @@ func TestOrigins(t *testing.T) {
 		}
 	}
 }
+
+// A trace keeps the statements it follows, in program order.
+func TestTrace(t *testing.T) {
+	p, err := cobol.ReadProgram("testdata/ORIGINS.cbl", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	records, err := layout.Program(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	flow := Analyze(p, records)
+	for item, want := range map[string][]string{
+		"WS-OUT-ACCT": {"READ IN-FILE -> IN-RECORD", "MOVE IN-ACCT -> WS-OUT-ACCT"},
+		"WS-BODY":     {"READ IN-FILE -> IN-RECORD", "MOVE 5 -> IN-AMOUNT", "MOVE IN-RECORD -> WS-HOLD"},
+		"WS-OUT-TAG":  nil,
+	} {
+		var got []string
+		for _, e := range flow.Trace(item).Edges {
+			got = append(got, fmt.Sprintf("%s %s -> %s", e.Verb, e.From, e.To))
+		}
+		if !slices.Equal(got, want) {
+			t.Errorf("trace of %s: %q, want %q", item, got, want)
+		}
+	}
+}

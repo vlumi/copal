@@ -55,6 +55,9 @@ func writeLegend(b *strings.Builder, keys []Key, x, y int) {
 			if k.node.Dashed {
 				class += " dashed"
 			}
+			if k.node.Highlight {
+				class += " highlight"
+			}
 			fmt.Fprintf(b, `<rect class="%s" x="%d" y="%d" width="%d" height="14" rx="%d"/>`+"\n",
 				class, left, middle-7, sampleWidth, radius)
 		case k.style != nil:
