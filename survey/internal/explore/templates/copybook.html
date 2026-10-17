@@ -4,6 +4,19 @@
 <h1><span class="kind">copybook</span> {{.Name}}</h1>
 <p class="crumbs">{{template "src" .Source}} · used by {{range $i, $u := .UsedBy}}{{if $i}}, {{end}}<a href="{{program $u}}">{{$u}}</a>{{else}}no program{{end}}</p>
 {{if .Description}}<pre class="description">{{join .Description "\n"}}</pre>{{end}}
+<h2>Kinds of field</h2>
+<dl class="kinds">
+  <dt>{{template "badge" "group"}}</dt><dd>has fields of its own</dd>
+  <dt>{{template "badge" "filler"}}</dt><dd>named FILLER</dd>
+  <dt>{{template "badge" "key"}}</dt><dd>a file's record key, or a key a sort sorts on, in a program that uses the copybook</dd>
+  <dt>{{template "badge" "code"}}</dt><dd>has condition names, level 88</dd>
+  <dt>{{template "badge" "edited"}}</dt><dd>numeric-edited, for printing</dd>
+  <dt>{{template "badge" "amount"}}</dt><dd>numeric with decimals</dd>
+  <dt>{{template "badge" "date"}}</dt><dd>numeric of 6, 8 or 14 digits, named for a date</dd>
+  <dt>{{template "badge" "number"}}</dt><dd>any other numeric field</dd>
+  <dt>{{template "badge" "text"}}</dt><dd>anything else</dd>
+</dl>
+<p class="note">The first that fits is the field's kind. A key is only what a program says is one: a field a file is read by in sequence, however it is named, is not. A date is told by its name, containing DATE, MONTH, TIMESTAMP or YYMM: the one rule here that reads a name.</p>
 {{range .Records}}
 <h2>{{.Name}}</h2>
 <table>
@@ -14,5 +27,5 @@
 {{end}}
 {{end}}
 
-{{define "layout"}}<tr><td class="num">{{printf "%02d" .Level}}</td><td>{{.Name}}</td><td class="num">{{.Start}}</td><td class="num">{{.Length}}</td><td><code>{{.Picture}}</code></td><td>{{.Usage}}</td><td>{{template "src" .Source}}</td></tr>
+{{define "layout"}}<tr><td class="num">{{printf "%02d" .Level}}</td><td>{{.Name}} {{template "badge" .Kind}}</td><td class="num">{{.Start}}</td><td class="num">{{.Length}}</td><td><code>{{.Picture}}</code></td><td>{{.Usage}}</td><td>{{template "src" .Source}}</td></tr>
 {{range .Fields}}{{template "layout" .}}{{end}}{{end}}

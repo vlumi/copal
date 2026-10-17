@@ -19,6 +19,12 @@
 </html>
 {{end}}
 
+{{define "badge"}}<span class="badge kind-{{.}}">{{.}}</span>{{end}}
+
+{{define "datasetBadges"}}{{template "badge" .Kind}}{{if .Indexed}} {{template "badge" "indexed"}}{{end}}{{end}}
+
+{{define "steps"}}{{range $i, $s := .}}{{if $i}}, {{end}}<a href="{{step $s}}">{{$s.Step}}</a> of {{$s.Job}}{{end}}{{end}}
+
 {{define "src"}}<a href="{{source .}}">{{sourceText .}}</a>{{end}}
 
 {{define "lineage"}}

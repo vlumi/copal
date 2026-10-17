@@ -2,7 +2,7 @@
 {{define "content"}}
 {{with .View}}{{$p := .Program}}
 <h1><span class="kind">program</span> {{$p.Name}}</h1>
-<p class="crumbs">{{template "src" $p.Source}}{{if .Runs}} · run by {{range $i, $r := .Runs}}{{if $i}}, {{end}}<a href="{{step $r}}">{{$r.Step}}</a> of {{$r.Job}}{{end}}{{end}}{{if $p.CalledBy}} · called by {{range $i, $c := $p.CalledBy}}{{if $i}}, {{end}}<a href="{{program $c}}">{{$c}}</a>{{end}}{{end}}</p>
+<p class="crumbs">{{$p.Kind}} program · {{template "src" $p.Source}}{{if .Runs}} · run by {{range $i, $r := .Runs}}{{if $i}}, {{end}}<a href="{{step $r}}">{{$r.Step}}</a> of {{$r.Job}}{{end}}{{end}}{{if $p.CalledBy}} · called by {{range $i, $c := $p.CalledBy}}{{if $i}}, {{end}}<a href="{{program $c}}">{{$c}}</a>{{end}}{{end}}</p>
 {{if $p.Description}}<pre class="description">{{join $p.Description "\n"}}</pre>{{end}}
 <h2>Flow</h2>
 <div class="diagram">{{.Flow}}</div>
@@ -38,7 +38,7 @@
 <table>
   <thead><tr><th>Record</th><th>Section</th><th>File</th><th class="num">Length</th><th>Copybook</th></tr></thead>
   <tbody>
-  {{range $p.Records}}<tr><td><a href="{{field $p.Name .Name}}">{{.Name}}</a></td><td>{{.Section}}</td><td>{{.File}}</td><td class="num">{{.Length}}</td><td>{{with .Copybook}}<a href="{{copybook .}}">{{.}}</a>{{end}}</td></tr>
+  {{range $p.Records}}<tr><td><a href="{{field $p.Name .Name}}">{{.Name}}</a></td><td>{{template "badge" .Section}}</td><td>{{.File}}</td><td class="num">{{.Length}}</td><td>{{with .Copybook}}<a href="{{copybook .}}">{{.}}</a>{{end}}</td></tr>
   {{end}}
   </tbody>
 </table>

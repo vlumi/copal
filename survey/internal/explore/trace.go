@@ -132,7 +132,7 @@ func (s *Server) jobDiagrams(paths map[string]*blueprint.JobPath) ([]Diagram, er
 			continue
 		}
 		svg, err := svg(blueprint.JobGraph(j, blueprint.JobNotes{
-			StepLink:    func(step blueprint.Step) string { return stepLink(StepRef{Job: j.Name, Step: step.Name}) },
+			StepLink:    func(step blueprint.Step) string { return stepLink(blueprint.StepRef{Job: j.Name, Step: step.Name}) },
 			DatasetLink: func(ds string) string { return datasetLink(datasetBase(ds)) },
 			Path:        path,
 		}))

@@ -1,8 +1,8 @@
 {{define "title"}}{{.View.Field.Name}} of {{.View.Program.Name}}{{end}}
 {{define "content"}}
 {{with .View}}{{$p := .Program.Name}}
-<h1><span class="kind">field</span> {{.Field.Name}}</h1>
-<p class="crumbs">of <a href="{{program $p}}">{{$p}}</a>, {{range .Path}}in <a href="{{field $p .Name}}">{{.Name}}</a>, {{end}}{{with .Record}}{{if .File}}a record of file {{.File}}{{else}}{{.Section}}{{end}}{{with .Copybook}}, from copybook <a href="{{copybook .}}">{{.}}</a>{{end}}{{end}} · {{template "src" .Field.Source}}</p>
+<h1><span class="kind">field</span> {{.Field.Name}} {{template "badge" .Field.Kind}}</h1>
+<p class="crumbs">of <a href="{{program $p}}">{{$p}}</a>, {{range .Path}}in <a href="{{field $p .Name}}">{{.Name}}</a>, {{end}}{{with .Record}}{{template "badge" .Section}} {{if .File}}a record of file {{.File}}{{else}}record {{.Name}}{{end}}{{with .Copybook}}, from copybook <a href="{{copybook .}}">{{.}}</a>{{end}}{{end}} · {{template "src" .Field.Source}}</p>
 {{with .Field}}
 <table>
   <tbody>
@@ -14,7 +14,7 @@
   {{with .Values}}<tr><th>Value</th><td><code>{{join . ", "}}</code></td></tr>{{end}}
   {{with .Description}}<tr><th>Description</th><td>{{.}}</td></tr>{{end}}
   {{with .Conditions}}<tr><th>Conditions</th><td>{{range $i, $c := .}}{{if $i}}, {{end}}{{$c.Name}} <code>{{join $c.Values ", "}}</code>{{end}}</td></tr>{{end}}
-  {{with .Fields}}<tr><th>Fields</th><td>{{range $i, $f := .}}{{if $i}}, {{end}}<a href="{{field $p $f.Name}}">{{$f.Name}}</a>{{end}}</td></tr>{{end}}
+  {{with .Fields}}<tr><th>Fields</th><td>{{range $i, $f := .}}{{if $i}}, {{end}}<a href="{{field $p $f.Name}}">{{$f.Name}}</a> {{template "badge" $f.Kind}}{{end}}</td></tr>{{end}}
   </tbody>
 </table>
 {{end}}
