@@ -2,7 +2,7 @@
 
 A web window onto the running First Bank of Pangaea, built for the modernization: it runs the bank, watches its online day, and shows each run's jobs as the survey draws them. It is the one part of Copal that knows both the bank and the survey, so it lives beside them rather than in either.
 
-`make console` serves it at <http://127.0.0.1:8080/> (`ADDR` to change it):
+`make console` serves it at <http://127.0.0.1:4510/> (`ADDR` to change it):
 
 - the bank today: its business date, accounts and balances, and every day it has run, with each day's worst return code;
 - accounts, searched by account number, customer number or name, and for each account its master record field by field, every posting and every reject since the reset;

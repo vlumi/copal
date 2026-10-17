@@ -178,7 +178,7 @@ func days(args []string) error {
 // until an interrupt closes the day, extracting its holds for the batch.
 func serveOnline(args []string) error {
 	flags, b := bankFlags("online")
-	addr := flags.String("addr", "127.0.0.1:8081", "address to serve on")
+	addr := flags.String("addr", "127.0.0.1:2951", "address to serve on")
 	_ = flags.Parse(args)
 	bankLayouts, err := records.Load(b.Copybooks)
 	if err != nil {
@@ -202,7 +202,7 @@ func serveOnline(args []string) error {
 // interrupted, printing every request and its response.
 func simulateTraffic(args []string) error {
 	flags, b := bankFlags("simulate")
-	api := flags.String("api", "http://127.0.0.1:8080/api", "the online channel's API")
+	api := flags.String("api", "http://127.0.0.1:4510/api", "the online channel's API")
 	rate := flags.Float64("rate", 5, "requests a second")
 	seed := flags.Uint64("seed", 1, "seed the traffic is made up from")
 	_ = flags.Parse(args)

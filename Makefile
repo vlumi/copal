@@ -50,13 +50,15 @@ bank-reset:  ## Reset the running bank to a generated start (SEED, ACCOUNTS)
 bank-days: pangaea-build  ## Run the bank's next N business days
 	go run ./pangaea/cmd/pangaea days -n $(N)
 
-ADDR ?= 127.0.0.1:8080
+# The ports are goroawase, Japanese number puns: 4510 shigoto, "work";
+# 2951 fukukoi, "come, fortune"; 1192 ii kuni, "good country".
+ADDR ?= 127.0.0.1:4510
 
 .PHONY: console
 console: pangaea-build  ## Serve the bank console in the browser (ADDR)
 	go run ./console/cmd/console -addr $(ADDR)
 
-ONLINE_ADDR ?= 127.0.0.1:8081
+ONLINE_ADDR ?= 127.0.0.1:2951
 
 .PHONY: online
 online: pangaea-build  ## Serve the bank's online day until interrupted (ONLINE_ADDR)
@@ -73,7 +75,7 @@ blueprints:  ## Regenerate Pangaea's blueprints with Survey
 	rm -rf blueprints/pangaea
 	go run ./survey/cmd/survey blueprints -copybooks pangaea/copybooks -out blueprints/pangaea -title pangaea pangaea/programs/*.cbl pangaea/jobs/*.jcl
 
-EXPLORE_ADDR ?= 127.0.0.1:8090
+EXPLORE_ADDR ?= 127.0.0.1:1192
 
 .PHONY: explore
 explore:  ## Explore Pangaea's analysis in the browser (EXPLORE_ADDR)

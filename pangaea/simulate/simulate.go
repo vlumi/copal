@@ -29,7 +29,7 @@ type Card struct {
 
 // Simulator sends made-up requests to the online channel's API.
 type Simulator struct {
-	API    string // the API's base URL, such as http://127.0.0.1:8080/api
+	API    string // the API's base URL, such as http://127.0.0.1:4510/api
 	Client *http.Client
 	Cards  []Card
 	rand   *rand.Rand
