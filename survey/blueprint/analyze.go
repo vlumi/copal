@@ -24,6 +24,7 @@ type System struct {
 	Copybooks []Copybook
 	Jobs      []Job
 	Datasets  []SystemDataset
+	Entities  []Entity
 }
 
 // Program is the blueprint of one program. Its Kind is "called" for a
@@ -221,6 +222,7 @@ func Analyze(paths []string, copybookDir string) (*System, error) {
 		}
 		s.Copybooks = append(s.Copybooks, copybook)
 	}
+	s.Entities = entities(s.Copybooks, s.Programs)
 	for _, path := range jobPaths {
 		job, err := analyzeJob(path, s.Programs)
 		if err != nil {

@@ -19,6 +19,12 @@ func fieldLink(program, field string) string {
 	return programLink(program) + "/fields/" + url.PathEscape(field)
 }
 
+func entityLink(record string) string { return "/entities/" + url.PathEscape(record) }
+
+func entityFieldLink(record, field string) string {
+	return entityLink(record) + "/fields/" + url.PathEscape(field)
+}
+
 func copybookLink(name string) string { return "/copybooks/" + url.PathEscape(name) }
 
 func jobLink(name string) string { return "/jobs/" + url.PathEscape(name) }

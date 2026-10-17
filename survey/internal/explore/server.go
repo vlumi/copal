@@ -36,7 +36,7 @@ func New(system *blueprint.System, title string) (*Server, error) {
 	s := &Server{title: title, index: newIndex(system), pages: map[string]*template.Template{}}
 	funcs := template.FuncMap{
 		"program": programLink, "paragraph": paragraphLink, "field": fieldLink, "copybook": copybookLink,
-		"job": jobLink, "step": stepLink, "dataset": datasetLink, "source": sourceLink,
+		"job": jobLink, "entity": entityLink, "entityField": entityFieldLink, "step": stepLink, "dataset": datasetLink, "source": sourceLink,
 		"sourceText": sourceText, "base": datasetBase, "join": strings.Join,
 		"add":     func(a, b int) int { return a + b },
 		"hop":     hopID,
@@ -45,11 +45,13 @@ func New(system *blueprint.System, title string) (*Server, error) {
 		"lineage": func(program string, fields map[string]bool, rows []blueprint.Lineage) lineageTable {
 			return lineageTable{Program: program, Fields: fields, Rows: rows}
 		},
+		"layoutOf": func(record string, f blueprint.Field) layoutRow { return layoutRow{Record: record, Field: f} },
 		"decisions": func(program string, rows []blueprint.Decision) decisionTable {
 			return decisionTable{Program: program, Rows: rows}
 		},
 	}
-	for _, page := range []string{"index", "search", "job", "step", "dataset", "program", "paragraph", "field", "copybook", "source", "trace", "error"} {
+	for _, page := range []string{"index", "search", "job", "step", "dataset", "program", "paragraph", "field", "copybook",
+		"entityfield", "source", "trace", "error"} {
 		t, err := template.New("").Funcs(funcs).ParseFS(files, "templates/base.html", "templates/"+page+".html")
 		if err != nil {
 			return nil, err
@@ -73,6 +75,7 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /programs/{program}/paragraphs/{paragraph}", s.view("paragraph", s.paragraph))
 	mux.HandleFunc("GET /programs/{program}/fields/{field}", s.view("field", s.field))
 	mux.HandleFunc("GET /copybooks/{copybook}", s.view("copybook", s.copybook))
+	mux.HandleFunc("GET /entities/{record}/fields/{field}", s.view("entityfield", s.entityField))
 	mux.HandleFunc("GET /source/{path...}", s.view("source", s.source))
 	mux.HandleFunc("GET /trace", s.view("trace", s.trace))
 	return mux
@@ -113,6 +116,12 @@ type lineageTable struct {
 	Program string
 	Fields  map[string]bool
 	Rows    []blueprint.Lineage
+}
+
+// layoutRow is a field of a copybook's record, for the layout template.
+type layoutRow struct {
+	Record string
+	Field  blueprint.Field
 }
 
 // decisionTable is a program's decisions on a field, for the decisions
@@ -270,7 +279,9 @@ type FieldView struct {
 	Into      []blueprint.Lineage
 	OutOf     []blueprint.Lineage
 	Decisions []blueprint.Decision
-	Fields    map[string]bool
+	// Entity is the field of an entity it is, if its record is one.
+	Entity *EntityFieldRef
+	Fields map[string]bool
 }
 
 func (s *Server) field(r *http.Request) (any, error) {
@@ -299,6 +310,9 @@ func (s *Server) field(r *http.Request) (any, error) {
 		}
 	}
 	v.Decisions = p.Decisions(name)
+	if ref, ok := s.index.entityFields[[2]string{p.Name, name}]; ok {
+		v.Entity = &ref
+	}
 	for _, e := range p.Lineage {
 		if e.To == name && !e.ToFile {
 			v.Into = append(v.Into, e)
@@ -337,6 +351,42 @@ func (s *Server) copybook(r *http.Request) (any, error) {
 		return nil, fmt.Errorf("copybook %s: %w", r.PathValue("copybook"), errNotFound)
 	}
 	return c, nil
+}
+
+// EntityFieldView is a field of an entity across every program that uses
+// the entity: its layout in the copybook, and each program's use of it.
+type EntityFieldView struct {
+	Entity *blueprint.Entity
+	Layout blueprint.Field
+	Field  blueprint.EntityField
+	Used   []blueprint.FieldUse
+	Unused []string
+}
+
+func (s *Server) entityField(r *http.Request) (any, error) {
+	e, ok := s.index.entities[r.PathValue("record")]
+	if !ok {
+		return nil, fmt.Errorf("entity %s: %w", r.PathValue("record"), errNotFound)
+	}
+	f, ok := e.Field(r.PathValue("field"))
+	if !ok {
+		return nil, fmt.Errorf("field %s of %s: %w", r.PathValue("field"), e.Record, errNotFound)
+	}
+	v := EntityFieldView{Entity: e, Field: f}
+	c := s.index.copybooks[e.Copybook]
+	for _, rec := range c.Records {
+		if rec.Name == e.Record {
+			_, v.Layout, _ = findField(rec.Field, f.Name)
+		}
+	}
+	for _, u := range f.Uses {
+		if len(u.ReadBy)+len(u.WrittenBy)+len(u.Decisions) > 0 {
+			v.Used = append(v.Used, u)
+		} else {
+			v.Unused = append(v.Unused, u.Program)
+		}
+	}
+	return v, nil
 }
 
 // SourceView is a source file, by line.

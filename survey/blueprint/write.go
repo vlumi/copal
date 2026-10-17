@@ -25,6 +25,13 @@ func (s *System) Render(dir, title string) (map[string][]byte, error) {
 		}
 		files["datasets.json"] = append(data, '\n')
 	}
+	if len(s.Entities) > 0 {
+		data, err := json.MarshalIndent(s.Entities, "", "  ")
+		if err != nil {
+			return nil, err
+		}
+		files["entities.json"] = append(data, '\n')
+	}
 	for _, p := range s.Programs {
 		if err := renderBoth(files, dir, "programs", p.Name, p, programMarkdown); err != nil {
 			return nil, err

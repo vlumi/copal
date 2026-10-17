@@ -1,0 +1,32 @@
+{{define "title"}}{{.View.Field.Name}} of {{.View.Entity.Record}}{{end}}
+{{define "content"}}
+{{with .View}}
+<h1><span class="kind">field</span> {{.Field.Name}} {{template "badge" .Field.Kind}}</h1>
+<p class="crumbs">of record {{.Entity.Record}}, described by copybook <a href="{{copybook .Entity.Copybook}}">{{.Entity.Copybook}}</a>, across every program that uses it · {{template "src" .Layout.Source}}</p>
+{{with .Layout}}
+<table>
+  <tbody>
+  <tr><th>Bytes</th><td>{{.Start}} to {{add .Start (add .Length -1)}}, {{.Length}} long</td></tr>
+  {{with .Picture}}<tr><th>Picture</th><td><code>{{.}}</code>{{with $.View.Layout.Usage}} {{.}}{{end}}</td></tr>{{end}}
+  {{with .Conditions}}<tr><th>Conditions</th><td>{{range $i, $c := .}}{{if $i}}, {{end}}{{$c.Name}} <code>{{join $c.Values ", "}}</code>{{end}}</td></tr>{{end}}
+  </tbody>
+</table>
+{{end}}
+<h2>Programs</h2>
+{{if .Used}}
+<table>
+  <thead><tr><th>Program</th><th>Reads it in</th><th>Writes it in</th><th>Decides on it in</th></tr></thead>
+  <tbody>
+  {{range .Used}}{{$p := .Program}}<tr>
+    <td><a href="{{field $p .Field}}">{{$p}}</a>{{if ne .Field $.View.Field.Name}}<br><span class="note">as {{.Field}}</span>{{end}}</td>
+    <td>{{range $i, $x := .ReadBy}}{{if $i}}, {{end}}<a href="{{paragraph $p $x}}">{{$x}}</a>{{end}}</td>
+    <td>{{range $i, $x := .WrittenBy}}{{if $i}}, {{end}}<a href="{{paragraph $p $x}}">{{$x}}</a>{{end}}</td>
+    <td>{{range .Decisions}}<a href="{{paragraph $p .Paragraph}}">{{.Paragraph}}</a>{{if .Loop}} <span class="note">in its loop</span>{{end}}: {{range $i, $c := .Conditions}}{{if $i}}, {{end}}<code>{{$c}}</code>{{end}}<br>{{end}}</td>
+  </tr>{{end}}
+  </tbody>
+</table>
+{{else}}<p class="note">No program uses it by name.</p>{{end}}
+{{with .Unused}}<p class="note">Also in the record of {{range $i, $p := .}}{{if $i}}, {{end}}<a href="{{program $p}}">{{$p}}</a>{{end}}, which do not use it by name.</p>{{end}}
+<p class="note">Uses are by name: a statement that moves the whole record, such as a READ INTO or a MOVE of the record, counts for the record, not for each of its fields.</p>
+{{end}}
+{{end}}

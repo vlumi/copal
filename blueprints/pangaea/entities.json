@@ -1,0 +1,4379 @@
+[
+  {
+    "record": "ACCRUAL-RECORD",
+    "copybook": "ACCRREC",
+    "programs": [
+      "GLSUM",
+      "INTACCR",
+      "MONCHG",
+      "STMTPRT"
+    ],
+    "fields": [
+      {
+        "name": "AC-ACCT-NO",
+        "kind": "number",
+        "uses": [
+          {
+            "program": "GLSUM",
+            "field": "AC-ACCT-NO"
+          },
+          {
+            "program": "INTACCR",
+            "field": "AC-ACCT-NO",
+            "writtenBy": [
+              "1400-TAKE-ACCRUAL"
+            ]
+          },
+          {
+            "program": "MONCHG",
+            "field": "AC-ACCT-NO",
+            "readBy": [
+              "1200-READ-ACCOUNT"
+            ],
+            "decisions": [
+              {
+                "paragraph": "1200-READ-ACCOUNT",
+                "source": "pangaea/programs/MONCHG.cbl:140",
+                "conditions": [
+                  "MASTER-AT-END OR ACCRUALS-AT-END OR AC-ACCT-NO NOT = AM-ACCT-NO"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "STMTPRT",
+            "field": "AC-ACCT-NO"
+          }
+        ]
+      },
+      {
+        "name": "AC-THROUGH-DATE",
+        "kind": "date",
+        "uses": [
+          {
+            "program": "GLSUM",
+            "field": "AC-THROUGH-DATE"
+          },
+          {
+            "program": "INTACCR",
+            "field": "AC-THROUGH-DATE",
+            "readBy": [
+              "2000-ACCRUE-ACCOUNT",
+              "2200-FIND-MONTH-START"
+            ],
+            "writtenBy": [
+              "1400-TAKE-ACCRUAL",
+              "2000-ACCRUE-ACCOUNT"
+            ]
+          },
+          {
+            "program": "MONCHG",
+            "field": "AC-THROUGH-DATE"
+          },
+          {
+            "program": "STMTPRT",
+            "field": "AC-THROUGH-DATE"
+          }
+        ]
+      },
+      {
+        "name": "AC-ACCRUED",
+        "kind": "amount",
+        "uses": [
+          {
+            "program": "GLSUM",
+            "field": "AC-ACCRUED"
+          },
+          {
+            "program": "INTACCR",
+            "field": "AC-ACCRUED",
+            "readBy": [
+              "2300-ACCRUE-DAYS",
+              "2400-CLOSE-MONTH"
+            ],
+            "writtenBy": [
+              "1400-TAKE-ACCRUAL",
+              "2300-ACCRUE-DAYS",
+              "2400-CLOSE-MONTH"
+            ]
+          },
+          {
+            "program": "MONCHG",
+            "field": "AC-ACCRUED"
+          },
+          {
+            "program": "STMTPRT",
+            "field": "AC-ACCRUED"
+          }
+        ]
+      },
+      {
+        "name": "AC-DUE",
+        "kind": "amount",
+        "uses": [
+          {
+            "program": "GLSUM",
+            "field": "AC-DUE"
+          },
+          {
+            "program": "INTACCR",
+            "field": "AC-DUE",
+            "readBy": [
+              "2400-CLOSE-MONTH"
+            ],
+            "writtenBy": [
+              "2000-ACCRUE-ACCOUNT",
+              "2400-CLOSE-MONTH"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2400-CLOSE-MONTH",
+                "source": "pangaea/programs/INTACCR.cbl:327",
+                "conditions": [
+                  "AC-DUE \u003c 0"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "MONCHG",
+            "field": "AC-DUE",
+            "readBy": [
+              "2100-SETTLE-INTEREST"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2100-SETTLE-INTEREST",
+                "source": "pangaea/programs/MONCHG.cbl:172",
+                "conditions": [
+                  "AC-DUE \u003e 0",
+                  "AC-DUE \u003c 0"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "STMTPRT",
+            "field": "AC-DUE"
+          }
+        ]
+      },
+      {
+        "name": "AC-DUE-MONTH",
+        "kind": "date",
+        "uses": [
+          {
+            "program": "GLSUM",
+            "field": "AC-DUE-MONTH",
+            "readBy": [
+              "1000-INITIALIZE"
+            ]
+          },
+          {
+            "program": "INTACCR",
+            "field": "AC-DUE-MONTH",
+            "readBy": [
+              "2400-CLOSE-MONTH"
+            ],
+            "writtenBy": [
+              "2000-ACCRUE-ACCOUNT",
+              "2400-CLOSE-MONTH"
+            ]
+          },
+          {
+            "program": "MONCHG",
+            "field": "AC-DUE-MONTH",
+            "readBy": [
+              "2000-CHARGE-ACCOUNT"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2000-CHARGE-ACCOUNT",
+                "source": "pangaea/programs/MONCHG.cbl:161",
+                "conditions": [
+                  "AC-DUE-MONTH = 0"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "STMTPRT",
+            "field": "AC-DUE-MONTH",
+            "readBy": [
+              "1000-INITIALIZE"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "record": "ACCT-MASTER-RECORD",
+    "copybook": "ACCTMAST",
+    "programs": [
+      "ACCTLOAD",
+      "ACCTMNT",
+      "INTACCR",
+      "MONCHG",
+      "STMTPRT",
+      "TXPOST"
+    ],
+    "fields": [
+      {
+        "name": "AM-ACCT-NO",
+        "kind": "number",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "AM-ACCT-NO",
+            "readBy": [
+              "2100-WRITE-ONLINE"
+            ]
+          },
+          {
+            "program": "ACCTMNT",
+            "field": "AM-ACCT-NO",
+            "writtenBy": [
+              "2210-OPEN"
+            ]
+          },
+          {
+            "program": "INTACCR",
+            "field": "AM-ACCT-NO",
+            "readBy": [
+              "1400-TAKE-ACCRUAL"
+            ],
+            "decisions": [
+              {
+                "paragraph": "1400-TAKE-ACCRUAL",
+                "source": "pangaea/programs/INTACCR.cbl:227",
+                "conditions": [
+                  "WS-ACCRUAL-KEY = AM-ACCT-NO",
+                  "WS-ACCRUAL-KEY \u003e AM-ACCT-NO"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "MONCHG",
+            "field": "AM-ACCT-NO",
+            "readBy": [
+              "1200-READ-ACCOUNT",
+              "2900-WRITE-TRAN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "1200-READ-ACCOUNT",
+                "source": "pangaea/programs/MONCHG.cbl:140",
+                "conditions": [
+                  "MASTER-AT-END OR ACCRUALS-AT-END OR AC-ACCT-NO NOT = AM-ACCT-NO"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "STMTPRT",
+            "field": "AM-ACCT-NO",
+            "readBy": [
+              "3000-PRINT-STATEMENTS",
+              "3300-PRINT-STATEMENT",
+              "3400-PRINT-HEADING"
+            ],
+            "decisions": [
+              {
+                "paragraph": "3000-PRINT-STATEMENTS",
+                "loop": "PERFORM UNTIL MASTER-AT-END",
+                "source": "pangaea/programs/STMTPRT.cbl:285",
+                "conditions": [
+                  "WS-POSTING-KEY \u003c AM-ACCT-NO"
+                ]
+              },
+              {
+                "paragraph": "3300-PRINT-STATEMENT",
+                "source": "pangaea/programs/STMTPRT.cbl:319",
+                "conditions": [
+                  "AM-CLOSED AND AM-BALANCE = 0 AND WS-POSTING-KEY NOT = AM-ACCT-NO",
+                  "WS-POSTING-KEY = AM-ACCT-NO"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "TXPOST",
+            "field": "AM-ACCT-NO",
+            "readBy": [
+              "1200-READ-MASTER"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AM-CUST-NO",
+        "kind": "number",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "AM-CUST-NO",
+            "readBy": [
+              "2100-WRITE-ONLINE"
+            ]
+          },
+          {
+            "program": "ACCTMNT",
+            "field": "AM-CUST-NO",
+            "writtenBy": [
+              "2210-OPEN"
+            ]
+          },
+          {
+            "program": "INTACCR",
+            "field": "AM-CUST-NO"
+          },
+          {
+            "program": "MONCHG",
+            "field": "AM-CUST-NO"
+          },
+          {
+            "program": "STMTPRT",
+            "field": "AM-CUST-NO"
+          },
+          {
+            "program": "TXPOST",
+            "field": "AM-CUST-NO"
+          }
+        ]
+      },
+      {
+        "name": "AM-SHORT-NAME",
+        "kind": "text",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "AM-SHORT-NAME",
+            "readBy": [
+              "2100-WRITE-ONLINE"
+            ]
+          },
+          {
+            "program": "ACCTMNT",
+            "field": "AM-SHORT-NAME",
+            "writtenBy": [
+              "2210-OPEN"
+            ]
+          },
+          {
+            "program": "INTACCR",
+            "field": "AM-SHORT-NAME"
+          },
+          {
+            "program": "MONCHG",
+            "field": "AM-SHORT-NAME"
+          },
+          {
+            "program": "STMTPRT",
+            "field": "AM-SHORT-NAME",
+            "readBy": [
+              "3400-PRINT-HEADING"
+            ]
+          },
+          {
+            "program": "TXPOST",
+            "field": "AM-SHORT-NAME"
+          }
+        ]
+      },
+      {
+        "name": "AM-ACCT-TYPE",
+        "kind": "code",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "AM-ACCT-TYPE",
+            "readBy": [
+              "2100-WRITE-ONLINE"
+            ]
+          },
+          {
+            "program": "ACCTMNT",
+            "field": "AM-ACCT-TYPE",
+            "readBy": [
+              "2210-OPEN",
+              "2250-LIMIT"
+            ],
+            "writtenBy": [
+              "2210-OPEN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2210-OPEN",
+                "source": "pangaea/programs/ACCTMNT.cbl:236",
+                "conditions": [
+                  "AM-SAVINGS"
+                ]
+              },
+              {
+                "paragraph": "2250-LIMIT",
+                "source": "pangaea/programs/ACCTMNT.cbl:284",
+                "conditions": [
+                  "AM-CURRENT"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "INTACCR",
+            "field": "AM-ACCT-TYPE",
+            "readBy": [
+              "2100-FIND-RATE"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2100-FIND-RATE",
+                "loop": "PERFORM VARYING WS-RX FROM 1 BY 1 UNTIL WS-RX \u003e WS-RATE-COUNT",
+                "source": "pangaea/programs/INTACCR.cbl:269",
+                "conditions": [
+                  "WS-RT-ACCT-TYPE(WS-RX) = AM-ACCT-TYPE"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "MONCHG",
+            "field": "AM-ACCT-TYPE",
+            "readBy": [
+              "2200-CHARGE-FEE"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2200-CHARGE-FEE",
+                "source": "pangaea/programs/MONCHG.cbl:194",
+                "conditions": [
+                  "AM-ACCT-TYPE = 'C' AND AM-STATUS = 'O'"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "STMTPRT",
+            "field": "AM-ACCT-TYPE",
+            "readBy": [
+              "3400-PRINT-HEADING"
+            ],
+            "decisions": [
+              {
+                "paragraph": "3400-PRINT-HEADING",
+                "source": "pangaea/programs/STMTPRT.cbl:339",
+                "conditions": [
+                  "AM-SAVINGS AND AM-FROZEN",
+                  "AM-SAVINGS"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "TXPOST",
+            "field": "AM-ACCT-TYPE"
+          }
+        ]
+      },
+      {
+        "name": "AM-STATUS",
+        "kind": "code",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "AM-STATUS",
+            "readBy": [
+              "2000-LOAD-ACCOUNT",
+              "2100-WRITE-ONLINE"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2000-LOAD-ACCOUNT",
+                "source": "pangaea/programs/ACCTLOAD.cbl:125",
+                "conditions": [
+                  "AM-CLOSED"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "ACCTMNT",
+            "field": "AM-STATUS",
+            "readBy": [
+              "2200-APPLY-REQUEST",
+              "2230-FREEZE",
+              "2240-UNFREEZE"
+            ],
+            "writtenBy": [
+              "2210-OPEN",
+              "2220-CLOSE",
+              "2230-FREEZE",
+              "2240-UNFREEZE"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2200-APPLY-REQUEST",
+                "source": "pangaea/programs/ACCTMNT.cbl:215",
+                "conditions": [
+                  "AM-CLOSED"
+                ]
+              },
+              {
+                "paragraph": "2230-FREEZE",
+                "source": "pangaea/programs/ACCTMNT.cbl:266",
+                "conditions": [
+                  "AM-OPEN"
+                ]
+              },
+              {
+                "paragraph": "2240-UNFREEZE",
+                "source": "pangaea/programs/ACCTMNT.cbl:275",
+                "conditions": [
+                  "AM-FROZEN"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "INTACCR",
+            "field": "AM-STATUS"
+          },
+          {
+            "program": "MONCHG",
+            "field": "AM-STATUS",
+            "readBy": [
+              "2200-CHARGE-FEE"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2200-CHARGE-FEE",
+                "source": "pangaea/programs/MONCHG.cbl:194",
+                "conditions": [
+                  "AM-ACCT-TYPE = 'C' AND AM-STATUS = 'O'"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "STMTPRT",
+            "field": "AM-STATUS",
+            "readBy": [
+              "3300-PRINT-STATEMENT",
+              "3400-PRINT-HEADING"
+            ],
+            "decisions": [
+              {
+                "paragraph": "3300-PRINT-STATEMENT",
+                "source": "pangaea/programs/STMTPRT.cbl:319",
+                "conditions": [
+                  "AM-CLOSED AND AM-BALANCE = 0 AND WS-POSTING-KEY NOT = AM-ACCT-NO"
+                ]
+              },
+              {
+                "paragraph": "3400-PRINT-HEADING",
+                "source": "pangaea/programs/STMTPRT.cbl:339",
+                "conditions": [
+                  "AM-SAVINGS AND AM-FROZEN",
+                  "AM-FROZEN"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "TXPOST",
+            "field": "AM-STATUS",
+            "readBy": [
+              "3000-APPLY-TRAN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "3000-APPLY-TRAN",
+                "source": "pangaea/programs/TXPOST.cbl:256",
+                "conditions": [
+                  "AM-CLOSED",
+                  "AM-FROZEN"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AM-OPEN-DATE",
+        "kind": "date",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "AM-OPEN-DATE"
+          },
+          {
+            "program": "ACCTMNT",
+            "field": "AM-OPEN-DATE",
+            "writtenBy": [
+              "2210-OPEN"
+            ]
+          },
+          {
+            "program": "INTACCR",
+            "field": "AM-OPEN-DATE"
+          },
+          {
+            "program": "MONCHG",
+            "field": "AM-OPEN-DATE"
+          },
+          {
+            "program": "STMTPRT",
+            "field": "AM-OPEN-DATE"
+          },
+          {
+            "program": "TXPOST",
+            "field": "AM-OPEN-DATE"
+          }
+        ]
+      },
+      {
+        "name": "AM-LAST-ACTIVITY-DATE",
+        "kind": "date",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "AM-LAST-ACTIVITY-DATE"
+          },
+          {
+            "program": "ACCTMNT",
+            "field": "AM-LAST-ACTIVITY-DATE",
+            "writtenBy": [
+              "2210-OPEN"
+            ]
+          },
+          {
+            "program": "INTACCR",
+            "field": "AM-LAST-ACTIVITY-DATE"
+          },
+          {
+            "program": "MONCHG",
+            "field": "AM-LAST-ACTIVITY-DATE"
+          },
+          {
+            "program": "STMTPRT",
+            "field": "AM-LAST-ACTIVITY-DATE"
+          },
+          {
+            "program": "TXPOST",
+            "field": "AM-LAST-ACTIVITY-DATE",
+            "writtenBy": [
+              "3800-WRITE-AUDIT"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AM-BALANCE",
+        "kind": "amount",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "AM-BALANCE",
+            "readBy": [
+              "2100-WRITE-ONLINE"
+            ]
+          },
+          {
+            "program": "ACCTMNT",
+            "field": "AM-BALANCE",
+            "readBy": [
+              "2000-NEXT-ACCOUNT",
+              "2220-CLOSE",
+              "2800-WRITE-HELD"
+            ],
+            "writtenBy": [
+              "2210-OPEN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2220-CLOSE",
+                "source": "pangaea/programs/ACCTMNT.cbl:256",
+                "conditions": [
+                  "AM-BALANCE = 0"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "INTACCR",
+            "field": "AM-BALANCE",
+            "readBy": [
+              "2100-FIND-RATE",
+              "2300-ACCRUE-DAYS"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2100-FIND-RATE",
+                "loop": "PERFORM VARYING WS-RX FROM 1 BY 1 UNTIL WS-RX \u003e WS-RATE-COUNT",
+                "source": "pangaea/programs/INTACCR.cbl:269",
+                "conditions": [
+                  "AM-BALANCE \u003c 0",
+                  "WS-RT-CREDIT(WS-RX) AND WS-RT-FLOOR(WS-RX) NOT \u003e AM-BALANCE AND (NOT RATE-FOUND OR WS-RT-FLOOR(WS-RX) \u003e WS-BEST-FLOOR)"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "MONCHG",
+            "field": "AM-BALANCE",
+            "readBy": [
+              "2200-CHARGE-FEE"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2200-CHARGE-FEE",
+                "source": "pangaea/programs/MONCHG.cbl:194",
+                "conditions": [
+                  "AM-BALANCE \u003c WS-FEE-WAIVER-BALANCE"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "STMTPRT",
+            "field": "AM-BALANCE",
+            "readBy": [
+              "3300-PRINT-STATEMENT"
+            ],
+            "decisions": [
+              {
+                "paragraph": "3300-PRINT-STATEMENT",
+                "source": "pangaea/programs/STMTPRT.cbl:319",
+                "conditions": [
+                  "AM-CLOSED AND AM-BALANCE = 0 AND WS-POSTING-KEY NOT = AM-ACCT-NO"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "TXPOST",
+            "field": "AM-BALANCE",
+            "readBy": [
+              "1200-READ-MASTER",
+              "3000-APPLY-TRAN",
+              "3100-POST-CREDIT",
+              "3200-POST-DEBIT",
+              "3300-POST-FEE",
+              "3400-POST-AUTHORIZED",
+              "3800-WRITE-AUDIT",
+              "4000-WRITE-MASTER"
+            ],
+            "writtenBy": [
+              "3100-POST-CREDIT",
+              "3200-POST-DEBIT",
+              "3300-POST-FEE",
+              "3400-POST-AUTHORIZED"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AM-OVERDRAFT-LIMIT",
+        "kind": "amount",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "AM-OVERDRAFT-LIMIT",
+            "readBy": [
+              "2100-WRITE-ONLINE"
+            ]
+          },
+          {
+            "program": "ACCTMNT",
+            "field": "AM-OVERDRAFT-LIMIT",
+            "writtenBy": [
+              "2210-OPEN",
+              "2220-CLOSE",
+              "2250-LIMIT"
+            ]
+          },
+          {
+            "program": "INTACCR",
+            "field": "AM-OVERDRAFT-LIMIT"
+          },
+          {
+            "program": "MONCHG",
+            "field": "AM-OVERDRAFT-LIMIT"
+          },
+          {
+            "program": "STMTPRT",
+            "field": "AM-OVERDRAFT-LIMIT"
+          },
+          {
+            "program": "TXPOST",
+            "field": "AM-OVERDRAFT-LIMIT",
+            "readBy": [
+              "3200-POST-DEBIT"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "record": "ACCT-ONLINE-RECORD",
+    "copybook": "ACCTONL",
+    "programs": [
+      "ACCTLOAD",
+      "ATMBAL",
+      "ATMWDL",
+      "AUTHPUR",
+      "AUTHREV",
+      "AUTHSRV"
+    ],
+    "fields": [
+      {
+        "name": "AO-ACCT-NO",
+        "kind": "key",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "AO-ACCT-NO",
+            "writtenBy": [
+              "2100-WRITE-ONLINE"
+            ]
+          },
+          {
+            "program": "ATMBAL",
+            "field": "AO-ACCT-NO"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "AO-ACCT-NO",
+            "readBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "AO-ACCT-NO",
+            "readBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "AO-ACCT-NO"
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "AO-ACCT-NO",
+            "writtenBy": [
+              "2200-READ-CARD-AND-ACCOUNT"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AO-CUST-NO",
+        "kind": "number",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "AO-CUST-NO",
+            "writtenBy": [
+              "2100-WRITE-ONLINE"
+            ]
+          },
+          {
+            "program": "ATMBAL",
+            "field": "AO-CUST-NO"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "AO-CUST-NO"
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "AO-CUST-NO"
+          },
+          {
+            "program": "AUTHREV",
+            "field": "AO-CUST-NO"
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "AO-CUST-NO"
+          }
+        ]
+      },
+      {
+        "name": "AO-SHORT-NAME",
+        "kind": "text",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "AO-SHORT-NAME",
+            "writtenBy": [
+              "2100-WRITE-ONLINE"
+            ]
+          },
+          {
+            "program": "ATMBAL",
+            "field": "AO-SHORT-NAME"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "AO-SHORT-NAME"
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "AO-SHORT-NAME"
+          },
+          {
+            "program": "AUTHREV",
+            "field": "AO-SHORT-NAME"
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "AO-SHORT-NAME"
+          }
+        ]
+      },
+      {
+        "name": "AO-ACCT-TYPE",
+        "kind": "code",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "AO-ACCT-TYPE",
+            "writtenBy": [
+              "2100-WRITE-ONLINE"
+            ]
+          },
+          {
+            "program": "ATMBAL",
+            "field": "AO-ACCT-TYPE"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "AO-ACCT-TYPE"
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "AO-ACCT-TYPE"
+          },
+          {
+            "program": "AUTHREV",
+            "field": "AO-ACCT-TYPE"
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "AO-ACCT-TYPE"
+          }
+        ]
+      },
+      {
+        "name": "AO-STATUS",
+        "kind": "code",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "AO-STATUS",
+            "writtenBy": [
+              "2100-WRITE-ONLINE"
+            ]
+          },
+          {
+            "program": "ATMBAL",
+            "field": "AO-STATUS",
+            "readBy": [
+              "0000-MAIN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "0000-MAIN",
+                "source": "pangaea/programs/ATMBAL.cbl:34",
+                "conditions": [
+                  "AO-OPEN"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "ATMWDL",
+            "field": "AO-STATUS",
+            "readBy": [
+              "0000-MAIN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "0000-MAIN",
+                "source": "pangaea/programs/ATMWDL.cbl:47",
+                "conditions": [
+                  "AO-OPEN"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "AO-STATUS",
+            "readBy": [
+              "0000-MAIN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "0000-MAIN",
+                "source": "pangaea/programs/AUTHPUR.cbl:38",
+                "conditions": [
+                  "AO-OPEN"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "AO-STATUS"
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "AO-STATUS"
+          }
+        ]
+      },
+      {
+        "name": "AO-BALANCE",
+        "kind": "amount",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "AO-BALANCE",
+            "writtenBy": [
+              "2100-WRITE-ONLINE"
+            ]
+          },
+          {
+            "program": "ATMBAL",
+            "field": "AO-BALANCE",
+            "readBy": [
+              "0000-MAIN"
+            ]
+          },
+          {
+            "program": "ATMWDL",
+            "field": "AO-BALANCE",
+            "readBy": [
+              "0000-MAIN",
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "AO-BALANCE",
+            "readBy": [
+              "0000-MAIN",
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "AO-BALANCE",
+            "readBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "AO-BALANCE"
+          }
+        ]
+      },
+      {
+        "name": "AO-OVERDRAFT-LIMIT",
+        "kind": "amount",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "AO-OVERDRAFT-LIMIT",
+            "writtenBy": [
+              "2100-WRITE-ONLINE"
+            ]
+          },
+          {
+            "program": "ATMBAL",
+            "field": "AO-OVERDRAFT-LIMIT",
+            "readBy": [
+              "0000-MAIN"
+            ]
+          },
+          {
+            "program": "ATMWDL",
+            "field": "AO-OVERDRAFT-LIMIT",
+            "readBy": [
+              "0000-MAIN"
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "AO-OVERDRAFT-LIMIT",
+            "readBy": [
+              "0000-MAIN"
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "AO-OVERDRAFT-LIMIT",
+            "readBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "AO-OVERDRAFT-LIMIT"
+          }
+        ]
+      },
+      {
+        "name": "AO-HOLDS",
+        "kind": "amount",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "AO-HOLDS",
+            "writtenBy": [
+              "2100-WRITE-ONLINE"
+            ]
+          },
+          {
+            "program": "ATMBAL",
+            "field": "AO-HOLDS",
+            "readBy": [
+              "0000-MAIN"
+            ]
+          },
+          {
+            "program": "ATMWDL",
+            "field": "AO-HOLDS",
+            "readBy": [
+              "0000-MAIN",
+              "2000-APPROVE"
+            ],
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "AO-HOLDS",
+            "readBy": [
+              "0000-MAIN",
+              "2000-APPROVE"
+            ],
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "AO-HOLDS",
+            "readBy": [
+              "2000-APPROVE"
+            ],
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "AO-HOLDS"
+          }
+        ]
+      },
+      {
+        "name": "AO-AS-OF-DATE",
+        "kind": "date",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "AO-AS-OF-DATE",
+            "writtenBy": [
+              "2100-WRITE-ONLINE"
+            ]
+          },
+          {
+            "program": "ATMBAL",
+            "field": "AO-AS-OF-DATE"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "AO-AS-OF-DATE"
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "AO-AS-OF-DATE"
+          },
+          {
+            "program": "AUTHREV",
+            "field": "AO-AS-OF-DATE"
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "AO-AS-OF-DATE"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "record": "AUDIT-RECORD",
+    "copybook": "AUDITREC",
+    "programs": [
+      "GLSUM",
+      "STMTPRT",
+      "TXPOST"
+    ],
+    "fields": [
+      {
+        "name": "AU-BUSINESS-DATE",
+        "kind": "date",
+        "uses": [
+          {
+            "program": "GLSUM",
+            "field": "AU-BUSINESS-DATE",
+            "readBy": [
+              "2000-POST-MONTH"
+            ]
+          },
+          {
+            "program": "STMTPRT",
+            "field": "AU-BUSINESS-DATE",
+            "readBy": [
+              "2000-SELECT-POSTINGS",
+              "2100-RELEASE-POSTING"
+            ]
+          },
+          {
+            "program": "TXPOST",
+            "field": "AU-BUSINESS-DATE",
+            "writtenBy": [
+              "3800-WRITE-AUDIT"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AU-TRAN-ID",
+        "kind": "number",
+        "uses": [
+          {
+            "program": "GLSUM",
+            "field": "AU-TRAN-ID"
+          },
+          {
+            "program": "STMTPRT",
+            "field": "AU-TRAN-ID",
+            "readBy": [
+              "2100-RELEASE-POSTING"
+            ]
+          },
+          {
+            "program": "TXPOST",
+            "field": "AU-TRAN-ID",
+            "writtenBy": [
+              "3800-WRITE-AUDIT"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AU-ACCT-NO",
+        "kind": "number",
+        "uses": [
+          {
+            "program": "GLSUM",
+            "field": "AU-ACCT-NO"
+          },
+          {
+            "program": "STMTPRT",
+            "field": "AU-ACCT-NO",
+            "readBy": [
+              "2100-RELEASE-POSTING"
+            ]
+          },
+          {
+            "program": "TXPOST",
+            "field": "AU-ACCT-NO",
+            "writtenBy": [
+              "3800-WRITE-AUDIT"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AU-TRAN-CODE",
+        "kind": "text",
+        "uses": [
+          {
+            "program": "GLSUM",
+            "field": "AU-TRAN-CODE",
+            "readBy": [
+              "2000-POST-MONTH",
+              "2100-POST-TO-LEDGER"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2100-POST-TO-LEDGER",
+                "source": "pangaea/programs/GLSUM.cbl:224",
+                "conditions": [
+                  "GS-CODE(GS-CX) = AU-TRAN-CODE"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "STMTPRT",
+            "field": "AU-TRAN-CODE",
+            "readBy": [
+              "2000-SELECT-POSTINGS",
+              "2100-RELEASE-POSTING"
+            ]
+          },
+          {
+            "program": "TXPOST",
+            "field": "AU-TRAN-CODE",
+            "writtenBy": [
+              "3800-WRITE-AUDIT"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AU-AMOUNT",
+        "kind": "amount",
+        "uses": [
+          {
+            "program": "GLSUM",
+            "field": "AU-AMOUNT",
+            "readBy": [
+              "2100-POST-TO-LEDGER"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2100-POST-TO-LEDGER",
+                "source": "pangaea/programs/GLSUM.cbl:224",
+                "conditions": [
+                  "AU-AMOUNT \u003c 0"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "STMTPRT",
+            "field": "AU-AMOUNT",
+            "readBy": [
+              "2100-RELEASE-POSTING"
+            ]
+          },
+          {
+            "program": "TXPOST",
+            "field": "AU-AMOUNT",
+            "writtenBy": [
+              "3800-WRITE-AUDIT"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AU-BALANCE-BEFORE",
+        "kind": "amount",
+        "uses": [
+          {
+            "program": "GLSUM",
+            "field": "AU-BALANCE-BEFORE"
+          },
+          {
+            "program": "STMTPRT",
+            "field": "AU-BALANCE-BEFORE",
+            "readBy": [
+              "2100-RELEASE-POSTING"
+            ]
+          },
+          {
+            "program": "TXPOST",
+            "field": "AU-BALANCE-BEFORE",
+            "writtenBy": [
+              "3800-WRITE-AUDIT"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AU-BALANCE-AFTER",
+        "kind": "amount",
+        "uses": [
+          {
+            "program": "GLSUM",
+            "field": "AU-BALANCE-AFTER"
+          },
+          {
+            "program": "STMTPRT",
+            "field": "AU-BALANCE-AFTER",
+            "readBy": [
+              "2100-RELEASE-POSTING"
+            ]
+          },
+          {
+            "program": "TXPOST",
+            "field": "AU-BALANCE-AFTER",
+            "writtenBy": [
+              "3800-WRITE-AUDIT"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "record": "AUTH-REQUEST",
+    "copybook": "AUTHMSG",
+    "programs": [
+      "ATMBAL",
+      "ATMWDL",
+      "AUTHPUR",
+      "AUTHREV",
+      "AUTHSRV"
+    ],
+    "fields": [
+      {
+        "name": "RQ-FUNCTION",
+        "kind": "code",
+        "uses": [
+          {
+            "program": "ATMBAL",
+            "field": "RQ-FUNCTION"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "RQ-FUNCTION"
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "RQ-FUNCTION"
+          },
+          {
+            "program": "AUTHREV",
+            "field": "RQ-FUNCTION"
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "RQ-FUNCTION",
+            "readBy": [
+              "2100-AUTHORIZE",
+              "2400-SAVE-CHANGES"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2100-AUTHORIZE",
+                "source": "pangaea/programs/AUTHSRV.cbl:160",
+                "conditions": [
+                  "RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY",
+                  "RS-RESULT = SPACES AND RQ-REVERSAL",
+                  "RQ-PURCHASE",
+                  "RQ-BALANCE-ENQUIRY",
+                  "RQ-REVERSAL",
+                  "RQ-WITHDRAWAL"
+                ]
+              },
+              {
+                "paragraph": "2400-SAVE-CHANGES",
+                "source": "pangaea/programs/AUTHSRV.cbl:230",
+                "conditions": [
+                  "RQ-REVERSAL"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "RQ-CARD-NO",
+        "kind": "number",
+        "uses": [
+          {
+            "program": "ATMBAL",
+            "field": "RQ-CARD-NO"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "RQ-CARD-NO"
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "RQ-CARD-NO"
+          },
+          {
+            "program": "AUTHREV",
+            "field": "RQ-CARD-NO"
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "RQ-CARD-NO",
+            "readBy": [
+              "2200-READ-CARD-AND-ACCOUNT"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "RQ-AMOUNT",
+        "kind": "amount",
+        "uses": [
+          {
+            "program": "ATMBAL",
+            "field": "RQ-AMOUNT"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "RQ-AMOUNT",
+            "readBy": [
+              "0000-MAIN",
+              "2000-APPROVE"
+            ],
+            "decisions": [
+              {
+                "paragraph": "0000-MAIN",
+                "source": "pangaea/programs/ATMWDL.cbl:47",
+                "conditions": [
+                  "RQ-AMOUNT = 0 OR FUNCTION MOD(RQ-AMOUNT WS-NOTE) NOT = 0"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "RQ-AMOUNT",
+            "readBy": [
+              "0000-MAIN",
+              "2000-APPROVE"
+            ],
+            "decisions": [
+              {
+                "paragraph": "0000-MAIN",
+                "source": "pangaea/programs/AUTHPUR.cbl:38",
+                "conditions": [
+                  "RQ-AMOUNT = 0",
+                  "RQ-AMOUNT \u003e WS-AVAILABLE"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "RQ-AMOUNT"
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "RQ-AMOUNT"
+          }
+        ]
+      },
+      {
+        "name": "RQ-AUTH-CODE",
+        "kind": "number",
+        "uses": [
+          {
+            "program": "ATMBAL",
+            "field": "RQ-AUTH-CODE"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "RQ-AUTH-CODE"
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "RQ-AUTH-CODE"
+          },
+          {
+            "program": "AUTHREV",
+            "field": "RQ-AUTH-CODE"
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "RQ-AUTH-CODE",
+            "readBy": [
+              "2300-READ-HOLD"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "RQ-TERMINAL",
+        "kind": "text",
+        "uses": [
+          {
+            "program": "ATMBAL",
+            "field": "RQ-TERMINAL"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "RQ-TERMINAL",
+            "readBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "RQ-TERMINAL",
+            "readBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "RQ-TERMINAL"
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "RQ-TERMINAL"
+          }
+        ]
+      },
+      {
+        "name": "RQ-TIMESTAMP",
+        "kind": "date",
+        "uses": [
+          {
+            "program": "ATMBAL",
+            "field": "RQ-TIMESTAMP"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "RQ-TIMESTAMP",
+            "readBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "RQ-TIMESTAMP",
+            "readBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "RQ-TIMESTAMP"
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "RQ-TIMESTAMP"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "record": "AUTH-RESPONSE",
+    "copybook": "AUTHMSG",
+    "programs": [
+      "ATMBAL",
+      "ATMWDL",
+      "AUTHPUR",
+      "AUTHREV",
+      "AUTHSRV"
+    ],
+    "fields": [
+      {
+        "name": "RS-RESULT",
+        "kind": "code",
+        "uses": [
+          {
+            "program": "ATMBAL",
+            "field": "RS-RESULT",
+            "writtenBy": [
+              "0000-MAIN"
+            ]
+          },
+          {
+            "program": "ATMWDL",
+            "field": "RS-RESULT",
+            "writtenBy": [
+              "0000-MAIN",
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "RS-RESULT",
+            "writtenBy": [
+              "0000-MAIN",
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "RS-RESULT",
+            "writtenBy": [
+              "0000-MAIN",
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "RS-RESULT",
+            "readBy": [
+              "2100-AUTHORIZE"
+            ],
+            "writtenBy": [
+              "2100-AUTHORIZE",
+              "2200-READ-CARD-AND-ACCOUNT",
+              "2300-READ-HOLD"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2100-AUTHORIZE",
+                "source": "pangaea/programs/AUTHSRV.cbl:160",
+                "conditions": [
+                  "RS-RESULT = SPACES AND RQ-REVERSAL",
+                  "RS-RESULT = SPACES",
+                  "RS-APPROVED"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "RS-AUTH-CODE",
+        "kind": "number",
+        "uses": [
+          {
+            "program": "ATMBAL",
+            "field": "RS-AUTH-CODE"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "RS-AUTH-CODE"
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "RS-AUTH-CODE"
+          },
+          {
+            "program": "AUTHREV",
+            "field": "RS-AUTH-CODE",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "RS-AUTH-CODE",
+            "writtenBy": [
+              "2400-SAVE-CHANGES"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "RS-AMOUNT",
+        "kind": "edited",
+        "uses": [
+          {
+            "program": "ATMBAL",
+            "field": "RS-AMOUNT"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "RS-AMOUNT",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "RS-AMOUNT",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "RS-AMOUNT",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "RS-AMOUNT"
+          }
+        ]
+      },
+      {
+        "name": "RS-FEE",
+        "kind": "edited",
+        "uses": [
+          {
+            "program": "ATMBAL",
+            "field": "RS-FEE"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "RS-FEE",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "RS-FEE",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "RS-FEE",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "RS-FEE"
+          }
+        ]
+      },
+      {
+        "name": "RS-BALANCE",
+        "kind": "edited",
+        "uses": [
+          {
+            "program": "ATMBAL",
+            "field": "RS-BALANCE",
+            "writtenBy": [
+              "0000-MAIN"
+            ]
+          },
+          {
+            "program": "ATMWDL",
+            "field": "RS-BALANCE",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "RS-BALANCE",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "RS-BALANCE",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "RS-BALANCE"
+          }
+        ]
+      },
+      {
+        "name": "RS-AVAILABLE",
+        "kind": "edited",
+        "uses": [
+          {
+            "program": "ATMBAL",
+            "field": "RS-AVAILABLE",
+            "writtenBy": [
+              "0000-MAIN"
+            ]
+          },
+          {
+            "program": "ATMWDL",
+            "field": "RS-AVAILABLE",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "RS-AVAILABLE",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "RS-AVAILABLE",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "RS-AVAILABLE"
+          }
+        ]
+      },
+      {
+        "name": "RS-MESSAGE",
+        "kind": "text",
+        "uses": [
+          {
+            "program": "ATMBAL",
+            "field": "RS-MESSAGE",
+            "writtenBy": [
+              "0000-MAIN"
+            ]
+          },
+          {
+            "program": "ATMWDL",
+            "field": "RS-MESSAGE",
+            "writtenBy": [
+              "0000-MAIN",
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "RS-MESSAGE",
+            "writtenBy": [
+              "0000-MAIN",
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "RS-MESSAGE",
+            "writtenBy": [
+              "0000-MAIN",
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "RS-MESSAGE",
+            "writtenBy": [
+              "2100-AUTHORIZE",
+              "2200-READ-CARD-AND-ACCOUNT",
+              "2300-READ-HOLD"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "record": "BANK-CONTROL-RECORD",
+    "copybook": "BANKCTL",
+    "programs": [
+      "ACCTLOAD",
+      "ACCTMNT",
+      "ATMBAL",
+      "ATMWDL",
+      "AUTHPUR",
+      "AUTHREV",
+      "AUTHSRV",
+      "BANKDATE",
+      "CARDLOAD",
+      "HOLDEXT",
+      "INTACCR",
+      "MONCHG",
+      "TXPOST",
+      "TXVALID"
+    ],
+    "fields": [
+      {
+        "name": "BC-BUSINESS-DATE",
+        "kind": "date",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "BC-BUSINESS-DATE",
+            "readBy": [
+              "1000-INITIALIZE"
+            ]
+          },
+          {
+            "program": "ACCTMNT",
+            "field": "BC-BUSINESS-DATE",
+            "readBy": [
+              "1000-INITIALIZE"
+            ]
+          },
+          {
+            "program": "ATMBAL",
+            "field": "BC-BUSINESS-DATE"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "BC-BUSINESS-DATE",
+            "readBy": [
+              "1000-START-CARD-TOTALS",
+              "2000-APPROVE"
+            ],
+            "decisions": [
+              {
+                "paragraph": "1000-START-CARD-TOTALS",
+                "source": "pangaea/programs/ATMWDL.cbl:82",
+                "conditions": [
+                  "CR-TOTALS-DATE = BC-BUSINESS-DATE",
+                  "CR-TOTALS-DATE(1:6) = BC-BUSINESS-DATE(1:6)"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "BC-BUSINESS-DATE",
+            "readBy": [
+              "1000-START-CARD-TOTALS",
+              "2000-APPROVE"
+            ],
+            "decisions": [
+              {
+                "paragraph": "1000-START-CARD-TOTALS",
+                "source": "pangaea/programs/AUTHPUR.cbl:65",
+                "conditions": [
+                  "CR-TOTALS-DATE = BC-BUSINESS-DATE",
+                  "CR-TOTALS-DATE(1:6) = BC-BUSINESS-DATE(1:6)"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "BC-BUSINESS-DATE"
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "BC-BUSINESS-DATE",
+            "readBy": [
+              "8000-WRITE-REPORT"
+            ]
+          },
+          {
+            "program": "BANKDATE",
+            "field": "BC-BUSINESS-DATE",
+            "readBy": [
+              "1000-NEXT-BUSINESS-DAY"
+            ],
+            "writtenBy": [
+              "1000-NEXT-BUSINESS-DAY"
+            ]
+          },
+          {
+            "program": "CARDLOAD",
+            "field": "BC-BUSINESS-DATE",
+            "readBy": [
+              "1000-INITIALIZE"
+            ]
+          },
+          {
+            "program": "HOLDEXT",
+            "field": "BC-BUSINESS-DATE",
+            "readBy": [
+              "1000-INITIALIZE",
+              "2000-EXTRACT-HOLD",
+              "8000-WRITE-REPORT"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2000-EXTRACT-HOLD",
+                "source": "pangaea/programs/HOLDEXT.cbl:134",
+                "conditions": [
+                  "HD-BUSINESS-DATE = BC-BUSINESS-DATE"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "INTACCR",
+            "field": "BC-BUSINESS-DATE",
+            "readBy": [
+              "1000-INITIALIZE"
+            ]
+          },
+          {
+            "program": "MONCHG",
+            "field": "BC-BUSINESS-DATE",
+            "readBy": [
+              "1000-INITIALIZE"
+            ]
+          },
+          {
+            "program": "TXPOST",
+            "field": "BC-BUSINESS-DATE",
+            "readBy": [
+              "1000-INITIALIZE"
+            ]
+          },
+          {
+            "program": "TXVALID",
+            "field": "BC-BUSINESS-DATE",
+            "readBy": [
+              "1000-OPEN-FILES"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "record": "CARD-RECORD",
+    "copybook": "CARDREC",
+    "programs": [
+      "ATMBAL",
+      "ATMWDL",
+      "AUTHPUR",
+      "AUTHREV",
+      "AUTHSRV",
+      "CARDLOAD"
+    ],
+    "fields": [
+      {
+        "name": "CR-CARD-NO",
+        "kind": "key",
+        "uses": [
+          {
+            "program": "ATMBAL",
+            "field": "CR-CARD-NO"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "CR-CARD-NO",
+            "readBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "CR-CARD-NO",
+            "readBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "CR-CARD-NO",
+            "readBy": [
+              "0000-MAIN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "0000-MAIN",
+                "source": "pangaea/programs/AUTHREV.cbl:37",
+                "conditions": [
+                  "HD-CARD-NO = CR-CARD-NO"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "CR-CARD-NO",
+            "writtenBy": [
+              "2200-READ-CARD-AND-ACCOUNT"
+            ]
+          },
+          {
+            "program": "CARDLOAD",
+            "field": "CR-CARD-NO"
+          }
+        ]
+      },
+      {
+        "name": "CR-ACCT-NO",
+        "kind": "number",
+        "uses": [
+          {
+            "program": "ATMBAL",
+            "field": "CR-ACCT-NO"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "CR-ACCT-NO"
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "CR-ACCT-NO"
+          },
+          {
+            "program": "AUTHREV",
+            "field": "CR-ACCT-NO"
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "CR-ACCT-NO",
+            "readBy": [
+              "2200-READ-CARD-AND-ACCOUNT",
+              "2300-READ-HOLD"
+            ]
+          },
+          {
+            "program": "CARDLOAD",
+            "field": "CR-ACCT-NO"
+          }
+        ]
+      },
+      {
+        "name": "CR-CUST-NO",
+        "kind": "number",
+        "uses": [
+          {
+            "program": "ATMBAL",
+            "field": "CR-CUST-NO"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "CR-CUST-NO"
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "CR-CUST-NO"
+          },
+          {
+            "program": "AUTHREV",
+            "field": "CR-CUST-NO"
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "CR-CUST-NO"
+          },
+          {
+            "program": "CARDLOAD",
+            "field": "CR-CUST-NO"
+          }
+        ]
+      },
+      {
+        "name": "CR-STATUS",
+        "kind": "code",
+        "uses": [
+          {
+            "program": "ATMBAL",
+            "field": "CR-STATUS",
+            "readBy": [
+              "0000-MAIN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "0000-MAIN",
+                "source": "pangaea/programs/ATMBAL.cbl:34",
+                "conditions": [
+                  "CR-BLOCKED"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "ATMWDL",
+            "field": "CR-STATUS",
+            "readBy": [
+              "0000-MAIN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "0000-MAIN",
+                "source": "pangaea/programs/ATMWDL.cbl:47",
+                "conditions": [
+                  "CR-BLOCKED"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "CR-STATUS",
+            "readBy": [
+              "0000-MAIN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "0000-MAIN",
+                "source": "pangaea/programs/AUTHPUR.cbl:38",
+                "conditions": [
+                  "CR-BLOCKED"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "CR-STATUS"
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "CR-STATUS"
+          },
+          {
+            "program": "CARDLOAD",
+            "field": "CR-STATUS",
+            "readBy": [
+              "2000-LOAD-CARD"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2000-LOAD-CARD",
+                "source": "pangaea/programs/CARDLOAD.cbl:117",
+                "conditions": [
+                  "CR-BLOCKED"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "CR-EXPIRY-MONTH",
+        "kind": "date",
+        "uses": [
+          {
+            "program": "ATMBAL",
+            "field": "CR-EXPIRY-MONTH"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "CR-EXPIRY-MONTH"
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "CR-EXPIRY-MONTH"
+          },
+          {
+            "program": "AUTHREV",
+            "field": "CR-EXPIRY-MONTH"
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "CR-EXPIRY-MONTH"
+          },
+          {
+            "program": "CARDLOAD",
+            "field": "CR-EXPIRY-MONTH",
+            "readBy": [
+              "2000-LOAD-CARD"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2000-LOAD-CARD",
+                "source": "pangaea/programs/CARDLOAD.cbl:117",
+                "conditions": [
+                  "CR-EXPIRY-MONTH \u003c WS-BUSINESS-MONTH"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "CR-PURCHASE-LIMIT",
+        "kind": "amount",
+        "uses": [
+          {
+            "program": "ATMBAL",
+            "field": "CR-PURCHASE-LIMIT"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "CR-PURCHASE-LIMIT"
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "CR-PURCHASE-LIMIT",
+            "readBy": [
+              "0000-MAIN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "0000-MAIN",
+                "source": "pangaea/programs/AUTHPUR.cbl:38",
+                "conditions": [
+                  "WS-DAY-PURCHASES \u003e CR-PURCHASE-LIMIT"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "CR-PURCHASE-LIMIT"
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "CR-PURCHASE-LIMIT"
+          },
+          {
+            "program": "CARDLOAD",
+            "field": "CR-PURCHASE-LIMIT"
+          }
+        ]
+      },
+      {
+        "name": "CR-CASH-LIMIT",
+        "kind": "amount",
+        "uses": [
+          {
+            "program": "ATMBAL",
+            "field": "CR-CASH-LIMIT"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "CR-CASH-LIMIT",
+            "readBy": [
+              "0000-MAIN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "0000-MAIN",
+                "source": "pangaea/programs/ATMWDL.cbl:47",
+                "conditions": [
+                  "WS-DAY-CASH \u003e CR-CASH-LIMIT"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "CR-CASH-LIMIT"
+          },
+          {
+            "program": "AUTHREV",
+            "field": "CR-CASH-LIMIT"
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "CR-CASH-LIMIT"
+          },
+          {
+            "program": "CARDLOAD",
+            "field": "CR-CASH-LIMIT"
+          }
+        ]
+      },
+      {
+        "name": "CR-TOTALS-DATE",
+        "kind": "date",
+        "uses": [
+          {
+            "program": "ATMBAL",
+            "field": "CR-TOTALS-DATE"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "CR-TOTALS-DATE",
+            "readBy": [
+              "1000-START-CARD-TOTALS"
+            ],
+            "writtenBy": [
+              "1000-START-CARD-TOTALS"
+            ],
+            "decisions": [
+              {
+                "paragraph": "1000-START-CARD-TOTALS",
+                "source": "pangaea/programs/ATMWDL.cbl:82",
+                "conditions": [
+                  "CR-TOTALS-DATE = BC-BUSINESS-DATE",
+                  "CR-TOTALS-DATE(1:6) = BC-BUSINESS-DATE(1:6)"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "CR-TOTALS-DATE",
+            "readBy": [
+              "1000-START-CARD-TOTALS"
+            ],
+            "writtenBy": [
+              "1000-START-CARD-TOTALS"
+            ],
+            "decisions": [
+              {
+                "paragraph": "1000-START-CARD-TOTALS",
+                "source": "pangaea/programs/AUTHPUR.cbl:65",
+                "conditions": [
+                  "CR-TOTALS-DATE = BC-BUSINESS-DATE",
+                  "CR-TOTALS-DATE(1:6) = BC-BUSINESS-DATE(1:6)"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "CR-TOTALS-DATE",
+            "readBy": [
+              "2000-APPROVE"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2000-APPROVE",
+                "source": "pangaea/programs/AUTHREV.cbl:55",
+                "conditions": [
+                  "CR-TOTALS-DATE = HD-BUSINESS-DATE"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "CR-TOTALS-DATE"
+          },
+          {
+            "program": "CARDLOAD",
+            "field": "CR-TOTALS-DATE"
+          }
+        ]
+      },
+      {
+        "name": "CR-DAY-PURCHASES",
+        "kind": "amount",
+        "uses": [
+          {
+            "program": "ATMBAL",
+            "field": "CR-DAY-PURCHASES"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "CR-DAY-PURCHASES",
+            "writtenBy": [
+              "1000-START-CARD-TOTALS"
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "CR-DAY-PURCHASES",
+            "readBy": [
+              "0000-MAIN"
+            ],
+            "writtenBy": [
+              "1000-START-CARD-TOTALS",
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "CR-DAY-PURCHASES",
+            "readBy": [
+              "2000-APPROVE"
+            ],
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "CR-DAY-PURCHASES"
+          },
+          {
+            "program": "CARDLOAD",
+            "field": "CR-DAY-PURCHASES"
+          }
+        ]
+      },
+      {
+        "name": "CR-DAY-CASH",
+        "kind": "amount",
+        "uses": [
+          {
+            "program": "ATMBAL",
+            "field": "CR-DAY-CASH"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "CR-DAY-CASH",
+            "readBy": [
+              "0000-MAIN"
+            ],
+            "writtenBy": [
+              "1000-START-CARD-TOTALS",
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "CR-DAY-CASH",
+            "writtenBy": [
+              "1000-START-CARD-TOTALS"
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "CR-DAY-CASH"
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "CR-DAY-CASH"
+          },
+          {
+            "program": "CARDLOAD",
+            "field": "CR-DAY-CASH"
+          }
+        ]
+      },
+      {
+        "name": "CR-MONTH-WITHDRAWALS",
+        "kind": "number",
+        "uses": [
+          {
+            "program": "ATMBAL",
+            "field": "CR-MONTH-WITHDRAWALS"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "CR-MONTH-WITHDRAWALS",
+            "readBy": [
+              "0000-MAIN",
+              "2000-APPROVE"
+            ],
+            "writtenBy": [
+              "1000-START-CARD-TOTALS",
+              "2000-APPROVE"
+            ],
+            "decisions": [
+              {
+                "paragraph": "0000-MAIN",
+                "source": "pangaea/programs/ATMWDL.cbl:47",
+                "conditions": [
+                  "CR-MONTH-WITHDRAWALS \u003c WS-FREE-WITHDRAWALS"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "CR-MONTH-WITHDRAWALS",
+            "writtenBy": [
+              "1000-START-CARD-TOTALS"
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "CR-MONTH-WITHDRAWALS"
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "CR-MONTH-WITHDRAWALS"
+          },
+          {
+            "program": "CARDLOAD",
+            "field": "CR-MONTH-WITHDRAWALS"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "record": ":P:-CODE-VALUES",
+    "copybook": "CODETAB",
+    "programs": [
+      "GLSUM",
+      "STMTPRT"
+    ],
+    "fields": null
+  },
+  {
+    "record": ":P:-CODE-TABLE",
+    "copybook": "CODETAB",
+    "programs": [
+      "GLSUM",
+      "STMTPRT"
+    ],
+    "fields": [
+      {
+        "name": ":P:-CODE-ENTRY",
+        "kind": "group",
+        "uses": [
+          {
+            "program": "GLSUM",
+            "field": "GS-CODE-ENTRY",
+            "readBy": [
+              "2100-POST-TO-LEDGER"
+            ]
+          },
+          {
+            "program": "STMTPRT",
+            "field": "ST-CODE-ENTRY",
+            "readBy": [
+              "3500-PRINT-POSTING"
+            ]
+          }
+        ]
+      },
+      {
+        "name": ":P:-CODE",
+        "kind": "text",
+        "uses": [
+          {
+            "program": "GLSUM",
+            "field": "GS-CODE",
+            "readBy": [
+              "2100-POST-TO-LEDGER"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2100-POST-TO-LEDGER",
+                "source": "pangaea/programs/GLSUM.cbl:224",
+                "conditions": [
+                  "GS-CODE(GS-CX) = AU-TRAN-CODE"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "STMTPRT",
+            "field": "ST-CODE",
+            "readBy": [
+              "3500-PRINT-POSTING"
+            ],
+            "decisions": [
+              {
+                "paragraph": "3500-PRINT-POSTING",
+                "source": "pangaea/programs/STMTPRT.cbl:368",
+                "conditions": [
+                  "ST-CODE(ST-CX) = SR-TRAN-CODE"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": ":P:-CODE-TEXT",
+        "kind": "text",
+        "uses": [
+          {
+            "program": "GLSUM",
+            "field": "GS-CODE-TEXT"
+          },
+          {
+            "program": "STMTPRT",
+            "field": "ST-CODE-TEXT",
+            "readBy": [
+              "3500-PRINT-POSTING"
+            ]
+          }
+        ]
+      },
+      {
+        "name": ":P:-CODE-GL-ACCOUNT",
+        "kind": "number",
+        "uses": [
+          {
+            "program": "GLSUM",
+            "field": "GS-CODE-GL-ACCOUNT",
+            "readBy": [
+              "2100-POST-TO-LEDGER"
+            ]
+          },
+          {
+            "program": "STMTPRT",
+            "field": "ST-CODE-GL-ACCOUNT"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "record": "GL-SUMMARY-RECORD",
+    "copybook": "GLREC",
+    "programs": [
+      "GLSUM"
+    ],
+    "fields": [
+      {
+        "name": "GL-MONTH",
+        "kind": "date",
+        "uses": [
+          {
+            "program": "GLSUM",
+            "field": "GL-MONTH",
+            "writtenBy": [
+              "3000-WRITE-LEDGER"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "GL-ACCOUNT",
+        "kind": "number",
+        "uses": [
+          {
+            "program": "GLSUM",
+            "field": "GL-ACCOUNT",
+            "writtenBy": [
+              "3000-WRITE-LEDGER"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "GL-ACCOUNT-NAME",
+        "kind": "text",
+        "uses": [
+          {
+            "program": "GLSUM",
+            "field": "GL-ACCOUNT-NAME",
+            "writtenBy": [
+              "3000-WRITE-LEDGER"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "GL-DEBITS",
+        "kind": "amount",
+        "uses": [
+          {
+            "program": "GLSUM",
+            "field": "GL-DEBITS",
+            "writtenBy": [
+              "3000-WRITE-LEDGER"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "GL-CREDITS",
+        "kind": "amount",
+        "uses": [
+          {
+            "program": "GLSUM",
+            "field": "GL-CREDITS",
+            "writtenBy": [
+              "3000-WRITE-LEDGER"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "record": "HOLD-RECORD",
+    "copybook": "HOLDREC",
+    "programs": [
+      "ACCTLOAD",
+      "ATMBAL",
+      "ATMWDL",
+      "AUTHPUR",
+      "AUTHREV",
+      "AUTHSRV",
+      "HOLDEXT"
+    ],
+    "fields": [
+      {
+        "name": "HD-KEY",
+        "kind": "group",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "HD-KEY"
+          },
+          {
+            "program": "ATMBAL",
+            "field": "HD-KEY"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "HD-KEY"
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "HD-KEY"
+          },
+          {
+            "program": "AUTHREV",
+            "field": "HD-KEY"
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "HD-KEY",
+            "readBy": [
+              "1100-FIND-LAST-HOLD"
+            ],
+            "writtenBy": [
+              "1100-FIND-LAST-HOLD"
+            ]
+          },
+          {
+            "program": "HOLDEXT",
+            "field": "HD-KEY"
+          }
+        ]
+      },
+      {
+        "name": "HD-ACCT-NO",
+        "kind": "number",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "HD-ACCT-NO"
+          },
+          {
+            "program": "ATMBAL",
+            "field": "HD-ACCT-NO"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "HD-ACCT-NO",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "HD-ACCT-NO",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "HD-ACCT-NO"
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "HD-ACCT-NO",
+            "writtenBy": [
+              "2300-READ-HOLD"
+            ]
+          },
+          {
+            "program": "HOLDEXT",
+            "field": "HD-ACCT-NO",
+            "readBy": [
+              "2000-EXTRACT-HOLD"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "HD-HOLD-NO",
+        "kind": "number",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "HD-HOLD-NO"
+          },
+          {
+            "program": "ATMBAL",
+            "field": "HD-HOLD-NO"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "HD-HOLD-NO"
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "HD-HOLD-NO"
+          },
+          {
+            "program": "AUTHREV",
+            "field": "HD-HOLD-NO",
+            "readBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "HD-HOLD-NO",
+            "readBy": [
+              "1100-FIND-LAST-HOLD"
+            ],
+            "writtenBy": [
+              "2300-READ-HOLD",
+              "2400-SAVE-CHANGES"
+            ],
+            "decisions": [
+              {
+                "paragraph": "1100-FIND-LAST-HOLD",
+                "loop": "PERFORM UNTIL END-OF-HOLDS",
+                "source": "pangaea/programs/AUTHSRV.cbl:137",
+                "conditions": [
+                  "HD-HOLD-NO \u003e WS-LAST-HOLD-NO"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "HOLDEXT",
+            "field": "HD-HOLD-NO",
+            "readBy": [
+              "2000-EXTRACT-HOLD"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "HD-CARD-NO",
+        "kind": "number",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "HD-CARD-NO"
+          },
+          {
+            "program": "ATMBAL",
+            "field": "HD-CARD-NO"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "HD-CARD-NO",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "HD-CARD-NO",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "HD-CARD-NO",
+            "readBy": [
+              "0000-MAIN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "0000-MAIN",
+                "source": "pangaea/programs/AUTHREV.cbl:37",
+                "conditions": [
+                  "HD-CARD-NO = CR-CARD-NO"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "HD-CARD-NO"
+          },
+          {
+            "program": "HOLDEXT",
+            "field": "HD-CARD-NO"
+          }
+        ]
+      },
+      {
+        "name": "HD-KIND",
+        "kind": "code",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "HD-KIND"
+          },
+          {
+            "program": "ATMBAL",
+            "field": "HD-KIND"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "HD-KIND",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "HD-KIND",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "HD-KIND",
+            "readBy": [
+              "0000-MAIN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "0000-MAIN",
+                "source": "pangaea/programs/AUTHREV.cbl:37",
+                "conditions": [
+                  "HD-PURCHASE"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "HD-KIND"
+          },
+          {
+            "program": "HOLDEXT",
+            "field": "HD-KIND",
+            "readBy": [
+              "2000-EXTRACT-HOLD"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2000-EXTRACT-HOLD",
+                "source": "pangaea/programs/HOLDEXT.cbl:134",
+                "conditions": [
+                  "HD-PURCHASE"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "HD-STATUS",
+        "kind": "code",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "HD-STATUS"
+          },
+          {
+            "program": "ATMBAL",
+            "field": "HD-STATUS"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "HD-STATUS",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "HD-STATUS",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "HD-STATUS",
+            "readBy": [
+              "0000-MAIN"
+            ],
+            "writtenBy": [
+              "2000-APPROVE"
+            ],
+            "decisions": [
+              {
+                "paragraph": "0000-MAIN",
+                "source": "pangaea/programs/AUTHREV.cbl:37",
+                "conditions": [
+                  "HD-REVERSED"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "HD-STATUS"
+          },
+          {
+            "program": "HOLDEXT",
+            "field": "HD-STATUS",
+            "readBy": [
+              "2000-EXTRACT-HOLD"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2000-EXTRACT-HOLD",
+                "source": "pangaea/programs/HOLDEXT.cbl:134",
+                "conditions": [
+                  "HD-REVERSED"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "HD-AMOUNT",
+        "kind": "amount",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "HD-AMOUNT"
+          },
+          {
+            "program": "ATMBAL",
+            "field": "HD-AMOUNT"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "HD-AMOUNT",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "HD-AMOUNT",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "HD-AMOUNT",
+            "readBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "HD-AMOUNT",
+            "readBy": [
+              "2400-SAVE-CHANGES"
+            ]
+          },
+          {
+            "program": "HOLDEXT",
+            "field": "HD-AMOUNT",
+            "readBy": [
+              "2000-EXTRACT-HOLD"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "HD-FEE",
+        "kind": "amount",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "HD-FEE"
+          },
+          {
+            "program": "ATMBAL",
+            "field": "HD-FEE"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "HD-FEE",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "HD-FEE",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "HD-FEE"
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "HD-FEE",
+            "readBy": [
+              "2400-SAVE-CHANGES"
+            ]
+          },
+          {
+            "program": "HOLDEXT",
+            "field": "HD-FEE",
+            "readBy": [
+              "2000-EXTRACT-HOLD"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2000-EXTRACT-HOLD",
+                "source": "pangaea/programs/HOLDEXT.cbl:134",
+                "conditions": [
+                  "HD-FEE \u003e 0"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "HD-TERMINAL",
+        "kind": "text",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "HD-TERMINAL"
+          },
+          {
+            "program": "ATMBAL",
+            "field": "HD-TERMINAL"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "HD-TERMINAL",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "HD-TERMINAL",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "HD-TERMINAL"
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "HD-TERMINAL"
+          },
+          {
+            "program": "HOLDEXT",
+            "field": "HD-TERMINAL",
+            "readBy": [
+              "2000-EXTRACT-HOLD"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "HD-TIMESTAMP",
+        "kind": "date",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "HD-TIMESTAMP"
+          },
+          {
+            "program": "ATMBAL",
+            "field": "HD-TIMESTAMP"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "HD-TIMESTAMP",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "HD-TIMESTAMP",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "HD-TIMESTAMP"
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "HD-TIMESTAMP"
+          },
+          {
+            "program": "HOLDEXT",
+            "field": "HD-TIMESTAMP"
+          }
+        ]
+      },
+      {
+        "name": "HD-BUSINESS-DATE",
+        "kind": "date",
+        "uses": [
+          {
+            "program": "ACCTLOAD",
+            "field": "HD-BUSINESS-DATE"
+          },
+          {
+            "program": "ATMBAL",
+            "field": "HD-BUSINESS-DATE"
+          },
+          {
+            "program": "ATMWDL",
+            "field": "HD-BUSINESS-DATE",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHPUR",
+            "field": "HD-BUSINESS-DATE",
+            "writtenBy": [
+              "2000-APPROVE"
+            ]
+          },
+          {
+            "program": "AUTHREV",
+            "field": "HD-BUSINESS-DATE",
+            "readBy": [
+              "2000-APPROVE"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2000-APPROVE",
+                "source": "pangaea/programs/AUTHREV.cbl:55",
+                "conditions": [
+                  "CR-TOTALS-DATE = HD-BUSINESS-DATE"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "AUTHSRV",
+            "field": "HD-BUSINESS-DATE"
+          },
+          {
+            "program": "HOLDEXT",
+            "field": "HD-BUSINESS-DATE",
+            "readBy": [
+              "2000-EXTRACT-HOLD"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2000-EXTRACT-HOLD",
+                "source": "pangaea/programs/HOLDEXT.cbl:134",
+                "conditions": [
+                  "HD-BUSINESS-DATE = BC-BUSINESS-DATE"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "record": "MAINT-REQUEST",
+    "copybook": "MAINTREC",
+    "programs": [
+      "ACCTMNT"
+    ],
+    "fields": [
+      {
+        "name": "MR-REQUEST-ID",
+        "kind": "number",
+        "uses": [
+          {
+            "program": "ACCTMNT",
+            "field": "MR-REQUEST-ID",
+            "readBy": [
+              "1300-READ-REQUEST"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "MR-REQUEST-TYPE",
+        "kind": "code",
+        "uses": [
+          {
+            "program": "ACCTMNT",
+            "field": "MR-REQUEST-TYPE",
+            "readBy": [
+              "2200-APPLY-REQUEST"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2200-APPLY-REQUEST",
+                "source": "pangaea/programs/ACCTMNT.cbl:215",
+                "conditions": [
+                  "MR-OPEN",
+                  "MR-CLOSE",
+                  "MR-FREEZE",
+                  "MR-UNFREEZE",
+                  "MR-LIMIT"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "MR-ACCT-NO",
+        "kind": "number",
+        "uses": [
+          {
+            "program": "ACCTMNT",
+            "field": "MR-ACCT-NO",
+            "readBy": [
+              "1300-READ-REQUEST",
+              "2210-OPEN"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "MR-CUST-NO",
+        "kind": "number",
+        "uses": [
+          {
+            "program": "ACCTMNT",
+            "field": "MR-CUST-NO",
+            "readBy": [
+              "2210-OPEN"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "MR-SHORT-NAME",
+        "kind": "text",
+        "uses": [
+          {
+            "program": "ACCTMNT",
+            "field": "MR-SHORT-NAME",
+            "readBy": [
+              "2210-OPEN"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "MR-ACCT-TYPE",
+        "kind": "text",
+        "uses": [
+          {
+            "program": "ACCTMNT",
+            "field": "MR-ACCT-TYPE",
+            "readBy": [
+              "2210-OPEN"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "MR-OVERDRAFT-LIMIT",
+        "kind": "amount",
+        "uses": [
+          {
+            "program": "ACCTMNT",
+            "field": "MR-OVERDRAFT-LIMIT",
+            "readBy": [
+              "2210-OPEN",
+              "2250-LIMIT"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "record": "RATE-RECORD",
+    "copybook": "RATEREC",
+    "programs": [
+      "INTACCR"
+    ],
+    "fields": [
+      {
+        "name": "RT-ACCT-TYPE",
+        "kind": "text",
+        "uses": [
+          {
+            "program": "INTACCR",
+            "field": "RT-ACCT-TYPE",
+            "readBy": [
+              "1100-LOAD-RATES"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "RT-KIND",
+        "kind": "code",
+        "uses": [
+          {
+            "program": "INTACCR",
+            "field": "RT-KIND",
+            "readBy": [
+              "1100-LOAD-RATES"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "RT-FLOOR",
+        "kind": "amount",
+        "uses": [
+          {
+            "program": "INTACCR",
+            "field": "RT-FLOOR",
+            "readBy": [
+              "1100-LOAD-RATES"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "RT-ANNUAL-RATE",
+        "kind": "amount",
+        "uses": [
+          {
+            "program": "INTACCR",
+            "field": "RT-ANNUAL-RATE",
+            "readBy": [
+              "1100-LOAD-RATES"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "record": "REJECT-RECORD",
+    "copybook": "REJREC",
+    "programs": [
+      "ACCTMNT",
+      "TXPOST",
+      "TXVALID"
+    ],
+    "fields": [
+      {
+        "name": "RJ-PROGRAM",
+        "kind": "text",
+        "uses": [
+          {
+            "program": "ACCTMNT",
+            "field": "RJ-PROGRAM",
+            "writtenBy": [
+              "2290-REJECT"
+            ]
+          },
+          {
+            "program": "TXPOST",
+            "field": "RJ-PROGRAM",
+            "writtenBy": [
+              "3900-REJECT-TRAN"
+            ]
+          },
+          {
+            "program": "TXVALID",
+            "field": "RJ-PROGRAM",
+            "writtenBy": [
+              "3300-REJECT-RECORD"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "RJ-REASON",
+        "kind": "code",
+        "uses": [
+          {
+            "program": "ACCTMNT",
+            "field": "RJ-REASON",
+            "writtenBy": [
+              "2200-APPLY-REQUEST",
+              "2210-OPEN",
+              "2220-CLOSE",
+              "2230-FREEZE",
+              "2240-UNFREEZE",
+              "2250-LIMIT"
+            ]
+          },
+          {
+            "program": "TXPOST",
+            "field": "RJ-REASON",
+            "writtenBy": [
+              "2000-MATCH",
+              "3000-APPLY-TRAN",
+              "3200-POST-DEBIT"
+            ]
+          },
+          {
+            "program": "TXVALID",
+            "field": "RJ-REASON",
+            "writtenBy": [
+              "3000-READ-DETAILS",
+              "3200-VALIDATE-DETAIL"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "RJ-TRAN",
+        "kind": "text",
+        "uses": [
+          {
+            "program": "ACCTMNT",
+            "field": "RJ-TRAN",
+            "writtenBy": [
+              "2290-REJECT"
+            ]
+          },
+          {
+            "program": "TXPOST",
+            "field": "RJ-TRAN",
+            "writtenBy": [
+              "3900-REJECT-TRAN"
+            ]
+          },
+          {
+            "program": "TXVALID",
+            "field": "RJ-TRAN",
+            "writtenBy": [
+              "3300-REJECT-RECORD"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "record": "TRAN-RECORD",
+    "copybook": "TRANREC",
+    "programs": [
+      "HOLDEXT",
+      "MONCHG",
+      "TXPOST",
+      "TXVALID"
+    ],
+    "fields": [
+      {
+        "name": "TR-REC-TYPE",
+        "kind": "code",
+        "uses": [
+          {
+            "program": "HOLDEXT",
+            "field": "TR-REC-TYPE",
+            "writtenBy": [
+              "1000-INITIALIZE",
+              "2000-EXTRACT-HOLD",
+              "3000-WRITE-TRAILER"
+            ]
+          },
+          {
+            "program": "MONCHG",
+            "field": "TR-REC-TYPE",
+            "writtenBy": [
+              "2900-WRITE-TRAN"
+            ]
+          },
+          {
+            "program": "TXPOST",
+            "field": "TR-REC-TYPE"
+          },
+          {
+            "program": "TXVALID",
+            "field": "TR-REC-TYPE",
+            "readBy": [
+              "2000-READ-HEADER",
+              "3000-READ-DETAILS"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2000-READ-HEADER",
+                "source": "pangaea/programs/TXVALID.cbl:158",
+                "conditions": [
+                  "TR-HEADER"
+                ]
+              },
+              {
+                "paragraph": "3000-READ-DETAILS",
+                "loop": "PERFORM UNTIL TR-TRAILER OR NOT FILE-IS-GOOD",
+                "source": "pangaea/programs/TXVALID.cbl:182",
+                "conditions": [
+                  "TR-DETAIL",
+                  "TR-HEADER"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "TR-BODY",
+        "kind": "text",
+        "uses": [
+          {
+            "program": "HOLDEXT",
+            "field": "TR-BODY"
+          },
+          {
+            "program": "MONCHG",
+            "field": "TR-BODY"
+          },
+          {
+            "program": "TXPOST",
+            "field": "TR-BODY"
+          },
+          {
+            "program": "TXVALID",
+            "field": "TR-BODY"
+          }
+        ]
+      },
+      {
+        "name": "TR-HEADER-BODY",
+        "kind": "group",
+        "uses": [
+          {
+            "program": "HOLDEXT",
+            "field": "TR-HEADER-BODY"
+          },
+          {
+            "program": "MONCHG",
+            "field": "TR-HEADER-BODY"
+          },
+          {
+            "program": "TXPOST",
+            "field": "TR-HEADER-BODY"
+          },
+          {
+            "program": "TXVALID",
+            "field": "TR-HEADER-BODY"
+          }
+        ]
+      },
+      {
+        "name": "TH-BUSINESS-DATE",
+        "kind": "date",
+        "uses": [
+          {
+            "program": "HOLDEXT",
+            "field": "TH-BUSINESS-DATE",
+            "writtenBy": [
+              "1000-INITIALIZE"
+            ]
+          },
+          {
+            "program": "MONCHG",
+            "field": "TH-BUSINESS-DATE"
+          },
+          {
+            "program": "TXPOST",
+            "field": "TH-BUSINESS-DATE"
+          },
+          {
+            "program": "TXVALID",
+            "field": "TH-BUSINESS-DATE",
+            "readBy": [
+              "2000-READ-HEADER"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2000-READ-HEADER",
+                "source": "pangaea/programs/TXVALID.cbl:158",
+                "conditions": [
+                  "TH-BUSINESS-DATE = WS-BUSINESS-DATE"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "TH-SOURCE",
+        "kind": "code",
+        "uses": [
+          {
+            "program": "HOLDEXT",
+            "field": "TH-SOURCE",
+            "writtenBy": [
+              "1000-INITIALIZE"
+            ]
+          },
+          {
+            "program": "MONCHG",
+            "field": "TH-SOURCE"
+          },
+          {
+            "program": "TXPOST",
+            "field": "TH-SOURCE"
+          },
+          {
+            "program": "TXVALID",
+            "field": "TH-SOURCE",
+            "readBy": [
+              "2000-READ-HEADER"
+            ],
+            "decisions": [
+              {
+                "paragraph": "2000-READ-HEADER",
+                "source": "pangaea/programs/TXVALID.cbl:158",
+                "conditions": [
+                  "NOT TH-FROM-BRANCHES AND NOT TH-FROM-CARDS"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "TH-FILE-SEQ",
+        "kind": "number",
+        "uses": [
+          {
+            "program": "HOLDEXT",
+            "field": "TH-FILE-SEQ",
+            "writtenBy": [
+              "1000-INITIALIZE"
+            ]
+          },
+          {
+            "program": "MONCHG",
+            "field": "TH-FILE-SEQ"
+          },
+          {
+            "program": "TXPOST",
+            "field": "TH-FILE-SEQ"
+          },
+          {
+            "program": "TXVALID",
+            "field": "TH-FILE-SEQ"
+          }
+        ]
+      },
+      {
+        "name": "TR-DETAIL-BODY",
+        "kind": "group",
+        "uses": [
+          {
+            "program": "HOLDEXT",
+            "field": "TR-DETAIL-BODY"
+          },
+          {
+            "program": "MONCHG",
+            "field": "TR-DETAIL-BODY"
+          },
+          {
+            "program": "TXPOST",
+            "field": "TR-DETAIL-BODY"
+          },
+          {
+            "program": "TXVALID",
+            "field": "TR-DETAIL-BODY"
+          }
+        ]
+      },
+      {
+        "name": "TD-TRAN-ID",
+        "kind": "number",
+        "uses": [
+          {
+            "program": "HOLDEXT",
+            "field": "TD-TRAN-ID",
+            "writtenBy": [
+              "2900-WRITE-DETAIL"
+            ]
+          },
+          {
+            "program": "MONCHG",
+            "field": "TD-TRAN-ID",
+            "writtenBy": [
+              "2900-WRITE-TRAN"
+            ]
+          },
+          {
+            "program": "TXPOST",
+            "field": "TD-TRAN-ID",
+            "readBy": [
+              "1300-READ-TRAN",
+              "3800-WRITE-AUDIT"
+            ]
+          },
+          {
+            "program": "TXVALID",
+            "field": "TD-TRAN-ID"
+          }
+        ]
+      },
+      {
+        "name": "TD-ACCT-NO",
+        "kind": "number",
+        "uses": [
+          {
+            "program": "HOLDEXT",
+            "field": "TD-ACCT-NO",
+            "readBy": [
+              "2900-WRITE-DETAIL"
+            ],
+            "writtenBy": [
+              "2000-EXTRACT-HOLD"
+            ]
+          },
+          {
+            "program": "MONCHG",
+            "field": "TD-ACCT-NO",
+            "writtenBy": [
+              "2900-WRITE-TRAN"
+            ]
+          },
+          {
+            "program": "TXPOST",
+            "field": "TD-ACCT-NO",
+            "readBy": [
+              "1300-READ-TRAN",
+              "3500-WRITE-LEG",
+              "3800-WRITE-AUDIT"
+            ],
+            "writtenBy": [
+              "3500-WRITE-LEG"
+            ]
+          },
+          {
+            "program": "TXVALID",
+            "field": "TD-ACCT-NO",
+            "readBy": [
+              "3200-VALIDATE-DETAIL"
+            ],
+            "decisions": [
+              {
+                "paragraph": "3200-VALIDATE-DETAIL",
+                "source": "pangaea/programs/TXVALID.cbl:205",
+                "conditions": [
+                  "TD-ACCT-NO IS NUMERIC",
+                  "TD-TRANSFER AND (TD-COUNTER-ACCT-NO IS NOT NUMERIC OR TD-COUNTER-ACCT-NO = TD-ACCT-NO)"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "TD-TRAN-CODE",
+        "kind": "code",
+        "uses": [
+          {
+            "program": "HOLDEXT",
+            "field": "TD-TRAN-CODE",
+            "writtenBy": [
+              "2000-EXTRACT-HOLD"
+            ]
+          },
+          {
+            "program": "MONCHG",
+            "field": "TD-TRAN-CODE",
+            "writtenBy": [
+              "2100-SETTLE-INTEREST",
+              "2200-CHARGE-FEE"
+            ]
+          },
+          {
+            "program": "TXPOST",
+            "field": "TD-TRAN-CODE",
+            "readBy": [
+              "3000-APPLY-TRAN",
+              "3200-POST-DEBIT",
+              "3500-WRITE-LEG",
+              "3800-WRITE-AUDIT",
+              "3900-REJECT-TRAN"
+            ],
+            "writtenBy": [
+              "3500-WRITE-LEG"
+            ],
+            "decisions": [
+              {
+                "paragraph": "3000-APPLY-TRAN",
+                "source": "pangaea/programs/TXPOST.cbl:256",
+                "conditions": [
+                  "TD-DEPOSIT OR TD-TRANSFER-CREDIT OR TD-TRANSFER-RETURN OR TD-INTEREST",
+                  "TD-FEE OR TD-OVERDRAFT-INTEREST OR TD-MAINTENANCE-FEE OR TD-ATM-FEE",
+                  "TD-CARD-PURCHASE OR TD-ATM-WITHDRAWAL",
+                  "TD-WITHDRAWAL OR TD-TRANSFER"
+                ]
+              },
+              {
+                "paragraph": "3200-POST-DEBIT",
+                "source": "pangaea/programs/TXPOST.cbl:293",
+                "conditions": [
+                  "TD-TRANSFER"
+                ]
+              },
+              {
+                "paragraph": "3500-WRITE-LEG",
+                "source": "pangaea/programs/TXPOST.cbl:328",
+                "conditions": [
+                  "TD-TRANSFER"
+                ]
+              },
+              {
+                "paragraph": "3900-REJECT-TRAN",
+                "source": "pangaea/programs/TXPOST.cbl:357",
+                "conditions": [
+                  "TD-TRANSFER-CREDIT"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "TXVALID",
+            "field": "TD-TRAN-CODE",
+            "readBy": [
+              "3200-VALIDATE-DETAIL"
+            ],
+            "decisions": [
+              {
+                "paragraph": "3200-VALIDATE-DETAIL",
+                "source": "pangaea/programs/TXVALID.cbl:205",
+                "conditions": [
+                  "(FROM-BRANCHES AND NOT TD-KNOWN-CODE) OR (FROM-CARDS AND NOT TD-CARD-CODE)",
+                  "TD-TRANSFER AND (TD-COUNTER-ACCT-NO IS NOT NUMERIC OR TD-COUNTER-ACCT-NO = TD-ACCT-NO)"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "TD-AMOUNT",
+        "kind": "amount",
+        "uses": [
+          {
+            "program": "HOLDEXT",
+            "field": "TD-AMOUNT",
+            "readBy": [
+              "2900-WRITE-DETAIL"
+            ],
+            "writtenBy": [
+              "2000-EXTRACT-HOLD"
+            ]
+          },
+          {
+            "program": "MONCHG",
+            "field": "TD-AMOUNT",
+            "readBy": [
+              "2100-SETTLE-INTEREST",
+              "2200-CHARGE-FEE"
+            ],
+            "writtenBy": [
+              "2100-SETTLE-INTEREST",
+              "2200-CHARGE-FEE"
+            ]
+          },
+          {
+            "program": "TXPOST",
+            "field": "TD-AMOUNT",
+            "readBy": [
+              "3100-POST-CREDIT",
+              "3200-POST-DEBIT",
+              "3300-POST-FEE",
+              "3400-POST-AUTHORIZED"
+            ]
+          },
+          {
+            "program": "TXVALID",
+            "field": "TD-AMOUNT",
+            "readBy": [
+              "3200-VALIDATE-DETAIL"
+            ],
+            "decisions": [
+              {
+                "paragraph": "3200-VALIDATE-DETAIL",
+                "source": "pangaea/programs/TXVALID.cbl:205",
+                "conditions": [
+                  "TD-AMOUNT IS NUMERIC",
+                  "TD-AMOUNT IS NOT NUMERIC OR TD-AMOUNT = ZERO"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "TD-DESCRIPTION",
+        "kind": "text",
+        "uses": [
+          {
+            "program": "HOLDEXT",
+            "field": "TD-DESCRIPTION",
+            "writtenBy": [
+              "2000-EXTRACT-HOLD"
+            ]
+          },
+          {
+            "program": "MONCHG",
+            "field": "TD-DESCRIPTION",
+            "writtenBy": [
+              "2100-SETTLE-INTEREST",
+              "2200-CHARGE-FEE"
+            ]
+          },
+          {
+            "program": "TXPOST",
+            "field": "TD-DESCRIPTION"
+          },
+          {
+            "program": "TXVALID",
+            "field": "TD-DESCRIPTION"
+          }
+        ]
+      },
+      {
+        "name": "TD-COUNTER-ACCT-NO",
+        "kind": "number",
+        "uses": [
+          {
+            "program": "HOLDEXT",
+            "field": "TD-COUNTER-ACCT-NO",
+            "writtenBy": [
+              "2000-EXTRACT-HOLD"
+            ]
+          },
+          {
+            "program": "MONCHG",
+            "field": "TD-COUNTER-ACCT-NO"
+          },
+          {
+            "program": "TXPOST",
+            "field": "TD-COUNTER-ACCT-NO",
+            "readBy": [
+              "3500-WRITE-LEG"
+            ],
+            "writtenBy": [
+              "3500-WRITE-LEG"
+            ]
+          },
+          {
+            "program": "TXVALID",
+            "field": "TD-COUNTER-ACCT-NO",
+            "readBy": [
+              "3200-VALIDATE-DETAIL"
+            ],
+            "decisions": [
+              {
+                "paragraph": "3200-VALIDATE-DETAIL",
+                "source": "pangaea/programs/TXVALID.cbl:205",
+                "conditions": [
+                  "TD-TRANSFER AND (TD-COUNTER-ACCT-NO IS NOT NUMERIC OR TD-COUNTER-ACCT-NO = TD-ACCT-NO)"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "TR-TRAILER-BODY",
+        "kind": "group",
+        "uses": [
+          {
+            "program": "HOLDEXT",
+            "field": "TR-TRAILER-BODY"
+          },
+          {
+            "program": "MONCHG",
+            "field": "TR-TRAILER-BODY"
+          },
+          {
+            "program": "TXPOST",
+            "field": "TR-TRAILER-BODY"
+          },
+          {
+            "program": "TXVALID",
+            "field": "TR-TRAILER-BODY"
+          }
+        ]
+      },
+      {
+        "name": "TT-DETAIL-COUNT",
+        "kind": "number",
+        "uses": [
+          {
+            "program": "HOLDEXT",
+            "field": "TT-DETAIL-COUNT",
+            "writtenBy": [
+              "3000-WRITE-TRAILER"
+            ]
+          },
+          {
+            "program": "MONCHG",
+            "field": "TT-DETAIL-COUNT"
+          },
+          {
+            "program": "TXPOST",
+            "field": "TT-DETAIL-COUNT"
+          },
+          {
+            "program": "TXVALID",
+            "field": "TT-DETAIL-COUNT",
+            "readBy": [
+              "4000-CHECK-TRAILER"
+            ],
+            "decisions": [
+              {
+                "paragraph": "4000-CHECK-TRAILER",
+                "source": "pangaea/programs/TXVALID.cbl:247",
+                "conditions": [
+                  "TT-DETAIL-COUNT = WS-DETAIL-COUNT"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "TT-AMOUNT-TOTAL",
+        "kind": "amount",
+        "uses": [
+          {
+            "program": "HOLDEXT",
+            "field": "TT-AMOUNT-TOTAL",
+            "writtenBy": [
+              "3000-WRITE-TRAILER"
+            ]
+          },
+          {
+            "program": "MONCHG",
+            "field": "TT-AMOUNT-TOTAL"
+          },
+          {
+            "program": "TXPOST",
+            "field": "TT-AMOUNT-TOTAL"
+          },
+          {
+            "program": "TXVALID",
+            "field": "TT-AMOUNT-TOTAL",
+            "readBy": [
+              "4000-CHECK-TRAILER"
+            ],
+            "decisions": [
+              {
+                "paragraph": "4000-CHECK-TRAILER",
+                "source": "pangaea/programs/TXVALID.cbl:247",
+                "conditions": [
+                  "TT-AMOUNT-TOTAL = WS-AMOUNT-TOTAL"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "TT-ACCT-HASH",
+        "kind": "number",
+        "uses": [
+          {
+            "program": "HOLDEXT",
+            "field": "TT-ACCT-HASH",
+            "writtenBy": [
+              "3000-WRITE-TRAILER"
+            ]
+          },
+          {
+            "program": "MONCHG",
+            "field": "TT-ACCT-HASH"
+          },
+          {
+            "program": "TXPOST",
+            "field": "TT-ACCT-HASH"
+          },
+          {
+            "program": "TXVALID",
+            "field": "TT-ACCT-HASH",
+            "readBy": [
+              "4000-CHECK-TRAILER"
+            ],
+            "decisions": [
+              {
+                "paragraph": "4000-CHECK-TRAILER",
+                "source": "pangaea/programs/TXVALID.cbl:247",
+                "conditions": [
+                  "TT-ACCT-HASH = WS-ACCT-HASH"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

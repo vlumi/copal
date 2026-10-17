@@ -19,6 +19,7 @@
 </table>
 {{end}}
 <p><a href="{{trace $p .Field.Name}}">Follow its values back</a> through every program and job step to where they start.</p>
+{{with .Entity}}<p>Its record is described by a copybook: see <a href="{{entityField .Record .Field}}">{{.Field}} across every program</a> that uses it.</p>{{end}}
 <h2>Paragraphs</h2>
 <p>Written by {{range $i, $x := .WrittenBy}}{{if $i}}, {{end}}<a href="{{paragraph $p $x}}">{{$x}}</a>{{else}}none{{end}}; read by {{range $i, $x := .ReadBy}}{{if $i}}, {{end}}<a href="{{paragraph $p $x}}">{{$x}}</a>{{else}}none{{end}}.</p>
 {{with .Decisions}}<h2>Rules</h2>
