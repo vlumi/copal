@@ -79,5 +79,9 @@ EXPLORE_ADDR ?= localhost:8090
 explore:  ## Explore Pangaea's analysis in the browser (EXPLORE_ADDR)
 	go run ./survey/cmd/survey explore -copybooks pangaea/copybooks -addr $(EXPLORE_ADDR) -title "the First Bank of Pangaea" pangaea/programs/*.cbl pangaea/jobs/*.jcl
 
+.PHONY: docs-diagrams
+docs-diagrams:  ## Redraw the diagrams of docs/architecture.md
+	go run ./survey/cmd/docsdiagrams -out docs/diagrams
+
 .PHONY: ci
 ci: toolchain lint-md lint-go lint-deps test  ## Full local CI
