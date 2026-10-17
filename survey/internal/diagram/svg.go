@@ -111,7 +111,8 @@ func (l *layout) writeEdge(b *strings.Builder, e routedEdge) {
 	fmt.Fprintf(b, `<path class="%s" d="%s" %s="url(#%s)"/>`+"\n", class, path, marker, arrow)
 }
 
-func (l *layout) writeNode(b *strings.Builder, s *slot, n Node) {
+// nodeClass is the CSS class of a node's box, which draws it as it is.
+func nodeClass(n Node) string {
 	class := "box"
 	for _, c := range []struct {
 		set  bool
@@ -121,6 +122,11 @@ func (l *layout) writeNode(b *strings.Builder, s *slot, n Node) {
 			class += " " + c.name
 		}
 	}
+	return class
+}
+
+func (l *layout) writeNode(b *strings.Builder, s *slot, n Node) {
+	class := nodeClass(n)
 	open, end := "<g>", "</g>"
 	if n.Link != "" {
 		open, end = fmt.Sprintf(`<a href="%s">`, escape(n.Link)), "</a>"

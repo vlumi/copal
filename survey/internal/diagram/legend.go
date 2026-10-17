@@ -48,18 +48,12 @@ func writeLegend(b *strings.Builder, keys []Key, x, y int) {
 		middle := y + legendPadding + i*legendRow + legendRow/2
 		switch {
 		case k.node != nil:
-			class, radius := "box", 3
+			radius := 3
 			if k.node.Data {
-				class, radius = class+" data", 7
-			}
-			if k.node.Dashed {
-				class += " dashed"
-			}
-			if k.node.Highlight {
-				class += " highlight"
+				radius = 7
 			}
 			fmt.Fprintf(b, `<rect class="%s" x="%d" y="%d" width="%d" height="14" rx="%d"/>`+"\n",
-				class, left, middle-7, sampleWidth, radius)
+				nodeClass(*k.node), left, middle-7, sampleWidth, radius)
 		case k.style != nil:
 			class := "edge"
 			if *k.style != Solid {

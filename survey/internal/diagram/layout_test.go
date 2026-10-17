@@ -185,3 +185,15 @@ func TestHighlight(t *testing.T) {
 		}
 	}
 }
+
+// A legend's sample of a node is drawn as the node is.
+func TestLegendSamples(t *testing.T) {
+	g := Graph{Nodes: []Node{{ID: "a", Label: "A"}}, Legend: []Key{NodeKey(Node{Emphasis: true}, "first")}}
+	svg, err := g.SVG()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := `<rect class="box emphasis" x="`; !strings.Contains(string(svg), want) {
+		t.Errorf("no %s in\n%s", want, svg)
+	}
+}
