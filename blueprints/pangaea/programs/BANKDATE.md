@@ -186,4 +186,4 @@ Working storage. 1 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-WEEKDAY | code | 1 | 1 | 9 | | | [BANKDATE.cbl:47](../../../pangaea/programs/BANKDATE.cbl#L47) |
-| 88 | WEEKEND | | | | | | VALUE 6, 0 | [BANKDATE.cbl:48](../../../pangaea/programs/BANKDATE.cbl#L48) |
+| 88 | └ WEEKEND | | | | | | VALUE 6, 0 | [BANKDATE.cbl:48](../../../pangaea/programs/BANKDATE.cbl#L48) |

@@ -45,7 +45,9 @@ func New(system *blueprint.System, title string) (*Server, error) {
 		"lineage": func(program string, fields map[string]bool, rows []blueprint.Lineage) lineageTable {
 			return lineageTable{Program: program, Fields: fields, Rows: rows}
 		},
-		"layoutOf": func(record string, f blueprint.Field) layoutRow { return layoutRow{Record: record, Field: f} },
+		"layoutOf":   func(record string, f blueprint.Field) layoutRow { return layoutRow{Record: record, Field: f} },
+		"layoutRows": blueprint.LayoutRows,
+		"notes":      func(f *blueprint.Field) string { return blueprint.FieldNotes(*f) },
 		"decisions": func(program string, rows []blueprint.Decision) decisionTable {
 			return decisionTable{Program: program, Rows: rows}
 		},

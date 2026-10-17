@@ -413,11 +413,11 @@ Working storage. 10 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-FILE-STATUSES | group | 1 | 10 | | | | [AUTHSRV.cbl:69](../../../pangaea/programs/AUTHSRV.cbl#L69) |
-| 05 | WS-CONTROL-STATUS | text | 1 | 2 | XX | | | [AUTHSRV.cbl:70](../../../pangaea/programs/AUTHSRV.cbl#L70) |
-| 05 | WS-ACCT-STATUS | text | 3 | 2 | XX | | | [AUTHSRV.cbl:71](../../../pangaea/programs/AUTHSRV.cbl#L71) |
-| 05 | WS-CARD-STATUS | text | 5 | 2 | XX | | | [AUTHSRV.cbl:72](../../../pangaea/programs/AUTHSRV.cbl#L72) |
-| 05 | WS-HOLD-STATUS | text | 7 | 2 | XX | | | [AUTHSRV.cbl:73](../../../pangaea/programs/AUTHSRV.cbl#L73) |
-| 05 | WS-REPORT-STATUS | text | 9 | 2 | XX | | | [AUTHSRV.cbl:74](../../../pangaea/programs/AUTHSRV.cbl#L74) |
+| 05 | ├ WS-CONTROL-STATUS | text | 1 | 2 | XX | | | [AUTHSRV.cbl:70](../../../pangaea/programs/AUTHSRV.cbl#L70) |
+| 05 | ├ WS-ACCT-STATUS | text | 3 | 2 | XX | | | [AUTHSRV.cbl:71](../../../pangaea/programs/AUTHSRV.cbl#L71) |
+| 05 | ├ WS-CARD-STATUS | text | 5 | 2 | XX | | | [AUTHSRV.cbl:72](../../../pangaea/programs/AUTHSRV.cbl#L72) |
+| 05 | ├ WS-HOLD-STATUS | text | 7 | 2 | XX | | | [AUTHSRV.cbl:73](../../../pangaea/programs/AUTHSRV.cbl#L73) |
+| 05 | └ WS-REPORT-STATUS | text | 9 | 2 | XX | | | [AUTHSRV.cbl:74](../../../pangaea/programs/AUTHSRV.cbl#L74) |
 
 ### WS-ABORT-MESSAGE
 
@@ -434,7 +434,7 @@ Working storage. 1 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-INPUT-END-SW | code | 1 | 1 | X | | VALUE 'N' | [AUTHSRV.cbl:77](../../../pangaea/programs/AUTHSRV.cbl#L77) |
-| 88 | END-OF-INPUT | | | | | | VALUE 'Y' | [AUTHSRV.cbl:78](../../../pangaea/programs/AUTHSRV.cbl#L78) |
+| 88 | └ END-OF-INPUT | | | | | | VALUE 'Y' | [AUTHSRV.cbl:78](../../../pangaea/programs/AUTHSRV.cbl#L78) |
 
 ### WS-HOLDS-END-SW
 
@@ -443,7 +443,7 @@ Working storage. 1 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-HOLDS-END-SW | code | 1 | 1 | X | | VALUE 'N' | [AUTHSRV.cbl:79](../../../pangaea/programs/AUTHSRV.cbl#L79) |
-| 88 | END-OF-HOLDS | | | | | | VALUE 'Y' | [AUTHSRV.cbl:80](../../../pangaea/programs/AUTHSRV.cbl#L80) |
+| 88 | └ END-OF-HOLDS | | | | | | VALUE 'Y' | [AUTHSRV.cbl:80](../../../pangaea/programs/AUTHSRV.cbl#L80) |
 
 ### WS-LAST-HOLD-NO
 
@@ -468,11 +468,11 @@ Working storage. 50 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-TOTALS | group | 1 | 50 | | | | [AUTHSRV.cbl:85](../../../pangaea/programs/AUTHSRV.cbl#L85) |
-| 05 | WS-REQUEST-COUNT | number | 1 | 8 | 9(8) | | VALUE 0 | [AUTHSRV.cbl:86](../../../pangaea/programs/AUTHSRV.cbl#L86) |
-| 05 | WS-APPROVED-COUNT | number | 9 | 8 | 9(8) | | VALUE 0 | [AUTHSRV.cbl:87](../../../pangaea/programs/AUTHSRV.cbl#L87) |
-| 05 | WS-DECLINED-COUNT | number | 17 | 8 | 9(8) | | VALUE 0 | [AUTHSRV.cbl:88](../../../pangaea/programs/AUTHSRV.cbl#L88) |
-| 05 | WS-HELD-TOTAL | amount | 25 | 13 | 9(11)V99 | | VALUE 0 | [AUTHSRV.cbl:89](../../../pangaea/programs/AUTHSRV.cbl#L89) |
-| 05 | WS-RELEASED-TOTAL | amount | 38 | 13 | 9(11)V99 | | VALUE 0 | [AUTHSRV.cbl:90](../../../pangaea/programs/AUTHSRV.cbl#L90) |
+| 05 | ├ WS-REQUEST-COUNT | number | 1 | 8 | 9(8) | | VALUE 0 | [AUTHSRV.cbl:86](../../../pangaea/programs/AUTHSRV.cbl#L86) |
+| 05 | ├ WS-APPROVED-COUNT | number | 9 | 8 | 9(8) | | VALUE 0 | [AUTHSRV.cbl:87](../../../pangaea/programs/AUTHSRV.cbl#L87) |
+| 05 | ├ WS-DECLINED-COUNT | number | 17 | 8 | 9(8) | | VALUE 0 | [AUTHSRV.cbl:88](../../../pangaea/programs/AUTHSRV.cbl#L88) |
+| 05 | ├ WS-HELD-TOTAL | amount | 25 | 13 | 9(11)V99 | | VALUE 0 | [AUTHSRV.cbl:89](../../../pangaea/programs/AUTHSRV.cbl#L89) |
+| 05 | └ WS-RELEASED-TOTAL | amount | 38 | 13 | 9(11)V99 | | VALUE 0 | [AUTHSRV.cbl:90](../../../pangaea/programs/AUTHSRV.cbl#L90) |
 
 ### WS-REPORT-COUNT-LINE
 
@@ -481,9 +481,9 @@ Working storage. 80 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-REPORT-COUNT-LINE | group | 1 | 80 | | | | [AUTHSRV.cbl:92](../../../pangaea/programs/AUTHSRV.cbl#L92) |
-| 05 | WS-RC-LABEL | text | 1 | 30 | X(30) | | | [AUTHSRV.cbl:93](../../../pangaea/programs/AUTHSRV.cbl#L93) |
-| 05 | WS-RC-VALUE | edited | 31 | 10 | ZZ,ZZZ,ZZ9 | | | [AUTHSRV.cbl:94](../../../pangaea/programs/AUTHSRV.cbl#L94) |
-| 05 | FILLER | filler | 41 | 40 | X(40) | | VALUE SPACES | [AUTHSRV.cbl:95](../../../pangaea/programs/AUTHSRV.cbl#L95) |
+| 05 | ├ WS-RC-LABEL | text | 1 | 30 | X(30) | | | [AUTHSRV.cbl:93](../../../pangaea/programs/AUTHSRV.cbl#L93) |
+| 05 | ├ WS-RC-VALUE | edited | 31 | 10 | ZZ,ZZZ,ZZ9 | | | [AUTHSRV.cbl:94](../../../pangaea/programs/AUTHSRV.cbl#L94) |
+| 05 | └ FILLER | filler | 41 | 40 | X(40) | | VALUE SPACES | [AUTHSRV.cbl:95](../../../pangaea/programs/AUTHSRV.cbl#L95) |
 
 ### WS-REPORT-AMOUNT-LINE
 
@@ -492,6 +492,6 @@ Working storage. 80 bytes.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-REPORT-AMOUNT-LINE | group | 1 | 80 | | | | [AUTHSRV.cbl:96](../../../pangaea/programs/AUTHSRV.cbl#L96) |
-| 05 | WS-RA-LABEL | text | 1 | 30 | X(30) | | | [AUTHSRV.cbl:97](../../../pangaea/programs/AUTHSRV.cbl#L97) |
-| 05 | WS-RA-VALUE | edited | 31 | 21 | Z,ZZZ,ZZZ,ZZZ,ZZ9.99- | | | [AUTHSRV.cbl:98](../../../pangaea/programs/AUTHSRV.cbl#L98) |
-| 05 | FILLER | filler | 52 | 29 | X(29) | | VALUE SPACES | [AUTHSRV.cbl:99](../../../pangaea/programs/AUTHSRV.cbl#L99) |
+| 05 | ├ WS-RA-LABEL | text | 1 | 30 | X(30) | | | [AUTHSRV.cbl:97](../../../pangaea/programs/AUTHSRV.cbl#L97) |
+| 05 | ├ WS-RA-VALUE | edited | 31 | 21 | Z,ZZZ,ZZZ,ZZZ,ZZ9.99- | | | [AUTHSRV.cbl:98](../../../pangaea/programs/AUTHSRV.cbl#L98) |
+| 05 | └ FILLER | filler | 52 | 29 | X(29) | | VALUE SPACES | [AUTHSRV.cbl:99](../../../pangaea/programs/AUTHSRV.cbl#L99) |
