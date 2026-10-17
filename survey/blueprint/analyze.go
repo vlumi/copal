@@ -23,6 +23,7 @@ type System struct {
 	Programs  []Program
 	Copybooks []Copybook
 	Jobs      []Job
+	Datasets  []SystemDataset
 }
 
 // Program is the blueprint of one program. Its Kind is "called" for a
@@ -229,6 +230,7 @@ func Analyze(paths []string, copybookDir string) (*System, error) {
 	}
 	slices.SortFunc(s.Jobs, func(a, b Job) int { return strings.Compare(a.Name, b.Name) })
 	describeDatasets(s.Jobs)
+	s.Datasets = systemDatasets(s.Jobs)
 	return s, nil
 }
 

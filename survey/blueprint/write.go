@@ -18,6 +18,13 @@ import (
 // to the same working directory as dir.
 func (s *System) Render(dir, title string) (map[string][]byte, error) {
 	files := map[string][]byte{"README.md": []byte(s.indexMarkdown(dir, title))}
+	if len(s.Datasets) > 0 {
+		data, err := json.MarshalIndent(s.Datasets, "", "  ")
+		if err != nil {
+			return nil, err
+		}
+		files["datasets.json"] = append(data, '\n')
+	}
 	for _, p := range s.Programs {
 		if err := renderBoth(files, dir, "programs", p.Name, p, programMarkdown); err != nil {
 			return nil, err
@@ -109,6 +116,7 @@ func (s *System) indexMarkdown(dir, title string) string {
 				strconv.Itoa(len(job.Steps)), strconv.Itoa(len(job.Findings))))
 		}
 	}
+	writeDatasets(&b, s.Datasets)
 	return b.String()
 }
 
