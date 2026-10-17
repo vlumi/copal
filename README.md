@@ -40,7 +40,7 @@ Everything is a make target, and plain `make` lists them. You need GnuCOBOL 3.2 
    make bank-days N=5
    ```
 
-4. Serve the console and open <http://127.0.0.1:8080/>: the bank today, with buttons to run days and reset. Open a day to see its jobs drawn as networks with each step's return code and each dataset's records, and the reports; open an account for its master record field by field and its postings; **Compare** shows what the days changed, reconciled against the postings.
+4. Serve the console and open <http://127.0.0.1:4510/>: the bank today, with buttons to run days and reset. Open a day to see its jobs drawn as networks with each step's return code and each dataset's records, and the reports; open an account for its master record field by field and its postings; **Compare** shows what the days changed, reconciled against the postings.
 
    ```sh
    make console
@@ -58,7 +58,7 @@ Everything is a make target, and plain `make` lists them. You need GnuCOBOL 3.2 
    make blueprints
    ```
 
-7. Serve the explorer and open <http://127.0.0.1:8090/>: the same analysis as a web app. Search for `AM-BALANCE`, open it in TXPOST, and follow its values back: the trail runs through every program and job step to the files that come from outside, highlighted on the diagrams.
+7. Serve the explorer and open <http://127.0.0.1:1192/>: the same analysis as a web app. Search for `AM-BALANCE`, open it in TXPOST, and follow its values back: the trail runs through every program and job step to the files that come from outside, highlighted on the diagrams.
 
    ```sh
    make explore

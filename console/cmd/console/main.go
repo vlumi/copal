@@ -31,7 +31,7 @@ func serve(args []string) error {
 	b := bank.Bank{Copybooks: "pangaea/copybooks", Jobs: "pangaea/jobs"}
 	flags.StringVar(&b.Dir, "bank", "pangaea/run/bank", "directory of the running bank")
 	flags.StringVar(&b.Programs, "programs", "pangaea/build", "directory of the compiled programs")
-	addr := flags.String("addr", "127.0.0.1:8080", "address to serve on")
+	addr := flags.String("addr", "127.0.0.1:4510", "address to serve on")
 	src := flags.String("src", "pangaea/programs", "directory of the COBOL programs")
 	blueprints := flags.String("blueprints", "blueprints/pangaea", "directory of the bank's blueprints")
 	_ = flags.Parse(args)
