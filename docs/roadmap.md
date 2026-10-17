@@ -103,6 +103,20 @@ Static blueprints are good for reading one program or job at a time, but underst
 
 Done when: starting from a field in a report, you can follow it back through every program and job step to the input it came from, on the diagrams.
 
+## 9. Design views
+
+The explorer shows the system the way the code is organized. Designing a replacement needs it organized the way the business is. The views, with their plan in [plans/design-views.md](plans/design-views.md):
+
+- Kinds, visible everywhere: amounts, codes, keys, dates and text among fields; main and called programs; external, internal, output and temporary datasets; shown as badges in the explorer, as columns in the blueprints, and as looks of their own in the diagrams.
+- Rules by field: every decision on a field across every program, and a page per field of a shared record.
+- Entities: a page per copybook record with its datasets, its users, who reads and writes each field, and for each code field its state machine, derived from the decision tables.
+- Ownership: programs grouped by the entities they write, drawn; the first draft of a service decomposition.
+- The boundary: the system's inputs and outputs, files, reports and streams, in one place.
+- Forward lineage: from a field to everything its values reach, the mirror of the trail back, on the same diagrams.
+- The order of jobs, derived from the generations they write and read.
+
+Done when: starting from the entities page, you can name the system's data model, its state machines, who owns each entity, its contracts with the outside, and what a change to an input field touches, without opening a program.
+
 ## Later
 
 The explorer's lineage goes back, not yet forward: where a field's values go. It does not yet follow values into a called program and back through its LINKAGE SECTION, nor from SYSIN through ACCEPT, so the online day's holds stop at AUTHSRV. A program's outputs keep only the first record type it writes to a file.
