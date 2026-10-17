@@ -2,6 +2,7 @@ package blueprint
 
 import (
 	"fmt"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -60,6 +61,33 @@ func newRules(program string, tables []rules.Table, records []Record) Rules {
 		r.Tables = append(r.Tables, dt)
 	}
 	return r
+}
+
+// Decision is a decision table with conditions on a data item: its
+// paragraph, and loop if it is one's, and those conditions.
+type Decision struct {
+	Paragraph  string   `json:"paragraph"`
+	Loop       string   `json:"loop,omitempty"`
+	Source     string   `json:"source"`
+	Conditions []string `json:"conditions"`
+}
+
+// Decisions lists the program's decision tables that decide on a data
+// item, with the conditions on it.
+func (p Program) Decisions(item string) []Decision {
+	var decisions []Decision
+	for _, t := range p.Rules.Tables {
+		d := Decision{Paragraph: t.Paragraph, Loop: t.Loop, Source: t.Source}
+		for i, refs := range t.ConditionRefs {
+			if slices.Contains(refs, item) {
+				d.Conditions = append(d.Conditions, t.Conditions[i])
+			}
+		}
+		if len(d.Conditions) > 0 {
+			decisions = append(decisions, d)
+		}
+	}
+	return decisions
 }
 
 // conditionFields maps each condition name the records declare to its

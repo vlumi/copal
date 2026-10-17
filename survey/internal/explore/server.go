@@ -45,6 +45,9 @@ func New(system *blueprint.System, title string) (*Server, error) {
 		"lineage": func(program string, fields map[string]bool, rows []blueprint.Lineage) lineageTable {
 			return lineageTable{Program: program, Fields: fields, Rows: rows}
 		},
+		"decisions": func(program string, rows []blueprint.Decision) decisionTable {
+			return decisionTable{Program: program, Rows: rows}
+		},
 	}
 	for _, page := range []string{"index", "search", "job", "step", "dataset", "program", "paragraph", "field", "copybook", "source", "trace", "error"} {
 		t, err := template.New("").Funcs(funcs).ParseFS(files, "templates/base.html", "templates/"+page+".html")
@@ -110,6 +113,13 @@ type lineageTable struct {
 	Program string
 	Fields  map[string]bool
 	Rows    []blueprint.Lineage
+}
+
+// decisionTable is a program's decisions on a field, for the decisions
+// template.
+type decisionTable struct {
+	Program string
+	Rows    []blueprint.Decision
 }
 
 // HomeView lists the system's parts.
@@ -248,8 +258,8 @@ func (s *Server) paragraph(r *http.Request) (any, error) {
 }
 
 // FieldView is a data item of a program: where it is, the paragraphs that
-// read and write it, and the statements that move values into it and out
-// of it.
+// read and write it, the statements that move values into it and out of
+// it, and the decisions on it.
 type FieldView struct {
 	Program   *blueprint.Program
 	Record    blueprint.Record
@@ -259,6 +269,7 @@ type FieldView struct {
 	WrittenBy []string
 	Into      []blueprint.Lineage
 	OutOf     []blueprint.Lineage
+	Decisions []blueprint.Decision
 	Fields    map[string]bool
 }
 
@@ -287,6 +298,7 @@ func (s *Server) field(r *http.Request) (any, error) {
 			v.WrittenBy = append(v.WrittenBy, para.Name)
 		}
 	}
+	v.Decisions = p.Decisions(name)
 	for _, e := range p.Lineage {
 		if e.To == name && !e.ToFile {
 			v.Into = append(v.Into, e)

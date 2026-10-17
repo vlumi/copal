@@ -27,6 +27,16 @@
 
 {{define "src"}}<a href="{{source .}}">{{sourceText .}}</a>{{end}}
 
+{{define "decisions"}}
+<table>
+  <thead><tr><th>Paragraph</th><th>Conditions</th><th>Source</th></tr></thead>
+  <tbody>
+  {{range .Rows}}<tr><td><a href="{{paragraph $.Program .Paragraph}}">{{.Paragraph}}</a>{{with .Loop}}<br><span class="note">in its loop, <code>{{.}}</code></span>{{end}}</td><td>{{range .Conditions}}<code>{{.}}</code><br>{{end}}</td><td>{{template "src" .Source}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{end}}
+
 {{define "lineage"}}
 <table>
   <thead><tr><th>From</th><th>To</th><th>Statement</th><th>Paragraph</th><th>Source</th></tr></thead>

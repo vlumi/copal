@@ -85,6 +85,7 @@ func TestPages(t *testing.T) {
 		"/jobs/DAILY":                            {"<svg", `href="/jobs/DAILY/steps/POST"`, `href="/datasets/ACCT.MASTER"`},
 		"/datasets/ACCT.MASTER":                  {"ACCTMAST", "MAINT", "ACCT.MASTER(0)"},
 		"/programs/AUTHSRV":                      {"<svg", `href="/programs/AUTHPUR"`, "run by"},
+		"/programs/TXPOST/fields/AM-STATUS":      {"<h2>Rules</h2>", `href="/programs/TXPOST/paragraphs/3000-APPLY-TRAN"`, "<code>AM-CLOSED</code>"},
 		"/programs/TXPOST/fields/AM-BALANCE":     {"S9(11)V99", "Values moved into it", "3200-POST-DEBIT", "Follow its values back"},
 		"/programs/TXPOST/paragraphs/0000-MAIN":  {"Performs", "1000-INITIALIZE"},
 		"/source/pangaea/copybooks/ACCTMAST.cpy": {`id="L1"`, "ACCT-MASTER-RECORD"},
