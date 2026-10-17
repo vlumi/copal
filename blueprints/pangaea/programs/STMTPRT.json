@@ -4193,5 +4193,310 @@
         }
       ]
     }
+  ],
+  "inputs": [
+    {
+      "file": "ACCR-IN",
+      "record": "ACCRUAL-RECORD",
+      "fields": [
+        {
+          "name": "AC-ACCT-NO",
+          "start": 1,
+          "length": 10
+        },
+        {
+          "name": "AC-THROUGH-DATE",
+          "start": 11,
+          "length": 8
+        },
+        {
+          "name": "AC-ACCRUED",
+          "start": 19,
+          "length": 7
+        },
+        {
+          "name": "AC-DUE",
+          "start": 26,
+          "length": 5
+        },
+        {
+          "name": "AC-DUE-MONTH",
+          "start": 31,
+          "length": 6,
+          "reaches": [
+            "WS-CLOSED-MONTH-NUMBER"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "AUDIT-IN",
+      "record": "AUDIT-RECORD",
+      "fields": [
+        {
+          "name": "AU-BUSINESS-DATE",
+          "start": 1,
+          "length": 8,
+          "reaches": [
+            "WS-POSTING-MONTH",
+            "SR-DATE",
+            "WS-DATE",
+            "file STMT-SORT"
+          ]
+        },
+        {
+          "name": "AU-TRAN-ID",
+          "start": 9,
+          "length": 10,
+          "reaches": [
+            "SR-TRAN-ID",
+            "WS-PL-TRAN-ID",
+            "STMT-LINE",
+            "file STMT-SORT",
+            "file STMT-OUT"
+          ]
+        },
+        {
+          "name": "AU-ACCT-NO",
+          "start": 19,
+          "length": 10,
+          "reaches": [
+            "SR-ACCT-NO",
+            "WS-POSTING-KEY",
+            "file STMT-SORT"
+          ]
+        },
+        {
+          "name": "AU-TRAN-CODE",
+          "start": 29,
+          "length": 2,
+          "reaches": [
+            "WS-POSTING-CODE",
+            "SR-TRAN-CODE",
+            "WS-PL-DESCRIPTION",
+            "STMT-LINE",
+            "file STMT-SORT",
+            "file STMT-OUT"
+          ]
+        },
+        {
+          "name": "AU-AMOUNT",
+          "start": 31,
+          "length": 11,
+          "reaches": [
+            "SR-AMOUNT",
+            "WS-PL-AMOUNT",
+            "WS-DEBITS",
+            "WS-CREDITS",
+            "STMT-LINE",
+            "WS-SL-DEBITS",
+            "WS-DEBIT-TOTAL",
+            "WS-SL-CREDITS",
+            "WS-CREDIT-TOTAL",
+            "WS-RA-VALUE",
+            "REPORT-LINE",
+            "file STMT-SORT",
+            "file STMT-OUT",
+            "file REPORT-OUT"
+          ]
+        },
+        {
+          "name": "AU-BALANCE-BEFORE",
+          "start": 42,
+          "length": 13,
+          "reaches": [
+            "SR-BALANCE-BEFORE",
+            "WS-OPENING",
+            "WS-CLOSING",
+            "WS-BL-BALANCE",
+            "STMT-LINE",
+            "file STMT-SORT",
+            "file STMT-OUT"
+          ]
+        },
+        {
+          "name": "AU-BALANCE-AFTER",
+          "start": 55,
+          "length": 13,
+          "reaches": [
+            "SR-BALANCE-AFTER",
+            "WS-PL-BALANCE",
+            "WS-CLOSING",
+            "STMT-LINE",
+            "WS-BL-BALANCE",
+            "file STMT-SORT",
+            "file STMT-OUT"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "STMT-SORT",
+      "record": "SORT-RECORD",
+      "fields": [
+        {
+          "name": "SR-ACCT-NO",
+          "start": 1,
+          "length": 10,
+          "reaches": [
+            "WS-POSTING-KEY",
+            "file STMT-SORT"
+          ]
+        },
+        {
+          "name": "SR-DATE",
+          "start": 11,
+          "length": 8,
+          "reaches": [
+            "WS-DATE",
+            "file STMT-SORT"
+          ]
+        },
+        {
+          "name": "SR-SEQ",
+          "start": 19,
+          "length": 8,
+          "reaches": [
+            "file STMT-SORT"
+          ]
+        },
+        {
+          "name": "SR-TRAN-ID",
+          "start": 27,
+          "length": 10,
+          "reaches": [
+            "WS-PL-TRAN-ID",
+            "STMT-LINE",
+            "file STMT-SORT",
+            "file STMT-OUT"
+          ]
+        },
+        {
+          "name": "SR-TRAN-CODE",
+          "start": 37,
+          "length": 2,
+          "reaches": [
+            "WS-PL-DESCRIPTION",
+            "STMT-LINE",
+            "file STMT-SORT",
+            "file STMT-OUT"
+          ]
+        },
+        {
+          "name": "SR-AMOUNT",
+          "start": 39,
+          "length": 11,
+          "reaches": [
+            "WS-PL-AMOUNT",
+            "WS-DEBITS",
+            "WS-CREDITS",
+            "STMT-LINE",
+            "WS-SL-DEBITS",
+            "WS-DEBIT-TOTAL",
+            "WS-SL-CREDITS",
+            "WS-CREDIT-TOTAL",
+            "WS-RA-VALUE",
+            "REPORT-LINE",
+            "file STMT-SORT",
+            "file STMT-OUT",
+            "file REPORT-OUT"
+          ]
+        },
+        {
+          "name": "SR-BALANCE-BEFORE",
+          "start": 50,
+          "length": 13,
+          "reaches": [
+            "WS-OPENING",
+            "WS-CLOSING",
+            "WS-BL-BALANCE",
+            "STMT-LINE",
+            "file STMT-SORT",
+            "file STMT-OUT"
+          ]
+        },
+        {
+          "name": "SR-BALANCE-AFTER",
+          "start": 63,
+          "length": 13,
+          "reaches": [
+            "WS-PL-BALANCE",
+            "WS-CLOSING",
+            "STMT-LINE",
+            "WS-BL-BALANCE",
+            "file STMT-SORT",
+            "file STMT-OUT"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "ACCT-IN",
+      "record": "ACCT-MASTER-RECORD",
+      "fields": [
+        {
+          "name": "AM-ACCT-NO",
+          "start": 1,
+          "length": 10,
+          "reaches": [
+            "WS-AL-ACCT-NO",
+            "STMT-LINE",
+            "file STMT-OUT"
+          ]
+        },
+        {
+          "name": "AM-CUST-NO",
+          "start": 11,
+          "length": 8
+        },
+        {
+          "name": "AM-SHORT-NAME",
+          "start": 19,
+          "length": 20,
+          "reaches": [
+            "WS-AL-NAME",
+            "STMT-LINE",
+            "file STMT-OUT"
+          ]
+        },
+        {
+          "name": "AM-ACCT-TYPE",
+          "start": 39,
+          "length": 1
+        },
+        {
+          "name": "AM-STATUS",
+          "start": 40,
+          "length": 1
+        },
+        {
+          "name": "AM-OPEN-DATE",
+          "start": 41,
+          "length": 8
+        },
+        {
+          "name": "AM-LAST-ACTIVITY-DATE",
+          "start": 49,
+          "length": 8
+        },
+        {
+          "name": "AM-BALANCE",
+          "start": 57,
+          "length": 13,
+          "reaches": [
+            "WS-OPENING",
+            "WS-CLOSING",
+            "WS-BL-BALANCE",
+            "STMT-LINE",
+            "file STMT-OUT"
+          ]
+        },
+        {
+          "name": "AM-OVERDRAFT-LIMIT",
+          "start": 70,
+          "length": 9
+        }
+      ]
+    }
   ]
 }

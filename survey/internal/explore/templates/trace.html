@@ -1,8 +1,13 @@
-{{define "title"}}Where {{.View.Start.Field}} comes from{{end}}
+{{define "title"}}Where {{.View.Start.Field}} {{if .View.Forward}}goes{{else}}comes from{{end}}{{end}}
 {{define "content"}}
 {{with .View}}
-<h1><span class="kind">trail of</span> {{.Start.Field}}</h1>
-<p class="crumbs">its values in <a href="{{program .Start.Program}}">{{.Start.Program}}</a>{{with .Start.Step}}, step {{.}} of {{$.View.Start.Job}}{{end}}, followed back through {{len .Hops}} fields of the programs that move them and the job steps between them{{if .External}}, to {{range $i, $d := .External}}{{if $i}}, {{end}}<a href="{{dataset (base $d)}}">{{$d}}</a>{{end}}, which no job writes: they come from outside{{end}}.</p>
+<h1><span class="kind">{{if .Forward}}where it goes,{{else}}trail of{{end}}</span> {{.Start.Field}}</h1>
+{{if .Forward}}
+<p class="crumbs">its values in <a href="{{program .Start.Program}}">{{.Start.Program}}</a>{{with .Start.Step}}, step {{.}} of {{$.View.Start.Job}}{{end}}, followed on through {{len .Hops}} fields of the programs that move them and the job steps between them{{if .Outputs}}, to {{range $i, $d := .Outputs}}{{if $i}}, {{end}}<a href="{{dataset (base $d)}}">{{$d}}</a>{{end}}, which no step reads: they go outside{{end}}{{if .Reports}}{{if .Outputs}}, and{{else}}, to{{end}} the reports {{join .Reports ", "}}{{end}}. <a href="{{trace .Start.Program .Start.Field}}">Follow them back instead.</a></p>
+{{else}}
+<p class="crumbs">its values in <a href="{{program .Start.Program}}">{{.Start.Program}}</a>{{with .Start.Step}}, step {{.}} of {{$.View.Start.Job}}{{end}}, followed back through {{len .Hops}} fields of the programs that move them and the job steps between them{{if .External}}, to {{range $i, $d := .External}}{{if $i}}, {{end}}<a href="{{dataset (base $d)}}">{{$d}}</a>{{end}}, which no job writes: they come from outside{{end}}. <a href="{{forward .Start.Program .Start.Field}}">Follow where they go instead.</a></p>
+{{end}}
+{{if .Capped}}<p class="note"><strong>The trail is cut short</strong> at {{len .Hops}} fields: its values reach more of the system than a page can follow. The fields here are the nearest.</p>{{end}}
 
 {{range .Jobs}}
 <h2>Job <a href="{{job .Name}}">{{.Name}}</a></h2>
@@ -10,14 +15,20 @@
 {{end}}
 
 <h2>The trail</h2>
-{{range .Hops}}{{$p := .Node.Program}}
+{{range .Hops}}{{$p := .Node.Program}}{{$fields := .Fields}}
 <section class="hop" id="{{.ID}}">
-  <h3><a href="{{field $p .Node.Field}}">{{.Node.Field}}</a> in <a href="{{program $p}}">{{$p}}</a>{{if .Node.Step}}, step <a href="{{step (stepRef .Node.Job .Node.Step)}}">{{.Node.Step}}</a> of <a href="{{job .Node.Job}}">{{.Node.Job}}</a>{{end}}</h3>
-  {{if .Statements}}{{template "lineage" (lineage $p .Fields .Statements)}}{{else}}<p class="note">No statement moves a value into it.</p>{{end}}
+  <h3><a href="{{field $p .Node.Field}}">{{.Node.Field}}</a>{{if .Node.Length}}, bytes {{.Node.Start}} to {{add .Node.Start (add .Node.Length -1)}}{{end}} in <a href="{{program $p}}">{{$p}}</a>{{if .Node.Step}}, step <a href="{{step (stepRef .Node.Job .Node.Step)}}">{{.Node.Step}}</a> of <a href="{{job .Node.Job}}">{{.Node.Job}}</a>{{end}}</h3>
+  {{if .Statements}}{{template "lineage" (lineage $p .Fields .Statements)}}{{else}}<p class="note">No statement moves {{if $.View.Forward}}its values on{{else}}a value into it{{end}}.</p>{{end}}
   {{with .Starts}}<p>Starts from {{join . "; "}}.</p>{{end}}
+  {{with .Reaches}}<p>Reaches {{range $i, $x := .}}{{if $i}}, {{end}}{{if index $fields $x}}<a href="{{field $p $x}}">{{$x}}</a>{{else}}{{$x}}{{end}}{{end}}.</p>{{end}}
+  {{range .Displays}}<p>Shown by <code>DISPLAY {{join .Items " "}}</code> in <a href="{{paragraph $p .Paragraph}}">{{.Paragraph}}</a>, to the job's output.</p>{{end}}
   {{range .Sources}}
   <p>Reads {{.Field}} from file {{.File}}{{with .Datasets}}, dataset {{range $i, $d := .}}{{if $i}}, {{end}}<a href="{{dataset (base $d)}}">{{$d}}</a>{{end}}{{end}}{{if .Sorts}}, through the sort of {{range $i, $n := .Sorts}}{{if $i}}, {{end}}{{$n.Step}} of {{$n.Job}}{{end}}{{end}}:
     {{if .Writers}}written as {{range $i, $n := .Writers}}{{if $i}}, {{end}}<a href="#{{hop $n}}">{{$n.Field}}</a> by {{$n.Program}}{{with $n.Step}} in {{.}} of {{$n.Job}}{{end}}{{end}}{{end}}{{if .External}}{{if .Writers}}; {{end}}from outside, as no job writes {{join .External ", "}}{{end}}{{if and (not .Writers) (not .External)}}no step's program writes these bytes{{end}}.</p>
+  {{end}}
+  {{range .Targets}}
+  <p>Writes to file {{.File}}{{with .Datasets}}, dataset {{range $i, $d := .}}{{if $i}}, {{end}}<a href="{{dataset (base $d)}}">{{$d}}</a>{{end}}{{end}}{{if .Sorts}}, through the sort of {{range $i, $n := .Sorts}}{{if $i}}, {{end}}{{$n.Step}} of {{$n.Job}}{{end}}{{end}}:
+    {{if .Report}}printed to the job's output, DD {{.Report}}{{end}}{{if .Readers}}{{if .Report}}; {{end}}read as {{range $i, $n := .Readers}}{{if $i}}, {{end}}<a href="#{{hop $n}}">{{$n.Field}}</a> by {{$n.Program}}{{with $n.Step}} in {{.}} of {{$n.Job}}{{end}}{{end}}{{end}}{{if .Outputs}}{{if or .Report .Readers}}; {{end}}out of the system, as no step reads {{join .Outputs ", "}}{{end}}{{if and (not .Report) (not .Readers) (not .Outputs)}}no step's program reads these bytes{{end}}.</p>
   {{end}}
 </section>
 {{end}}

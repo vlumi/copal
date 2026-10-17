@@ -3589,5 +3589,487 @@
         }
       ]
     }
+  ],
+  "inputs": [
+    {
+      "file": "CONTROL-FILE",
+      "record": "BANK-CONTROL-RECORD",
+      "fields": [
+        {
+          "name": "BC-BUSINESS-DATE",
+          "start": 1,
+          "length": 8,
+          "reaches": [
+            "WS-BUSINESS-DATE",
+            "AU-BUSINESS-DATE",
+            "AM-LAST-ACTIVITY-DATE",
+            "REPORT-LINE",
+            "AUDIT-OUT-RECORD",
+            "ACCT-OUT-RECORD",
+            "file REPORT-OUT",
+            "file AUDIT-OUT",
+            "file ACCT-OUT"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "ACCT-IN",
+      "record": "ACCT-MASTER-RECORD",
+      "fields": [
+        {
+          "name": "AM-ACCT-NO",
+          "start": 1,
+          "length": 10,
+          "reaches": [
+            "WS-MASTER-KEY",
+            "ACCT-OUT-RECORD",
+            "WS-PREV-MASTER-KEY",
+            "file ACCT-OUT"
+          ]
+        },
+        {
+          "name": "AM-CUST-NO",
+          "start": 11,
+          "length": 8,
+          "reaches": [
+            "ACCT-OUT-RECORD",
+            "file ACCT-OUT"
+          ]
+        },
+        {
+          "name": "AM-SHORT-NAME",
+          "start": 19,
+          "length": 20,
+          "reaches": [
+            "ACCT-OUT-RECORD",
+            "file ACCT-OUT"
+          ]
+        },
+        {
+          "name": "AM-ACCT-TYPE",
+          "start": 39,
+          "length": 1,
+          "reaches": [
+            "ACCT-OUT-RECORD",
+            "file ACCT-OUT"
+          ]
+        },
+        {
+          "name": "AM-STATUS",
+          "start": 40,
+          "length": 1,
+          "reaches": [
+            "ACCT-OUT-RECORD",
+            "file ACCT-OUT"
+          ]
+        },
+        {
+          "name": "AM-OPEN-DATE",
+          "start": 41,
+          "length": 8,
+          "reaches": [
+            "ACCT-OUT-RECORD",
+            "file ACCT-OUT"
+          ]
+        },
+        {
+          "name": "AM-LAST-ACTIVITY-DATE",
+          "start": 49,
+          "length": 8,
+          "reaches": [
+            "ACCT-OUT-RECORD",
+            "file ACCT-OUT"
+          ]
+        },
+        {
+          "name": "AM-BALANCE",
+          "start": 57,
+          "length": 13,
+          "reaches": [
+            "WS-OPENING-TOTAL",
+            "WS-BALANCE-BEFORE",
+            "WS-NEW-BALANCE",
+            "AU-BALANCE-AFTER",
+            "ACCT-OUT-RECORD",
+            "WS-CLOSING-TOTAL",
+            "WS-EXPECTED-TOTAL",
+            "WS-RA-VALUE",
+            "AU-BALANCE-BEFORE",
+            "AM-BALANCE",
+            "AUDIT-OUT-RECORD",
+            "REPORT-LINE",
+            "file ACCT-OUT",
+            "file AUDIT-OUT",
+            "file REPORT-OUT"
+          ]
+        },
+        {
+          "name": "AM-OVERDRAFT-LIMIT",
+          "start": 70,
+          "length": 9,
+          "reaches": [
+            "WS-BALANCE-FLOOR",
+            "ACCT-OUT-RECORD",
+            "file ACCT-OUT"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "TRAN-IN",
+      "record": "TRAN-RECORD",
+      "fields": [
+        {
+          "name": "TR-REC-TYPE",
+          "start": 1,
+          "length": 1,
+          "reaches": [
+            "WS-SAVED-TRAN",
+            "LEGS-OUT-RECORD",
+            "RJ-TRAN",
+            "TR-REC-TYPE",
+            "REJECT-OUT-RECORD",
+            "file LEGS-OUT",
+            "file REJECT-OUT"
+          ]
+        },
+        {
+          "name": "TR-BODY",
+          "start": 2,
+          "length": 79,
+          "reaches": [
+            "WS-TRAN-KEY",
+            "WS-TOK-ACCT-NO",
+            "WS-TOK-TRAN-ID",
+            "AM-BALANCE",
+            "WS-CREDIT-TOTAL",
+            "WS-SIGNED-AMOUNT",
+            "WS-NEW-BALANCE",
+            "WS-DEBIT-TOTAL",
+            "WS-FEE-TOTAL",
+            "WS-SAVED-TRAN",
+            "WS-LEG-ACCT-NO",
+            "TD-ACCT-NO",
+            "LEGS-OUT-RECORD",
+            "AU-TRAN-ID",
+            "AU-ACCT-NO",
+            "AU-TRAN-CODE",
+            "RJ-TRAN",
+            "WS-PREV-TRAN-ORDER-KEY",
+            "WS-OPENING-TOTAL",
+            "WS-BALANCE-BEFORE",
+            "AU-BALANCE-AFTER",
+            "ACCT-OUT-RECORD",
+            "WS-CLOSING-TOTAL",
+            "WS-EXPECTED-TOTAL",
+            "WS-RA-VALUE",
+            "AU-AMOUNT",
+            "TR-BODY",
+            "TD-COUNTER-ACCT-NO",
+            "AUDIT-OUT-RECORD",
+            "REJECT-OUT-RECORD",
+            "AU-BALANCE-BEFORE",
+            "REPORT-LINE",
+            "file LEGS-OUT",
+            "file ACCT-OUT",
+            "file AUDIT-OUT",
+            "file REJECT-OUT",
+            "file REPORT-OUT"
+          ]
+        },
+        {
+          "name": "TH-BUSINESS-DATE",
+          "start": 2,
+          "length": 8,
+          "reaches": [
+            "WS-TOK-TRAN-ID",
+            "WS-SAVED-TRAN",
+            "LEGS-OUT-RECORD",
+            "AU-TRAN-ID",
+            "RJ-TRAN",
+            "WS-PREV-TRAN-ORDER-KEY",
+            "TH-BUSINESS-DATE",
+            "AUDIT-OUT-RECORD",
+            "REJECT-OUT-RECORD",
+            "file LEGS-OUT",
+            "file AUDIT-OUT",
+            "file REJECT-OUT"
+          ]
+        },
+        {
+          "name": "TH-SOURCE",
+          "start": 10,
+          "length": 8,
+          "reaches": [
+            "WS-TRAN-KEY",
+            "WS-TOK-ACCT-NO",
+            "WS-TOK-TRAN-ID",
+            "WS-SAVED-TRAN",
+            "WS-LEG-ACCT-NO",
+            "LEGS-OUT-RECORD",
+            "AU-TRAN-ID",
+            "AU-ACCT-NO",
+            "RJ-TRAN",
+            "WS-PREV-TRAN-ORDER-KEY",
+            "TH-SOURCE",
+            "TD-COUNTER-ACCT-NO",
+            "AUDIT-OUT-RECORD",
+            "REJECT-OUT-RECORD",
+            "file LEGS-OUT",
+            "file AUDIT-OUT",
+            "file REJECT-OUT"
+          ]
+        },
+        {
+          "name": "TH-FILE-SEQ",
+          "start": 18,
+          "length": 6,
+          "reaches": [
+            "WS-TRAN-KEY",
+            "WS-TOK-ACCT-NO",
+            "WS-SAVED-TRAN",
+            "WS-LEG-ACCT-NO",
+            "LEGS-OUT-RECORD",
+            "AU-ACCT-NO",
+            "AU-TRAN-CODE",
+            "RJ-TRAN",
+            "WS-PREV-TRAN-ORDER-KEY",
+            "TH-FILE-SEQ",
+            "TD-COUNTER-ACCT-NO",
+            "AUDIT-OUT-RECORD",
+            "REJECT-OUT-RECORD",
+            "file LEGS-OUT",
+            "file AUDIT-OUT",
+            "file REJECT-OUT"
+          ]
+        },
+        {
+          "name": "TD-TRAN-ID",
+          "start": 2,
+          "length": 10,
+          "reaches": [
+            "WS-TOK-TRAN-ID",
+            "WS-SAVED-TRAN",
+            "LEGS-OUT-RECORD",
+            "AU-TRAN-ID",
+            "RJ-TRAN",
+            "WS-PREV-TRAN-ORDER-KEY",
+            "TD-TRAN-ID",
+            "AUDIT-OUT-RECORD",
+            "REJECT-OUT-RECORD",
+            "file LEGS-OUT",
+            "file AUDIT-OUT",
+            "file REJECT-OUT"
+          ]
+        },
+        {
+          "name": "TD-ACCT-NO",
+          "start": 12,
+          "length": 10,
+          "reaches": [
+            "WS-TRAN-KEY",
+            "WS-TOK-ACCT-NO",
+            "WS-SAVED-TRAN",
+            "WS-LEG-ACCT-NO",
+            "LEGS-OUT-RECORD",
+            "AU-ACCT-NO",
+            "RJ-TRAN",
+            "WS-PREV-TRAN-ORDER-KEY",
+            "TD-ACCT-NO",
+            "TD-COUNTER-ACCT-NO",
+            "AUDIT-OUT-RECORD",
+            "REJECT-OUT-RECORD",
+            "file LEGS-OUT",
+            "file AUDIT-OUT",
+            "file REJECT-OUT"
+          ]
+        },
+        {
+          "name": "TD-TRAN-CODE",
+          "start": 22,
+          "length": 2,
+          "reaches": [
+            "WS-SAVED-TRAN",
+            "LEGS-OUT-RECORD",
+            "AU-TRAN-CODE",
+            "RJ-TRAN",
+            "TD-TRAN-CODE",
+            "AUDIT-OUT-RECORD",
+            "REJECT-OUT-RECORD",
+            "file LEGS-OUT",
+            "file AUDIT-OUT",
+            "file REJECT-OUT"
+          ]
+        },
+        {
+          "name": "TD-AMOUNT",
+          "start": 24,
+          "length": 11,
+          "reaches": [
+            "AM-BALANCE",
+            "WS-CREDIT-TOTAL",
+            "WS-SIGNED-AMOUNT",
+            "WS-NEW-BALANCE",
+            "WS-DEBIT-TOTAL",
+            "WS-FEE-TOTAL",
+            "WS-SAVED-TRAN",
+            "LEGS-OUT-RECORD",
+            "RJ-TRAN",
+            "WS-OPENING-TOTAL",
+            "WS-BALANCE-BEFORE",
+            "AU-BALANCE-AFTER",
+            "ACCT-OUT-RECORD",
+            "WS-CLOSING-TOTAL",
+            "WS-EXPECTED-TOTAL",
+            "WS-RA-VALUE",
+            "AU-AMOUNT",
+            "TD-AMOUNT",
+            "REJECT-OUT-RECORD",
+            "AU-BALANCE-BEFORE",
+            "AUDIT-OUT-RECORD",
+            "REPORT-LINE",
+            "file LEGS-OUT",
+            "file ACCT-OUT",
+            "file REJECT-OUT",
+            "file AUDIT-OUT",
+            "file REPORT-OUT"
+          ]
+        },
+        {
+          "name": "TD-DESCRIPTION",
+          "start": 35,
+          "length": 20,
+          "reaches": [
+            "WS-SAVED-TRAN",
+            "LEGS-OUT-RECORD",
+            "RJ-TRAN",
+            "TD-DESCRIPTION",
+            "REJECT-OUT-RECORD",
+            "file LEGS-OUT",
+            "file REJECT-OUT"
+          ]
+        },
+        {
+          "name": "TD-COUNTER-ACCT-NO",
+          "start": 55,
+          "length": 10,
+          "reaches": [
+            "WS-SAVED-TRAN",
+            "TD-ACCT-NO",
+            "LEGS-OUT-RECORD",
+            "RJ-TRAN",
+            "TD-COUNTER-ACCT-NO",
+            "WS-TRAN-KEY",
+            "WS-TOK-ACCT-NO",
+            "WS-LEG-ACCT-NO",
+            "AU-ACCT-NO",
+            "REJECT-OUT-RECORD",
+            "WS-PREV-TRAN-ORDER-KEY",
+            "AUDIT-OUT-RECORD",
+            "file LEGS-OUT",
+            "file REJECT-OUT",
+            "file AUDIT-OUT"
+          ]
+        },
+        {
+          "name": "TT-DETAIL-COUNT",
+          "start": 2,
+          "length": 8,
+          "reaches": [
+            "WS-TOK-TRAN-ID",
+            "WS-SAVED-TRAN",
+            "LEGS-OUT-RECORD",
+            "AU-TRAN-ID",
+            "RJ-TRAN",
+            "WS-PREV-TRAN-ORDER-KEY",
+            "TH-BUSINESS-DATE",
+            "AUDIT-OUT-RECORD",
+            "REJECT-OUT-RECORD",
+            "file LEGS-OUT",
+            "file AUDIT-OUT",
+            "file REJECT-OUT"
+          ]
+        },
+        {
+          "name": "TT-AMOUNT-TOTAL",
+          "start": 10,
+          "length": 15,
+          "reaches": [
+            "WS-TRAN-KEY",
+            "WS-TOK-ACCT-NO",
+            "WS-TOK-TRAN-ID",
+            "AM-BALANCE",
+            "WS-CREDIT-TOTAL",
+            "WS-SIGNED-AMOUNT",
+            "WS-NEW-BALANCE",
+            "WS-DEBIT-TOTAL",
+            "WS-FEE-TOTAL",
+            "WS-SAVED-TRAN",
+            "WS-LEG-ACCT-NO",
+            "LEGS-OUT-RECORD",
+            "AU-TRAN-ID",
+            "AU-ACCT-NO",
+            "AU-TRAN-CODE",
+            "RJ-TRAN",
+            "WS-PREV-TRAN-ORDER-KEY",
+            "WS-OPENING-TOTAL",
+            "WS-BALANCE-BEFORE",
+            "AU-BALANCE-AFTER",
+            "ACCT-OUT-RECORD",
+            "WS-CLOSING-TOTAL",
+            "WS-EXPECTED-TOTAL",
+            "WS-RA-VALUE",
+            "AU-AMOUNT",
+            "TT-AMOUNT-TOTAL",
+            "TD-COUNTER-ACCT-NO",
+            "AUDIT-OUT-RECORD",
+            "REJECT-OUT-RECORD",
+            "AU-BALANCE-BEFORE",
+            "REPORT-LINE",
+            "TD-ACCT-NO",
+            "file LEGS-OUT",
+            "file ACCT-OUT",
+            "file AUDIT-OUT",
+            "file REJECT-OUT",
+            "file REPORT-OUT"
+          ]
+        },
+        {
+          "name": "TT-ACCT-HASH",
+          "start": 25,
+          "length": 15,
+          "reaches": [
+            "AM-BALANCE",
+            "WS-CREDIT-TOTAL",
+            "WS-SIGNED-AMOUNT",
+            "WS-NEW-BALANCE",
+            "WS-DEBIT-TOTAL",
+            "WS-FEE-TOTAL",
+            "WS-SAVED-TRAN",
+            "LEGS-OUT-RECORD",
+            "RJ-TRAN",
+            "WS-OPENING-TOTAL",
+            "WS-BALANCE-BEFORE",
+            "AU-BALANCE-AFTER",
+            "ACCT-OUT-RECORD",
+            "WS-CLOSING-TOTAL",
+            "WS-EXPECTED-TOTAL",
+            "WS-RA-VALUE",
+            "AU-AMOUNT",
+            "TT-ACCT-HASH",
+            "REJECT-OUT-RECORD",
+            "AU-BALANCE-BEFORE",
+            "AUDIT-OUT-RECORD",
+            "REPORT-LINE",
+            "file LEGS-OUT",
+            "file ACCT-OUT",
+            "file REJECT-OUT",
+            "file AUDIT-OUT",
+            "file REPORT-OUT"
+          ]
+        }
+      ]
+    }
   ]
 }

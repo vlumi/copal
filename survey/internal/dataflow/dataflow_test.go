@@ -116,3 +116,79 @@ func TestTrace(t *testing.T) {
 		}
 	}
 }
+
+// Affects is Trace turned around: values are followed forward by bytes,
+// through groups and redefinitions, to the items they reach and the bytes
+// of the files they are written to.
+func TestAffects(t *testing.T) {
+	p, err := cobol.ReadProgram("testdata/ORIGINS.cbl", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	records, err := layout.Program(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	flow := Analyze(p, records)
+	for item, want := range map[string]string{
+		"IN-KIND":   "[WS-KIND] [] [MOVE IN-RECORD -> WS-HOLD]",
+		"IN-ACCT":   "[WS-BODY WS-OUT-ACCT OUT-RECORD] [{OUT-FILE 1 5}] [MOVE IN-RECORD -> WS-HOLD MOVE IN-ACCT -> WS-OUT-ACCT WRITE WS-OUT -> OUT-RECORD WRITE OUT-RECORD -> OUT-FILE]",
+		"IN-AMOUNT": "[WS-BODY] [] [MOVE IN-RECORD -> WS-HOLD]",
+		"WS-OUT":    "[OUT-RECORD] [{OUT-FILE 1 8}] [WRITE WS-OUT -> OUT-RECORD WRITE OUT-RECORD -> OUT-FILE]",
+		"WS-HOLD":   "[] [] []",
+	} {
+		e := flow.Affects(item)
+		var edges []string
+		for _, edge := range e.Edges {
+			edges = append(edges, fmt.Sprintf("%s %s -> %s", edge.Verb, edge.From, edge.To))
+		}
+		if got := fmt.Sprintf("%v %v %v", e.Items, e.Files, edges); got != want {
+			t.Errorf("affects of %s:\n%s\nwant\n%s", item, got, want)
+		}
+	}
+}
+
+// Items share bytes when one is in the other or redefines it.
+func TestShare(t *testing.T) {
+	p, err := cobol.ReadProgram("testdata/ORIGINS.cbl", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	records, err := layout.Program(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	flow := Analyze(p, records)
+	for _, c := range []struct {
+		a, b string
+		want bool
+	}{{"IN-RECORD", "IN-ACCT", true}, {"IN-BODY", "IN-AMOUNT", true}, {"IN-KIND", "IN-ACCT", false}, {"WS-HOLD", "IN-RECORD", false}} {
+		if got := flow.Share(c.a, c.b); got != c.want {
+			t.Errorf("%s and %s share bytes: %v", c.a, c.b, got)
+		}
+	}
+}
+
+// A run of an item's bytes is traced and followed on its own: the bytes
+// of IN-BODY that IN-ACCT redefines come from the file alone, and go on to
+// WS-OUT-ACCT as well as into WS-HOLD.
+func TestBytes(t *testing.T) {
+	p, err := cobol.ReadProgram("testdata/ORIGINS.cbl", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	records, err := layout.Program(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	flow := Analyze(p, records)
+	if got := fmt.Sprint(flow.TraceBytes("IN-BODY", 1, 5).Origins); got != "[file IN-FILE IN-ACCT]" {
+		t.Errorf("origins of IN-BODY's first bytes: %s", got)
+	}
+	if got := fmt.Sprint(flow.AffectsBytes("IN-BODY", 1, 5).Items); got != "[WS-BODY WS-OUT-ACCT OUT-RECORD]" {
+		t.Errorf("IN-BODY's first bytes reach %s", got)
+	}
+	if e := flow.AffectsBytes("IN-BODY", 7, 5); e.Items != nil {
+		t.Errorf("bytes beyond the item reach %s", e.Items)
+	}
+}

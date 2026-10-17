@@ -45,6 +45,7 @@ In order:
 - **Calls:** for a program that is called, what it is passed and by whom; for one that calls, what it calls and what it passes.
 - **Data flow:** what each paragraph reads and writes.
 - **Lineage:** every statement that moves a value into a data item, grouped by the record the item belongs to: from which item, literal or file, by which verb, in which paragraph.
+- **Inputs:** in the JSON, for every record the program reads from a file, where the values of each field go: the data items they reach and the files they are written to. The mirror of the field origins, which the explorer's forward lineage follows from.
 - **Field origins:** for every field of every record the program writes to a file, where its values come from in the end: the fields of the files it reads, literals and initial values, followed through every statement and through the bytes that groups and redefinitions share.
 - **Records:** the layout of every record, field by field, with kind, position, length, picture, usage and notes; a record from a copybook points at the copybook's blueprint instead.
 

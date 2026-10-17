@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/vlumi/copal/survey/blueprint"
@@ -13,20 +14,26 @@ import (
 	"github.com/vlumi/copal/survey/internal/lineage"
 )
 
-// TraceView is a field's values followed back across the system: every
-// hop of the trail, nearest first, the job networks and the program flows
-// with the trail on them, and where the values start.
+// TraceView is a field's values followed back across the system, or
+// forward: every hop of the trail, nearest first, the job networks and the
+// program flows with the trail on them, and where the values start, or
+// where they end.
 type TraceView struct {
+	Forward  bool
 	Start    lineage.Node
 	Hops     []TraceHop
 	Jobs     []Diagram
 	Programs []Diagram
-	External []string
+	External []string // back, the datasets no job writes
+	Outputs  []string // forward, the datasets no step reads
+	Reports  []string // forward, the DDs of the job's output
+	Capped   bool
 }
 
 // TraceHop is a field of a program on the trail: the statements that move
-// values into it, the literals and initial values it starts from, and the
-// files it reads from.
+// its values, and going back, the literals and initial values it starts
+// from and the files it reads from; going forward, the items its values
+// reach, the files it writes them to and the DISPLAYs that show them.
 type TraceHop struct {
 	ID         string
 	Node       lineage.Node
@@ -34,6 +41,9 @@ type TraceHop struct {
 	Fields     map[string]bool
 	Starts     []string
 	Sources    []lineage.Source
+	Reaches    []string
+	Targets    []lineage.Target
+	Displays   []blueprint.Display
 }
 
 // Diagram is a job network or a program flow, by name.
@@ -48,8 +58,14 @@ func (s *Server) trace(r *http.Request) (any, error) {
 	if !ok || !fieldNames(p)[start.Field] {
 		return nil, fmt.Errorf("field %s of %s: %w", start.Field, start.Program, errNotFound)
 	}
-	trail := lineage.Back(s.index.system, start)
-	v := TraceView{Start: start}
+	v := TraceView{Start: start, Forward: r.FormValue("direction") == "forward"}
+	var trail lineage.Trail
+	if v.Forward {
+		trail = lineage.Forward(s.index.system, start)
+	} else {
+		trail = lineage.Back(s.index.system, start)
+	}
+	v.Capped = trail.Capped
 	if len(trail.Hops) > 0 {
 		v.Start = trail.Hops[0].Node
 	}
@@ -57,8 +73,9 @@ func (s *Server) trace(r *http.Request) (any, error) {
 	paragraphs := map[string]map[string]bool{}
 	for _, h := range trail.Hops {
 		q := s.index.programs[h.Node.Program]
-		hop := TraceHop{ID: hopID(h.Node), Node: h.Node, Fields: fieldNames(q), Sources: h.Sources}
-		for _, e := range h.Trace.Edges {
+		hop := TraceHop{ID: hopID(h.Node), Node: h.Node, Fields: fieldNames(q), Sources: h.Sources,
+			Reaches: h.Effect.Items, Targets: h.Targets, Displays: h.Displays}
+		for _, e := range append(slices.Clone(h.Trace.Edges), h.Effect.Edges...) {
 			hop.Statements = append(hop.Statements, statement(e))
 			if paragraphs[q.Name] == nil {
 				paragraphs[q.Name] = map[string]bool{}
@@ -71,14 +88,18 @@ func (s *Server) trace(r *http.Request) (any, error) {
 			}
 		}
 		v.Hops = append(v.Hops, hop)
-		s.markPath(paths, h)
 		for _, src := range h.Sources {
-			for _, ds := range src.External {
-				if !slices.Contains(v.External, ds) {
-					v.External = append(v.External, ds)
-				}
+			s.markPath(paths, h.Node, src.Datasets, append(slices.Clone(src.Writers), src.Sorts...))
+			addAll(&v.External, src.External)
+		}
+		for _, tgt := range h.Targets {
+			s.markPath(paths, h.Node, tgt.Datasets, append(slices.Clone(tgt.Readers), tgt.Sorts...))
+			addAll(&v.Outputs, tgt.Outputs)
+			if tgt.Report != "" {
+				addAll(&v.Reports, []string{tgt.Report})
 			}
 		}
+		s.markPath(paths, h.Node, nil, nil)
 	}
 	var err error
 	if v.Jobs, err = s.jobDiagrams(paths); err != nil {
@@ -88,11 +109,20 @@ func (s *Server) trace(r *http.Request) (any, error) {
 	return v, err
 }
 
-// markPath adds a hop to the paths through the jobs: its step, the steps
-// that wrote what it reads and the sorts that passed it on, and the
-// datasets between them.
-func (s *Server) markPath(paths map[string]*blueprint.JobPath, h lineage.Hop) {
-	mark := func(n lineage.Node, datasets []string) {
+func addAll(list *[]string, names []string) {
+	for _, name := range names {
+		if !slices.Contains(*list, name) {
+			*list = append(*list, name)
+		}
+	}
+}
+
+// markPath adds a hop's step to the paths through the jobs, and with it,
+// the steps at the other end of the datasets between them: those that
+// wrote what it reads, or read what it writes, and the sorts that passed
+// the records on.
+func (s *Server) markPath(paths map[string]*blueprint.JobPath, at lineage.Node, datasets []string, others []lineage.Node) {
+	mark := func(n lineage.Node) {
 		if n.Job == "" {
 			return
 		}
@@ -115,12 +145,9 @@ func (s *Server) markPath(paths map[string]*blueprint.JobPath, h lineage.Hop) {
 			}
 		}
 	}
-	mark(h.Node, nil)
-	for _, src := range h.Sources {
-		mark(h.Node, src.Datasets)
-		for _, n := range append(slices.Clone(src.Writers), src.Sorts...) {
-			mark(n, src.Datasets)
-		}
+	mark(at)
+	for _, n := range others {
+		mark(n)
 	}
 }
 
@@ -170,11 +197,21 @@ func statement(e dataflow.Edge) blueprint.Lineage {
 
 // hopID is the anchor of a hop on the trace page.
 func hopID(n lineage.Node) string {
-	return "hop-" + strings.NewReplacer(" ", "-", "&", "", "(", "", ")", "", "+", "").Replace(
-		strings.Join([]string{n.Job, n.Step, n.Program, n.Field}, "-"))
+	parts := []string{n.Job, n.Step, n.Program, n.Field}
+	if n.Length > 0 {
+		parts = append(parts, strconv.Itoa(n.Start), strconv.Itoa(n.Length))
+	}
+	return "hop-" + strings.NewReplacer(" ", "-", "&", "", "(", "", ")", "", "+", "").Replace(strings.Join(parts, "-"))
 }
 
-// traceLink is the trace page of a program's field.
+// traceLink is the trace page of a program's field, back to where its
+// values come from.
 func traceLink(program, field string) string {
 	return "/trace?" + url.Values{"program": {program}, "field": {field}}.Encode()
+}
+
+// forwardLink is the trace page of a program's field, on to where its
+// values go.
+func forwardLink(program, field string) string {
+	return "/trace?" + url.Values{"direction": {"forward"}, "program": {program}, "field": {field}}.Encode()
 }

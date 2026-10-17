@@ -44,8 +44,24 @@ func TestDisplays(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := []Display{{Items: []string{"'REPLY: '", "WS-REPLY"}, Paragraph: "MAIN-PARA", Source: "testdata/REPLY.cbl:10"}}
+	want := []Display{{Items: []string{"'REPLY: '", "WS-REPLY"}, Paragraph: "MAIN-PARA", Source: "testdata/REPLY.cbl:22"}}
 	if p := s.Programs[0]; !p.ReadsSysin || !reflect.DeepEqual(p.Displays, want) {
 		t.Errorf("reads SYSIN %v, displays %+v, want %+v", p.ReadsSysin, p.Displays, want)
+	}
+}
+
+// A program's inputs are the records it reads from files, a record read
+// INTO another described by that one, with where each field's values go.
+func TestInputs(t *testing.T) {
+	s, err := Analyze([]string{"testdata/REPLY.cbl"}, "testdata/no-copybooks")
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []Input{{File: "IN-FILE", Record: "WS-IN", Fields: []FieldEffect{
+		{Name: "WS-IN-KEY", Start: 1, Length: 4, Reaches: []string{"WS-REPLY"}},
+		{Name: "WS-IN-REST", Start: 5, Length: 6},
+	}}}
+	if got := s.Programs[0].Inputs; !reflect.DeepEqual(got, want) {
+		t.Errorf("inputs %+v, want %+v", got, want)
 	}
 }

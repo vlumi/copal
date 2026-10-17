@@ -49,6 +49,7 @@ type Program struct {
 	Sorts    []Sort    `json:"sorts,omitempty"`
 	Lineage  []Lineage `json:"lineage,omitempty"`
 	Outputs  []Output  `json:"outputs,omitempty"`
+	Inputs   []Input   `json:"inputs,omitempty"`
 	// Rules are the program's decision tables, a blueprint of their own.
 	Rules Rules `json:"-"`
 	flow  dataflow.Flow
@@ -68,6 +69,12 @@ type Sort struct {
 // through the statements that move them.
 func (p Program) Trace(item string) dataflow.Trace {
 	return p.flow.Trace(item)
+}
+
+// TraceBytes traces where the values of some of a data item's bytes come
+// from, from start, 1-based, for length.
+func (p Program) TraceBytes(item string, start, length int) dataflow.Trace {
+	return p.flow.TraceBytes(item, start, length)
 }
 
 // Lineage is one statement moving a value from one data item, or a file,
@@ -308,6 +315,7 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 			FromLiteral: e.FromLiteral, Paragraph: e.Paragraph, Verb: e.Verb, Source: e.Pos.String()})
 	}
 	program.Outputs = outputs(program, flow)
+	program.Inputs = inputs(program, flow)
 	program.Rules = newRules(program.Name, rules.Tables(p), program.Records)
 	return program, nil
 }

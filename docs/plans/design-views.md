@@ -134,6 +134,8 @@ Today `lineage.Back` follows a field's values to where they came from. Add the o
 
 Checks: forward from `TD-AMOUNT` in `TXVALID` reaches `TXPOST`'s `AM-BALANCE`, the audit trail, and from there `STMTPRT`'s statement lines and `GLSUM`'s ledger amounts; forward from `BC-BUSINESS-DATE` in `BANKDATE` reaches nearly everything, which the page should survive without timing out, so cap the hops the way `Back` caps sort depth and say when it did.
 
+As built: the `TD-AMOUNT` check holds, through the sort, the postings, `TRAN.AUDIT` into `MONTHLY`, `STMTOUT` and `GL.SUMMARY(+1)`. `BC-BUSINESS-DATE` reaches 89 fields across the jobs, and the page renders in well under a second; the cap is 400 fields, with a note on the page when it cuts a trail. Two things the plan did not foresee: a reader whose record has the bytes only in a FILLER, as `ACCTMNT`'s `ACCT-IN-RECORD` has the balance, is followed by that run of bytes, which nodes now carry, and `Back` does the same; and readers are not the mirror of writers, since every later step and later run reads what a step wrote, where only the last writer before a reader wrote what it reads.
+
 One pull request, commits: `Affects` in `dataflow`; inputs in the model; `Forward` with the shared resolution; the trace page's direction; docs.
 
 ## Part 5: the order of jobs, derived
