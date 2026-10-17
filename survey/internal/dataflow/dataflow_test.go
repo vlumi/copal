@@ -116,3 +116,34 @@ func TestTrace(t *testing.T) {
 		}
 	}
 }
+
+// Affects is Trace turned around: values are followed forward by bytes,
+// through groups and redefinitions, to the items they reach and the bytes
+// of the files they are written to.
+func TestAffects(t *testing.T) {
+	p, err := cobol.ReadProgram("testdata/ORIGINS.cbl", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	records, err := layout.Program(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	flow := Analyze(p, records)
+	for item, want := range map[string]string{
+		"IN-KIND":   "[WS-KIND] [] [MOVE IN-RECORD -> WS-HOLD]",
+		"IN-ACCT":   "[WS-BODY WS-OUT-ACCT OUT-RECORD] [{OUT-FILE 1 5}] [MOVE IN-RECORD -> WS-HOLD MOVE IN-ACCT -> WS-OUT-ACCT WRITE WS-OUT -> OUT-RECORD WRITE OUT-RECORD -> OUT-FILE]",
+		"IN-AMOUNT": "[WS-BODY] [] [MOVE IN-RECORD -> WS-HOLD]",
+		"WS-OUT":    "[OUT-RECORD] [{OUT-FILE 1 8}] [WRITE WS-OUT -> OUT-RECORD WRITE OUT-RECORD -> OUT-FILE]",
+		"WS-HOLD":   "[] [] []",
+	} {
+		e := flow.Affects(item)
+		var edges []string
+		for _, edge := range e.Edges {
+			edges = append(edges, fmt.Sprintf("%s %s -> %s", edge.Verb, edge.From, edge.To))
+		}
+		if got := fmt.Sprintf("%v %v %v", e.Items, e.Files, edges); got != want {
+			t.Errorf("affects of %s:\n%s\nwant\n%s", item, got, want)
+		}
+	}
+}

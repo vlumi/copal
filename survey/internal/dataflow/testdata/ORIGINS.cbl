@@ -4,6 +4,7 @@
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
            SELECT IN-FILE  ASSIGN TO INDD.
+           SELECT OUT-FILE ASSIGN TO OUTDD.
        DATA DIVISION.
        FILE SECTION.
        FD  IN-FILE.
@@ -13,6 +14,8 @@
            05  IN-DETAIL REDEFINES IN-BODY.
                10  IN-ACCT             PIC 9(5).
                10  IN-AMOUNT           PIC 9(4).
+       FD  OUT-FILE.
+       01  OUT-RECORD                  PIC X(8).
        WORKING-STORAGE SECTION.
        01  WS-HOLD.
            05  WS-KIND                 PIC X.
@@ -26,4 +29,5 @@
            MOVE 5 TO IN-AMOUNT
            MOVE IN-RECORD TO WS-HOLD
            MOVE IN-ACCT TO WS-OUT-ACCT
+           WRITE OUT-RECORD FROM WS-OUT
            STOP RUN.
