@@ -6,7 +6,30 @@ Every blueprint exists twice: as Markdown, for reading, and as JSON next to it, 
 
 ## The index
 
-`README.md` lists the programs with their files, paragraphs and decision tables, the copybooks with their records and the programs that use them, and the jobs with their steps and findings.
+`README.md` lists the programs with their kind, files, paragraphs and decision tables, the copybooks with their records and the programs that use them, the jobs with their steps and findings, and the system's datasets. `datasets.json` next to it has the datasets for tools.
+
+A program is **main**, or **called** when it is passed items with `PROCEDURE DIVISION USING`.
+
+The datasets are every dataset the jobs name, by the name without its generation, each with its copybook, whether it is indexed, the job steps that write and read it, and its kind:
+
+- **external**: no step writes it, so it comes from outside the system, as the day's transactions do;
+- **output**: no step reads it, so it goes outside, as the rejects and the ledger do;
+- **temporary**: `&&NAME`, it lives within its job;
+- **internal**: anything else, passed from step to step and from job to job.
+
+## Kinds of field
+
+Every field of a layout, in a program or a copybook, has a kind, the first of these that fits:
+
+1. **group**: it has fields of its own.
+2. **filler**: it is named `FILLER`.
+3. **key**: it is the `RECORD KEY` of one of the program's files, or a key one of its sorts sorts on. A copybook's field is a key where a program that uses the copybook says so. A key is only what the code says is one: the account master's account number is read in sequence, so it is a number.
+4. **code**: it has condition names, level 88.
+5. **edited**: its picture is numeric-edited, for printing.
+6. **amount**: numeric with decimals.
+7. **date**: numeric without decimals, of 6, 8 or 14 digits, with `DATE`, `MONTH`, `TIMESTAMP` or `YYMM` in its name. This is the one rule that reads a name, and the only heuristic among the kinds.
+8. **number**: any other numeric field.
+9. **text**: anything else.
 
 ## A program, `programs/NAME.md`
 
@@ -20,19 +43,19 @@ In order:
 - **Data flow:** what each paragraph reads and writes.
 - **Lineage:** every statement that moves a value into a data item, grouped by the record the item belongs to: from which item, literal or file, by which verb, in which paragraph.
 - **Field origins:** for every field of every record the program writes to a file, where its values come from in the end: the fields of the files it reads, literals and initial values, followed through every statement and through the bytes that groups and redefinitions share.
-- **Records:** the layout of every record, field by field, with position, length, picture, usage and notes; a record from a copybook points at the copybook's blueprint instead.
+- **Records:** the layout of every record, field by field, with kind, position, length, picture, usage and notes; a record from a copybook points at the copybook's blueprint instead.
 
 ## A copybook, `copybooks/NAME.md`
 
-Its description, the programs that use it, and the layout of each record in it.
+Its description, the programs that use it, and the layout of each record in it, with each field's kind.
 
 ## A job, `jobs/NAME.md`
 
 - **The job's own description:** its comment banner.
 - **Steps:** each step, its program, the datasets it reads and writes, what bypasses it, and its description from the JCL's comments.
-- **Network:** the steps and the datasets between them. A dataset one step writes and another reads is drawn once, between them; one only read or only written is drawn next to its step. Temporary datasets are dashed, and each dataset names the copybook that describes its records, where a program says so.
+- **Network:** the steps and the datasets between them. A dataset one step writes and another reads is drawn once, between them; one only read or only written is drawn next to its step. Temporary datasets are dashed, external ones drawn in a warm fill of their own, and each dataset names the copybook that describes its records, where a program says so, and its kind and whether it is indexed, unless it is internal and sequential.
 - **The DD statements of each step:** the dataset, its disposition, the program's file bound to it, that file's copybook, and how the program uses the file.
-- **Datasets:** every dataset the job names, the copybook that describes it, and the steps that write and read it.
+- **Datasets:** every dataset the job names, the copybook that describes it, its kind across the system, and the steps of the job that write and read it.
 - **Findings:** where the job and its programs disagree. A DD no file is assigned to; a file no DD is bound to; a program that writes a dataset it shares with `DISP=SHR`, appends to one that is not `DISP=MOD`, or only reads one it creates; a new dataset organized otherwise than its file; a temporary dataset read before any step writes it, or written and never read; a step running a program that was not analyzed; a program that ACCEPTs with no SYSIN; a dataset two programs describe with different copybooks. A job with none says so.
 
 ## Decision tables, `rules/NAME.md`
