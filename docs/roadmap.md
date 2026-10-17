@@ -91,18 +91,20 @@ A bank that only has a batch is not a realistic bank. Customers pay by card and 
 
 Done when: with the simulator running, the console shows available balances dropping during the day and declines for cards over their limits, the API closes for the batch, and the next morning the card and ATM transactions appear in the master.
 
-## 8. The explorer
+## 8. The explorer (done)
 
 Static blueprints are good for reading one program or job at a time, but understanding a system means moving through it: from the job network to a step, its program, a paragraph, a record, a field, and following a value across programs through the datasets between them. The explorer is a web app for that, a second reader of the same analysis the blueprints are written from.
 
 - `copal explore` serves the analysis of any system Copal reads, not just Pangaea, locally, in the browser (done).
 - Every name is a link: jobs, steps, datasets, programs, paragraphs, records, fields, copybooks. Search finds any of them, and history goes back and forth (done).
 - The job networks and program flows are Copal's own diagrams, with pan and zoom (done).
-- Lineage across programs: pick a field and see where its values come from and where they go, through the statements of each program and through the datasets that pass records from step to step, highlighted on the diagrams. This needs lineage by storage position, through groups and redefinitions, joined across programs by the copybook that describes each dataset.
-- Server-rendered pages with a little script, like the bank console; no frontend build.
+- Lineage across programs: pick a field and see where its values come from, through the statements of each program and through the datasets that pass records from step to step, highlighted on the diagrams (done). Fields are joined across programs by the bytes the writer wrote and the reader reads, which is what a shared copybook comes down to, and a sort passes records on unchanged.
+- Server-rendered pages with a little script, like the bank console; no frontend build (done).
 
 Done when: starting from a field in a report, you can follow it back through every program and job step to the input it came from, on the diagrams.
 
 ## Later
+
+The explorer's lineage goes back, not yet forward: where a field's values go. It does not yet follow values into a called program and back through its LINKAGE SECTION, nor from SYSIN through ACCEPT, so the online day's holds stop at AUTHSRV. A program's outputs keep only the first record type it writes to a file.
 
 From the brief, once the above stands: test data derived from the extracted conditions so every branch is reached, run through GnuCOBOL as the oracle a rewrite has to match; data that respects cross-record rules; and only then a model for naming and prose.
