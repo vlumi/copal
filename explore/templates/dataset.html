@@ -1,0 +1,15 @@
+{{define "title"}}{{.View.Name}}{{end}}
+{{define "content"}}
+{{with .View}}
+<h1><span class="kind">dataset</span> {{.Name}}</h1>
+<p class="crumbs">{{if .Copybooks}}records described by {{range $i, $c := .Copybooks}}{{if $i}}, {{end}}<a href="{{copybook $c}}">{{$c}}</a>{{end}}{{else}}no copybook describes its records{{end}}</p>
+<h2>Job steps that use it</h2>
+<table>
+  <thead><tr><th>Job</th><th>Step</th><th>As</th><th>DD</th><th>DISP</th><th>Program</th><th>File</th><th>Use</th></tr></thead>
+  <tbody>
+  {{range .Uses}}<tr><td><a href="{{job .Job}}">{{.Job}}</a></td><td><a href="{{step .StepRef}}">{{.Step}}</a></td><td>{{.Dataset}}</td><td>{{.DD}}</td><td>{{.Disp}}</td><td><a href="{{program .Program}}">{{.Program}}</a></td><td>{{.File}}</td><td>{{join .Uses ", "}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{end}}
+{{end}}

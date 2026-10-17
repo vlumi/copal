@@ -1,0 +1,363 @@
+package explore
+
+import (
+	"bufio"
+	"bytes"
+	"embed"
+	"errors"
+	"fmt"
+	"html/template"
+	"io/fs"
+	"log"
+	"net/http"
+	"os"
+	"slices"
+	"strings"
+
+	"github.com/vlumi/copal/blueprint"
+	"github.com/vlumi/copal/diagram"
+)
+
+//go:embed templates static
+var files embed.FS
+
+// errNotFound is for a page of something the system does not have.
+var errNotFound = errors.New("not found")
+
+// Server serves the explorer for one system.
+type Server struct {
+	title string
+	index *index
+	pages map[string]*template.Template
+}
+
+// New makes an explorer of the system, titled with its name.
+func New(system *blueprint.System, title string) (*Server, error) {
+	s := &Server{title: title, index: newIndex(system), pages: map[string]*template.Template{}}
+	funcs := template.FuncMap{
+		"program": programLink, "paragraph": paragraphLink, "field": fieldLink, "copybook": copybookLink,
+		"job": jobLink, "step": stepLink, "dataset": datasetLink, "source": sourceLink,
+		"sourceText": sourceText, "base": datasetBase, "join": strings.Join,
+		"add":     func(a, b int) int { return a + b },
+		"stepRef": func(job, step string) StepRef { return StepRef{Job: job, Step: step} },
+		"lineage": func(program string, fields map[string]bool, rows []blueprint.Lineage) lineageTable {
+			return lineageTable{Program: program, Fields: fields, Rows: rows}
+		},
+	}
+	for _, page := range []string{"index", "search", "job", "step", "dataset", "program", "paragraph", "field", "copybook", "source", "error"} {
+		t, err := template.New("").Funcs(funcs).ParseFS(files, "templates/base.html", "templates/"+page+".html")
+		if err != nil {
+			return nil, err
+		}
+		s.pages[page] = t
+	}
+	return s, nil
+}
+
+// Handler routes the explorer's pages.
+func (s *Server) Handler() http.Handler {
+	static, _ := fs.Sub(files, "static")
+	mux := http.NewServeMux()
+	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServerFS(static)))
+	mux.HandleFunc("GET /{$}", s.view("index", s.home))
+	mux.HandleFunc("GET /search", s.view("search", s.search))
+	mux.HandleFunc("GET /jobs/{job}", s.view("job", s.job))
+	mux.HandleFunc("GET /jobs/{job}/steps/{step}", s.view("step", s.step))
+	mux.HandleFunc("GET /datasets/{name}", s.view("dataset", s.dataset))
+	mux.HandleFunc("GET /programs/{program}", s.view("program", s.program))
+	mux.HandleFunc("GET /programs/{program}/paragraphs/{paragraph}", s.view("paragraph", s.paragraph))
+	mux.HandleFunc("GET /programs/{program}/fields/{field}", s.view("field", s.field))
+	mux.HandleFunc("GET /copybooks/{copybook}", s.view("copybook", s.copybook))
+	mux.HandleFunc("GET /source/{path...}", s.view("source", s.source))
+	return mux
+}
+
+// page is what every template gets: the system's title, and the page's
+// own view.
+type page struct {
+	Title string
+	View  any
+}
+
+func (s *Server) view(name string, read func(*http.Request) (any, error)) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		v, err := read(r)
+		status := http.StatusOK
+		switch {
+		case errors.Is(err, errNotFound):
+			name, status, v = "error", http.StatusNotFound, err.Error()
+		case err != nil:
+			name, status, v = "error", http.StatusInternalServerError, err.Error()
+		}
+		var b bytes.Buffer
+		if err := s.pages[name].ExecuteTemplate(&b, "base", page{Title: s.title, View: v}); err != nil {
+			log.Printf("explore: %s: %v", name, err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.WriteHeader(status)
+		_, _ = b.WriteTo(w)
+	}
+}
+
+// lineageTable is the statements that move values, for the lineage
+// template: those of a program whose fields link to their pages.
+type lineageTable struct {
+	Program string
+	Fields  map[string]bool
+	Rows    []blueprint.Lineage
+}
+
+// HomeView lists the system's parts.
+type HomeView struct {
+	System   *blueprint.System
+	Datasets []string
+}
+
+func (s *Server) home(*http.Request) (any, error) {
+	v := HomeView{System: s.index.system}
+	for name := range s.index.datasets {
+		v.Datasets = append(v.Datasets, name)
+	}
+	slices.Sort(v.Datasets)
+	return v, nil
+}
+
+// SearchView is what a search found.
+type SearchView struct {
+	Query string
+	Names []Name
+}
+
+func (s *Server) search(r *http.Request) (any, error) {
+	q := r.FormValue("q")
+	return SearchView{Query: q, Names: s.index.search(q)}, nil
+}
+
+// JobView is a job and its network.
+type JobView struct {
+	Job     *blueprint.Job
+	Network template.HTML
+}
+
+func (s *Server) job(r *http.Request) (any, error) {
+	j, ok := s.index.jobs[r.PathValue("job")]
+	if !ok {
+		return nil, fmt.Errorf("job %s: %w", r.PathValue("job"), errNotFound)
+	}
+	network, err := svg(blueprint.JobGraph(*j, blueprint.JobNotes{
+		StepLink:    func(step blueprint.Step) string { return stepLink(StepRef{Job: j.Name, Step: step.Name}) },
+		DatasetLink: func(ds string) string { return datasetLink(datasetBase(ds)) },
+	}))
+	return JobView{Job: j, Network: network}, err
+}
+
+// StepView is a step of a job, and whether its program was analyzed.
+type StepView struct {
+	Job      *blueprint.Job
+	Step     blueprint.Step
+	Analyzed bool
+}
+
+func (s *Server) step(r *http.Request) (any, error) {
+	j, ok := s.index.jobs[r.PathValue("job")]
+	if !ok {
+		return nil, fmt.Errorf("job %s: %w", r.PathValue("job"), errNotFound)
+	}
+	i := slices.IndexFunc(j.Steps, func(step blueprint.Step) bool { return step.Name == r.PathValue("step") })
+	if i < 0 {
+		return nil, fmt.Errorf("step %s of job %s: %w", r.PathValue("step"), j.Name, errNotFound)
+	}
+	_, analyzed := s.index.programs[j.Steps[i].Program]
+	return StepView{Job: j, Step: j.Steps[i], Analyzed: analyzed}, nil
+}
+
+// DatasetView is a dataset, the copybooks that describe its records, and
+// every job step that uses it.
+type DatasetView struct {
+	Name      string
+	Copybooks []string
+	Uses      []DatasetUse
+}
+
+func (s *Server) dataset(r *http.Request) (any, error) {
+	name := r.PathValue("name")
+	uses, ok := s.index.datasets[name]
+	if !ok {
+		return nil, fmt.Errorf("dataset %s: %w", name, errNotFound)
+	}
+	v := DatasetView{Name: name, Uses: uses}
+	for _, u := range uses {
+		if u.Copybook != "" && !slices.Contains(v.Copybooks, u.Copybook) {
+			v.Copybooks = append(v.Copybooks, u.Copybook)
+		}
+	}
+	return v, nil
+}
+
+// ProgramView is a program, its flow, and the job steps that run it.
+type ProgramView struct {
+	Program *blueprint.Program
+	Flow    template.HTML
+	Runs    []StepRef
+}
+
+func (s *Server) program(r *http.Request) (any, error) {
+	p, err := s.lookupProgram(r)
+	if err != nil {
+		return nil, err
+	}
+	flow, err := svg(blueprint.FlowGraph(*p, func(para blueprint.Paragraph) string { return paragraphLink(p.Name, para.Name) }))
+	return ProgramView{Program: p, Flow: flow, Runs: s.index.runs[p.Name]}, err
+}
+
+func (s *Server) lookupProgram(r *http.Request) (*blueprint.Program, error) {
+	p, ok := s.index.programs[r.PathValue("program")]
+	if !ok {
+		return nil, fmt.Errorf("program %s: %w", r.PathValue("program"), errNotFound)
+	}
+	return p, nil
+}
+
+// ParagraphView is a paragraph of a program, and the values its statements
+// move.
+type ParagraphView struct {
+	Program   *blueprint.Program
+	Paragraph blueprint.Paragraph
+	Lineage   []blueprint.Lineage
+	Fields    map[string]bool
+}
+
+func (s *Server) paragraph(r *http.Request) (any, error) {
+	p, err := s.lookupProgram(r)
+	if err != nil {
+		return nil, err
+	}
+	i := slices.IndexFunc(p.Paragraphs, func(para blueprint.Paragraph) bool { return para.Name == r.PathValue("paragraph") })
+	if i < 0 {
+		return nil, fmt.Errorf("paragraph %s of %s: %w", r.PathValue("paragraph"), p.Name, errNotFound)
+	}
+	v := ParagraphView{Program: p, Paragraph: p.Paragraphs[i], Fields: fieldNames(p)}
+	for _, e := range p.Lineage {
+		if e.Paragraph == v.Paragraph.Name {
+			v.Lineage = append(v.Lineage, e)
+		}
+	}
+	return v, nil
+}
+
+// FieldView is a data item of a program: where it is, the paragraphs that
+// read and write it, and the statements that move values into it and out
+// of it.
+type FieldView struct {
+	Program   *blueprint.Program
+	Record    blueprint.Record
+	Path      []blueprint.Field // the groups it is in, from its record down
+	Field     blueprint.Field
+	ReadBy    []string
+	WrittenBy []string
+	Into      []blueprint.Lineage
+	OutOf     []blueprint.Lineage
+	Fields    map[string]bool
+}
+
+func (s *Server) field(r *http.Request) (any, error) {
+	p, err := s.lookupProgram(r)
+	if err != nil {
+		return nil, err
+	}
+	name := r.PathValue("field")
+	v := FieldView{Program: p, Fields: fieldNames(p)}
+	found := false
+	for _, rec := range p.Records {
+		if path, f, ok := findField(rec.Field, name); ok {
+			v.Record, v.Path, v.Field, found = rec, path, f, true
+			break
+		}
+	}
+	if !found {
+		return nil, fmt.Errorf("field %s of %s: %w", name, p.Name, errNotFound)
+	}
+	for _, para := range p.Paragraphs {
+		if slices.Contains(para.Reads, name) {
+			v.ReadBy = append(v.ReadBy, para.Name)
+		}
+		if slices.Contains(para.Writes, name) {
+			v.WrittenBy = append(v.WrittenBy, para.Name)
+		}
+	}
+	for _, e := range p.Lineage {
+		if e.To == name && !e.ToFile {
+			v.Into = append(v.Into, e)
+		}
+		if e.From == name && !e.FromFile && !e.FromLiteral {
+			v.OutOf = append(v.OutOf, e)
+		}
+	}
+	return v, nil
+}
+
+// findField finds a field by name in a record, with the groups it is in.
+func findField(f blueprint.Field, name string) ([]blueprint.Field, blueprint.Field, bool) {
+	if f.Name == name {
+		return nil, f, true
+	}
+	for _, child := range f.Fields {
+		if path, found, ok := findField(child, name); ok {
+			return append([]blueprint.Field{f}, path...), found, true
+		}
+	}
+	return nil, blueprint.Field{}, false
+}
+
+func fieldNames(p *blueprint.Program) map[string]bool {
+	names := map[string]bool{}
+	for _, r := range p.Records {
+		walkFields(r.Field, func(f blueprint.Field) { names[f.Name] = true })
+	}
+	return names
+}
+
+func (s *Server) copybook(r *http.Request) (any, error) {
+	c, ok := s.index.copybooks[r.PathValue("copybook")]
+	if !ok {
+		return nil, fmt.Errorf("copybook %s: %w", r.PathValue("copybook"), errNotFound)
+	}
+	return c, nil
+}
+
+// SourceView is a source file, by line.
+type SourceView struct {
+	Path  string
+	Lines []string
+}
+
+// source shows a source file the analysis read, and no other.
+func (s *Server) source(r *http.Request) (any, error) {
+	path := r.PathValue("path")
+	if !s.index.sources[path] {
+		return nil, fmt.Errorf("source %s: %w", path, errNotFound)
+	}
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = f.Close() }()
+	v := SourceView{Path: path}
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		v.Lines = append(v.Lines, scanner.Text())
+	}
+	return v, scanner.Err()
+}
+
+// sourceText writes a source reference as the file's name and the line.
+func sourceText(source string) string {
+	return source[strings.LastIndex(source, "/")+1:]
+}
+
+func svg(g diagram.Graph) (template.HTML, error) {
+	b, err := g.SVG()
+	return template.HTML(b), err //nolint:gosec // drawn by Copal, its labels escaped
+}

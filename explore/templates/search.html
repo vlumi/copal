@@ -1,0 +1,12 @@
+{{define "title"}}Search{{end}}
+{{define "content"}}
+{{with .View}}
+<h1>{{len .Names}} found for “{{.Query}}”</h1>
+{{if .Names}}
+<table>
+  <thead><tr><th>Name</th><th>Kind</th><th>In</th></tr></thead>
+  <tbody>{{range .Names}}<tr><td><a href="{{.Link}}">{{.Name}}</a></td><td>{{.Kind}}</td><td>{{.In}}</td></tr>{{end}}</tbody>
+</table>
+{{end}}
+{{end}}
+{{end}}

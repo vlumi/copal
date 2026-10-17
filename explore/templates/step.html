@@ -1,0 +1,22 @@
+{{define "title"}}{{.View.Step.Name}} of {{.View.Job.Name}}{{end}}
+{{define "content"}}
+{{with .View}}
+<h1><span class="kind">step</span> {{.Step.Name}}</h1>
+<p class="crumbs">of job <a href="{{job .Job.Name}}">{{.Job.Name}}</a>, running {{if .Analyzed}}<a href="{{program .Step.Program}}">{{.Step.Program}}</a>{{else}}{{.Step.Program}}, which was not analyzed{{end}}{{with .Step.Cond}}, bypassed by {{.}}{{end}} · {{template "src" .Step.Source}}</p>
+{{if .Step.Description}}<p>{{join .Step.Description " "}}</p>{{end}}
+<h2>DD statements</h2>
+<table>
+  <thead><tr><th>DD</th><th>Dataset</th><th>DISP</th><th>File</th><th>Copybook</th><th>Use</th></tr></thead>
+  <tbody>
+  {{range .Step.DDs}}<tr>
+    <td>{{.Name}}</td>
+    <td>{{if .Sysout}}job output{{else if .Dummy}}dummy{{else if .InStream}}in-stream data{{else}}{{range $i, $d := .Datasets}}{{if $i}}, {{end}}<a href="{{dataset (base $d)}}">{{$d}}</a>{{end}}{{if .Indexed}} (indexed){{end}}{{end}}</td>
+    <td>{{.Disp}}</td>
+    <td>{{.File}}</td>
+    <td>{{with .Copybook}}<a href="{{copybook .}}">{{.}}</a>{{end}}</td>
+    <td>{{join .Uses ", "}}</td>
+  </tr>{{end}}
+  </tbody>
+</table>
+{{end}}
+{{end}}

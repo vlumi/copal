@@ -1,0 +1,20 @@
+{{define "title"}}{{.View.Job.Name}}{{end}}
+{{define "content"}}
+{{with .View}}{{with .Job}}
+<h1><span class="kind">job</span> {{.Name}}</h1>
+{{if .Description}}<pre class="description">{{join .Description "\n"}}</pre>{{end}}
+<p class="note">{{template "src" .Source}}</p>
+{{end}}
+<div class="diagram">{{.Network}}</div>
+{{with .Job}}
+<h2>Steps</h2>
+<table>
+  <thead><tr><th>Step</th><th>Program</th><th>Bypassed by</th><th>Description</th><th>Source</th></tr></thead>
+  <tbody>
+  {{range .Steps}}<tr><td><a href="{{step (stepRef $.View.Job.Name .Name)}}">{{.Name}}</a></td><td><a href="{{program .Program}}">{{.Program}}</a></td><td>{{.Cond}}</td><td>{{join .Description " "}}</td><td>{{template "src" .Source}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{if .Findings}}<h2>Findings</h2><ul>{{range .Findings}}<li>{{.}}</li>{{end}}</ul>{{end}}
+{{end}}{{end}}
+{{end}}
