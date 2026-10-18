@@ -330,11 +330,7 @@ func writeDataFlow(b *strings.Builder, dir string, p Program) {
 	for _, g := range groupLineage(p, records) {
 		fmt.Fprintf(b, "\n### %s\n\n%s| Into | From | Statement | Paragraph | Source |\n| --- | --- | --- | --- | --- |\n", g.title, g.intro)
 		for _, e := range g.edges {
-			to := e.To
-			if e.ToFile {
-				to = "file " + to
-			}
-			b.WriteString(row(to, lineageItem(e, records), e.Verb, e.Paragraph, sourceLink(dir, e.Source, true)))
+			b.WriteString(row(e.ToText(), lineageItem(e, records), e.Verb, e.Paragraph, sourceLink(dir, e.Source, true)))
 		}
 	}
 }
@@ -352,7 +348,8 @@ type lineageGroup struct {
 func groupLineage(p Program, records map[string]Record) []lineageGroup {
 	groups := make([]lineageGroup, len(p.Records)+2)
 	files, other := len(p.Records), len(p.Records)+1
-	groups[files] = lineageGroup{title: "Into files", intro: "Records written to files.\n\n"}
+	groups[files] = lineageGroup{title: "Out of the program",
+		intro: "Records written to files, items passed to the programs called, and items displayed to the job's output.\n\n"}
 	groups[other] = lineageGroup{title: "Into other data items",
 		intro: "Data items the program does not declare, such as special registers and index names.\n\n"}
 	for i, r := range p.Records {
@@ -364,7 +361,7 @@ func groupLineage(p Program, records map[string]Record) []lineageGroup {
 	}
 	for _, e := range p.Lineage {
 		i := other
-		if r, ok := records[e.To]; e.ToFile {
+		if r, ok := records[e.To]; !e.ToItem() {
 			i = files
 		} else if ok {
 			i = slices.IndexFunc(p.Records, func(pr Record) bool { return pr.Name == r.Name })
@@ -386,11 +383,8 @@ func groupLineage(p Program, records map[string]Record) []lineageGroup {
 // the item is a field of it.
 func lineageItem(e Lineage, records map[string]Record) string {
 	name := e.From
-	switch {
-	case e.FromFile:
-		return "file " + name
-	case e.FromLiteral:
-		return "literal " + name
+	if !e.FromItem() {
+		return e.FromText()
 	}
 	r, ok := records[name]
 	switch {

@@ -25,6 +25,7 @@ type TraceView struct {
 	Jobs     []Diagram
 	Programs []Diagram
 	External []string // back, the datasets no job writes
+	Streams  []string // back, the job steps whose SYSIN the values come from
 	Outputs  []string // forward, the datasets no step reads
 	Reports  []string // forward, the DDs of the job's output
 	Capped   bool
@@ -83,7 +84,7 @@ func (s *Server) trace(r *http.Request) (any, error) {
 			paragraphs[q.Name][e.Paragraph] = true
 		}
 		for _, o := range h.Trace.Origins {
-			if o.File == "" {
+			if o.File == "" && o.Call == "" && o.Parameter == 0 && o.Stream == "" {
 				hop.Starts = append(hop.Starts, o.String())
 			}
 		}
@@ -91,6 +92,9 @@ func (s *Server) trace(r *http.Request) (any, error) {
 		for _, src := range h.Sources {
 			s.markPath(paths, h.Node, src.Datasets, append(slices.Clone(src.Writers), src.Sorts...))
 			addAll(&v.External, src.External)
+			if src.Stream != "" {
+				addAll(&v.Streams, []string{fmt.Sprintf("the %s of %s in %s", src.Stream, h.Node.Step, h.Node.Job)})
+			}
 		}
 		for _, tgt := range h.Targets {
 			s.markPath(paths, h.Node, tgt.Datasets, append(slices.Clone(tgt.Readers), tgt.Sorts...))
@@ -191,8 +195,7 @@ func (s *Server) flowDiagrams(paragraphs map[string]map[string]bool) ([]Diagram,
 }
 
 func statement(e dataflow.Edge) blueprint.Lineage {
-	return blueprint.Lineage{From: e.From, To: e.To, FromFile: e.FromFile, FromLiteral: e.FromLiteral, ToFile: e.ToFile,
-		Paragraph: e.Paragraph, Verb: e.Verb, Source: e.Pos.String()}
+	return blueprint.NewLineage(e)
 }
 
 // hopID is the anchor of a hop on the trace page.

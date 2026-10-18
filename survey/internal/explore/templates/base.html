@@ -55,8 +55,8 @@
   <thead><tr><th>From</th><th>To</th><th>Statement</th><th>Paragraph</th><th>Source</th></tr></thead>
   <tbody>
   {{range .Rows}}<tr>
-    <td>{{if .FromFile}}file {{.From}}{{else if .FromLiteral}}<code>{{.From}}</code>{{else if index $.Fields .From}}<a href="{{field $.Program .From}}">{{.From}}</a>{{else}}{{.From}}{{end}}</td>
-    <td>{{if .ToFile}}file {{.To}}{{else if index $.Fields .To}}<a href="{{field $.Program .To}}">{{.To}}</a>{{else}}{{.To}}{{end}}</td>
+    <td>{{if .FromLiteral}}<code>{{.From}}</code>{{else if .FromCall}}call <a href="{{program .From}}">{{.From}}</a> argument {{.Arg}}{{else if not .FromItem}}{{.FromText}}{{else if index $.Fields .From}}<a href="{{field $.Program .From}}">{{.From}}</a>{{else}}{{.From}}{{end}}</td>
+    <td>{{if .ToCall}}call <a href="{{program .To}}">{{.To}}</a> argument {{.Arg}}{{else if not .ToItem}}{{.ToText}}{{else if index $.Fields .To}}<a href="{{field $.Program .To}}">{{.To}}</a>{{else}}{{.To}}{{end}}</td>
     <td>{{.Verb}}</td>
     <td><a href="{{paragraph $.Program .Paragraph}}">{{.Paragraph}}</a></td>
     <td>{{template "src" .Source}}</td>

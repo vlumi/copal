@@ -31,6 +31,7 @@ Program [TXSORT.cbl](../../../pangaea/programs/TXSORT.cbl): 3 files, 1 paragraph
 - [Paragraphs](#paragraphs)
 - [Data flow](#data-flow)
 - [Lineage](#lineage)
+  - [Out of the program](#out-of-the-program)
   - [Into other data items](#into-other-data-items)
 - [Records](#records)
   - [TRAN-IN-RECORD](#tran-in-record)
@@ -64,6 +65,14 @@ Program [TXSORT.cbl](../../../pangaea/programs/TXSORT.cbl): 3 files, 1 paragraph
 ## Lineage
 
 Where each data item's values come from, grouped by the record they go into. A data item links to the record it belongs to.
+
+### Out of the program
+
+Records written to files, items passed to the programs called, and items displayed to the job's output.
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| SYSOUT | SORT-RETURN | DISPLAY | 0000-MAIN | [TXSORT.cbl:54](../../../pangaea/programs/TXSORT.cbl#L54) |
 
 ### Into other data items
 

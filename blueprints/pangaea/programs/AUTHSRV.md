@@ -47,11 +47,12 @@ Program [AUTHSRV.cbl](../../../pangaea/programs/AUTHSRV.cbl): 5 files, 11 paragr
   - [Into WS-INPUT-END-SW](#into-ws-input-end-sw)
   - [Into WS-HOLDS-END-SW](#into-ws-holds-end-sw)
   - [Into WS-LAST-HOLD-NO](#into-ws-last-hold-no)
+  - [Into AUTH-REQUEST](#into-auth-request)
   - [Into AUTH-RESPONSE](#into-auth-response)
   - [Into WS-TOTALS](#into-ws-totals)
   - [Into WS-REPORT-COUNT-LINE](#into-ws-report-count-line)
   - [Into WS-REPORT-AMOUNT-LINE](#into-ws-report-amount-line)
-  - [Into files](#into-files)
+  - [Out of the program](#out-of-the-program)
   - [Into other data items](#into-other-data-items)
 - [Field origins](#field-origins)
   - [File ACCT-FILE](#file-acct-file)
@@ -141,6 +142,10 @@ Record [BANK-CONTROL-RECORD](#bank-control-record), from copybook [BANKCTL](../c
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
 | BANK-CONTROL-RECORD | file CONTROL-FILE | READ | 1000-INITIALIZE | [AUTHSRV.cbl:123](../../../pangaea/programs/AUTHSRV.cbl#L123) |
+| BANK-CONTROL-RECORD | call AUTHPUR argument 3 | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:176](../../../pangaea/programs/AUTHSRV.cbl#L176) |
+| BANK-CONTROL-RECORD | call AUTHREV argument 3 | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:180](../../../pangaea/programs/AUTHSRV.cbl#L180) |
+| BANK-CONTROL-RECORD | call ATMWDL argument 3 | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:184](../../../pangaea/programs/AUTHSRV.cbl#L184) |
+| BANK-CONTROL-RECORD | call ATMBAL argument 3 | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:188](../../../pangaea/programs/AUTHSRV.cbl#L188) |
 
 ### Into ACCT-ONLINE-RECORD
 
@@ -148,6 +153,10 @@ Record [ACCT-ONLINE-RECORD](#acct-online-record), from copybook [ACCTONL](../cop
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| ACCT-ONLINE-RECORD | call AUTHPUR argument 4 | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:176](../../../pangaea/programs/AUTHSRV.cbl#L176) |
+| ACCT-ONLINE-RECORD | call AUTHREV argument 4 | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:180](../../../pangaea/programs/AUTHSRV.cbl#L180) |
+| ACCT-ONLINE-RECORD | call ATMWDL argument 4 | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:184](../../../pangaea/programs/AUTHSRV.cbl#L184) |
+| ACCT-ONLINE-RECORD | call ATMBAL argument 4 | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:188](../../../pangaea/programs/AUTHSRV.cbl#L188) |
 | ACCT-ONLINE-RECORD | file ACCT-FILE | READ | 2200-READ-CARD-AND-ACCOUNT | [AUTHSRV.cbl:211](../../../pangaea/programs/AUTHSRV.cbl#L211) |
 | AO-ACCT-NO | [CR-ACCT-NO](#card-record "in CARD-RECORD") | MOVE | 2200-READ-CARD-AND-ACCOUNT | [AUTHSRV.cbl:210](../../../pangaea/programs/AUTHSRV.cbl#L210) |
 
@@ -157,6 +166,10 @@ Record [CARD-RECORD](#card-record), from copybook [CARDREC](../copybooks/CARDREC
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| CARD-RECORD | call AUTHPUR argument 5 | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:176](../../../pangaea/programs/AUTHSRV.cbl#L176) |
+| CARD-RECORD | call AUTHREV argument 5 | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:180](../../../pangaea/programs/AUTHSRV.cbl#L180) |
+| CARD-RECORD | call ATMWDL argument 5 | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:184](../../../pangaea/programs/AUTHSRV.cbl#L184) |
+| CARD-RECORD | call ATMBAL argument 5 | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:188](../../../pangaea/programs/AUTHSRV.cbl#L188) |
 | CARD-RECORD | file CARD-FILE | READ | 2200-READ-CARD-AND-ACCOUNT | [AUTHSRV.cbl:205](../../../pangaea/programs/AUTHSRV.cbl#L205) |
 | CR-CARD-NO | [RQ-CARD-NO](#auth-request "in AUTH-REQUEST") | MOVE | 2200-READ-CARD-AND-ACCOUNT | [AUTHSRV.cbl:204](../../../pangaea/programs/AUTHSRV.cbl#L204) |
 
@@ -172,6 +185,10 @@ Record [HOLD-RECORD](#hold-record), from copybook [HOLDREC](../copybooks/HOLDREC
 | HD-KEY | literal LOW-VALUES | MOVE | 1100-FIND-LAST-HOLD | [AUTHSRV.cbl:132](../../../pangaea/programs/AUTHSRV.cbl#L132) |
 | HOLD-RECORD | file HOLD-FILE | READ | 1100-FIND-LAST-HOLD | [AUTHSRV.cbl:138](../../../pangaea/programs/AUTHSRV.cbl#L138) |
 | HOLD-RECORD | literal SPACES | MOVE | 2100-AUTHORIZE | [AUTHSRV.cbl:162](../../../pangaea/programs/AUTHSRV.cbl#L162) |
+| HOLD-RECORD | call AUTHPUR argument 6 | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:176](../../../pangaea/programs/AUTHSRV.cbl#L176) |
+| HOLD-RECORD | call AUTHREV argument 6 | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:180](../../../pangaea/programs/AUTHSRV.cbl#L180) |
+| HOLD-RECORD | call ATMWDL argument 6 | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:184](../../../pangaea/programs/AUTHSRV.cbl#L184) |
+| HOLD-RECORD | call ATMBAL argument 6 | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:188](../../../pangaea/programs/AUTHSRV.cbl#L188) |
 | HOLD-RECORD | file HOLD-FILE | READ | 2300-READ-HOLD | [AUTHSRV.cbl:222](../../../pangaea/programs/AUTHSRV.cbl#L222) |
 
 ### Into REPORT-LINE
@@ -230,6 +247,18 @@ Record [WS-LAST-HOLD-NO](#ws-last-hold-no).
 | WS-LAST-HOLD-NO | [HD-HOLD-NO](#hold-record "in HOLD-RECORD") | MOVE | 1100-FIND-LAST-HOLD | [AUTHSRV.cbl:143](../../../pangaea/programs/AUTHSRV.cbl#L143) |
 | WS-LAST-HOLD-NO | literal 1 | ADD | 2400-SAVE-CHANGES | [AUTHSRV.cbl:250](../../../pangaea/programs/AUTHSRV.cbl#L250) |
 
+### Into AUTH-REQUEST
+
+Record [AUTH-REQUEST](#auth-request), from copybook [AUTHMSG](../copybooks/AUTHMSG.md).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| AUTH-REQUEST | SYSIN | ACCEPT | 2000-SERVE-REQUEST | [AUTHSRV.cbl:150](../../../pangaea/programs/AUTHSRV.cbl#L150) |
+| AUTH-REQUEST | call AUTHPUR argument 1 | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:176](../../../pangaea/programs/AUTHSRV.cbl#L176) |
+| AUTH-REQUEST | call AUTHREV argument 1 | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:180](../../../pangaea/programs/AUTHSRV.cbl#L180) |
+| AUTH-REQUEST | call ATMWDL argument 1 | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:184](../../../pangaea/programs/AUTHSRV.cbl#L184) |
+| AUTH-REQUEST | call ATMBAL argument 1 | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:188](../../../pangaea/programs/AUTHSRV.cbl#L188) |
+
 ### Into AUTH-RESPONSE
 
 Record [AUTH-RESPONSE](#auth-response), from copybook [AUTHMSG](../copybooks/AUTHMSG.md).
@@ -237,6 +266,10 @@ Record [AUTH-RESPONSE](#auth-response), from copybook [AUTHMSG](../copybooks/AUT
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
 | AUTH-RESPONSE | literal SPACES | MOVE | 2100-AUTHORIZE | [AUTHSRV.cbl:162](../../../pangaea/programs/AUTHSRV.cbl#L162) |
+| AUTH-RESPONSE | call AUTHPUR argument 2 | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:176](../../../pangaea/programs/AUTHSRV.cbl#L176) |
+| AUTH-RESPONSE | call AUTHREV argument 2 | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:180](../../../pangaea/programs/AUTHSRV.cbl#L180) |
+| AUTH-RESPONSE | call ATMWDL argument 2 | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:184](../../../pangaea/programs/AUTHSRV.cbl#L184) |
+| AUTH-RESPONSE | call ATMBAL argument 2 | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:188](../../../pangaea/programs/AUTHSRV.cbl#L188) |
 | RS-AUTH-CODE | [WS-LAST-HOLD-NO](#ws-last-hold-no) | MOVE | 2400-SAVE-CHANGES | [AUTHSRV.cbl:251](../../../pangaea/programs/AUTHSRV.cbl#L251) |
 | RS-MESSAGE | literal 'UNKNOWN REQUEST' | MOVE | 2100-AUTHORIZE | [AUTHSRV.cbl:168](../../../pangaea/programs/AUTHSRV.cbl#L168) |
 | RS-MESSAGE | literal 'NO SUCH CARD' | MOVE | 2200-READ-CARD-AND-ACCOUNT | [AUTHSRV.cbl:208](../../../pangaea/programs/AUTHSRV.cbl#L208) |
@@ -286,13 +319,37 @@ Record [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
 | WS-RA-VALUE | [WS-HELD-TOTAL](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [AUTHSRV.cbl:285](../../../pangaea/programs/AUTHSRV.cbl#L285) |
 | WS-RA-VALUE | [WS-RELEASED-TOTAL](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [AUTHSRV.cbl:288](../../../pangaea/programs/AUTHSRV.cbl#L288) |
 
-### Into files
+### Out of the program
 
-Records written to files.
+Records written to files, items passed to the programs called, and items displayed to the job's output.
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
 | file ACCT-FILE | [ACCT-ONLINE-RECORD](#acct-online-record) | REWRITE | 2400-SAVE-CHANGES | [AUTHSRV.cbl:231](../../../pangaea/programs/AUTHSRV.cbl#L231) |
+| call ATMBAL argument 1 | [AUTH-REQUEST](#auth-request) | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:188](../../../pangaea/programs/AUTHSRV.cbl#L188) |
+| call ATMBAL argument 2 | [AUTH-RESPONSE](#auth-response) | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:188](../../../pangaea/programs/AUTHSRV.cbl#L188) |
+| call ATMBAL argument 3 | [BANK-CONTROL-RECORD](#bank-control-record) | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:188](../../../pangaea/programs/AUTHSRV.cbl#L188) |
+| call ATMBAL argument 4 | [ACCT-ONLINE-RECORD](#acct-online-record) | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:188](../../../pangaea/programs/AUTHSRV.cbl#L188) |
+| call ATMBAL argument 5 | [CARD-RECORD](#card-record) | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:188](../../../pangaea/programs/AUTHSRV.cbl#L188) |
+| call ATMBAL argument 6 | [HOLD-RECORD](#hold-record) | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:188](../../../pangaea/programs/AUTHSRV.cbl#L188) |
+| call ATMWDL argument 1 | [AUTH-REQUEST](#auth-request) | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:184](../../../pangaea/programs/AUTHSRV.cbl#L184) |
+| call ATMWDL argument 2 | [AUTH-RESPONSE](#auth-response) | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:184](../../../pangaea/programs/AUTHSRV.cbl#L184) |
+| call ATMWDL argument 3 | [BANK-CONTROL-RECORD](#bank-control-record) | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:184](../../../pangaea/programs/AUTHSRV.cbl#L184) |
+| call ATMWDL argument 4 | [ACCT-ONLINE-RECORD](#acct-online-record) | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:184](../../../pangaea/programs/AUTHSRV.cbl#L184) |
+| call ATMWDL argument 5 | [CARD-RECORD](#card-record) | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:184](../../../pangaea/programs/AUTHSRV.cbl#L184) |
+| call ATMWDL argument 6 | [HOLD-RECORD](#hold-record) | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:184](../../../pangaea/programs/AUTHSRV.cbl#L184) |
+| call AUTHPUR argument 1 | [AUTH-REQUEST](#auth-request) | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:176](../../../pangaea/programs/AUTHSRV.cbl#L176) |
+| call AUTHPUR argument 2 | [AUTH-RESPONSE](#auth-response) | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:176](../../../pangaea/programs/AUTHSRV.cbl#L176) |
+| call AUTHPUR argument 3 | [BANK-CONTROL-RECORD](#bank-control-record) | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:176](../../../pangaea/programs/AUTHSRV.cbl#L176) |
+| call AUTHPUR argument 4 | [ACCT-ONLINE-RECORD](#acct-online-record) | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:176](../../../pangaea/programs/AUTHSRV.cbl#L176) |
+| call AUTHPUR argument 5 | [CARD-RECORD](#card-record) | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:176](../../../pangaea/programs/AUTHSRV.cbl#L176) |
+| call AUTHPUR argument 6 | [HOLD-RECORD](#hold-record) | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:176](../../../pangaea/programs/AUTHSRV.cbl#L176) |
+| call AUTHREV argument 1 | [AUTH-REQUEST](#auth-request) | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:180](../../../pangaea/programs/AUTHSRV.cbl#L180) |
+| call AUTHREV argument 2 | [AUTH-RESPONSE](#auth-response) | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:180](../../../pangaea/programs/AUTHSRV.cbl#L180) |
+| call AUTHREV argument 3 | [BANK-CONTROL-RECORD](#bank-control-record) | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:180](../../../pangaea/programs/AUTHSRV.cbl#L180) |
+| call AUTHREV argument 4 | [ACCT-ONLINE-RECORD](#acct-online-record) | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:180](../../../pangaea/programs/AUTHSRV.cbl#L180) |
+| call AUTHREV argument 5 | [CARD-RECORD](#card-record) | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:180](../../../pangaea/programs/AUTHSRV.cbl#L180) |
+| call AUTHREV argument 6 | [HOLD-RECORD](#hold-record) | CALL | 2100-AUTHORIZE | [AUTHSRV.cbl:180](../../../pangaea/programs/AUTHSRV.cbl#L180) |
 | file CARD-FILE | [CARD-RECORD](#card-record) | REWRITE | 2400-SAVE-CHANGES | [AUTHSRV.cbl:236](../../../pangaea/programs/AUTHSRV.cbl#L236) |
 | file HOLD-FILE | [HOLD-RECORD](#hold-record) | REWRITE | 2400-SAVE-CHANGES | [AUTHSRV.cbl:242](../../../pangaea/programs/AUTHSRV.cbl#L242) |
 | file HOLD-FILE | [HOLD-RECORD](#hold-record) | WRITE | 2400-SAVE-CHANGES | [AUTHSRV.cbl:252](../../../pangaea/programs/AUTHSRV.cbl#L252) |
@@ -305,6 +362,7 @@ Records written to files.
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [AUTHSRV.cbl:283](../../../pangaea/programs/AUTHSRV.cbl#L283) |
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [AUTHSRV.cbl:286](../../../pangaea/programs/AUTHSRV.cbl#L286) |
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [AUTHSRV.cbl:289](../../../pangaea/programs/AUTHSRV.cbl#L289) |
+| SYSOUT | [AUTH-RESPONSE](#auth-response) | DISPLAY | 2000-SERVE-REQUEST | [AUTHSRV.cbl:155](../../../pangaea/programs/AUTHSRV.cbl#L155) |
 
 ### Into other data items
 
@@ -326,15 +384,15 @@ Written from [ACCT-ONLINE-RECORD](#acct-online-record).
 
 | Field | Position | Origins |
 | --- | --: | --- |
-| AO-ACCT-NO | 1-10 | file ACCT-FILE AO-ACCT-NO; file CARD-FILE CR-ACCT-NO |
-| AO-CUST-NO | 11-18 | file ACCT-FILE AO-CUST-NO |
-| AO-SHORT-NAME | 19-38 | file ACCT-FILE AO-SHORT-NAME |
-| AO-ACCT-TYPE | 39 | file ACCT-FILE AO-ACCT-TYPE |
-| AO-STATUS | 40 | file ACCT-FILE AO-STATUS |
-| AO-BALANCE | 41-53 | file ACCT-FILE AO-BALANCE |
-| AO-OVERDRAFT-LIMIT | 54-62 | file ACCT-FILE AO-OVERDRAFT-LIMIT |
-| AO-HOLDS | 63-75 | file ACCT-FILE AO-HOLDS |
-| AO-AS-OF-DATE | 76-83 | file ACCT-FILE AO-AS-OF-DATE |
+| AO-ACCT-NO | 1-10 | call ATMBAL argument 4 AO-ACCT-NO; call ATMBAL argument 5 CR-ACCT-NO; call ATMWDL argument 4 AO-ACCT-NO; call ATMWDL argument 5 CR-ACCT-NO; call AUTHPUR argument 4 AO-ACCT-NO; call AUTHPUR argument 5 CR-ACCT-NO; call AUTHREV argument 4 AO-ACCT-NO; call AUTHREV argument 5 CR-ACCT-NO; file ACCT-FILE AO-ACCT-NO; file CARD-FILE CR-ACCT-NO |
+| AO-CUST-NO | 11-18 | call ATMBAL argument 4 AO-CUST-NO; call ATMWDL argument 4 AO-CUST-NO; call AUTHPUR argument 4 AO-CUST-NO; call AUTHREV argument 4 AO-CUST-NO; file ACCT-FILE AO-CUST-NO |
+| AO-SHORT-NAME | 19-38 | call ATMBAL argument 4 AO-SHORT-NAME; call ATMWDL argument 4 AO-SHORT-NAME; call AUTHPUR argument 4 AO-SHORT-NAME; call AUTHREV argument 4 AO-SHORT-NAME; file ACCT-FILE AO-SHORT-NAME |
+| AO-ACCT-TYPE | 39 | call ATMBAL argument 4 AO-ACCT-TYPE; call ATMWDL argument 4 AO-ACCT-TYPE; call AUTHPUR argument 4 AO-ACCT-TYPE; call AUTHREV argument 4 AO-ACCT-TYPE; file ACCT-FILE AO-ACCT-TYPE |
+| AO-STATUS | 40 | call ATMBAL argument 4 AO-STATUS; call ATMWDL argument 4 AO-STATUS; call AUTHPUR argument 4 AO-STATUS; call AUTHREV argument 4 AO-STATUS; file ACCT-FILE AO-STATUS |
+| AO-BALANCE | 41-53 | call ATMBAL argument 4 AO-BALANCE; call ATMWDL argument 4 AO-BALANCE; call AUTHPUR argument 4 AO-BALANCE; call AUTHREV argument 4 AO-BALANCE; file ACCT-FILE AO-BALANCE |
+| AO-OVERDRAFT-LIMIT | 54-62 | call ATMBAL argument 4 AO-OVERDRAFT-LIMIT; call ATMWDL argument 4 AO-OVERDRAFT-LIMIT; call AUTHPUR argument 4 AO-OVERDRAFT-LIMIT; call AUTHREV argument 4 AO-OVERDRAFT-LIMIT; file ACCT-FILE AO-OVERDRAFT-LIMIT |
+| AO-HOLDS | 63-75 | call ATMBAL argument 4 AO-HOLDS; call ATMWDL argument 4 AO-HOLDS; call AUTHPUR argument 4 AO-HOLDS; call AUTHREV argument 4 AO-HOLDS; file ACCT-FILE AO-HOLDS |
+| AO-AS-OF-DATE | 76-83 | call ATMBAL argument 4 AO-AS-OF-DATE; call ATMWDL argument 4 AO-AS-OF-DATE; call AUTHPUR argument 4 AO-AS-OF-DATE; call AUTHREV argument 4 AO-AS-OF-DATE; file ACCT-FILE AO-AS-OF-DATE |
 
 ### File CARD-FILE
 
@@ -342,17 +400,17 @@ Written from [CARD-RECORD](#card-record).
 
 | Field | Position | Origins |
 | --- | --: | --- |
-| CR-CARD-NO | 1-16 | file CARD-FILE CR-CARD-NO |
-| CR-ACCT-NO | 17-26 | file CARD-FILE CR-ACCT-NO |
-| CR-CUST-NO | 27-34 | file CARD-FILE CR-CUST-NO |
-| CR-STATUS | 35 | file CARD-FILE CR-STATUS |
-| CR-EXPIRY-MONTH | 36-41 | file CARD-FILE CR-EXPIRY-MONTH |
-| CR-PURCHASE-LIMIT | 42-48 | file CARD-FILE CR-PURCHASE-LIMIT |
-| CR-CASH-LIMIT | 49-55 | file CARD-FILE CR-CASH-LIMIT |
-| CR-TOTALS-DATE | 56-63 | file CARD-FILE CR-TOTALS-DATE |
-| CR-DAY-PURCHASES | 64-70 | file CARD-FILE CR-DAY-PURCHASES |
-| CR-DAY-CASH | 71-77 | file CARD-FILE CR-DAY-CASH |
-| CR-MONTH-WITHDRAWALS | 78-80 | file CARD-FILE CR-MONTH-WITHDRAWALS |
+| CR-CARD-NO | 1-16 | call ATMBAL argument 1 RQ-CARD-NO; call ATMBAL argument 5 CR-CARD-NO; call ATMWDL argument 1 RQ-CARD-NO; call ATMWDL argument 5 CR-CARD-NO; call AUTHPUR argument 1 RQ-CARD-NO; call AUTHPUR argument 5 CR-CARD-NO; call AUTHREV argument 1 RQ-CARD-NO; call AUTHREV argument 5 CR-CARD-NO; file CARD-FILE CR-CARD-NO; stream SYSIN RQ-CARD-NO |
+| CR-ACCT-NO | 17-26 | call ATMBAL argument 5 CR-ACCT-NO; call ATMWDL argument 5 CR-ACCT-NO; call AUTHPUR argument 5 CR-ACCT-NO; call AUTHREV argument 5 CR-ACCT-NO; file CARD-FILE CR-ACCT-NO |
+| CR-CUST-NO | 27-34 | call ATMBAL argument 5 CR-CUST-NO; call ATMWDL argument 5 CR-CUST-NO; call AUTHPUR argument 5 CR-CUST-NO; call AUTHREV argument 5 CR-CUST-NO; file CARD-FILE CR-CUST-NO |
+| CR-STATUS | 35 | call ATMBAL argument 5 CR-STATUS; call ATMWDL argument 5 CR-STATUS; call AUTHPUR argument 5 CR-STATUS; call AUTHREV argument 5 CR-STATUS; file CARD-FILE CR-STATUS |
+| CR-EXPIRY-MONTH | 36-41 | call ATMBAL argument 5 CR-EXPIRY-MONTH; call ATMWDL argument 5 CR-EXPIRY-MONTH; call AUTHPUR argument 5 CR-EXPIRY-MONTH; call AUTHREV argument 5 CR-EXPIRY-MONTH; file CARD-FILE CR-EXPIRY-MONTH |
+| CR-PURCHASE-LIMIT | 42-48 | call ATMBAL argument 5 CR-PURCHASE-LIMIT; call ATMWDL argument 5 CR-PURCHASE-LIMIT; call AUTHPUR argument 5 CR-PURCHASE-LIMIT; call AUTHREV argument 5 CR-PURCHASE-LIMIT; file CARD-FILE CR-PURCHASE-LIMIT |
+| CR-CASH-LIMIT | 49-55 | call ATMBAL argument 5 CR-CASH-LIMIT; call ATMWDL argument 5 CR-CASH-LIMIT; call AUTHPUR argument 5 CR-CASH-LIMIT; call AUTHREV argument 5 CR-CASH-LIMIT; file CARD-FILE CR-CASH-LIMIT |
+| CR-TOTALS-DATE | 56-63 | call ATMBAL argument 5 CR-TOTALS-DATE; call ATMWDL argument 5 CR-TOTALS-DATE; call AUTHPUR argument 5 CR-TOTALS-DATE; call AUTHREV argument 5 CR-TOTALS-DATE; file CARD-FILE CR-TOTALS-DATE |
+| CR-DAY-PURCHASES | 64-70 | call ATMBAL argument 5 CR-DAY-PURCHASES; call ATMWDL argument 5 CR-DAY-PURCHASES; call AUTHPUR argument 5 CR-DAY-PURCHASES; call AUTHREV argument 5 CR-DAY-PURCHASES; file CARD-FILE CR-DAY-PURCHASES |
+| CR-DAY-CASH | 71-77 | call ATMBAL argument 5 CR-DAY-CASH; call ATMWDL argument 5 CR-DAY-CASH; call AUTHPUR argument 5 CR-DAY-CASH; call AUTHREV argument 5 CR-DAY-CASH; file CARD-FILE CR-DAY-CASH |
+| CR-MONTH-WITHDRAWALS | 78-80 | call ATMBAL argument 5 CR-MONTH-WITHDRAWALS; call ATMWDL argument 5 CR-MONTH-WITHDRAWALS; call AUTHPUR argument 5 CR-MONTH-WITHDRAWALS; call AUTHREV argument 5 CR-MONTH-WITHDRAWALS; file CARD-FILE CR-MONTH-WITHDRAWALS |
 
 ### File HOLD-FILE
 
@@ -360,16 +418,16 @@ Written from [HOLD-RECORD](#hold-record).
 
 | Field | Position | Origins |
 | --- | --: | --- |
-| HD-ACCT-NO | 1-10 | file CARD-FILE CR-ACCT-NO; file HOLD-FILE HD-ACCT-NO |
-| HD-HOLD-NO | 11-16 | file HOLD-FILE HD-HOLD-NO; initial value of WS-LAST-HOLD-NO; literal 1 |
-| HD-CARD-NO | 17-32 | file HOLD-FILE HD-CARD-NO |
-| HD-KIND | 33 | file HOLD-FILE HD-KIND |
-| HD-STATUS | 34 | file HOLD-FILE HD-STATUS |
-| HD-AMOUNT | 35-43 | file HOLD-FILE HD-AMOUNT |
-| HD-FEE | 44-48 | file HOLD-FILE HD-FEE |
-| HD-TERMINAL | 49-68 | file HOLD-FILE HD-TERMINAL |
-| HD-TIMESTAMP | 69-82 | file HOLD-FILE HD-TIMESTAMP |
-| HD-BUSINESS-DATE | 83-90 | file HOLD-FILE HD-BUSINESS-DATE |
+| HD-ACCT-NO | 1-10 | call ATMBAL argument 5 CR-ACCT-NO; call ATMBAL argument 6 HD-ACCT-NO; call ATMWDL argument 5 CR-ACCT-NO; call ATMWDL argument 6 HD-ACCT-NO; call AUTHPUR argument 5 CR-ACCT-NO; call AUTHPUR argument 6 HD-ACCT-NO; call AUTHREV argument 5 CR-ACCT-NO; call AUTHREV argument 6 HD-ACCT-NO; file CARD-FILE CR-ACCT-NO; file HOLD-FILE HD-ACCT-NO |
+| HD-HOLD-NO | 11-16 | call ATMBAL argument 1 RQ-AUTH-CODE; call ATMBAL argument 6 HD-HOLD-NO; call ATMWDL argument 1 RQ-AUTH-CODE; call ATMWDL argument 6 HD-HOLD-NO; call AUTHPUR argument 1 RQ-AUTH-CODE; call AUTHPUR argument 6 HD-HOLD-NO; call AUTHREV argument 1 RQ-AUTH-CODE; call AUTHREV argument 6 HD-HOLD-NO; file HOLD-FILE HD-HOLD-NO; initial value of WS-LAST-HOLD-NO; literal 1; stream SYSIN RQ-AUTH-CODE |
+| HD-CARD-NO | 17-32 | call ATMBAL argument 6 HD-CARD-NO; call ATMWDL argument 6 HD-CARD-NO; call AUTHPUR argument 6 HD-CARD-NO; call AUTHREV argument 6 HD-CARD-NO; file HOLD-FILE HD-CARD-NO |
+| HD-KIND | 33 | call ATMBAL argument 6 HD-KIND; call ATMWDL argument 6 HD-KIND; call AUTHPUR argument 6 HD-KIND; call AUTHREV argument 6 HD-KIND; file HOLD-FILE HD-KIND |
+| HD-STATUS | 34 | call ATMBAL argument 6 HD-STATUS; call ATMWDL argument 6 HD-STATUS; call AUTHPUR argument 6 HD-STATUS; call AUTHREV argument 6 HD-STATUS; file HOLD-FILE HD-STATUS |
+| HD-AMOUNT | 35-43 | call ATMBAL argument 6 HD-AMOUNT; call ATMWDL argument 6 HD-AMOUNT; call AUTHPUR argument 6 HD-AMOUNT; call AUTHREV argument 6 HD-AMOUNT; file HOLD-FILE HD-AMOUNT |
+| HD-FEE | 44-48 | call ATMBAL argument 6 HD-FEE; call ATMWDL argument 6 HD-FEE; call AUTHPUR argument 6 HD-FEE; call AUTHREV argument 6 HD-FEE; file HOLD-FILE HD-FEE |
+| HD-TERMINAL | 49-68 | call ATMBAL argument 6 HD-TERMINAL; call ATMWDL argument 6 HD-TERMINAL; call AUTHPUR argument 6 HD-TERMINAL; call AUTHREV argument 6 HD-TERMINAL; file HOLD-FILE HD-TERMINAL |
+| HD-TIMESTAMP | 69-82 | call ATMBAL argument 6 HD-TIMESTAMP; call ATMWDL argument 6 HD-TIMESTAMP; call AUTHPUR argument 6 HD-TIMESTAMP; call AUTHREV argument 6 HD-TIMESTAMP; file HOLD-FILE HD-TIMESTAMP |
+| HD-BUSINESS-DATE | 83-90 | call ATMBAL argument 6 HD-BUSINESS-DATE; call ATMWDL argument 6 HD-BUSINESS-DATE; call AUTHPUR argument 6 HD-BUSINESS-DATE; call AUTHREV argument 6 HD-BUSINESS-DATE; file HOLD-FILE HD-BUSINESS-DATE |
 
 ### File REPORT-OUT
 
@@ -378,7 +436,7 @@ Written from [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
 | Field | Position | Origins |
 | --- | --: | --- |
 | WS-RA-LABEL | 1-30 | literal 'HELD WITH FEES'; literal 'RELEASED BY REVERSALS' |
-| WS-RA-VALUE | 31-51 | file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-HELD-TOTAL; initial value of WS-RELEASED-TOTAL |
+| WS-RA-VALUE | 31-51 | call ATMBAL argument 6 HD-AMOUNT; call ATMBAL argument 6 HD-FEE; call ATMWDL argument 6 HD-AMOUNT; call ATMWDL argument 6 HD-FEE; call AUTHPUR argument 6 HD-AMOUNT; call AUTHPUR argument 6 HD-FEE; call AUTHREV argument 6 HD-AMOUNT; call AUTHREV argument 6 HD-FEE; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-HELD-TOTAL; initial value of WS-RELEASED-TOTAL |
 
 ## Records
 

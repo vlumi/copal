@@ -5,7 +5,7 @@
 {{if .Forward}}
 <p class="crumbs">its values in <a href="{{program .Start.Program}}">{{.Start.Program}}</a>{{with .Start.Step}}, step {{.}} of {{$.View.Start.Job}}{{end}}, followed on through {{len .Hops}} fields of the programs that move them and the job steps between them{{if .Outputs}}, to {{range $i, $d := .Outputs}}{{if $i}}, {{end}}<a href="{{dataset (base $d)}}">{{$d}}</a>{{end}}, which no step reads: they go outside{{end}}{{if .Reports}}{{if .Outputs}}, and{{else}}, to{{end}} the reports {{join .Reports ", "}}{{end}}. <a href="{{trace .Start.Program .Start.Field}}">Follow them back instead.</a></p>
 {{else}}
-<p class="crumbs">its values in <a href="{{program .Start.Program}}">{{.Start.Program}}</a>{{with .Start.Step}}, step {{.}} of {{$.View.Start.Job}}{{end}}, followed back through {{len .Hops}} fields of the programs that move them and the job steps between them{{if .External}}, to {{range $i, $d := .External}}{{if $i}}, {{end}}<a href="{{dataset (base $d)}}">{{$d}}</a>{{end}}, which no job writes: they come from outside{{end}}. <a href="{{forward .Start.Program .Start.Field}}">Follow where they go instead.</a></p>
+<p class="crumbs">its values in <a href="{{program .Start.Program}}">{{.Start.Program}}</a>{{with .Start.Step}}, step {{.}} of {{$.View.Start.Job}}{{end}}, followed back through {{len .Hops}} fields of the programs that move them and the job steps between them{{if .External}}, to {{range $i, $d := .External}}{{if $i}}, {{end}}<a href="{{dataset (base $d)}}">{{$d}}</a>{{end}}, which no job writes: they come from outside{{end}}{{if .Streams}}{{if .External}}, and{{else}}, to{{end}} {{join .Streams ", "}}, the in-stream data the job is given from outside{{end}}. <a href="{{forward .Start.Program .Start.Field}}">Follow where they go instead.</a></p>
 {{end}}
 {{if .Capped}}<p class="note"><strong>The trail is cut short</strong> at {{len .Hops}} fields: its values reach more of the system than a page can follow. The fields here are the nearest.</p>{{end}}
 
@@ -23,12 +23,21 @@
   {{with .Reaches}}<p>Reaches {{range $i, $x := .}}{{if $i}}, {{end}}{{if index $fields $x}}<a href="{{field $p $x}}">{{$x}}</a>{{else}}{{$x}}{{end}}{{end}}.</p>{{end}}
   {{range .Displays}}<p>Shown by <code>DISPLAY {{join .Items " "}}</code> in <a href="{{paragraph $p .Paragraph}}">{{.Paragraph}}</a>, to the job's output.</p>{{end}}
   {{range .Sources}}
+  {{if .Call}}<p>Passed by reference to <a href="{{program .Call}}">{{.Call}}</a> as argument {{.Arg}}, which changes {{.Field}}: written as {{template "nodes" .Writers}}.</p>
+  {{else if .Parameter}}<p>Passed in by the caller as parameter {{.Parameter}}, {{.Field}}: from {{template "nodes" .Writers}}.</p>
+  {{else if .Stream}}<p>Accepted as {{.Field}} from {{.Stream}}, the job's in-stream data, from outside.</p>
+  {{else}}
   <p>Reads {{.Field}} from file {{.File}}{{with .Datasets}}, dataset {{range $i, $d := .}}{{if $i}}, {{end}}<a href="{{dataset (base $d)}}">{{$d}}</a>{{end}}{{end}}{{if .Sorts}}, through the sort of {{range $i, $n := .Sorts}}{{if $i}}, {{end}}{{$n.Step}} of {{$n.Job}}{{end}}{{end}}:
     {{if .Writers}}written as {{range $i, $n := .Writers}}{{if $i}}, {{end}}<a href="#{{hop $n}}">{{$n.Field}}</a> by {{$n.Program}}{{with $n.Step}} in {{.}} of {{$n.Job}}{{end}}{{end}}{{end}}{{if .External}}{{if .Writers}}; {{end}}from outside, as no job writes {{join .External ", "}}{{end}}{{if and (not .Writers) (not .External)}}no step's program writes these bytes{{end}}.</p>
   {{end}}
+  {{end}}
   {{range .Targets}}
+  {{if .Call}}<p>Passed to <a href="{{program .Call}}">{{.Call}}</a> as argument {{.Arg}}: read as {{template "nodes" .Readers}}.</p>
+  {{else if .Parameter}}<p>Goes back to the caller through parameter {{.Parameter}}: as {{template "nodes" .Readers}}.</p>
+  {{else}}
   <p>Writes to file {{.File}}{{with .Datasets}}, dataset {{range $i, $d := .}}{{if $i}}, {{end}}<a href="{{dataset (base $d)}}">{{$d}}</a>{{end}}{{end}}{{if .Sorts}}, through the sort of {{range $i, $n := .Sorts}}{{if $i}}, {{end}}{{$n.Step}} of {{$n.Job}}{{end}}{{end}}:
     {{if .Report}}printed to the job's output, DD {{.Report}}{{end}}{{if .Readers}}{{if .Report}}; {{end}}read as {{range $i, $n := .Readers}}{{if $i}}, {{end}}<a href="#{{hop $n}}">{{$n.Field}}</a> by {{$n.Program}}{{with $n.Step}} in {{.}} of {{$n.Job}}{{end}}{{end}}{{end}}{{if .Outputs}}{{if or .Report .Readers}}; {{end}}out of the system, as no step reads {{join .Outputs ", "}}{{end}}{{if and (not .Report) (not .Readers) (not .Outputs)}}no step's program reads these bytes{{end}}.</p>
+  {{end}}
   {{end}}
 </section>
 {{end}}
@@ -44,3 +53,5 @@
 {{end}}
 {{end}}
 {{end}}
+
+{{define "nodes"}}{{range $i, $n := .}}{{if $i}}, {{end}}<a href="#{{hop $n}}">{{$n.Field}}</a> in {{$n.Program}}{{end}}{{end}}

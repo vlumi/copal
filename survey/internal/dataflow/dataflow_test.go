@@ -192,3 +192,57 @@ func TestBytes(t *testing.T) {
 		t.Errorf("bytes beyond the item reach %s", e.Items)
 	}
 }
+
+func analyze(t *testing.T, path string) Flow {
+	t.Helper()
+	p, err := cobol.ReadProgram(path, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	records, err := layout.Program(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return Analyze(p, records)
+}
+
+func originStrings(origins []Origin) []string {
+	var s []string
+	for _, o := range origins {
+		s = append(s, o.String())
+	}
+	return s
+}
+
+// A CALL passes its items in, and those by reference may come back
+// changed; an ACCEPT reads SYSIN; a called program's linkage items come
+// from its caller, and what it writes into them goes back.
+func TestCallsAndStreams(t *testing.T) {
+	caller := analyze(t, "testdata/CALLER.cbl")
+	var edges []string
+	for _, e := range caller.Lineage {
+		edges = append(edges, fmt.Sprintf("%s %s -> %s %d", e.Verb, e.From, e.To, e.Arg))
+	}
+	want := []string{"ACCEPT SYSIN -> WS-REQUEST 0", "CALL WS-REQUEST -> CALLEE 1", "CALL CALLEE -> WS-REQUEST 1",
+		"CALL WS-DATE -> CALLEE 2", "MOVE WS-HELD -> WS-OUT 0", "DISPLAY WS-OUT -> SYSOUT 0"}
+	if !slices.Equal(edges, want) {
+		t.Errorf("edges\n%q\nwant\n%q", edges, want)
+	}
+	if got := originStrings(caller.Origins("WS-OUT")); !slices.Equal(got, []string{"call CALLEE argument 1 WS-HELD", "stream SYSIN WS-HELD"}) {
+		t.Errorf("origins of WS-OUT: %q", got)
+	}
+	if calls := caller.Affects("WS-AMOUNT").Calls; len(calls) != 1 || calls[0] != (Passed{Program: "CALLEE", Arg: 1, Start: 1, Length: 5}) {
+		t.Errorf("WS-AMOUNT passed as %+v", calls)
+	}
+
+	callee := analyze(t, "testdata/CALLEE.cbl")
+	if got := originStrings(callee.Origins("LK-HELD")); !slices.Equal(got, []string{"parameter 1 LK-AMOUNT", "parameter 1 LK-HELD"}) {
+		t.Errorf("origins of LK-HELD: %q", got)
+	}
+	if params := callee.Affects("LK-AMOUNT").Parameters; len(params) != 1 || params[0] != (Passed{Arg: 1, Start: 6, Length: 5}) {
+		t.Errorf("LK-AMOUNT goes back as %+v", params)
+	}
+	if params := callee.Affects("LK-DATE").Parameters; len(params) != 0 {
+		t.Errorf("LK-DATE, only read, goes back as %+v", params)
+	}
+}

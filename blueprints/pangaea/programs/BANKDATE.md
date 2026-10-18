@@ -34,7 +34,7 @@ Program [BANKDATE.cbl](../../../pangaea/programs/BANKDATE.cbl): 2 files, 2 parag
   - [Into CONTROL-OUT-RECORD](#into-control-out-record)
   - [Into WS-DAY-NUMBER](#into-ws-day-number)
   - [Into WS-WEEKDAY](#into-ws-weekday)
-  - [Into files](#into-files)
+  - [Out of the program](#out-of-the-program)
   - [Into other data items](#into-other-data-items)
 - [Field origins](#field-origins)
   - [File CONTROL-OUT](#file-control-out)
@@ -111,13 +111,15 @@ Record [WS-WEEKDAY](#ws-weekday).
 | WS-WEEKDAY | [WS-DAY-NUMBER](#ws-day-number) | COMPUTE | 1000-NEXT-BUSINESS-DAY | [BANKDATE.cbl:78](../../../pangaea/programs/BANKDATE.cbl#L78) |
 | WS-WEEKDAY | [WS-DAY-NUMBER](#ws-day-number) | COMPUTE | 1000-NEXT-BUSINESS-DAY | [BANKDATE.cbl:81](../../../pangaea/programs/BANKDATE.cbl#L81) |
 
-### Into files
+### Out of the program
 
-Records written to files.
+Records written to files, items passed to the programs called, and items displayed to the job's output.
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
 | file CONTROL-OUT | [CONTROL-OUT-RECORD](#control-out-record) | WRITE | 0000-MAIN | [BANKDATE.cbl:68](../../../pangaea/programs/BANKDATE.cbl#L68) |
+| SYSOUT | [WS-IN-STATUS](#ws-in-status) | DISPLAY | 0000-MAIN | [BANKDATE.cbl:56](../../../pangaea/programs/BANKDATE.cbl#L56) |
+| SYSOUT | [WS-OUT-STATUS](#ws-out-status) | DISPLAY | 0000-MAIN | [BANKDATE.cbl:56](../../../pangaea/programs/BANKDATE.cbl#L56) |
 
 ### Into other data items
 

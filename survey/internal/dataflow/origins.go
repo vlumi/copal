@@ -1,6 +1,7 @@
 package dataflow
 
 import (
+	"fmt"
 	"slices"
 	"strings"
 
@@ -8,21 +9,35 @@ import (
 )
 
 // Origin is where a data item's values come from in the end: a field of a
-// record a file is read into, a literal, or an item's initial VALUE.
+// record a file is read into, a literal, an item's initial VALUE, a
+// program called, which may change an item passed to it by reference, the
+// caller of the program, which passes the items it is called with, or the
+// job's SYSIN, which an ACCEPT reads.
 type Origin struct {
-	File    string // the file, for a field read from one
-	Item    string // the field read, or the item with the initial value
-	Literal string // the literal, as written
+	File      string // the file, for a field read from one
+	Item      string // the item at the bytes, or the item with the initial value
+	Literal   string // the literal, as written
+	Call      string // the program called, for an item passed to it
+	Arg       int    // the position of the argument passed, 1-based
+	Parameter int    // the position of the USING item passed in, 1-based
+	Stream    string // SYSIN, for an item accepted from it
 }
 
 // String writes the origin: "file TRAN-IN TD-AMOUNT", "literal 'TXPOST'",
-// "initial value of WS-COUNT".
+// "initial value of WS-COUNT", "call AUTHPUR argument 6 HD-AMOUNT",
+// "parameter 1 RQ-AMOUNT", "stream SYSIN AUTH-REQUEST".
 func (o Origin) String() string {
 	switch {
 	case o.File != "":
 		return "file " + o.File + " " + o.Item
 	case o.Literal != "":
 		return "literal " + o.Literal
+	case o.Call != "":
+		return fmt.Sprintf("call %s argument %d %s", o.Call, o.Arg, o.Item)
+	case o.Parameter > 0:
+		return fmt.Sprintf("parameter %d %s", o.Parameter, o.Item)
+	case o.Stream != "":
+		return "stream " + o.Stream + " " + o.Item
 	}
 	return "initial value of " + o.Item
 }
@@ -149,14 +164,23 @@ func (f Flow) trace(start place) Trace {
 		if p := f.storage.places[name]; p.value {
 			found[Origin{Item: name}] = true
 		}
+		if n := f.parameters[here.record]; n > 0 {
+			found[Origin{Parameter: n, Item: name}] = true
+		}
 		for i, e := range f.Lineage {
 			to, ok := f.storage.places[e.To]
-			if e.ToFile || !ok || !to.overlaps(here) {
+			if e.ToFile || e.ToCall || e.ToStream || !ok || !to.overlaps(here) {
 				continue
 			}
 			switch {
 			case e.FromFile:
 				found[Origin{File: e.From, Item: name}] = true
+				followed[i] = true
+			case e.FromCall:
+				found[Origin{Call: e.From, Arg: e.Arg, Item: name}] = true
+				followed[i] = true
+			case e.FromStream:
+				found[Origin{Stream: e.From, Item: name}] = true
 				followed[i] = true
 			case e.FromLiteral && to.group && to.length > here.length:
 				clearing[Origin{Literal: e.From}] = true

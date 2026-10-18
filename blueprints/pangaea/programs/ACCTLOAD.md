@@ -41,7 +41,7 @@ Program [ACCTLOAD.cbl](../../../pangaea/programs/ACCTLOAD.cbl): 5 files, 8 parag
   - [Into WS-TOTALS](#into-ws-totals)
   - [Into WS-REPORT-COUNT-LINE](#into-ws-report-count-line)
   - [Into WS-REPORT-AMOUNT-LINE](#into-ws-report-amount-line)
-  - [Into files](#into-files)
+  - [Out of the program](#out-of-the-program)
   - [Into other data items](#into-other-data-items)
 - [Field origins](#field-origins)
   - [File ONLINE-OUT](#file-online-out)
@@ -211,9 +211,9 @@ Record [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
 | WS-RA-LABEL | literal 'BALANCES LOADED' | MOVE | 8000-WRITE-REPORT | [ACCTLOAD.cbl:173](../../../pangaea/programs/ACCTLOAD.cbl#L173) |
 | WS-RA-VALUE | [WS-LOADED-BALANCE](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [ACCTLOAD.cbl:174](../../../pangaea/programs/ACCTLOAD.cbl#L174) |
 
-### Into files
+### Out of the program
 
-Records written to files.
+Records written to files, items passed to the programs called, and items displayed to the job's output.
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
@@ -225,6 +225,8 @@ Records written to files.
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [ACCTLOAD.cbl:170](../../../pangaea/programs/ACCTLOAD.cbl#L170) |
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [ACCTLOAD.cbl:172](../../../pangaea/programs/ACCTLOAD.cbl#L172) |
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [ACCTLOAD.cbl:175](../../../pangaea/programs/ACCTLOAD.cbl#L175) |
+| SYSOUT | [WS-FILE-STATUSES](#ws-file-statuses) | DISPLAY | 1000-INITIALIZE | [ACCTLOAD.cbl:104](../../../pangaea/programs/ACCTLOAD.cbl#L104) |
+| SYSOUT | [WS-ABORT-MESSAGE](#ws-abort-message) | DISPLAY | 9900-ABORT | [ACCTLOAD.cbl:183](../../../pangaea/programs/ACCTLOAD.cbl#L183) |
 
 ### Into other data items
 

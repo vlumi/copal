@@ -63,12 +63,22 @@ type Hop struct {
 // those bytes. Sorts are the steps whose sorts passed the records on, with
 // the datasets they read, and External the datasets no step writes, which
 // come from outside the system.
+//
+// A source may instead be a program called, Call, which may have changed
+// the argument at Arg passed to it, and Writers are its fields over the
+// bytes; the program's caller, which passed the item at Parameter, and
+// Writers are the callers' fields over the bytes; or Stream, the job's
+// SYSIN, from outside.
 type Source struct {
 	File, Field string
 	Datasets    []string
 	Writers     []Node
 	Sorts       []Node
 	External    []string
+	Call        string
+	Arg         int
+	Parameter   int
+	Stream      string
 }
 
 // Target is a run of bytes a program writes to a file, and where they are
@@ -77,13 +87,21 @@ type Source struct {
 // Sorts are the steps whose sorts passed the records on, Outputs the
 // datasets no step reads, which go outside the system, and Report the DD
 // of the job's output the file is printed to.
+//
+// A target may instead be a program called, Call, passed the bytes as the
+// argument at Arg, and Readers are its fields over them; or the program's
+// caller, Parameter, the USING item the bytes go back through, and Readers
+// are the callers' fields over them.
 type Target struct {
-	File     string
-	Datasets []string
-	Readers  []Node
-	Sorts    []Node
-	Outputs  []string
-	Report   string
+	File      string
+	Datasets  []string
+	Readers   []Node
+	Sorts     []Node
+	Outputs   []string
+	Report    string
+	Call      string
+	Arg       int
+	Parameter int
 }
 
 // Trail is every hop from a field, each node once, nearest first. Capped
@@ -177,17 +195,39 @@ func (t tracer) walk(start Node, step func(Node, *blueprint.Program) (Hop, []Nod
 // alone if none does.
 func (t tracer) runs(n Node) []Node {
 	var nodes []Node
-	for _, job := range t.system.Jobs {
-		for _, step := range job.Steps {
-			if step.Program == n.Program {
-				nodes = append(nodes, Node{Job: job.Name, Step: step.Name, Program: n.Program, Field: n.Field})
-			}
-		}
+	for _, step := range t.steps(n.Program, map[string]bool{}) {
+		nodes = append(nodes, Node{Job: step.Job, Step: step.Step, Program: n.Program, Field: n.Field})
 	}
 	if len(nodes) == 0 {
 		return []Node{n}
 	}
 	return nodes
+}
+
+// steps lists the job steps that run a program, or, for a program no step
+// runs, those that run the programs that call it.
+func (t tracer) steps(program string, seen map[string]bool) []blueprint.StepRef {
+	if seen[program] {
+		return nil
+	}
+	seen[program] = true
+	var steps []blueprint.StepRef
+	for _, job := range t.system.Jobs {
+		for _, step := range job.Steps {
+			if step.Program == program {
+				steps = append(steps, blueprint.StepRef{Job: job.Name, Step: step.Name})
+			}
+		}
+	}
+	if len(steps) > 0 {
+		return steps
+	}
+	for _, caller := range t.system.Programs {
+		if slices.ContainsFunc(caller.Calls, func(c blueprint.Call) bool { return c.Program == program }) {
+			steps = append(steps, t.steps(caller.Name, seen)...)
+		}
+	}
+	return steps
 }
 
 func (t tracer) back(n Node, p *blueprint.Program) Hop {
@@ -196,7 +236,19 @@ func (t tracer) back(n Node, p *blueprint.Program) Hop {
 		hop.Trace = p.TraceBytes(n.Field, n.Start, n.Length)
 	}
 	for _, o := range hop.Trace.Origins {
-		if o.File == "" {
+		switch {
+		case o.Call != "":
+			if writers := t.called(n, p, o.Call, o.Arg, o.Item); len(writers) > 0 {
+				hop.Sources = append(hop.Sources, Source{Field: o.Item, Call: o.Call, Arg: o.Arg, Writers: writers})
+			}
+			continue
+		case o.Parameter > 0:
+			hop.Sources = append(hop.Sources, Source{Field: o.Item, Parameter: o.Parameter, Writers: t.callers(n, p, o.Parameter, o.Item)})
+			continue
+		case o.Stream != "":
+			hop.Sources = append(hop.Sources, Source{Field: o.Item, Stream: o.Stream})
+			continue
+		case o.File == "":
 			continue
 		}
 		start, length, ok := bytesOf(p, o.File, o.Item)
@@ -219,6 +271,12 @@ func (t tracer) forward(n Node, p *blueprint.Program) Hop {
 		tgt := Target{File: w.File}
 		t.toFile(&tgt, n, p, w.File, w.Start, w.Length, 0)
 		hop.Targets = append(hop.Targets, tgt)
+	}
+	for _, c := range hop.Effect.Calls {
+		hop.Targets = append(hop.Targets, Target{Call: c.Program, Arg: c.Arg, Readers: t.passedTo(n, c)})
+	}
+	for _, c := range hop.Effect.Parameters {
+		hop.Targets = append(hop.Targets, Target{Parameter: c.Arg, Readers: t.passedBack(n, p, c)})
 	}
 	shown := append([]string{n.Field}, hop.Effect.Items...)
 	for _, d := range p.Displays {
@@ -580,4 +638,155 @@ func findSort(p *blueprint.Program, match func(blueprint.Sort) bool) (blueprint.
 		return blueprint.Sort{}, false
 	}
 	return p.Sorts[i], true
+}
+
+// called finds, in a program called, the fields over the bytes of an item
+// that a caller passed to it as the argument at arg and that came back
+// changed: the bytes at the same offset in the program's USING item, those
+// of them that a statement of the program moves a value into. A program
+// that only reads what it is passed by reference gives nothing back.
+func (t tracer) called(n Node, caller *blueprint.Program, program string, arg int, item string) []Node {
+	itemRecord, field, ok := locate(caller, item)
+	if !ok {
+		return nil
+	}
+	var nodes []Node
+	for _, c := range caller.Calls {
+		if c.Program != program || len(c.Using) < arg {
+			continue
+		}
+		argRecord, argument, ok := locate(caller, c.Using[arg-1])
+		if !ok || argRecord.Name != itemRecord.Name || !within(field, argument) {
+			continue
+		}
+		for _, node := range t.parameter(n, program, arg, field.Start-argument.Start, field.Length) {
+			if t.changes(node) {
+				nodes = append(nodes, node)
+			}
+		}
+	}
+	return unique(nodes)
+}
+
+// changes reports whether a statement of a node's program moves a value
+// into the node's bytes.
+func (t tracer) changes(n Node) bool {
+	p := t.programs[n.Program]
+	trace := p.Trace(n.Field)
+	if n.Length > 0 {
+		trace = p.TraceBytes(n.Field, n.Start, n.Length)
+	}
+	return len(trace.Edges) > 0
+}
+
+// callers finds, in the programs that call one, the fields over the bytes
+// of an item the program was passed as its USING item at position: the
+// bytes at the same offset in each caller's argument.
+func (t tracer) callers(n Node, callee *blueprint.Program, position int, item string) []Node {
+	if len(callee.Using) < position {
+		return nil
+	}
+	_, field, ok := locate(callee, item)
+	_, parameter, found := locate(callee, callee.Using[position-1])
+	if !ok || !found {
+		return nil
+	}
+	return t.arguments(n, callee.Name, position, field.Start-parameter.Start, field.Length)
+}
+
+// passedTo finds the fields of a program called over the bytes passed to
+// it.
+func (t tracer) passedTo(n Node, c dataflow.Passed) []Node {
+	return unique(t.parameter(n, c.Program, c.Arg, c.Start-1, c.Length))
+}
+
+// passedBack finds the callers' fields over the bytes a program called
+// moved into the USING item at c.Arg.
+func (t tracer) passedBack(n Node, callee *blueprint.Program, c dataflow.Passed) []Node {
+	if len(callee.Using) < c.Arg {
+		return nil
+	}
+	_, parameter, ok := locate(callee, callee.Using[c.Arg-1])
+	if !ok {
+		return nil
+	}
+	return t.arguments(n, callee.Name, c.Arg, c.Start-parameter.Start, c.Length)
+}
+
+// parameter lists a program's fields over the bytes of its USING item at
+// position, from offset, for length.
+func (t tracer) parameter(n Node, program string, position, offset, length int) []Node {
+	callee := t.programs[program]
+	if callee == nil || len(callee.Using) < position {
+		return nil
+	}
+	r, parameter, ok := locate(callee, callee.Using[position-1])
+	if !ok {
+		return nil
+	}
+	return over(Node{Job: n.Job, Step: n.Step, Program: callee.Name}, spans(r), parameter.Start+offset, length)
+}
+
+// arguments lists the fields of every program that calls one over the
+// bytes of the argument it passes at position, from offset, for length.
+func (t tracer) arguments(n Node, program string, position, offset, length int) []Node {
+	var nodes []Node
+	for i := range t.system.Programs {
+		caller := &t.system.Programs[i]
+		for _, c := range caller.Calls {
+			if c.Program != program || len(c.Using) < position {
+				continue
+			}
+			r, argument, ok := locate(caller, c.Using[position-1])
+			if !ok {
+				continue
+			}
+			nodes = append(nodes, over(Node{Job: n.Job, Step: n.Step, Program: caller.Name}, spans(r), argument.Start+offset, length)...)
+		}
+	}
+	return unique(nodes)
+}
+
+// locate finds a data item a program declares, and the record it is in.
+func locate(p *blueprint.Program, name string) (blueprint.Record, blueprint.Field, bool) {
+	for _, r := range p.Records {
+		if f, ok := find(r.Field, name); ok {
+			return r, f, true
+		}
+	}
+	return blueprint.Record{}, blueprint.Field{}, false
+}
+
+// within reports whether a field's bytes are in another's.
+func within(f, in blueprint.Field) bool {
+	return f.Start >= in.Start && f.Start+f.Length <= in.Start+in.Length
+}
+
+// spans is a record and its elementary fields, FILLER left out.
+func spans(r blueprint.Record) record {
+	rec := record{whole: span{r.Name, r.Start, r.Length}}
+	var walk func(f blueprint.Field)
+	walk = func(f blueprint.Field) {
+		if len(f.Fields) == 0 {
+			if f.Name != "FILLER" {
+				rec.fields = append(rec.fields, span{f.Name, f.Start, f.Length})
+			}
+			return
+		}
+		for _, child := range f.Fields {
+			walk(child)
+		}
+	}
+	walk(r.Field)
+	return rec
+}
+
+func unique(nodes []Node) []Node {
+	var out []Node
+	for _, n := range nodes {
+		if !slices.Contains(out, n) {
+			out = append(out, n)
+		}
+	}
+	return out
 }

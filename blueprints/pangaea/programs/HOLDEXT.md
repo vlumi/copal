@@ -45,7 +45,7 @@ Program [HOLDEXT.cbl](../../../pangaea/programs/HOLDEXT.cbl): 4 files, 9 paragra
   - [Into WS-TOTALS](#into-ws-totals)
   - [Into WS-REPORT-COUNT-LINE](#into-ws-report-count-line)
   - [Into WS-REPORT-AMOUNT-LINE](#into-ws-report-amount-line)
-  - [Into files](#into-files)
+  - [Out of the program](#out-of-the-program)
   - [Into other data items](#into-other-data-items)
 - [Field origins](#field-origins)
   - [File TRAN-OUT](#file-tran-out)
@@ -240,9 +240,9 @@ Record [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
 | WS-RA-LABEL | literal 'AMOUNT TOTAL' | MOVE | 8000-WRITE-REPORT | [HOLDEXT.cbl:200](../../../pangaea/programs/HOLDEXT.cbl#L200) |
 | WS-RA-VALUE | [WS-AMOUNT-TOTAL](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [HOLDEXT.cbl:201](../../../pangaea/programs/HOLDEXT.cbl#L201) |
 
-### Into files
+### Out of the program
 
-Records written to files.
+Records written to files, items passed to the programs called, and items displayed to the job's output.
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
@@ -252,6 +252,8 @@ Records written to files.
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [HOLDEXT.cbl:196](../../../pangaea/programs/HOLDEXT.cbl#L196) |
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [HOLDEXT.cbl:199](../../../pangaea/programs/HOLDEXT.cbl#L199) |
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [HOLDEXT.cbl:202](../../../pangaea/programs/HOLDEXT.cbl#L202) |
+| SYSOUT | [WS-FILE-STATUSES](#ws-file-statuses) | DISPLAY | 1000-INITIALIZE | [HOLDEXT.cbl:107](../../../pangaea/programs/HOLDEXT.cbl#L107) |
+| SYSOUT | [WS-ABORT-MESSAGE](#ws-abort-message) | DISPLAY | 9900-ABORT | [HOLDEXT.cbl:210](../../../pangaea/programs/HOLDEXT.cbl#L210) |
 | file TRAN-OUT | [TRAN-OUT-RECORD](#tran-out-record) | WRITE | 1000-INITIALIZE | [HOLDEXT.cbl:121](../../../pangaea/programs/HOLDEXT.cbl#L121) |
 | file TRAN-OUT | [TRAN-OUT-RECORD](#tran-out-record) | WRITE | 2900-WRITE-DETAIL | [HOLDEXT.cbl:169](../../../pangaea/programs/HOLDEXT.cbl#L169) |
 | file TRAN-OUT | [TRAN-OUT-RECORD](#tran-out-record) | WRITE | 3000-WRITE-TRAILER | [HOLDEXT.cbl:180](../../../pangaea/programs/HOLDEXT.cbl#L180) |
