@@ -10,12 +10,12 @@ Every dataset the bank keeps, by name. A name with a generation, `NAME(+1)`, is 
 | BANK.RATES | RATEREC, 20 bytes | Nobody since the bank opened | DAILY ACCRUE | The interest rate sheet, by account type and balance tier. Maintained by hand. |
 | ACCT.MASTER | ACCTMAST, 100 bytes, in account order | DAILY MAINT | DAILY, MONTHLY, START | The account master. A new generation every day; the day's postings and maintenance applied. |
 | ACCT.ACCRUAL | ACCRREC, 40 bytes, in step with the master | DAILY ACCRUE | DAILY, MONTHLY | Each account's accrued interest, and the interest due when a month closed. Packed decimal. |
-| ACCT.MAINT | MAINTREC, 80 bytes | The branches | DAILY MAINT | The day's account maintenance requests: open, close, freeze, unfreeze, overdraft limit. |
+| ACCT.MAINT | MAINTREC, 80 bytes | The branches | DAILY MAINT | The day's account maintenance requests: open, close, freeze, unfreeze, overdraft limit, each with the day the branch took it, six digits, `YYMMDD`. |
 | TRAN.DAILY | TRANREC, 80 bytes, header, details, trailer | The branches | DAILY VALID | The day's transactions: deposits, withdrawals, fees and transfers. From outside. |
 | TRAN.CARD | TRANREC, 80 bytes, header, details, trailer | ONLINE EXTRACT | DAILY VALIDC | The online day's card purchases, ATM withdrawals and ATM fees, from the holds. |
 | TRAN.AUDIT | AUDITREC, 100 bytes | DAILY, the four TXPOST steps | MONTHLY | One record per posting: account, transaction, amount, balance before and after. A generation per day, kept forever. |
-| TRAN.REJECTS | REJREC, 110 bytes | DAILY VALID, VALIDC and the TXPOST steps | Nobody; returned to the branches | The transactions that did not validate or could not post, with the reason. |
-| MAINT.REJECTS | REJREC, 110 bytes | DAILY MAINT | Nobody; returned to the branches | The maintenance requests the rules refused. |
+| TRAN.REJECTS | REJREC, 110 bytes | DAILY VALID, VALIDC and the TXPOST steps | Nobody; returned to the branches | The transactions that did not validate or could not post, with the reason and the date, as text. |
+| MAINT.REJECTS | REJREC, 110 bytes | DAILY MAINT | Nobody; returned to the branches | The maintenance requests the rules refused, with the reason and the date, as text. |
 | CARD.MASTER | CARDREC, 80 bytes, in card order | Nobody since the bank opened | DAILY CARDS, START | The cards: account, status, expiry, daily limits. Maintained by hand. |
 | ACCT.ONLINE | ACCTONL, 100 bytes, indexed by account | DAILY LOAD, START; updated by ONLINE AUTH | ONLINE | The online account file for one business day: balance, overdraft limit, holds. Indexed: no text form. |
 | CARD.ONLINE | CARDREC, 80 bytes, indexed by card | DAILY CARDS, START; updated by ONLINE AUTH | ONLINE | The online card file for one business day, with the day's running totals. Indexed. |
