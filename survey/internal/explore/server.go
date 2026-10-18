@@ -321,10 +321,10 @@ func (s *Server) field(r *http.Request) (any, error) {
 		v.Entity = &ref
 	}
 	for _, e := range p.Lineage {
-		if e.To == name && !e.ToFile {
+		if e.To == name && e.ToItem() {
 			v.Into = append(v.Into, e)
 		}
-		if e.From == name && !e.FromFile && !e.FromLiteral {
+		if e.From == name && e.FromItem() {
 			v.OutOf = append(v.OutOf, e)
 		}
 	}

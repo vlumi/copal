@@ -57,7 +57,7 @@ Program [TXVALID.cbl](../../../pangaea/programs/TXVALID.cbl): 5 files, 10 paragr
   - [Into WS-TOTALS](#into-ws-totals)
   - [Into WS-REPORT-COUNT-LINE](#into-ws-report-count-line)
   - [Into WS-REPORT-AMOUNT-LINE](#into-ws-report-amount-line)
-  - [Into files](#into-files)
+  - [Out of the program](#out-of-the-program)
   - [Into other data items](#into-other-data-items)
 - [Field origins](#field-origins)
   - [File TRAN-OUT](#file-tran-out)
@@ -275,9 +275,9 @@ Record [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
 | WS-RA-LABEL | literal 'AMOUNT TOTAL' | MOVE | 8000-WRITE-REPORT | [TXVALID.cbl:285](../../../pangaea/programs/TXVALID.cbl#L285) |
 | WS-RA-VALUE | [WS-AMOUNT-TOTAL](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [TXVALID.cbl:286](../../../pangaea/programs/TXVALID.cbl#L286) |
 
-### Into files
+### Out of the program
 
-Records written to files.
+Records written to files, items passed to the programs called, and items displayed to the job's output.
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
@@ -290,6 +290,7 @@ Records written to files.
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [TXVALID.cbl:287](../../../pangaea/programs/TXVALID.cbl#L287) |
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [TXVALID.cbl:289](../../../pangaea/programs/TXVALID.cbl#L289) |
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [TXVALID.cbl:297](../../../pangaea/programs/TXVALID.cbl#L297) |
+| SYSOUT | [WS-FILE-STATUSES](#ws-file-statuses) | DISPLAY | 1000-OPEN-FILES | [TXVALID.cbl:143](../../../pangaea/programs/TXVALID.cbl#L143) |
 | file TRAN-OUT | [TRAN-OUT-RECORD](#tran-out-record) | WRITE | 3200-VALIDATE-DETAIL | [TXVALID.cbl:233](../../../pangaea/programs/TXVALID.cbl#L233) |
 
 ### Into other data items

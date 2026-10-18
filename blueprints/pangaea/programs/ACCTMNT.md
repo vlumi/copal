@@ -61,7 +61,7 @@ Program [ACCTMNT.cbl](../../../pangaea/programs/ACCTMNT.cbl): 6 files, 21 paragr
   - [Into WS-TOTALS](#into-ws-totals)
   - [Into WS-REPORT-COUNT-LINE](#into-ws-report-count-line)
   - [Into WS-REPORT-AMOUNT-LINE](#into-ws-report-amount-line)
-  - [Into files](#into-files)
+  - [Out of the program](#out-of-the-program)
   - [Into other data items](#into-other-data-items)
 - [Field origins](#field-origins)
   - [File REJECT-OUT](#file-reject-out)
@@ -400,9 +400,9 @@ Record [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
 | WS-RA-LABEL | literal 'BALANCES' | MOVE | 8000-WRITE-REPORT | [ACCTMNT.cbl:348](../../../pangaea/programs/ACCTMNT.cbl#L348) |
 | WS-RA-VALUE | [WS-BALANCES-OUT](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [ACCTMNT.cbl:349](../../../pangaea/programs/ACCTMNT.cbl#L349) |
 
-### Into files
+### Out of the program
 
-Records written to files.
+Records written to files, items passed to the programs called, and items displayed to the job's output.
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
@@ -423,6 +423,8 @@ Records written to files.
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:350](../../../pangaea/programs/ACCTMNT.cbl#L350) |
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:352](../../../pangaea/programs/ACCTMNT.cbl#L352) |
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [ACCTMNT.cbl:354](../../../pangaea/programs/ACCTMNT.cbl#L354) |
+| SYSOUT | [WS-FILE-STATUSES](#ws-file-statuses) | DISPLAY | 1000-INITIALIZE | [ACCTMNT.cbl:149](../../../pangaea/programs/ACCTMNT.cbl#L149) |
+| SYSOUT | [WS-ABORT-MESSAGE](#ws-abort-message) | DISPLAY | 9900-ABORT | [ACCTMNT.cbl:363](../../../pangaea/programs/ACCTMNT.cbl#L363) |
 
 ### Into other data items
 

@@ -49,7 +49,7 @@ Program [MONCHG.cbl](../../../pangaea/programs/MONCHG.cbl): 5 files, 10 paragrap
   - [Into WS-TOTALS](#into-ws-totals)
   - [Into WS-REPORT-COUNT-LINE](#into-ws-report-count-line)
   - [Into WS-REPORT-AMOUNT-LINE](#into-ws-report-amount-line)
-  - [Into files](#into-files)
+  - [Out of the program](#out-of-the-program)
   - [Into other data items](#into-other-data-items)
 - [Field origins](#field-origins)
   - [File TRAN-OUT](#file-tran-out)
@@ -282,9 +282,9 @@ Record [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
 | WS-RA-VALUE | [WS-OVERDRAFT-TOTAL](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:248](../../../pangaea/programs/MONCHG.cbl#L248) |
 | WS-RA-VALUE | [WS-FEE-TOTAL](#ws-totals "in WS-TOTALS") | MOVE | 8000-WRITE-REPORT | [MONCHG.cbl:254](../../../pangaea/programs/MONCHG.cbl#L254) |
 
-### Into files
+### Out of the program
 
-Records written to files.
+Records written to files, items passed to the programs called, and items displayed to the job's output.
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
@@ -300,6 +300,8 @@ Records written to files.
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:252](../../../pangaea/programs/MONCHG.cbl#L252) |
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:255](../../../pangaea/programs/MONCHG.cbl#L255) |
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | 8000-WRITE-REPORT | [MONCHG.cbl:258](../../../pangaea/programs/MONCHG.cbl#L258) |
+| SYSOUT | [WS-FILE-STATUSES](#ws-file-statuses) | DISPLAY | 1000-INITIALIZE | [MONCHG.cbl:126](../../../pangaea/programs/MONCHG.cbl#L126) |
+| SYSOUT | [WS-ABORT-MESSAGE](#ws-abort-message) | DISPLAY | 9900-ABORT | [MONCHG.cbl:267](../../../pangaea/programs/MONCHG.cbl#L267) |
 | file TRAN-OUT | [TRAN-OUT-RECORD](#tran-out-record) | WRITE | 2900-WRITE-TRAN | [MONCHG.cbl:217](../../../pangaea/programs/MONCHG.cbl#L217) |
 
 ### Into other data items

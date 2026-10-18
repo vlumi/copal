@@ -85,10 +85,58 @@ type Lineage struct {
 	To          string `json:"to"`
 	FromFile    bool   `json:"fromFile,omitempty"`
 	FromLiteral bool   `json:"fromLiteral,omitempty"`
+	FromCall    bool   `json:"fromCall,omitempty"`
+	FromStream  bool   `json:"fromStream,omitempty"`
 	ToFile      bool   `json:"toFile,omitempty"`
+	ToCall      bool   `json:"toCall,omitempty"`
+	ToStream    bool   `json:"toStream,omitempty"`
+	Arg         int    `json:"arg,omitempty"`
 	Paragraph   string `json:"paragraph"`
 	Verb        string `json:"verb"`
 	Source      string `json:"source"`
+}
+
+// NewLineage is a statement's move of a value, as data flow finds it.
+func NewLineage(e dataflow.Edge) Lineage {
+	return Lineage{From: e.From, To: e.To, FromFile: e.FromFile, FromLiteral: e.FromLiteral, FromCall: e.FromCall,
+		FromStream: e.FromStream, ToFile: e.ToFile, ToCall: e.ToCall, ToStream: e.ToStream, Arg: e.Arg,
+		Paragraph: e.Paragraph, Verb: e.Verb, Source: e.Pos.String()}
+}
+
+// FromItem reports whether the value comes from a data item, rather than
+// a file, a literal, a program called or a stream.
+func (e Lineage) FromItem() bool {
+	return !e.FromFile && !e.FromLiteral && !e.FromCall && !e.FromStream
+}
+
+// ToItem reports whether the value goes into a data item, rather than a
+// file, a program called or a stream.
+func (e Lineage) ToItem() bool { return !e.ToFile && !e.ToCall && !e.ToStream }
+
+// FromText writes where the value comes from when it is not a data item:
+// "file TRAN-IN", "literal 1", "call AUTHPUR argument 6", "SYSIN".
+func (e Lineage) FromText() string {
+	switch {
+	case e.FromFile:
+		return "file " + e.From
+	case e.FromLiteral:
+		return "literal " + e.From
+	case e.FromCall:
+		return fmt.Sprintf("call %s argument %d", e.From, e.Arg)
+	}
+	return e.From
+}
+
+// ToText writes where the value goes when it is not a data item: "file
+// TRAN-OUT", "call AUTHPUR argument 6", "SYSOUT".
+func (e Lineage) ToText() string {
+	switch {
+	case e.ToFile:
+		return "file " + e.To
+	case e.ToCall:
+		return fmt.Sprintf("call %s argument %d", e.To, e.Arg)
+	}
+	return e.To
 }
 
 // Identification is an identification paragraph such as AUTHOR.
@@ -314,8 +362,7 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 		program.Paragraphs = append(program.Paragraphs, bp)
 	}
 	for _, e := range flow.Lineage {
-		program.Lineage = append(program.Lineage, Lineage{From: e.From, To: e.To, FromFile: e.FromFile, ToFile: e.ToFile,
-			FromLiteral: e.FromLiteral, Paragraph: e.Paragraph, Verb: e.Verb, Source: e.Pos.String()})
+		program.Lineage = append(program.Lineage, NewLineage(e))
 	}
 	program.Outputs = outputs(program, flow)
 	program.Inputs = inputs(program, flow)

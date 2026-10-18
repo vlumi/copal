@@ -1,12 +1,27 @@
 package dataflow
 
 // Effect is where a data item's values go: the items they reach, the
-// bytes of the files they are written to, and the statements that move
-// them there, as lineage edges, in the order the program declares them.
+// bytes of the files they are written to, the bytes of the arguments they
+// are passed in to programs called, the bytes of the items the program was
+// called with that they are moved into, back to the caller, and the
+// statements that move them there, as lineage edges, in the order the
+// program declares them.
 type Effect struct {
-	Items []string
-	Files []Written
-	Edges []Edge
+	Items      []string
+	Files      []Written
+	Calls      []Passed
+	Parameters []Passed
+	Edges      []Edge
+}
+
+// Passed is a run of bytes of an item passed between programs: to Program,
+// the program called, as the argument at Arg, or, with no Program, as the
+// USING item at Arg, back to the caller; Start is 1-based, within the
+// item.
+type Passed struct {
+	Program       string
+	Arg           int
+	Start, Length int
 }
 
 // Written is a run of bytes of the record a file is written from: the
@@ -43,7 +58,13 @@ func (f Flow) AffectsBytes(item string, start, length int) Effect {
 
 func (f Flow) affects(start place) Effect {
 	var effect Effect
-	reached, written := map[string]bool{}, map[Written]bool{}
+	reached, written, passed := map[string]bool{}, map[Written]bool{}, map[Passed]bool{}
+	pass := func(p Passed, to *[]Passed) {
+		if !passed[p] {
+			passed[p] = true
+			*to = append(*to, p)
+		}
+	}
 	followed := map[int]bool{}
 	visited := map[place]bool{}
 	queue := []place{start}
@@ -58,9 +79,18 @@ func (f Flow) affects(start place) Effect {
 			reached[name] = true
 			effect.Items = append(effect.Items, name)
 		}
+		if n := f.parameters[here.record]; n > 0 && here != start {
+			pass(Passed{Arg: n, Start: here.start, Length: here.length}, &effect.Parameters)
+		}
 		for i, e := range f.Lineage {
 			from, ok := f.storage.places[e.From]
-			if e.FromFile || e.FromLiteral || !ok || !from.overlaps(here) {
+			if e.FromFile || e.FromLiteral || e.FromCall || e.FromStream || e.ToStream || !ok || !from.overlaps(here) {
+				continue
+			}
+			if e.ToCall {
+				w := writtenBytes(e.To, here, from)
+				pass(Passed{Program: e.To, Arg: e.Arg, Start: w.Start, Length: w.Length}, &effect.Calls)
+				followed[i] = true
 				continue
 			}
 			if e.ToFile {

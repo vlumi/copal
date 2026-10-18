@@ -191,8 +191,7 @@ func (s *Server) flowDiagrams(paragraphs map[string]map[string]bool) ([]Diagram,
 }
 
 func statement(e dataflow.Edge) blueprint.Lineage {
-	return blueprint.Lineage{From: e.From, To: e.To, FromFile: e.FromFile, FromLiteral: e.FromLiteral, ToFile: e.ToFile,
-		Paragraph: e.Paragraph, Verb: e.Verb, Source: e.Pos.String()}
+	return blueprint.NewLineage(e)
 }
 
 // hopID is the anchor of a hop on the trace page.

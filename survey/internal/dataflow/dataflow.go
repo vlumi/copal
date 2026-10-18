@@ -21,6 +21,9 @@ type Flow struct {
 	Paragraphs []Paragraph
 	Lineage    []Edge
 	storage    *storage
+	// parameters are the positions of the items the program is passed
+	// with USING, 1-based, by name.
+	parameters map[string]int
 }
 
 // Paragraph is a paragraph's reads and writes, each item once, in the
@@ -37,19 +40,31 @@ type Paragraph struct {
 // for a value the statement gives itself, such as MOVE 'TXPOST' TO
 // RJ-PROGRAM or SET TD-INTEREST TO TRUE, written as "condition
 // TD-INTEREST".
+//
+// A CALL moves each item it passes into the program called, To with
+// ToCall, and may move a value back into each item it passes by
+// reference, From with FromCall; Arg is the argument's position, 1-based.
+// An ACCEPT moves a value from the job's SYSIN, From with FromStream, and
+// a DISPLAY one to its SYSOUT, To with ToStream.
 type Edge struct {
-	From, To         string
-	FromFile, ToFile bool
-	FromLiteral      bool
-	Paragraph        string
-	Verb             string
-	Pos              cobol.Pos
+	From, To             string
+	FromFile, ToFile     bool
+	FromLiteral          bool
+	FromCall, ToCall     bool
+	FromStream, ToStream bool
+	Arg                  int
+	Paragraph            string
+	Verb                 string
+	Pos                  cobol.Pos
 }
 
 // Analyze finds the program's data flow, given its records laid out.
 func Analyze(p *cobol.Program, records *layout.ProgramRecords) Flow {
 	names := newNames(records)
-	flow := Flow{storage: newStorage(records)}
+	flow := Flow{storage: newStorage(records), parameters: map[string]int{}}
+	for i, item := range p.Using {
+		flow.parameters[item] = i + 1
+	}
 	for _, para := range p.Paragraphs {
 		pf := Paragraph{Name: para.Name}
 		cobol.Walk(para.Statements, func(s cobol.Statement) {
@@ -160,7 +175,12 @@ var lineageVerbs = map[string]bool{
 // edges lists the values a statement moves. A data item operand moves its
 // own value, not its subscripts'; an expression moves every item in it.
 func (n *names) edges(paragraph string, s cobol.Statement) []Edge {
-	if !lineageVerbs[s.Verb] {
+	switch {
+	case s.Verb == "CALL" && s.Calls != "":
+		return n.callEdges(paragraph, s)
+	case (s.Verb == "ACCEPT" || s.Verb == "DISPLAY") && s.Device == "":
+		return n.streamEdges(paragraph, s)
+	case !lineageVerbs[s.Verb]:
 		return nil
 	}
 	var edges []Edge
@@ -211,6 +231,44 @@ func (n *names) edges(paragraph string, s cobol.Statement) []Edge {
 			if file, ok := n.files[record.Name]; ok {
 				add(Edge{From: record.Name, To: file, ToFile: true})
 			}
+		}
+	}
+	return edges
+}
+
+// callEdges lists the values a CALL moves: each item it passes into the
+// program called, and back from it into each item passed by reference,
+// which the program may change.
+func (n *names) callEdges(paragraph string, s cobol.Statement) []Edge {
+	var edges []Edge
+	for i, op := range s.Reads {
+		if op.Name == "" {
+			continue
+		}
+		item := n.item(op.Name)
+		edges = append(edges, Edge{From: item, To: s.Calls, ToCall: true, Arg: i + 1, Paragraph: paragraph, Verb: s.Verb, Pos: s.Pos})
+		if slices.ContainsFunc(s.Writes, func(w cobol.Operand) bool { return w.Text == op.Text }) {
+			edges = append(edges, Edge{From: s.Calls, FromCall: true, Arg: i + 1, To: item, Paragraph: paragraph, Verb: s.Verb, Pos: s.Pos})
+		}
+	}
+	return edges
+}
+
+// streamEdges lists the values an ACCEPT moves from the job's SYSIN, or a
+// DISPLAY to its SYSOUT.
+func (n *names) streamEdges(paragraph string, s cobol.Statement) []Edge {
+	var edges []Edge
+	if s.Verb == "ACCEPT" {
+		for _, op := range s.Writes {
+			if op.Name != "" {
+				edges = append(edges, Edge{From: "SYSIN", FromStream: true, To: n.item(op.Name), Paragraph: paragraph, Verb: s.Verb, Pos: s.Pos})
+			}
+		}
+		return edges
+	}
+	for _, op := range s.Reads {
+		if op.Name != "" {
+			edges = append(edges, Edge{From: n.item(op.Name), To: "SYSOUT", ToStream: true, Paragraph: paragraph, Verb: s.Verb, Pos: s.Pos})
 		}
 	}
 	return edges

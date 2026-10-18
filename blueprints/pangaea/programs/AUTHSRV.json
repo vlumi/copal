@@ -1793,12 +1793,28 @@
       "source": "pangaea/programs/AUTHSRV.cbl:143"
     },
     {
+      "from": "SYSIN",
+      "to": "AUTH-REQUEST",
+      "fromStream": true,
+      "paragraph": "2000-SERVE-REQUEST",
+      "verb": "ACCEPT",
+      "source": "pangaea/programs/AUTHSRV.cbl:150"
+    },
+    {
       "from": "condition END-OF-INPUT",
       "to": "WS-INPUT-END-SW",
       "fromLiteral": true,
       "paragraph": "2000-SERVE-REQUEST",
       "verb": "SET",
       "source": "pangaea/programs/AUTHSRV.cbl:152"
+    },
+    {
+      "from": "AUTH-RESPONSE",
+      "to": "SYSOUT",
+      "toStream": true,
+      "paragraph": "2000-SERVE-REQUEST",
+      "verb": "DISPLAY",
+      "source": "pangaea/programs/AUTHSRV.cbl:155"
     },
     {
       "from": "1",
@@ -1839,6 +1855,438 @@
       "paragraph": "2100-AUTHORIZE",
       "verb": "MOVE",
       "source": "pangaea/programs/AUTHSRV.cbl:168"
+    },
+    {
+      "from": "AUTH-REQUEST",
+      "to": "AUTHPUR",
+      "toCall": true,
+      "arg": 1,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:176"
+    },
+    {
+      "from": "AUTHPUR",
+      "to": "AUTH-REQUEST",
+      "fromCall": true,
+      "arg": 1,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:176"
+    },
+    {
+      "from": "AUTH-RESPONSE",
+      "to": "AUTHPUR",
+      "toCall": true,
+      "arg": 2,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:176"
+    },
+    {
+      "from": "AUTHPUR",
+      "to": "AUTH-RESPONSE",
+      "fromCall": true,
+      "arg": 2,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:176"
+    },
+    {
+      "from": "BANK-CONTROL-RECORD",
+      "to": "AUTHPUR",
+      "toCall": true,
+      "arg": 3,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:176"
+    },
+    {
+      "from": "AUTHPUR",
+      "to": "BANK-CONTROL-RECORD",
+      "fromCall": true,
+      "arg": 3,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:176"
+    },
+    {
+      "from": "ACCT-ONLINE-RECORD",
+      "to": "AUTHPUR",
+      "toCall": true,
+      "arg": 4,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:176"
+    },
+    {
+      "from": "AUTHPUR",
+      "to": "ACCT-ONLINE-RECORD",
+      "fromCall": true,
+      "arg": 4,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:176"
+    },
+    {
+      "from": "CARD-RECORD",
+      "to": "AUTHPUR",
+      "toCall": true,
+      "arg": 5,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:176"
+    },
+    {
+      "from": "AUTHPUR",
+      "to": "CARD-RECORD",
+      "fromCall": true,
+      "arg": 5,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:176"
+    },
+    {
+      "from": "HOLD-RECORD",
+      "to": "AUTHPUR",
+      "toCall": true,
+      "arg": 6,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:176"
+    },
+    {
+      "from": "AUTHPUR",
+      "to": "HOLD-RECORD",
+      "fromCall": true,
+      "arg": 6,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:176"
+    },
+    {
+      "from": "AUTH-REQUEST",
+      "to": "AUTHREV",
+      "toCall": true,
+      "arg": 1,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:180"
+    },
+    {
+      "from": "AUTHREV",
+      "to": "AUTH-REQUEST",
+      "fromCall": true,
+      "arg": 1,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:180"
+    },
+    {
+      "from": "AUTH-RESPONSE",
+      "to": "AUTHREV",
+      "toCall": true,
+      "arg": 2,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:180"
+    },
+    {
+      "from": "AUTHREV",
+      "to": "AUTH-RESPONSE",
+      "fromCall": true,
+      "arg": 2,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:180"
+    },
+    {
+      "from": "BANK-CONTROL-RECORD",
+      "to": "AUTHREV",
+      "toCall": true,
+      "arg": 3,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:180"
+    },
+    {
+      "from": "AUTHREV",
+      "to": "BANK-CONTROL-RECORD",
+      "fromCall": true,
+      "arg": 3,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:180"
+    },
+    {
+      "from": "ACCT-ONLINE-RECORD",
+      "to": "AUTHREV",
+      "toCall": true,
+      "arg": 4,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:180"
+    },
+    {
+      "from": "AUTHREV",
+      "to": "ACCT-ONLINE-RECORD",
+      "fromCall": true,
+      "arg": 4,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:180"
+    },
+    {
+      "from": "CARD-RECORD",
+      "to": "AUTHREV",
+      "toCall": true,
+      "arg": 5,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:180"
+    },
+    {
+      "from": "AUTHREV",
+      "to": "CARD-RECORD",
+      "fromCall": true,
+      "arg": 5,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:180"
+    },
+    {
+      "from": "HOLD-RECORD",
+      "to": "AUTHREV",
+      "toCall": true,
+      "arg": 6,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:180"
+    },
+    {
+      "from": "AUTHREV",
+      "to": "HOLD-RECORD",
+      "fromCall": true,
+      "arg": 6,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:180"
+    },
+    {
+      "from": "AUTH-REQUEST",
+      "to": "ATMWDL",
+      "toCall": true,
+      "arg": 1,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:184"
+    },
+    {
+      "from": "ATMWDL",
+      "to": "AUTH-REQUEST",
+      "fromCall": true,
+      "arg": 1,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:184"
+    },
+    {
+      "from": "AUTH-RESPONSE",
+      "to": "ATMWDL",
+      "toCall": true,
+      "arg": 2,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:184"
+    },
+    {
+      "from": "ATMWDL",
+      "to": "AUTH-RESPONSE",
+      "fromCall": true,
+      "arg": 2,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:184"
+    },
+    {
+      "from": "BANK-CONTROL-RECORD",
+      "to": "ATMWDL",
+      "toCall": true,
+      "arg": 3,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:184"
+    },
+    {
+      "from": "ATMWDL",
+      "to": "BANK-CONTROL-RECORD",
+      "fromCall": true,
+      "arg": 3,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:184"
+    },
+    {
+      "from": "ACCT-ONLINE-RECORD",
+      "to": "ATMWDL",
+      "toCall": true,
+      "arg": 4,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:184"
+    },
+    {
+      "from": "ATMWDL",
+      "to": "ACCT-ONLINE-RECORD",
+      "fromCall": true,
+      "arg": 4,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:184"
+    },
+    {
+      "from": "CARD-RECORD",
+      "to": "ATMWDL",
+      "toCall": true,
+      "arg": 5,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:184"
+    },
+    {
+      "from": "ATMWDL",
+      "to": "CARD-RECORD",
+      "fromCall": true,
+      "arg": 5,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:184"
+    },
+    {
+      "from": "HOLD-RECORD",
+      "to": "ATMWDL",
+      "toCall": true,
+      "arg": 6,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:184"
+    },
+    {
+      "from": "ATMWDL",
+      "to": "HOLD-RECORD",
+      "fromCall": true,
+      "arg": 6,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:184"
+    },
+    {
+      "from": "AUTH-REQUEST",
+      "to": "ATMBAL",
+      "toCall": true,
+      "arg": 1,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:188"
+    },
+    {
+      "from": "ATMBAL",
+      "to": "AUTH-REQUEST",
+      "fromCall": true,
+      "arg": 1,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:188"
+    },
+    {
+      "from": "AUTH-RESPONSE",
+      "to": "ATMBAL",
+      "toCall": true,
+      "arg": 2,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:188"
+    },
+    {
+      "from": "ATMBAL",
+      "to": "AUTH-RESPONSE",
+      "fromCall": true,
+      "arg": 2,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:188"
+    },
+    {
+      "from": "BANK-CONTROL-RECORD",
+      "to": "ATMBAL",
+      "toCall": true,
+      "arg": 3,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:188"
+    },
+    {
+      "from": "ATMBAL",
+      "to": "BANK-CONTROL-RECORD",
+      "fromCall": true,
+      "arg": 3,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:188"
+    },
+    {
+      "from": "ACCT-ONLINE-RECORD",
+      "to": "ATMBAL",
+      "toCall": true,
+      "arg": 4,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:188"
+    },
+    {
+      "from": "ATMBAL",
+      "to": "ACCT-ONLINE-RECORD",
+      "fromCall": true,
+      "arg": 4,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:188"
+    },
+    {
+      "from": "CARD-RECORD",
+      "to": "ATMBAL",
+      "toCall": true,
+      "arg": 5,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:188"
+    },
+    {
+      "from": "ATMBAL",
+      "to": "CARD-RECORD",
+      "fromCall": true,
+      "arg": 5,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:188"
+    },
+    {
+      "from": "HOLD-RECORD",
+      "to": "ATMBAL",
+      "toCall": true,
+      "arg": 6,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:188"
+    },
+    {
+      "from": "ATMBAL",
+      "to": "HOLD-RECORD",
+      "fromCall": true,
+      "arg": 6,
+      "paragraph": "2100-AUTHORIZE",
+      "verb": "CALL",
+      "source": "pangaea/programs/AUTHSRV.cbl:188"
     },
     {
       "from": "1",
@@ -2325,6 +2773,14 @@
           "start": 1,
           "length": 10,
           "origins": [
+            "call ATMBAL argument 4 AO-ACCT-NO",
+            "call ATMBAL argument 5 CR-ACCT-NO",
+            "call ATMWDL argument 4 AO-ACCT-NO",
+            "call ATMWDL argument 5 CR-ACCT-NO",
+            "call AUTHPUR argument 4 AO-ACCT-NO",
+            "call AUTHPUR argument 5 CR-ACCT-NO",
+            "call AUTHREV argument 4 AO-ACCT-NO",
+            "call AUTHREV argument 5 CR-ACCT-NO",
             "file ACCT-FILE AO-ACCT-NO",
             "file CARD-FILE CR-ACCT-NO"
           ]
@@ -2334,6 +2790,10 @@
           "start": 11,
           "length": 8,
           "origins": [
+            "call ATMBAL argument 4 AO-CUST-NO",
+            "call ATMWDL argument 4 AO-CUST-NO",
+            "call AUTHPUR argument 4 AO-CUST-NO",
+            "call AUTHREV argument 4 AO-CUST-NO",
             "file ACCT-FILE AO-CUST-NO"
           ]
         },
@@ -2342,6 +2802,10 @@
           "start": 19,
           "length": 20,
           "origins": [
+            "call ATMBAL argument 4 AO-SHORT-NAME",
+            "call ATMWDL argument 4 AO-SHORT-NAME",
+            "call AUTHPUR argument 4 AO-SHORT-NAME",
+            "call AUTHREV argument 4 AO-SHORT-NAME",
             "file ACCT-FILE AO-SHORT-NAME"
           ]
         },
@@ -2350,6 +2814,10 @@
           "start": 39,
           "length": 1,
           "origins": [
+            "call ATMBAL argument 4 AO-ACCT-TYPE",
+            "call ATMWDL argument 4 AO-ACCT-TYPE",
+            "call AUTHPUR argument 4 AO-ACCT-TYPE",
+            "call AUTHREV argument 4 AO-ACCT-TYPE",
             "file ACCT-FILE AO-ACCT-TYPE"
           ]
         },
@@ -2358,6 +2826,10 @@
           "start": 40,
           "length": 1,
           "origins": [
+            "call ATMBAL argument 4 AO-STATUS",
+            "call ATMWDL argument 4 AO-STATUS",
+            "call AUTHPUR argument 4 AO-STATUS",
+            "call AUTHREV argument 4 AO-STATUS",
             "file ACCT-FILE AO-STATUS"
           ]
         },
@@ -2366,6 +2838,10 @@
           "start": 41,
           "length": 13,
           "origins": [
+            "call ATMBAL argument 4 AO-BALANCE",
+            "call ATMWDL argument 4 AO-BALANCE",
+            "call AUTHPUR argument 4 AO-BALANCE",
+            "call AUTHREV argument 4 AO-BALANCE",
             "file ACCT-FILE AO-BALANCE"
           ]
         },
@@ -2374,6 +2850,10 @@
           "start": 54,
           "length": 9,
           "origins": [
+            "call ATMBAL argument 4 AO-OVERDRAFT-LIMIT",
+            "call ATMWDL argument 4 AO-OVERDRAFT-LIMIT",
+            "call AUTHPUR argument 4 AO-OVERDRAFT-LIMIT",
+            "call AUTHREV argument 4 AO-OVERDRAFT-LIMIT",
             "file ACCT-FILE AO-OVERDRAFT-LIMIT"
           ]
         },
@@ -2382,6 +2862,10 @@
           "start": 63,
           "length": 13,
           "origins": [
+            "call ATMBAL argument 4 AO-HOLDS",
+            "call ATMWDL argument 4 AO-HOLDS",
+            "call AUTHPUR argument 4 AO-HOLDS",
+            "call AUTHREV argument 4 AO-HOLDS",
             "file ACCT-FILE AO-HOLDS"
           ]
         },
@@ -2390,6 +2874,10 @@
           "start": 76,
           "length": 8,
           "origins": [
+            "call ATMBAL argument 4 AO-AS-OF-DATE",
+            "call ATMWDL argument 4 AO-AS-OF-DATE",
+            "call AUTHPUR argument 4 AO-AS-OF-DATE",
+            "call AUTHREV argument 4 AO-AS-OF-DATE",
             "file ACCT-FILE AO-AS-OF-DATE"
           ]
         }
@@ -2404,7 +2892,16 @@
           "start": 1,
           "length": 16,
           "origins": [
-            "file CARD-FILE CR-CARD-NO"
+            "call ATMBAL argument 1 RQ-CARD-NO",
+            "call ATMBAL argument 5 CR-CARD-NO",
+            "call ATMWDL argument 1 RQ-CARD-NO",
+            "call ATMWDL argument 5 CR-CARD-NO",
+            "call AUTHPUR argument 1 RQ-CARD-NO",
+            "call AUTHPUR argument 5 CR-CARD-NO",
+            "call AUTHREV argument 1 RQ-CARD-NO",
+            "call AUTHREV argument 5 CR-CARD-NO",
+            "file CARD-FILE CR-CARD-NO",
+            "stream SYSIN RQ-CARD-NO"
           ]
         },
         {
@@ -2412,6 +2909,10 @@
           "start": 17,
           "length": 10,
           "origins": [
+            "call ATMBAL argument 5 CR-ACCT-NO",
+            "call ATMWDL argument 5 CR-ACCT-NO",
+            "call AUTHPUR argument 5 CR-ACCT-NO",
+            "call AUTHREV argument 5 CR-ACCT-NO",
             "file CARD-FILE CR-ACCT-NO"
           ]
         },
@@ -2420,6 +2921,10 @@
           "start": 27,
           "length": 8,
           "origins": [
+            "call ATMBAL argument 5 CR-CUST-NO",
+            "call ATMWDL argument 5 CR-CUST-NO",
+            "call AUTHPUR argument 5 CR-CUST-NO",
+            "call AUTHREV argument 5 CR-CUST-NO",
             "file CARD-FILE CR-CUST-NO"
           ]
         },
@@ -2428,6 +2933,10 @@
           "start": 35,
           "length": 1,
           "origins": [
+            "call ATMBAL argument 5 CR-STATUS",
+            "call ATMWDL argument 5 CR-STATUS",
+            "call AUTHPUR argument 5 CR-STATUS",
+            "call AUTHREV argument 5 CR-STATUS",
             "file CARD-FILE CR-STATUS"
           ]
         },
@@ -2436,6 +2945,10 @@
           "start": 36,
           "length": 6,
           "origins": [
+            "call ATMBAL argument 5 CR-EXPIRY-MONTH",
+            "call ATMWDL argument 5 CR-EXPIRY-MONTH",
+            "call AUTHPUR argument 5 CR-EXPIRY-MONTH",
+            "call AUTHREV argument 5 CR-EXPIRY-MONTH",
             "file CARD-FILE CR-EXPIRY-MONTH"
           ]
         },
@@ -2444,6 +2957,10 @@
           "start": 42,
           "length": 7,
           "origins": [
+            "call ATMBAL argument 5 CR-PURCHASE-LIMIT",
+            "call ATMWDL argument 5 CR-PURCHASE-LIMIT",
+            "call AUTHPUR argument 5 CR-PURCHASE-LIMIT",
+            "call AUTHREV argument 5 CR-PURCHASE-LIMIT",
             "file CARD-FILE CR-PURCHASE-LIMIT"
           ]
         },
@@ -2452,6 +2969,10 @@
           "start": 49,
           "length": 7,
           "origins": [
+            "call ATMBAL argument 5 CR-CASH-LIMIT",
+            "call ATMWDL argument 5 CR-CASH-LIMIT",
+            "call AUTHPUR argument 5 CR-CASH-LIMIT",
+            "call AUTHREV argument 5 CR-CASH-LIMIT",
             "file CARD-FILE CR-CASH-LIMIT"
           ]
         },
@@ -2460,6 +2981,10 @@
           "start": 56,
           "length": 8,
           "origins": [
+            "call ATMBAL argument 5 CR-TOTALS-DATE",
+            "call ATMWDL argument 5 CR-TOTALS-DATE",
+            "call AUTHPUR argument 5 CR-TOTALS-DATE",
+            "call AUTHREV argument 5 CR-TOTALS-DATE",
             "file CARD-FILE CR-TOTALS-DATE"
           ]
         },
@@ -2468,6 +2993,10 @@
           "start": 64,
           "length": 7,
           "origins": [
+            "call ATMBAL argument 5 CR-DAY-PURCHASES",
+            "call ATMWDL argument 5 CR-DAY-PURCHASES",
+            "call AUTHPUR argument 5 CR-DAY-PURCHASES",
+            "call AUTHREV argument 5 CR-DAY-PURCHASES",
             "file CARD-FILE CR-DAY-PURCHASES"
           ]
         },
@@ -2476,6 +3005,10 @@
           "start": 71,
           "length": 7,
           "origins": [
+            "call ATMBAL argument 5 CR-DAY-CASH",
+            "call ATMWDL argument 5 CR-DAY-CASH",
+            "call AUTHPUR argument 5 CR-DAY-CASH",
+            "call AUTHREV argument 5 CR-DAY-CASH",
             "file CARD-FILE CR-DAY-CASH"
           ]
         },
@@ -2484,6 +3017,10 @@
           "start": 78,
           "length": 3,
           "origins": [
+            "call ATMBAL argument 5 CR-MONTH-WITHDRAWALS",
+            "call ATMWDL argument 5 CR-MONTH-WITHDRAWALS",
+            "call AUTHPUR argument 5 CR-MONTH-WITHDRAWALS",
+            "call AUTHREV argument 5 CR-MONTH-WITHDRAWALS",
             "file CARD-FILE CR-MONTH-WITHDRAWALS"
           ]
         }
@@ -2498,6 +3035,14 @@
           "start": 1,
           "length": 10,
           "origins": [
+            "call ATMBAL argument 5 CR-ACCT-NO",
+            "call ATMBAL argument 6 HD-ACCT-NO",
+            "call ATMWDL argument 5 CR-ACCT-NO",
+            "call ATMWDL argument 6 HD-ACCT-NO",
+            "call AUTHPUR argument 5 CR-ACCT-NO",
+            "call AUTHPUR argument 6 HD-ACCT-NO",
+            "call AUTHREV argument 5 CR-ACCT-NO",
+            "call AUTHREV argument 6 HD-ACCT-NO",
             "file CARD-FILE CR-ACCT-NO",
             "file HOLD-FILE HD-ACCT-NO"
           ]
@@ -2507,9 +3052,18 @@
           "start": 11,
           "length": 6,
           "origins": [
+            "call ATMBAL argument 1 RQ-AUTH-CODE",
+            "call ATMBAL argument 6 HD-HOLD-NO",
+            "call ATMWDL argument 1 RQ-AUTH-CODE",
+            "call ATMWDL argument 6 HD-HOLD-NO",
+            "call AUTHPUR argument 1 RQ-AUTH-CODE",
+            "call AUTHPUR argument 6 HD-HOLD-NO",
+            "call AUTHREV argument 1 RQ-AUTH-CODE",
+            "call AUTHREV argument 6 HD-HOLD-NO",
             "file HOLD-FILE HD-HOLD-NO",
             "initial value of WS-LAST-HOLD-NO",
-            "literal 1"
+            "literal 1",
+            "stream SYSIN RQ-AUTH-CODE"
           ]
         },
         {
@@ -2517,6 +3071,10 @@
           "start": 17,
           "length": 16,
           "origins": [
+            "call ATMBAL argument 6 HD-CARD-NO",
+            "call ATMWDL argument 6 HD-CARD-NO",
+            "call AUTHPUR argument 6 HD-CARD-NO",
+            "call AUTHREV argument 6 HD-CARD-NO",
             "file HOLD-FILE HD-CARD-NO"
           ]
         },
@@ -2525,6 +3083,10 @@
           "start": 33,
           "length": 1,
           "origins": [
+            "call ATMBAL argument 6 HD-KIND",
+            "call ATMWDL argument 6 HD-KIND",
+            "call AUTHPUR argument 6 HD-KIND",
+            "call AUTHREV argument 6 HD-KIND",
             "file HOLD-FILE HD-KIND"
           ]
         },
@@ -2533,6 +3095,10 @@
           "start": 34,
           "length": 1,
           "origins": [
+            "call ATMBAL argument 6 HD-STATUS",
+            "call ATMWDL argument 6 HD-STATUS",
+            "call AUTHPUR argument 6 HD-STATUS",
+            "call AUTHREV argument 6 HD-STATUS",
             "file HOLD-FILE HD-STATUS"
           ]
         },
@@ -2541,6 +3107,10 @@
           "start": 35,
           "length": 9,
           "origins": [
+            "call ATMBAL argument 6 HD-AMOUNT",
+            "call ATMWDL argument 6 HD-AMOUNT",
+            "call AUTHPUR argument 6 HD-AMOUNT",
+            "call AUTHREV argument 6 HD-AMOUNT",
             "file HOLD-FILE HD-AMOUNT"
           ]
         },
@@ -2549,6 +3119,10 @@
           "start": 44,
           "length": 5,
           "origins": [
+            "call ATMBAL argument 6 HD-FEE",
+            "call ATMWDL argument 6 HD-FEE",
+            "call AUTHPUR argument 6 HD-FEE",
+            "call AUTHREV argument 6 HD-FEE",
             "file HOLD-FILE HD-FEE"
           ]
         },
@@ -2557,6 +3131,10 @@
           "start": 49,
           "length": 20,
           "origins": [
+            "call ATMBAL argument 6 HD-TERMINAL",
+            "call ATMWDL argument 6 HD-TERMINAL",
+            "call AUTHPUR argument 6 HD-TERMINAL",
+            "call AUTHREV argument 6 HD-TERMINAL",
             "file HOLD-FILE HD-TERMINAL"
           ]
         },
@@ -2565,6 +3143,10 @@
           "start": 69,
           "length": 14,
           "origins": [
+            "call ATMBAL argument 6 HD-TIMESTAMP",
+            "call ATMWDL argument 6 HD-TIMESTAMP",
+            "call AUTHPUR argument 6 HD-TIMESTAMP",
+            "call AUTHREV argument 6 HD-TIMESTAMP",
             "file HOLD-FILE HD-TIMESTAMP"
           ]
         },
@@ -2573,6 +3155,10 @@
           "start": 83,
           "length": 8,
           "origins": [
+            "call ATMBAL argument 6 HD-BUSINESS-DATE",
+            "call ATMWDL argument 6 HD-BUSINESS-DATE",
+            "call AUTHPUR argument 6 HD-BUSINESS-DATE",
+            "call AUTHREV argument 6 HD-BUSINESS-DATE",
             "file HOLD-FILE HD-BUSINESS-DATE"
           ]
         }
@@ -2596,6 +3182,14 @@
           "start": 31,
           "length": 21,
           "origins": [
+            "call ATMBAL argument 6 HD-AMOUNT",
+            "call ATMBAL argument 6 HD-FEE",
+            "call ATMWDL argument 6 HD-AMOUNT",
+            "call ATMWDL argument 6 HD-FEE",
+            "call AUTHPUR argument 6 HD-AMOUNT",
+            "call AUTHPUR argument 6 HD-FEE",
+            "call AUTHREV argument 6 HD-AMOUNT",
+            "call AUTHREV argument 6 HD-FEE",
             "file HOLD-FILE HD-AMOUNT",
             "file HOLD-FILE HD-FEE",
             "initial value of WS-HELD-TOTAL",
