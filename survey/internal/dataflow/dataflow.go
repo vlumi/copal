@@ -27,6 +27,10 @@ type Flow struct {
 	// order is the order its statements run in, nil where the paths
 	// through them are not known.
 	order *order
+	// program and names are the program analyzed and how its names
+	// resolve, for what its statements change.
+	program *cobol.Program
+	names   *names
 }
 
 // Paragraph is a paragraph's reads and writes, each item once, in the
@@ -64,7 +68,7 @@ type Edge struct {
 // Analyze finds the program's data flow, given its records laid out.
 func Analyze(p *cobol.Program, records *layout.ProgramRecords) Flow {
 	names := newNames(records)
-	flow := Flow{storage: newStorage(records), parameters: map[string]int{}}
+	flow := Flow{storage: newStorage(records), parameters: map[string]int{}, program: p, names: names}
 	for i, item := range p.Using {
 		flow.parameters[item] = i + 1
 	}

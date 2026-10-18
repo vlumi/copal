@@ -6,9 +6,17 @@
       "source": "pangaea/programs/TXVALID.cbl:113",
       "conditions": [
         "FILE-IS-GOOD",
+        "FILE-IS-GOOD, again",
+        "FILE-IS-GOOD, again (3)",
         "WS-REJECT-COUNT \u003e 0"
       ],
       "conditionRefs": [
+        [
+          "WS-FILE-ERROR"
+        ],
+        [
+          "WS-FILE-ERROR"
+        ],
         [
           "WS-FILE-ERROR"
         ],
@@ -23,16 +31,18 @@
         "PERFORM 4000-CHECK-TRAILER",
         "PERFORM 8000-WRITE-REPORT",
         "PERFORM 9000-CLOSE-FILES",
-        "MOVE 4 TO RETURN-CODE",
+        "MOVE 12 TO RETURN-CODE",
         "STOP RUN",
-        "MOVE 0 TO RETURN-CODE",
-        "MOVE 12 TO RETURN-CODE"
+        "MOVE 4 TO RETURN-CODE",
+        "MOVE 0 TO RETURN-CODE"
       ],
       "rules": [
         {
           "entries": [
             "Y",
-            "Y"
+            "Y",
+            "N",
+            ""
           ],
           "actions": [
             0,
@@ -48,7 +58,9 @@
         {
           "entries": [
             "Y",
-            "N"
+            "Y",
+            "Y",
+            "Y"
           ],
           "actions": [
             0,
@@ -63,7 +75,44 @@
         },
         {
           "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            9,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
             "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "",
+            "",
             ""
           ],
           "actions": [
@@ -71,7 +120,7 @@
             1,
             4,
             5,
-            9,
+            6,
             7
           ]
         }
@@ -153,6 +202,7 @@
         "READ TRAN-IN AT END",
         "FILE-IS-GOOD",
         "TR-HEADER",
+        "FILE-IS-GOOD, again",
         "TH-BUSINESS-DATE = WS-BUSINESS-DATE",
         "NOT TH-FROM-BRANCHES AND NOT TH-FROM-CARDS"
       ],
@@ -163,6 +213,9 @@
         ],
         [
           "TR-REC-TYPE"
+        ],
+        [
+          "WS-FILE-ERROR"
         ],
         [
           "TH-BUSINESS-DATE",
@@ -188,6 +241,7 @@
             "N",
             "",
             "",
+            "",
             ""
           ],
           "actions": [
@@ -201,6 +255,7 @@
             "Y",
             "Y",
             "N",
+            "Y",
             "",
             ""
           ],
@@ -213,6 +268,22 @@
         },
         {
           "entries": [
+            "Y",
+            "Y",
+            "N",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y",
             "Y",
             "Y",
             "Y",
@@ -231,6 +302,22 @@
             "Y",
             "Y",
             "Y",
+            "N",
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "Y",
             "Y",
             "Y"
           ],
@@ -246,6 +333,22 @@
             "Y",
             "Y",
             "Y",
+            "N",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "",
             "Y",
             "N"
           ],
@@ -261,6 +364,7 @@
             "N",
             "",
             "",
+            "",
             ""
           ],
           "actions": [
@@ -273,6 +377,7 @@
             "N",
             "Y",
             "N",
+            "Y",
             "",
             ""
           ],
@@ -285,6 +390,21 @@
         {
           "entries": [
             "N",
+            "Y",
+            "N",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
             "Y",
             "Y",
             "N",
@@ -301,6 +421,21 @@
             "N",
             "Y",
             "Y",
+            "N",
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "Y",
             "Y",
             "Y"
           ],
@@ -315,6 +450,21 @@
             "N",
             "Y",
             "Y",
+            "N",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "",
             "Y",
             "N"
           ],

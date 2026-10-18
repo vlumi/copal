@@ -1,8 +1,9 @@
 // Package controlflow finds the paths control can take through a program's
 // statements: in order within a paragraph, into the branches of IF,
 // EVALUATE, SEARCH and the conditional phrases, round the loops of PERFORM,
-// to the target of a GO TO, on from one paragraph into the next, and into a
-// performed range and back to the statement after the PERFORM.
+// to the target of a GO TO, out of the paragraph at EXIT PARAGRAPH, on
+// from one paragraph into the next, and into a performed range and back to
+// the statement after the PERFORM.
 //
 // A performed range is laid out anew for every PERFORM of it, so that
 // control returns only to the statement after the PERFORM that entered it.
@@ -23,7 +24,8 @@ import (
 //
 // Covered is false when the graph leaves out paths the program can take: a
 // GO TO out of a performed range, a PERFORM of a range already being
-// performed, or a target the program does not declare.
+// performed, a target the program does not declare, or an EXIT SECTION or
+// EXIT PERFORM, which it does not follow.
 type Graph struct {
 	Nodes   []Node
 	Covered bool
@@ -84,6 +86,9 @@ type builder struct {
 	index   map[string]int
 	// active are the ranges being laid out, from the outermost PERFORM in.
 	active [][2]int
+	// paragraphEnd is where control goes when the paragraph being laid
+	// out ends, which EXIT PARAGRAPH goes to.
+	paragraphEnd int
 }
 
 func (b *builder) node(s *cobol.Statement) int {
@@ -127,7 +132,10 @@ func (b *builder) performed(first, last, exit int) int {
 		if i < last {
 			next = start(i + 1)
 		}
+		outer := b.paragraphEnd
+		b.paragraphEnd = next
 		b.link(starts[i], b.sequence(r, b.program.Paragraphs[i].Statements, next))
+		b.paragraphEnd = outer
 	}
 	return entry
 }
@@ -153,6 +161,10 @@ func (b *builder) statement(r scope, s *cobol.Statement, next int) int {
 	switch s.Verb {
 	case "STOP", "GOBACK", "EXIT PROGRAM":
 		b.link(n, End)
+	case "EXIT PARAGRAPH":
+		b.link(n, b.paragraphEnd)
+	case "EXIT SECTION", "EXIT PERFORM":
+		b.graph.Covered = false
 	case "GO":
 		b.goTo(r, n, s, next)
 	case "PERFORM":

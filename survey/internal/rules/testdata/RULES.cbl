@@ -30,6 +30,18 @@
                    MOVE WS-RATE(WS-I) TO WS-BEST
                END-IF
            END-PERFORM.
+       EXIT-PARA.
+           IF DONE = 1
+               EXIT PARAGRAPH
+           END-IF
+           DISPLAY 'NOT DONE'.
+       AGAIN-PARA.
+           IF OK = 1
+               PERFORM OPEN-PARA
+           END-IF
+           IF OK = 1
+               DISPLAY 'STILL OK'
+           END-IF.
        WIDE-PARA.
            IF A1 = 1
                DISPLAY 'Y1'

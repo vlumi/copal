@@ -70,29 +70,26 @@ Source: [AUTHSRV.cbl:149](../../../pangaea/programs/AUTHSRV.cbl#L149).
 
 ## 2100-AUTHORIZE
 
-| | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 | 48 | 49 | 50 | 51 | 52 | 53 | 54 | 55 | 56 | 57 | 58 | 59 | 60 | 61 | 62 | 63 | 64 |
-| --- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N |
-| `RS-RESULT = SPACES AND RQ-REVERSAL` | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N |
-| `RS-RESULT = SPACES` | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | N | N | N | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | N | N | N | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | N | N | N | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | N | N | N |
-| `RQ-PURCHASE` | Y | Y | Y | N | N | N | N | N | N | N | N | N | N | | | | Y | Y | Y | N | N | N | N | N | N | N | N | N | N | | | | Y | Y | Y | N | N | N | N | N | N | N | N | N | N | | | | Y | Y | Y | N | N | N | N | N | N | N | N | N | N | | | |
-| `RS-APPROVED` | Y | Y | N | Y | Y | N | Y | Y | N | Y | N | Y | N | Y | Y | N | Y | Y | N | Y | Y | N | Y | Y | N | Y | N | Y | N | Y | Y | N | Y | Y | N | Y | Y | N | Y | Y | N | Y | N | Y | N | Y | Y | N | Y | Y | N | Y | Y | N | Y | Y | N | Y | N | Y | N | Y | Y | N |
-| `RQ-BALANCE-ENQUIRY` | N | Y | | N | Y | | N | Y | | Y | Y | N | N | N | Y | | N | Y | | N | Y | | N | Y | | Y | Y | N | N | N | Y | | N | Y | | N | Y | | N | Y | | Y | Y | N | N | N | Y | | N | Y | | N | Y | | N | Y | | Y | Y | N | N | N | Y | |
-| `RQ-REVERSAL` | | | | Y | Y | Y | N | N | N | N | N | N | N | | | | | | | Y | Y | Y | N | N | N | N | N | N | N | | | | | | | Y | Y | Y | N | N | N | N | N | N | N | | | | | | | Y | Y | Y | N | N | N | N | N | N | N | | | |
-| `RQ-WITHDRAWAL` | | | | | | | Y | Y | Y | N | N | N | N | | | | | | | | | | Y | Y | Y | N | N | N | N | | | | | | | | | | Y | Y | Y | N | N | N | N | | | | | | | | | | Y | Y | Y | N | N | N | N | | | |
-| → `ADD 1 TO WS-REQUEST-COUNT` | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
-| → `MOVE SPACES TO AUTH-RESPONSE HOLD-RECORD` | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 |
-| → `PERFORM 2200-READ-CARD-AND-ACCOUNT` | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
-| → `PERFORM 2300-READ-HOLD` | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | | | | | | | | | | | | | | | | | 5 | 5 | 5 | 5 | 5 | 5 | 5 | 5 | 5 | 5 | 5 | 5 | 5 | 5 | 5 | 5 | | | | | | | | | | | | | | | | |
-| → `CALL 'AUTHPUR' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD` | 5 | 5 | 5 | | | | | | | | | | | | | | 4 | 4 | 4 | | | | | | | | | | | | | | 6 | 6 | 6 | | | | | | | | | | | | | | 5 | 5 | 5 | | | | | | | | | | | | | |
-| → `ADD 1 TO WS-APPROVED-COUNT` | 6 | 6 | | 6 | 6 | | 6 | 6 | | 6 | | 5 | | 5 | 5 | | 5 | 5 | | 5 | 5 | | 5 | 5 | | 5 | | 4 | | 4 | 4 | | 7 | 7 | | 7 | 7 | | 7 | 7 | | 7 | | 6 | | 6 | 6 | | 6 | 6 | | 6 | 6 | | 6 | 6 | | 6 | | 5 | | 5 | 5 | |
-| → `PERFORM 2400-SAVE-CHANGES` | 7 | | | 7 | | | 7 | | | | | 6 | | 6 | | | 6 | | | 6 | | | 6 | | | | | 5 | | 5 | | | 8 | | | 8 | | | 8 | | | | | 7 | | 7 | | | 7 | | | 7 | | | 7 | | | | | 6 | | 6 | | |
-| → `ADD 1 TO WS-DECLINED-COUNT` | | | 6 | | | 6 | | | 6 | | 6 | | 5 | | | 5 | | | 5 | | | 5 | | | 5 | | 5 | | 4 | | | 4 | | | 7 | | | 7 | | | 7 | | 7 | | 6 | | | 6 | | | 6 | | | 6 | | | 6 | | 6 | | 5 | | | 5 |
-| → `CALL 'AUTHREV' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD` | | | | 5 | 5 | 5 | | | | | | | | | | | | | | 4 | 4 | 4 | | | | | | | | | | | | | | 6 | 6 | 6 | | | | | | | | | | | | | | 5 | 5 | 5 | | | | | | | | | | |
-| → `CALL 'ATMWDL' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD` | | | | | | | 5 | 5 | 5 | | | | | | | | | | | | | | 4 | 4 | 4 | | | | | | | | | | | | | | 6 | 6 | 6 | | | | | | | | | | | | | | 5 | 5 | 5 | | | | | | | |
-| → `CALL 'ATMBAL' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD` | | | | | | | | | | 5 | 5 | | | | | | | | | | | | | | | 4 | 4 | | | | | | | | | | | | | | | 6 | 6 | | | | | | | | | | | | | | | 5 | 5 | | | | | |
-| → `SET RS-INVALID-REQUEST TO TRUE` | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 |
-| → `MOVE 'UNKNOWN REQUEST' TO RS-MESSAGE` | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 |
+| | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 |
+| --- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | N | N | N | N | N | N | N | N | N | N | N | N |
+| `RS-RESULT = SPACES AND RQ-REVERSAL` | Y | Y | Y | Y | Y | Y | N | N | N | N | N | N | Y | Y | Y | Y | Y | Y | N | N | N | N | N | N |
+| `RS-RESULT = SPACES` | Y | Y | Y | Y | Y | N | Y | Y | Y | Y | Y | N | Y | Y | Y | Y | Y | N | Y | Y | Y | Y | Y | N |
+| `RQ-PURCHASE` | Y | N | N | N | N | | Y | N | N | N | N | | Y | N | N | N | N | | Y | N | N | N | N | |
+| `RQ-REVERSAL` | | Y | N | N | N | | | Y | N | N | N | | | Y | N | N | N | | | Y | N | N | N | |
+| `RQ-WITHDRAWAL` | | | Y | N | N | | | | Y | N | N | | | | Y | N | N | | | | Y | N | N | |
+| `RQ-BALANCE-ENQUIRY` | | | | Y | N | | | | | Y | N | | | | | Y | N | | | | | Y | N | |
+| → `ADD 1 TO WS-REQUEST-COUNT` | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+| → `MOVE SPACES TO AUTH-RESPONSE HOLD-RECORD` | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 |
+| → `PERFORM 2200-READ-CARD-AND-ACCOUNT` | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | | | | | | | | | | | | |
+| → `PERFORM 2300-READ-HOLD` | 4 | 4 | 4 | 4 | 4 | 4 | | | | | | | 5 | 5 | 5 | 5 | 5 | 5 | | | | | | |
+| → `CALL 'AUTHPUR' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD` | 5 | | | | | | 4 | | | | | | 6 | | | | | | 5 | | | | | |
+| → `IF RS-APPROVED` | 6 | 6 | 6 | 6 | 5 | 5 | 5 | 5 | 5 | 5 | 4 | 4 | 7 | 7 | 7 | 7 | 6 | 6 | 6 | 6 | 6 | 6 | 5 | 5 |
+| → `CALL 'AUTHREV' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD` | | 5 | | | | | | 4 | | | | | | 6 | | | | | | 5 | | | | |
+| → `CALL 'ATMWDL' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD` | | | 5 | | | | | | 4 | | | | | | 6 | | | | | | 5 | | | |
+| → `CALL 'ATMBAL' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD` | | | | 5 | | | | | | 4 | | | | | | 6 | | | | | | 5 | | |
+| → `SET RS-INVALID-REQUEST TO TRUE` | | | | | | | | | | | | | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 |
+| → `MOVE 'UNKNOWN REQUEST' TO RS-MESSAGE` | | | | | | | | | | | | | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 |
 
 Source: [AUTHSRV.cbl:160](../../../pangaea/programs/AUTHSRV.cbl#L160).
 

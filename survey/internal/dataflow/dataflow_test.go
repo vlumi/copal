@@ -298,3 +298,43 @@ func TestEdgesOnce(t *testing.T) {
 		t.Errorf("the STRING moves %q into WS-STAMP, want IN-CODE and '-' once each", moves)
 	}
 }
+
+// A statement may change what it writes, by bytes, and what the
+// paragraphs it performs write; a condition name stands for its field.
+func TestMayChange(t *testing.T) {
+	p, err := cobol.ReadProgram("testdata/ORDER.cbl", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	records, err := layout.Program(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	flow := Analyze(p, records)
+	statement := func(text string) cobol.Statement {
+		var found cobol.Statement
+		for _, para := range p.Paragraphs {
+			cobol.Walk(para.Statements, func(s cobol.Statement) {
+				if s.Text == text {
+					found = s
+				}
+			})
+		}
+		return found
+	}
+	for _, c := range []struct {
+		statement string
+		names     []string
+		want      bool
+	}{
+		{"MOVE IN-AMOUNT TO WS-AMOUNT", []string{"WS-LINE"}, true},
+		{"MOVE IN-AMOUNT TO WS-AMOUNT", []string{"WS-TOTAL", "WS-CODE"}, false},
+		{"PERFORM READ-PARA", []string{"WS-EOF"}, true},
+		{"PERFORM READ-PARA", []string{"IN-CODE"}, true},
+		{"PERFORM READ-PARA", []string{"WS-TOTAL"}, false},
+	} {
+		if got := flow.MayChange(statement(c.statement), c.names); got != c.want {
+			t.Errorf("%s may change %v: %v, want %v", c.statement, c.names, got, c.want)
+		}
+	}
+}

@@ -15,20 +15,22 @@ The business rules of [TXVALID](../programs/TXVALID.md), paragraph by paragraph:
 
 ## 0000-MAIN
 
-| | 1 | 2 | 3 |
-| --- | :-: | :-: | :-: |
-| `FILE-IS-GOOD` | Y | Y | N |
-| `WS-REJECT-COUNT > 0` | Y | N | |
-| → `PERFORM 1000-OPEN-FILES` | 1 | 1 | 1 |
-| → `PERFORM 2000-READ-HEADER` | 2 | 2 | 2 |
-| → `PERFORM 3000-READ-DETAILS` | 3 | 3 | |
-| → `PERFORM 4000-CHECK-TRAILER` | 4 | 4 | |
-| → `PERFORM 8000-WRITE-REPORT` | 5 | 5 | 3 |
-| → `PERFORM 9000-CLOSE-FILES` | 6 | 6 | 4 |
-| → `MOVE 4 TO RETURN-CODE` | 7 | | |
-| → `STOP RUN` | 8 | 8 | 6 |
-| → `MOVE 0 TO RETURN-CODE` | | 7 | |
-| → `MOVE 12 TO RETURN-CODE` | | | 5 |
+| | 1 | 2 | 3 | 4 | 5 |
+| --- | :-: | :-: | :-: | :-: | :-: |
+| `FILE-IS-GOOD` | Y | Y | Y | Y | N |
+| `FILE-IS-GOOD, again` | Y | Y | Y | N | |
+| `FILE-IS-GOOD, again (3)` | N | Y | Y | | |
+| `WS-REJECT-COUNT > 0` | | Y | N | | |
+| → `PERFORM 1000-OPEN-FILES` | 1 | 1 | 1 | 1 | 1 |
+| → `PERFORM 2000-READ-HEADER` | 2 | 2 | 2 | 2 | 2 |
+| → `PERFORM 3000-READ-DETAILS` | 3 | 3 | 3 | 3 | |
+| → `PERFORM 4000-CHECK-TRAILER` | 4 | 4 | 4 | | |
+| → `PERFORM 8000-WRITE-REPORT` | 5 | 5 | 5 | 4 | 3 |
+| → `PERFORM 9000-CLOSE-FILES` | 6 | 6 | 6 | 5 | 4 |
+| → `MOVE 12 TO RETURN-CODE` | 7 | | | 6 | 5 |
+| → `STOP RUN` | 8 | 8 | 8 | 7 | 6 |
+| → `MOVE 4 TO RETURN-CODE` | | 7 | | | |
+| → `MOVE 0 TO RETURN-CODE` | | | 7 | | |
 
 Source: [TXVALID.cbl:113](../../../pangaea/programs/TXVALID.cbl#L113).
 
@@ -52,20 +54,21 @@ Source: [TXVALID.cbl:136](../../../pangaea/programs/TXVALID.cbl#L136).
 
 ## 2000-READ-HEADER
 
-| | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
-| --- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| `READ TRAN-IN AT END` | Y | Y | Y | Y | Y | N | N | N | N | N |
-| `FILE-IS-GOOD` | N | Y | Y | Y | Y | N | Y | Y | Y | Y |
-| `TR-HEADER` | | N | Y | Y | Y | | N | Y | Y | Y |
-| `TH-BUSINESS-DATE = WS-BUSINESS-DATE` | | | N | Y | Y | | | N | Y | Y |
-| `NOT TH-FROM-BRANCHES AND NOT TH-FROM-CARDS` | | | | Y | N | | | | Y | N |
-| → `READ TRAN-IN` | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
-| → `MOVE 'EMPTY FILE' TO WS-FILE-ERROR` | 2 | 2 | 2 | 2 | 2 | | | | | |
-| → `CONTINUE` | 3 | | | | | 2 | | | | |
-| → `MOVE 'FIRST RECORD IS NOT A HEADER' TO WS-FILE-ERROR` | | 3 | | | | | 2 | | | |
-| → `MOVE TH-SOURCE TO WS-SOURCE` | | 4 | 4 | 4 | 3 | | 3 | 3 | 3 | 2 |
-| → `MOVE 'HEADER IS NOT FOR THE BUSINESS DATE' TO WS-FILE-ERROR` | | | 3 | | | | | 2 | | |
-| → `MOVE 'HEADER IS FROM AN UNKNOWN SOURCE' TO WS-FILE-ERROR` | | | | 3 | | | | | 2 | |
+| | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 |
+| --- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| `READ TRAN-IN AT END` | Y | Y | Y | Y | Y | Y | Y | Y | N | N | N | N | N | N | N | N |
+| `FILE-IS-GOOD` | N | Y | Y | Y | Y | Y | Y | Y | N | Y | Y | Y | Y | Y | Y | Y |
+| `TR-HEADER` | | N | N | Y | Y | Y | Y | Y | | N | N | Y | Y | Y | Y | Y |
+| `FILE-IS-GOOD, again` | | Y | N | Y | N | Y | N | | | Y | N | Y | N | Y | N | |
+| `TH-BUSINESS-DATE = WS-BUSINESS-DATE` | | | | N | N | Y | Y | Y | | | | N | N | Y | Y | Y |
+| `NOT TH-FROM-BRANCHES AND NOT TH-FROM-CARDS` | | | | | | Y | Y | N | | | | | | Y | Y | N |
+| → `READ TRAN-IN` | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+| → `MOVE 'EMPTY FILE' TO WS-FILE-ERROR` | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | | | | | | | | |
+| → `CONTINUE` | 3 | | | | | | | | 2 | | | | | | | |
+| → `MOVE 'FIRST RECORD IS NOT A HEADER' TO WS-FILE-ERROR` | | 3 | 3 | | | | | | | 2 | 2 | | | | | |
+| → `MOVE TH-SOURCE TO WS-SOURCE` | | 4 | | 4 | | 4 | | 3 | | 3 | | 3 | | 3 | | 2 |
+| → `MOVE 'HEADER IS NOT FOR THE BUSINESS DATE' TO WS-FILE-ERROR` | | | | 3 | 3 | | | | | | | 2 | 2 | | | |
+| → `MOVE 'HEADER IS FROM AN UNKNOWN SOURCE' TO WS-FILE-ERROR` | | | | | | 3 | 3 | | | | | | | 2 | 2 | |
 
 Source: [TXVALID.cbl:163](../../../pangaea/programs/TXVALID.cbl#L163).
 

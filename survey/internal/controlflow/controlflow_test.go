@@ -1,6 +1,7 @@
 package controlflow
 
 import (
+	"slices"
 	"testing"
 
 	"github.com/vlumi/copal/bedrock/cobol"
@@ -71,6 +72,14 @@ func TestPaths(t *testing.T) {
 		if reaches(g, at(g, move), at(g, move)) {
 			t.Errorf("control returns from a PERFORM of WORK-PARA to before %s", move)
 		}
+	}
+	for _, n := range at(g, "EXIT PARAGRAPH") {
+		if slices.ContainsFunc(g.Nodes[n].Next, func(m int) bool { return slices.Contains(at(g, "MOVE WS-A TO WS-B"), m) }) {
+			t.Error("EXIT PARAGRAPH runs on to the paragraph's next statement")
+		}
+	}
+	if !reaches(g, at(g, "EXIT PARAGRAPH"), at(g, "MOVE 2 TO WS-A")) {
+		t.Error("EXIT PARAGRAPH does not return to the statement after the PERFORM")
 	}
 	if reaches(g, at(g, "GO TO CHECK-EXIT"), at(g, "MOVE 5 TO WS-B")) {
 		t.Error("the GO TO runs on into the statements it skips")
