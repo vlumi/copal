@@ -282,3 +282,16 @@ func TestRunInStream(t *testing.T) {
 		t.Error("ran a step with in-stream data on CARDS")
 	}
 }
+
+// With a trace directory, each step's program is told to trace into a file
+// of its own, named after the step.
+func TestRunTraces(t *testing.T) {
+	r := newRunner(t, map[string]string{"PROG": `echo "$COB_SET_TRACE" > "$COB_TRACE_FILE"`})
+	r.Traces = t.TempDir()
+	if _, err := r.Run(parse(t, "//J JOB\n//ONE EXEC PGM=PROG\n//TWO EXEC PGM=PROG\n")); err != nil {
+		t.Fatal(err)
+	}
+	for _, step := range []string{"ONE", "TWO"} {
+		assertFile(t, filepath.Join(r.Traces, step+".trace"), "Y\n")
+	}
+}
