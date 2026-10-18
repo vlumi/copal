@@ -70,3 +70,31 @@ func TestDateLayouts(t *testing.T) {
 		}
 	}
 }
+
+// HOLDEXT writes a header, details and a trailer from one record laid out
+// in redefinitions; each type's fields get the origins of its own writes.
+func TestRecordTypes(t *testing.T) {
+	t.Chdir("../..")
+	system, err := Analyze([]string{"pangaea/programs/HOLDEXT.cbl"}, "pangaea/copybooks")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var types []string
+	for _, out := range system.Programs[0].Outputs {
+		if out.File != "TRAN-OUT" {
+			continue
+		}
+		types = append(types, out.Type)
+		if out.Type != "TR-TRAILER" {
+			continue
+		}
+		for _, f := range out.Fields {
+			if f.Name == "TT-AMOUNT-TOTAL" && !slices.Equal(f.Origins, []string{"file HOLD-FILE HD-AMOUNT", "file HOLD-FILE HD-FEE", "initial value of WS-AMOUNT-TOTAL"}) {
+				t.Errorf("the trailer's amount total comes from %q", f.Origins)
+			}
+		}
+	}
+	if !slices.Equal(types, []string{"TR-HEADER", "TR-DETAIL", "TR-TRAILER"}) {
+		t.Errorf("TRAN-OUT is written as %q", types)
+	}
+}

@@ -374,7 +374,7 @@ func (t tracer) toFile(tgt *Target, n Node, p *blueprint.Program, file string, s
 				t.sorted(tgt, at, q, sort, start, length, depth)
 				continue
 			}
-			tgt.Readers = append(tgt.Readers, over(at, inputs(q, r.file), start, length)...)
+			tgt.Readers = append(tgt.Readers, overEach(at, inputs(q, r.file), start, length)...)
 		}
 	}
 }
@@ -383,7 +383,7 @@ func (t tracer) toFile(tgt *Target, n Node, p *blueprint.Program, file string, s
 // or to the program's RETURN statements.
 func (t tracer) sorted(tgt *Target, at Node, p *blueprint.Program, sort blueprint.Sort, start, length, depth int) {
 	if len(sort.Giving) == 0 {
-		tgt.Readers = append(tgt.Readers, over(at, inputs(p, sort.Work), start, length)...)
+		tgt.Readers = append(tgt.Readers, overEach(at, inputs(p, sort.Work), start, length)...)
 	}
 	for _, giving := range sort.Giving {
 		t.toFile(tgt, at, p, giving, start, length, depth+1)
@@ -551,12 +551,16 @@ func outputs(p *blueprint.Program, file string) []record {
 	return list
 }
 
-func inputs(p *blueprint.Program, file string) record {
-	i := slices.IndexFunc(p.Inputs, func(in blueprint.Input) bool { return in.File == file })
-	if i < 0 {
-		return record{}
+// inputs lists the records a program reads from a file, one for each
+// record type.
+func inputs(p *blueprint.Program, file string) []record {
+	var list []record
+	for _, in := range p.Inputs {
+		if in.File == file {
+			list = append(list, newRecord(p, in.Record, in.Fields, func(f blueprint.FieldEffect) span { return span{f.Name, f.Start, f.Length} }))
+		}
 	}
-	return newRecord(p, p.Inputs[i].Record, p.Inputs[i].Fields, func(f blueprint.FieldEffect) span { return span{f.Name, f.Start, f.Length} })
+	return list
 }
 
 func newRecord[F any](p *blueprint.Program, name string, fields []F, spanOf func(F) span) record {
@@ -600,17 +604,26 @@ func over(at Node, r record, start, length int) []Node {
 }
 
 // overEach lists the fields over the bytes in each of the records, as
-// over does, each once.
+// over does, each once: those of the records with a field over exactly the
+// bytes, if any has one, as a record of the same type does.
 func overEach(at Node, records []record, start, length int) []Node {
-	var nodes []Node
+	var exact, any []Node
 	for _, r := range records {
-		for _, n := range over(at, r, start, length) {
-			if !slices.Contains(nodes, n) {
-				nodes = append(nodes, n)
+		nodes := over(at, r, start, length)
+		target := &any
+		if slices.ContainsFunc(r.fields, func(s span) bool { return s.start == start && s.length == length }) {
+			target = &exact
+		}
+		for _, n := range nodes {
+			if !slices.Contains(*target, n) {
+				*target = append(*target, n)
 			}
 		}
 	}
-	return nodes
+	if len(exact) > 0 {
+		return exact
+	}
+	return any
 }
 
 // bytesOf is where a field is in the record of a file it belongs to.

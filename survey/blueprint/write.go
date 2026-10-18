@@ -187,10 +187,10 @@ func programMarkdown(dir string, p Program) string {
 			where = "Linkage"
 		}
 		if r.Copybook != "" {
-			fmt.Fprintf(&b, "%s. %d bytes, layout in copybook [%s](../copybooks/%s.md).\n", where, r.Length, r.Copybook, r.Copybook)
+			fmt.Fprintf(&b, "%s. %d bytes, layout in copybook [%s](../copybooks/%s.md).%s\n", where, r.Length, r.Copybook, r.Copybook, typesSentence(r))
 			continue
 		}
-		fmt.Fprintf(&b, "%s. %d bytes.%s\n\n", where, r.Length, sentence(r.Description))
+		fmt.Fprintf(&b, "%s. %d bytes.%s%s\n\n", where, r.Length, sentence(r.Description), typesSentence(r))
 		writeLayout(&b, dir, r.Field)
 	}
 	return b.String()

@@ -29,6 +29,8 @@ The oracle tells a file's record types apart, by the field the program tests to 
 - A program's inputs have every record type it reads, not the first.
 - A program that updates a dataset in place, reading and rewriting it, counts among its writers in lineage.
 
+As built: a record has types only where it is laid out in redefinitions, since a status or a switch with condition names is no record type; the type field is the first with a condition name the program tests or sets, so HOLDEXT, which only sets them, tells its header, details and trailer apart as TXVALID, which tests them, does. A write's type is what its type field's values come from on the paths to it; HOLDEXT's trailer now gets its counts and totals alone, from the holds through the totals it adds up, and no detail's bytes. The oracle takes its shapes from the fact. An update in place was the step's own: AUTHSRV reads the holds it writes, and the trail of one found no writer.
+
 ## Part 4: design facts between records
 
 - **Keys and links:** a field moved into an indexed file's key to read it, or compared with another file's key to match it, refers to that file's records; with the record order a file's types are tested in, and its control totals, a field compared with an item the program adds another field up into. The oracle infers these for its own use; publish them, and show them on the entity pages as the data model's links.
