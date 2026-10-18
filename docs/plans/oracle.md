@@ -57,6 +57,15 @@ Indexed input files, such as the online account and hold files, need loading. Lo
 
 One pull request, possibly two: the base case and candidates first, then the rules between records.
 
+As built: `survey/internal/oracle`, and `survey oracle` with `make oracle`, which report the rules reached. The cases are not written yet; that is part 4, and merging the kept cases into fewer is deferred to it.
+
+- The base case takes the record types from the first field of a record with a condition name the program tests: all of its condition names are then the types, the ones the program never tests among them. A redefinition belongs to a type by their order, when there are as many of each, since a copybook declares them alike; otherwise by the rules that test the type and use the redefinition's fields, which follow the paragraphs a rule performs. Keys count by the record's index among those of its type, for types that redefine the record, so that the first records of two files refer to each other, and by its index in the file otherwise, so that an indexed file's keys are unique.
+- The levers are the literals each condition compares with, one above and below for a number, the values of the condition names it tests and a value of none, class test values, and zero, one, minus one and the largest value for any number a condition depends on; copies of one input field into another for a condition that compares them, and give or take one; a field moved into an indexed file's key, set to that file's keys; pairs of levers for the parts of an AND; and an input empty, doubled, or without the records of a type. A called program's conditions are followed back through the arguments it is passed to the caller's inputs.
+- A control total is a field of an input compared with an item the program adds a field of the same input to, or 1; it is balanced after each lever, except the one that sets it, so that a total that differs can be had too.
+- The first try found a parser bug, fixed in its own pull request: a statement took conditional phrases of other kinds, so an ADD in a READ's INVALID KEY took the READ's NOT INVALID KEY.
+
+On Pangaea it reaches 245 of the 384 rules, 64%, against the fixtures' 200, in about two minutes, AUTHSRV's minute of it. AUTHPUR, AUTHREV and ATMBAL are reached in full, through AUTHSRV's SYSIN. What it leaves is mostly rules no run can reach, which the tables cannot tell, as they do not evaluate values: a path that finds a file good right after a statement that made it bad, two request types at once, or a REWRITE that fails right after the READ of the same record succeeded. Part 4's report lists them, rule by rule. The check on `TXPOST`'s overdraft floor exactly at the limit is a boundary between values, not a rule: both sides of it are reached, but not the cent on it.
+
 ## Part 4: the program cases
 
 - For each main program of the system, its cases under `blueprints/<system>/oracle/PROGRAM/NN/`: the input files as text, as Pangaea's fixtures are, the outputs, the reports, the return code, and the rules each case reaches.
