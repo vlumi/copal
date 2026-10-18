@@ -25,6 +25,8 @@ GnuCOBOL 3.2 traces every paragraph and statement it executes, with its source l
 
 One pull request: the package with tests on a small fixture program; pangaea on top of it; docs.
 
+As built: `run.Build` and `run.Step`. `pangaea/compile` is gone, its callers use `run.Build`, and the job runner hands each step to `run.Step`. Pangaea's golden outputs did not change.
+
 ## Part 2: rule coverage from a trace
 
 - `survey/internal/rules`: each rule gains the positions of the statements on its path, in order.
@@ -32,6 +34,10 @@ One pull request: the package with tests on a small fixture program; pangaea on 
 - Tests compile fixture programs with tracing and run them: CI has GnuCOBOL already. Also check the replay on Pangaea's daily fixture: run it traced and report the coverage of today's goldens. That is the baseline, and the first number worth a look.
 
 One pull request.
+
+As built: the trace is cut into passes by its `Paragraph:` entries, and an inline loop's passes by the events on its `PERFORM` line, one for each test of the loop; a statement is known by its file and line. The job runner gained `Traces`, a directory for each step's trace, since GnuCOBOL starts the trace file afresh in every run.
+
+The first replay of Pangaea's fixtures, all four, found two errors in the decision tables rather than in the replay: a path did not end at `EXIT PARAGRAPH`, and a condition tested twice was taken to have the same outcome both times, even with a statement between that may change it. TXVALID's table left out the rule where a bad trailer ends the run with return code 12. Both were fixed first, in their own pull request. With them fixed, every pass matches a rule, and the fixtures reach 200 of Pangaea's 384 rules, 52%: the baseline the search starts from. The least covered are AUTHSRV, 18 of 55, whose fixture sends a handful of requests, and TXVALID, 17 of 66, whose fixtures have one bad file between them.
 
 ## Part 3: synthesizing records
 
