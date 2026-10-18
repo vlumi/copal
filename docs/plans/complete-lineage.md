@@ -94,6 +94,8 @@ Checks: the trail of `REJREC`'s date reaches `BANK.CONTROL`'s `BC-BUSINESS-DATE`
 
 One pull request.
 
+As built: the checks hold. `MR-EFFECTIVE-DATE` came with CR-0129 in 1991, which dates an opening from it; generated and fixture requests carry the business date, so the master is unchanged and only the rejects' golden outputs change. The rejection date did not fit the reject record's FILLER, so CR-0444 widened the record to 110 bytes and appended `RJ-REJECT-DATE` at the end. Each entity field has its layout, and a date field or a text field that is not a redefinition lists the date fields of another layout its values come from; amounts computed from dates and a body redefined for several record types are left out. The entity pages show four layouts, since the online requests' and holds' timestamps are fourteen digits, and find two more dates from another layout besides the plan's: `ACCT-MASTER-RECORD`'s open date from the request's, and `ACCRUAL-RECORD`'s due month from the business date. A six-digit picture holds both `YYMMDD` and `YYYYMM`; the survey cannot tell them apart.
+
 ## Milestone 11, later: the oracle
 
 From the brief, once the lineage stands, and to be planned on its own: test data derived from the decision tables, so that every rule of every table is reached, run through GnuCOBOL to record the outputs a rewrite has to match; data that respects the rules between records, control totals, header before detail, references to accounts that exist; and only then a model, for naming paragraphs and explaining rules in prose, on top of the facts.

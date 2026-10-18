@@ -26,7 +26,7 @@
 //TRANOUT  DD DSN=&&VALID,DISP=NEW,
 //            DCB=(RECFM=FB,LRECL=80)
 //REJECTS  DD DSN=TRAN.REJECTS(+1),DISP=NEW,
-//            DCB=(RECFM=FB,LRECL=100)
+//            DCB=(RECFM=FB,LRECL=110)
 //VALRPT   DD SYSOUT=*
 //*----------------------------------------------------------------*
 //* VALIDATE THE CARD FILE, THE ONLINE DAY'S AUTHORIZED CARD AND   *
@@ -135,7 +135,7 @@
 //ACCTOUT  DD DSN=ACCT.MASTER(+1),DISP=NEW,
 //            DCB=(RECFM=FB,LRECL=100)
 //REJECTS  DD DSN=MAINT.REJECTS(+1),DISP=NEW,
-//            DCB=(RECFM=FB,LRECL=100)
+//            DCB=(RECFM=FB,LRECL=110)
 //MNTRPT   DD SYSOUT=*
 //*----------------------------------------------------------------*
 //* LOAD THE NEW MASTER INTO THE ONLINE ACCOUNT FILE, WHICH THE    *

@@ -27,6 +27,8 @@
       *                REJECTS APPENDED TO.                            *
       * 2004-09-20 PK  CR-0388 REJECT RECORDS OF UNKNOWN TYPE          *
       *                INSTEAD OF STOPPING THE RUN.                    *
+      * 2009-03-02 MV  CR-0444 THE DATE OF THE REJECTION ON EVERY      *
+      *                REJECT.                                         *
       *================================================================*
        IDENTIFICATION DIVISION.
        PROGRAM-ID. TXVALID.
@@ -62,7 +64,7 @@
        FD  TRAN-OUT.
        01  TRAN-OUT-RECORD             PIC X(80).
        FD  REJECT-OUT.
-       01  REJECT-OUT-RECORD           PIC X(100).
+       01  REJECT-OUT-RECORD           PIC X(110).
        FD  REPORT-OUT.
        01  REPORT-LINE                 PIC X(80).
 
@@ -151,7 +153,10 @@
                    STOP RUN
            END-READ
            MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE
-           MOVE SPACES TO REJECT-RECORD.
+           MOVE SPACES TO REJECT-RECORD
+           STRING WS-BUSINESS-DATE(1:4) '-' WS-BUSINESS-DATE(5:2) '-'
+                  WS-BUSINESS-DATE(7:2)
+               DELIMITED BY SIZE INTO RJ-REJECT-DATE.
 
       * THE FIRST RECORD MUST BE THE HEADER FOR THE BUSINESS DATE, FROM
       * A KNOWN SOURCE.

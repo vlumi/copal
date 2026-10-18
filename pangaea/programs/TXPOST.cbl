@@ -38,6 +38,8 @@
       *                ONLINE, POST WHATEVER THE BALANCE.              *
       * 2003-05-26 MV  CR-0352 FEES POST EVEN PAST THE OVERDRAFT       *
       *                LIMIT.                                          *
+      * 2009-03-02 MV  CR-0444 THE DATE OF THE REJECTION ON EVERY      *
+      *                REJECT.                                         *
       * 2001-09-03 TL  CR-0298 MONTH-END INTEREST AND FEES.            *
       * 2011-08-15 MV  CR-0471 RECONCILE THE NEW MASTER BEFORE         *
       *                ENDING THE RUN.                                 *
@@ -89,7 +91,7 @@
        FD  AUDIT-OUT.
        01  AUDIT-OUT-RECORD            PIC X(100).
        FD  REJECT-OUT.
-       01  REJECT-OUT-RECORD           PIC X(100).
+       01  REJECT-OUT-RECORD           PIC X(110).
        FD  LEGS-OUT.
        01  LEGS-OUT-RECORD             PIC X(80).
        FD  REPORT-OUT.
@@ -199,6 +201,9 @@
            END-READ
            MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE
            MOVE SPACES TO AUDIT-RECORD REJECT-RECORD
+           STRING WS-BUSINESS-DATE(1:4) '-' WS-BUSINESS-DATE(5:2) '-'
+                  WS-BUSINESS-DATE(7:2)
+               DELIMITED BY SIZE INTO RJ-REJECT-DATE
            PERFORM 1200-READ-MASTER
            PERFORM 1300-READ-TRAN.
 

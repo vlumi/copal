@@ -34,7 +34,7 @@ The business rules of [ACCTMNT](../programs/ACCTMNT.md), paragraph by paragraph:
 | → `STOP RUN` | 8 | 8 | 6 | 6 |
 | → `MOVE 0 TO RETURN-CODE` | | 7 | | 5 |
 
-Source: [ACCTMNT.cbl:128](../../../pangaea/programs/ACCTMNT.cbl#L128).
+Source: [ACCTMNT.cbl:138](../../../pangaea/programs/ACCTMNT.cbl#L138).
 
 ## 1000-INITIALIZE
 
@@ -51,10 +51,11 @@ Source: [ACCTMNT.cbl:128](../../../pangaea/programs/ACCTMNT.cbl#L128).
 | → `PERFORM 9900-ABORT` | | 4 | |
 | → `MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE` | | 5 | 3 |
 | → `MOVE SPACES TO REJECT-RECORD` | | 6 | 4 |
-| → `PERFORM 1200-READ-MASTER THRU 1200-EXIT` | | 7 | 5 |
-| → `PERFORM 1300-READ-REQUEST THRU 1300-EXIT` | | 8 | 6 |
+| → `STRING WS-BUSINESS-DATE(1:4) '-' WS-BUSINESS-DATE(5:2) '-' WS-BUSINESS-DATE(7:2) DELIMITED BY SIZE INTO RJ-REJECT-DATE` | | 7 | 5 |
+| → `PERFORM 1200-READ-MASTER THRU 1200-EXIT` | | 8 | 6 |
+| → `PERFORM 1300-READ-REQUEST THRU 1300-EXIT` | | 9 | 7 |
 
-Source: [ACCTMNT.cbl:145](../../../pangaea/programs/ACCTMNT.cbl#L145).
+Source: [ACCTMNT.cbl:155](../../../pangaea/programs/ACCTMNT.cbl#L155).
 
 ## 1200-READ-MASTER
 
@@ -71,7 +72,7 @@ Source: [ACCTMNT.cbl:145](../../../pangaea/programs/ACCTMNT.cbl#L145).
 | → `MOVE WS-MASTER-KEY TO WS-PREV-MASTER-KEY` | | 5 | 3 |
 | → `ADD 1 TO WS-MASTERS-READ` | | 6 | 4 |
 
-Source: [ACCTMNT.cbl:162](../../../pangaea/programs/ACCTMNT.cbl#L162).
+Source: [ACCTMNT.cbl:175](../../../pangaea/programs/ACCTMNT.cbl#L175).
 
 ## 1300-READ-REQUEST
 
@@ -89,7 +90,7 @@ Source: [ACCTMNT.cbl:162](../../../pangaea/programs/ACCTMNT.cbl#L162).
 | → `MOVE WS-REQUEST-ORDER-KEY TO WS-PREV-REQUEST-ORDER-KEY` | | 6 | 4 |
 | → `ADD 1 TO WS-REQUEST-COUNT` | | 7 | 5 |
 
-Source: [ACCTMNT.cbl:177](../../../pangaea/programs/ACCTMNT.cbl#L177).
+Source: [ACCTMNT.cbl:190](../../../pangaea/programs/ACCTMNT.cbl#L190).
 
 ## 2000-NEXT-ACCOUNT
 
@@ -105,7 +106,7 @@ Source: [ACCTMNT.cbl:177](../../../pangaea/programs/ACCTMNT.cbl#L177).
 | → `SET ACCOUNT-HELD TO TRUE` | 6 | | 5 | |
 | → `PERFORM 1200-READ-MASTER THRU 1200-EXIT` | 7 | | 6 | |
 
-Source: [ACCTMNT.cbl:195](../../../pangaea/programs/ACCTMNT.cbl#L195).
+Source: [ACCTMNT.cbl:208](../../../pangaea/programs/ACCTMNT.cbl#L208).
 
 ## 2100-APPLY-REQUESTS
 
@@ -117,7 +118,7 @@ Source: [ACCTMNT.cbl:195](../../../pangaea/programs/ACCTMNT.cbl#L195).
 | → `PERFORM 1300-READ-REQUEST THRU 1300-EXIT` | | 2 |
 | → `GO TO 2100-APPLY-REQUESTS` | | 3 |
 
-Source: [ACCTMNT.cbl:207](../../../pangaea/programs/ACCTMNT.cbl#L207).
+Source: [ACCTMNT.cbl:220](../../../pangaea/programs/ACCTMNT.cbl#L220).
 
 ## 2200-APPLY-REQUEST
 
@@ -140,31 +141,36 @@ Source: [ACCTMNT.cbl:207](../../../pangaea/programs/ACCTMNT.cbl#L207).
 | → `GO TO 2250-LIMIT` | | | | | | | 1 | |
 | → `SET RJ-BAD-TYPE TO TRUE` | | | | | | | | 1 |
 
-Source: [ACCTMNT.cbl:215](../../../pangaea/programs/ACCTMNT.cbl#L215).
+Source: [ACCTMNT.cbl:228](../../../pangaea/programs/ACCTMNT.cbl#L228).
 
 ## 2210-OPEN
 
-| | 1 | 2 | 3 |
-| --- | :-: | :-: | :-: |
-| `ACCOUNT-HELD` | Y | N | N |
-| `AM-SAVINGS` | | Y | N |
-| → `SET RJ-EXISTS TO TRUE` | 1 | | |
-| → `GO TO 2290-REJECT` | 2 | | |
-| → `MOVE SPACES TO ACCT-MASTER-RECORD` | | 1 | 1 |
-| → `MOVE MR-ACCT-NO TO AM-ACCT-NO` | | 2 | 2 |
-| → `MOVE MR-CUST-NO TO AM-CUST-NO` | | 3 | 3 |
-| → `MOVE MR-SHORT-NAME TO AM-SHORT-NAME` | | 4 | 4 |
-| → `MOVE MR-ACCT-TYPE TO AM-ACCT-TYPE` | | 5 | 5 |
-| → `SET AM-OPEN TO TRUE` | | 6 | 6 |
-| → `MOVE WS-BUSINESS-DATE TO AM-OPEN-DATE AM-LAST-ACTIVITY-DATE` | | 7 | 7 |
-| → `MOVE 0 TO AM-BALANCE` | | 8 | 8 |
-| → `MOVE MR-OVERDRAFT-LIMIT TO AM-OVERDRAFT-LIMIT` | | 9 | 9 |
-| → `MOVE 0 TO AM-OVERDRAFT-LIMIT` | | 10 | |
-| → `SET ACCOUNT-HELD TO TRUE` | | 11 | 10 |
-| → `ADD 1 TO WS-OPENED-COUNT` | | 12 | 11 |
-| → `GO TO 2299-EXIT` | | 13 | 12 |
+| | 1 | 2 | 3 | 4 | 5 |
+| --- | :-: | :-: | :-: | :-: | :-: |
+| `ACCOUNT-HELD` | Y | N | N | N | N |
+| `WS-EFF-YY < 50` | | Y | Y | N | N |
+| `AM-SAVINGS` | | Y | N | Y | N |
+| → `SET RJ-EXISTS TO TRUE` | 1 | | | | |
+| → `GO TO 2290-REJECT` | 2 | | | | |
+| → `MOVE SPACES TO ACCT-MASTER-RECORD` | | 1 | 1 | 1 | 1 |
+| → `MOVE MR-ACCT-NO TO AM-ACCT-NO` | | 2 | 2 | 2 | 2 |
+| → `MOVE MR-CUST-NO TO AM-CUST-NO` | | 3 | 3 | 3 | 3 |
+| → `MOVE MR-SHORT-NAME TO AM-SHORT-NAME` | | 4 | 4 | 4 | 4 |
+| → `MOVE MR-ACCT-TYPE TO AM-ACCT-TYPE` | | 5 | 5 | 5 | 5 |
+| → `SET AM-OPEN TO TRUE` | | 6 | 6 | 6 | 6 |
+| → `MOVE MR-EFFECTIVE-DATE TO WS-EFF-YYMMDD` | | 7 | 7 | 7 | 7 |
+| → `MOVE 20 TO WS-EFF-CENTURY` | | 8 | 8 | | |
+| → `MOVE WS-EFFECTIVE-DATE TO AM-OPEN-DATE` | | 9 | 9 | 9 | 9 |
+| → `MOVE WS-BUSINESS-DATE TO AM-LAST-ACTIVITY-DATE` | | 10 | 10 | 10 | 10 |
+| → `MOVE 0 TO AM-BALANCE` | | 11 | 11 | 11 | 11 |
+| → `MOVE MR-OVERDRAFT-LIMIT TO AM-OVERDRAFT-LIMIT` | | 12 | 12 | 12 | 12 |
+| → `MOVE 0 TO AM-OVERDRAFT-LIMIT` | | 13 | | 13 | |
+| → `SET ACCOUNT-HELD TO TRUE` | | 14 | 13 | 14 | 13 |
+| → `ADD 1 TO WS-OPENED-COUNT` | | 15 | 14 | 15 | 14 |
+| → `GO TO 2299-EXIT` | | 16 | 15 | 16 | 15 |
+| → `MOVE 19 TO WS-EFF-CENTURY` | | | | 8 | 8 |
 
-Source: [ACCTMNT.cbl:236](../../../pangaea/programs/ACCTMNT.cbl#L236).
+Source: [ACCTMNT.cbl:249](../../../pangaea/programs/ACCTMNT.cbl#L249).
 
 ## 2220-CLOSE
 
@@ -178,7 +184,7 @@ Source: [ACCTMNT.cbl:236](../../../pangaea/programs/ACCTMNT.cbl#L236).
 | → `ADD 1 TO WS-CLOSED-COUNT` | | 3 |
 | → `GO TO 2299-EXIT` | | 4 |
 
-Source: [ACCTMNT.cbl:256](../../../pangaea/programs/ACCTMNT.cbl#L256).
+Source: [ACCTMNT.cbl:276](../../../pangaea/programs/ACCTMNT.cbl#L276).
 
 ## 2230-FREEZE
 
@@ -191,7 +197,7 @@ Source: [ACCTMNT.cbl:256](../../../pangaea/programs/ACCTMNT.cbl#L256).
 | → `ADD 1 TO WS-FROZEN-COUNT` | | 2 |
 | → `GO TO 2299-EXIT` | | 3 |
 
-Source: [ACCTMNT.cbl:266](../../../pangaea/programs/ACCTMNT.cbl#L266).
+Source: [ACCTMNT.cbl:286](../../../pangaea/programs/ACCTMNT.cbl#L286).
 
 ## 2240-UNFREEZE
 
@@ -204,7 +210,7 @@ Source: [ACCTMNT.cbl:266](../../../pangaea/programs/ACCTMNT.cbl#L266).
 | → `ADD 1 TO WS-UNFROZEN-COUNT` | | 2 |
 | → `GO TO 2299-EXIT` | | 3 |
 
-Source: [ACCTMNT.cbl:275](../../../pangaea/programs/ACCTMNT.cbl#L275).
+Source: [ACCTMNT.cbl:295](../../../pangaea/programs/ACCTMNT.cbl#L295).
 
 ## 2250-LIMIT
 
@@ -217,7 +223,7 @@ Source: [ACCTMNT.cbl:275](../../../pangaea/programs/ACCTMNT.cbl#L275).
 | → `ADD 1 TO WS-LIMIT-COUNT` | | 2 |
 | → `GO TO 2299-EXIT` | | 3 |
 
-Source: [ACCTMNT.cbl:284](../../../pangaea/programs/ACCTMNT.cbl#L284).
+Source: [ACCTMNT.cbl:304](../../../pangaea/programs/ACCTMNT.cbl#L304).
 
 ## 2800-WRITE-HELD
 
@@ -228,4 +234,4 @@ Source: [ACCTMNT.cbl:284](../../../pangaea/programs/ACCTMNT.cbl#L284).
 | → `ADD 1 TO WS-MASTERS-WRITTEN` | 2 | |
 | → `ADD AM-BALANCE TO WS-BALANCES-OUT` | 3 | |
 
-Source: [ACCTMNT.cbl:302](../../../pangaea/programs/ACCTMNT.cbl#L302).
+Source: [ACCTMNT.cbl:322](../../../pangaea/programs/ACCTMNT.cbl#L322).

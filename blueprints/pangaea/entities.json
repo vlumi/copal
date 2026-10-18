@@ -23,6 +23,7 @@
       {
         "name": "AC-ACCT-NO",
         "kind": "number",
+        "layout": "9(10)",
         "uses": [
           {
             "program": "GLSUM",
@@ -60,6 +61,7 @@
       {
         "name": "AC-THROUGH-DATE",
         "kind": "date",
+        "layout": "9(8)",
         "uses": [
           {
             "program": "GLSUM",
@@ -90,6 +92,7 @@
       {
         "name": "AC-ACCRUED",
         "kind": "amount",
+        "layout": "S9(7)V9(6) COMP-3",
         "uses": [
           {
             "program": "GLSUM",
@@ -121,6 +124,7 @@
       {
         "name": "AC-DUE",
         "kind": "amount",
+        "layout": "S9(7)V99 COMP-3",
         "uses": [
           {
             "program": "GLSUM",
@@ -172,6 +176,7 @@
       {
         "name": "AC-DUE-MONTH",
         "kind": "date",
+        "layout": "9(6)",
         "uses": [
           {
             "program": "GLSUM",
@@ -214,6 +219,12 @@
               "1000-INITIALIZE"
             ]
           }
+        ],
+        "datesFrom": [
+          {
+            "record": "BANK-CONTROL-RECORD",
+            "field": "BC-BUSINESS-DATE"
+          }
         ]
       }
     ]
@@ -250,6 +261,7 @@
       {
         "name": "AM-ACCT-NO",
         "kind": "number",
+        "layout": "9(10)",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -338,6 +350,7 @@
       {
         "name": "AM-CUST-NO",
         "kind": "number",
+        "layout": "9(8)",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -374,6 +387,7 @@
       {
         "name": "AM-SHORT-NAME",
         "kind": "text",
+        "layout": "X(20)",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -413,6 +427,7 @@
       {
         "name": "AM-ACCT-TYPE",
         "kind": "code",
+        "layout": "X",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -434,14 +449,14 @@
             "decisions": [
               {
                 "paragraph": "2210-OPEN",
-                "source": "pangaea/programs/ACCTMNT.cbl:236",
+                "source": "pangaea/programs/ACCTMNT.cbl:249",
                 "conditions": [
                   "AM-SAVINGS"
                 ]
               },
               {
                 "paragraph": "2250-LIMIT",
-                "source": "pangaea/programs/ACCTMNT.cbl:284",
+                "source": "pangaea/programs/ACCTMNT.cbl:304",
                 "conditions": [
                   "AM-CURRENT"
                 ]
@@ -523,7 +538,7 @@
               "program": "ACCTMNT",
               "from": "MR-ACCT-TYPE",
               "paragraph": "2210-OPEN",
-              "source": "pangaea/programs/ACCTMNT.cbl:244"
+              "source": "pangaea/programs/ACCTMNT.cbl:257"
             }
           ]
         }
@@ -531,6 +546,7 @@
       {
         "name": "AM-STATUS",
         "kind": "code",
+        "layout": "X",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -566,21 +582,21 @@
             "decisions": [
               {
                 "paragraph": "2200-APPLY-REQUEST",
-                "source": "pangaea/programs/ACCTMNT.cbl:215",
+                "source": "pangaea/programs/ACCTMNT.cbl:228",
                 "conditions": [
                   "AM-CLOSED"
                 ]
               },
               {
                 "paragraph": "2230-FREEZE",
-                "source": "pangaea/programs/ACCTMNT.cbl:266",
+                "source": "pangaea/programs/ACCTMNT.cbl:286",
                 "conditions": [
                   "AM-OPEN"
                 ]
               },
               {
                 "paragraph": "2240-UNFREEZE",
-                "source": "pangaea/programs/ACCTMNT.cbl:275",
+                "source": "pangaea/programs/ACCTMNT.cbl:295",
                 "conditions": [
                   "AM-FROZEN"
                 ]
@@ -641,7 +657,7 @@
             "decisions": [
               {
                 "paragraph": "3000-APPLY-TRAN",
-                "source": "pangaea/programs/TXPOST.cbl:256",
+                "source": "pangaea/programs/TXPOST.cbl:261",
                 "conditions": [
                   "AM-CLOSED",
                   "AM-FROZEN"
@@ -677,28 +693,28 @@
               "to": "AM-OPEN",
               "program": "ACCTMNT",
               "paragraph": "2210-OPEN",
-              "source": "pangaea/programs/ACCTMNT.cbl:245"
+              "source": "pangaea/programs/ACCTMNT.cbl:258"
             },
             {
               "from": "any",
               "to": "AM-CLOSED",
               "program": "ACCTMNT",
               "paragraph": "2220-CLOSE",
-              "source": "pangaea/programs/ACCTMNT.cbl:260"
+              "source": "pangaea/programs/ACCTMNT.cbl:280"
             },
             {
               "from": "AM-OPEN",
               "to": "AM-FROZEN",
               "program": "ACCTMNT",
               "paragraph": "2230-FREEZE",
-              "source": "pangaea/programs/ACCTMNT.cbl:270"
+              "source": "pangaea/programs/ACCTMNT.cbl:290"
             },
             {
               "from": "AM-FROZEN",
               "to": "AM-OPEN",
               "program": "ACCTMNT",
               "paragraph": "2240-UNFREEZE",
-              "source": "pangaea/programs/ACCTMNT.cbl:279"
+              "source": "pangaea/programs/ACCTMNT.cbl:299"
             }
           ]
         }
@@ -706,6 +722,7 @@
       {
         "name": "AM-OPEN-DATE",
         "kind": "date",
+        "layout": "9(8)",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -734,11 +751,18 @@
             "program": "TXPOST",
             "field": "AM-OPEN-DATE"
           }
+        ],
+        "datesFrom": [
+          {
+            "record": "MAINT-REQUEST",
+            "field": "MR-EFFECTIVE-DATE"
+          }
         ]
       },
       {
         "name": "AM-LAST-ACTIVITY-DATE",
         "kind": "date",
+        "layout": "9(8)",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -775,6 +799,7 @@
       {
         "name": "AM-BALANCE",
         "kind": "amount",
+        "layout": "S9(11)V99",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -797,7 +822,7 @@
             "decisions": [
               {
                 "paragraph": "2220-CLOSE",
-                "source": "pangaea/programs/ACCTMNT.cbl:256",
+                "source": "pangaea/programs/ACCTMNT.cbl:276",
                 "conditions": [
                   "AM-BALANCE = 0"
                 ]
@@ -880,6 +905,7 @@
       {
         "name": "AM-OVERDRAFT-LIMIT",
         "kind": "amount",
+        "layout": "9(7)V99",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -942,6 +968,7 @@
       {
         "name": "AO-ACCT-NO",
         "kind": "key",
+        "layout": "9(10)",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -984,6 +1011,7 @@
       {
         "name": "AO-CUST-NO",
         "kind": "number",
+        "layout": "9(8)",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -1017,6 +1045,7 @@
       {
         "name": "AO-SHORT-NAME",
         "kind": "text",
+        "layout": "X(20)",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -1050,6 +1079,7 @@
       {
         "name": "AO-ACCT-TYPE",
         "kind": "code",
+        "layout": "X",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -1107,6 +1137,7 @@
       {
         "name": "AO-STATUS",
         "kind": "code",
+        "layout": "X",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -1200,6 +1231,7 @@
       {
         "name": "AO-BALANCE",
         "kind": "amount",
+        "layout": "S9(11)V99",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -1247,6 +1279,7 @@
       {
         "name": "AO-OVERDRAFT-LIMIT",
         "kind": "amount",
+        "layout": "9(7)V99",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -1292,6 +1325,7 @@
       {
         "name": "AO-HOLDS",
         "kind": "amount",
+        "layout": "S9(11)V99",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -1348,6 +1382,7 @@
       {
         "name": "AO-AS-OF-DATE",
         "kind": "date",
+        "layout": "9(8)",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -1402,6 +1437,7 @@
       {
         "name": "AU-BUSINESS-DATE",
         "kind": "date",
+        "layout": "9(8)",
         "uses": [
           {
             "program": "GLSUM",
@@ -1430,6 +1466,7 @@
       {
         "name": "AU-TRAN-ID",
         "kind": "number",
+        "layout": "9(10)",
         "uses": [
           {
             "program": "GLSUM",
@@ -1454,6 +1491,7 @@
       {
         "name": "AU-ACCT-NO",
         "kind": "number",
+        "layout": "9(10)",
         "uses": [
           {
             "program": "GLSUM",
@@ -1478,6 +1516,7 @@
       {
         "name": "AU-TRAN-CODE",
         "kind": "text",
+        "layout": "XX",
         "uses": [
           {
             "program": "GLSUM",
@@ -1516,6 +1555,7 @@
       {
         "name": "AU-AMOUNT",
         "kind": "amount",
+        "layout": "S9(9)V99",
         "uses": [
           {
             "program": "GLSUM",
@@ -1552,6 +1592,7 @@
       {
         "name": "AU-BALANCE-BEFORE",
         "kind": "amount",
+        "layout": "S9(11)V99",
         "uses": [
           {
             "program": "GLSUM",
@@ -1576,6 +1617,7 @@
       {
         "name": "AU-BALANCE-AFTER",
         "kind": "amount",
+        "layout": "S9(11)V99",
         "uses": [
           {
             "program": "GLSUM",
@@ -1613,6 +1655,7 @@
       {
         "name": "RQ-FUNCTION",
         "kind": "code",
+        "layout": "X(4)",
         "uses": [
           {
             "program": "ATMBAL",
@@ -1692,6 +1735,7 @@
       {
         "name": "RQ-CARD-NO",
         "kind": "number",
+        "layout": "9(16)",
         "uses": [
           {
             "program": "ATMBAL",
@@ -1721,6 +1765,7 @@
       {
         "name": "RQ-AMOUNT",
         "kind": "amount",
+        "layout": "9(7)V99",
         "uses": [
           {
             "program": "ATMBAL",
@@ -1774,6 +1819,7 @@
       {
         "name": "RQ-AUTH-CODE",
         "kind": "number",
+        "layout": "9(6)",
         "uses": [
           {
             "program": "ATMBAL",
@@ -1803,6 +1849,7 @@
       {
         "name": "RQ-TERMINAL",
         "kind": "text",
+        "layout": "X(20)",
         "uses": [
           {
             "program": "ATMBAL",
@@ -1835,6 +1882,7 @@
       {
         "name": "RQ-TIMESTAMP",
         "kind": "date",
+        "layout": "9(14)",
         "uses": [
           {
             "program": "ATMBAL",
@@ -1880,6 +1928,7 @@
       {
         "name": "RS-RESULT",
         "kind": "code",
+        "layout": "XX",
         "uses": [
           {
             "program": "ATMBAL",
@@ -2161,6 +2210,7 @@
       {
         "name": "RS-AUTH-CODE",
         "kind": "number",
+        "layout": "9(6)",
         "uses": [
           {
             "program": "ATMBAL",
@@ -2193,6 +2243,7 @@
       {
         "name": "RS-AMOUNT",
         "kind": "edited",
+        "layout": "Z(6)9.99",
         "uses": [
           {
             "program": "ATMBAL",
@@ -2228,6 +2279,7 @@
       {
         "name": "RS-FEE",
         "kind": "edited",
+        "layout": "ZZ9.99",
         "uses": [
           {
             "program": "ATMBAL",
@@ -2263,6 +2315,7 @@
       {
         "name": "RS-BALANCE",
         "kind": "edited",
+        "layout": "-9(11).99",
         "uses": [
           {
             "program": "ATMBAL",
@@ -2301,6 +2354,7 @@
       {
         "name": "RS-AVAILABLE",
         "kind": "edited",
+        "layout": "-9(11).99",
         "uses": [
           {
             "program": "ATMBAL",
@@ -2339,6 +2393,7 @@
       {
         "name": "RS-MESSAGE",
         "kind": "text",
+        "layout": "X(30)",
         "uses": [
           {
             "program": "ATMBAL",
@@ -2424,6 +2479,7 @@
       {
         "name": "BC-BUSINESS-DATE",
         "kind": "date",
+        "layout": "9(8)",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -2580,6 +2636,7 @@
       {
         "name": "CR-CARD-NO",
         "kind": "key",
+        "layout": "9(16)",
         "uses": [
           {
             "program": "ATMBAL",
@@ -2631,6 +2688,7 @@
       {
         "name": "CR-ACCT-NO",
         "kind": "number",
+        "layout": "9(10)",
         "uses": [
           {
             "program": "ATMBAL",
@@ -2665,6 +2723,7 @@
       {
         "name": "CR-CUST-NO",
         "kind": "number",
+        "layout": "9(8)",
         "uses": [
           {
             "program": "ATMBAL",
@@ -2695,6 +2754,7 @@
       {
         "name": "CR-STATUS",
         "kind": "code",
+        "layout": "X",
         "uses": [
           {
             "program": "ATMBAL",
@@ -2789,6 +2849,7 @@
       {
         "name": "CR-EXPIRY-MONTH",
         "kind": "date",
+        "layout": "9(6)",
         "uses": [
           {
             "program": "ATMBAL",
@@ -2831,6 +2892,7 @@
       {
         "name": "CR-PURCHASE-LIMIT",
         "kind": "amount",
+        "layout": "9(5)V99",
         "uses": [
           {
             "program": "ATMBAL",
@@ -2873,6 +2935,7 @@
       {
         "name": "CR-CASH-LIMIT",
         "kind": "amount",
+        "layout": "9(5)V99",
         "uses": [
           {
             "program": "ATMBAL",
@@ -2915,6 +2978,7 @@
       {
         "name": "CR-TOTALS-DATE",
         "kind": "date",
+        "layout": "9(8)",
         "uses": [
           {
             "program": "ATMBAL",
@@ -2989,6 +3053,7 @@
       {
         "name": "CR-DAY-PURCHASES",
         "kind": "amount",
+        "layout": "9(5)V99",
         "uses": [
           {
             "program": "ATMBAL",
@@ -3035,6 +3100,7 @@
       {
         "name": "CR-DAY-CASH",
         "kind": "amount",
+        "layout": "9(5)V99",
         "uses": [
           {
             "program": "ATMBAL",
@@ -3075,6 +3141,7 @@
       {
         "name": "CR-MONTH-WITHDRAWALS",
         "kind": "number",
+        "layout": "9(3)",
         "uses": [
           {
             "program": "ATMBAL",
@@ -3144,6 +3211,7 @@
       {
         "name": ":P:-CODE-ENTRY",
         "kind": "group",
+        "layout": "",
         "uses": [
           {
             "program": "GLSUM",
@@ -3164,6 +3232,7 @@
       {
         "name": ":P:-CODE",
         "kind": "text",
+        "layout": "XX",
         "uses": [
           {
             "program": "GLSUM",
@@ -3202,6 +3271,7 @@
       {
         "name": ":P:-CODE-TEXT",
         "kind": "text",
+        "layout": "X(20)",
         "uses": [
           {
             "program": "GLSUM",
@@ -3219,6 +3289,7 @@
       {
         "name": ":P:-CODE-GL-ACCOUNT",
         "kind": "number",
+        "layout": "9(4)",
         "uses": [
           {
             "program": "GLSUM",
@@ -3251,6 +3322,7 @@
       {
         "name": "GL-MONTH",
         "kind": "date",
+        "layout": "9(6)",
         "uses": [
           {
             "program": "GLSUM",
@@ -3264,6 +3336,7 @@
       {
         "name": "GL-ACCOUNT",
         "kind": "number",
+        "layout": "9(4)",
         "uses": [
           {
             "program": "GLSUM",
@@ -3277,6 +3350,7 @@
       {
         "name": "GL-ACCOUNT-NAME",
         "kind": "text",
+        "layout": "X(24)",
         "uses": [
           {
             "program": "GLSUM",
@@ -3290,6 +3364,7 @@
       {
         "name": "GL-DEBITS",
         "kind": "amount",
+        "layout": "S9(13)V99 COMP-3",
         "uses": [
           {
             "program": "GLSUM",
@@ -3303,6 +3378,7 @@
       {
         "name": "GL-CREDITS",
         "kind": "amount",
+        "layout": "S9(13)V99 COMP-3",
         "uses": [
           {
             "program": "GLSUM",
@@ -3341,6 +3417,7 @@
       {
         "name": "HD-KEY",
         "kind": "group",
+        "layout": "",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -3381,6 +3458,7 @@
       {
         "name": "HD-ACCT-NO",
         "kind": "number",
+        "layout": "9(10)",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -3427,6 +3505,7 @@
       {
         "name": "HD-HOLD-NO",
         "kind": "number",
+        "layout": "9(6)",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -3484,6 +3563,7 @@
       {
         "name": "HD-CARD-NO",
         "kind": "number",
+        "layout": "9(16)",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -3536,6 +3616,7 @@
       {
         "name": "HD-KIND",
         "kind": "code",
+        "layout": "X",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -3632,6 +3713,7 @@
       {
         "name": "HD-STATUS",
         "kind": "code",
+        "layout": "X",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -3738,6 +3820,7 @@
       {
         "name": "HD-AMOUNT",
         "kind": "amount",
+        "layout": "9(7)V99",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -3787,6 +3870,7 @@
       {
         "name": "HD-FEE",
         "kind": "amount",
+        "layout": "9(3)V99",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -3842,6 +3926,7 @@
       {
         "name": "HD-TERMINAL",
         "kind": "text",
+        "layout": "X(20)",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -3885,6 +3970,7 @@
       {
         "name": "HD-TIMESTAMP",
         "kind": "date",
+        "layout": "9(14)",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -3925,6 +4011,7 @@
       {
         "name": "HD-BUSINESS-DATE",
         "kind": "date",
+        "layout": "9(8)",
         "uses": [
           {
             "program": "ACCTLOAD",
@@ -4004,6 +4091,7 @@
       {
         "name": "MR-REQUEST-ID",
         "kind": "number",
+        "layout": "9(10)",
         "uses": [
           {
             "program": "ACCTMNT",
@@ -4017,6 +4105,7 @@
       {
         "name": "MR-REQUEST-TYPE",
         "kind": "code",
+        "layout": "X",
         "uses": [
           {
             "program": "ACCTMNT",
@@ -4027,7 +4116,7 @@
             "decisions": [
               {
                 "paragraph": "2200-APPLY-REQUEST",
-                "source": "pangaea/programs/ACCTMNT.cbl:215",
+                "source": "pangaea/programs/ACCTMNT.cbl:228",
                 "conditions": [
                   "MR-OPEN",
                   "MR-CLOSE",
@@ -4077,6 +4166,7 @@
       {
         "name": "MR-ACCT-NO",
         "kind": "number",
+        "layout": "9(10)",
         "uses": [
           {
             "program": "ACCTMNT",
@@ -4091,6 +4181,7 @@
       {
         "name": "MR-CUST-NO",
         "kind": "number",
+        "layout": "9(8)",
         "uses": [
           {
             "program": "ACCTMNT",
@@ -4104,6 +4195,7 @@
       {
         "name": "MR-SHORT-NAME",
         "kind": "text",
+        "layout": "X(20)",
         "uses": [
           {
             "program": "ACCTMNT",
@@ -4117,6 +4209,7 @@
       {
         "name": "MR-ACCT-TYPE",
         "kind": "text",
+        "layout": "X",
         "uses": [
           {
             "program": "ACCTMNT",
@@ -4130,6 +4223,7 @@
       {
         "name": "MR-OVERDRAFT-LIMIT",
         "kind": "amount",
+        "layout": "9(7)V99",
         "uses": [
           {
             "program": "ACCTMNT",
@@ -4137,6 +4231,20 @@
             "readBy": [
               "2210-OPEN",
               "2250-LIMIT"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "MR-EFFECTIVE-DATE",
+        "kind": "date",
+        "layout": "9(6)",
+        "uses": [
+          {
+            "program": "ACCTMNT",
+            "field": "MR-EFFECTIVE-DATE",
+            "readBy": [
+              "2210-OPEN"
             ]
           }
         ]
@@ -4159,6 +4267,7 @@
       {
         "name": "RT-ACCT-TYPE",
         "kind": "text",
+        "layout": "X",
         "uses": [
           {
             "program": "INTACCR",
@@ -4172,6 +4281,7 @@
       {
         "name": "RT-KIND",
         "kind": "code",
+        "layout": "X",
         "uses": [
           {
             "program": "INTACCR",
@@ -4201,6 +4311,7 @@
       {
         "name": "RT-FLOOR",
         "kind": "amount",
+        "layout": "S9(11)V99 COMP-3",
         "uses": [
           {
             "program": "INTACCR",
@@ -4214,6 +4325,7 @@
       {
         "name": "RT-ANNUAL-RATE",
         "kind": "amount",
+        "layout": "9V9(6) COMP-3",
         "uses": [
           {
             "program": "INTACCR",
@@ -4247,6 +4359,7 @@
       {
         "name": "RJ-PROGRAM",
         "kind": "text",
+        "layout": "X(8)",
         "uses": [
           {
             "program": "ACCTMNT",
@@ -4274,6 +4387,7 @@
       {
         "name": "RJ-REASON",
         "kind": "code",
+        "layout": "X(4)",
         "uses": [
           {
             "program": "ACCTMNT",
@@ -4386,119 +4500,119 @@
               "to": "RJ-NO-ACCOUNT",
               "program": "ACCTMNT",
               "paragraph": "2200-APPLY-REQUEST",
-              "source": "pangaea/programs/ACCTMNT.cbl:219"
+              "source": "pangaea/programs/ACCTMNT.cbl:232"
             },
             {
               "from": "any",
               "to": "RJ-CLOSED",
               "program": "ACCTMNT",
               "paragraph": "2200-APPLY-REQUEST",
-              "source": "pangaea/programs/ACCTMNT.cbl:222"
+              "source": "pangaea/programs/ACCTMNT.cbl:235"
             },
             {
               "from": "any",
               "to": "RJ-BAD-TYPE",
               "program": "ACCTMNT",
               "paragraph": "2200-APPLY-REQUEST",
-              "source": "pangaea/programs/ACCTMNT.cbl:232"
+              "source": "pangaea/programs/ACCTMNT.cbl:245"
             },
             {
               "from": "any",
               "to": "RJ-EXISTS",
               "program": "ACCTMNT",
               "paragraph": "2210-OPEN",
-              "source": "pangaea/programs/ACCTMNT.cbl:238"
+              "source": "pangaea/programs/ACCTMNT.cbl:251"
             },
             {
               "from": "any",
               "to": "RJ-HAS-BALANCE",
               "program": "ACCTMNT",
               "paragraph": "2220-CLOSE",
-              "source": "pangaea/programs/ACCTMNT.cbl:258"
+              "source": "pangaea/programs/ACCTMNT.cbl:278"
             },
             {
               "from": "any",
               "to": "RJ-BAD-STATUS",
               "program": "ACCTMNT",
               "paragraph": "2230-FREEZE",
-              "source": "pangaea/programs/ACCTMNT.cbl:268"
+              "source": "pangaea/programs/ACCTMNT.cbl:288"
             },
             {
               "from": "any",
               "to": "RJ-BAD-STATUS",
               "program": "ACCTMNT",
               "paragraph": "2240-UNFREEZE",
-              "source": "pangaea/programs/ACCTMNT.cbl:277"
+              "source": "pangaea/programs/ACCTMNT.cbl:297"
             },
             {
               "from": "any",
               "to": "RJ-BAD-TYPE",
               "program": "ACCTMNT",
               "paragraph": "2250-LIMIT",
-              "source": "pangaea/programs/ACCTMNT.cbl:286"
+              "source": "pangaea/programs/ACCTMNT.cbl:306"
             },
             {
               "from": "any",
               "to": "RJ-NO-ACCOUNT",
               "program": "TXPOST",
               "paragraph": "2000-MATCH",
-              "source": "pangaea/programs/TXPOST.cbl:244"
+              "source": "pangaea/programs/TXPOST.cbl:249"
             },
             {
               "from": "any",
               "to": "RJ-CLOSED",
               "program": "TXPOST",
               "paragraph": "3000-APPLY-TRAN",
-              "source": "pangaea/programs/TXPOST.cbl:260"
+              "source": "pangaea/programs/TXPOST.cbl:265"
             },
             {
               "from": "any",
               "to": "RJ-FROZEN",
               "program": "TXPOST",
               "paragraph": "3000-APPLY-TRAN",
-              "source": "pangaea/programs/TXPOST.cbl:276"
+              "source": "pangaea/programs/TXPOST.cbl:281"
             },
             {
               "from": "any",
               "to": "RJ-NO-FUNDS",
               "program": "TXPOST",
               "paragraph": "3200-POST-DEBIT",
-              "source": "pangaea/programs/TXPOST.cbl:297"
+              "source": "pangaea/programs/TXPOST.cbl:302"
             },
             {
               "from": "any",
               "to": "RJ-BAD-TYPE",
               "program": "TXVALID",
               "paragraph": "3000-READ-DETAILS",
-              "source": "pangaea/programs/TXVALID.cbl:189"
+              "source": "pangaea/programs/TXVALID.cbl:194"
             },
             {
               "from": "any",
               "to": "RJ-BAD-CODE",
               "program": "TXVALID",
               "paragraph": "3200-VALIDATE-DETAIL",
-              "source": "pangaea/programs/TXVALID.cbl:220"
+              "source": "pangaea/programs/TXVALID.cbl:225"
             },
             {
               "from": "any",
               "to": "RJ-BAD-AMOUNT",
               "program": "TXVALID",
               "paragraph": "3200-VALIDATE-DETAIL",
-              "source": "pangaea/programs/TXVALID.cbl:224"
+              "source": "pangaea/programs/TXVALID.cbl:229"
             },
             {
               "from": "any",
               "to": "RJ-BAD-COUNTER",
               "program": "TXVALID",
               "paragraph": "3200-VALIDATE-DETAIL",
-              "source": "pangaea/programs/TXVALID.cbl:229"
+              "source": "pangaea/programs/TXVALID.cbl:234"
             },
             {
               "from": "any",
               "to": "RJ-BAD-ACCOUNT",
               "program": "TXVALID",
               "paragraph": "3200-VALIDATE-DETAIL",
-              "source": "pangaea/programs/TXVALID.cbl:216"
+              "source": "pangaea/programs/TXVALID.cbl:221"
             }
           ]
         }
@@ -4506,6 +4620,7 @@
       {
         "name": "RJ-TRAN",
         "kind": "text",
+        "layout": "X(80)",
         "uses": [
           {
             "program": "ACCTMNT",
@@ -4527,6 +4642,40 @@
             "writtenBy": [
               "3300-REJECT-RECORD"
             ]
+          }
+        ]
+      },
+      {
+        "name": "RJ-REJECT-DATE",
+        "kind": "text",
+        "layout": "X(10)",
+        "uses": [
+          {
+            "program": "ACCTMNT",
+            "field": "RJ-REJECT-DATE",
+            "writtenBy": [
+              "1000-INITIALIZE"
+            ]
+          },
+          {
+            "program": "TXPOST",
+            "field": "RJ-REJECT-DATE",
+            "writtenBy": [
+              "1000-INITIALIZE"
+            ]
+          },
+          {
+            "program": "TXVALID",
+            "field": "RJ-REJECT-DATE",
+            "writtenBy": [
+              "1000-OPEN-FILES"
+            ]
+          }
+        ],
+        "datesFrom": [
+          {
+            "record": "BANK-CONTROL-RECORD",
+            "field": "BC-BUSINESS-DATE"
           }
         ]
       }
@@ -4564,6 +4713,7 @@
       {
         "name": "TR-REC-TYPE",
         "kind": "code",
+        "layout": "X",
         "uses": [
           {
             "program": "HOLDEXT",
@@ -4595,7 +4745,7 @@
             "decisions": [
               {
                 "paragraph": "2000-READ-HEADER",
-                "source": "pangaea/programs/TXVALID.cbl:158",
+                "source": "pangaea/programs/TXVALID.cbl:163",
                 "conditions": [
                   "TR-HEADER"
                 ]
@@ -4603,7 +4753,7 @@
               {
                 "paragraph": "3000-READ-DETAILS",
                 "loop": "PERFORM UNTIL TR-TRAILER OR NOT FILE-IS-GOOD",
-                "source": "pangaea/programs/TXVALID.cbl:182",
+                "source": "pangaea/programs/TXVALID.cbl:187",
                 "conditions": [
                   "TR-DETAIL",
                   "TR-HEADER"
@@ -4668,6 +4818,7 @@
       {
         "name": "TR-BODY",
         "kind": "text",
+        "layout": "X(79)",
         "uses": [
           {
             "program": "HOLDEXT",
@@ -4690,6 +4841,7 @@
       {
         "name": "TR-HEADER-BODY",
         "kind": "group",
+        "layout": "",
         "uses": [
           {
             "program": "HOLDEXT",
@@ -4712,6 +4864,7 @@
       {
         "name": "TH-BUSINESS-DATE",
         "kind": "date",
+        "layout": "9(8)",
         "uses": [
           {
             "program": "HOLDEXT",
@@ -4737,7 +4890,7 @@
             "decisions": [
               {
                 "paragraph": "2000-READ-HEADER",
-                "source": "pangaea/programs/TXVALID.cbl:158",
+                "source": "pangaea/programs/TXVALID.cbl:163",
                 "conditions": [
                   "TH-BUSINESS-DATE = WS-BUSINESS-DATE"
                 ]
@@ -4749,6 +4902,7 @@
       {
         "name": "TH-SOURCE",
         "kind": "code",
+        "layout": "X(8)",
         "uses": [
           {
             "program": "HOLDEXT",
@@ -4774,7 +4928,7 @@
             "decisions": [
               {
                 "paragraph": "2000-READ-HEADER",
-                "source": "pangaea/programs/TXVALID.cbl:158",
+                "source": "pangaea/programs/TXVALID.cbl:163",
                 "conditions": [
                   "NOT TH-FROM-BRANCHES AND NOT TH-FROM-CARDS"
                 ]
@@ -4811,6 +4965,7 @@
       {
         "name": "TH-FILE-SEQ",
         "kind": "number",
+        "layout": "9(6)",
         "uses": [
           {
             "program": "HOLDEXT",
@@ -4836,6 +4991,7 @@
       {
         "name": "TR-DETAIL-BODY",
         "kind": "group",
+        "layout": "",
         "uses": [
           {
             "program": "HOLDEXT",
@@ -4858,6 +5014,7 @@
       {
         "name": "TD-TRAN-ID",
         "kind": "number",
+        "layout": "9(10)",
         "uses": [
           {
             "program": "HOLDEXT",
@@ -4890,6 +5047,7 @@
       {
         "name": "TD-ACCT-NO",
         "kind": "number",
+        "layout": "9(10)",
         "uses": [
           {
             "program": "HOLDEXT",
@@ -4929,7 +5087,7 @@
             "decisions": [
               {
                 "paragraph": "3200-VALIDATE-DETAIL",
-                "source": "pangaea/programs/TXVALID.cbl:205",
+                "source": "pangaea/programs/TXVALID.cbl:210",
                 "conditions": [
                   "TD-ACCT-NO IS NUMERIC",
                   "TD-TRANSFER AND (TD-COUNTER-ACCT-NO IS NOT NUMERIC OR TD-COUNTER-ACCT-NO = TD-ACCT-NO)"
@@ -4942,6 +5100,7 @@
       {
         "name": "TD-TRAN-CODE",
         "kind": "code",
+        "layout": "XX",
         "uses": [
           {
             "program": "HOLDEXT",
@@ -4974,7 +5133,7 @@
             "decisions": [
               {
                 "paragraph": "3000-APPLY-TRAN",
-                "source": "pangaea/programs/TXPOST.cbl:256",
+                "source": "pangaea/programs/TXPOST.cbl:261",
                 "conditions": [
                   "TD-DEPOSIT OR TD-TRANSFER-CREDIT OR TD-TRANSFER-RETURN OR TD-INTEREST",
                   "TD-FEE OR TD-OVERDRAFT-INTEREST OR TD-MAINTENANCE-FEE OR TD-ATM-FEE",
@@ -4984,21 +5143,21 @@
               },
               {
                 "paragraph": "3200-POST-DEBIT",
-                "source": "pangaea/programs/TXPOST.cbl:293",
+                "source": "pangaea/programs/TXPOST.cbl:298",
                 "conditions": [
                   "TD-TRANSFER"
                 ]
               },
               {
                 "paragraph": "3500-WRITE-LEG",
-                "source": "pangaea/programs/TXPOST.cbl:328",
+                "source": "pangaea/programs/TXPOST.cbl:333",
                 "conditions": [
                   "TD-TRANSFER"
                 ]
               },
               {
                 "paragraph": "3900-REJECT-TRAN",
-                "source": "pangaea/programs/TXPOST.cbl:357",
+                "source": "pangaea/programs/TXPOST.cbl:362",
                 "conditions": [
                   "TD-TRANSFER-CREDIT"
                 ]
@@ -5014,7 +5173,7 @@
             "decisions": [
               {
                 "paragraph": "3200-VALIDATE-DETAIL",
-                "source": "pangaea/programs/TXVALID.cbl:205",
+                "source": "pangaea/programs/TXVALID.cbl:210",
                 "conditions": [
                   "(FROM-BRANCHES AND NOT TD-KNOWN-CODE) OR (FROM-CARDS AND NOT TD-CARD-CODE)",
                   "TD-TRANSFER AND (TD-COUNTER-ACCT-NO IS NOT NUMERIC OR TD-COUNTER-ACCT-NO = TD-ACCT-NO)"
@@ -5163,14 +5322,14 @@
               "to": "TD-TRANSFER-CREDIT",
               "program": "TXPOST",
               "paragraph": "3500-WRITE-LEG",
-              "source": "pangaea/programs/TXPOST.cbl:331"
+              "source": "pangaea/programs/TXPOST.cbl:336"
             },
             {
               "from": "any",
               "to": "TD-TRANSFER-RETURN",
               "program": "TXPOST",
               "paragraph": "3500-WRITE-LEG",
-              "source": "pangaea/programs/TXPOST.cbl:333"
+              "source": "pangaea/programs/TXPOST.cbl:338"
             }
           ]
         }
@@ -5178,6 +5337,7 @@
       {
         "name": "TD-AMOUNT",
         "kind": "amount",
+        "layout": "9(9)V99",
         "uses": [
           {
             "program": "HOLDEXT",
@@ -5220,7 +5380,7 @@
             "decisions": [
               {
                 "paragraph": "3200-VALIDATE-DETAIL",
-                "source": "pangaea/programs/TXVALID.cbl:205",
+                "source": "pangaea/programs/TXVALID.cbl:210",
                 "conditions": [
                   "TD-AMOUNT IS NUMERIC",
                   "TD-AMOUNT IS NOT NUMERIC OR TD-AMOUNT = ZERO"
@@ -5233,6 +5393,7 @@
       {
         "name": "TD-DESCRIPTION",
         "kind": "text",
+        "layout": "X(20)",
         "uses": [
           {
             "program": "HOLDEXT",
@@ -5262,6 +5423,7 @@
       {
         "name": "TD-COUNTER-ACCT-NO",
         "kind": "number",
+        "layout": "9(10)",
         "uses": [
           {
             "program": "HOLDEXT",
@@ -5293,7 +5455,7 @@
             "decisions": [
               {
                 "paragraph": "3200-VALIDATE-DETAIL",
-                "source": "pangaea/programs/TXVALID.cbl:205",
+                "source": "pangaea/programs/TXVALID.cbl:210",
                 "conditions": [
                   "TD-TRANSFER AND (TD-COUNTER-ACCT-NO IS NOT NUMERIC OR TD-COUNTER-ACCT-NO = TD-ACCT-NO)"
                 ]
@@ -5305,6 +5467,7 @@
       {
         "name": "TR-TRAILER-BODY",
         "kind": "group",
+        "layout": "",
         "uses": [
           {
             "program": "HOLDEXT",
@@ -5327,6 +5490,7 @@
       {
         "name": "TT-DETAIL-COUNT",
         "kind": "number",
+        "layout": "9(8)",
         "uses": [
           {
             "program": "HOLDEXT",
@@ -5352,7 +5516,7 @@
             "decisions": [
               {
                 "paragraph": "4000-CHECK-TRAILER",
-                "source": "pangaea/programs/TXVALID.cbl:247",
+                "source": "pangaea/programs/TXVALID.cbl:252",
                 "conditions": [
                   "TT-DETAIL-COUNT = WS-DETAIL-COUNT"
                 ]
@@ -5364,6 +5528,7 @@
       {
         "name": "TT-AMOUNT-TOTAL",
         "kind": "amount",
+        "layout": "9(13)V99",
         "uses": [
           {
             "program": "HOLDEXT",
@@ -5389,7 +5554,7 @@
             "decisions": [
               {
                 "paragraph": "4000-CHECK-TRAILER",
-                "source": "pangaea/programs/TXVALID.cbl:247",
+                "source": "pangaea/programs/TXVALID.cbl:252",
                 "conditions": [
                   "TT-AMOUNT-TOTAL = WS-AMOUNT-TOTAL"
                 ]
@@ -5401,6 +5566,7 @@
       {
         "name": "TT-ACCT-HASH",
         "kind": "number",
+        "layout": "9(15)",
         "uses": [
           {
             "program": "HOLDEXT",
@@ -5426,7 +5592,7 @@
             "decisions": [
               {
                 "paragraph": "4000-CHECK-TRAILER",
-                "source": "pangaea/programs/TXVALID.cbl:247",
+                "source": "pangaea/programs/TXVALID.cbl:252",
                 "conditions": [
                   "TT-ACCT-HASH = WS-ACCT-HASH"
                 ]

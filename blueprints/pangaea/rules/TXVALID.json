@@ -3,7 +3,7 @@
   "tables": [
     {
       "paragraph": "0000-MAIN",
-      "source": "pangaea/programs/TXVALID.cbl:111",
+      "source": "pangaea/programs/TXVALID.cbl:113",
       "conditions": [
         "FILE-IS-GOOD",
         "WS-REJECT-COUNT \u003e 0"
@@ -79,7 +79,7 @@
     },
     {
       "paragraph": "1000-OPEN-FILES",
-      "source": "pangaea/programs/TXVALID.cbl:134",
+      "source": "pangaea/programs/TXVALID.cbl:136",
       "conditions": [
         "WS-CONTROL-STATUS NOT = '00' OR WS-TRAN-IN-STATUS NOT = '00' OR WS-TRAN-OUT-STATUS NOT = '00' OR NOT REJECTS-OPENED OR WS-REPORT-STATUS NOT = '00'",
         "READ CONTROL-FILE AT END"
@@ -102,7 +102,8 @@
         "READ CONTROL-FILE",
         "DISPLAY 'TXVALID: NO BANK CONTROL RECORD'",
         "MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE",
-        "MOVE SPACES TO REJECT-RECORD"
+        "MOVE SPACES TO REJECT-RECORD",
+        "STRING WS-BUSINESS-DATE(1:4) '-' WS-BUSINESS-DATE(5:2) '-' WS-BUSINESS-DATE(7:2) DELIMITED BY SIZE INTO RJ-REJECT-DATE"
       ],
       "rules": [
         {
@@ -139,14 +140,15 @@
             0,
             4,
             6,
-            7
+            7,
+            8
           ]
         }
       ]
     },
     {
       "paragraph": "2000-READ-HEADER",
-      "source": "pangaea/programs/TXVALID.cbl:158",
+      "source": "pangaea/programs/TXVALID.cbl:163",
       "conditions": [
         "READ TRAN-IN AT END",
         "FILE-IS-GOOD",
@@ -326,7 +328,7 @@
     {
       "paragraph": "3000-READ-DETAILS",
       "loop": "PERFORM UNTIL TR-TRAILER OR NOT FILE-IS-GOOD",
-      "source": "pangaea/programs/TXVALID.cbl:182",
+      "source": "pangaea/programs/TXVALID.cbl:187",
       "conditions": [
         "TR-DETAIL",
         "FILE-IS-GOOD",
@@ -420,7 +422,7 @@
     },
     {
       "paragraph": "3100-READ-NEXT",
-      "source": "pangaea/programs/TXVALID.cbl:198",
+      "source": "pangaea/programs/TXVALID.cbl:203",
       "conditions": [
         "READ TRAN-IN AT END"
       ],
@@ -453,7 +455,7 @@
     },
     {
       "paragraph": "3200-VALIDATE-DETAIL",
-      "source": "pangaea/programs/TXVALID.cbl:205",
+      "source": "pangaea/programs/TXVALID.cbl:210",
       "conditions": [
         "TD-AMOUNT IS NUMERIC",
         "TD-ACCT-NO IS NUMERIC",
@@ -872,7 +874,7 @@
     },
     {
       "paragraph": "4000-CHECK-TRAILER",
-      "source": "pangaea/programs/TXVALID.cbl:247",
+      "source": "pangaea/programs/TXVALID.cbl:252",
       "conditions": [
         "TT-DETAIL-COUNT = WS-DETAIL-COUNT",
         "FILE-IS-GOOD",
@@ -1062,7 +1064,7 @@
     },
     {
       "paragraph": "8000-WRITE-REPORT",
-      "source": "pangaea/programs/TXVALID.cbl:268",
+      "source": "pangaea/programs/TXVALID.cbl:273",
       "conditions": [
         "FILE-IS-GOOD"
       ],

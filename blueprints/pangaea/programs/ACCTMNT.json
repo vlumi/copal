@@ -26,8 +26,13 @@
     "MODIFICATION HISTORY",
     "DATE       BY  CHANGE",
     "1988-05-09 JA  CR-0031 ORIGINAL VERSION.",
+    "1991-10-07 PK  CR-0129 AN OPENING IS DATED FROM ITS REQUEST'S",
+    "               EFFECTIVE DATE.",
     "1994-11-14 PK  CR-0201 OVERDRAFT LIMIT CHANGES.",
-    "1999-01-11 SL  Y2K: 8-DIGIT OPEN DATES."
+    "1999-01-11 SL  Y2K: 8-DIGIT OPEN DATES. THE EFFECTIVE DATE",
+    "               LEFT AS IS, WINDOWED ON READ: BELOW 50 IS 20YY.",
+    "2009-03-02 MV  CR-0444 THE DATE OF THE REJECTION ON EVERY",
+    "               REJECT."
   ],
   "identification": [
     {
@@ -56,7 +61,7 @@
       "records": [
         "BANK-CONTROL-RECORD"
       ],
-      "source": "pangaea/programs/ACCTMNT.cbl:37"
+      "source": "pangaea/programs/ACCTMNT.cbl:42"
     },
     {
       "name": "ACCT-IN",
@@ -70,7 +75,7 @@
       "records": [
         "ACCT-IN-RECORD"
       ],
-      "source": "pangaea/programs/ACCTMNT.cbl:40"
+      "source": "pangaea/programs/ACCTMNT.cbl:45"
     },
     {
       "name": "MAINT-IN",
@@ -84,7 +89,7 @@
       "records": [
         "MAINT-REQUEST"
       ],
-      "source": "pangaea/programs/ACCTMNT.cbl:43"
+      "source": "pangaea/programs/ACCTMNT.cbl:48"
     },
     {
       "name": "ACCT-OUT",
@@ -98,7 +103,7 @@
       "records": [
         "ACCT-OUT-RECORD"
       ],
-      "source": "pangaea/programs/ACCTMNT.cbl:46"
+      "source": "pangaea/programs/ACCTMNT.cbl:51"
     },
     {
       "name": "REJECT-OUT",
@@ -112,7 +117,7 @@
       "records": [
         "REJECT-OUT-RECORD"
       ],
-      "source": "pangaea/programs/ACCTMNT.cbl:49"
+      "source": "pangaea/programs/ACCTMNT.cbl:54"
     },
     {
       "name": "REPORT-OUT",
@@ -126,7 +131,7 @@
       "records": [
         "REPORT-LINE"
       ],
-      "source": "pangaea/programs/ACCTMNT.cbl:52"
+      "source": "pangaea/programs/ACCTMNT.cbl:57"
     }
   ],
   "records": [
@@ -177,7 +182,7 @@
       "length": 100,
       "category": "group",
       "kind": "group",
-      "source": "pangaea/programs/ACCTMNT.cbl:61",
+      "source": "pangaea/programs/ACCTMNT.cbl:66",
       "fields": [
         {
           "level": 5,
@@ -188,7 +193,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "pangaea/programs/ACCTMNT.cbl:62"
+          "source": "pangaea/programs/ACCTMNT.cbl:67"
         },
         {
           "level": 5,
@@ -199,7 +204,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "filler",
-          "source": "pangaea/programs/ACCTMNT.cbl:63"
+          "source": "pangaea/programs/ACCTMNT.cbl:68"
         }
       ]
     },
@@ -213,8 +218,8 @@
       "length": 80,
       "category": "group",
       "kind": "group",
-      "description": "MAINTREC: ACCOUNT MAINTENANCE REQUEST, 80 BYTES THE BRANCHES' REQUESTS TO OPEN AN ACCOUNT, CLOSE ONE, FREEZE OR UNFREEZE ONE, OR CHANGE ITS OVERDRAFT LIMIT, IN ACCOUNT NUMBER AND REQUEST ID ORDER. AN OPENING CARRIES THE NEW ACCOUNT'S CUSTOMER, NAME AND TYPE; A LIMIT CHANGE THE NEW LIMIT. MODIFICATION HISTORY DATE       BY  CHANGE 1988-05-09 JA  CR-0031 ORIGINAL VERSION.",
-      "source": "pangaea/copybooks/MAINTREC.cpy:13",
+      "description": "MAINTREC: ACCOUNT MAINTENANCE REQUEST, 80 BYTES THE BRANCHES' REQUESTS TO OPEN AN ACCOUNT, CLOSE ONE, FREEZE OR UNFREEZE ONE, OR CHANGE ITS OVERDRAFT LIMIT, IN ACCOUNT NUMBER AND REQUEST ID ORDER. AN OPENING CARRIES THE NEW ACCOUNT'S CUSTOMER, NAME AND TYPE; A LIMIT CHANGE THE NEW LIMIT. THE EFFECTIVE DATE IS THE DAY THE BRANCH TOOK THE REQUEST, YYMMDD. MODIFICATION HISTORY DATE       BY  CHANGE 1988-05-09 JA  CR-0031 ORIGINAL VERSION. 1991-10-07 PK  CR-0129 EFFECTIVE DATE OF THE REQUEST. 1999-01-11 SL  Y2K: LEFT AS IS, WINDOWED ON READ.",
+      "source": "pangaea/copybooks/MAINTREC.cpy:16",
       "fields": [
         {
           "level": 5,
@@ -226,7 +231,7 @@
           "category": "numeric",
           "kind": "number",
           "digits": 10,
-          "source": "pangaea/copybooks/MAINTREC.cpy:14"
+          "source": "pangaea/copybooks/MAINTREC.cpy:17"
         },
         {
           "level": 5,
@@ -243,38 +248,38 @@
               "values": [
                 "'O'"
               ],
-              "source": "pangaea/copybooks/MAINTREC.cpy:16"
+              "source": "pangaea/copybooks/MAINTREC.cpy:19"
             },
             {
               "name": "MR-CLOSE",
               "values": [
                 "'C'"
               ],
-              "source": "pangaea/copybooks/MAINTREC.cpy:17"
+              "source": "pangaea/copybooks/MAINTREC.cpy:20"
             },
             {
               "name": "MR-FREEZE",
               "values": [
                 "'F'"
               ],
-              "source": "pangaea/copybooks/MAINTREC.cpy:18"
+              "source": "pangaea/copybooks/MAINTREC.cpy:21"
             },
             {
               "name": "MR-UNFREEZE",
               "values": [
                 "'U'"
               ],
-              "source": "pangaea/copybooks/MAINTREC.cpy:19"
+              "source": "pangaea/copybooks/MAINTREC.cpy:22"
             },
             {
               "name": "MR-LIMIT",
               "values": [
                 "'L'"
               ],
-              "source": "pangaea/copybooks/MAINTREC.cpy:20"
+              "source": "pangaea/copybooks/MAINTREC.cpy:23"
             }
           ],
-          "source": "pangaea/copybooks/MAINTREC.cpy:15"
+          "source": "pangaea/copybooks/MAINTREC.cpy:18"
         },
         {
           "level": 5,
@@ -286,7 +291,7 @@
           "category": "numeric",
           "kind": "number",
           "digits": 10,
-          "source": "pangaea/copybooks/MAINTREC.cpy:21"
+          "source": "pangaea/copybooks/MAINTREC.cpy:24"
         },
         {
           "level": 5,
@@ -298,7 +303,7 @@
           "category": "numeric",
           "kind": "number",
           "digits": 8,
-          "source": "pangaea/copybooks/MAINTREC.cpy:22"
+          "source": "pangaea/copybooks/MAINTREC.cpy:25"
         },
         {
           "level": 5,
@@ -309,7 +314,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "pangaea/copybooks/MAINTREC.cpy:23"
+          "source": "pangaea/copybooks/MAINTREC.cpy:26"
         },
         {
           "level": 5,
@@ -320,7 +325,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "pangaea/copybooks/MAINTREC.cpy:24"
+          "source": "pangaea/copybooks/MAINTREC.cpy:27"
         },
         {
           "level": 5,
@@ -333,18 +338,30 @@
           "kind": "amount",
           "digits": 9,
           "scale": 2,
-          "source": "pangaea/copybooks/MAINTREC.cpy:25"
+          "source": "pangaea/copybooks/MAINTREC.cpy:28"
+        },
+        {
+          "level": 5,
+          "name": "MR-EFFECTIVE-DATE",
+          "start": 60,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "date",
+          "digits": 6,
+          "source": "pangaea/copybooks/MAINTREC.cpy:29"
         },
         {
           "level": 5,
           "name": "FILLER",
-          "start": 60,
-          "length": 21,
-          "picture": "X(21)",
+          "start": 66,
+          "length": 15,
+          "picture": "X(15)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "filler",
-          "source": "pangaea/copybooks/MAINTREC.cpy:26"
+          "source": "pangaea/copybooks/MAINTREC.cpy:30"
         }
       ]
     },
@@ -359,7 +376,7 @@
       "usage": "DISPLAY",
       "category": "alphanumeric",
       "kind": "text",
-      "source": "pangaea/programs/ACCTMNT.cbl:67"
+      "source": "pangaea/programs/ACCTMNT.cbl:72"
     },
     {
       "section": "file",
@@ -367,12 +384,12 @@
       "level": 1,
       "name": "REJECT-OUT-RECORD",
       "start": 1,
-      "length": 100,
-      "picture": "X(100)",
+      "length": 110,
+      "picture": "X(110)",
       "usage": "DISPLAY",
       "category": "alphanumeric",
       "kind": "text",
-      "source": "pangaea/programs/ACCTMNT.cbl:69"
+      "source": "pangaea/programs/ACCTMNT.cbl:74"
     },
     {
       "section": "file",
@@ -385,7 +402,7 @@
       "usage": "DISPLAY",
       "category": "alphanumeric",
       "kind": "text",
-      "source": "pangaea/programs/ACCTMNT.cbl:71"
+      "source": "pangaea/programs/ACCTMNT.cbl:76"
     },
     {
       "section": "working-storage",
@@ -395,7 +412,7 @@
       "length": 12,
       "category": "group",
       "kind": "group",
-      "source": "pangaea/programs/ACCTMNT.cbl:74",
+      "source": "pangaea/programs/ACCTMNT.cbl:79",
       "fields": [
         {
           "level": 5,
@@ -406,7 +423,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "pangaea/programs/ACCTMNT.cbl:75"
+          "source": "pangaea/programs/ACCTMNT.cbl:80"
         },
         {
           "level": 5,
@@ -417,7 +434,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "pangaea/programs/ACCTMNT.cbl:76"
+          "source": "pangaea/programs/ACCTMNT.cbl:81"
         },
         {
           "level": 5,
@@ -428,7 +445,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "pangaea/programs/ACCTMNT.cbl:77"
+          "source": "pangaea/programs/ACCTMNT.cbl:82"
         },
         {
           "level": 5,
@@ -439,7 +456,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "pangaea/programs/ACCTMNT.cbl:78"
+          "source": "pangaea/programs/ACCTMNT.cbl:83"
         },
         {
           "level": 5,
@@ -450,7 +467,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "pangaea/programs/ACCTMNT.cbl:79"
+          "source": "pangaea/programs/ACCTMNT.cbl:84"
         },
         {
           "level": 5,
@@ -461,7 +478,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "pangaea/programs/ACCTMNT.cbl:80"
+          "source": "pangaea/programs/ACCTMNT.cbl:85"
         }
       ]
     },
@@ -476,7 +493,66 @@
       "category": "numeric",
       "kind": "date",
       "digits": 8,
-      "source": "pangaea/programs/ACCTMNT.cbl:82"
+      "source": "pangaea/programs/ACCTMNT.cbl:87"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-EFFECTIVE-DATE",
+      "start": 1,
+      "length": 8,
+      "category": "group",
+      "kind": "group",
+      "source": "pangaea/programs/ACCTMNT.cbl:88",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-EFF-CENTURY",
+          "start": 1,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 2,
+          "source": "pangaea/programs/ACCTMNT.cbl:89"
+        },
+        {
+          "level": 5,
+          "name": "WS-EFF-YYMMDD",
+          "start": 3,
+          "length": 6,
+          "category": "group",
+          "kind": "group",
+          "source": "pangaea/programs/ACCTMNT.cbl:90",
+          "fields": [
+            {
+              "level": 10,
+              "name": "WS-EFF-YY",
+              "start": 3,
+              "length": 2,
+              "picture": "99",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 2,
+              "source": "pangaea/programs/ACCTMNT.cbl:91"
+            },
+            {
+              "level": 10,
+              "name": "WS-EFF-MMDD",
+              "start": 5,
+              "length": 4,
+              "picture": "9(4)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 4,
+              "source": "pangaea/programs/ACCTMNT.cbl:92"
+            }
+          ]
+        }
+      ]
     },
     {
       "section": "working-storage",
@@ -488,7 +564,7 @@
       "usage": "DISPLAY",
       "category": "alphanumeric",
       "kind": "text",
-      "source": "pangaea/programs/ACCTMNT.cbl:83"
+      "source": "pangaea/programs/ACCTMNT.cbl:93"
     },
     {
       "section": "working-storage",
@@ -501,7 +577,7 @@
       "category": "alphanumeric",
       "kind": "text",
       "description": "MATCH KEYS: HIGH-VALUES ONCE A FILE IS AT ITS END. THE ACTIVE KEY IS THE LOWER OF THE TWO: THE ACCOUNT BEING WORKED ON.",
-      "source": "pangaea/programs/ACCTMNT.cbl:87"
+      "source": "pangaea/programs/ACCTMNT.cbl:97"
     },
     {
       "section": "working-storage",
@@ -513,7 +589,7 @@
       "usage": "DISPLAY",
       "category": "alphanumeric",
       "kind": "text",
-      "source": "pangaea/programs/ACCTMNT.cbl:88"
+      "source": "pangaea/programs/ACCTMNT.cbl:98"
     },
     {
       "section": "working-storage",
@@ -525,7 +601,7 @@
       "usage": "DISPLAY",
       "category": "alphanumeric",
       "kind": "text",
-      "source": "pangaea/programs/ACCTMNT.cbl:89"
+      "source": "pangaea/programs/ACCTMNT.cbl:99"
     },
     {
       "section": "working-storage",
@@ -540,7 +616,7 @@
       "values": [
         "LOW-VALUES"
       ],
-      "source": "pangaea/programs/ACCTMNT.cbl:90"
+      "source": "pangaea/programs/ACCTMNT.cbl:100"
     },
     {
       "section": "working-storage",
@@ -550,7 +626,7 @@
       "length": 20,
       "category": "group",
       "kind": "group",
-      "source": "pangaea/programs/ACCTMNT.cbl:91",
+      "source": "pangaea/programs/ACCTMNT.cbl:101",
       "fields": [
         {
           "level": 5,
@@ -561,7 +637,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "pangaea/programs/ACCTMNT.cbl:92"
+          "source": "pangaea/programs/ACCTMNT.cbl:102"
         },
         {
           "level": 5,
@@ -572,7 +648,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "pangaea/programs/ACCTMNT.cbl:93"
+          "source": "pangaea/programs/ACCTMNT.cbl:103"
         }
       ]
     },
@@ -589,7 +665,7 @@
       "values": [
         "LOW-VALUES"
       ],
-      "source": "pangaea/programs/ACCTMNT.cbl:94"
+      "source": "pangaea/programs/ACCTMNT.cbl:104"
     },
     {
       "section": "working-storage",
@@ -608,17 +684,17 @@
           "values": [
             "'Y'"
           ],
-          "source": "pangaea/programs/ACCTMNT.cbl:98"
+          "source": "pangaea/programs/ACCTMNT.cbl:108"
         },
         {
           "name": "NOTHING-HELD",
           "values": [
             "'N'"
           ],
-          "source": "pangaea/programs/ACCTMNT.cbl:99"
+          "source": "pangaea/programs/ACCTMNT.cbl:109"
         }
       ],
-      "source": "pangaea/programs/ACCTMNT.cbl:97"
+      "source": "pangaea/programs/ACCTMNT.cbl:107"
     },
     {
       "section": "working-storage",
@@ -798,11 +874,11 @@
       "level": 1,
       "name": "REJECT-RECORD",
       "start": 1,
-      "length": 100,
+      "length": 110,
       "category": "group",
       "kind": "group",
-      "description": "REJREC: REJECTED TRANSACTION, 100 BYTES THE TRANSACTION AS RECEIVED, WITH THE STEP THAT REJECTED IT AND WHY. ACCOUNT MAINTENANCE REJECTS ITS REQUESTS IN THE SAME FORM, THE REQUEST IN PLACE OF THE TRANSACTION. MODIFICATION HISTORY DATE       BY  CHANGE 1987-03-12 JA  ORIGINAL VERSION. 1988-05-09 JA  CR-0031 ACCOUNT MAINTENANCE REASONS.",
-      "source": "pangaea/copybooks/REJREC.cpy:12",
+      "description": "REJREC: REJECTED TRANSACTION, 110 BYTES THE TRANSACTION AS RECEIVED, WITH THE STEP THAT REJECTED IT AND WHY. ACCOUNT MAINTENANCE REJECTS ITS REQUESTS IN THE SAME FORM, THE REQUEST IN PLACE OF THE TRANSACTION. THE DATE IT WAS REJECTED IS TEXT, YYYY-MM-DD, AS THE BRANCHES READ IT. MODIFICATION HISTORY DATE       BY  CHANGE 1987-03-12 JA  ORIGINAL VERSION. 1988-05-09 JA  CR-0031 ACCOUNT MAINTENANCE REASONS. 2009-03-02 MV  CR-0444 THE DATE OF THE REJECTION. RECORD WIDENED TO 110 BYTES.",
+      "source": "pangaea/copybooks/REJREC.cpy:15",
       "fields": [
         {
           "level": 5,
@@ -813,7 +889,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "pangaea/copybooks/REJREC.cpy:13"
+          "source": "pangaea/copybooks/REJREC.cpy:16"
         },
         {
           "level": 5,
@@ -830,87 +906,87 @@
               "values": [
                 "'ACCT'"
               ],
-              "source": "pangaea/copybooks/REJREC.cpy:15"
+              "source": "pangaea/copybooks/REJREC.cpy:18"
             },
             {
               "name": "RJ-BAD-COUNTER",
               "values": [
                 "'CTRA'"
               ],
-              "source": "pangaea/copybooks/REJREC.cpy:16"
+              "source": "pangaea/copybooks/REJREC.cpy:19"
             },
             {
               "name": "RJ-BAD-CODE",
               "values": [
                 "'CODE'"
               ],
-              "source": "pangaea/copybooks/REJREC.cpy:17"
+              "source": "pangaea/copybooks/REJREC.cpy:20"
             },
             {
               "name": "RJ-BAD-AMOUNT",
               "values": [
                 "'AMNT'"
               ],
-              "source": "pangaea/copybooks/REJREC.cpy:18"
+              "source": "pangaea/copybooks/REJREC.cpy:21"
             },
             {
               "name": "RJ-BAD-TYPE",
               "values": [
                 "'TYPE'"
               ],
-              "source": "pangaea/copybooks/REJREC.cpy:19"
+              "source": "pangaea/copybooks/REJREC.cpy:22"
             },
             {
               "name": "RJ-NO-ACCOUNT",
               "values": [
                 "'UNKN'"
               ],
-              "source": "pangaea/copybooks/REJREC.cpy:20"
+              "source": "pangaea/copybooks/REJREC.cpy:23"
             },
             {
               "name": "RJ-CLOSED",
               "values": [
                 "'CLSD'"
               ],
-              "source": "pangaea/copybooks/REJREC.cpy:21"
+              "source": "pangaea/copybooks/REJREC.cpy:24"
             },
             {
               "name": "RJ-FROZEN",
               "values": [
                 "'FRZN'"
               ],
-              "source": "pangaea/copybooks/REJREC.cpy:22"
+              "source": "pangaea/copybooks/REJREC.cpy:25"
             },
             {
               "name": "RJ-NO-FUNDS",
               "values": [
                 "'FUND'"
               ],
-              "source": "pangaea/copybooks/REJREC.cpy:23"
+              "source": "pangaea/copybooks/REJREC.cpy:26"
             },
             {
               "name": "RJ-EXISTS",
               "values": [
                 "'EXST'"
               ],
-              "source": "pangaea/copybooks/REJREC.cpy:24"
+              "source": "pangaea/copybooks/REJREC.cpy:27"
             },
             {
               "name": "RJ-HAS-BALANCE",
               "values": [
                 "'BALN'"
               ],
-              "source": "pangaea/copybooks/REJREC.cpy:25"
+              "source": "pangaea/copybooks/REJREC.cpy:28"
             },
             {
               "name": "RJ-BAD-STATUS",
               "values": [
                 "'STAT'"
               ],
-              "source": "pangaea/copybooks/REJREC.cpy:26"
+              "source": "pangaea/copybooks/REJREC.cpy:29"
             }
           ],
-          "source": "pangaea/copybooks/REJREC.cpy:14"
+          "source": "pangaea/copybooks/REJREC.cpy:17"
         },
         {
           "level": 5,
@@ -921,7 +997,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "pangaea/copybooks/REJREC.cpy:27"
+          "source": "pangaea/copybooks/REJREC.cpy:30"
         },
         {
           "level": 5,
@@ -932,7 +1008,18 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "filler",
-          "source": "pangaea/copybooks/REJREC.cpy:28"
+          "source": "pangaea/copybooks/REJREC.cpy:31"
+        },
+        {
+          "level": 5,
+          "name": "RJ-REJECT-DATE",
+          "start": 101,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "pangaea/copybooks/REJREC.cpy:32"
         }
       ]
     },
@@ -944,7 +1031,7 @@
       "length": 102,
       "category": "group",
       "kind": "group",
-      "source": "pangaea/programs/ACCTMNT.cbl:104",
+      "source": "pangaea/programs/ACCTMNT.cbl:114",
       "fields": [
         {
           "level": 5,
@@ -959,7 +1046,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/ACCTMNT.cbl:105"
+          "source": "pangaea/programs/ACCTMNT.cbl:115"
         },
         {
           "level": 5,
@@ -974,7 +1061,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/ACCTMNT.cbl:106"
+          "source": "pangaea/programs/ACCTMNT.cbl:116"
         },
         {
           "level": 5,
@@ -989,7 +1076,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/ACCTMNT.cbl:107"
+          "source": "pangaea/programs/ACCTMNT.cbl:117"
         },
         {
           "level": 5,
@@ -1004,7 +1091,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/ACCTMNT.cbl:108"
+          "source": "pangaea/programs/ACCTMNT.cbl:118"
         },
         {
           "level": 5,
@@ -1019,7 +1106,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/ACCTMNT.cbl:109"
+          "source": "pangaea/programs/ACCTMNT.cbl:119"
         },
         {
           "level": 5,
@@ -1034,7 +1121,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/ACCTMNT.cbl:110"
+          "source": "pangaea/programs/ACCTMNT.cbl:120"
         },
         {
           "level": 5,
@@ -1049,7 +1136,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/ACCTMNT.cbl:111"
+          "source": "pangaea/programs/ACCTMNT.cbl:121"
         },
         {
           "level": 5,
@@ -1064,7 +1151,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/ACCTMNT.cbl:112"
+          "source": "pangaea/programs/ACCTMNT.cbl:122"
         },
         {
           "level": 5,
@@ -1079,7 +1166,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/ACCTMNT.cbl:113"
+          "source": "pangaea/programs/ACCTMNT.cbl:123"
         },
         {
           "level": 5,
@@ -1096,7 +1183,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/ACCTMNT.cbl:114"
+          "source": "pangaea/programs/ACCTMNT.cbl:124"
         },
         {
           "level": 5,
@@ -1113,7 +1200,7 @@
           "values": [
             "0"
           ],
-          "source": "pangaea/programs/ACCTMNT.cbl:115"
+          "source": "pangaea/programs/ACCTMNT.cbl:125"
         }
       ]
     },
@@ -1125,7 +1212,7 @@
       "length": 80,
       "category": "group",
       "kind": "group",
-      "source": "pangaea/programs/ACCTMNT.cbl:117",
+      "source": "pangaea/programs/ACCTMNT.cbl:127",
       "fields": [
         {
           "level": 5,
@@ -1136,7 +1223,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "pangaea/programs/ACCTMNT.cbl:118"
+          "source": "pangaea/programs/ACCTMNT.cbl:128"
         },
         {
           "level": 5,
@@ -1147,7 +1234,7 @@
           "usage": "DISPLAY",
           "category": "numeric-edited",
           "kind": "edited",
-          "source": "pangaea/programs/ACCTMNT.cbl:119"
+          "source": "pangaea/programs/ACCTMNT.cbl:129"
         },
         {
           "level": 5,
@@ -1161,7 +1248,7 @@
           "values": [
             "SPACES"
           ],
-          "source": "pangaea/programs/ACCTMNT.cbl:120"
+          "source": "pangaea/programs/ACCTMNT.cbl:130"
         }
       ]
     },
@@ -1173,7 +1260,7 @@
       "length": 80,
       "category": "group",
       "kind": "group",
-      "source": "pangaea/programs/ACCTMNT.cbl:121",
+      "source": "pangaea/programs/ACCTMNT.cbl:131",
       "fields": [
         {
           "level": 5,
@@ -1184,7 +1271,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "pangaea/programs/ACCTMNT.cbl:122"
+          "source": "pangaea/programs/ACCTMNT.cbl:132"
         },
         {
           "level": 5,
@@ -1195,7 +1282,7 @@
           "usage": "DISPLAY",
           "category": "numeric-edited",
           "kind": "edited",
-          "source": "pangaea/programs/ACCTMNT.cbl:123"
+          "source": "pangaea/programs/ACCTMNT.cbl:133"
         },
         {
           "level": 5,
@@ -1209,7 +1296,7 @@
           "values": [
             "SPACES"
           ],
-          "source": "pangaea/programs/ACCTMNT.cbl:124"
+          "source": "pangaea/programs/ACCTMNT.cbl:134"
         }
       ]
     }
@@ -1218,28 +1305,28 @@
     {
       "name": "0000-MAIN",
       "description": "MATCH UNTIL BOTH FILES END, THEN RECONCILE AND REPORT.",
-      "source": "pangaea/programs/ACCTMNT.cbl:128",
+      "source": "pangaea/programs/ACCTMNT.cbl:138",
       "performs": [
         {
           "target": "1000-INITIALIZE",
-          "source": "pangaea/programs/ACCTMNT.cbl:129"
+          "source": "pangaea/programs/ACCTMNT.cbl:139"
         },
         {
           "target": "2000-NEXT-ACCOUNT",
           "thru": "2999-EXIT",
-          "source": "pangaea/programs/ACCTMNT.cbl:130"
+          "source": "pangaea/programs/ACCTMNT.cbl:140"
         },
         {
           "target": "9900-ABORT",
-          "source": "pangaea/programs/ACCTMNT.cbl:135"
+          "source": "pangaea/programs/ACCTMNT.cbl:145"
         },
         {
           "target": "8000-WRITE-REPORT",
-          "source": "pangaea/programs/ACCTMNT.cbl:136"
+          "source": "pangaea/programs/ACCTMNT.cbl:146"
         },
         {
           "target": "9000-CLOSE-FILES",
-          "source": "pangaea/programs/ACCTMNT.cbl:137"
+          "source": "pangaea/programs/ACCTMNT.cbl:147"
         }
       ],
       "reads": [
@@ -1257,21 +1344,21 @@
     {
       "name": "1000-INITIALIZE",
       "description": "OPEN THE FILES AND READ THE FIRST RECORD OF EACH.",
-      "source": "pangaea/programs/ACCTMNT.cbl:145",
+      "source": "pangaea/programs/ACCTMNT.cbl:155",
       "performs": [
         {
           "target": "9900-ABORT",
-          "source": "pangaea/programs/ACCTMNT.cbl:155"
+          "source": "pangaea/programs/ACCTMNT.cbl:165"
         },
         {
           "target": "1200-READ-MASTER",
           "thru": "1200-EXIT",
-          "source": "pangaea/programs/ACCTMNT.cbl:158"
+          "source": "pangaea/programs/ACCTMNT.cbl:171"
         },
         {
           "target": "1300-READ-REQUEST",
           "thru": "1300-EXIT",
-          "source": "pangaea/programs/ACCTMNT.cbl:159"
+          "source": "pangaea/programs/ACCTMNT.cbl:172"
         }
       ],
       "performedBy": [
@@ -1279,30 +1366,32 @@
       ],
       "reads": [
         "WS-FILE-STATUSES",
-        "BC-BUSINESS-DATE"
+        "BC-BUSINESS-DATE",
+        "WS-BUSINESS-DATE"
       ],
       "writes": [
         "RETURN-CODE",
         "BANK-CONTROL-RECORD",
         "WS-ABORT-MESSAGE",
         "WS-BUSINESS-DATE",
-        "REJECT-RECORD"
+        "REJECT-RECORD",
+        "RJ-REJECT-DATE"
       ]
     },
     {
       "name": "1200-READ-MASTER",
       "description": "READ THE NEXT OLD MASTER RECORD, CHECKING ACCOUNT ORDER.",
-      "source": "pangaea/programs/ACCTMNT.cbl:162",
+      "source": "pangaea/programs/ACCTMNT.cbl:175",
       "performs": [
         {
           "target": "9900-ABORT",
-          "source": "pangaea/programs/ACCTMNT.cbl:170"
+          "source": "pangaea/programs/ACCTMNT.cbl:183"
         }
       ],
       "goTos": [
         {
           "target": "1200-EXIT",
-          "source": "pangaea/programs/ACCTMNT.cbl:166"
+          "source": "pangaea/programs/ACCTMNT.cbl:179"
         }
       ],
       "fallsInto": "1200-EXIT",
@@ -1326,7 +1415,7 @@
     },
     {
       "name": "1200-EXIT",
-      "source": "pangaea/programs/ACCTMNT.cbl:173",
+      "source": "pangaea/programs/ACCTMNT.cbl:186",
       "performedBy": [
         "1000-INITIALIZE",
         "2000-NEXT-ACCOUNT"
@@ -1338,17 +1427,17 @@
     {
       "name": "1300-READ-REQUEST",
       "description": "READ THE NEXT REQUEST, CHECKING ITS ORDER.",
-      "source": "pangaea/programs/ACCTMNT.cbl:177",
+      "source": "pangaea/programs/ACCTMNT.cbl:190",
       "performs": [
         {
           "target": "9900-ABORT",
-          "source": "pangaea/programs/ACCTMNT.cbl:186"
+          "source": "pangaea/programs/ACCTMNT.cbl:199"
         }
       ],
       "goTos": [
         {
           "target": "1300-EXIT",
-          "source": "pangaea/programs/ACCTMNT.cbl:181"
+          "source": "pangaea/programs/ACCTMNT.cbl:194"
         }
       ],
       "fallsInto": "1300-EXIT",
@@ -1375,7 +1464,7 @@
     },
     {
       "name": "1300-EXIT",
-      "source": "pangaea/programs/ACCTMNT.cbl:189",
+      "source": "pangaea/programs/ACCTMNT.cbl:202",
       "performedBy": [
         "1000-INITIALIZE",
         "2100-APPLY-REQUESTS"
@@ -1387,12 +1476,12 @@
     {
       "name": "2000-NEXT-ACCOUNT",
       "description": "TAKE THE LOWER KEY AS THE ACTIVE ACCOUNT, AND HOLD IT IF THE MASTER HAS IT. AN ACCOUNT ONLY THE REQUESTS NAME IS NOT HELD UNTIL AN OPENING MAKES IT.",
-      "source": "pangaea/programs/ACCTMNT.cbl:195",
+      "source": "pangaea/programs/ACCTMNT.cbl:208",
       "performs": [
         {
           "target": "1200-READ-MASTER",
           "thru": "1200-EXIT",
-          "source": "pangaea/programs/ACCTMNT.cbl:204"
+          "source": "pangaea/programs/ACCTMNT.cbl:217"
         }
       ],
       "fallsInto": "2100-APPLY-REQUESTS",
@@ -1417,27 +1506,27 @@
     {
       "name": "2100-APPLY-REQUESTS",
       "description": "APPLY THE ACTIVE ACCOUNT'S REQUESTS, ONE AFTER THE OTHER.",
-      "source": "pangaea/programs/ACCTMNT.cbl:207",
+      "source": "pangaea/programs/ACCTMNT.cbl:220",
       "performs": [
         {
           "target": "2200-APPLY-REQUEST",
           "thru": "2299-EXIT",
-          "source": "pangaea/programs/ACCTMNT.cbl:210"
+          "source": "pangaea/programs/ACCTMNT.cbl:223"
         },
         {
           "target": "1300-READ-REQUEST",
           "thru": "1300-EXIT",
-          "source": "pangaea/programs/ACCTMNT.cbl:211"
+          "source": "pangaea/programs/ACCTMNT.cbl:224"
         }
       ],
       "goTos": [
         {
           "target": "2800-WRITE-HELD",
-          "source": "pangaea/programs/ACCTMNT.cbl:209"
+          "source": "pangaea/programs/ACCTMNT.cbl:222"
         },
         {
           "target": "2100-APPLY-REQUESTS",
-          "source": "pangaea/programs/ACCTMNT.cbl:212"
+          "source": "pangaea/programs/ACCTMNT.cbl:225"
         }
       ],
       "performedBy": [
@@ -1455,39 +1544,39 @@
     {
       "name": "2200-APPLY-REQUEST",
       "description": "APPLY ONE REQUEST BY ITS TYPE.",
-      "source": "pangaea/programs/ACCTMNT.cbl:215",
+      "source": "pangaea/programs/ACCTMNT.cbl:228",
       "goTos": [
         {
           "target": "2210-OPEN",
-          "source": "pangaea/programs/ACCTMNT.cbl:217"
-        },
-        {
-          "target": "2290-REJECT",
-          "source": "pangaea/programs/ACCTMNT.cbl:220"
-        },
-        {
-          "target": "2290-REJECT",
-          "source": "pangaea/programs/ACCTMNT.cbl:223"
-        },
-        {
-          "target": "2220-CLOSE",
-          "source": "pangaea/programs/ACCTMNT.cbl:225"
-        },
-        {
-          "target": "2230-FREEZE",
-          "source": "pangaea/programs/ACCTMNT.cbl:227"
-        },
-        {
-          "target": "2240-UNFREEZE",
-          "source": "pangaea/programs/ACCTMNT.cbl:229"
-        },
-        {
-          "target": "2250-LIMIT",
-          "source": "pangaea/programs/ACCTMNT.cbl:231"
+          "source": "pangaea/programs/ACCTMNT.cbl:230"
         },
         {
           "target": "2290-REJECT",
           "source": "pangaea/programs/ACCTMNT.cbl:233"
+        },
+        {
+          "target": "2290-REJECT",
+          "source": "pangaea/programs/ACCTMNT.cbl:236"
+        },
+        {
+          "target": "2220-CLOSE",
+          "source": "pangaea/programs/ACCTMNT.cbl:238"
+        },
+        {
+          "target": "2230-FREEZE",
+          "source": "pangaea/programs/ACCTMNT.cbl:240"
+        },
+        {
+          "target": "2240-UNFREEZE",
+          "source": "pangaea/programs/ACCTMNT.cbl:242"
+        },
+        {
+          "target": "2250-LIMIT",
+          "source": "pangaea/programs/ACCTMNT.cbl:244"
+        },
+        {
+          "target": "2290-REJECT",
+          "source": "pangaea/programs/ACCTMNT.cbl:246"
         }
       ],
       "performedBy": [
@@ -1505,16 +1594,16 @@
     },
     {
       "name": "2210-OPEN",
-      "description": "OPEN A NEW ACCOUNT, EMPTY, FROM TODAY.",
-      "source": "pangaea/programs/ACCTMNT.cbl:236",
+      "description": "OPEN A NEW ACCOUNT, EMPTY, FROM THE REQUEST'S EFFECTIVE DATE.",
+      "source": "pangaea/programs/ACCTMNT.cbl:249",
       "goTos": [
         {
           "target": "2290-REJECT",
-          "source": "pangaea/programs/ACCTMNT.cbl:239"
+          "source": "pangaea/programs/ACCTMNT.cbl:252"
         },
         {
           "target": "2299-EXIT",
-          "source": "pangaea/programs/ACCTMNT.cbl:253"
+          "source": "pangaea/programs/ACCTMNT.cbl:273"
         }
       ],
       "performedBy": [
@@ -1530,6 +1619,9 @@
         "MR-CUST-NO",
         "MR-SHORT-NAME",
         "MR-ACCT-TYPE",
+        "MR-EFFECTIVE-DATE",
+        "WS-EFF-YY",
+        "WS-EFFECTIVE-DATE",
         "WS-BUSINESS-DATE",
         "MR-OVERDRAFT-LIMIT",
         "AM-ACCT-TYPE",
@@ -1543,6 +1635,8 @@
         "AM-SHORT-NAME",
         "AM-ACCT-TYPE",
         "AM-STATUS",
+        "WS-EFF-YYMMDD",
+        "WS-EFF-CENTURY",
         "AM-OPEN-DATE",
         "AM-LAST-ACTIVITY-DATE",
         "AM-BALANCE",
@@ -1554,15 +1648,15 @@
     {
       "name": "2220-CLOSE",
       "description": "CLOSE AN ACCOUNT, IF IT IS EMPTY.",
-      "source": "pangaea/programs/ACCTMNT.cbl:256",
+      "source": "pangaea/programs/ACCTMNT.cbl:276",
       "goTos": [
         {
           "target": "2290-REJECT",
-          "source": "pangaea/programs/ACCTMNT.cbl:259"
+          "source": "pangaea/programs/ACCTMNT.cbl:279"
         },
         {
           "target": "2299-EXIT",
-          "source": "pangaea/programs/ACCTMNT.cbl:263"
+          "source": "pangaea/programs/ACCTMNT.cbl:283"
         }
       ],
       "performedBy": [
@@ -1586,15 +1680,15 @@
     {
       "name": "2230-FREEZE",
       "description": "FREEZE AN OPEN ACCOUNT.",
-      "source": "pangaea/programs/ACCTMNT.cbl:266",
+      "source": "pangaea/programs/ACCTMNT.cbl:286",
       "goTos": [
         {
           "target": "2290-REJECT",
-          "source": "pangaea/programs/ACCTMNT.cbl:269"
+          "source": "pangaea/programs/ACCTMNT.cbl:289"
         },
         {
           "target": "2299-EXIT",
-          "source": "pangaea/programs/ACCTMNT.cbl:272"
+          "source": "pangaea/programs/ACCTMNT.cbl:292"
         }
       ],
       "performedBy": [
@@ -1617,15 +1711,15 @@
     {
       "name": "2240-UNFREEZE",
       "description": "UNFREEZE A FROZEN ACCOUNT.",
-      "source": "pangaea/programs/ACCTMNT.cbl:275",
+      "source": "pangaea/programs/ACCTMNT.cbl:295",
       "goTos": [
         {
           "target": "2290-REJECT",
-          "source": "pangaea/programs/ACCTMNT.cbl:278"
+          "source": "pangaea/programs/ACCTMNT.cbl:298"
         },
         {
           "target": "2299-EXIT",
-          "source": "pangaea/programs/ACCTMNT.cbl:281"
+          "source": "pangaea/programs/ACCTMNT.cbl:301"
         }
       ],
       "performedBy": [
@@ -1648,15 +1742,15 @@
     {
       "name": "2250-LIMIT",
       "description": "CHANGE A CURRENT ACCOUNT'S OVERDRAFT LIMIT.",
-      "source": "pangaea/programs/ACCTMNT.cbl:284",
+      "source": "pangaea/programs/ACCTMNT.cbl:304",
       "goTos": [
         {
           "target": "2290-REJECT",
-          "source": "pangaea/programs/ACCTMNT.cbl:287"
+          "source": "pangaea/programs/ACCTMNT.cbl:307"
         },
         {
           "target": "2299-EXIT",
-          "source": "pangaea/programs/ACCTMNT.cbl:290"
+          "source": "pangaea/programs/ACCTMNT.cbl:310"
         }
       ],
       "performedBy": [
@@ -1680,7 +1774,7 @@
     {
       "name": "2290-REJECT",
       "description": "WRITE THE REQUEST TO THE REJECTS WITH ITS REASON.",
-      "source": "pangaea/programs/ACCTMNT.cbl:293",
+      "source": "pangaea/programs/ACCTMNT.cbl:313",
       "fallsInto": "2299-EXIT",
       "performedBy": [
         "0000-MAIN",
@@ -1708,7 +1802,7 @@
     },
     {
       "name": "2299-EXIT",
-      "source": "pangaea/programs/ACCTMNT.cbl:298",
+      "source": "pangaea/programs/ACCTMNT.cbl:318",
       "performedBy": [
         "0000-MAIN",
         "2100-APPLY-REQUESTS"
@@ -1725,7 +1819,7 @@
     {
       "name": "2800-WRITE-HELD",
       "description": "WRITE THE HELD ACCOUNT, ITS REQUESTS APPLIED, TO THE NEW MASTER.",
-      "source": "pangaea/programs/ACCTMNT.cbl:302",
+      "source": "pangaea/programs/ACCTMNT.cbl:322",
       "fallsInto": "2999-EXIT",
       "performedBy": [
         "0000-MAIN"
@@ -1748,7 +1842,7 @@
     },
     {
       "name": "2999-EXIT",
-      "source": "pangaea/programs/ACCTMNT.cbl:307",
+      "source": "pangaea/programs/ACCTMNT.cbl:327",
       "performedBy": [
         "0000-MAIN"
       ],
@@ -1759,7 +1853,7 @@
     {
       "name": "8000-WRITE-REPORT",
       "description": "WRITE THE MAINTENANCE REPORT.",
-      "source": "pangaea/programs/ACCTMNT.cbl:311",
+      "source": "pangaea/programs/ACCTMNT.cbl:331",
       "performedBy": [
         "0000-MAIN"
       ],
@@ -1789,7 +1883,7 @@
     {
       "name": "9000-CLOSE-FILES",
       "description": "CLOSE ALL FILES.",
-      "source": "pangaea/programs/ACCTMNT.cbl:357",
+      "source": "pangaea/programs/ACCTMNT.cbl:377",
       "performedBy": [
         "0000-MAIN",
         "9900-ABORT"
@@ -1798,11 +1892,11 @@
     {
       "name": "9900-ABORT",
       "description": "STOP THE RUN WITH RETURN CODE 16, SAYING WHY.",
-      "source": "pangaea/programs/ACCTMNT.cbl:362",
+      "source": "pangaea/programs/ACCTMNT.cbl:382",
       "performs": [
         {
           "target": "9000-CLOSE-FILES",
-          "source": "pangaea/programs/ACCTMNT.cbl:364"
+          "source": "pangaea/programs/ACCTMNT.cbl:384"
         }
       ],
       "performedBy": [
@@ -1826,7 +1920,7 @@
         "WS-FILE-STATUSES"
       ],
       "paragraph": "1000-INITIALIZE",
-      "source": "pangaea/programs/ACCTMNT.cbl:149"
+      "source": "pangaea/programs/ACCTMNT.cbl:159"
     },
     {
       "items": [
@@ -1834,7 +1928,7 @@
         "WS-ABORT-MESSAGE"
       ],
       "paragraph": "9900-ABORT",
-      "source": "pangaea/programs/ACCTMNT.cbl:363"
+      "source": "pangaea/programs/ACCTMNT.cbl:383"
     }
   ],
   "lineage": [
@@ -1844,7 +1938,7 @@
       "fromLiteral": true,
       "paragraph": "0000-MAIN",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:134"
+      "source": "pangaea/programs/ACCTMNT.cbl:144"
     },
     {
       "from": "4",
@@ -1852,7 +1946,7 @@
       "fromLiteral": true,
       "paragraph": "0000-MAIN",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:139"
+      "source": "pangaea/programs/ACCTMNT.cbl:149"
     },
     {
       "from": "0",
@@ -1860,7 +1954,7 @@
       "fromLiteral": true,
       "paragraph": "0000-MAIN",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:141"
+      "source": "pangaea/programs/ACCTMNT.cbl:151"
     },
     {
       "from": "WS-FILE-STATUSES",
@@ -1868,7 +1962,7 @@
       "toStream": true,
       "paragraph": "1000-INITIALIZE",
       "verb": "DISPLAY",
-      "source": "pangaea/programs/ACCTMNT.cbl:149"
+      "source": "pangaea/programs/ACCTMNT.cbl:159"
     },
     {
       "from": "16",
@@ -1876,7 +1970,7 @@
       "fromLiteral": true,
       "paragraph": "1000-INITIALIZE",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:150"
+      "source": "pangaea/programs/ACCTMNT.cbl:160"
     },
     {
       "from": "CONTROL-FILE",
@@ -1884,7 +1978,7 @@
       "fromFile": true,
       "paragraph": "1000-INITIALIZE",
       "verb": "READ",
-      "source": "pangaea/programs/ACCTMNT.cbl:152"
+      "source": "pangaea/programs/ACCTMNT.cbl:162"
     },
     {
       "from": "'NO BANK CONTROL RECORD'",
@@ -1892,14 +1986,14 @@
       "fromLiteral": true,
       "paragraph": "1000-INITIALIZE",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:154"
+      "source": "pangaea/programs/ACCTMNT.cbl:164"
     },
     {
       "from": "BC-BUSINESS-DATE",
       "to": "WS-BUSINESS-DATE",
       "paragraph": "1000-INITIALIZE",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:156"
+      "source": "pangaea/programs/ACCTMNT.cbl:166"
     },
     {
       "from": "SPACES",
@@ -1907,7 +2001,44 @@
       "fromLiteral": true,
       "paragraph": "1000-INITIALIZE",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:157"
+      "source": "pangaea/programs/ACCTMNT.cbl:167"
+    },
+    {
+      "from": "WS-BUSINESS-DATE",
+      "to": "RJ-REJECT-DATE",
+      "paragraph": "1000-INITIALIZE",
+      "verb": "STRING",
+      "source": "pangaea/programs/ACCTMNT.cbl:168"
+    },
+    {
+      "from": "'-'",
+      "to": "RJ-REJECT-DATE",
+      "fromLiteral": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "STRING",
+      "source": "pangaea/programs/ACCTMNT.cbl:168"
+    },
+    {
+      "from": "WS-BUSINESS-DATE",
+      "to": "RJ-REJECT-DATE",
+      "paragraph": "1000-INITIALIZE",
+      "verb": "STRING",
+      "source": "pangaea/programs/ACCTMNT.cbl:168"
+    },
+    {
+      "from": "'-'",
+      "to": "RJ-REJECT-DATE",
+      "fromLiteral": true,
+      "paragraph": "1000-INITIALIZE",
+      "verb": "STRING",
+      "source": "pangaea/programs/ACCTMNT.cbl:168"
+    },
+    {
+      "from": "WS-BUSINESS-DATE",
+      "to": "RJ-REJECT-DATE",
+      "paragraph": "1000-INITIALIZE",
+      "verb": "STRING",
+      "source": "pangaea/programs/ACCTMNT.cbl:168"
     },
     {
       "from": "ACCT-IN",
@@ -1915,7 +2046,7 @@
       "fromFile": true,
       "paragraph": "1200-READ-MASTER",
       "verb": "READ",
-      "source": "pangaea/programs/ACCTMNT.cbl:163"
+      "source": "pangaea/programs/ACCTMNT.cbl:176"
     },
     {
       "from": "HIGH-VALUES",
@@ -1923,14 +2054,14 @@
       "fromLiteral": true,
       "paragraph": "1200-READ-MASTER",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:165"
+      "source": "pangaea/programs/ACCTMNT.cbl:178"
     },
     {
       "from": "AI-ACCT-NO",
       "to": "WS-MASTER-KEY",
       "paragraph": "1200-READ-MASTER",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:167"
+      "source": "pangaea/programs/ACCTMNT.cbl:180"
     },
     {
       "from": "'MASTER NOT IN ACCOUNT ORDER'",
@@ -1938,14 +2069,14 @@
       "fromLiteral": true,
       "paragraph": "1200-READ-MASTER",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:169"
+      "source": "pangaea/programs/ACCTMNT.cbl:182"
     },
     {
       "from": "WS-MASTER-KEY",
       "to": "WS-PREV-MASTER-KEY",
       "paragraph": "1200-READ-MASTER",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:171"
+      "source": "pangaea/programs/ACCTMNT.cbl:184"
     },
     {
       "from": "1",
@@ -1953,7 +2084,7 @@
       "fromLiteral": true,
       "paragraph": "1200-READ-MASTER",
       "verb": "ADD",
-      "source": "pangaea/programs/ACCTMNT.cbl:172"
+      "source": "pangaea/programs/ACCTMNT.cbl:185"
     },
     {
       "from": "MAINT-IN",
@@ -1961,7 +2092,7 @@
       "fromFile": true,
       "paragraph": "1300-READ-REQUEST",
       "verb": "READ",
-      "source": "pangaea/programs/ACCTMNT.cbl:178"
+      "source": "pangaea/programs/ACCTMNT.cbl:191"
     },
     {
       "from": "HIGH-VALUES",
@@ -1969,28 +2100,28 @@
       "fromLiteral": true,
       "paragraph": "1300-READ-REQUEST",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:180"
+      "source": "pangaea/programs/ACCTMNT.cbl:193"
     },
     {
       "from": "MR-ACCT-NO",
       "to": "WS-REQUEST-KEY",
       "paragraph": "1300-READ-REQUEST",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:182"
+      "source": "pangaea/programs/ACCTMNT.cbl:195"
     },
     {
       "from": "MR-ACCT-NO",
       "to": "WS-ROK-ACCT-NO",
       "paragraph": "1300-READ-REQUEST",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:182"
+      "source": "pangaea/programs/ACCTMNT.cbl:195"
     },
     {
       "from": "MR-REQUEST-ID",
       "to": "WS-ROK-REQUEST-ID",
       "paragraph": "1300-READ-REQUEST",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:183"
+      "source": "pangaea/programs/ACCTMNT.cbl:196"
     },
     {
       "from": "'REQUESTS NOT IN ACCOUNT ORDER'",
@@ -1998,14 +2129,14 @@
       "fromLiteral": true,
       "paragraph": "1300-READ-REQUEST",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:185"
+      "source": "pangaea/programs/ACCTMNT.cbl:198"
     },
     {
       "from": "WS-REQUEST-ORDER-KEY",
       "to": "WS-PREV-REQUEST-ORDER-KEY",
       "paragraph": "1300-READ-REQUEST",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:187"
+      "source": "pangaea/programs/ACCTMNT.cbl:200"
     },
     {
       "from": "1",
@@ -2013,21 +2144,21 @@
       "fromLiteral": true,
       "paragraph": "1300-READ-REQUEST",
       "verb": "ADD",
-      "source": "pangaea/programs/ACCTMNT.cbl:188"
+      "source": "pangaea/programs/ACCTMNT.cbl:201"
     },
     {
       "from": "WS-MASTER-KEY",
       "to": "WS-ACTIVE-KEY",
       "paragraph": "2000-NEXT-ACCOUNT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:196"
+      "source": "pangaea/programs/ACCTMNT.cbl:209"
     },
     {
       "from": "WS-REQUEST-KEY",
       "to": "WS-ACTIVE-KEY",
       "paragraph": "2000-NEXT-ACCOUNT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:198"
+      "source": "pangaea/programs/ACCTMNT.cbl:211"
     },
     {
       "from": "condition NOTHING-HELD",
@@ -2035,21 +2166,21 @@
       "fromLiteral": true,
       "paragraph": "2000-NEXT-ACCOUNT",
       "verb": "SET",
-      "source": "pangaea/programs/ACCTMNT.cbl:199"
+      "source": "pangaea/programs/ACCTMNT.cbl:212"
     },
     {
       "from": "ACCT-IN-RECORD",
       "to": "ACCT-MASTER-RECORD",
       "paragraph": "2000-NEXT-ACCOUNT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:201"
+      "source": "pangaea/programs/ACCTMNT.cbl:214"
     },
     {
       "from": "AM-BALANCE",
       "to": "WS-BALANCES-IN",
       "paragraph": "2000-NEXT-ACCOUNT",
       "verb": "ADD",
-      "source": "pangaea/programs/ACCTMNT.cbl:202"
+      "source": "pangaea/programs/ACCTMNT.cbl:215"
     },
     {
       "from": "condition ACCOUNT-HELD",
@@ -2057,7 +2188,7 @@
       "fromLiteral": true,
       "paragraph": "2000-NEXT-ACCOUNT",
       "verb": "SET",
-      "source": "pangaea/programs/ACCTMNT.cbl:203"
+      "source": "pangaea/programs/ACCTMNT.cbl:216"
     },
     {
       "from": "condition RJ-NO-ACCOUNT",
@@ -2065,7 +2196,7 @@
       "fromLiteral": true,
       "paragraph": "2200-APPLY-REQUEST",
       "verb": "SET",
-      "source": "pangaea/programs/ACCTMNT.cbl:219"
+      "source": "pangaea/programs/ACCTMNT.cbl:232"
     },
     {
       "from": "condition RJ-CLOSED",
@@ -2073,7 +2204,7 @@
       "fromLiteral": true,
       "paragraph": "2200-APPLY-REQUEST",
       "verb": "SET",
-      "source": "pangaea/programs/ACCTMNT.cbl:222"
+      "source": "pangaea/programs/ACCTMNT.cbl:235"
     },
     {
       "from": "condition RJ-BAD-TYPE",
@@ -2081,7 +2212,7 @@
       "fromLiteral": true,
       "paragraph": "2200-APPLY-REQUEST",
       "verb": "SET",
-      "source": "pangaea/programs/ACCTMNT.cbl:232"
+      "source": "pangaea/programs/ACCTMNT.cbl:245"
     },
     {
       "from": "condition RJ-EXISTS",
@@ -2089,7 +2220,7 @@
       "fromLiteral": true,
       "paragraph": "2210-OPEN",
       "verb": "SET",
-      "source": "pangaea/programs/ACCTMNT.cbl:238"
+      "source": "pangaea/programs/ACCTMNT.cbl:251"
     },
     {
       "from": "SPACES",
@@ -2097,35 +2228,35 @@
       "fromLiteral": true,
       "paragraph": "2210-OPEN",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:240"
+      "source": "pangaea/programs/ACCTMNT.cbl:253"
     },
     {
       "from": "MR-ACCT-NO",
       "to": "AM-ACCT-NO",
       "paragraph": "2210-OPEN",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:241"
+      "source": "pangaea/programs/ACCTMNT.cbl:254"
     },
     {
       "from": "MR-CUST-NO",
       "to": "AM-CUST-NO",
       "paragraph": "2210-OPEN",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:242"
+      "source": "pangaea/programs/ACCTMNT.cbl:255"
     },
     {
       "from": "MR-SHORT-NAME",
       "to": "AM-SHORT-NAME",
       "paragraph": "2210-OPEN",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:243"
+      "source": "pangaea/programs/ACCTMNT.cbl:256"
     },
     {
       "from": "MR-ACCT-TYPE",
       "to": "AM-ACCT-TYPE",
       "paragraph": "2210-OPEN",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:244"
+      "source": "pangaea/programs/ACCTMNT.cbl:257"
     },
     {
       "from": "condition AM-OPEN",
@@ -2133,21 +2264,44 @@
       "fromLiteral": true,
       "paragraph": "2210-OPEN",
       "verb": "SET",
-      "source": "pangaea/programs/ACCTMNT.cbl:245"
+      "source": "pangaea/programs/ACCTMNT.cbl:258"
     },
     {
-      "from": "WS-BUSINESS-DATE",
+      "from": "MR-EFFECTIVE-DATE",
+      "to": "WS-EFF-YYMMDD",
+      "paragraph": "2210-OPEN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:259"
+    },
+    {
+      "from": "20",
+      "to": "WS-EFF-CENTURY",
+      "fromLiteral": true,
+      "paragraph": "2210-OPEN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:261"
+    },
+    {
+      "from": "19",
+      "to": "WS-EFF-CENTURY",
+      "fromLiteral": true,
+      "paragraph": "2210-OPEN",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:263"
+    },
+    {
+      "from": "WS-EFFECTIVE-DATE",
       "to": "AM-OPEN-DATE",
       "paragraph": "2210-OPEN",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:246"
+      "source": "pangaea/programs/ACCTMNT.cbl:265"
     },
     {
       "from": "WS-BUSINESS-DATE",
       "to": "AM-LAST-ACTIVITY-DATE",
       "paragraph": "2210-OPEN",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:246"
+      "source": "pangaea/programs/ACCTMNT.cbl:266"
     },
     {
       "from": "0",
@@ -2155,14 +2309,14 @@
       "fromLiteral": true,
       "paragraph": "2210-OPEN",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:247"
+      "source": "pangaea/programs/ACCTMNT.cbl:267"
     },
     {
       "from": "MR-OVERDRAFT-LIMIT",
       "to": "AM-OVERDRAFT-LIMIT",
       "paragraph": "2210-OPEN",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:248"
+      "source": "pangaea/programs/ACCTMNT.cbl:268"
     },
     {
       "from": "0",
@@ -2170,7 +2324,7 @@
       "fromLiteral": true,
       "paragraph": "2210-OPEN",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:250"
+      "source": "pangaea/programs/ACCTMNT.cbl:270"
     },
     {
       "from": "condition ACCOUNT-HELD",
@@ -2178,7 +2332,7 @@
       "fromLiteral": true,
       "paragraph": "2210-OPEN",
       "verb": "SET",
-      "source": "pangaea/programs/ACCTMNT.cbl:251"
+      "source": "pangaea/programs/ACCTMNT.cbl:271"
     },
     {
       "from": "1",
@@ -2186,7 +2340,7 @@
       "fromLiteral": true,
       "paragraph": "2210-OPEN",
       "verb": "ADD",
-      "source": "pangaea/programs/ACCTMNT.cbl:252"
+      "source": "pangaea/programs/ACCTMNT.cbl:272"
     },
     {
       "from": "condition RJ-HAS-BALANCE",
@@ -2194,7 +2348,7 @@
       "fromLiteral": true,
       "paragraph": "2220-CLOSE",
       "verb": "SET",
-      "source": "pangaea/programs/ACCTMNT.cbl:258"
+      "source": "pangaea/programs/ACCTMNT.cbl:278"
     },
     {
       "from": "condition AM-CLOSED",
@@ -2202,7 +2356,7 @@
       "fromLiteral": true,
       "paragraph": "2220-CLOSE",
       "verb": "SET",
-      "source": "pangaea/programs/ACCTMNT.cbl:260"
+      "source": "pangaea/programs/ACCTMNT.cbl:280"
     },
     {
       "from": "0",
@@ -2210,7 +2364,7 @@
       "fromLiteral": true,
       "paragraph": "2220-CLOSE",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:261"
+      "source": "pangaea/programs/ACCTMNT.cbl:281"
     },
     {
       "from": "1",
@@ -2218,7 +2372,7 @@
       "fromLiteral": true,
       "paragraph": "2220-CLOSE",
       "verb": "ADD",
-      "source": "pangaea/programs/ACCTMNT.cbl:262"
+      "source": "pangaea/programs/ACCTMNT.cbl:282"
     },
     {
       "from": "condition RJ-BAD-STATUS",
@@ -2226,7 +2380,7 @@
       "fromLiteral": true,
       "paragraph": "2230-FREEZE",
       "verb": "SET",
-      "source": "pangaea/programs/ACCTMNT.cbl:268"
+      "source": "pangaea/programs/ACCTMNT.cbl:288"
     },
     {
       "from": "condition AM-FROZEN",
@@ -2234,7 +2388,7 @@
       "fromLiteral": true,
       "paragraph": "2230-FREEZE",
       "verb": "SET",
-      "source": "pangaea/programs/ACCTMNT.cbl:270"
+      "source": "pangaea/programs/ACCTMNT.cbl:290"
     },
     {
       "from": "1",
@@ -2242,7 +2396,7 @@
       "fromLiteral": true,
       "paragraph": "2230-FREEZE",
       "verb": "ADD",
-      "source": "pangaea/programs/ACCTMNT.cbl:271"
+      "source": "pangaea/programs/ACCTMNT.cbl:291"
     },
     {
       "from": "condition RJ-BAD-STATUS",
@@ -2250,7 +2404,7 @@
       "fromLiteral": true,
       "paragraph": "2240-UNFREEZE",
       "verb": "SET",
-      "source": "pangaea/programs/ACCTMNT.cbl:277"
+      "source": "pangaea/programs/ACCTMNT.cbl:297"
     },
     {
       "from": "condition AM-OPEN",
@@ -2258,7 +2412,7 @@
       "fromLiteral": true,
       "paragraph": "2240-UNFREEZE",
       "verb": "SET",
-      "source": "pangaea/programs/ACCTMNT.cbl:279"
+      "source": "pangaea/programs/ACCTMNT.cbl:299"
     },
     {
       "from": "1",
@@ -2266,7 +2420,7 @@
       "fromLiteral": true,
       "paragraph": "2240-UNFREEZE",
       "verb": "ADD",
-      "source": "pangaea/programs/ACCTMNT.cbl:280"
+      "source": "pangaea/programs/ACCTMNT.cbl:300"
     },
     {
       "from": "condition RJ-BAD-TYPE",
@@ -2274,14 +2428,14 @@
       "fromLiteral": true,
       "paragraph": "2250-LIMIT",
       "verb": "SET",
-      "source": "pangaea/programs/ACCTMNT.cbl:286"
+      "source": "pangaea/programs/ACCTMNT.cbl:306"
     },
     {
       "from": "MR-OVERDRAFT-LIMIT",
       "to": "AM-OVERDRAFT-LIMIT",
       "paragraph": "2250-LIMIT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:288"
+      "source": "pangaea/programs/ACCTMNT.cbl:308"
     },
     {
       "from": "1",
@@ -2289,7 +2443,7 @@
       "fromLiteral": true,
       "paragraph": "2250-LIMIT",
       "verb": "ADD",
-      "source": "pangaea/programs/ACCTMNT.cbl:289"
+      "source": "pangaea/programs/ACCTMNT.cbl:309"
     },
     {
       "from": "'ACCTMNT'",
@@ -2297,21 +2451,21 @@
       "fromLiteral": true,
       "paragraph": "2290-REJECT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:294"
+      "source": "pangaea/programs/ACCTMNT.cbl:314"
     },
     {
       "from": "MAINT-REQUEST",
       "to": "RJ-TRAN",
       "paragraph": "2290-REJECT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:295"
+      "source": "pangaea/programs/ACCTMNT.cbl:315"
     },
     {
       "from": "REJECT-RECORD",
       "to": "REJECT-OUT-RECORD",
       "paragraph": "2290-REJECT",
       "verb": "WRITE",
-      "source": "pangaea/programs/ACCTMNT.cbl:296"
+      "source": "pangaea/programs/ACCTMNT.cbl:316"
     },
     {
       "from": "REJECT-OUT-RECORD",
@@ -2319,7 +2473,7 @@
       "toFile": true,
       "paragraph": "2290-REJECT",
       "verb": "WRITE",
-      "source": "pangaea/programs/ACCTMNT.cbl:296"
+      "source": "pangaea/programs/ACCTMNT.cbl:316"
     },
     {
       "from": "1",
@@ -2327,14 +2481,14 @@
       "fromLiteral": true,
       "paragraph": "2290-REJECT",
       "verb": "ADD",
-      "source": "pangaea/programs/ACCTMNT.cbl:297"
+      "source": "pangaea/programs/ACCTMNT.cbl:317"
     },
     {
       "from": "ACCT-MASTER-RECORD",
       "to": "ACCT-OUT-RECORD",
       "paragraph": "2800-WRITE-HELD",
       "verb": "WRITE",
-      "source": "pangaea/programs/ACCTMNT.cbl:304"
+      "source": "pangaea/programs/ACCTMNT.cbl:324"
     },
     {
       "from": "ACCT-OUT-RECORD",
@@ -2342,7 +2496,7 @@
       "toFile": true,
       "paragraph": "2800-WRITE-HELD",
       "verb": "WRITE",
-      "source": "pangaea/programs/ACCTMNT.cbl:304"
+      "source": "pangaea/programs/ACCTMNT.cbl:324"
     },
     {
       "from": "1",
@@ -2350,14 +2504,14 @@
       "fromLiteral": true,
       "paragraph": "2800-WRITE-HELD",
       "verb": "ADD",
-      "source": "pangaea/programs/ACCTMNT.cbl:305"
+      "source": "pangaea/programs/ACCTMNT.cbl:325"
     },
     {
       "from": "AM-BALANCE",
       "to": "WS-BALANCES-OUT",
       "paragraph": "2800-WRITE-HELD",
       "verb": "ADD",
-      "source": "pangaea/programs/ACCTMNT.cbl:306"
+      "source": "pangaea/programs/ACCTMNT.cbl:326"
     },
     {
       "from": "SPACES",
@@ -2365,7 +2519,7 @@
       "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:312"
+      "source": "pangaea/programs/ACCTMNT.cbl:332"
     },
     {
       "from": "'ACCTMNT  ACCOUNT MAINTENANCE     BUSINESS DATE '",
@@ -2373,14 +2527,14 @@
       "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "STRING",
-      "source": "pangaea/programs/ACCTMNT.cbl:313"
+      "source": "pangaea/programs/ACCTMNT.cbl:333"
     },
     {
       "from": "WS-BUSINESS-DATE",
       "to": "REPORT-LINE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "STRING",
-      "source": "pangaea/programs/ACCTMNT.cbl:313"
+      "source": "pangaea/programs/ACCTMNT.cbl:333"
     },
     {
       "from": "REPORT-LINE",
@@ -2388,7 +2542,7 @@
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/ACCTMNT.cbl:316"
+      "source": "pangaea/programs/ACCTMNT.cbl:336"
     },
     {
       "from": "SPACES",
@@ -2396,7 +2550,7 @@
       "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:317"
+      "source": "pangaea/programs/ACCTMNT.cbl:337"
     },
     {
       "from": "REPORT-LINE",
@@ -2404,7 +2558,7 @@
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/ACCTMNT.cbl:318"
+      "source": "pangaea/programs/ACCTMNT.cbl:338"
     },
     {
       "from": "'ACCOUNTS READ'",
@@ -2412,21 +2566,21 @@
       "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:319"
+      "source": "pangaea/programs/ACCTMNT.cbl:339"
     },
     {
       "from": "WS-MASTERS-READ",
       "to": "WS-RC-VALUE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:320"
+      "source": "pangaea/programs/ACCTMNT.cbl:340"
     },
     {
       "from": "WS-REPORT-COUNT-LINE",
       "to": "REPORT-LINE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/ACCTMNT.cbl:321"
+      "source": "pangaea/programs/ACCTMNT.cbl:341"
     },
     {
       "from": "REPORT-LINE",
@@ -2434,7 +2588,7 @@
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/ACCTMNT.cbl:321"
+      "source": "pangaea/programs/ACCTMNT.cbl:341"
     },
     {
       "from": "'ACCOUNTS WRITTEN'",
@@ -2442,21 +2596,21 @@
       "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:322"
+      "source": "pangaea/programs/ACCTMNT.cbl:342"
     },
     {
       "from": "WS-MASTERS-WRITTEN",
       "to": "WS-RC-VALUE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:323"
+      "source": "pangaea/programs/ACCTMNT.cbl:343"
     },
     {
       "from": "WS-REPORT-COUNT-LINE",
       "to": "REPORT-LINE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/ACCTMNT.cbl:324"
+      "source": "pangaea/programs/ACCTMNT.cbl:344"
     },
     {
       "from": "REPORT-LINE",
@@ -2464,7 +2618,7 @@
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
-      "source": "pangaea/programs/ACCTMNT.cbl:324"
+      "source": "pangaea/programs/ACCTMNT.cbl:344"
     },
     {
       "from": "'REQUESTS READ'",
@@ -2472,217 +2626,21 @@
       "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:325"
+      "source": "pangaea/programs/ACCTMNT.cbl:345"
     },
     {
       "from": "WS-REQUEST-COUNT",
       "to": "WS-RC-VALUE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:326"
-    },
-    {
-      "from": "WS-REPORT-COUNT-LINE",
-      "to": "REPORT-LINE",
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "WRITE",
-      "source": "pangaea/programs/ACCTMNT.cbl:327"
-    },
-    {
-      "from": "REPORT-LINE",
-      "to": "REPORT-OUT",
-      "toFile": true,
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "WRITE",
-      "source": "pangaea/programs/ACCTMNT.cbl:327"
-    },
-    {
-      "from": "'ACCOUNTS OPENED'",
-      "to": "WS-RC-LABEL",
-      "fromLiteral": true,
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:328"
-    },
-    {
-      "from": "WS-OPENED-COUNT",
-      "to": "WS-RC-VALUE",
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:329"
-    },
-    {
-      "from": "WS-REPORT-COUNT-LINE",
-      "to": "REPORT-LINE",
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "WRITE",
-      "source": "pangaea/programs/ACCTMNT.cbl:330"
-    },
-    {
-      "from": "REPORT-LINE",
-      "to": "REPORT-OUT",
-      "toFile": true,
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "WRITE",
-      "source": "pangaea/programs/ACCTMNT.cbl:330"
-    },
-    {
-      "from": "'ACCOUNTS CLOSED'",
-      "to": "WS-RC-LABEL",
-      "fromLiteral": true,
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:331"
-    },
-    {
-      "from": "WS-CLOSED-COUNT",
-      "to": "WS-RC-VALUE",
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:332"
-    },
-    {
-      "from": "WS-REPORT-COUNT-LINE",
-      "to": "REPORT-LINE",
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "WRITE",
-      "source": "pangaea/programs/ACCTMNT.cbl:333"
-    },
-    {
-      "from": "REPORT-LINE",
-      "to": "REPORT-OUT",
-      "toFile": true,
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "WRITE",
-      "source": "pangaea/programs/ACCTMNT.cbl:333"
-    },
-    {
-      "from": "'ACCOUNTS FROZEN'",
-      "to": "WS-RC-LABEL",
-      "fromLiteral": true,
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:334"
-    },
-    {
-      "from": "WS-FROZEN-COUNT",
-      "to": "WS-RC-VALUE",
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:335"
-    },
-    {
-      "from": "WS-REPORT-COUNT-LINE",
-      "to": "REPORT-LINE",
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "WRITE",
-      "source": "pangaea/programs/ACCTMNT.cbl:336"
-    },
-    {
-      "from": "REPORT-LINE",
-      "to": "REPORT-OUT",
-      "toFile": true,
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "WRITE",
-      "source": "pangaea/programs/ACCTMNT.cbl:336"
-    },
-    {
-      "from": "'ACCOUNTS UNFROZEN'",
-      "to": "WS-RC-LABEL",
-      "fromLiteral": true,
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:337"
-    },
-    {
-      "from": "WS-UNFROZEN-COUNT",
-      "to": "WS-RC-VALUE",
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:338"
-    },
-    {
-      "from": "WS-REPORT-COUNT-LINE",
-      "to": "REPORT-LINE",
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "WRITE",
-      "source": "pangaea/programs/ACCTMNT.cbl:339"
-    },
-    {
-      "from": "REPORT-LINE",
-      "to": "REPORT-OUT",
-      "toFile": true,
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "WRITE",
-      "source": "pangaea/programs/ACCTMNT.cbl:339"
-    },
-    {
-      "from": "'OVERDRAFT LIMITS CHANGED'",
-      "to": "WS-RC-LABEL",
-      "fromLiteral": true,
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:340"
-    },
-    {
-      "from": "WS-LIMIT-COUNT",
-      "to": "WS-RC-VALUE",
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:341"
-    },
-    {
-      "from": "WS-REPORT-COUNT-LINE",
-      "to": "REPORT-LINE",
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "WRITE",
-      "source": "pangaea/programs/ACCTMNT.cbl:342"
-    },
-    {
-      "from": "REPORT-LINE",
-      "to": "REPORT-OUT",
-      "toFile": true,
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "WRITE",
-      "source": "pangaea/programs/ACCTMNT.cbl:342"
-    },
-    {
-      "from": "'REQUESTS REJECTED'",
-      "to": "WS-RC-LABEL",
-      "fromLiteral": true,
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:343"
-    },
-    {
-      "from": "WS-REJECT-COUNT",
-      "to": "WS-RC-VALUE",
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:344"
-    },
-    {
-      "from": "WS-REPORT-COUNT-LINE",
-      "to": "REPORT-LINE",
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "WRITE",
-      "source": "pangaea/programs/ACCTMNT.cbl:345"
-    },
-    {
-      "from": "REPORT-LINE",
-      "to": "REPORT-OUT",
-      "toFile": true,
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "WRITE",
-      "source": "pangaea/programs/ACCTMNT.cbl:345"
-    },
-    {
-      "from": "SPACES",
-      "to": "REPORT-LINE",
-      "fromLiteral": true,
-      "paragraph": "8000-WRITE-REPORT",
-      "verb": "MOVE",
       "source": "pangaea/programs/ACCTMNT.cbl:346"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:347"
     },
     {
       "from": "REPORT-LINE",
@@ -2693,22 +2651,22 @@
       "source": "pangaea/programs/ACCTMNT.cbl:347"
     },
     {
-      "from": "'BALANCES'",
-      "to": "WS-RA-LABEL",
+      "from": "'ACCOUNTS OPENED'",
+      "to": "WS-RC-LABEL",
       "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
       "source": "pangaea/programs/ACCTMNT.cbl:348"
     },
     {
-      "from": "WS-BALANCES-OUT",
-      "to": "WS-RA-VALUE",
+      "from": "WS-OPENED-COUNT",
+      "to": "WS-RC-VALUE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
       "source": "pangaea/programs/ACCTMNT.cbl:349"
     },
     {
-      "from": "WS-REPORT-AMOUNT-LINE",
+      "from": "WS-REPORT-COUNT-LINE",
       "to": "REPORT-LINE",
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
@@ -2723,27 +2681,25 @@
       "source": "pangaea/programs/ACCTMNT.cbl:350"
     },
     {
-      "from": "SPACES",
-      "to": "REPORT-LINE",
+      "from": "'ACCOUNTS CLOSED'",
+      "to": "WS-RC-LABEL",
       "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "MOVE",
       "source": "pangaea/programs/ACCTMNT.cbl:351"
     },
     {
-      "from": "REPORT-LINE",
-      "to": "REPORT-OUT",
-      "toFile": true,
+      "from": "WS-CLOSED-COUNT",
+      "to": "WS-RC-VALUE",
       "paragraph": "8000-WRITE-REPORT",
-      "verb": "WRITE",
+      "verb": "MOVE",
       "source": "pangaea/programs/ACCTMNT.cbl:352"
     },
     {
-      "from": "'NEW MASTER IN BALANCE'",
+      "from": "WS-REPORT-COUNT-LINE",
       "to": "REPORT-LINE",
-      "fromLiteral": true,
       "paragraph": "8000-WRITE-REPORT",
-      "verb": "MOVE",
+      "verb": "WRITE",
       "source": "pangaea/programs/ACCTMNT.cbl:353"
     },
     {
@@ -2752,7 +2708,205 @@
       "toFile": true,
       "paragraph": "8000-WRITE-REPORT",
       "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:353"
+    },
+    {
+      "from": "'ACCOUNTS FROZEN'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
       "source": "pangaea/programs/ACCTMNT.cbl:354"
+    },
+    {
+      "from": "WS-FROZEN-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:355"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:356"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:356"
+    },
+    {
+      "from": "'ACCOUNTS UNFROZEN'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:357"
+    },
+    {
+      "from": "WS-UNFROZEN-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:358"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:359"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:359"
+    },
+    {
+      "from": "'OVERDRAFT LIMITS CHANGED'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:360"
+    },
+    {
+      "from": "WS-LIMIT-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:361"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:362"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:362"
+    },
+    {
+      "from": "'REQUESTS REJECTED'",
+      "to": "WS-RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:363"
+    },
+    {
+      "from": "WS-REJECT-COUNT",
+      "to": "WS-RC-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:364"
+    },
+    {
+      "from": "WS-REPORT-COUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:365"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:365"
+    },
+    {
+      "from": "SPACES",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:366"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:367"
+    },
+    {
+      "from": "'BALANCES'",
+      "to": "WS-RA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:368"
+    },
+    {
+      "from": "WS-BALANCES-OUT",
+      "to": "WS-RA-VALUE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:369"
+    },
+    {
+      "from": "WS-REPORT-AMOUNT-LINE",
+      "to": "REPORT-LINE",
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:370"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:370"
+    },
+    {
+      "from": "SPACES",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:371"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:372"
+    },
+    {
+      "from": "'NEW MASTER IN BALANCE'",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "pangaea/programs/ACCTMNT.cbl:373"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "8000-WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "pangaea/programs/ACCTMNT.cbl:374"
     },
     {
       "from": "WS-ABORT-MESSAGE",
@@ -2760,7 +2914,7 @@
       "toStream": true,
       "paragraph": "9900-ABORT",
       "verb": "DISPLAY",
-      "source": "pangaea/programs/ACCTMNT.cbl:363"
+      "source": "pangaea/programs/ACCTMNT.cbl:383"
     },
     {
       "from": "16",
@@ -2768,7 +2922,7 @@
       "fromLiteral": true,
       "paragraph": "9900-ABORT",
       "verb": "MOVE",
-      "source": "pangaea/programs/ACCTMNT.cbl:365"
+      "source": "pangaea/programs/ACCTMNT.cbl:385"
     }
   ],
   "outputs": [
@@ -2803,6 +2957,15 @@
           "length": 80,
           "origins": [
             "file MAINT-IN MAINT-REQUEST"
+          ]
+        },
+        {
+          "name": "RJ-REJECT-DATE",
+          "start": 101,
+          "length": 10,
+          "origins": [
+            "file CONTROL-FILE BC-BUSINESS-DATE",
+            "literal '-'"
           ]
         }
       ]
@@ -2864,7 +3027,9 @@
           "length": 8,
           "origins": [
             "file ACCT-IN ACCT-IN-RECORD",
-            "file CONTROL-FILE BC-BUSINESS-DATE"
+            "file MAINT-IN MR-EFFECTIVE-DATE",
+            "literal 19",
+            "literal 20"
           ]
         },
         {
@@ -2989,11 +3154,13 @@
           "length": 8,
           "reaches": [
             "WS-BUSINESS-DATE",
+            "RJ-REJECT-DATE",
             "REPORT-LINE",
-            "AM-OPEN-DATE",
+            "REJECT-OUT-RECORD",
             "AM-LAST-ACTIVITY-DATE",
             "ACCT-OUT-RECORD",
             "file REPORT-OUT",
+            "file REJECT-OUT",
             "file ACCT-OUT"
           ]
         }
@@ -3108,6 +3275,20 @@
             "RJ-TRAN",
             "REJECT-OUT-RECORD",
             "AM-OVERDRAFT-LIMIT",
+            "ACCT-OUT-RECORD",
+            "file REJECT-OUT",
+            "file ACCT-OUT"
+          ]
+        },
+        {
+          "name": "MR-EFFECTIVE-DATE",
+          "start": 60,
+          "length": 6,
+          "reaches": [
+            "RJ-TRAN",
+            "REJECT-OUT-RECORD",
+            "WS-EFF-YYMMDD",
+            "AM-OPEN-DATE",
             "ACCT-OUT-RECORD",
             "file REJECT-OUT",
             "file ACCT-OUT"

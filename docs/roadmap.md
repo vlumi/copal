@@ -117,14 +117,14 @@ The explorer shows the system the way the code is organized. Designing a replace
 
 Done when: starting from the entities page, you can name the system's data model, its state machines, who owns each entity, its contracts with the outside, and what a change to an input field touches, without opening a program.
 
-## 10. Complete lineage
+## 10. Complete lineage (done)
 
 The trail of a field stops where Pangaea's online day begins: at a `CALL`, at `ACCEPT`, and at the first record type a program writes to a file; and it ignores the order of statements. The plan is in [plans/complete-lineage.md](plans/complete-lineage.md):
 
-- Across `CALL`, by argument and parameter, both ways, and from `ACCEPT` and to `DISPLAY` as streams of the job.
-- Every record type a program writes to a file.
-- Origins along the control flow, so that a value every path overwrites is not one.
-- Pangaea's honest mess: one business date in three layouts, for the survey to find.
+- Across `CALL`, by argument and parameter, both ways, and from `ACCEPT` and to `DISPLAY` as streams of the job (done).
+- Every record type a program writes to a file (done).
+- Origins along the control flow, so that a value every path overwrites is not one (done).
+- Pangaea's honest mess: one business date in three layouts, for the survey to find (done).
 
 Done when: the trail of a card purchase in the master goes back through the night's batch, the card file and the hold, into `AUTHPUR` and the terminal's request, and every origin in the blueprints is one a path can reach.
 

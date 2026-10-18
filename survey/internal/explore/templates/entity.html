@@ -22,6 +22,19 @@
 {{range .}}<h3 id="states-{{.Field.Name}}"><a href="{{entityField .Record .Field.Name}}">{{.Field.Name}}</a></h3>
 {{template "states" .}}{{end}}
 {{end}}
+{{with .Dates}}
+<h2>Date layouts</h2>
+<p class="note">The entities hold dates in {{len .}} layouts, by picture and usage. A field of another kind whose values come from a date in another layout, such as text strung from a date, is listed with the layout it holds them in.</p>
+<table class="dates">
+  <thead><tr><th>Layout</th><th>Here</th><th>In the other entities</th></tr></thead>
+  <tbody>
+  {{range .}}<tr><td><code>{{.Layout}}</code></td>
+    <td>{{range $i, $f := .Here}}{{if $i}}; {{end}}<a href="{{entityField $e.Record $f.Field}}">{{$f.Field}}</a>{{with $f.From}}, from {{range $j, $s := .}}{{if $j}}, {{end}}<a href="{{entityField $s.Record $s.Field}}">{{$s.Field}}</a> <code>{{$s.Layout}}</code>{{end}}{{end}}{{end}}</td>
+    <td>{{range $i, $f := .Elsewhere}}{{if $i}}, {{end}}<a href="{{entityField $f.Record $f.Field}}">{{$f.Field}}</a>{{end}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{end}}
 <h2>Fields</h2>
 <p class="note">Who reads, writes and decides on each field, by name: a statement that moves the whole record counts for the record, not for each field.</p>
 <table>
