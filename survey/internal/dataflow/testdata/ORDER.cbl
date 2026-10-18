@@ -21,6 +21,7 @@
            05  WS-NOTE                 PIC X(11)      VALUE 'NONE'.
        01  WS-TOTAL                    PIC 9(7)       VALUE 0.
        01  WS-EOF                      PIC X          VALUE 'N'.
+       01  WS-STAMP                    PIC X(3).
        PROCEDURE DIVISION.
        MAIN-PARA.
            OPEN INPUT IN-FILE OUTPUT OUT-FILE
@@ -43,6 +44,7 @@
                PERFORM READ-PARA
            END-PERFORM
            MOVE 0 TO WS-TOTAL
+           STRING IN-CODE '-' IN-CODE DELIMITED BY SIZE INTO WS-STAMP
            CLOSE IN-FILE OUT-FILE
            STOP RUN.
        READ-PARA.

@@ -365,9 +365,6 @@ Record [REJECT-RECORD](#reject-record), from copybook [REJREC](../copybooks/REJR
 | RJ-REASON | literal condition RJ-BAD-TYPE | SET | 2250-LIMIT | [ACCTMNT.cbl:306](../../../pangaea/programs/ACCTMNT.cbl#L306) |
 | RJ-REJECT-DATE | [WS-BUSINESS-DATE](#ws-business-date) | STRING | 1000-INITIALIZE | [ACCTMNT.cbl:168](../../../pangaea/programs/ACCTMNT.cbl#L168) |
 | RJ-REJECT-DATE | literal '-' | STRING | 1000-INITIALIZE | [ACCTMNT.cbl:168](../../../pangaea/programs/ACCTMNT.cbl#L168) |
-| RJ-REJECT-DATE | [WS-BUSINESS-DATE](#ws-business-date) | STRING | 1000-INITIALIZE | [ACCTMNT.cbl:168](../../../pangaea/programs/ACCTMNT.cbl#L168) |
-| RJ-REJECT-DATE | literal '-' | STRING | 1000-INITIALIZE | [ACCTMNT.cbl:168](../../../pangaea/programs/ACCTMNT.cbl#L168) |
-| RJ-REJECT-DATE | [WS-BUSINESS-DATE](#ws-business-date) | STRING | 1000-INITIALIZE | [ACCTMNT.cbl:168](../../../pangaea/programs/ACCTMNT.cbl#L168) |
 | RJ-TRAN | [MAINT-REQUEST](#maint-request) | MOVE | 2290-REJECT | [ACCTMNT.cbl:315](../../../pangaea/programs/ACCTMNT.cbl#L315) |
 
 ### Into WS-TOTALS

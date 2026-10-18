@@ -269,12 +269,10 @@ Record [WS-TOTALS](#ws-totals).
 | WS-DEPOSITS-CHANGE | [WS-LT-CREDITS](#ws-ledger-totals "in WS-LEDGER-TOTALS") | COMPUTE | 3000-WRITE-LEDGER | [GLSUM.cbl:278](../../../pangaea/programs/GLSUM.cbl#L278) |
 | WS-DEPOSITS-CHANGE | WS-TX | COMPUTE | 3000-WRITE-LEDGER | [GLSUM.cbl:278](../../../pangaea/programs/GLSUM.cbl#L278) |
 | WS-DEPOSITS-CHANGE | [WS-LT-DEBITS](#ws-ledger-totals "in WS-LEDGER-TOTALS") | COMPUTE | 3000-WRITE-LEDGER | [GLSUM.cbl:278](../../../pangaea/programs/GLSUM.cbl#L278) |
-| WS-DEPOSITS-CHANGE | WS-TX | COMPUTE | 3000-WRITE-LEDGER | [GLSUM.cbl:278](../../../pangaea/programs/GLSUM.cbl#L278) |
 | WS-POSTING-COUNT | literal 1 | ADD | 2100-POST-TO-LEDGER | [GLSUM.cbl:248](../../../pangaea/programs/GLSUM.cbl#L248) |
 | WS-TRANSIT-NET | [WS-LT-DEBITS](#ws-ledger-totals "in WS-LEDGER-TOTALS") | COMPUTE | 3000-WRITE-LEDGER | [GLSUM.cbl:281](../../../pangaea/programs/GLSUM.cbl#L281) |
 | WS-TRANSIT-NET | WS-TX | COMPUTE | 3000-WRITE-LEDGER | [GLSUM.cbl:281](../../../pangaea/programs/GLSUM.cbl#L281) |
 | WS-TRANSIT-NET | [WS-LT-CREDITS](#ws-ledger-totals "in WS-LEDGER-TOTALS") | COMPUTE | 3000-WRITE-LEDGER | [GLSUM.cbl:281](../../../pangaea/programs/GLSUM.cbl#L281) |
-| WS-TRANSIT-NET | WS-TX | COMPUTE | 3000-WRITE-LEDGER | [GLSUM.cbl:281](../../../pangaea/programs/GLSUM.cbl#L281) |
 
 ### Into WS-LEDGER-LINE
 

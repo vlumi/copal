@@ -208,8 +208,9 @@ var lineageVerbs = map[string]bool{
 	"STRING": true, "SET": true, "WRITE": true, "REWRITE": true, "RELEASE": true, "READ": true, "RETURN": true,
 }
 
-// edges lists the values a statement moves. A data item operand moves its
-// own value, not its subscripts'; an expression moves every item in it.
+// edges lists the values a statement moves, each once. A data item operand
+// moves its own value, not its subscripts'; an expression moves every item
+// in it.
 func (n *names) edges(paragraph string, s cobol.Statement) []Edge {
 	switch {
 	case s.Verb == "CALL" && s.Calls != "":
@@ -222,7 +223,7 @@ func (n *names) edges(paragraph string, s cobol.Statement) []Edge {
 	var edges []Edge
 	add := func(e Edge) {
 		e.Paragraph, e.Verb, e.Pos = paragraph, s.Verb, s.Pos
-		if e.FromFile || e.ToFile || e.FromLiteral || e.From != e.To {
+		if (e.FromFile || e.ToFile || e.FromLiteral || e.From != e.To) && !slices.Contains(edges, e) {
 			edges = append(edges, e)
 		}
 	}

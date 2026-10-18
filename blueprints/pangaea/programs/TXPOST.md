@@ -418,9 +418,6 @@ Record [REJECT-RECORD](#reject-record), from copybook [REJREC](../copybooks/REJR
 | RJ-REASON | literal condition RJ-NO-FUNDS | SET | 3200-POST-DEBIT | [TXPOST.cbl:302](../../../pangaea/programs/TXPOST.cbl#L302) |
 | RJ-REJECT-DATE | [WS-BUSINESS-DATE](#ws-business-date) | STRING | 1000-INITIALIZE | [TXPOST.cbl:204](../../../pangaea/programs/TXPOST.cbl#L204) |
 | RJ-REJECT-DATE | literal '-' | STRING | 1000-INITIALIZE | [TXPOST.cbl:204](../../../pangaea/programs/TXPOST.cbl#L204) |
-| RJ-REJECT-DATE | [WS-BUSINESS-DATE](#ws-business-date) | STRING | 1000-INITIALIZE | [TXPOST.cbl:204](../../../pangaea/programs/TXPOST.cbl#L204) |
-| RJ-REJECT-DATE | literal '-' | STRING | 1000-INITIALIZE | [TXPOST.cbl:204](../../../pangaea/programs/TXPOST.cbl#L204) |
-| RJ-REJECT-DATE | [WS-BUSINESS-DATE](#ws-business-date) | STRING | 1000-INITIALIZE | [TXPOST.cbl:204](../../../pangaea/programs/TXPOST.cbl#L204) |
 | RJ-TRAN | [TRAN-RECORD](#tran-record) | MOVE | 3900-REJECT-TRAN | [TXPOST.cbl:364](../../../pangaea/programs/TXPOST.cbl#L364) |
 
 ### Into WS-REPORT-COUNT-LINE
