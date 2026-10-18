@@ -81,11 +81,13 @@ func TestEveryLinkResolves(t *testing.T) {
 func TestPages(t *testing.T) {
 	server := newPangaea(t)
 	for path, want := range map[string][]string{
-		"/search?q=balance":                      {"AM-BALANCE", `href="/programs/TXPOST/fields/AM-BALANCE"`},
-		"/jobs/DAILY":                            {"<svg", `href="/jobs/DAILY/steps/POST"`, `href="/datasets/ACCT.MASTER"`},
-		"/datasets/ACCT.MASTER":                  {"ACCTMAST", "MAINT", "ACCT.MASTER(0)"},
-		"/programs/AUTHSRV":                      {"<svg", `href="/programs/AUTHPUR"`, "run by"},
-		"/programs/TXPOST/fields/AM-STATUS":      {"<h2>Rules</h2>", `href="/programs/TXPOST/paragraphs/3000-APPLY-TRAN"`, "<code>AM-CLOSED</code>"},
+		"/search?q=balance":                 {"AM-BALANCE", `href="/programs/TXPOST/fields/AM-BALANCE"`},
+		"/jobs/DAILY":                       {"<svg", `href="/jobs/DAILY/steps/POST"`, `href="/datasets/ACCT.MASTER"`},
+		"/datasets/ACCT.MASTER":             {"ACCTMAST", "MAINT", "ACCT.MASTER(0)"},
+		"/programs/AUTHSRV":                 {"<svg", `href="/programs/AUTHPUR"`, "run by"},
+		"/programs/TXPOST/fields/AM-STATUS": {"<h2>Rules</h2>", `href="/programs/TXPOST/paragraphs/3000-APPLY-TRAN"`, "<code>AM-CLOSED</code>"},
+		"/trace?program=HOLDEXT&field=TD-AMOUNT": {"Passed by reference to", ">AUTHPUR</a> as argument 6", "Passed in by the caller as parameter 1",
+			"Accepted as RQ-AMOUNT from SYSIN", "the SYSIN of AUTH in ONLINE"},
 		"/programs/TXPOST/fields/AM-BALANCE":     {"S9(11)V99", "Values moved into it", "3200-POST-DEBIT", "Follow its values back", "follow where its values go"},
 		"/programs/TXPOST/paragraphs/0000-MAIN":  {"Performs", "1000-INITIALIZE"},
 		"/source/pangaea/copybooks/ACCTMAST.cpy": {`id="L1"`, "ACCT-MASTER-RECORD"},

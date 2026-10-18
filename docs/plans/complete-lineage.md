@@ -41,6 +41,8 @@ Checks against Pangaea:
 
 One pull request: the edges; the origins and effects; the field origins in the blueprints, with goldens; lineage across calls; across streams; the trace page; docs.
 
+As built: all checks hold. Two refinements. Within the caller every program called by reference is an origin of what it is passed, since the caller cannot know which callee changes it; across programs, `lineage` keeps only a called program with a statement that moves a value into the bytes, so `ATMBAL` and `AUTHREV` drop out of the hold amount's trail. And a called program no step runs is placed in the steps that run its callers, so a trail can start in `AUTHPUR`. Forward, `DISPLAY` stays a note on the hop rather than a target, as it was; the plan's `Effect.Streams` was not needed. The blueprints' lineage tables put files, programs called and SYSOUT under one heading, "Out of the program", which replaces "Into files".
+
 ## Part 2: every record type a program writes
 
 `blueprint.Program.Outputs` keeps the first record type a program writes to a file; a file of header, details and trailer, or a report of headings, lines and totals, has more. Make `Output` one per record written, not per file: the file, the record written, and its fields' origins. The Markdown's field origins get a heading per record under the file's. `lineage.outputs` matches a reader's bytes against every record type the writer wrote to the file, so a reader's field over a header's bytes finds the header's field as well as the detail's.

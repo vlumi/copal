@@ -124,3 +124,79 @@ func TestForwardCapped(t *testing.T) {
 		t.Errorf("%d hops, capped %v", len(trail.Hops), trail.Capped)
 	}
 }
+
+// hopsOf maps a trail's hops by node, without the bytes of a node.
+func hopsOf(trail Trail) map[Node]Hop {
+	hops := map[Node]Hop{}
+	for _, h := range trail.Hops {
+		hops[h.Node] = h
+	}
+	return hops
+}
+
+func online(program, field string) Node {
+	return Node{Job: "ONLINE", Step: "AUTH", Program: program, Field: field}
+}
+
+// A hold's amount in the card file goes back into the online day: the
+// hold record AUTHSRV writes, the programs it calls that set the amount,
+// the request they are passed, and the job's SYSIN it is accepted from.
+// A program called that does not change what it is passed gives nothing.
+func TestBackAcrossCalls(t *testing.T) {
+	hops := hopsOf(Back(pangaea(t), Node{Job: "ONLINE", Step: "EXTRACT", Program: "HOLDEXT", Field: "TD-AMOUNT"}))
+	held, ok := hops[online("AUTHSRV", "HD-AMOUNT")]
+	if !ok {
+		t.Fatal("no hop at AUTHSRV's hold amount")
+	}
+	var called []string
+	for _, src := range held.Sources {
+		if src.Call != "" {
+			called = append(called, src.Call)
+		}
+	}
+	if fmt.Sprint(called) != "[ATMWDL AUTHPUR]" {
+		t.Errorf("the hold amount comes from %v, want ATMWDL and AUTHPUR", called)
+	}
+	purchase, ok := hops[online("AUTHPUR", "HD-AMOUNT")]
+	if !ok || !slices.ContainsFunc(purchase.Sources, func(s Source) bool {
+		return s.Parameter == 1 && s.Field == "RQ-AMOUNT" && slices.Contains(s.Writers, online("AUTHSRV", "RQ-AMOUNT"))
+	}) {
+		t.Errorf("AUTHPUR's hold amount does not come from the request: %+v", purchase.Sources)
+	}
+	request := hops[online("AUTHSRV", "RQ-AMOUNT")]
+	if len(request.Sources) != 1 || request.Sources[0].Stream != "SYSIN" {
+		t.Errorf("the request's amount comes from %+v, want SYSIN", request.Sources)
+	}
+}
+
+// The available balance AUTHSRV answers with goes back through the programs
+// called to the online account, and to the steps that loaded it.
+func TestBackFromResponse(t *testing.T) {
+	hops := hopsOf(Back(pangaea(t), online("AUTHSRV", "RS-AVAILABLE")))
+	if _, ok := hops[online("AUTHPUR", "RS-AVAILABLE")]; !ok {
+		t.Fatal("no hop at AUTHPUR's available balance")
+	}
+	for _, field := range []string{"AO-BALANCE", "AO-OVERDRAFT-LIMIT", "AO-HOLDS"} {
+		h, ok := hops[online("AUTHSRV", field)]
+		if !ok || !slices.ContainsFunc(h.Sources, func(s Source) bool {
+			return s.File == "ACCT-FILE" && slices.ContainsFunc(s.Writers, func(n Node) bool { return n.Program == "ACCTLOAD" })
+		}) {
+			t.Errorf("%s does not go back to ACCTLOAD through the online account file", field)
+		}
+	}
+}
+
+// The request's amount goes on into the programs called, back out through
+// the hold record, into the hold file and the card file.
+func TestForwardAcrossCalls(t *testing.T) {
+	hops := hopsOf(Forward(pangaea(t), online("AUTHSRV", "RQ-AMOUNT")))
+	for _, n := range []Node{online("AUTHPUR", "RQ-AMOUNT"), online("AUTHSRV", "HD-AMOUNT"),
+		{Job: "ONLINE", Step: "EXTRACT", Program: "HOLDEXT", Field: "HD-AMOUNT"}} {
+		if _, ok := hops[n]; !ok {
+			t.Errorf("the request's amount does not reach %+v", n)
+		}
+	}
+	if !slices.ContainsFunc(hops[online("AUTHSRV", "RS-AMOUNT")].Displays, func(d blueprint.Display) bool { return true }) {
+		t.Error("the response that shows the amount is not displayed")
+	}
+}
