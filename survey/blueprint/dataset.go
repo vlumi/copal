@@ -152,7 +152,7 @@ func writeDatasets(b *strings.Builder, datasets []SystemDataset) {
 func stepLinks(steps []StepRef) string {
 	var links []string
 	for _, s := range steps {
-		links = append(links, fmt.Sprintf("[%s %s](jobs/%s.md#%s)", s.Job, s.Step, s.Job, headingAnchor(s.Step)))
+		links = append(links, fmt.Sprintf("[%s %s](jobs/%s.md#%s)", s.Job, s.Step, s.Job, HeadingAnchor(s.Step)))
 	}
 	return strings.Join(links, ", ")
 }

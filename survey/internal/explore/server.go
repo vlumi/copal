@@ -16,6 +16,7 @@ import (
 
 	"github.com/vlumi/copal/survey/blueprint"
 	"github.com/vlumi/copal/survey/internal/diagram"
+	"github.com/vlumi/copal/survey/internal/oracle"
 )
 
 //go:embed templates static
@@ -29,18 +30,29 @@ type Server struct {
 	title string
 	index *index
 	pages map[string]*template.Template
+	// cases is the coverage of each main program's cases, and casesDir
+	// where they are, if they were given.
+	cases    map[string]*oracle.Coverage
+	casesDir string
 }
 
-// New makes an explorer of the system, titled with its name.
-func New(system *blueprint.System, title string) (*Server, error) {
-	s := &Server{title: title, index: newIndex(system), pages: map[string]*template.Template{}}
+// New makes an explorer of the system, titled with its name, and with the
+// cases the oracle wrote to casesDir, if it is given.
+func New(system *blueprint.System, title, casesDir string) (*Server, error) {
+	s := &Server{title: title, index: newIndex(system), pages: map[string]*template.Template{}, casesDir: casesDir}
+	if casesDir != "" {
+		var err error
+		if s.cases, err = oracle.ReadCoverage(casesDir); err != nil {
+			return nil, err
+		}
+	}
 	funcs := template.FuncMap{
 		"program": programLink, "paragraph": paragraphLink, "field": fieldLink, "copybook": copybookLink,
 		"job": jobLink, "entity": entityLink, "entityField": entityFieldLink, "step": stepLink, "dataset": datasetLink, "source": sourceLink,
 		"sourceText": sourceText, "base": datasetBase, "join": strings.Join,
 		"add":   func(a, b int) int { return a + b },
 		"hop":   hopID,
-		"trace": traceLink, "forward": forwardLink,
+		"trace": traceLink, "forward": forwardLink, "case": caseLink,
 		"stepRef": func(job, step string) blueprint.StepRef { return blueprint.StepRef{Job: job, Step: step} },
 		"lineage": func(program string, fields map[string]bool, rows []blueprint.Lineage) lineageTable {
 			return lineageTable{Program: program, Fields: fields, Rows: rows}
@@ -53,7 +65,7 @@ func New(system *blueprint.System, title string) (*Server, error) {
 		},
 	}
 	for _, page := range []string{"index", "search", "job", "step", "dataset", "program", "paragraph", "field", "copybook",
-		"entities", "entity", "entityfield", "ownership", "boundary", "schedule", "source", "trace", "error"} {
+		"entities", "entity", "entityfield", "ownership", "boundary", "schedule", "source", "trace", "case", "error"} {
 		t, err := template.New("").Funcs(funcs).ParseFS(files, "templates/base.html", "templates/"+page+".html")
 		if err != nil {
 			return nil, err
@@ -76,6 +88,7 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /programs/{program}", s.view("program", s.program))
 	mux.HandleFunc("GET /programs/{program}/paragraphs/{paragraph}", s.view("paragraph", s.paragraph))
 	mux.HandleFunc("GET /programs/{program}/fields/{field}", s.view("field", s.field))
+	mux.HandleFunc("GET /programs/{program}/cases/{case}", s.view("case", s.caseView))
 	mux.HandleFunc("GET /copybooks/{copybook}", s.view("copybook", s.copybook))
 	mux.HandleFunc("GET /entities", s.view("entities", s.entities))
 	mux.HandleFunc("GET /ownership", s.view("ownership", s.ownership))
@@ -225,6 +238,7 @@ type ProgramView struct {
 	Program *blueprint.Program
 	Flow    template.HTML
 	Runs    []blueprint.StepRef
+	Cases   *CasesView
 }
 
 func (s *Server) program(r *http.Request) (any, error) {
@@ -235,7 +249,7 @@ func (s *Server) program(r *http.Request) (any, error) {
 	flow, err := svg(blueprint.FlowGraph(*p, blueprint.FlowNotes{
 		Link: func(para blueprint.Paragraph) string { return paragraphLink(p.Name, para.Name) },
 	}))
-	return ProgramView{Program: p, Flow: flow, Runs: s.index.runs[p.Name]}, err
+	return ProgramView{Program: p, Flow: flow, Runs: s.index.runs[p.Name], Cases: s.casesOf(p.Name)}, err
 }
 
 func (s *Server) lookupProgram(r *http.Request) (*blueprint.Program, error) {

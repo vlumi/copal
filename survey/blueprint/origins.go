@@ -109,7 +109,7 @@ func outputFiles(outs []Output) [][]Output {
 func recordLinks(outs []Output) string {
 	links := make([]string, len(outs))
 	for i, o := range outs {
-		links[i] = fmt.Sprintf("[%s](#%s)", o.Record, headingAnchor(o.Record))
+		links[i] = fmt.Sprintf("[%s](#%s)", o.Record, HeadingAnchor(o.Record))
 	}
 	if len(links) == 1 {
 		return links[0]

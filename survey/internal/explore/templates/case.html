@@ -1,0 +1,16 @@
+{{define "title"}}case {{.View.Number}} of {{.View.Program}}{{end}}
+{{define "content"}}
+{{with .View}}
+<h1><span class="kind">case</span> {{.Number}} of {{.Program}}</h1>
+<p class="crumbs">of <a href="{{program .Program}}">{{.Program}}</a></p>
+<p>{{if .Outcome.TimedOut}}The run did not end in time, and was killed.{{else if .Outcome.Abended}}The run abended.{{else}}The run ended with return code {{.Outcome.ReturnCode}}.{{end}}</p>
+<h2>Input</h2>
+{{range .Inputs}}<h3>{{.Name}}</h3>
+{{if .Text}}<pre>{{.Text}}</pre>{{else}}<p class="note">No records.</p>{{end}}
+{{end}}
+<h2>Output</h2>
+{{range .Outputs}}<h3>{{.Name}}</h3>
+{{if .Text}}<pre>{{.Text}}</pre>{{else}}<p class="note">No records.</p>{{end}}
+{{end}}
+{{end}}
+{{end}}

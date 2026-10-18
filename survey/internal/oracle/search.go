@@ -14,14 +14,16 @@ import (
 // the round before kept.
 const maxRounds = 4
 
-// Result is what the search found for a program: the cases it kept, in
-// the order it found them, the units whose decision tables they reach,
-// and for each rule reached, the case that reached it first.
+// Result is the cases of a program: the units whose decision tables they
+// reach, the cases, and for each case, what its run reached, wrote and
+// returned; and for each rule reached, the first case that reaches it.
 type Result struct {
 	Program string
-	Cases   []Case
 	Units   []Unit
+	Cases   []Case
 	First   map[rule]int
+	runs    []result
+	program *program
 }
 
 // Rules counts the rules of a unit's tables, and those reached.
@@ -38,10 +40,44 @@ func (r *Result) Rules(unit int) (reached, total int) {
 }
 
 // Search finds cases that reach the rules of a main program's decision
-// tables, and of the programs it calls. The system's programs are
-// compiled from the directory of the program's source, and the work is
-// done in a scratch directory.
+// tables, and of the programs it calls, as few as reach them all, and
+// records what each writes. The system's programs are compiled from the
+// directory of the program's source, in a scratch directory that other
+// searches of the same system may share.
 func Search(system *blueprint.System, bp *blueprint.Program, copybookDir, scratch string) (*Result, error) {
+	s, err := newSearcher(system, bp, copybookDir, scratch)
+	if err != nil {
+		return nil, err
+	}
+	found, err := s.search()
+	if err != nil {
+		return nil, err
+	}
+	return s.record(fewest(found))
+}
+
+// Replay runs a program on the cases its Files were written from, in the
+// program's directory, and records what each reaches and writes.
+func Replay(system *blueprint.System, bp *blueprint.Program, copybookDir, scratch, dir string) (*Result, error) {
+	s, err := newSearcher(system, bp, copybookDir, scratch)
+	if err != nil {
+		return nil, err
+	}
+	cases, err := s.program.readCases(dir)
+	if err != nil {
+		return nil, err
+	}
+	return s.record(cases)
+}
+
+type searcher struct {
+	program *program
+	runner  *runner
+	scratch string
+	runs    int
+}
+
+func newSearcher(system *blueprint.System, bp *blueprint.Program, copybookDir, scratch string) (*searcher, error) {
 	p, err := prepare(system, bp, copybookDir)
 	if err != nil {
 		return nil, err
@@ -50,24 +86,42 @@ func Search(system *blueprint.System, bp *blueprint.Program, copybookDir, scratc
 	if err != nil {
 		return nil, err
 	}
-	s := &searcher{program: p, runner: r, scratch: scratch,
-		result: &Result{Program: bp.Name, Units: p.units, First: map[rule]int{}}}
-	return s.result, s.search()
+	return &searcher{program: p, runner: r, scratch: filepath.Join(scratch, bp.Name)}, nil
 }
 
-type searcher struct {
-	program *program
-	runner  *runner
-	scratch string
-	runs    int
-	result  *Result
+// found is a case the search kept, and the rules its run reached.
+type found struct {
+	c       Case
+	reached map[rule]bool
 }
 
-func (s *searcher) search() error {
+func (s *searcher) search() ([]found, error) {
+	var kept []found
+	reached := map[rule]bool{}
+	keep := func(candidates []Case) ([]Case, error) {
+		results, err := s.runAll(candidates, false)
+		if err != nil {
+			return nil, err
+		}
+		var fresh []Case
+		for i, res := range results {
+			added := false
+			for r := range res.reached {
+				if !reached[r] {
+					reached[r], added = true, true
+				}
+			}
+			if added {
+				kept = append(kept, found{candidates[i], res.reached})
+				fresh = append(fresh, candidates[i])
+			}
+		}
+		return fresh, nil
+	}
 	levers := s.program.levers()
-	frontier := []Case{s.program.base()}
-	if _, err := s.keep(frontier); err != nil {
-		return err
+	frontier, err := keep([]Case{s.program.base()})
+	if err != nil {
+		return nil, err
 	}
 	for range maxRounds {
 		var candidates []Case
@@ -78,48 +132,75 @@ func (s *searcher) search() error {
 				}
 			}
 		}
-		kept, err := s.keep(candidates)
-		if err != nil {
-			return err
+		if frontier, err = keep(candidates); err != nil {
+			return nil, err
 		}
-		if len(kept) == 0 {
+		if len(frontier) == 0 {
 			break
 		}
-		frontier = kept
-	}
-	return nil
-}
-
-// keep runs the candidates, in parallel, and keeps, in their order, those
-// that reach a rule that no case before them reached.
-func (s *searcher) keep(candidates []Case) ([]Case, error) {
-	results, err := s.runAll(candidates)
-	if err != nil {
-		return nil, err
-	}
-	var kept []Case
-	for i, res := range results {
-		var fresh []rule
-		for r := range res.reached {
-			if _, ok := s.result.First[r]; !ok {
-				fresh = append(fresh, r)
-			}
-		}
-		if len(fresh) == 0 {
-			continue
-		}
-		for _, r := range fresh {
-			s.result.First[r] = len(s.result.Cases)
-		}
-		s.result.Cases = append(s.result.Cases, candidates[i])
-		kept = append(kept, candidates[i])
 	}
 	return kept, nil
 }
 
-func (s *searcher) runAll(candidates []Case) ([]result, error) {
-	results := make([]result, len(candidates))
-	errs := make([]error, len(candidates))
+// fewest picks, from the cases found, as few as reach every rule they
+// reach between them: each time, the case that reaches the most rules no
+// case picked before reaches, the earliest found on a tie. The cases
+// picked keep the order they were found in.
+func fewest(cases []found) []Case {
+	covered := map[rule]bool{}
+	picked := make([]bool, len(cases))
+	for {
+		best, gain := -1, 0
+		for i, f := range cases {
+			n := 0
+			for r := range f.reached {
+				if !covered[r] {
+					n++
+				}
+			}
+			if !picked[i] && n > gain {
+				best, gain = i, n
+			}
+		}
+		if best < 0 {
+			break
+		}
+		picked[best] = true
+		for r := range cases[best].reached {
+			covered[r] = true
+		}
+	}
+	var out []Case
+	for i, f := range cases {
+		if picked[i] {
+			out = append(out, f.c)
+		}
+	}
+	return out
+}
+
+// record runs the cases again, recording what each writes, and notes the
+// first case that reaches each rule.
+func (s *searcher) record(cases []Case) (*Result, error) {
+	runs, err := s.runAll(cases, true)
+	if err != nil {
+		return nil, err
+	}
+	res := &Result{Program: s.program.blueprint.Name, Units: s.program.units, Cases: cases, First: map[rule]int{},
+		runs: runs, program: s.program}
+	for i, run := range runs {
+		for r := range run.reached {
+			if _, ok := res.First[r]; !ok {
+				res.First[r] = i
+			}
+		}
+	}
+	return res, nil
+}
+
+func (s *searcher) runAll(cases []Case, record bool) ([]result, error) {
+	results := make([]result, len(cases))
+	errs := make([]error, len(cases))
 	work := make(chan int)
 	var wg sync.WaitGroup
 	for range runtime.NumCPU() {
@@ -129,18 +210,18 @@ func (s *searcher) runAll(candidates []Case) ([]result, error) {
 			for i := range work {
 				dir := filepath.Join(s.scratch, "runs", fmt.Sprint(s.runs+i))
 				if errs[i] = os.MkdirAll(dir, 0o755); errs[i] == nil {
-					results[i], errs[i] = s.runner.run(candidates[i], dir)
+					results[i], errs[i] = s.runner.run(cases[i], dir, record)
 					_ = os.RemoveAll(dir)
 				}
 			}
 		}()
 	}
-	for i := range candidates {
+	for i := range cases {
 		work <- i
 	}
 	close(work)
 	wg.Wait()
-	s.runs += len(candidates)
+	s.runs += len(cases)
 	for _, err := range errs {
 		if err != nil {
 			return nil, err

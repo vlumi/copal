@@ -353,7 +353,7 @@ func groupLineage(p Program, records map[string]Record) []lineageGroup {
 	groups[other] = lineageGroup{title: "Into other data items",
 		intro: "Data items the program does not declare, such as special registers and index names.\n\n"}
 	for i, r := range p.Records {
-		intro := "Record [" + r.Name + "](#" + headingAnchor(r.Name) + ")"
+		intro := "Record [" + r.Name + "](#" + HeadingAnchor(r.Name) + ")"
 		if r.Copybook != "" {
 			intro += ", from copybook " + copybookLink(r.Copybook)
 		}
@@ -389,9 +389,9 @@ func lineageItem(e Lineage, records map[string]Record) string {
 	r, ok := records[name]
 	switch {
 	case ok && r.Name == name:
-		return fmt.Sprintf("[%s](#%s)", name, headingAnchor(r.Name))
+		return fmt.Sprintf("[%s](#%s)", name, HeadingAnchor(r.Name))
 	case ok:
-		return fmt.Sprintf("[%s](#%s \"in %s\")", name, headingAnchor(r.Name), r.Name)
+		return fmt.Sprintf("[%s](#%s \"in %s\")", name, HeadingAnchor(r.Name), r.Name)
 	}
 	return name
 }

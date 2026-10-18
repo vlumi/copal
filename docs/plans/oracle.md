@@ -77,6 +77,8 @@ Checks against Pangaea: every rule of `TXVALID`'s header, detail and trailer che
 
 One pull request.
 
+As built: the cases are in `oracle/pangaea/`, beside the blueprints rather than in them, since `make blueprints` writes its directory afresh. The kept cases are cut to as few as reach the same rules, by a greedy cover; their input files are not merged into fewer, larger ones. An input file is written field by field, a record of no known type as the redefinition the program uses most, and read back for the replay; a record whose fields do not give back its bytes would be written whole. Indexed output files are read through a generated unloader. `coverage.json` beside each program's report feeds the explorer, whose program page lists the coverage of each decision table, by the program's own cases or its caller's, and links to a page for each case. CI replays every case, in about thirty seconds, and compares; the search runs only on demand, with `make oracle`, and gives the same cases every time. On Pangaea: 245 of the 384 rules, by 100 cases.
+
 ## Part 5: the batch
 
 Cases for the daily and month-end jobs: the program cases' inputs for the jobs' first steps, the rest produced by the steps themselves, run through the job runner, with the datasets each step writes recorded. Running a job needs the job runner from Pangaea's machine room; whether that also moves into bedrock, or the batch cases are run from the console, which imports both, is decided when this part starts, once parts 1 to 4 show how much of the runner is generic.
