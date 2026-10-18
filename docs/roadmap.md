@@ -128,6 +128,17 @@ The trail of a field stops where Pangaea's online day begins: at a `CALL`, at `A
 
 Done when: the trail of a card purchase in the master goes back through the night's batch, the card file and the hold, into `AUTHPUR` and the terminal's request, and every origin in the blueprints is one a path can reach.
 
+## 11. The oracle
+
+The survey knows the rules; a rewrite needs evidence of what the programs do when each applies. The plan is in [plans/oracle.md](plans/oracle.md):
+
+- Running COBOL moves into bedrock, so that the survey can run the programs it reads, and Pangaea's machine room is built on the same.
+- Rule coverage from GnuCOBOL's statement trace, replayed against the decision tables.
+- Test data from the decision tables: each condition's literals and boundaries in the input fields the lineage says feed it, kept when a run reaches a new rule, with the rules between records, order, control totals and references, taken from the survey's own facts.
+- Golden cases per program, inputs and outputs, with each rule's coverage; then cases for the batches.
+
+Done when: every rule of every decision table in Pangaea is reached by a recorded case, or listed as unreached with the condition that blocks it, and the cases run green in CI.
+
 ## Later
 
-From the brief: test data derived from the extracted conditions so every branch is reached, run through GnuCOBOL as the oracle a rewrite has to match; data that respects cross-record rules; and only then a model for naming and prose.
+From the brief: a model for naming paragraphs and explaining rules in prose, on top of the facts the analysis established and the evidence the oracle recorded.
