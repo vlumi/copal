@@ -709,14 +709,97 @@
               "to": "AM-OPEN",
               "program": "ACCTMNT",
               "paragraph": "2210-OPEN",
-              "source": "pangaea/programs/ACCTMNT.cbl:258"
+              "source": "pangaea/programs/ACCTMNT.cbl:258",
+              "when": [
+                {
+                  "condition": "ACCOUNT-HELD",
+                  "holds": false
+                },
+                {
+                  "condition": "WS-EFF-YY \u003c 50",
+                  "holds": true
+                },
+                {
+                  "condition": "AM-SAVINGS",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "AM-OPEN",
+              "program": "ACCTMNT",
+              "paragraph": "2210-OPEN",
+              "source": "pangaea/programs/ACCTMNT.cbl:258",
+              "when": [
+                {
+                  "condition": "ACCOUNT-HELD",
+                  "holds": false
+                },
+                {
+                  "condition": "WS-EFF-YY \u003c 50",
+                  "holds": true
+                },
+                {
+                  "condition": "AM-SAVINGS",
+                  "holds": false
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "AM-OPEN",
+              "program": "ACCTMNT",
+              "paragraph": "2210-OPEN",
+              "source": "pangaea/programs/ACCTMNT.cbl:258",
+              "when": [
+                {
+                  "condition": "ACCOUNT-HELD",
+                  "holds": false
+                },
+                {
+                  "condition": "WS-EFF-YY \u003c 50",
+                  "holds": false
+                },
+                {
+                  "condition": "AM-SAVINGS",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "AM-OPEN",
+              "program": "ACCTMNT",
+              "paragraph": "2210-OPEN",
+              "source": "pangaea/programs/ACCTMNT.cbl:258",
+              "when": [
+                {
+                  "condition": "ACCOUNT-HELD",
+                  "holds": false
+                },
+                {
+                  "condition": "WS-EFF-YY \u003c 50",
+                  "holds": false
+                },
+                {
+                  "condition": "AM-SAVINGS",
+                  "holds": false
+                }
+              ]
             },
             {
               "from": "any",
               "to": "AM-CLOSED",
               "program": "ACCTMNT",
               "paragraph": "2220-CLOSE",
-              "source": "pangaea/programs/ACCTMNT.cbl:280"
+              "source": "pangaea/programs/ACCTMNT.cbl:280",
+              "when": [
+                {
+                  "condition": "AM-BALANCE = 0",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "AM-OPEN",
@@ -2154,56 +2237,297 @@
               "to": "RS-CARD-BLOCKED",
               "program": "ATMBAL",
               "paragraph": "0000-MAIN",
-              "source": "pangaea/programs/ATMBAL.cbl:37"
+              "source": "pangaea/programs/ATMBAL.cbl:37",
+              "when": [
+                {
+                  "condition": "CR-BLOCKED",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RS-ACCOUNT-NOT-OPEN",
               "program": "ATMBAL",
               "paragraph": "0000-MAIN",
-              "source": "pangaea/programs/ATMBAL.cbl:40"
+              "source": "pangaea/programs/ATMBAL.cbl:40",
+              "when": [
+                {
+                  "condition": "CR-BLOCKED",
+                  "holds": false
+                },
+                {
+                  "condition": "AO-OPEN",
+                  "holds": false
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RS-APPROVED",
               "program": "ATMBAL",
               "paragraph": "0000-MAIN",
-              "source": "pangaea/programs/ATMBAL.cbl:43"
+              "source": "pangaea/programs/ATMBAL.cbl:43",
+              "when": [
+                {
+                  "condition": "CR-BLOCKED",
+                  "holds": false
+                },
+                {
+                  "condition": "AO-OPEN",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RS-CARD-BLOCKED",
               "program": "ATMWDL",
               "paragraph": "0000-MAIN",
-              "source": "pangaea/programs/ATMWDL.cbl:60"
+              "source": "pangaea/programs/ATMWDL.cbl:60",
+              "when": [
+                {
+                  "condition": "CR-MONTH-WITHDRAWALS \u003c WS-FREE-WITHDRAWALS",
+                  "holds": true
+                },
+                {
+                  "condition": "CR-BLOCKED",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RS-ACCOUNT-NOT-OPEN",
               "program": "ATMWDL",
               "paragraph": "0000-MAIN",
-              "source": "pangaea/programs/ATMWDL.cbl:63"
+              "source": "pangaea/programs/ATMWDL.cbl:63",
+              "when": [
+                {
+                  "condition": "CR-MONTH-WITHDRAWALS \u003c WS-FREE-WITHDRAWALS",
+                  "holds": true
+                },
+                {
+                  "condition": "CR-BLOCKED",
+                  "holds": false
+                },
+                {
+                  "condition": "AO-OPEN",
+                  "holds": false
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RS-INVALID-AMOUNT",
               "program": "ATMWDL",
               "paragraph": "0000-MAIN",
-              "source": "pangaea/programs/ATMWDL.cbl:67"
+              "source": "pangaea/programs/ATMWDL.cbl:67",
+              "when": [
+                {
+                  "condition": "CR-MONTH-WITHDRAWALS \u003c WS-FREE-WITHDRAWALS",
+                  "holds": true
+                },
+                {
+                  "condition": "CR-BLOCKED",
+                  "holds": false
+                },
+                {
+                  "condition": "AO-OPEN",
+                  "holds": true
+                },
+                {
+                  "condition": "RQ-AMOUNT = 0 OR FUNCTION MOD(RQ-AMOUNT WS-NOTE) NOT = 0",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RS-OVER-LIMIT",
               "program": "ATMWDL",
               "paragraph": "0000-MAIN",
-              "source": "pangaea/programs/ATMWDL.cbl:70"
+              "source": "pangaea/programs/ATMWDL.cbl:70",
+              "when": [
+                {
+                  "condition": "CR-MONTH-WITHDRAWALS \u003c WS-FREE-WITHDRAWALS",
+                  "holds": true
+                },
+                {
+                  "condition": "CR-BLOCKED",
+                  "holds": false
+                },
+                {
+                  "condition": "AO-OPEN",
+                  "holds": true
+                },
+                {
+                  "condition": "RQ-AMOUNT = 0 OR FUNCTION MOD(RQ-AMOUNT WS-NOTE) NOT = 0",
+                  "holds": false
+                },
+                {
+                  "condition": "WS-DAY-CASH \u003e CR-CASH-LIMIT",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RS-INSUFFICIENT-FUNDS",
               "program": "ATMWDL",
               "paragraph": "0000-MAIN",
-              "source": "pangaea/programs/ATMWDL.cbl:73"
+              "source": "pangaea/programs/ATMWDL.cbl:73",
+              "when": [
+                {
+                  "condition": "CR-MONTH-WITHDRAWALS \u003c WS-FREE-WITHDRAWALS",
+                  "holds": true
+                },
+                {
+                  "condition": "CR-BLOCKED",
+                  "holds": false
+                },
+                {
+                  "condition": "AO-OPEN",
+                  "holds": true
+                },
+                {
+                  "condition": "RQ-AMOUNT = 0 OR FUNCTION MOD(RQ-AMOUNT WS-NOTE) NOT = 0",
+                  "holds": false
+                },
+                {
+                  "condition": "WS-DAY-CASH \u003e CR-CASH-LIMIT",
+                  "holds": false
+                },
+                {
+                  "condition": "WS-TO-HOLD \u003e WS-AVAILABLE",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "RS-CARD-BLOCKED",
+              "program": "ATMWDL",
+              "paragraph": "0000-MAIN",
+              "source": "pangaea/programs/ATMWDL.cbl:60",
+              "when": [
+                {
+                  "condition": "CR-MONTH-WITHDRAWALS \u003c WS-FREE-WITHDRAWALS",
+                  "holds": false
+                },
+                {
+                  "condition": "CR-BLOCKED",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "RS-ACCOUNT-NOT-OPEN",
+              "program": "ATMWDL",
+              "paragraph": "0000-MAIN",
+              "source": "pangaea/programs/ATMWDL.cbl:63",
+              "when": [
+                {
+                  "condition": "CR-MONTH-WITHDRAWALS \u003c WS-FREE-WITHDRAWALS",
+                  "holds": false
+                },
+                {
+                  "condition": "CR-BLOCKED",
+                  "holds": false
+                },
+                {
+                  "condition": "AO-OPEN",
+                  "holds": false
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "RS-INVALID-AMOUNT",
+              "program": "ATMWDL",
+              "paragraph": "0000-MAIN",
+              "source": "pangaea/programs/ATMWDL.cbl:67",
+              "when": [
+                {
+                  "condition": "CR-MONTH-WITHDRAWALS \u003c WS-FREE-WITHDRAWALS",
+                  "holds": false
+                },
+                {
+                  "condition": "CR-BLOCKED",
+                  "holds": false
+                },
+                {
+                  "condition": "AO-OPEN",
+                  "holds": true
+                },
+                {
+                  "condition": "RQ-AMOUNT = 0 OR FUNCTION MOD(RQ-AMOUNT WS-NOTE) NOT = 0",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "RS-OVER-LIMIT",
+              "program": "ATMWDL",
+              "paragraph": "0000-MAIN",
+              "source": "pangaea/programs/ATMWDL.cbl:70",
+              "when": [
+                {
+                  "condition": "CR-MONTH-WITHDRAWALS \u003c WS-FREE-WITHDRAWALS",
+                  "holds": false
+                },
+                {
+                  "condition": "CR-BLOCKED",
+                  "holds": false
+                },
+                {
+                  "condition": "AO-OPEN",
+                  "holds": true
+                },
+                {
+                  "condition": "RQ-AMOUNT = 0 OR FUNCTION MOD(RQ-AMOUNT WS-NOTE) NOT = 0",
+                  "holds": false
+                },
+                {
+                  "condition": "WS-DAY-CASH \u003e CR-CASH-LIMIT",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "RS-INSUFFICIENT-FUNDS",
+              "program": "ATMWDL",
+              "paragraph": "0000-MAIN",
+              "source": "pangaea/programs/ATMWDL.cbl:73",
+              "when": [
+                {
+                  "condition": "CR-MONTH-WITHDRAWALS \u003c WS-FREE-WITHDRAWALS",
+                  "holds": false
+                },
+                {
+                  "condition": "CR-BLOCKED",
+                  "holds": false
+                },
+                {
+                  "condition": "AO-OPEN",
+                  "holds": true
+                },
+                {
+                  "condition": "RQ-AMOUNT = 0 OR FUNCTION MOD(RQ-AMOUNT WS-NOTE) NOT = 0",
+                  "holds": false
+                },
+                {
+                  "condition": "WS-DAY-CASH \u003e CR-CASH-LIMIT",
+                  "holds": false
+                },
+                {
+                  "condition": "WS-TO-HOLD \u003e WS-AVAILABLE",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "any",
@@ -2217,35 +2541,105 @@
               "to": "RS-CARD-BLOCKED",
               "program": "AUTHPUR",
               "paragraph": "0000-MAIN",
-              "source": "pangaea/programs/AUTHPUR.cbl:45"
+              "source": "pangaea/programs/AUTHPUR.cbl:45",
+              "when": [
+                {
+                  "condition": "CR-BLOCKED",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RS-ACCOUNT-NOT-OPEN",
               "program": "AUTHPUR",
               "paragraph": "0000-MAIN",
-              "source": "pangaea/programs/AUTHPUR.cbl:48"
+              "source": "pangaea/programs/AUTHPUR.cbl:48",
+              "when": [
+                {
+                  "condition": "CR-BLOCKED",
+                  "holds": false
+                },
+                {
+                  "condition": "AO-OPEN",
+                  "holds": false
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RS-INVALID-AMOUNT",
               "program": "AUTHPUR",
               "paragraph": "0000-MAIN",
-              "source": "pangaea/programs/AUTHPUR.cbl:51"
+              "source": "pangaea/programs/AUTHPUR.cbl:51",
+              "when": [
+                {
+                  "condition": "CR-BLOCKED",
+                  "holds": false
+                },
+                {
+                  "condition": "AO-OPEN",
+                  "holds": true
+                },
+                {
+                  "condition": "RQ-AMOUNT = 0",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RS-OVER-LIMIT",
               "program": "AUTHPUR",
               "paragraph": "0000-MAIN",
-              "source": "pangaea/programs/AUTHPUR.cbl:54"
+              "source": "pangaea/programs/AUTHPUR.cbl:54",
+              "when": [
+                {
+                  "condition": "CR-BLOCKED",
+                  "holds": false
+                },
+                {
+                  "condition": "AO-OPEN",
+                  "holds": true
+                },
+                {
+                  "condition": "RQ-AMOUNT = 0",
+                  "holds": false
+                },
+                {
+                  "condition": "WS-DAY-PURCHASES \u003e CR-PURCHASE-LIMIT",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RS-INSUFFICIENT-FUNDS",
               "program": "AUTHPUR",
               "paragraph": "0000-MAIN",
-              "source": "pangaea/programs/AUTHPUR.cbl:57"
+              "source": "pangaea/programs/AUTHPUR.cbl:57",
+              "when": [
+                {
+                  "condition": "CR-BLOCKED",
+                  "holds": false
+                },
+                {
+                  "condition": "AO-OPEN",
+                  "holds": true
+                },
+                {
+                  "condition": "RQ-AMOUNT = 0",
+                  "holds": false
+                },
+                {
+                  "condition": "WS-DAY-PURCHASES \u003e CR-PURCHASE-LIMIT",
+                  "holds": false
+                },
+                {
+                  "condition": "RQ-AMOUNT \u003e WS-AVAILABLE",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "any",
@@ -2259,49 +2653,133 @@
               "to": "RS-NO-SUCH-AUTH",
               "program": "AUTHREV",
               "paragraph": "0000-MAIN",
-              "source": "pangaea/programs/AUTHREV.cbl:40"
+              "source": "pangaea/programs/AUTHREV.cbl:40",
+              "when": [
+                {
+                  "condition": "HD-CARD-NO = CR-CARD-NO",
+                  "holds": false
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RS-INVALID-REQUEST",
               "program": "AUTHREV",
               "paragraph": "0000-MAIN",
-              "source": "pangaea/programs/AUTHREV.cbl:43"
+              "source": "pangaea/programs/AUTHREV.cbl:43",
+              "when": [
+                {
+                  "condition": "HD-CARD-NO = CR-CARD-NO",
+                  "holds": true
+                },
+                {
+                  "condition": "HD-PURCHASE",
+                  "holds": false
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "RS-NO-SUCH-AUTH",
+              "program": "AUTHREV",
+              "paragraph": "0000-MAIN",
+              "source": "pangaea/programs/AUTHREV.cbl:40",
+              "when": [
+                {
+                  "condition": "HD-CARD-NO = CR-CARD-NO",
+                  "holds": true
+                },
+                {
+                  "condition": "HD-PURCHASE",
+                  "holds": true
+                },
+                {
+                  "condition": "HD-REVERSED",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RS-APPROVED",
               "program": "AUTHREV",
               "paragraph": "2000-APPROVE",
-              "source": "pangaea/programs/AUTHREV.cbl:61"
+              "source": "pangaea/programs/AUTHREV.cbl:61",
+              "when": [
+                {
+                  "condition": "CR-TOTALS-DATE = HD-BUSINESS-DATE",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "RS-APPROVED",
+              "program": "AUTHREV",
+              "paragraph": "2000-APPROVE",
+              "source": "pangaea/programs/AUTHREV.cbl:61",
+              "when": [
+                {
+                  "condition": "CR-TOTALS-DATE = HD-BUSINESS-DATE",
+                  "holds": false
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RS-INVALID-REQUEST",
               "program": "AUTHSRV",
               "paragraph": "2100-AUTHORIZE",
-              "source": "pangaea/programs/AUTHSRV.cbl:167"
+              "source": "pangaea/programs/AUTHSRV.cbl:167",
+              "when": [
+                {
+                  "condition": "RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY",
+                  "holds": false
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RS-NO-SUCH-CARD",
               "program": "AUTHSRV",
               "paragraph": "2200-READ-CARD-AND-ACCOUNT",
-              "source": "pangaea/programs/AUTHSRV.cbl:207"
+              "source": "pangaea/programs/AUTHSRV.cbl:207",
+              "when": [
+                {
+                  "condition": "READ CARD-FILE INVALID KEY",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RS-ACCOUNT-NOT-OPEN",
               "program": "AUTHSRV",
               "paragraph": "2200-READ-CARD-AND-ACCOUNT",
-              "source": "pangaea/programs/AUTHSRV.cbl:213"
+              "source": "pangaea/programs/AUTHSRV.cbl:213",
+              "when": [
+                {
+                  "condition": "READ CARD-FILE INVALID KEY",
+                  "holds": false
+                },
+                {
+                  "condition": "READ ACCT-FILE INVALID KEY",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RS-NO-SUCH-AUTH",
               "program": "AUTHSRV",
               "paragraph": "2300-READ-HOLD",
-              "source": "pangaea/programs/AUTHSRV.cbl:224"
+              "source": "pangaea/programs/AUTHSRV.cbl:224",
+              "when": [
+                {
+                  "condition": "READ HOLD-FILE INVALID KEY",
+                  "holds": true
+                }
+              ]
             }
           ]
         }
@@ -3985,7 +4463,26 @@
               "to": "HD-REVERSED",
               "program": "AUTHREV",
               "paragraph": "2000-APPROVE",
-              "source": "pangaea/programs/AUTHREV.cbl:60"
+              "source": "pangaea/programs/AUTHREV.cbl:60",
+              "when": [
+                {
+                  "condition": "CR-TOTALS-DATE = HD-BUSINESS-DATE",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "HD-REVERSED",
+              "program": "AUTHREV",
+              "paragraph": "2000-APPROVE",
+              "source": "pangaea/programs/AUTHREV.cbl:60",
+              "when": [
+                {
+                  "condition": "CR-TOTALS-DATE = HD-BUSINESS-DATE",
+                  "holds": false
+                }
+              ]
             }
           ]
         }
@@ -4733,119 +5230,466 @@
               "to": "RJ-NO-ACCOUNT",
               "program": "ACCTMNT",
               "paragraph": "2200-APPLY-REQUEST",
-              "source": "pangaea/programs/ACCTMNT.cbl:232"
+              "source": "pangaea/programs/ACCTMNT.cbl:232",
+              "when": [
+                {
+                  "condition": "MR-OPEN",
+                  "holds": false
+                },
+                {
+                  "condition": "NOTHING-HELD",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RJ-CLOSED",
               "program": "ACCTMNT",
               "paragraph": "2200-APPLY-REQUEST",
-              "source": "pangaea/programs/ACCTMNT.cbl:235"
+              "source": "pangaea/programs/ACCTMNT.cbl:235",
+              "when": [
+                {
+                  "condition": "MR-OPEN",
+                  "holds": false
+                },
+                {
+                  "condition": "NOTHING-HELD",
+                  "holds": false
+                },
+                {
+                  "condition": "AM-CLOSED",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RJ-BAD-TYPE",
               "program": "ACCTMNT",
               "paragraph": "2200-APPLY-REQUEST",
-              "source": "pangaea/programs/ACCTMNT.cbl:245"
+              "source": "pangaea/programs/ACCTMNT.cbl:245",
+              "when": [
+                {
+                  "condition": "MR-OPEN",
+                  "holds": false
+                },
+                {
+                  "condition": "NOTHING-HELD",
+                  "holds": false
+                },
+                {
+                  "condition": "AM-CLOSED",
+                  "holds": false
+                },
+                {
+                  "condition": "MR-CLOSE",
+                  "holds": false
+                },
+                {
+                  "condition": "MR-FREEZE",
+                  "holds": false
+                },
+                {
+                  "condition": "MR-UNFREEZE",
+                  "holds": false
+                },
+                {
+                  "condition": "MR-LIMIT",
+                  "holds": false
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RJ-EXISTS",
               "program": "ACCTMNT",
               "paragraph": "2210-OPEN",
-              "source": "pangaea/programs/ACCTMNT.cbl:251"
+              "source": "pangaea/programs/ACCTMNT.cbl:251",
+              "when": [
+                {
+                  "condition": "ACCOUNT-HELD",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RJ-HAS-BALANCE",
               "program": "ACCTMNT",
               "paragraph": "2220-CLOSE",
-              "source": "pangaea/programs/ACCTMNT.cbl:278"
+              "source": "pangaea/programs/ACCTMNT.cbl:278",
+              "when": [
+                {
+                  "condition": "AM-BALANCE = 0",
+                  "holds": false
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RJ-BAD-STATUS",
               "program": "ACCTMNT",
               "paragraph": "2230-FREEZE",
-              "source": "pangaea/programs/ACCTMNT.cbl:288"
+              "source": "pangaea/programs/ACCTMNT.cbl:288",
+              "when": [
+                {
+                  "condition": "AM-OPEN",
+                  "holds": false
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RJ-BAD-STATUS",
               "program": "ACCTMNT",
               "paragraph": "2240-UNFREEZE",
-              "source": "pangaea/programs/ACCTMNT.cbl:297"
+              "source": "pangaea/programs/ACCTMNT.cbl:297",
+              "when": [
+                {
+                  "condition": "AM-FROZEN",
+                  "holds": false
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RJ-BAD-TYPE",
               "program": "ACCTMNT",
               "paragraph": "2250-LIMIT",
-              "source": "pangaea/programs/ACCTMNT.cbl:306"
+              "source": "pangaea/programs/ACCTMNT.cbl:306",
+              "when": [
+                {
+                  "condition": "AM-CURRENT",
+                  "holds": false
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RJ-NO-ACCOUNT",
               "program": "TXPOST",
               "paragraph": "2000-MATCH",
-              "source": "pangaea/programs/TXPOST.cbl:249"
+              "source": "pangaea/programs/TXPOST.cbl:249",
+              "when": [
+                {
+                  "condition": "WS-TRAN-KEY \u003c WS-MASTER-KEY",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RJ-CLOSED",
               "program": "TXPOST",
               "paragraph": "3000-APPLY-TRAN",
-              "source": "pangaea/programs/TXPOST.cbl:265"
+              "source": "pangaea/programs/TXPOST.cbl:265",
+              "when": [
+                {
+                  "condition": "AM-CLOSED",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RJ-FROZEN",
               "program": "TXPOST",
               "paragraph": "3000-APPLY-TRAN",
-              "source": "pangaea/programs/TXPOST.cbl:281"
+              "source": "pangaea/programs/TXPOST.cbl:281",
+              "when": [
+                {
+                  "condition": "AM-CLOSED",
+                  "holds": false
+                },
+                {
+                  "condition": "TD-DEPOSIT OR TD-TRANSFER-CREDIT OR TD-TRANSFER-RETURN OR TD-INTEREST",
+                  "holds": false
+                },
+                {
+                  "condition": "TD-FEE OR TD-OVERDRAFT-INTEREST OR TD-MAINTENANCE-FEE OR TD-ATM-FEE",
+                  "holds": false
+                },
+                {
+                  "condition": "TD-CARD-PURCHASE OR TD-ATM-WITHDRAWAL",
+                  "holds": false
+                },
+                {
+                  "condition": "AM-FROZEN",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RJ-NO-FUNDS",
               "program": "TXPOST",
               "paragraph": "3200-POST-DEBIT",
-              "source": "pangaea/programs/TXPOST.cbl:302"
+              "source": "pangaea/programs/TXPOST.cbl:302",
+              "when": [
+                {
+                  "condition": "WS-NEW-BALANCE \u003c WS-BALANCE-FLOOR",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RJ-BAD-TYPE",
               "program": "TXVALID",
               "paragraph": "3000-READ-DETAILS",
-              "source": "pangaea/programs/TXVALID.cbl:194"
+              "source": "pangaea/programs/TXVALID.cbl:194",
+              "when": [
+                {
+                  "condition": "TR-DETAIL",
+                  "holds": false
+                },
+                {
+                  "condition": "FILE-IS-GOOD",
+                  "holds": true
+                },
+                {
+                  "condition": "TR-HEADER",
+                  "holds": false
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "RJ-BAD-TYPE",
+              "program": "TXVALID",
+              "paragraph": "3000-READ-DETAILS",
+              "source": "pangaea/programs/TXVALID.cbl:194",
+              "when": [
+                {
+                  "condition": "TR-DETAIL",
+                  "holds": false
+                },
+                {
+                  "condition": "FILE-IS-GOOD",
+                  "holds": false
+                },
+                {
+                  "condition": "TR-HEADER",
+                  "holds": false
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RJ-BAD-CODE",
               "program": "TXVALID",
               "paragraph": "3200-VALIDATE-DETAIL",
-              "source": "pangaea/programs/TXVALID.cbl:225"
+              "source": "pangaea/programs/TXVALID.cbl:225",
+              "when": [
+                {
+                  "condition": "TD-AMOUNT IS NUMERIC",
+                  "holds": true
+                },
+                {
+                  "condition": "TD-ACCT-NO IS NUMERIC",
+                  "holds": true
+                },
+                {
+                  "condition": "(FROM-BRANCHES AND NOT TD-KNOWN-CODE) OR (FROM-CARDS AND NOT TD-CARD-CODE)",
+                  "holds": true
+                },
+                {
+                  "condition": "DETAIL-IS-VALID",
+                  "holds": false
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RJ-BAD-AMOUNT",
               "program": "TXVALID",
               "paragraph": "3200-VALIDATE-DETAIL",
-              "source": "pangaea/programs/TXVALID.cbl:229"
+              "source": "pangaea/programs/TXVALID.cbl:229",
+              "when": [
+                {
+                  "condition": "TD-AMOUNT IS NUMERIC",
+                  "holds": true
+                },
+                {
+                  "condition": "TD-ACCT-NO IS NUMERIC",
+                  "holds": true
+                },
+                {
+                  "condition": "(FROM-BRANCHES AND NOT TD-KNOWN-CODE) OR (FROM-CARDS AND NOT TD-CARD-CODE)",
+                  "holds": false
+                },
+                {
+                  "condition": "DETAIL-IS-VALID",
+                  "holds": false
+                },
+                {
+                  "condition": "TD-AMOUNT IS NOT NUMERIC OR TD-AMOUNT = ZERO",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RJ-BAD-COUNTER",
               "program": "TXVALID",
               "paragraph": "3200-VALIDATE-DETAIL",
-              "source": "pangaea/programs/TXVALID.cbl:234"
+              "source": "pangaea/programs/TXVALID.cbl:234",
+              "when": [
+                {
+                  "condition": "TD-AMOUNT IS NUMERIC",
+                  "holds": true
+                },
+                {
+                  "condition": "TD-ACCT-NO IS NUMERIC",
+                  "holds": true
+                },
+                {
+                  "condition": "(FROM-BRANCHES AND NOT TD-KNOWN-CODE) OR (FROM-CARDS AND NOT TD-CARD-CODE)",
+                  "holds": false
+                },
+                {
+                  "condition": "DETAIL-IS-VALID",
+                  "holds": false
+                },
+                {
+                  "condition": "TD-AMOUNT IS NOT NUMERIC OR TD-AMOUNT = ZERO",
+                  "holds": false
+                },
+                {
+                  "condition": "TD-TRANSFER AND (TD-COUNTER-ACCT-NO IS NOT NUMERIC OR TD-COUNTER-ACCT-NO = TD-ACCT-NO)",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "any",
               "to": "RJ-BAD-ACCOUNT",
               "program": "TXVALID",
               "paragraph": "3200-VALIDATE-DETAIL",
-              "source": "pangaea/programs/TXVALID.cbl:221"
+              "source": "pangaea/programs/TXVALID.cbl:221",
+              "when": [
+                {
+                  "condition": "TD-AMOUNT IS NUMERIC",
+                  "holds": true
+                },
+                {
+                  "condition": "TD-ACCT-NO IS NUMERIC",
+                  "holds": false
+                },
+                {
+                  "condition": "DETAIL-IS-VALID",
+                  "holds": false
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "RJ-BAD-CODE",
+              "program": "TXVALID",
+              "paragraph": "3200-VALIDATE-DETAIL",
+              "source": "pangaea/programs/TXVALID.cbl:225",
+              "when": [
+                {
+                  "condition": "TD-AMOUNT IS NUMERIC",
+                  "holds": false
+                },
+                {
+                  "condition": "TD-ACCT-NO IS NUMERIC",
+                  "holds": true
+                },
+                {
+                  "condition": "(FROM-BRANCHES AND NOT TD-KNOWN-CODE) OR (FROM-CARDS AND NOT TD-CARD-CODE)",
+                  "holds": true
+                },
+                {
+                  "condition": "DETAIL-IS-VALID",
+                  "holds": false
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "RJ-BAD-AMOUNT",
+              "program": "TXVALID",
+              "paragraph": "3200-VALIDATE-DETAIL",
+              "source": "pangaea/programs/TXVALID.cbl:229",
+              "when": [
+                {
+                  "condition": "TD-AMOUNT IS NUMERIC",
+                  "holds": false
+                },
+                {
+                  "condition": "TD-ACCT-NO IS NUMERIC",
+                  "holds": true
+                },
+                {
+                  "condition": "(FROM-BRANCHES AND NOT TD-KNOWN-CODE) OR (FROM-CARDS AND NOT TD-CARD-CODE)",
+                  "holds": false
+                },
+                {
+                  "condition": "DETAIL-IS-VALID",
+                  "holds": false
+                },
+                {
+                  "condition": "TD-AMOUNT IS NOT NUMERIC OR TD-AMOUNT = ZERO",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "RJ-BAD-COUNTER",
+              "program": "TXVALID",
+              "paragraph": "3200-VALIDATE-DETAIL",
+              "source": "pangaea/programs/TXVALID.cbl:234",
+              "when": [
+                {
+                  "condition": "TD-AMOUNT IS NUMERIC",
+                  "holds": false
+                },
+                {
+                  "condition": "TD-ACCT-NO IS NUMERIC",
+                  "holds": true
+                },
+                {
+                  "condition": "(FROM-BRANCHES AND NOT TD-KNOWN-CODE) OR (FROM-CARDS AND NOT TD-CARD-CODE)",
+                  "holds": false
+                },
+                {
+                  "condition": "DETAIL-IS-VALID",
+                  "holds": false
+                },
+                {
+                  "condition": "TD-AMOUNT IS NOT NUMERIC OR TD-AMOUNT = ZERO",
+                  "holds": false
+                },
+                {
+                  "condition": "TD-TRANSFER AND (TD-COUNTER-ACCT-NO IS NOT NUMERIC OR TD-COUNTER-ACCT-NO = TD-ACCT-NO)",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "RJ-BAD-ACCOUNT",
+              "program": "TXVALID",
+              "paragraph": "3200-VALIDATE-DETAIL",
+              "source": "pangaea/programs/TXVALID.cbl:221",
+              "when": [
+                {
+                  "condition": "TD-AMOUNT IS NUMERIC",
+                  "holds": false
+                },
+                {
+                  "condition": "TD-ACCT-NO IS NUMERIC",
+                  "holds": false
+                },
+                {
+                  "condition": "DETAIL-IS-VALID",
+                  "holds": false
+                }
+              ]
             }
           ]
         }
@@ -5022,14 +5866,117 @@
               "to": "TR-HEADER",
               "program": "HOLDEXT",
               "paragraph": "1000-INITIALIZE",
-              "source": "pangaea/programs/HOLDEXT.cbl:117"
+              "source": "pangaea/programs/HOLDEXT.cbl:117",
+              "when": [
+                {
+                  "condition": "WS-FILE-STATUSES = ALL '0'",
+                  "holds": true
+                },
+                {
+                  "condition": "READ CONTROL-FILE AT END",
+                  "holds": false
+                }
+              ]
             },
             {
               "from": "any",
               "to": "TR-DETAIL",
               "program": "HOLDEXT",
               "paragraph": "2000-EXTRACT-HOLD",
-              "source": "pangaea/programs/HOLDEXT.cbl:143"
+              "source": "pangaea/programs/HOLDEXT.cbl:143",
+              "when": [
+                {
+                  "condition": "HD-BUSINESS-DATE = BC-BUSINESS-DATE",
+                  "holds": true
+                },
+                {
+                  "condition": "HD-REVERSED",
+                  "holds": false
+                },
+                {
+                  "condition": "HD-PURCHASE",
+                  "holds": true
+                },
+                {
+                  "condition": "HD-FEE \u003e 0",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "TR-DETAIL",
+              "program": "HOLDEXT",
+              "paragraph": "2000-EXTRACT-HOLD",
+              "source": "pangaea/programs/HOLDEXT.cbl:143",
+              "when": [
+                {
+                  "condition": "HD-BUSINESS-DATE = BC-BUSINESS-DATE",
+                  "holds": true
+                },
+                {
+                  "condition": "HD-REVERSED",
+                  "holds": false
+                },
+                {
+                  "condition": "HD-PURCHASE",
+                  "holds": true
+                },
+                {
+                  "condition": "HD-FEE \u003e 0",
+                  "holds": false
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "TR-DETAIL",
+              "program": "HOLDEXT",
+              "paragraph": "2000-EXTRACT-HOLD",
+              "source": "pangaea/programs/HOLDEXT.cbl:143",
+              "when": [
+                {
+                  "condition": "HD-BUSINESS-DATE = BC-BUSINESS-DATE",
+                  "holds": true
+                },
+                {
+                  "condition": "HD-REVERSED",
+                  "holds": false
+                },
+                {
+                  "condition": "HD-PURCHASE",
+                  "holds": false
+                },
+                {
+                  "condition": "HD-FEE \u003e 0",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "TR-DETAIL",
+              "program": "HOLDEXT",
+              "paragraph": "2000-EXTRACT-HOLD",
+              "source": "pangaea/programs/HOLDEXT.cbl:143",
+              "when": [
+                {
+                  "condition": "HD-BUSINESS-DATE = BC-BUSINESS-DATE",
+                  "holds": true
+                },
+                {
+                  "condition": "HD-REVERSED",
+                  "holds": false
+                },
+                {
+                  "condition": "HD-PURCHASE",
+                  "holds": false
+                },
+                {
+                  "condition": "HD-FEE \u003e 0",
+                  "holds": false
+                }
+              ]
             },
             {
               "from": "any",
@@ -5190,7 +6137,17 @@
               "to": "TH-FROM-CARDS",
               "program": "HOLDEXT",
               "paragraph": "1000-INITIALIZE",
-              "source": "pangaea/programs/HOLDEXT.cbl:119"
+              "source": "pangaea/programs/HOLDEXT.cbl:119",
+              "when": [
+                {
+                  "condition": "WS-FILE-STATUSES = ALL '0'",
+                  "holds": true
+                },
+                {
+                  "condition": "READ CONTROL-FILE AT END",
+                  "holds": false
+                }
+              ]
             }
           ]
         }
@@ -5513,42 +6470,197 @@
               "to": "TD-CARD-PURCHASE",
               "program": "HOLDEXT",
               "paragraph": "2000-EXTRACT-HOLD",
-              "source": "pangaea/programs/HOLDEXT.cbl:149"
+              "source": "pangaea/programs/HOLDEXT.cbl:149",
+              "when": [
+                {
+                  "condition": "HD-BUSINESS-DATE = BC-BUSINESS-DATE",
+                  "holds": true
+                },
+                {
+                  "condition": "HD-REVERSED",
+                  "holds": false
+                },
+                {
+                  "condition": "HD-PURCHASE",
+                  "holds": true
+                },
+                {
+                  "condition": "HD-FEE \u003e 0",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "any",
               "to": "TD-ATM-FEE",
               "program": "HOLDEXT",
               "paragraph": "2000-EXTRACT-HOLD",
-              "source": "pangaea/programs/HOLDEXT.cbl:157"
+              "source": "pangaea/programs/HOLDEXT.cbl:157",
+              "when": [
+                {
+                  "condition": "HD-BUSINESS-DATE = BC-BUSINESS-DATE",
+                  "holds": true
+                },
+                {
+                  "condition": "HD-REVERSED",
+                  "holds": false
+                },
+                {
+                  "condition": "HD-PURCHASE",
+                  "holds": true
+                },
+                {
+                  "condition": "HD-FEE \u003e 0",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "TD-CARD-PURCHASE",
+              "program": "HOLDEXT",
+              "paragraph": "2000-EXTRACT-HOLD",
+              "source": "pangaea/programs/HOLDEXT.cbl:149",
+              "when": [
+                {
+                  "condition": "HD-BUSINESS-DATE = BC-BUSINESS-DATE",
+                  "holds": true
+                },
+                {
+                  "condition": "HD-REVERSED",
+                  "holds": false
+                },
+                {
+                  "condition": "HD-PURCHASE",
+                  "holds": true
+                },
+                {
+                  "condition": "HD-FEE \u003e 0",
+                  "holds": false
+                }
+              ]
             },
             {
               "from": "any",
               "to": "TD-ATM-WITHDRAWAL",
               "program": "HOLDEXT",
               "paragraph": "2000-EXTRACT-HOLD",
-              "source": "pangaea/programs/HOLDEXT.cbl:151"
+              "source": "pangaea/programs/HOLDEXT.cbl:151",
+              "when": [
+                {
+                  "condition": "HD-BUSINESS-DATE = BC-BUSINESS-DATE",
+                  "holds": true
+                },
+                {
+                  "condition": "HD-REVERSED",
+                  "holds": false
+                },
+                {
+                  "condition": "HD-PURCHASE",
+                  "holds": false
+                },
+                {
+                  "condition": "HD-FEE \u003e 0",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "TD-ATM-FEE",
+              "program": "HOLDEXT",
+              "paragraph": "2000-EXTRACT-HOLD",
+              "source": "pangaea/programs/HOLDEXT.cbl:157",
+              "when": [
+                {
+                  "condition": "HD-BUSINESS-DATE = BC-BUSINESS-DATE",
+                  "holds": true
+                },
+                {
+                  "condition": "HD-REVERSED",
+                  "holds": false
+                },
+                {
+                  "condition": "HD-PURCHASE",
+                  "holds": false
+                },
+                {
+                  "condition": "HD-FEE \u003e 0",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "TD-ATM-WITHDRAWAL",
+              "program": "HOLDEXT",
+              "paragraph": "2000-EXTRACT-HOLD",
+              "source": "pangaea/programs/HOLDEXT.cbl:151",
+              "when": [
+                {
+                  "condition": "HD-BUSINESS-DATE = BC-BUSINESS-DATE",
+                  "holds": true
+                },
+                {
+                  "condition": "HD-REVERSED",
+                  "holds": false
+                },
+                {
+                  "condition": "HD-PURCHASE",
+                  "holds": false
+                },
+                {
+                  "condition": "HD-FEE \u003e 0",
+                  "holds": false
+                }
+              ]
             },
             {
               "from": "any",
               "to": "TD-INTEREST",
               "program": "MONCHG",
               "paragraph": "2100-SETTLE-INTEREST",
-              "source": "pangaea/programs/MONCHG.cbl:175"
+              "source": "pangaea/programs/MONCHG.cbl:175",
+              "when": [
+                {
+                  "condition": "AC-DUE \u003e 0",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "any",
               "to": "TD-OVERDRAFT-INTEREST",
               "program": "MONCHG",
               "paragraph": "2100-SETTLE-INTEREST",
-              "source": "pangaea/programs/MONCHG.cbl:182"
+              "source": "pangaea/programs/MONCHG.cbl:182",
+              "when": [
+                {
+                  "condition": "AC-DUE \u003e 0",
+                  "holds": false
+                },
+                {
+                  "condition": "AC-DUE \u003c 0",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "any",
               "to": "TD-MAINTENANCE-FEE",
               "program": "MONCHG",
               "paragraph": "2200-CHARGE-FEE",
-              "source": "pangaea/programs/MONCHG.cbl:198"
+              "source": "pangaea/programs/MONCHG.cbl:198",
+              "when": [
+                {
+                  "condition": "AM-ACCT-TYPE = 'C' AND AM-STATUS = 'O'",
+                  "holds": true
+                },
+                {
+                  "condition": "AM-BALANCE \u003c WS-FEE-WAIVER-BALANCE",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "TD-TRANSFER",

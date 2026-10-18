@@ -36,7 +36,7 @@ func TestStateMachine(t *testing.T) {
 	want := []Transition{
 		{From: "S-OPEN", To: "S-SHUT", Program: "P", Paragraph: "SHUT-IT", Source: "P.cbl:10"},
 		{From: "S-SHUT", To: "S-OPEN", Program: "P", Paragraph: "SHUT-IT", Source: "P.cbl:11"},
-		{From: AnyState, To: "S-OPEN", Program: "P", Paragraph: "LOG-IT", Source: "P.cbl:20"},
+		{From: AnyState, To: "S-OPEN", Program: "P", Paragraph: "LOG-IT", Source: "P.cbl:20", When: []Outcome{{Condition: "WS-LOG", Holds: true}}},
 		{From: AnyState, To: "S-OPEN", Program: "P", Paragraph: "START-IT", Source: "P.cbl:30"},
 	}
 	if !reflect.DeepEqual(m.Transitions, want) {

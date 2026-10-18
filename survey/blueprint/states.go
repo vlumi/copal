@@ -2,6 +2,7 @@ package blueprint
 
 import (
 	"fmt"
+	"reflect"
 	"slices"
 	"strings"
 
@@ -44,11 +45,18 @@ const AnyState = "any"
 // state when the path does not establish one. Source is where the
 // statement that sets the state is.
 type Transition struct {
-	From      string `json:"from"`
-	To        string `json:"to"`
-	Program   string `json:"program"`
-	Paragraph string `json:"paragraph"`
-	Source    string `json:"source"`
+	From      string    `json:"from"`
+	To        string    `json:"to"`
+	Program   string    `json:"program"`
+	Paragraph string    `json:"paragraph"`
+	Source    string    `json:"source"`
+	When      []Outcome `json:"when,omitempty"`
+}
+
+// Outcome is a condition a rule tests, and whether the rule finds it true.
+type Outcome struct {
+	Condition string `json:"condition"`
+	Holds     bool   `json:"holds"`
 }
 
 // codeField is a code field as a program knows it, its condition names
@@ -103,7 +111,7 @@ func (m *StateMachine) add(c codeField) {
 				}
 				for _, f := range from {
 					m.addTransition(Transition{From: f, To: to, Program: p.Name, Paragraph: t.Paragraph,
-						Source: c.statementSource(t.Paragraph, to)})
+						Source: c.statementSource(t.Paragraph, to), When: c.reasons(t, r)})
 				}
 			}
 		}
@@ -123,9 +131,21 @@ func (m *StateMachine) add(c codeField) {
 }
 
 func (m *StateMachine) addTransition(t Transition) {
-	if !slices.Contains(m.Transitions, t) {
+	if !slices.ContainsFunc(m.Transitions, func(u Transition) bool { return reflect.DeepEqual(t, u) }) {
 		m.Transitions = append(m.Transitions, t)
 	}
+}
+
+// reasons are the outcomes of the conditions a rule tests other than those
+// on the field itself: why the rule sets the state it sets.
+func (c codeField) reasons(t DecisionTable, r DecisionRule) []Outcome {
+	var when []Outcome
+	for i, condition := range t.Conditions {
+		if r.Entries[i] != "" && !slices.Contains(t.ConditionRefs[i], c.name) {
+			when = append(when, Outcome{Condition: condition, Holds: r.Entries[i] == "Y"})
+		}
+	}
+	return when
 }
 
 // heldIn lists the states a rule holds the field in, or any state.
