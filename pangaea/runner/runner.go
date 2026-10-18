@@ -10,12 +10,12 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"slices"
 	"strings"
 
 	"github.com/vlumi/copal/bedrock/jcl"
+	cobolrun "github.com/vlumi/copal/bedrock/run"
 	"github.com/vlumi/copal/pangaea/dataset"
 )
 
@@ -191,7 +191,7 @@ func bypassed(step jcl.Step, results []Result) bool {
 
 func (run *jobRun) runStep(step jcl.Step) (Result, error) {
 	result := Result{Step: step.Name, Program: step.Program}
-	env, err := run.allocate(step)
+	dds, err := run.allocate(step)
 	if err != nil {
 		return result, err
 	}
@@ -199,31 +199,23 @@ func (run *jobRun) runStep(step jcl.Step) (Result, error) {
 	if err != nil {
 		return result, err
 	}
-	cmd := exec.Command(filepath.Join(run.Programs, step.Program))
-	cmd.Env = append(os.Environ(), env...)
-	cmd.Env = append(cmd.Env, "COB_LIBRARY_PATH="+run.Programs)
-	cmd.Stdout = output
-	cmd.Stderr = output
+	s := cobolrun.Step{Programs: run.Programs, Program: step.Program, DDs: dds, Stdout: output}
 	if slices.ContainsFunc(step.DDs, func(dd jcl.DD) bool { return dd.InStream }) {
-		cmd.Stdin = run.InStream
+		s.Stdin = run.InStream
 		if run.Output != nil {
-			cmd.Stdout = io.MultiWriter(output, run.Output)
+			s.Stdout = io.MultiWriter(output, run.Output)
 		}
 	}
-	runErr := cmd.Run()
+	outcome, runErr := s.Run()
 	if err := closeOutput(output); err != nil {
 		return result, err
 	}
-
-	var exit *exec.ExitError
-	switch {
-	case errors.As(runErr, &exit) && exit.Exited():
-		result.RC = exit.ExitCode()
-	case errors.As(runErr, &exit):
-		result.Abended = true
-		return result, run.discardNew(step)
-	case runErr != nil:
+	if runErr != nil {
 		return result, runErr
+	}
+	result.RC, result.Abended = outcome.RC, outcome.Abended
+	if outcome.Abended {
+		return result, run.discardNew(step)
 	}
 	return result, run.catalogWritten(step)
 }
@@ -239,11 +231,11 @@ func (run *jobRun) dsn(dd jcl.DD) string {
 	return dd.DSN
 }
 
-// allocate checks the step's datasets and returns the environment that binds
-// each DD name to its file, the way GnuCOBOL resolves ASSIGN names. In-stream
-// data is bound to no file, only to SYSIN, the program's standard input.
-func (run *jobRun) allocate(step jcl.Step) ([]string, error) {
-	var env []string
+// allocate checks the step's datasets and returns the file each DD name is
+// bound to. In-stream data is bound to no file, only to SYSIN, the
+// program's standard input.
+func (run *jobRun) allocate(step jcl.Step) (map[string]string, error) {
+	dds := map[string]string{}
 	for _, dd := range step.DDs {
 		if dd.InStream {
 			if dd.Name != "SYSIN" {
@@ -255,9 +247,9 @@ func (run *jobRun) allocate(step jcl.Step) ([]string, error) {
 		if err != nil {
 			return nil, fmt.Errorf("DD %s: %w", dd.Name, err)
 		}
-		env = append(env, "DD_"+dd.Name+"="+path)
+		dds[dd.Name] = path
 	}
-	return env, nil
+	return dds, nil
 }
 
 func (run *jobRun) allocateDD(step jcl.Step, dd jcl.DD) (string, error) {

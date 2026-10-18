@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/vlumi/copal/bedrock/run"
 	"github.com/vlumi/copal/pangaea/bank"
-	"github.com/vlumi/copal/pangaea/compile"
 	"github.com/vlumi/copal/pangaea/records"
 )
 
@@ -41,7 +41,7 @@ func TestCents(t *testing.T) {
 // bank is closed when it is not.
 func TestServer(t *testing.T) {
 	programs := t.TempDir()
-	if _, err := compile.Programs("../programs", "../copybooks", programs); err != nil {
+	if _, err := (run.Build{Sources: "../programs", Copybooks: "../copybooks", Out: programs}).Programs(); err != nil {
 		t.Fatal(err)
 	}
 	b := bank.Bank{Dir: t.TempDir(), Programs: programs, Copybooks: "../copybooks", Jobs: "../jobs"}
