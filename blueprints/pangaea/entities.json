@@ -227,6 +227,22 @@
           }
         ]
       }
+    ],
+    "links": [
+      {
+        "kind": "equal",
+        "from": {
+          "record": "ACCRUAL-RECORD",
+          "field": "AC-ACCT-NO"
+        },
+        "to": {
+          "record": "ACCT-MASTER-RECORD",
+          "field": "AM-ACCT-NO"
+        },
+        "programs": [
+          "MONCHG"
+        ]
+      }
     ]
   },
   {
@@ -944,6 +960,50 @@
           }
         ]
       }
+    ],
+    "links": [
+      {
+        "kind": "equal",
+        "from": {
+          "record": "RATE-RECORD",
+          "field": "RT-ACCT-TYPE"
+        },
+        "to": {
+          "record": "ACCT-MASTER-RECORD",
+          "field": "AM-ACCT-TYPE"
+        },
+        "programs": [
+          "INTACCR"
+        ]
+      },
+      {
+        "kind": "equal",
+        "from": {
+          "record": "ACCRUAL-RECORD",
+          "field": "AC-ACCT-NO"
+        },
+        "to": {
+          "record": "ACCT-MASTER-RECORD",
+          "field": "AM-ACCT-NO"
+        },
+        "programs": [
+          "MONCHG"
+        ]
+      },
+      {
+        "kind": "equal",
+        "from": {
+          "record": "TRAN-RECORD",
+          "field": "TD-ACCT-NO"
+        },
+        "to": {
+          "record": "ACCT-MASTER-RECORD",
+          "field": "AM-ACCT-NO"
+        },
+        "programs": [
+          "TXPOST"
+        ]
+      }
     ]
   },
   {
@@ -1411,6 +1471,22 @@
             "program": "AUTHSRV",
             "field": "AO-AS-OF-DATE"
           }
+        ]
+      }
+    ],
+    "links": [
+      {
+        "kind": "key",
+        "from": {
+          "record": "CARD-RECORD",
+          "field": "CR-ACCT-NO"
+        },
+        "to": {
+          "record": "ACCT-ONLINE-RECORD",
+          "field": "AO-ACCT-NO"
+        },
+        "programs": [
+          "AUTHSRV"
         ]
       }
     ]
@@ -1910,6 +1986,36 @@
             "program": "AUTHSRV",
             "field": "RQ-TIMESTAMP"
           }
+        ]
+      }
+    ],
+    "links": [
+      {
+        "kind": "key",
+        "from": {
+          "record": "AUTH-REQUEST",
+          "field": "RQ-CARD-NO"
+        },
+        "to": {
+          "record": "CARD-RECORD",
+          "field": "CR-CARD-NO"
+        },
+        "programs": [
+          "AUTHSRV"
+        ]
+      },
+      {
+        "kind": "key",
+        "from": {
+          "record": "AUTH-REQUEST",
+          "field": "RQ-AUTH-CODE"
+        },
+        "to": {
+          "record": "HOLD-RECORD",
+          "field": "HD-HOLD-NO"
+        },
+        "programs": [
+          "AUTHSRV"
         ]
       }
     ]
@@ -2604,6 +2710,36 @@
           }
         ]
       }
+    ],
+    "links": [
+      {
+        "kind": "equal",
+        "from": {
+          "record": "HOLD-RECORD",
+          "field": "HD-BUSINESS-DATE"
+        },
+        "to": {
+          "record": "BANK-CONTROL-RECORD",
+          "field": "BC-BUSINESS-DATE"
+        },
+        "programs": [
+          "HOLDEXT"
+        ]
+      },
+      {
+        "kind": "equal",
+        "from": {
+          "record": "TRAN-RECORD",
+          "field": "TH-BUSINESS-DATE"
+        },
+        "to": {
+          "record": "BANK-CONTROL-RECORD",
+          "field": "BC-BUSINESS-DATE"
+        },
+        "programs": [
+          "TXVALID"
+        ]
+      }
     ]
   },
   {
@@ -3180,6 +3316,50 @@
             "program": "CARDLOAD",
             "field": "CR-MONTH-WITHDRAWALS"
           }
+        ]
+      }
+    ],
+    "links": [
+      {
+        "kind": "key",
+        "from": {
+          "record": "CARD-RECORD",
+          "field": "CR-ACCT-NO"
+        },
+        "to": {
+          "record": "ACCT-ONLINE-RECORD",
+          "field": "AO-ACCT-NO"
+        },
+        "programs": [
+          "AUTHSRV"
+        ]
+      },
+      {
+        "kind": "key",
+        "from": {
+          "record": "AUTH-REQUEST",
+          "field": "RQ-CARD-NO"
+        },
+        "to": {
+          "record": "CARD-RECORD",
+          "field": "CR-CARD-NO"
+        },
+        "programs": [
+          "AUTHSRV"
+        ]
+      },
+      {
+        "kind": "key",
+        "from": {
+          "record": "CARD-RECORD",
+          "field": "CR-ACCT-NO"
+        },
+        "to": {
+          "record": "HOLD-RECORD",
+          "field": "HD-ACCT-NO"
+        },
+        "programs": [
+          "AUTHSRV"
         ]
       }
     ]
@@ -4066,6 +4246,50 @@
           }
         ]
       }
+    ],
+    "links": [
+      {
+        "kind": "key",
+        "from": {
+          "record": "CARD-RECORD",
+          "field": "CR-ACCT-NO"
+        },
+        "to": {
+          "record": "HOLD-RECORD",
+          "field": "HD-ACCT-NO"
+        },
+        "programs": [
+          "AUTHSRV"
+        ]
+      },
+      {
+        "kind": "key",
+        "from": {
+          "record": "AUTH-REQUEST",
+          "field": "RQ-AUTH-CODE"
+        },
+        "to": {
+          "record": "HOLD-RECORD",
+          "field": "HD-HOLD-NO"
+        },
+        "programs": [
+          "AUTHSRV"
+        ]
+      },
+      {
+        "kind": "equal",
+        "from": {
+          "record": "HOLD-RECORD",
+          "field": "HD-BUSINESS-DATE"
+        },
+        "to": {
+          "record": "BANK-CONTROL-RECORD",
+          "field": "BC-BUSINESS-DATE"
+        },
+        "programs": [
+          "HOLDEXT"
+        ]
+      }
     ]
   },
   {
@@ -4327,6 +4551,22 @@
               "1100-LOAD-RATES"
             ]
           }
+        ]
+      }
+    ],
+    "links": [
+      {
+        "kind": "equal",
+        "from": {
+          "record": "RATE-RECORD",
+          "field": "RT-ACCT-TYPE"
+        },
+        "to": {
+          "record": "ACCT-MASTER-RECORD",
+          "field": "AM-ACCT-TYPE"
+        },
+        "programs": [
+          "INTACCR"
         ]
       }
     ]
@@ -5592,6 +5832,61 @@
               }
             ]
           }
+        ]
+      }
+    ],
+    "links": [
+      {
+        "kind": "equal",
+        "from": {
+          "record": "TRAN-RECORD",
+          "field": "TD-ACCT-NO"
+        },
+        "to": {
+          "record": "ACCT-MASTER-RECORD",
+          "field": "AM-ACCT-NO"
+        },
+        "programs": [
+          "TXPOST"
+        ]
+      },
+      {
+        "kind": "equal",
+        "from": {
+          "record": "TRAN-RECORD",
+          "field": "TH-BUSINESS-DATE"
+        },
+        "to": {
+          "record": "BANK-CONTROL-RECORD",
+          "field": "BC-BUSINESS-DATE"
+        },
+        "programs": [
+          "TXVALID"
+        ]
+      }
+    ],
+    "totals": [
+      {
+        "field": "TT-DETAIL-COUNT",
+        "type": "TR-DETAIL",
+        "programs": [
+          "TXVALID"
+        ]
+      },
+      {
+        "field": "TT-AMOUNT-TOTAL",
+        "sum": "TD-AMOUNT",
+        "type": "TR-DETAIL",
+        "programs": [
+          "TXVALID"
+        ]
+      },
+      {
+        "field": "TT-ACCT-HASH",
+        "sum": "TD-ACCT-NO",
+        "type": "TR-DETAIL",
+        "programs": [
+          "TXVALID"
         ]
       }
     ]

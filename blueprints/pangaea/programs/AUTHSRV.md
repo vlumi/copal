@@ -59,6 +59,7 @@ Program [AUTHSRV.cbl](../../../pangaea/programs/AUTHSRV.cbl): 5 files, 11 paragr
   - [File CARD-FILE](#file-card-file)
   - [File HOLD-FILE](#file-hold-file)
   - [File REPORT-OUT](#file-report-out)
+- [Links between records](#links-between-records)
 - [Records](#records)
   - [BANK-CONTROL-RECORD](#bank-control-record)
   - [ACCT-ONLINE-RECORD](#acct-online-record)
@@ -452,6 +453,17 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-coun
 | --- | --: | --- |
 | WS-RA-LABEL | 1-30 | literal 'HELD WITH FEES'; literal 'RELEASED BY REVERSALS' |
 | WS-RA-VALUE | 31-51 | call ATMBAL argument 6 HD-AMOUNT; call ATMBAL argument 6 HD-FEE; call ATMWDL argument 6 HD-AMOUNT; call ATMWDL argument 6 HD-FEE; call AUTHPUR argument 6 HD-AMOUNT; call AUTHPUR argument 6 HD-FEE; call AUTHREV argument 6 HD-AMOUNT; call AUTHREV argument 6 HD-FEE; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-HELD-TOTAL; initial value of WS-RELEASED-TOTAL |
+
+## Links between records
+
+Fields of one input the program relies on to find or match the records of another: moved into an indexed file's record key to read it by, or compared for equality, each side's values from that field alone.
+
+| Field | Of | Links to | Of | How | Source |
+| --- | --- | --- | --- | --- | --- |
+| CR-ACCT-NO | CARD-FILE | AO-ACCT-NO | ACCT-FILE | key to read by | [AUTHSRV.cbl:210](../../../pangaea/programs/AUTHSRV.cbl#L210) |
+| RQ-CARD-NO | SYSIN | CR-CARD-NO | CARD-FILE | key to read by | [AUTHSRV.cbl:204](../../../pangaea/programs/AUTHSRV.cbl#L204) |
+| CR-ACCT-NO | CARD-FILE | HD-ACCT-NO | HOLD-FILE | key to read by | [AUTHSRV.cbl:220](../../../pangaea/programs/AUTHSRV.cbl#L220) |
+| RQ-AUTH-CODE | SYSIN | HD-HOLD-NO | HOLD-FILE | key to read by | [AUTHSRV.cbl:221](../../../pangaea/programs/AUTHSRV.cbl#L221) |
 
 ## Records
 

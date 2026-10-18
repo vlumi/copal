@@ -50,6 +50,7 @@ Program [HOLDEXT.cbl](../../../pangaea/programs/HOLDEXT.cbl): 4 files, 9 paragra
 - [Field origins](#field-origins)
   - [File TRAN-OUT](#file-tran-out)
   - [File REPORT-OUT](#file-report-out)
+- [Links between records](#links-between-records)
 - [Records](#records)
   - [BANK-CONTROL-RECORD](#bank-control-record)
   - [HOLD-RECORD](#hold-record)
@@ -329,6 +330,14 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-coun
 | --- | --: | --- |
 | WS-RA-LABEL | 1-30 | literal 'AMOUNT TOTAL' |
 | WS-RA-VALUE | 31-50 | file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-AMOUNT-TOTAL |
+
+## Links between records
+
+Fields of one input the program relies on to find or match the records of another: moved into an indexed file's record key to read it by, or compared for equality, each side's values from that field alone.
+
+| Field | Of | Links to | Of | How | Source |
+| --- | --- | --- | --- | --- | --- |
+| HD-BUSINESS-DATE | HOLD-FILE | BC-BUSINESS-DATE | CONTROL-FILE | equal to | [HOLDEXT.cbl:135](../../../pangaea/programs/HOLDEXT.cbl#L135) |
 
 ## Records
 

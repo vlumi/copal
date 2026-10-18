@@ -157,30 +157,35 @@ func conditionsOf(source *cobol.Program) []*cobol.Condition {
 	return conditions
 }
 
-// references lists the input fields the program moves into the record key
-// of an indexed input, to read it by: each with the key, whose values it
-// should take to find a record.
+// references are the links the blueprint finds the program reads an
+// indexed file by: each input field it moves into the file's record key,
+// with the key, whose values it should take to find a record.
 func (p *program) references() [][2]target {
 	var refs [][2]target
-	for _, in := range p.inputs {
-		if in.file.Organization != "INDEXED" || find(in.root, in.file.RecordKey) == nil {
+	for _, l := range p.blueprint.Links {
+		if l.Kind != "key" {
 			continue
 		}
-		key := target{input: in.name(), field: find(in.root, in.file.RecordKey)}
-		for _, e := range p.flow.Lineage {
-			if e.To != in.file.RecordKey || e.FromFile || e.FromLiteral {
-				continue
-			}
-			for _, from := range p.origins(e.From) {
-				if from.input != in.name() {
-					for _, leaf := range leaves(key.field) {
-						refs = append(refs, [2]target{from, {input: key.input, field: leaf}})
-					}
-				}
-			}
+		from, fok := p.inputField(l.From)
+		to, tok := p.inputField(l.To)
+		if fok && tok {
+			refs = append(refs, [2]target{from, to})
 		}
 	}
 	return refs
+}
+
+// inputField finds a field of a file, or of SYSIN, among the program's
+// inputs.
+func (p *program) inputField(f blueprint.FileField) (target, bool) {
+	for _, in := range p.inputs {
+		if in.name() == f.File || in.file.Name == f.File {
+			if field := find(in.root, f.Field); field != nil {
+				return target{input: in.name(), field: field}, true
+			}
+		}
+	}
+	return target{}, false
 }
 
 // target is a field of an input.

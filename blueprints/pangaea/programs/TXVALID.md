@@ -65,6 +65,8 @@ Program [TXVALID.cbl](../../../pangaea/programs/TXVALID.cbl): 5 files, 10 paragr
   - [File TRAN-OUT](#file-tran-out)
   - [File REJECT-OUT](#file-reject-out)
   - [File REPORT-OUT](#file-report-out)
+- [Links between records](#links-between-records)
+- [Control totals](#control-totals)
 - [Records](#records)
   - [BANK-CONTROL-RECORD](#bank-control-record)
   - [TRAN-RECORD](#tran-record)
@@ -381,6 +383,24 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-coun
 | --- | --: | --- |
 | WS-RA-LABEL | 1-30 | literal 'AMOUNT TOTAL' |
 | WS-RA-VALUE | 31-50 | file TRAN-IN TD-AMOUNT; initial value of WS-AMOUNT-TOTAL |
+
+## Links between records
+
+Fields of one input the program relies on to find or match the records of another: moved into an indexed file's record key to read it by, or compared for equality, each side's values from that field alone.
+
+| Field | Of | Links to | Of | How | Source |
+| --- | --- | --- | --- | --- | --- |
+| TH-BUSINESS-DATE | TRAN-IN | BC-BUSINESS-DATE | CONTROL-FILE | equal to | [TXVALID.cbl:168](../../../pangaea/programs/TXVALID.cbl#L168) |
+
+## Control totals
+
+Fields of an input the program checks against what it adds up from the input's other records.
+
+| Field | Of | Is | Over the records of type | Source |
+| --- | --- | --- | --- | --- |
+| TT-DETAIL-COUNT | TRAN-IN | their count | TR-DETAIL | [TXVALID.cbl:253](../../../pangaea/programs/TXVALID.cbl#L253) |
+| TT-AMOUNT-TOTAL | TRAN-IN | the sum of TD-AMOUNT | TR-DETAIL | [TXVALID.cbl:253](../../../pangaea/programs/TXVALID.cbl#L253) |
+| TT-ACCT-HASH | TRAN-IN | the sum of TD-ACCT-NO | TR-DETAIL | [TXVALID.cbl:253](../../../pangaea/programs/TXVALID.cbl#L253) |
 
 ## Records
 

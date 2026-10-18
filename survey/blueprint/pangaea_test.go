@@ -98,3 +98,42 @@ func TestRecordTypes(t *testing.T) {
 		t.Errorf("TRAN-OUT is written as %q", types)
 	}
 }
+
+// The facts between records: TXPOST matches transactions to accounts by
+// account number, AUTHSRV reads a card by the request's card number,
+// TXVALID checks the trailer's totals over the details, and ATMBAL writes
+// the result it is passed and reads nothing of the request.
+func TestRelations(t *testing.T) {
+	t.Chdir("../..")
+	programs, err := filepath.Glob("pangaea/programs/*.cbl")
+	if err != nil {
+		t.Fatal(err)
+	}
+	system, err := Analyze(programs, "pangaea/copybooks")
+	if err != nil {
+		t.Fatal(err)
+	}
+	byName := map[string]Program{}
+	for _, p := range system.Programs {
+		byName[p.Name] = p
+	}
+	hasLink := func(program, kind, from, to string) bool {
+		return slices.ContainsFunc(byName[program].Links, func(l Link) bool { return l.Kind == kind && l.From.Field == from && l.To.Field == to })
+	}
+	if !hasLink("TXPOST", "equal", "TD-ACCT-NO", "AM-ACCT-NO") || !hasLink("AUTHSRV", "key", "RQ-CARD-NO", "CR-CARD-NO") {
+		t.Errorf("links: TXPOST %+v, AUTHSRV %+v", byName["TXPOST"].Links, byName["AUTHSRV"].Links)
+	}
+	if want := (Total{File: "TRAN-IN", Field: "TT-AMOUNT-TOTAL", Sum: "TD-AMOUNT", Type: "TR-DETAIL"}); !slices.ContainsFunc(byName["TXVALID"].Totals, func(u Total) bool {
+		u.Source = ""
+		return u == want
+	}) {
+		t.Errorf("TXVALID's totals %+v", byName["TXVALID"].Totals)
+	}
+	for _, param := range byName["ATMBAL"].Parameters {
+		for _, f := range param.Fields {
+			if param.Item == "AUTH-REQUEST" && (f.Reads || f.Writes) || f.Name == "RS-RESULT" && !f.Writes {
+				t.Errorf("ATMBAL's parameter %s field %+v", param.Item, f)
+			}
+		}
+	}
+}

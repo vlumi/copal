@@ -17,25 +17,22 @@ type total struct {
 	counts int           // the type of the records added up; -1 for all
 }
 
-// totals finds the control totals of the program's inputs: each condition
-// that compares a field of an input with an item that is no input's, into
-// which the program adds a field of the same input, or 1. A count of
-// records of no known type counts those a sum of the same input adds up.
+// totals are the control totals the blueprint finds the program checks,
+// with the fields they are of.
 func (p *program) totals() []total {
 	var totals []total
-	for _, c := range p.conditions() {
-		for _, pair := range relations(c) {
-			if t, ok := p.totalOf(pair[0], pair[1]); ok && !slices.ContainsFunc(totals, func(u total) bool { return u.field == t.field }) {
-				totals = append(totals, t)
-			}
-		}
-	}
-	for i, t := range totals {
-		if t.sumOf != nil || t.counts >= 0 {
+	for _, t := range p.blueprint.Totals {
+		i := slices.IndexFunc(p.inputs, func(in input) bool { return in.file.Name == t.File })
+		if i < 0 {
 			continue
 		}
-		if j := slices.IndexFunc(totals, func(u total) bool { return u.input == t.input && u.sumOf != nil && u.counts >= 0 }); j >= 0 {
-			totals[i].counts = totals[j].counts
+		in := p.inputs[i]
+		u := total{input: in.name(), field: find(in.root, t.Field), counts: slices.Index(p.shapes[in.name()].typeNames, t.Type)}
+		if t.Sum != "" {
+			u.sumOf = find(in.root, t.Sum)
+		}
+		if u.field != nil && (t.Sum == "" || u.sumOf != nil) {
+			totals = append(totals, u)
 		}
 	}
 	return totals
@@ -55,52 +52,6 @@ func relations(c *cobol.Condition) [][2]string {
 		}
 	}
 	return pairs
-}
-
-// totalOf reads a comparison as a control total: a field of an input on
-// one side, and on the other an item the program adds a field of the same
-// input to, or adds 1 to.
-func (p *program) totalOf(field, item string) (total, bool) {
-	var in *input
-	var f *layout.Field
-	for i := range p.inputs {
-		if found := find(p.inputs[i].root, field); found != nil {
-			in, f = &p.inputs[i], found
-		}
-	}
-	if in == nil || p.isInputField(item) {
-		return total{}, false
-	}
-	s := p.shapes[in.name()]
-	for _, e := range p.flow.Lineage {
-		if e.To != item || e.Verb != "ADD" {
-			continue
-		}
-		switch {
-		case e.FromLiteral && e.From == "1":
-			return total{input: in.name(), field: f, counts: p.typeUsing(map[string]bool{item: true}, s)}, true
-		case !e.FromLiteral:
-			if summed := find(in.root, e.From); summed != nil && summed != f {
-				return total{input: in.name(), field: f, sumOf: summed, counts: s.typeOfField(summed)}, true
-			}
-		}
-	}
-	return total{}, false
-}
-
-func (p *program) isInputField(name string) bool {
-	return slices.ContainsFunc(p.inputs, func(in input) bool { return find(in.root, name) != nil })
-}
-
-// typeOfField is the record type whose redefinition a field is in; -1 for
-// a field outside the redefinitions.
-func (s shape) typeOfField(f *layout.Field) int {
-	for variant, kind := range s.variants {
-		if find(variant, f.Name) == f {
-			return kind
-		}
-	}
-	return -1
 }
 
 // balance sets each control total of a case to what the records it adds

@@ -14,6 +14,8 @@ type Entity struct {
 	ReadBy    []string      `json:"readBy,omitempty"`
 	Programs  []string      `json:"programs,omitempty"`
 	Fields    []EntityField `json:"fields"`
+	Links     []EntityLink  `json:"links,omitempty"`
+	Totals    []EntityTotal `json:"totals,omitempty"`
 }
 
 // EntityField is a field of an entity, FILLER left out, with its kind and
@@ -78,6 +80,7 @@ func entities(copybooks []Copybook, programs []Program) []Entity {
 		}
 	}
 	datesFrom(list, programs, held)
+	relate(list, programs, held)
 	return list
 }
 
