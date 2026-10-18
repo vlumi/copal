@@ -31,6 +31,8 @@ type Flow struct {
 	// resolve, for what its statements change.
 	program *cobol.Program
 	names   *names
+	// callWrites says what a CALL writes, where it is known.
+	callWrites CallWrites
 }
 
 // Paragraph is a paragraph's reads and writes, each item once, in the

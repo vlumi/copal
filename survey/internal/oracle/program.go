@@ -68,7 +68,7 @@ func prepare(system *blueprint.System, bp *blueprint.Program, copybookDir string
 	if err != nil {
 		return nil, err
 	}
-	p := &program{source: source, blueprint: bp, records: records, flow: flow, tables: rules.Tables(source, flow.MayChange), shapes: map[string]shape{}}
+	p := &program{source: source, blueprint: bp, records: records, flow: flow, tables: bp.Tables(), shapes: map[string]shape{}}
 	p.units = []Unit{{Program: bp.Name, Tables: p.tables, source: source, records: records, blueprint: bp}}
 	if err := p.addCallees(system, bp, copybookDir); err != nil {
 		return nil, err
@@ -112,11 +112,11 @@ func (p *program) addCallees(system *blueprint.System, bp *blueprint.Program, co
 			continue
 		}
 		callee := &system.Programs[i]
-		source, records, flow, err := analyze(callee, copybookDir)
+		source, records, _, err := analyze(callee, copybookDir)
 		if err != nil {
 			return err
 		}
-		p.units = append(p.units, Unit{Program: callee.Name, Tables: rules.Tables(source, flow.MayChange), source: source,
+		p.units = append(p.units, Unit{Program: callee.Name, Tables: callee.Tables(), source: source,
 			records: records, blueprint: callee})
 		if err := p.addCallees(system, callee, copybookDir); err != nil {
 			return err

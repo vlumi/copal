@@ -1,0 +1,12 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. ASKER.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01  WS-QUESTION.
+           05  WS-KIND                 PIC X.
+           05  WS-ANSWER               PIC X.
+       PROCEDURE DIVISION.
+       MAIN-PARA.
+           CALL 'ANSWERER' USING WS-QUESTION
+           CALL 'ELSEWHERE' USING WS-QUESTION
+           GOBACK.

@@ -52,8 +52,10 @@ type Program struct {
 	Outputs  []Output  `json:"outputs,omitempty"`
 	Inputs   []Input   `json:"inputs,omitempty"`
 	// Rules are the program's decision tables, a blueprint of their own.
-	Rules Rules `json:"-"`
-	flow  dataflow.Flow
+	Rules  Rules `json:"-"`
+	flow   dataflow.Flow
+	source *cobol.Program
+	tables []rules.Table
 }
 
 // Sort is a SORT statement: its work file, the keys it sorts on, and the files it reads with
@@ -65,6 +67,10 @@ type Sort struct {
 	Giving []string `json:"giving,omitempty"`
 	Source string   `json:"source"`
 }
+
+// Tables are the program's decision tables, as the rules analysis finds
+// them, with the positions of the statements on each rule's path.
+func (p Program) Tables() []rules.Table { return p.tables }
 
 // Trace traces where a data item's values come from within the program,
 // through the statements that move them.
@@ -265,6 +271,11 @@ func Analyze(paths []string, copybookDir string) (*System, error) {
 	}
 	slices.SortFunc(s.Programs, func(a, b Program) int { return strings.Compare(a.Name, b.Name) })
 	linkCalls(s.Programs)
+	for i := range s.Programs {
+		p := &s.Programs[i]
+		p.tables = rules.Tables(p.source, p.flow.WithCalls(callWrites(*p, s.Programs)).MayChange)
+		p.Rules = newRules(p.Name, p.tables, p.Records)
+	}
 	var copybookPaths []string
 	for _, ext := range cobol.CopybookExtensions {
 		paths, err := filepath.Glob(filepath.Join(copybookDir, "*"+ext))
@@ -366,7 +377,7 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 	}
 	program.Outputs = outputs(program, flow)
 	program.Inputs = inputs(program, flow)
-	program.Rules = newRules(program.Name, rules.Tables(p, flow.MayChange), program.Records)
+	program.source = p
 	return program, nil
 }
 

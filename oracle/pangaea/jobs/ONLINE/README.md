@@ -4,5 +4,5 @@ The job run after the jobs before it in the batch, on what they wrote, and on in
 
 | Step | Program | Outcome | Rules reached |
 | --- | --- | --- | --: |
-| AUTH | [AUTHSRV](../../AUTHSRV/) | RC=0000 | 12 of 78 |
+| AUTH | [AUTHSRV](../../AUTHSRV/) | RC=0000 | 12 of 118 |
 | EXTRACT | [HOLDEXT](../../HOLDEXT/) | RC=0000 | 2 of 11 |
