@@ -6,11 +6,13 @@ import (
 	"github.com/vlumi/copal/survey/internal/dataflow"
 )
 
-// Input is a file a program reads, and where the values of each field of
-// what it reads go: the mirror of Output.
+// Input is a record a program reads from a file, of one type if the
+// program tells its types apart, and where the values of each of its
+// fields go: the mirror of Output.
 type Input struct {
 	File   string        `json:"file"`
 	Record string        `json:"record"`
+	Type   string        `json:"type,omitempty"`
 	Fields []FieldEffect `json:"fields"`
 }
 
@@ -41,8 +43,8 @@ func (p Program) Share(a, b string) bool {
 }
 
 // inputs follows the fields of every record the program reads from a
-// file, as outputs traces those it writes. A record read INTO another is
-// described by that one's fields.
+// file, as outputs traces those it writes, for a record of types, those of
+// each type. A record read INTO another is described by that one's fields.
 func inputs(p Program, flow dataflow.Flow) []Input {
 	var ins []Input
 	for _, e := range p.Lineage {
@@ -59,17 +61,28 @@ func inputs(p Program, flow dataflow.Flow) []Input {
 		if i < 0 {
 			continue
 		}
-		in := Input{File: e.From, Record: record}
-		for _, f := range leaves(p.Records[i].Field) {
-			fe := FieldEffect{Name: f.Name, Start: f.Start, Length: f.Length}
-			effect := flow.Affects(f.Name)
-			fe.Reaches = append(fe.Reaches, effect.Items...)
-			for _, w := range effect.Files {
-				addOnce(&fe.Reaches, "file "+w.File)
-			}
-			in.Fields = append(in.Fields, fe)
+		r := p.Records[i]
+		if len(r.Types) == 0 {
+			ins = append(ins, affected(flow, Input{File: e.From, Record: record}, leaves(r.Field)))
+			continue
 		}
-		ins = append(ins, in)
+		for _, t := range r.Types {
+			ins = append(ins, affected(flow, Input{File: e.From, Record: record, Type: t.Name}, typeLeaves(r, t)))
+		}
 	}
 	return ins
+}
+
+// affected is an input with where the values of each of its fields go.
+func affected(flow dataflow.Flow, in Input, fields []Field) Input {
+	for _, f := range fields {
+		fe := FieldEffect{Name: f.Name, Start: f.Start, Length: f.Length}
+		effect := flow.Affects(f.Name)
+		fe.Reaches = append(fe.Reaches, effect.Items...)
+		for _, w := range effect.Files {
+			addOnce(&fe.Reaches, "file "+w.File)
+		}
+		in.Fields = append(in.Fields, fe)
+	}
+	return in
 }

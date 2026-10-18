@@ -173,6 +173,10 @@ type Record struct {
 	Section  string `json:"section,omitempty"`
 	File     string `json:"file,omitempty"`
 	Copybook string `json:"copybook,omitempty"`
+	// TypeField is the field whose condition names tell the record's
+	// types apart, and Types those types, as the program tests them.
+	TypeField string       `json:"typeField,omitempty"`
+	Types     []RecordType `json:"types,omitempty"`
 	Field
 }
 
@@ -357,6 +361,9 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 	}
 	for _, r := range laidOut.Linkage {
 		program.Records = append(program.Records, newRecord(r, "linkage", "", path, keys))
+	}
+	for i := range program.Records {
+		recordTypes(p, &program.Records[i])
 	}
 	program.Using = p.Using
 	program.Kind = programKind(p.Using)

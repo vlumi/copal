@@ -37,12 +37,15 @@ func (s shape) hasVariant(variant, kind int) bool {
 	return variant == kind || variant == anyType && !slices.Contains(slices.Collect(maps.Values(s.variants)), kind)
 }
 
-// shapeOf finds the shape of an input: the first field of the record with
-// a condition name the program tests, whose condition names are then the
-// types; and for each redefinition, its type: by their order, when there
-// are as many of them as types, since a copybook declares them alike, or
-// else the type whose rules use its fields most.
+// shapeOf finds the shape of an input: the blueprint's record types, when
+// it pairs each with a redefinition; or else the first field of the record
+// with a condition name the program tests, whose condition names are then
+// the types, and for each redefinition, the type whose rules use its
+// fields most.
 func (p *program) shapeOf(in input) shape {
+	if s, ok := p.blueprintShape(in); ok {
+		return s
+	}
 	tested := p.testedNames()
 	s := shape{variants: map[*layout.Field]int{}}
 	for _, f := range in.root.Children {
@@ -62,13 +65,9 @@ func (p *program) shapeOf(in input) shape {
 			}
 		}
 	}
-	var redefinitions []*layout.Field
 	for _, f := range in.root.Children {
-		if f.Redefines != "" {
-			redefinitions = append(redefinitions, f)
-		}
 		if f.Redefines != "" || slices.ContainsFunc(in.root.Children, func(g *layout.Field) bool { return g.Redefines == f.Name }) {
-			s.variants[f] = -1
+			s.variants[f] = anyType
 		}
 	}
 	switch {
@@ -86,10 +85,6 @@ func (p *program) shapeOf(in input) shape {
 			}
 		}
 	case s.discriminator == nil:
-	case len(redefinitions) == len(s.types):
-		for k, f := range redefinitions {
-			s.variants[f] = k
-		}
 	default:
 		for f := range s.variants {
 			s.variants[f] = p.typeOf(f, s)
@@ -139,6 +134,35 @@ func (s shape) pairLast() {
 	if len(types) == 1 && len(left) == 1 {
 		s.variants[left[0]] = types[0]
 	}
+}
+
+// blueprintShape is the shape the blueprint gives a record of types, each
+// paired with its redefinition: the redefinition no type has is in no
+// record of a type.
+func (p *program) blueprintShape(in input) (shape, bool) {
+	i := slices.IndexFunc(p.blueprint.Records, func(r blueprint.Record) bool { return r.Name == in.root.Name })
+	if i < 0 {
+		return shape{}, false
+	}
+	r := p.blueprint.Records[i]
+	if len(r.Types) == 0 || slices.ContainsFunc(r.Types, func(t blueprint.RecordType) bool { return t.Fields == "" }) {
+		return shape{}, false
+	}
+	s := shape{discriminator: find(in.root, r.TypeField), variants: map[*layout.Field]int{}}
+	for _, f := range in.root.Children {
+		if f.Redefines != "" || slices.ContainsFunc(in.root.Children, func(g *layout.Field) bool { return g.Redefines == f.Name }) {
+			s.variants[f] = anyType
+		}
+	}
+	for k, t := range r.Types {
+		v, ok := literal(s.discriminator, t.Value)
+		if !ok {
+			return shape{}, false
+		}
+		s.types, s.typeNames = append(s.types, v), append(s.typeNames, t.Name)
+		s.variants[find(in.root, t.Fields)] = k
+	}
+	return s, true
 }
 
 // testedNames are the data items and condition names the program's

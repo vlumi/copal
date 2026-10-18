@@ -231,3 +231,15 @@ func TestOverEveryRecordType(t *testing.T) {
 		t.Errorf("fields over bytes 1-8: %v, want %v", got, want)
 	}
 }
+
+// A step that updates a dataset in place, as AUTHSRV does the holds, is
+// among the writers of what it reads.
+func TestBackInPlace(t *testing.T) {
+	hops := hopsOf(Back(pangaea(t), online("AUTHSRV", "HD-AMOUNT")))
+	held := hops[online("AUTHSRV", "HD-AMOUNT")]
+	if !slices.ContainsFunc(held.Sources, func(s Source) bool {
+		return s.File == "HOLD-FILE" && slices.Contains(s.Writers, online("AUTHSRV", "HD-AMOUNT"))
+	}) {
+		t.Errorf("the holds AUTHSRV reads are not written by AUTHSRV: %+v", held.Sources)
+	}
+}

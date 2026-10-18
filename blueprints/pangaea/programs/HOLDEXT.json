@@ -443,6 +443,24 @@
     {
       "section": "working-storage",
       "copybook": "TRANREC",
+      "typeField": "TR-REC-TYPE",
+      "types": [
+        {
+          "name": "TR-HEADER",
+          "value": "'H'",
+          "fields": "TR-HEADER-BODY"
+        },
+        {
+          "name": "TR-DETAIL",
+          "value": "'D'",
+          "fields": "TR-DETAIL-BODY"
+        },
+        {
+          "name": "TR-TRAILER",
+          "value": "'T'",
+          "fields": "TR-TRAILER-BODY"
+        }
+      ],
       "level": 1,
       "name": "TRAN-RECORD",
       "start": 1,
@@ -1867,39 +1885,14 @@
     {
       "file": "TRAN-OUT",
       "record": "TRAN-RECORD",
+      "type": "TR-HEADER",
       "fields": [
         {
           "name": "TR-REC-TYPE",
           "start": 1,
           "length": 1,
           "origins": [
-            "literal condition TR-DETAIL",
-            "literal condition TR-HEADER",
-            "literal condition TR-TRAILER"
-          ]
-        },
-        {
-          "name": "TR-BODY",
-          "start": 2,
-          "length": 79,
-          "origins": [
-            "file CONTROL-FILE BC-BUSINESS-DATE",
-            "file HOLD-FILE HD-ACCT-NO",
-            "file HOLD-FILE HD-AMOUNT",
-            "file HOLD-FILE HD-FEE",
-            "file HOLD-FILE HD-HOLD-NO",
-            "file HOLD-FILE HD-TERMINAL",
-            "initial value of WS-ACCT-HASH",
-            "initial value of WS-AMOUNT-TOTAL",
-            "initial value of WS-DETAIL-COUNT",
-            "literal 'ATM FEE'",
-            "literal 0",
-            "literal 1",
-            "literal 2",
-            "literal condition TD-ATM-FEE",
-            "literal condition TD-ATM-WITHDRAWAL",
-            "literal condition TD-CARD-PURCHASE",
-            "literal condition TH-FROM-CARDS"
+            "literal condition TR-HEADER"
           ]
         },
         {
@@ -1907,10 +1900,7 @@
           "start": 2,
           "length": 8,
           "origins": [
-            "file CONTROL-FILE BC-BUSINESS-DATE",
-            "file HOLD-FILE HD-HOLD-NO",
-            "initial value of WS-DETAIL-COUNT",
-            "literal 1"
+            "file CONTROL-FILE BC-BUSINESS-DATE"
           ]
         },
         {
@@ -1918,12 +1908,6 @@
           "start": 10,
           "length": 8,
           "origins": [
-            "file HOLD-FILE HD-ACCT-NO",
-            "file HOLD-FILE HD-AMOUNT",
-            "file HOLD-FILE HD-FEE",
-            "initial value of WS-AMOUNT-TOTAL",
-            "literal 1",
-            "literal 2",
             "literal condition TH-FROM-CARDS"
           ]
         },
@@ -1932,14 +1916,22 @@
           "start": 18,
           "length": 6,
           "origins": [
-            "file HOLD-FILE HD-ACCT-NO",
-            "file HOLD-FILE HD-AMOUNT",
-            "file HOLD-FILE HD-FEE",
-            "initial value of WS-AMOUNT-TOTAL",
-            "literal 1",
-            "literal condition TD-ATM-FEE",
-            "literal condition TD-ATM-WITHDRAWAL",
-            "literal condition TD-CARD-PURCHASE"
+            "literal 1"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "TRAN-OUT",
+      "record": "TRAN-RECORD",
+      "type": "TR-DETAIL",
+      "fields": [
+        {
+          "name": "TR-REC-TYPE",
+          "start": 1,
+          "length": 1,
+          "origins": [
+            "literal condition TR-DETAIL"
           ]
         },
         {
@@ -1947,15 +1939,9 @@
           "start": 2,
           "length": 10,
           "origins": [
-            "file CONTROL-FILE BC-BUSINESS-DATE",
-            "file HOLD-FILE HD-AMOUNT",
-            "file HOLD-FILE HD-FEE",
             "file HOLD-FILE HD-HOLD-NO",
-            "initial value of WS-AMOUNT-TOTAL",
-            "initial value of WS-DETAIL-COUNT",
             "literal 1",
-            "literal 2",
-            "literal condition TH-FROM-CARDS"
+            "literal 2"
           ]
         },
         {
@@ -1963,12 +1949,7 @@
           "start": 12,
           "length": 10,
           "origins": [
-            "file HOLD-FILE HD-ACCT-NO",
-            "file HOLD-FILE HD-AMOUNT",
-            "file HOLD-FILE HD-FEE",
-            "initial value of WS-AMOUNT-TOTAL",
-            "literal 1",
-            "literal condition TH-FROM-CARDS"
+            "file HOLD-FILE HD-ACCT-NO"
           ]
         },
         {
@@ -1976,10 +1957,6 @@
           "start": 22,
           "length": 2,
           "origins": [
-            "file HOLD-FILE HD-AMOUNT",
-            "file HOLD-FILE HD-FEE",
-            "initial value of WS-AMOUNT-TOTAL",
-            "literal 1",
             "literal condition TD-ATM-FEE",
             "literal condition TD-ATM-WITHDRAWAL",
             "literal condition TD-CARD-PURCHASE"
@@ -1990,11 +1967,8 @@
           "start": 24,
           "length": 11,
           "origins": [
-            "file HOLD-FILE HD-ACCT-NO",
             "file HOLD-FILE HD-AMOUNT",
-            "file HOLD-FILE HD-FEE",
-            "initial value of WS-ACCT-HASH",
-            "initial value of WS-AMOUNT-TOTAL"
+            "file HOLD-FILE HD-FEE"
           ]
         },
         {
@@ -2002,9 +1976,7 @@
           "start": 35,
           "length": 20,
           "origins": [
-            "file HOLD-FILE HD-ACCT-NO",
             "file HOLD-FILE HD-TERMINAL",
-            "initial value of WS-ACCT-HASH",
             "literal 'ATM FEE'"
           ]
         },
@@ -2015,14 +1987,27 @@
           "origins": [
             "literal 0"
           ]
+        }
+      ]
+    },
+    {
+      "file": "TRAN-OUT",
+      "record": "TRAN-RECORD",
+      "type": "TR-TRAILER",
+      "fields": [
+        {
+          "name": "TR-REC-TYPE",
+          "start": 1,
+          "length": 1,
+          "origins": [
+            "literal condition TR-TRAILER"
+          ]
         },
         {
           "name": "TT-DETAIL-COUNT",
           "start": 2,
           "length": 8,
           "origins": [
-            "file CONTROL-FILE BC-BUSINESS-DATE",
-            "file HOLD-FILE HD-HOLD-NO",
             "initial value of WS-DETAIL-COUNT",
             "literal 1"
           ]
@@ -2032,16 +2017,9 @@
           "start": 10,
           "length": 15,
           "origins": [
-            "file HOLD-FILE HD-ACCT-NO",
             "file HOLD-FILE HD-AMOUNT",
             "file HOLD-FILE HD-FEE",
-            "initial value of WS-AMOUNT-TOTAL",
-            "literal 1",
-            "literal 2",
-            "literal condition TD-ATM-FEE",
-            "literal condition TD-ATM-WITHDRAWAL",
-            "literal condition TD-CARD-PURCHASE",
-            "literal condition TH-FROM-CARDS"
+            "initial value of WS-AMOUNT-TOTAL"
           ]
         },
         {
@@ -2050,11 +2028,7 @@
           "length": 15,
           "origins": [
             "file HOLD-FILE HD-ACCT-NO",
-            "file HOLD-FILE HD-AMOUNT",
-            "file HOLD-FILE HD-FEE",
-            "file HOLD-FILE HD-TERMINAL",
-            "initial value of WS-ACCT-HASH",
-            "literal 'ATM FEE'"
+            "initial value of WS-ACCT-HASH"
           ]
         }
       ]

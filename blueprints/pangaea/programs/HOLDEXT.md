@@ -276,22 +276,35 @@ Where the values of each field the program writes to a file come from: the field
 
 Written from [TRAN-RECORD](#tran-record).
 
+#### Record TRAN-RECORD, of type TR-HEADER
+
 | Field | Position | Origins |
 | --- | --: | --- |
-| TR-REC-TYPE | 1 | literal condition TR-DETAIL; literal condition TR-HEADER; literal condition TR-TRAILER |
-| TR-BODY | 2-80 | file CONTROL-FILE BC-BUSINESS-DATE; file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; file HOLD-FILE HD-HOLD-NO; file HOLD-FILE HD-TERMINAL; initial value of WS-ACCT-HASH; initial value of WS-AMOUNT-TOTAL; initial value of WS-DETAIL-COUNT; literal 'ATM FEE'; literal 0; literal 1; literal 2; literal condition TD-ATM-FEE; literal condition TD-ATM-WITHDRAWAL; literal condition TD-CARD-PURCHASE; literal condition TH-FROM-CARDS |
-| TH-BUSINESS-DATE | 2-9 | file CONTROL-FILE BC-BUSINESS-DATE; file HOLD-FILE HD-HOLD-NO; initial value of WS-DETAIL-COUNT; literal 1 |
-| TH-SOURCE | 10-17 | file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-AMOUNT-TOTAL; literal 1; literal 2; literal condition TH-FROM-CARDS |
-| TH-FILE-SEQ | 18-23 | file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-AMOUNT-TOTAL; literal 1; literal condition TD-ATM-FEE; literal condition TD-ATM-WITHDRAWAL; literal condition TD-CARD-PURCHASE |
-| TD-TRAN-ID | 2-11 | file CONTROL-FILE BC-BUSINESS-DATE; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; file HOLD-FILE HD-HOLD-NO; initial value of WS-AMOUNT-TOTAL; initial value of WS-DETAIL-COUNT; literal 1; literal 2; literal condition TH-FROM-CARDS |
-| TD-ACCT-NO | 12-21 | file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-AMOUNT-TOTAL; literal 1; literal condition TH-FROM-CARDS |
-| TD-TRAN-CODE | 22-23 | file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-AMOUNT-TOTAL; literal 1; literal condition TD-ATM-FEE; literal condition TD-ATM-WITHDRAWAL; literal condition TD-CARD-PURCHASE |
-| TD-AMOUNT | 24-34 | file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-ACCT-HASH; initial value of WS-AMOUNT-TOTAL |
-| TD-DESCRIPTION | 35-54 | file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-TERMINAL; initial value of WS-ACCT-HASH; literal 'ATM FEE' |
+| TR-REC-TYPE | 1 | literal condition TR-HEADER |
+| TH-BUSINESS-DATE | 2-9 | file CONTROL-FILE BC-BUSINESS-DATE |
+| TH-SOURCE | 10-17 | literal condition TH-FROM-CARDS |
+| TH-FILE-SEQ | 18-23 | literal 1 |
+
+#### Record TRAN-RECORD, of type TR-DETAIL
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| TR-REC-TYPE | 1 | literal condition TR-DETAIL |
+| TD-TRAN-ID | 2-11 | file HOLD-FILE HD-HOLD-NO; literal 1; literal 2 |
+| TD-ACCT-NO | 12-21 | file HOLD-FILE HD-ACCT-NO |
+| TD-TRAN-CODE | 22-23 | literal condition TD-ATM-FEE; literal condition TD-ATM-WITHDRAWAL; literal condition TD-CARD-PURCHASE |
+| TD-AMOUNT | 24-34 | file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE |
+| TD-DESCRIPTION | 35-54 | file HOLD-FILE HD-TERMINAL; literal 'ATM FEE' |
 | TD-COUNTER-ACCT-NO | 55-64 | literal 0 |
-| TT-DETAIL-COUNT | 2-9 | file CONTROL-FILE BC-BUSINESS-DATE; file HOLD-FILE HD-HOLD-NO; initial value of WS-DETAIL-COUNT; literal 1 |
-| TT-AMOUNT-TOTAL | 10-24 | file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-AMOUNT-TOTAL; literal 1; literal 2; literal condition TD-ATM-FEE; literal condition TD-ATM-WITHDRAWAL; literal condition TD-CARD-PURCHASE; literal condition TH-FROM-CARDS |
-| TT-ACCT-HASH | 25-39 | file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; file HOLD-FILE HD-TERMINAL; initial value of WS-ACCT-HASH; literal 'ATM FEE' |
+
+#### Record TRAN-RECORD, of type TR-TRAILER
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| TR-REC-TYPE | 1 | literal condition TR-TRAILER |
+| TT-DETAIL-COUNT | 2-9 | initial value of WS-DETAIL-COUNT; literal 1 |
+| TT-AMOUNT-TOTAL | 10-24 | file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-AMOUNT-TOTAL |
+| TT-ACCT-HASH | 25-39 | file HOLD-FILE HD-ACCT-NO; initial value of WS-ACCT-HASH |
 
 ### File REPORT-OUT
 
@@ -374,7 +387,7 @@ Working storage. 1 bytes.
 
 ### TRAN-RECORD
 
-Working storage. 80 bytes, layout in copybook [TRANREC](../copybooks/TRANREC.md).
+Working storage. 80 bytes, layout in copybook [TRANREC](../copybooks/TRANREC.md). Its types, told apart by TR-REC-TYPE: `TR-HEADER`, 'H', its fields in TR-HEADER-BODY; `TR-DETAIL`, 'D', its fields in TR-DETAIL-BODY; `TR-TRAILER`, 'T', its fields in TR-TRAILER-BODY.
 
 ### WS-TRAN-ID
 

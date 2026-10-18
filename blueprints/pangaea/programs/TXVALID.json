@@ -163,6 +163,24 @@
       "section": "file",
       "file": "TRAN-IN",
       "copybook": "TRANREC",
+      "typeField": "TR-REC-TYPE",
+      "types": [
+        {
+          "name": "TR-HEADER",
+          "value": "'H'",
+          "fields": "TR-HEADER-BODY"
+        },
+        {
+          "name": "TR-DETAIL",
+          "value": "'D'",
+          "fields": "TR-DETAIL-BODY"
+        },
+        {
+          "name": "TR-TRAILER",
+          "value": "'T'",
+          "fields": "TR-TRAILER-BODY"
+        }
+      ],
       "level": 1,
       "name": "TRAN-RECORD",
       "start": 1,
@@ -1961,6 +1979,7 @@
     {
       "file": "TRAN-OUT",
       "record": "TRAN-RECORD",
+      "type": "TR-HEADER",
       "fields": [
         {
           "name": "TR-REC-TYPE",
@@ -1968,14 +1987,6 @@
           "length": 1,
           "origins": [
             "file TRAN-IN TR-REC-TYPE"
-          ]
-        },
-        {
-          "name": "TR-BODY",
-          "start": 2,
-          "length": 79,
-          "origins": [
-            "file TRAN-IN TR-BODY"
           ]
         },
         {
@@ -2000,6 +2011,21 @@
           "length": 6,
           "origins": [
             "file TRAN-IN TH-FILE-SEQ"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "TRAN-OUT",
+      "record": "TRAN-RECORD",
+      "type": "TR-DETAIL",
+      "fields": [
+        {
+          "name": "TR-REC-TYPE",
+          "start": 1,
+          "length": 1,
+          "origins": [
+            "file TRAN-IN TR-REC-TYPE"
           ]
         },
         {
@@ -2048,6 +2074,21 @@
           "length": 10,
           "origins": [
             "file TRAN-IN TD-COUNTER-ACCT-NO"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "TRAN-OUT",
+      "record": "TRAN-RECORD",
+      "type": "TR-TRAILER",
+      "fields": [
+        {
+          "name": "TR-REC-TYPE",
+          "start": 1,
+          "length": 1,
+          "origins": [
+            "file TRAN-IN TR-REC-TYPE"
           ]
         },
         {
@@ -2222,6 +2263,7 @@
     {
       "file": "TRAN-IN",
       "record": "TRAN-RECORD",
+      "type": "TR-HEADER",
       "fields": [
         {
           "name": "TR-REC-TYPE",
@@ -2233,24 +2275,6 @@
             "TRAN-OUT-RECORD",
             "file REJECT-OUT",
             "file TRAN-OUT"
-          ]
-        },
-        {
-          "name": "TR-BODY",
-          "start": 2,
-          "length": 79,
-          "reaches": [
-            "WS-SOURCE",
-            "WS-AMOUNT-TOTAL",
-            "RJ-TRAN",
-            "WS-ACCT-HASH",
-            "REJECT-OUT-RECORD",
-            "TRAN-OUT-RECORD",
-            "WS-RA-VALUE",
-            "REPORT-LINE",
-            "file REJECT-OUT",
-            "file TRAN-OUT",
-            "file REPORT-OUT"
           ]
         },
         {
@@ -2286,6 +2310,25 @@
           "reaches": [
             "RJ-TRAN",
             "WS-ACCT-HASH",
+            "REJECT-OUT-RECORD",
+            "TRAN-OUT-RECORD",
+            "file REJECT-OUT",
+            "file TRAN-OUT"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "TRAN-IN",
+      "record": "TRAN-RECORD",
+      "type": "TR-DETAIL",
+      "fields": [
+        {
+          "name": "TR-REC-TYPE",
+          "start": 1,
+          "length": 1,
+          "reaches": [
+            "RJ-TRAN",
             "REJECT-OUT-RECORD",
             "TRAN-OUT-RECORD",
             "file REJECT-OUT",
@@ -2363,6 +2406,25 @@
           "name": "TD-COUNTER-ACCT-NO",
           "start": 55,
           "length": 10,
+          "reaches": [
+            "RJ-TRAN",
+            "REJECT-OUT-RECORD",
+            "TRAN-OUT-RECORD",
+            "file REJECT-OUT",
+            "file TRAN-OUT"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "TRAN-IN",
+      "record": "TRAN-RECORD",
+      "type": "TR-TRAILER",
+      "fields": [
+        {
+          "name": "TR-REC-TYPE",
+          "start": 1,
+          "length": 1,
           "reaches": [
             "RJ-TRAN",
             "REJECT-OUT-RECORD",

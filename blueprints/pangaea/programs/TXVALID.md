@@ -317,19 +317,32 @@ Where the values of each field the program writes to a file come from: the field
 
 Written from [TRAN-RECORD](#tran-record).
 
+#### Record TRAN-RECORD, of type TR-HEADER
+
 | Field | Position | Origins |
 | --- | --: | --- |
 | TR-REC-TYPE | 1 | file TRAN-IN TR-REC-TYPE |
-| TR-BODY | 2-80 | file TRAN-IN TR-BODY |
 | TH-BUSINESS-DATE | 2-9 | file TRAN-IN TH-BUSINESS-DATE |
 | TH-SOURCE | 10-17 | file TRAN-IN TH-SOURCE |
 | TH-FILE-SEQ | 18-23 | file TRAN-IN TH-FILE-SEQ |
+
+#### Record TRAN-RECORD, of type TR-DETAIL
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| TR-REC-TYPE | 1 | file TRAN-IN TR-REC-TYPE |
 | TD-TRAN-ID | 2-11 | file TRAN-IN TD-TRAN-ID |
 | TD-ACCT-NO | 12-21 | file TRAN-IN TD-ACCT-NO |
 | TD-TRAN-CODE | 22-23 | file TRAN-IN TD-TRAN-CODE |
 | TD-AMOUNT | 24-34 | file TRAN-IN TD-AMOUNT |
 | TD-DESCRIPTION | 35-54 | file TRAN-IN TD-DESCRIPTION |
 | TD-COUNTER-ACCT-NO | 55-64 | file TRAN-IN TD-COUNTER-ACCT-NO |
+
+#### Record TRAN-RECORD, of type TR-TRAILER
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| TR-REC-TYPE | 1 | file TRAN-IN TR-REC-TYPE |
 | TT-DETAIL-COUNT | 2-9 | file TRAN-IN TH-BUSINESS-DATE |
 | TT-AMOUNT-TOTAL | 10-24 | file TRAN-IN TT-AMOUNT-TOTAL |
 | TT-ACCT-HASH | 25-39 | file TRAN-IN TT-ACCT-HASH |
@@ -377,7 +390,7 @@ File CONTROL-FILE. 80 bytes, layout in copybook [BANKCTL](../copybooks/BANKCTL.m
 
 ### TRAN-RECORD
 
-File TRAN-IN. 80 bytes, layout in copybook [TRANREC](../copybooks/TRANREC.md).
+File TRAN-IN. 80 bytes, layout in copybook [TRANREC](../copybooks/TRANREC.md). Its types, told apart by TR-REC-TYPE: `TR-HEADER`, 'H', its fields in TR-HEADER-BODY; `TR-DETAIL`, 'D', its fields in TR-DETAIL-BODY; `TR-TRAILER`, 'T', its fields in TR-TRAILER-BODY.
 
 ### TRAN-OUT-RECORD
 
