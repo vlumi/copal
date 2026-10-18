@@ -73,6 +73,7 @@ Program [INTACCR.cbl](../../../pangaea/programs/INTACCR.cbl): 6 files, 15 paragr
 - [Field origins](#field-origins)
   - [File ACCR-OUT](#file-accr-out)
   - [File REPORT-OUT](#file-report-out)
+- [Links between records](#links-between-records)
 - [Records](#records)
   - [BANK-CONTROL-RECORD](#bank-control-record)
   - [RATE-RECORD](#rate-record)
@@ -527,6 +528,15 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-coun
 | --- | --: | --- |
 | WS-RA-LABEL | 1-30 | literal 'CREDIT INTEREST ACCRUED'; literal 'CREDIT INTEREST DUE'; literal 'DEBIT INTEREST ACCRUED'; literal 'DEBIT INTEREST DUE' |
 | WS-RA-VALUE | 31-49 | file ACCR-IN ACCR-IN-RECORD; file ACCT-IN AM-BALANCE; file CONTROL-FILE BC-BUSINESS-DATE; file RATE-FILE RT-ANNUAL-RATE; initial value of WS-CREDIT-ACCRUED; initial value of WS-CREDIT-DUE; initial value of WS-DEBIT-ACCRUED; initial value of WS-DEBIT-DUE; literal 0; literal 365 |
+
+## Links between records
+
+Fields of one input the program relies on to find or match the records of another: moved into an indexed file's record key to read it by, or compared for equality, each side's values from that field alone.
+
+| Field | Of | Links to | Of | How | Source |
+| --- | --- | --- | --- | --- | --- |
+| AI-ACCT-NO | ACCR-IN | AM-ACCT-NO | ACCT-IN | equal to | [INTACCR.cbl:228](../../../pangaea/programs/INTACCR.cbl#L228) |
+| RT-ACCT-TYPE | RATE-FILE | AM-ACCT-TYPE | ACCT-IN | equal to | [INTACCR.cbl:271](../../../pangaea/programs/INTACCR.cbl#L271) |
 
 ## Records
 

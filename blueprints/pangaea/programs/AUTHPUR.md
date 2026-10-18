@@ -36,6 +36,13 @@ Program [AUTHPUR.cbl](../../../pangaea/programs/AUTHPUR.cbl): 0 files, 3 paragra
   - [Into ACCT-ONLINE-RECORD](#into-acct-online-record)
   - [Into CARD-RECORD](#into-card-record)
   - [Into HOLD-RECORD](#into-hold-record)
+- [Parameters](#parameters)
+  - [Parameter 1, AUTH-REQUEST](#parameter-1-auth-request)
+  - [Parameter 2, AUTH-RESPONSE](#parameter-2-auth-response)
+  - [Parameter 3, BANK-CONTROL-RECORD](#parameter-3-bank-control-record)
+  - [Parameter 4, ACCT-ONLINE-RECORD](#parameter-4-acct-online-record)
+  - [Parameter 5, CARD-RECORD](#parameter-5-card-record)
+  - [Parameter 6, HOLD-RECORD](#parameter-6-hold-record)
 - [Records](#records)
   - [WS-AVAILABLE](#ws-available)
   - [WS-DAY-PURCHASES](#ws-day-purchases)
@@ -157,6 +164,84 @@ Record [HOLD-RECORD](#hold-record), from copybook [HOLDREC](../copybooks/HOLDREC
 | HD-STATUS | literal condition HD-OPEN | SET | 2000-APPROVE | [AUTHPUR.cbl:81](../../../pangaea/programs/AUTHPUR.cbl#L81) |
 | HD-TERMINAL | [RQ-TERMINAL](#auth-request "in AUTH-REQUEST") | MOVE | 2000-APPROVE | [AUTHPUR.cbl:84](../../../pangaea/programs/AUTHPUR.cbl#L84) |
 | HD-TIMESTAMP | [RQ-TIMESTAMP](#auth-request "in AUTH-REQUEST") | MOVE | 2000-APPROVE | [AUTHPUR.cbl:85](../../../pangaea/programs/AUTHPUR.cbl#L85) |
+
+## Parameters
+
+What the program does with each field of the items it is passed, by position: the contract its callers rely on. A statement on a whole item, or a group of it, counts for each field in it; a field neither read nor written is passed for nothing.
+
+### Parameter 1, AUTH-REQUEST
+
+| Field | Reads | Writes |
+| --- | :-: | :-: |
+| RQ-FUNCTION | | |
+| RQ-CARD-NO | | |
+| RQ-AMOUNT | yes | |
+| RQ-AUTH-CODE | | |
+| RQ-TERMINAL | yes | |
+| RQ-TIMESTAMP | yes | |
+
+### Parameter 2, AUTH-RESPONSE
+
+| Field | Reads | Writes |
+| --- | :-: | :-: |
+| RS-RESULT | | yes |
+| RS-AUTH-CODE | | |
+| RS-AMOUNT | | yes |
+| RS-FEE | | yes |
+| RS-BALANCE | | yes |
+| RS-AVAILABLE | | yes |
+| RS-MESSAGE | | yes |
+
+### Parameter 3, BANK-CONTROL-RECORD
+
+| Field | Reads | Writes |
+| --- | :-: | :-: |
+| BC-BUSINESS-DATE | yes | |
+
+### Parameter 4, ACCT-ONLINE-RECORD
+
+| Field | Reads | Writes |
+| --- | :-: | :-: |
+| AO-ACCT-NO | yes | |
+| AO-CUST-NO | | |
+| AO-SHORT-NAME | | |
+| AO-ACCT-TYPE | | |
+| AO-STATUS | yes | |
+| AO-BALANCE | yes | |
+| AO-OVERDRAFT-LIMIT | yes | |
+| AO-HOLDS | yes | yes |
+| AO-AS-OF-DATE | | |
+
+### Parameter 5, CARD-RECORD
+
+| Field | Reads | Writes |
+| --- | :-: | :-: |
+| CR-CARD-NO | yes | |
+| CR-ACCT-NO | | |
+| CR-CUST-NO | | |
+| CR-STATUS | yes | |
+| CR-EXPIRY-MONTH | | |
+| CR-PURCHASE-LIMIT | yes | |
+| CR-CASH-LIMIT | | |
+| CR-TOTALS-DATE | yes | yes |
+| CR-DAY-PURCHASES | yes | yes |
+| CR-DAY-CASH | | yes |
+| CR-MONTH-WITHDRAWALS | | yes |
+
+### Parameter 6, HOLD-RECORD
+
+| Field | Reads | Writes |
+| --- | :-: | :-: |
+| HD-ACCT-NO | | yes |
+| HD-HOLD-NO | | |
+| HD-CARD-NO | | yes |
+| HD-KIND | | yes |
+| HD-STATUS | | yes |
+| HD-AMOUNT | | yes |
+| HD-FEE | | yes |
+| HD-TERMINAL | | yes |
+| HD-TIMESTAMP | | yes |
+| HD-BUSINESS-DATE | | yes |
 
 ## Records
 

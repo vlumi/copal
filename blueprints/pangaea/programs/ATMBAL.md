@@ -29,6 +29,13 @@ Program [ATMBAL.cbl](../../../pangaea/programs/ATMBAL.cbl): 0 files, 1 paragraph
 - [Lineage](#lineage)
   - [Into WS-AVAILABLE](#into-ws-available)
   - [Into AUTH-RESPONSE](#into-auth-response)
+- [Parameters](#parameters)
+  - [Parameter 1, AUTH-REQUEST](#parameter-1-auth-request)
+  - [Parameter 2, AUTH-RESPONSE](#parameter-2-auth-response)
+  - [Parameter 3, BANK-CONTROL-RECORD](#parameter-3-bank-control-record)
+  - [Parameter 4, ACCT-ONLINE-RECORD](#parameter-4-acct-online-record)
+  - [Parameter 5, CARD-RECORD](#parameter-5-card-record)
+  - [Parameter 6, HOLD-RECORD](#parameter-6-hold-record)
 - [Records](#records)
   - [WS-AVAILABLE](#ws-available)
   - [AUTH-REQUEST](#auth-request)
@@ -91,6 +98,84 @@ Record [AUTH-RESPONSE](#auth-response), from copybook [AUTHMSG](../copybooks/AUT
 | RS-RESULT | literal condition RS-CARD-BLOCKED | SET | 0000-MAIN | [ATMBAL.cbl:37](../../../pangaea/programs/ATMBAL.cbl#L37) |
 | RS-RESULT | literal condition RS-ACCOUNT-NOT-OPEN | SET | 0000-MAIN | [ATMBAL.cbl:40](../../../pangaea/programs/ATMBAL.cbl#L40) |
 | RS-RESULT | literal condition RS-APPROVED | SET | 0000-MAIN | [ATMBAL.cbl:43](../../../pangaea/programs/ATMBAL.cbl#L43) |
+
+## Parameters
+
+What the program does with each field of the items it is passed, by position: the contract its callers rely on. A statement on a whole item, or a group of it, counts for each field in it; a field neither read nor written is passed for nothing.
+
+### Parameter 1, AUTH-REQUEST
+
+| Field | Reads | Writes |
+| --- | :-: | :-: |
+| RQ-FUNCTION | | |
+| RQ-CARD-NO | | |
+| RQ-AMOUNT | | |
+| RQ-AUTH-CODE | | |
+| RQ-TERMINAL | | |
+| RQ-TIMESTAMP | | |
+
+### Parameter 2, AUTH-RESPONSE
+
+| Field | Reads | Writes |
+| --- | :-: | :-: |
+| RS-RESULT | | yes |
+| RS-AUTH-CODE | | |
+| RS-AMOUNT | | |
+| RS-FEE | | |
+| RS-BALANCE | | yes |
+| RS-AVAILABLE | | yes |
+| RS-MESSAGE | | yes |
+
+### Parameter 3, BANK-CONTROL-RECORD
+
+| Field | Reads | Writes |
+| --- | :-: | :-: |
+| BC-BUSINESS-DATE | | |
+
+### Parameter 4, ACCT-ONLINE-RECORD
+
+| Field | Reads | Writes |
+| --- | :-: | :-: |
+| AO-ACCT-NO | | |
+| AO-CUST-NO | | |
+| AO-SHORT-NAME | | |
+| AO-ACCT-TYPE | | |
+| AO-STATUS | yes | |
+| AO-BALANCE | yes | |
+| AO-OVERDRAFT-LIMIT | yes | |
+| AO-HOLDS | yes | |
+| AO-AS-OF-DATE | | |
+
+### Parameter 5, CARD-RECORD
+
+| Field | Reads | Writes |
+| --- | :-: | :-: |
+| CR-CARD-NO | | |
+| CR-ACCT-NO | | |
+| CR-CUST-NO | | |
+| CR-STATUS | yes | |
+| CR-EXPIRY-MONTH | | |
+| CR-PURCHASE-LIMIT | | |
+| CR-CASH-LIMIT | | |
+| CR-TOTALS-DATE | | |
+| CR-DAY-PURCHASES | | |
+| CR-DAY-CASH | | |
+| CR-MONTH-WITHDRAWALS | | |
+
+### Parameter 6, HOLD-RECORD
+
+| Field | Reads | Writes |
+| --- | :-: | :-: |
+| HD-ACCT-NO | | |
+| HD-HOLD-NO | | |
+| HD-CARD-NO | | |
+| HD-KIND | | |
+| HD-STATUS | | |
+| HD-AMOUNT | | |
+| HD-FEE | | |
+| HD-TERMINAL | | |
+| HD-TIMESTAMP | | |
+| HD-BUSINESS-DATE | | |
 
 ## Records
 

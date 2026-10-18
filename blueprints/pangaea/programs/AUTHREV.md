@@ -35,6 +35,13 @@ Program [AUTHREV.cbl](../../../pangaea/programs/AUTHREV.cbl): 0 files, 2 paragra
   - [Into ACCT-ONLINE-RECORD](#into-acct-online-record)
   - [Into CARD-RECORD](#into-card-record)
   - [Into HOLD-RECORD](#into-hold-record)
+- [Parameters](#parameters)
+  - [Parameter 1, AUTH-REQUEST](#parameter-1-auth-request)
+  - [Parameter 2, AUTH-RESPONSE](#parameter-2-auth-response)
+  - [Parameter 3, BANK-CONTROL-RECORD](#parameter-3-bank-control-record)
+  - [Parameter 4, ACCT-ONLINE-RECORD](#parameter-4-acct-online-record)
+  - [Parameter 5, CARD-RECORD](#parameter-5-card-record)
+  - [Parameter 6, HOLD-RECORD](#parameter-6-hold-record)
 - [Records](#records)
   - [WS-AVAILABLE](#ws-available)
   - [AUTH-REQUEST](#auth-request)
@@ -128,6 +135,84 @@ Record [HOLD-RECORD](#hold-record), from copybook [HOLDREC](../copybooks/HOLDREC
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
 | HD-STATUS | literal condition HD-REVERSED | SET | 2000-APPROVE | [AUTHREV.cbl:60](../../../pangaea/programs/AUTHREV.cbl#L60) |
+
+## Parameters
+
+What the program does with each field of the items it is passed, by position: the contract its callers rely on. A statement on a whole item, or a group of it, counts for each field in it; a field neither read nor written is passed for nothing.
+
+### Parameter 1, AUTH-REQUEST
+
+| Field | Reads | Writes |
+| --- | :-: | :-: |
+| RQ-FUNCTION | | |
+| RQ-CARD-NO | | |
+| RQ-AMOUNT | | |
+| RQ-AUTH-CODE | | |
+| RQ-TERMINAL | | |
+| RQ-TIMESTAMP | | |
+
+### Parameter 2, AUTH-RESPONSE
+
+| Field | Reads | Writes |
+| --- | :-: | :-: |
+| RS-RESULT | | yes |
+| RS-AUTH-CODE | | yes |
+| RS-AMOUNT | | yes |
+| RS-FEE | | yes |
+| RS-BALANCE | | yes |
+| RS-AVAILABLE | | yes |
+| RS-MESSAGE | | yes |
+
+### Parameter 3, BANK-CONTROL-RECORD
+
+| Field | Reads | Writes |
+| --- | :-: | :-: |
+| BC-BUSINESS-DATE | | |
+
+### Parameter 4, ACCT-ONLINE-RECORD
+
+| Field | Reads | Writes |
+| --- | :-: | :-: |
+| AO-ACCT-NO | | |
+| AO-CUST-NO | | |
+| AO-SHORT-NAME | | |
+| AO-ACCT-TYPE | | |
+| AO-STATUS | | |
+| AO-BALANCE | yes | |
+| AO-OVERDRAFT-LIMIT | yes | |
+| AO-HOLDS | yes | yes |
+| AO-AS-OF-DATE | | |
+
+### Parameter 5, CARD-RECORD
+
+| Field | Reads | Writes |
+| --- | :-: | :-: |
+| CR-CARD-NO | yes | |
+| CR-ACCT-NO | | |
+| CR-CUST-NO | | |
+| CR-STATUS | | |
+| CR-EXPIRY-MONTH | | |
+| CR-PURCHASE-LIMIT | | |
+| CR-CASH-LIMIT | | |
+| CR-TOTALS-DATE | yes | |
+| CR-DAY-PURCHASES | yes | yes |
+| CR-DAY-CASH | | |
+| CR-MONTH-WITHDRAWALS | | |
+
+### Parameter 6, HOLD-RECORD
+
+| Field | Reads | Writes |
+| --- | :-: | :-: |
+| HD-ACCT-NO | | |
+| HD-HOLD-NO | yes | |
+| HD-CARD-NO | yes | |
+| HD-KIND | yes | |
+| HD-STATUS | yes | yes |
+| HD-AMOUNT | yes | |
+| HD-FEE | | |
+| HD-TERMINAL | | |
+| HD-TIMESTAMP | | |
+| HD-BUSINESS-DATE | yes | |
 
 ## Records
 

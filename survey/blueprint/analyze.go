@@ -51,6 +51,12 @@ type Program struct {
 	Lineage  []Lineage `json:"lineage,omitempty"`
 	Outputs  []Output  `json:"outputs,omitempty"`
 	Inputs   []Input   `json:"inputs,omitempty"`
+	// Links are the relations between its inputs' records it relies on,
+	// Totals the control totals it checks, and Parameters, for a called
+	// program, what it does with what it is passed.
+	Links      []Link      `json:"links,omitempty"`
+	Totals     []Total     `json:"totals,omitempty"`
+	Parameters []Parameter `json:"parameters,omitempty"`
 	// Rules are the program's decision tables, a blueprint of their own.
 	Rules  Rules `json:"-"`
 	flow   dataflow.Flow
@@ -387,6 +393,9 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 	}
 	program.Outputs = outputs(program, flow)
 	program.Inputs = inputs(program, flow)
+	program.Links = inputLinks(program, p, flow)
+	program.Totals = programTotals(program, p, flow)
+	program.Parameters = parameters(program)
 	program.source = p
 	return program, nil
 }

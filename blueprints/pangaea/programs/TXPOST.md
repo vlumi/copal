@@ -91,6 +91,7 @@ Program [TXPOST.cbl](../../../pangaea/programs/TXPOST.cbl): 8 files, 18 paragrap
   - [File REJECT-OUT](#file-reject-out)
   - [File ACCT-OUT](#file-acct-out)
   - [File REPORT-OUT](#file-report-out)
+- [Links between records](#links-between-records)
 - [Records](#records)
   - [BANK-CONTROL-RECORD](#bank-control-record)
   - [ACCT-MASTER-RECORD](#acct-master-record)
@@ -582,6 +583,14 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-coun
 | --- | --: | --- |
 | WS-RA-LABEL | 1-30 | literal 'CLOSING BALANCES'; literal 'CREDITS'; literal 'DEBITS'; literal 'FEES'; literal 'OPENING BALANCES' |
 | WS-RA-VALUE | 31-51 | file ACCT-IN AM-BALANCE; file TRAN-IN TD-AMOUNT; initial value of WS-CLOSING-TOTAL; initial value of WS-CREDIT-TOTAL; initial value of WS-DEBIT-TOTAL; initial value of WS-FEE-TOTAL; initial value of WS-OPENING-TOTAL |
+
+## Links between records
+
+Fields of one input the program relies on to find or match the records of another: moved into an indexed file's record key to read it by, or compared for equality, each side's values from that field alone.
+
+| Field | Of | Links to | Of | How | Source |
+| --- | --- | --- | --- | --- | --- |
+| TD-ACCT-NO | TRAN-IN | AM-ACCT-NO | ACCT-IN | equal to | [TXPOST.cbl:247](../../../pangaea/programs/TXPOST.cbl#L247) |
 
 ## Records
 

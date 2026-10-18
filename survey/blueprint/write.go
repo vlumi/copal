@@ -175,6 +175,7 @@ func programMarkdown(dir string, p Program) string {
 	writeCalls(&b, dir, p)
 	writeDataFlow(&b, dir, p)
 	writeOrigins(&b, p)
+	writeRelations(&b, dir, p)
 
 	b.WriteString("\n## Records\n")
 	for _, r := range p.Records {

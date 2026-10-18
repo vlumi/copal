@@ -54,6 +54,7 @@ Program [MONCHG.cbl](../../../pangaea/programs/MONCHG.cbl): 5 files, 10 paragrap
 - [Field origins](#field-origins)
   - [File TRAN-OUT](#file-tran-out)
   - [File REPORT-OUT](#file-report-out)
+- [Links between records](#links-between-records)
 - [Records](#records)
   - [BANK-CONTROL-RECORD](#bank-control-record)
   - [ACCT-MASTER-RECORD](#acct-master-record)
@@ -357,6 +358,14 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-coun
 | --- | --: | --- |
 | WS-RA-LABEL | 1-30 | literal 'INTEREST CREDITED'; literal 'MAINTENANCE FEES CHARGED'; literal 'OVERDRAFT INTEREST CHARGED' |
 | WS-RA-VALUE | 31-51 | file ACCR-IN AC-DUE; initial value of WS-FEE-TOTAL; initial value of WS-INTEREST-TOTAL; initial value of WS-MAINTENANCE-FEE; initial value of WS-OVERDRAFT-TOTAL |
+
+## Links between records
+
+Fields of one input the program relies on to find or match the records of another: moved into an indexed file's record key to read it by, or compared for equality, each side's values from that field alone.
+
+| Field | Of | Links to | Of | How | Source |
+| --- | --- | --- | --- | --- | --- |
+| AC-ACCT-NO | ACCR-IN | AM-ACCT-NO | ACCT-IN | equal to | [MONCHG.cbl:152](../../../pangaea/programs/MONCHG.cbl#L152) |
 
 ## Records
 
