@@ -70,6 +70,10 @@ RATE ?= 5
 simulate:  ## Send card traffic to the console's online channel until interrupted (RATE)
 	go run ./pangaea/cmd/pangaea simulate -api http://$(ADDR)/api -rate $(RATE)
 
+.PHONY: oracle
+oracle:  ## Search Pangaea's programs for cases that reach their rules, and report the coverage
+	go run ./survey/cmd/survey oracle -copybooks pangaea/copybooks pangaea/programs/*.cbl
+
 .PHONY: blueprints
 blueprints:  ## Regenerate Pangaea's blueprints with Survey
 	rm -rf blueprints/pangaea
