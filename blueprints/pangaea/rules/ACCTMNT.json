@@ -3,7 +3,7 @@
   "tables": [
     {
       "paragraph": "0000-MAIN",
-      "source": "pangaea/programs/ACCTMNT.cbl:128",
+      "source": "pangaea/programs/ACCTMNT.cbl:138",
       "conditions": [
         "WS-BALANCES-OUT = WS-BALANCES-IN",
         "WS-REJECT-COUNT \u003e 0"
@@ -93,7 +93,7 @@
     },
     {
       "paragraph": "1000-INITIALIZE",
-      "source": "pangaea/programs/ACCTMNT.cbl:145",
+      "source": "pangaea/programs/ACCTMNT.cbl:155",
       "conditions": [
         "WS-FILE-STATUSES = ALL '0'",
         "READ CONTROL-FILE AT END"
@@ -114,6 +114,7 @@
         "PERFORM 9900-ABORT",
         "MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE",
         "MOVE SPACES TO REJECT-RECORD",
+        "STRING WS-BUSINESS-DATE(1:4) '-' WS-BUSINESS-DATE(5:2) '-' WS-BUSINESS-DATE(7:2) DELIMITED BY SIZE INTO RJ-REJECT-DATE",
         "PERFORM 1200-READ-MASTER THRU 1200-EXIT",
         "PERFORM 1300-READ-REQUEST THRU 1300-EXIT"
       ],
@@ -143,7 +144,8 @@
             7,
             8,
             9,
-            10
+            10,
+            11
           ]
         },
         {
@@ -157,14 +159,15 @@
             7,
             8,
             9,
-            10
+            10,
+            11
           ]
         }
       ]
     },
     {
       "paragraph": "1200-READ-MASTER",
-      "source": "pangaea/programs/ACCTMNT.cbl:162",
+      "source": "pangaea/programs/ACCTMNT.cbl:175",
       "conditions": [
         "READ ACCT-IN AT END",
         "WS-MASTER-KEY \u003e WS-PREV-MASTER-KEY"
@@ -228,7 +231,7 @@
     },
     {
       "paragraph": "1300-READ-REQUEST",
-      "source": "pangaea/programs/ACCTMNT.cbl:177",
+      "source": "pangaea/programs/ACCTMNT.cbl:190",
       "conditions": [
         "READ MAINT-IN AT END",
         "WS-REQUEST-ORDER-KEY \u003e WS-PREV-REQUEST-ORDER-KEY"
@@ -295,7 +298,7 @@
     },
     {
       "paragraph": "2000-NEXT-ACCOUNT",
-      "source": "pangaea/programs/ACCTMNT.cbl:195",
+      "source": "pangaea/programs/ACCTMNT.cbl:208",
       "conditions": [
         "WS-REQUEST-KEY \u003c WS-MASTER-KEY",
         "WS-MASTER-KEY = WS-ACTIVE-KEY"
@@ -374,7 +377,7 @@
     },
     {
       "paragraph": "2100-APPLY-REQUESTS",
-      "source": "pangaea/programs/ACCTMNT.cbl:207",
+      "source": "pangaea/programs/ACCTMNT.cbl:220",
       "conditions": [
         "WS-REQUEST-KEY = WS-ACTIVE-KEY"
       ],
@@ -413,7 +416,7 @@
     },
     {
       "paragraph": "2200-APPLY-REQUEST",
-      "source": "pangaea/programs/ACCTMNT.cbl:215",
+      "source": "pangaea/programs/ACCTMNT.cbl:228",
       "conditions": [
         "MR-OPEN",
         "NOTHING-HELD",
@@ -577,14 +580,18 @@
     },
     {
       "paragraph": "2210-OPEN",
-      "source": "pangaea/programs/ACCTMNT.cbl:236",
+      "source": "pangaea/programs/ACCTMNT.cbl:249",
       "conditions": [
         "ACCOUNT-HELD",
+        "WS-EFF-YY \u003c 50",
         "AM-SAVINGS"
       ],
       "conditionRefs": [
         [
           "WS-HELD-SW"
+        ],
+        [
+          "WS-EFF-YY"
         ],
         [
           "AM-ACCT-TYPE"
@@ -599,18 +606,23 @@
         "MOVE MR-SHORT-NAME TO AM-SHORT-NAME",
         "MOVE MR-ACCT-TYPE TO AM-ACCT-TYPE",
         "SET AM-OPEN TO TRUE",
-        "MOVE WS-BUSINESS-DATE TO AM-OPEN-DATE AM-LAST-ACTIVITY-DATE",
+        "MOVE MR-EFFECTIVE-DATE TO WS-EFF-YYMMDD",
+        "MOVE 20 TO WS-EFF-CENTURY",
+        "MOVE WS-EFFECTIVE-DATE TO AM-OPEN-DATE",
+        "MOVE WS-BUSINESS-DATE TO AM-LAST-ACTIVITY-DATE",
         "MOVE 0 TO AM-BALANCE",
         "MOVE MR-OVERDRAFT-LIMIT TO AM-OVERDRAFT-LIMIT",
         "MOVE 0 TO AM-OVERDRAFT-LIMIT",
         "SET ACCOUNT-HELD TO TRUE",
         "ADD 1 TO WS-OPENED-COUNT",
-        "GO TO 2299-EXIT"
+        "GO TO 2299-EXIT",
+        "MOVE 19 TO WS-EFF-CENTURY"
       ],
       "rules": [
         {
           "entries": [
             "Y",
+            "",
             ""
           ],
           "actions": [
@@ -621,6 +633,7 @@
         {
           "entries": [
             "N",
+            "Y",
             "Y"
           ],
           "actions": [
@@ -636,12 +649,16 @@
             11,
             12,
             13,
-            14
+            14,
+            15,
+            16,
+            17
           ]
         },
         {
           "entries": [
             "N",
+            "Y",
             "N"
           ],
           "actions": [
@@ -654,16 +671,68 @@
             8,
             9,
             10,
+            11,
             12,
             13,
-            14
+            15,
+            16,
+            17
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            18,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            18,
+            10,
+            11,
+            12,
+            13,
+            15,
+            16,
+            17
           ]
         }
       ]
     },
     {
       "paragraph": "2220-CLOSE",
-      "source": "pangaea/programs/ACCTMNT.cbl:256",
+      "source": "pangaea/programs/ACCTMNT.cbl:276",
       "conditions": [
         "AM-BALANCE = 0"
       ],
@@ -705,7 +774,7 @@
     },
     {
       "paragraph": "2230-FREEZE",
-      "source": "pangaea/programs/ACCTMNT.cbl:266",
+      "source": "pangaea/programs/ACCTMNT.cbl:286",
       "conditions": [
         "AM-OPEN"
       ],
@@ -745,7 +814,7 @@
     },
     {
       "paragraph": "2240-UNFREEZE",
-      "source": "pangaea/programs/ACCTMNT.cbl:275",
+      "source": "pangaea/programs/ACCTMNT.cbl:295",
       "conditions": [
         "AM-FROZEN"
       ],
@@ -785,7 +854,7 @@
     },
     {
       "paragraph": "2250-LIMIT",
-      "source": "pangaea/programs/ACCTMNT.cbl:284",
+      "source": "pangaea/programs/ACCTMNT.cbl:304",
       "conditions": [
         "AM-CURRENT"
       ],
@@ -825,7 +894,7 @@
     },
     {
       "paragraph": "2800-WRITE-HELD",
-      "source": "pangaea/programs/ACCTMNT.cbl:302",
+      "source": "pangaea/programs/ACCTMNT.cbl:322",
       "conditions": [
         "ACCOUNT-HELD"
       ],

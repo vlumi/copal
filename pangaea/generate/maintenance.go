@@ -95,7 +95,7 @@ func (g *Generator) maintenanceFile(date Date, requests []request) ([][]byte, er
 		record := l.Blank()
 		fields := map[string]any{
 			"MR-REQUEST-ID": idBase + int64(i+1), "MR-REQUEST-TYPE": q.kind, "MR-ACCT-NO": q.account,
-			"MR-OVERDRAFT-LIMIT": q.limit,
+			"MR-OVERDRAFT-LIMIT": q.limit, "MR-EFFECTIVE-DATE": date.Number() % 1000000,
 		}
 		if q.kind == "O" {
 			kind := "C"

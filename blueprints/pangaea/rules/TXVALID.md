@@ -30,7 +30,7 @@ The business rules of [TXVALID](../programs/TXVALID.md), paragraph by paragraph:
 | → `MOVE 0 TO RETURN-CODE` | | 7 | |
 | → `MOVE 12 TO RETURN-CODE` | | | 5 |
 
-Source: [TXVALID.cbl:111](../../../pangaea/programs/TXVALID.cbl#L111).
+Source: [TXVALID.cbl:113](../../../pangaea/programs/TXVALID.cbl#L113).
 
 ## 1000-OPEN-FILES
 
@@ -46,8 +46,9 @@ Source: [TXVALID.cbl:111](../../../pangaea/programs/TXVALID.cbl#L111).
 | → `DISPLAY 'TXVALID: NO BANK CONTROL RECORD'` | | 3 | |
 | → `MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE` | | | 3 |
 | → `MOVE SPACES TO REJECT-RECORD` | | | 4 |
+| → `STRING WS-BUSINESS-DATE(1:4) '-' WS-BUSINESS-DATE(5:2) '-' WS-BUSINESS-DATE(7:2) DELIMITED BY SIZE INTO RJ-REJECT-DATE` | | | 5 |
 
-Source: [TXVALID.cbl:134](../../../pangaea/programs/TXVALID.cbl#L134).
+Source: [TXVALID.cbl:136](../../../pangaea/programs/TXVALID.cbl#L136).
 
 ## 2000-READ-HEADER
 
@@ -66,7 +67,7 @@ Source: [TXVALID.cbl:134](../../../pangaea/programs/TXVALID.cbl#L134).
 | → `MOVE 'HEADER IS NOT FOR THE BUSINESS DATE' TO WS-FILE-ERROR` | | | 3 | | | | | 2 | | |
 | → `MOVE 'HEADER IS FROM AN UNKNOWN SOURCE' TO WS-FILE-ERROR` | | | | 3 | | | | | 2 | |
 
-Source: [TXVALID.cbl:158](../../../pangaea/programs/TXVALID.cbl#L158).
+Source: [TXVALID.cbl:163](../../../pangaea/programs/TXVALID.cbl#L163).
 
 ## 3000-READ-DETAILS, in its loop
 
@@ -83,7 +84,7 @@ Each pass of `PERFORM UNTIL TR-TRAILER OR NOT FILE-IS-GOOD`.
 | → `MOVE 'TYPE' TO RJ-REASON` | | | | | 1 | 1 |
 | → `PERFORM 3300-REJECT-RECORD` | | | | | 2 | 2 |
 
-Source: [TXVALID.cbl:182](../../../pangaea/programs/TXVALID.cbl#L182).
+Source: [TXVALID.cbl:187](../../../pangaea/programs/TXVALID.cbl#L187).
 
 ## 3100-READ-NEXT
 
@@ -93,7 +94,7 @@ Source: [TXVALID.cbl:182](../../../pangaea/programs/TXVALID.cbl#L182).
 | → `READ TRAN-IN` | 1 | 1 |
 | → `MOVE 'NO TRAILER' TO WS-FILE-ERROR` | 2 | |
 
-Source: [TXVALID.cbl:198](../../../pangaea/programs/TXVALID.cbl#L198).
+Source: [TXVALID.cbl:203](../../../pangaea/programs/TXVALID.cbl#L203).
 
 ## 3200-VALIDATE-DETAIL
 
@@ -118,7 +119,7 @@ Source: [TXVALID.cbl:198](../../../pangaea/programs/TXVALID.cbl#L198).
 | → `SET RJ-BAD-COUNTER TO TRUE` | | | | | 5 | 5 | | | | | | | | | 4 | 4 | | | | |
 | → `SET RJ-BAD-ACCOUNT TO TRUE` | | | | | | | | | 4 | 4 | | | | | | | | | 3 | 3 |
 
-Source: [TXVALID.cbl:205](../../../pangaea/programs/TXVALID.cbl#L205).
+Source: [TXVALID.cbl:210](../../../pangaea/programs/TXVALID.cbl#L210).
 
 ## 4000-CHECK-TRAILER
 
@@ -135,7 +136,7 @@ Source: [TXVALID.cbl:205](../../../pangaea/programs/TXVALID.cbl#L205).
 | → `MOVE 'TRAILER AMOUNT TOTAL DIFFERS' TO WS-FILE-ERROR` | | | | 1 | 1 | 1 | | | | | | |
 | → `MOVE 'TRAILER ACCOUNT HASH DIFFERS' TO WS-FILE-ERROR` | | | | | | | 1 | 1 | 1 | | | |
 
-Source: [TXVALID.cbl:247](../../../pangaea/programs/TXVALID.cbl#L247).
+Source: [TXVALID.cbl:252](../../../pangaea/programs/TXVALID.cbl#L252).
 
 ## 8000-WRITE-REPORT
 
@@ -158,4 +159,4 @@ Source: [TXVALID.cbl:247](../../../pangaea/programs/TXVALID.cbl#L247).
 | → `MOVE 'FILE ACCEPTED' TO REPORT-LINE` | 21 | |
 | → `STRING 'FILE REJECTED: ' WS-FILE-ERROR DELIMITED BY SIZE INTO REPORT-LINE` | | 21 |
 
-Source: [TXVALID.cbl:268](../../../pangaea/programs/TXVALID.cbl#L268).
+Source: [TXVALID.cbl:273](../../../pangaea/programs/TXVALID.cbl#L273).

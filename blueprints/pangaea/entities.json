@@ -434,14 +434,14 @@
             "decisions": [
               {
                 "paragraph": "2210-OPEN",
-                "source": "pangaea/programs/ACCTMNT.cbl:236",
+                "source": "pangaea/programs/ACCTMNT.cbl:249",
                 "conditions": [
                   "AM-SAVINGS"
                 ]
               },
               {
                 "paragraph": "2250-LIMIT",
-                "source": "pangaea/programs/ACCTMNT.cbl:284",
+                "source": "pangaea/programs/ACCTMNT.cbl:304",
                 "conditions": [
                   "AM-CURRENT"
                 ]
@@ -523,7 +523,7 @@
               "program": "ACCTMNT",
               "from": "MR-ACCT-TYPE",
               "paragraph": "2210-OPEN",
-              "source": "pangaea/programs/ACCTMNT.cbl:244"
+              "source": "pangaea/programs/ACCTMNT.cbl:257"
             }
           ]
         }
@@ -566,21 +566,21 @@
             "decisions": [
               {
                 "paragraph": "2200-APPLY-REQUEST",
-                "source": "pangaea/programs/ACCTMNT.cbl:215",
+                "source": "pangaea/programs/ACCTMNT.cbl:228",
                 "conditions": [
                   "AM-CLOSED"
                 ]
               },
               {
                 "paragraph": "2230-FREEZE",
-                "source": "pangaea/programs/ACCTMNT.cbl:266",
+                "source": "pangaea/programs/ACCTMNT.cbl:286",
                 "conditions": [
                   "AM-OPEN"
                 ]
               },
               {
                 "paragraph": "2240-UNFREEZE",
-                "source": "pangaea/programs/ACCTMNT.cbl:275",
+                "source": "pangaea/programs/ACCTMNT.cbl:295",
                 "conditions": [
                   "AM-FROZEN"
                 ]
@@ -641,7 +641,7 @@
             "decisions": [
               {
                 "paragraph": "3000-APPLY-TRAN",
-                "source": "pangaea/programs/TXPOST.cbl:256",
+                "source": "pangaea/programs/TXPOST.cbl:261",
                 "conditions": [
                   "AM-CLOSED",
                   "AM-FROZEN"
@@ -677,28 +677,28 @@
               "to": "AM-OPEN",
               "program": "ACCTMNT",
               "paragraph": "2210-OPEN",
-              "source": "pangaea/programs/ACCTMNT.cbl:245"
+              "source": "pangaea/programs/ACCTMNT.cbl:258"
             },
             {
               "from": "any",
               "to": "AM-CLOSED",
               "program": "ACCTMNT",
               "paragraph": "2220-CLOSE",
-              "source": "pangaea/programs/ACCTMNT.cbl:260"
+              "source": "pangaea/programs/ACCTMNT.cbl:280"
             },
             {
               "from": "AM-OPEN",
               "to": "AM-FROZEN",
               "program": "ACCTMNT",
               "paragraph": "2230-FREEZE",
-              "source": "pangaea/programs/ACCTMNT.cbl:270"
+              "source": "pangaea/programs/ACCTMNT.cbl:290"
             },
             {
               "from": "AM-FROZEN",
               "to": "AM-OPEN",
               "program": "ACCTMNT",
               "paragraph": "2240-UNFREEZE",
-              "source": "pangaea/programs/ACCTMNT.cbl:279"
+              "source": "pangaea/programs/ACCTMNT.cbl:299"
             }
           ]
         }
@@ -797,7 +797,7 @@
             "decisions": [
               {
                 "paragraph": "2220-CLOSE",
-                "source": "pangaea/programs/ACCTMNT.cbl:256",
+                "source": "pangaea/programs/ACCTMNT.cbl:276",
                 "conditions": [
                   "AM-BALANCE = 0"
                 ]
@@ -4027,7 +4027,7 @@
             "decisions": [
               {
                 "paragraph": "2200-APPLY-REQUEST",
-                "source": "pangaea/programs/ACCTMNT.cbl:215",
+                "source": "pangaea/programs/ACCTMNT.cbl:228",
                 "conditions": [
                   "MR-OPEN",
                   "MR-CLOSE",
@@ -4137,6 +4137,19 @@
             "readBy": [
               "2210-OPEN",
               "2250-LIMIT"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "MR-EFFECTIVE-DATE",
+        "kind": "date",
+        "uses": [
+          {
+            "program": "ACCTMNT",
+            "field": "MR-EFFECTIVE-DATE",
+            "readBy": [
+              "2210-OPEN"
             ]
           }
         ]
@@ -4386,119 +4399,119 @@
               "to": "RJ-NO-ACCOUNT",
               "program": "ACCTMNT",
               "paragraph": "2200-APPLY-REQUEST",
-              "source": "pangaea/programs/ACCTMNT.cbl:219"
+              "source": "pangaea/programs/ACCTMNT.cbl:232"
             },
             {
               "from": "any",
               "to": "RJ-CLOSED",
               "program": "ACCTMNT",
               "paragraph": "2200-APPLY-REQUEST",
-              "source": "pangaea/programs/ACCTMNT.cbl:222"
+              "source": "pangaea/programs/ACCTMNT.cbl:235"
             },
             {
               "from": "any",
               "to": "RJ-BAD-TYPE",
               "program": "ACCTMNT",
               "paragraph": "2200-APPLY-REQUEST",
-              "source": "pangaea/programs/ACCTMNT.cbl:232"
+              "source": "pangaea/programs/ACCTMNT.cbl:245"
             },
             {
               "from": "any",
               "to": "RJ-EXISTS",
               "program": "ACCTMNT",
               "paragraph": "2210-OPEN",
-              "source": "pangaea/programs/ACCTMNT.cbl:238"
+              "source": "pangaea/programs/ACCTMNT.cbl:251"
             },
             {
               "from": "any",
               "to": "RJ-HAS-BALANCE",
               "program": "ACCTMNT",
               "paragraph": "2220-CLOSE",
-              "source": "pangaea/programs/ACCTMNT.cbl:258"
+              "source": "pangaea/programs/ACCTMNT.cbl:278"
             },
             {
               "from": "any",
               "to": "RJ-BAD-STATUS",
               "program": "ACCTMNT",
               "paragraph": "2230-FREEZE",
-              "source": "pangaea/programs/ACCTMNT.cbl:268"
+              "source": "pangaea/programs/ACCTMNT.cbl:288"
             },
             {
               "from": "any",
               "to": "RJ-BAD-STATUS",
               "program": "ACCTMNT",
               "paragraph": "2240-UNFREEZE",
-              "source": "pangaea/programs/ACCTMNT.cbl:277"
+              "source": "pangaea/programs/ACCTMNT.cbl:297"
             },
             {
               "from": "any",
               "to": "RJ-BAD-TYPE",
               "program": "ACCTMNT",
               "paragraph": "2250-LIMIT",
-              "source": "pangaea/programs/ACCTMNT.cbl:286"
+              "source": "pangaea/programs/ACCTMNT.cbl:306"
             },
             {
               "from": "any",
               "to": "RJ-NO-ACCOUNT",
               "program": "TXPOST",
               "paragraph": "2000-MATCH",
-              "source": "pangaea/programs/TXPOST.cbl:244"
+              "source": "pangaea/programs/TXPOST.cbl:249"
             },
             {
               "from": "any",
               "to": "RJ-CLOSED",
               "program": "TXPOST",
               "paragraph": "3000-APPLY-TRAN",
-              "source": "pangaea/programs/TXPOST.cbl:260"
+              "source": "pangaea/programs/TXPOST.cbl:265"
             },
             {
               "from": "any",
               "to": "RJ-FROZEN",
               "program": "TXPOST",
               "paragraph": "3000-APPLY-TRAN",
-              "source": "pangaea/programs/TXPOST.cbl:276"
+              "source": "pangaea/programs/TXPOST.cbl:281"
             },
             {
               "from": "any",
               "to": "RJ-NO-FUNDS",
               "program": "TXPOST",
               "paragraph": "3200-POST-DEBIT",
-              "source": "pangaea/programs/TXPOST.cbl:297"
+              "source": "pangaea/programs/TXPOST.cbl:302"
             },
             {
               "from": "any",
               "to": "RJ-BAD-TYPE",
               "program": "TXVALID",
               "paragraph": "3000-READ-DETAILS",
-              "source": "pangaea/programs/TXVALID.cbl:189"
+              "source": "pangaea/programs/TXVALID.cbl:194"
             },
             {
               "from": "any",
               "to": "RJ-BAD-CODE",
               "program": "TXVALID",
               "paragraph": "3200-VALIDATE-DETAIL",
-              "source": "pangaea/programs/TXVALID.cbl:220"
+              "source": "pangaea/programs/TXVALID.cbl:225"
             },
             {
               "from": "any",
               "to": "RJ-BAD-AMOUNT",
               "program": "TXVALID",
               "paragraph": "3200-VALIDATE-DETAIL",
-              "source": "pangaea/programs/TXVALID.cbl:224"
+              "source": "pangaea/programs/TXVALID.cbl:229"
             },
             {
               "from": "any",
               "to": "RJ-BAD-COUNTER",
               "program": "TXVALID",
               "paragraph": "3200-VALIDATE-DETAIL",
-              "source": "pangaea/programs/TXVALID.cbl:229"
+              "source": "pangaea/programs/TXVALID.cbl:234"
             },
             {
               "from": "any",
               "to": "RJ-BAD-ACCOUNT",
               "program": "TXVALID",
               "paragraph": "3200-VALIDATE-DETAIL",
-              "source": "pangaea/programs/TXVALID.cbl:216"
+              "source": "pangaea/programs/TXVALID.cbl:221"
             }
           ]
         }
@@ -4526,6 +4539,33 @@
             "field": "RJ-TRAN",
             "writtenBy": [
               "3300-REJECT-RECORD"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "RJ-REJECT-DATE",
+        "kind": "text",
+        "uses": [
+          {
+            "program": "ACCTMNT",
+            "field": "RJ-REJECT-DATE",
+            "writtenBy": [
+              "1000-INITIALIZE"
+            ]
+          },
+          {
+            "program": "TXPOST",
+            "field": "RJ-REJECT-DATE",
+            "writtenBy": [
+              "1000-INITIALIZE"
+            ]
+          },
+          {
+            "program": "TXVALID",
+            "field": "RJ-REJECT-DATE",
+            "writtenBy": [
+              "1000-OPEN-FILES"
             ]
           }
         ]
@@ -4595,7 +4635,7 @@
             "decisions": [
               {
                 "paragraph": "2000-READ-HEADER",
-                "source": "pangaea/programs/TXVALID.cbl:158",
+                "source": "pangaea/programs/TXVALID.cbl:163",
                 "conditions": [
                   "TR-HEADER"
                 ]
@@ -4603,7 +4643,7 @@
               {
                 "paragraph": "3000-READ-DETAILS",
                 "loop": "PERFORM UNTIL TR-TRAILER OR NOT FILE-IS-GOOD",
-                "source": "pangaea/programs/TXVALID.cbl:182",
+                "source": "pangaea/programs/TXVALID.cbl:187",
                 "conditions": [
                   "TR-DETAIL",
                   "TR-HEADER"
@@ -4737,7 +4777,7 @@
             "decisions": [
               {
                 "paragraph": "2000-READ-HEADER",
-                "source": "pangaea/programs/TXVALID.cbl:158",
+                "source": "pangaea/programs/TXVALID.cbl:163",
                 "conditions": [
                   "TH-BUSINESS-DATE = WS-BUSINESS-DATE"
                 ]
@@ -4774,7 +4814,7 @@
             "decisions": [
               {
                 "paragraph": "2000-READ-HEADER",
-                "source": "pangaea/programs/TXVALID.cbl:158",
+                "source": "pangaea/programs/TXVALID.cbl:163",
                 "conditions": [
                   "NOT TH-FROM-BRANCHES AND NOT TH-FROM-CARDS"
                 ]
@@ -4929,7 +4969,7 @@
             "decisions": [
               {
                 "paragraph": "3200-VALIDATE-DETAIL",
-                "source": "pangaea/programs/TXVALID.cbl:205",
+                "source": "pangaea/programs/TXVALID.cbl:210",
                 "conditions": [
                   "TD-ACCT-NO IS NUMERIC",
                   "TD-TRANSFER AND (TD-COUNTER-ACCT-NO IS NOT NUMERIC OR TD-COUNTER-ACCT-NO = TD-ACCT-NO)"
@@ -4974,7 +5014,7 @@
             "decisions": [
               {
                 "paragraph": "3000-APPLY-TRAN",
-                "source": "pangaea/programs/TXPOST.cbl:256",
+                "source": "pangaea/programs/TXPOST.cbl:261",
                 "conditions": [
                   "TD-DEPOSIT OR TD-TRANSFER-CREDIT OR TD-TRANSFER-RETURN OR TD-INTEREST",
                   "TD-FEE OR TD-OVERDRAFT-INTEREST OR TD-MAINTENANCE-FEE OR TD-ATM-FEE",
@@ -4984,21 +5024,21 @@
               },
               {
                 "paragraph": "3200-POST-DEBIT",
-                "source": "pangaea/programs/TXPOST.cbl:293",
+                "source": "pangaea/programs/TXPOST.cbl:298",
                 "conditions": [
                   "TD-TRANSFER"
                 ]
               },
               {
                 "paragraph": "3500-WRITE-LEG",
-                "source": "pangaea/programs/TXPOST.cbl:328",
+                "source": "pangaea/programs/TXPOST.cbl:333",
                 "conditions": [
                   "TD-TRANSFER"
                 ]
               },
               {
                 "paragraph": "3900-REJECT-TRAN",
-                "source": "pangaea/programs/TXPOST.cbl:357",
+                "source": "pangaea/programs/TXPOST.cbl:362",
                 "conditions": [
                   "TD-TRANSFER-CREDIT"
                 ]
@@ -5014,7 +5054,7 @@
             "decisions": [
               {
                 "paragraph": "3200-VALIDATE-DETAIL",
-                "source": "pangaea/programs/TXVALID.cbl:205",
+                "source": "pangaea/programs/TXVALID.cbl:210",
                 "conditions": [
                   "(FROM-BRANCHES AND NOT TD-KNOWN-CODE) OR (FROM-CARDS AND NOT TD-CARD-CODE)",
                   "TD-TRANSFER AND (TD-COUNTER-ACCT-NO IS NOT NUMERIC OR TD-COUNTER-ACCT-NO = TD-ACCT-NO)"
@@ -5163,14 +5203,14 @@
               "to": "TD-TRANSFER-CREDIT",
               "program": "TXPOST",
               "paragraph": "3500-WRITE-LEG",
-              "source": "pangaea/programs/TXPOST.cbl:331"
+              "source": "pangaea/programs/TXPOST.cbl:336"
             },
             {
               "from": "any",
               "to": "TD-TRANSFER-RETURN",
               "program": "TXPOST",
               "paragraph": "3500-WRITE-LEG",
-              "source": "pangaea/programs/TXPOST.cbl:333"
+              "source": "pangaea/programs/TXPOST.cbl:338"
             }
           ]
         }
@@ -5220,7 +5260,7 @@
             "decisions": [
               {
                 "paragraph": "3200-VALIDATE-DETAIL",
-                "source": "pangaea/programs/TXVALID.cbl:205",
+                "source": "pangaea/programs/TXVALID.cbl:210",
                 "conditions": [
                   "TD-AMOUNT IS NUMERIC",
                   "TD-AMOUNT IS NOT NUMERIC OR TD-AMOUNT = ZERO"
@@ -5293,7 +5333,7 @@
             "decisions": [
               {
                 "paragraph": "3200-VALIDATE-DETAIL",
-                "source": "pangaea/programs/TXVALID.cbl:205",
+                "source": "pangaea/programs/TXVALID.cbl:210",
                 "conditions": [
                   "TD-TRANSFER AND (TD-COUNTER-ACCT-NO IS NOT NUMERIC OR TD-COUNTER-ACCT-NO = TD-ACCT-NO)"
                 ]
@@ -5352,7 +5392,7 @@
             "decisions": [
               {
                 "paragraph": "4000-CHECK-TRAILER",
-                "source": "pangaea/programs/TXVALID.cbl:247",
+                "source": "pangaea/programs/TXVALID.cbl:252",
                 "conditions": [
                   "TT-DETAIL-COUNT = WS-DETAIL-COUNT"
                 ]
@@ -5389,7 +5429,7 @@
             "decisions": [
               {
                 "paragraph": "4000-CHECK-TRAILER",
-                "source": "pangaea/programs/TXVALID.cbl:247",
+                "source": "pangaea/programs/TXVALID.cbl:252",
                 "conditions": [
                   "TT-AMOUNT-TOTAL = WS-AMOUNT-TOTAL"
                 ]
@@ -5426,7 +5466,7 @@
             "decisions": [
               {
                 "paragraph": "4000-CHECK-TRAILER",
-                "source": "pangaea/programs/TXVALID.cbl:247",
+                "source": "pangaea/programs/TXVALID.cbl:252",
                 "conditions": [
                   "TT-ACCT-HASH = WS-ACCT-HASH"
                 ]

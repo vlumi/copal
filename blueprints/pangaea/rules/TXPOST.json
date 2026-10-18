@@ -3,7 +3,7 @@
   "tables": [
     {
       "paragraph": "0000-MAIN",
-      "source": "pangaea/programs/TXPOST.cbl:162",
+      "source": "pangaea/programs/TXPOST.cbl:164",
       "conditions": [
         "WS-REJECT-COUNT \u003e 0"
       ],
@@ -55,7 +55,7 @@
     },
     {
       "paragraph": "1000-INITIALIZE",
-      "source": "pangaea/programs/TXPOST.cbl:179",
+      "source": "pangaea/programs/TXPOST.cbl:181",
       "conditions": [
         "WS-CONTROL-STATUS NOT = '00' OR WS-ACCT-IN-STATUS NOT = '00' OR WS-TRAN-IN-STATUS NOT = '00' OR WS-ACCT-OUT-STATUS NOT = '00' OR NOT AUDIT-OPENED OR NOT REJECTS-OPENED OR WS-LEGS-STATUS NOT = '00' OR WS-REPORT-STATUS NOT = '00'",
         "READ CONTROL-FILE AT END"
@@ -83,6 +83,7 @@
         "PERFORM 9900-ABORT",
         "MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE",
         "MOVE SPACES TO AUDIT-RECORD REJECT-RECORD",
+        "STRING WS-BUSINESS-DATE(1:4) '-' WS-BUSINESS-DATE(5:2) '-' WS-BUSINESS-DATE(7:2) DELIMITED BY SIZE INTO RJ-REJECT-DATE",
         "PERFORM 1200-READ-MASTER",
         "PERFORM 1300-READ-TRAN"
       ],
@@ -112,7 +113,8 @@
             7,
             8,
             9,
-            10
+            10,
+            11
           ]
         },
         {
@@ -126,14 +128,15 @@
             7,
             8,
             9,
-            10
+            10,
+            11
           ]
         }
       ]
     },
     {
       "paragraph": "1200-READ-MASTER",
-      "source": "pangaea/programs/TXPOST.cbl:206",
+      "source": "pangaea/programs/TXPOST.cbl:211",
       "conditions": [
         "READ ACCT-IN AT END",
         "WS-MASTER-KEY \u003e WS-PREV-MASTER-KEY"
@@ -198,7 +201,7 @@
     },
     {
       "paragraph": "1300-READ-TRAN",
-      "source": "pangaea/programs/TXPOST.cbl:223",
+      "source": "pangaea/programs/TXPOST.cbl:228",
       "conditions": [
         "READ TRAN-IN AT END",
         "WS-TRAN-ORDER-KEY \u003e WS-PREV-TRAN-ORDER-KEY"
@@ -260,7 +263,7 @@
     },
     {
       "paragraph": "2000-MATCH",
-      "source": "pangaea/programs/TXPOST.cbl:241",
+      "source": "pangaea/programs/TXPOST.cbl:246",
       "conditions": [
         "WS-TRAN-KEY \u003c WS-MASTER-KEY",
         "WS-TRAN-KEY = WS-MASTER-KEY"
@@ -319,7 +322,7 @@
     },
     {
       "paragraph": "3000-APPLY-TRAN",
-      "source": "pangaea/programs/TXPOST.cbl:256",
+      "source": "pangaea/programs/TXPOST.cbl:261",
       "conditions": [
         "AM-CLOSED",
         "TD-DEPOSIT OR TD-TRANSFER-CREDIT OR TD-TRANSFER-RETURN OR TD-INTEREST",
@@ -462,7 +465,7 @@
     },
     {
       "paragraph": "3200-POST-DEBIT",
-      "source": "pangaea/programs/TXPOST.cbl:293",
+      "source": "pangaea/programs/TXPOST.cbl:298",
       "conditions": [
         "WS-NEW-BALANCE \u003c WS-BALANCE-FLOOR",
         "TD-TRANSFER"
@@ -533,7 +536,7 @@
     },
     {
       "paragraph": "3500-WRITE-LEG",
-      "source": "pangaea/programs/TXPOST.cbl:328",
+      "source": "pangaea/programs/TXPOST.cbl:333",
       "conditions": [
         "TD-TRANSFER"
       ],
@@ -588,7 +591,7 @@
     },
     {
       "paragraph": "3900-REJECT-TRAN",
-      "source": "pangaea/programs/TXPOST.cbl:357",
+      "source": "pangaea/programs/TXPOST.cbl:362",
       "conditions": [
         "TD-TRANSFER-CREDIT"
       ],
@@ -632,7 +635,7 @@
     },
     {
       "paragraph": "5000-RECONCILE",
-      "source": "pangaea/programs/TXPOST.cbl:373",
+      "source": "pangaea/programs/TXPOST.cbl:378",
       "conditions": [
         "WS-EXPECTED-TOTAL NOT = WS-CLOSING-TOTAL OR WS-MASTERS-WRITTEN NOT = WS-MASTERS-READ"
       ],

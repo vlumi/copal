@@ -22,8 +22,13 @@
       * MODIFICATION HISTORY                                           *
       * DATE       BY  CHANGE                                          *
       * 1988-05-09 JA  CR-0031 ORIGINAL VERSION.                       *
+      * 1991-10-07 PK  CR-0129 AN OPENING IS DATED FROM ITS REQUEST'S  *
+      *                EFFECTIVE DATE.                                 *
       * 1994-11-14 PK  CR-0201 OVERDRAFT LIMIT CHANGES.                *
-      * 1999-01-11 SL  Y2K: 8-DIGIT OPEN DATES.                        *
+      * 1999-01-11 SL  Y2K: 8-DIGIT OPEN DATES. THE EFFECTIVE DATE     *
+      *                LEFT AS IS, WINDOWED ON READ: BELOW 50 IS 20YY. *
+      * 2009-03-02 MV  CR-0444 THE DATE OF THE REJECTION ON EVERY      *
+      *                REJECT.                                         *
       *================================================================*
        IDENTIFICATION DIVISION.
        PROGRAM-ID. ACCTMNT.
@@ -66,7 +71,7 @@
        FD  ACCT-OUT.
        01  ACCT-OUT-RECORD             PIC X(100).
        FD  REJECT-OUT.
-       01  REJECT-OUT-RECORD           PIC X(100).
+       01  REJECT-OUT-RECORD           PIC X(110).
        FD  REPORT-OUT.
        01  REPORT-LINE                 PIC X(80).
 
@@ -80,6 +85,11 @@
            05  WS-REPORT-STATUS        PIC XX.
 
        01  WS-BUSINESS-DATE            PIC 9(8).
+       01  WS-EFFECTIVE-DATE.
+           05  WS-EFF-CENTURY          PIC 99.
+           05  WS-EFF-YYMMDD.
+               10  WS-EFF-YY           PIC 99.
+               10  WS-EFF-MMDD         PIC 9(4).
        01  WS-ABORT-MESSAGE            PIC X(40).
 
       * MATCH KEYS: HIGH-VALUES ONCE A FILE IS AT ITS END. THE ACTIVE
@@ -155,6 +165,9 @@
                    PERFORM 9900-ABORT.
            MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE
            MOVE SPACES TO REJECT-RECORD
+           STRING WS-BUSINESS-DATE(1:4) '-' WS-BUSINESS-DATE(5:2) '-'
+                  WS-BUSINESS-DATE(7:2)
+               DELIMITED BY SIZE INTO RJ-REJECT-DATE
            PERFORM 1200-READ-MASTER THRU 1200-EXIT
            PERFORM 1300-READ-REQUEST THRU 1300-EXIT.
 
@@ -232,7 +245,7 @@
            SET RJ-BAD-TYPE TO TRUE
            GO TO 2290-REJECT.
 
-      * OPEN A NEW ACCOUNT, EMPTY, FROM TODAY.
+      * OPEN A NEW ACCOUNT, EMPTY, FROM THE REQUEST'S EFFECTIVE DATE.
        2210-OPEN.
            IF ACCOUNT-HELD
                SET RJ-EXISTS TO TRUE
@@ -243,7 +256,14 @@
            MOVE MR-SHORT-NAME TO AM-SHORT-NAME
            MOVE MR-ACCT-TYPE TO AM-ACCT-TYPE
            SET AM-OPEN TO TRUE
-           MOVE WS-BUSINESS-DATE TO AM-OPEN-DATE AM-LAST-ACTIVITY-DATE
+           MOVE MR-EFFECTIVE-DATE TO WS-EFF-YYMMDD
+           IF WS-EFF-YY < 50
+               MOVE 20 TO WS-EFF-CENTURY
+           ELSE
+               MOVE 19 TO WS-EFF-CENTURY
+           END-IF
+           MOVE WS-EFFECTIVE-DATE TO AM-OPEN-DATE
+           MOVE WS-BUSINESS-DATE TO AM-LAST-ACTIVITY-DATE
            MOVE 0 TO AM-BALANCE
            MOVE MR-OVERDRAFT-LIMIT TO AM-OVERDRAFT-LIMIT
            IF AM-SAVINGS

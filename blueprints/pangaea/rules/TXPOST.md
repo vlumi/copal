@@ -29,7 +29,7 @@ The business rules of [TXPOST](../programs/TXPOST.md), paragraph by paragraph: e
 | → `STOP RUN` | 7 | 7 |
 | → `MOVE 0 TO RETURN-CODE` | | 6 |
 
-Source: [TXPOST.cbl:162](../../../pangaea/programs/TXPOST.cbl#L162).
+Source: [TXPOST.cbl:164](../../../pangaea/programs/TXPOST.cbl#L164).
 
 ## 1000-INITIALIZE
 
@@ -46,10 +46,11 @@ Source: [TXPOST.cbl:162](../../../pangaea/programs/TXPOST.cbl#L162).
 | → `PERFORM 9900-ABORT` | | 4 | |
 | → `MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE` | | 5 | 3 |
 | → `MOVE SPACES TO AUDIT-RECORD REJECT-RECORD` | | 6 | 4 |
-| → `PERFORM 1200-READ-MASTER` | | 7 | 5 |
-| → `PERFORM 1300-READ-TRAN` | | 8 | 6 |
+| → `STRING WS-BUSINESS-DATE(1:4) '-' WS-BUSINESS-DATE(5:2) '-' WS-BUSINESS-DATE(7:2) DELIMITED BY SIZE INTO RJ-REJECT-DATE` | | 7 | 5 |
+| → `PERFORM 1200-READ-MASTER` | | 8 | 6 |
+| → `PERFORM 1300-READ-TRAN` | | 9 | 7 |
 
-Source: [TXPOST.cbl:179](../../../pangaea/programs/TXPOST.cbl#L179).
+Source: [TXPOST.cbl:181](../../../pangaea/programs/TXPOST.cbl#L181).
 
 ## 1200-READ-MASTER
 
@@ -66,7 +67,7 @@ Source: [TXPOST.cbl:179](../../../pangaea/programs/TXPOST.cbl#L179).
 | → `ADD 1 TO WS-MASTERS-READ` | | 6 | 4 |
 | → `ADD AM-BALANCE TO WS-OPENING-TOTAL` | | 7 | 5 |
 
-Source: [TXPOST.cbl:206](../../../pangaea/programs/TXPOST.cbl#L206).
+Source: [TXPOST.cbl:211](../../../pangaea/programs/TXPOST.cbl#L211).
 
 ## 1300-READ-TRAN
 
@@ -82,7 +83,7 @@ Source: [TXPOST.cbl:206](../../../pangaea/programs/TXPOST.cbl#L206).
 | → `PERFORM 9900-ABORT` | | 5 | |
 | → `MOVE WS-TRAN-ORDER-KEY TO WS-PREV-TRAN-ORDER-KEY` | | 6 | 4 |
 
-Source: [TXPOST.cbl:223](../../../pangaea/programs/TXPOST.cbl#L223).
+Source: [TXPOST.cbl:228](../../../pangaea/programs/TXPOST.cbl#L228).
 
 ## 2000-MATCH
 
@@ -97,7 +98,7 @@ Source: [TXPOST.cbl:223](../../../pangaea/programs/TXPOST.cbl#L223).
 | → `PERFORM 4000-WRITE-MASTER` | | | 1 |
 | → `PERFORM 1200-READ-MASTER` | | | 2 |
 
-Source: [TXPOST.cbl:241](../../../pangaea/programs/TXPOST.cbl#L241).
+Source: [TXPOST.cbl:246](../../../pangaea/programs/TXPOST.cbl#L246).
 
 ## 3000-APPLY-TRAN
 
@@ -118,7 +119,7 @@ Source: [TXPOST.cbl:241](../../../pangaea/programs/TXPOST.cbl#L241).
 | → `SET RJ-FROZEN TO TRUE` | | | | | 2 | | |
 | → `PERFORM 3200-POST-DEBIT` | | | | | | 2 | |
 
-Source: [TXPOST.cbl:256](../../../pangaea/programs/TXPOST.cbl#L256).
+Source: [TXPOST.cbl:261](../../../pangaea/programs/TXPOST.cbl#L261).
 
 ## 3200-POST-DEBIT
 
@@ -136,7 +137,7 @@ Source: [TXPOST.cbl:256](../../../pangaea/programs/TXPOST.cbl#L256).
 | → `PERFORM 3800-WRITE-AUDIT` | | 6 | 6 |
 | → `PERFORM 3500-WRITE-LEG` | | 7 | |
 
-Source: [TXPOST.cbl:293](../../../pangaea/programs/TXPOST.cbl#L293).
+Source: [TXPOST.cbl:298](../../../pangaea/programs/TXPOST.cbl#L298).
 
 ## 3500-WRITE-LEG
 
@@ -153,7 +154,7 @@ Source: [TXPOST.cbl:293](../../../pangaea/programs/TXPOST.cbl#L293).
 | → `MOVE WS-SAVED-TRAN TO TRAN-RECORD` | 8 | 8 |
 | → `SET TD-TRANSFER-RETURN TO TRUE` | | 2 |
 
-Source: [TXPOST.cbl:328](../../../pangaea/programs/TXPOST.cbl#L328).
+Source: [TXPOST.cbl:333](../../../pangaea/programs/TXPOST.cbl#L333).
 
 ## 3900-REJECT-TRAN
 
@@ -166,7 +167,7 @@ Source: [TXPOST.cbl:328](../../../pangaea/programs/TXPOST.cbl#L328).
 | → `ADD 1 TO WS-REJECT-COUNT` | 4 | 4 |
 | → `PERFORM 3500-WRITE-LEG` | 5 | |
 
-Source: [TXPOST.cbl:357](../../../pangaea/programs/TXPOST.cbl#L357).
+Source: [TXPOST.cbl:362](../../../pangaea/programs/TXPOST.cbl#L362).
 
 ## 5000-RECONCILE
 
@@ -180,4 +181,4 @@ Source: [TXPOST.cbl:357](../../../pangaea/programs/TXPOST.cbl#L357).
 | → `MOVE 'NEW MASTER OUT OF BALANCE' TO WS-ABORT-MESSAGE` | 5 | |
 | → `PERFORM 9900-ABORT` | 6 | |
 
-Source: [TXPOST.cbl:373](../../../pangaea/programs/TXPOST.cbl#L373).
+Source: [TXPOST.cbl:378](../../../pangaea/programs/TXPOST.cbl#L378).
