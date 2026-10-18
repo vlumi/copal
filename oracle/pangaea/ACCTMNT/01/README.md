@@ -4,7 +4,7 @@ The run ended with return code 4.
 
 The first case to reach:
 
-- [ACCTMNT, 0000-MAIN, rule 3](../../../../blueprints/pangaea/rules/ACCTMNT.md#0000-main)
+- [ACCTMNT, 0000-MAIN, rule 2](../../../../blueprints/pangaea/rules/ACCTMNT.md#0000-main)
 - [ACCTMNT, 1000-INITIALIZE, rule 3](../../../../blueprints/pangaea/rules/ACCTMNT.md#1000-initialize)
 - [ACCTMNT, 1200-READ-MASTER, rule 1](../../../../blueprints/pangaea/rules/ACCTMNT.md#1200-read-master)
 - [ACCTMNT, 1200-READ-MASTER, rule 3](../../../../blueprints/pangaea/rules/ACCTMNT.md#1200-read-master)

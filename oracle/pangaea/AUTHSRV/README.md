@@ -1,6 +1,6 @@
 # AUTHSRV: cases
 
-25 cases reach 22 of the 55 rules of AUTHSRV's decision tables, and of the programs it calls, 9 of the 9 of AUTHPUR, 6 of the 6 of AUTHREV, 9 of the 15 of ATMWDL, 3 of the 3 of ATMBAL. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's.
+26 cases reach 23 of the 45 rules of AUTHSRV's decision tables, and of the programs it calls, 9 of the 9 of AUTHPUR, 6 of the 6 of AUTHREV, 9 of the 15 of ATMWDL, 3 of the 3 of ATMBAL. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's.
 
 ## AUTHSRV
 
@@ -9,14 +9,14 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | not reached: `WS-FILE-STATUSES = ALL '0'` N |
-| 2 | not reached: `WS-FILE-STATUSES = ALL '0'` Y, `READ CONTROL-FILE AT END` Y |
+| 2 | [case 10](10/) |
 | 3 | [case 01](01/) |
 
 ### [1100-FIND-LAST-HOLD](../../../blueprints/pangaea/rules/AUTHSRV.md#1100-find-last-hold)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 11](11/) |
+| 1 | [case 12](12/) |
 | 2 | [case 01](01/) |
 
 ### [1100-FIND-LAST-HOLD, in its loop](../../../blueprints/pangaea/rules/AUTHSRV.md#1100-find-last-hold-in-its-loop)
@@ -68,7 +68,7 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 01](01/) |
-| 2 | [case 10](10/) |
+| 2 | [case 11](11/) |
 | 3 | [case 01](01/) |
 
 ### [2300-READ-HOLD](../../../blueprints/pangaea/rules/AUTHSRV.md#2300-read-hold)
@@ -82,22 +82,12 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | not reached: `REWRITE ACCT-ONLINE-RECORD INVALID KEY` Y, `REWRITE CARD-RECORD INVALID KEY` Y, `RQ-REVERSAL` Y, `REWRITE HOLD-RECORD INVALID KEY` Y |
-| 2 | not reached: `REWRITE ACCT-ONLINE-RECORD INVALID KEY` Y, `REWRITE CARD-RECORD INVALID KEY` Y, `RQ-REVERSAL` Y, `REWRITE HOLD-RECORD INVALID KEY` N |
-| 3 | not reached: `REWRITE ACCT-ONLINE-RECORD INVALID KEY` Y, `REWRITE CARD-RECORD INVALID KEY` Y, `RQ-REVERSAL` N, `WRITE HOLD-RECORD INVALID KEY` Y |
-| 4 | not reached: `REWRITE ACCT-ONLINE-RECORD INVALID KEY` Y, `REWRITE CARD-RECORD INVALID KEY` Y, `RQ-REVERSAL` N, `WRITE HOLD-RECORD INVALID KEY` N |
-| 5 | not reached: `REWRITE ACCT-ONLINE-RECORD INVALID KEY` Y, `REWRITE CARD-RECORD INVALID KEY` N, `RQ-REVERSAL` Y, `REWRITE HOLD-RECORD INVALID KEY` Y |
-| 6 | not reached: `REWRITE ACCT-ONLINE-RECORD INVALID KEY` Y, `REWRITE CARD-RECORD INVALID KEY` N, `RQ-REVERSAL` Y, `REWRITE HOLD-RECORD INVALID KEY` N |
-| 7 | not reached: `REWRITE ACCT-ONLINE-RECORD INVALID KEY` Y, `REWRITE CARD-RECORD INVALID KEY` N, `RQ-REVERSAL` N, `WRITE HOLD-RECORD INVALID KEY` Y |
-| 8 | not reached: `REWRITE ACCT-ONLINE-RECORD INVALID KEY` Y, `REWRITE CARD-RECORD INVALID KEY` N, `RQ-REVERSAL` N, `WRITE HOLD-RECORD INVALID KEY` N |
-| 9 | not reached: `REWRITE ACCT-ONLINE-RECORD INVALID KEY` N, `REWRITE CARD-RECORD INVALID KEY` Y, `RQ-REVERSAL` Y, `REWRITE HOLD-RECORD INVALID KEY` Y |
-| 10 | not reached: `REWRITE ACCT-ONLINE-RECORD INVALID KEY` N, `REWRITE CARD-RECORD INVALID KEY` Y, `RQ-REVERSAL` Y, `REWRITE HOLD-RECORD INVALID KEY` N |
-| 11 | not reached: `REWRITE ACCT-ONLINE-RECORD INVALID KEY` N, `REWRITE CARD-RECORD INVALID KEY` Y, `RQ-REVERSAL` N, `WRITE HOLD-RECORD INVALID KEY` Y |
-| 12 | not reached: `REWRITE ACCT-ONLINE-RECORD INVALID KEY` N, `REWRITE CARD-RECORD INVALID KEY` Y, `RQ-REVERSAL` N, `WRITE HOLD-RECORD INVALID KEY` N |
-| 13 | not reached: `REWRITE ACCT-ONLINE-RECORD INVALID KEY` N, `REWRITE CARD-RECORD INVALID KEY` N, `RQ-REVERSAL` Y, `REWRITE HOLD-RECORD INVALID KEY` Y |
-| 14 | [case 02](02/) |
-| 15 | not reached: `REWRITE ACCT-ONLINE-RECORD INVALID KEY` N, `REWRITE CARD-RECORD INVALID KEY` N, `RQ-REVERSAL` N, `WRITE HOLD-RECORD INVALID KEY` Y |
-| 16 | [case 08](08/) |
+| 1 | not reached: `REWRITE ACCT-ONLINE-RECORD INVALID KEY` Y |
+| 2 | not reached: `REWRITE ACCT-ONLINE-RECORD INVALID KEY` N, `REWRITE CARD-RECORD INVALID KEY` Y |
+| 3 | not reached: `REWRITE ACCT-ONLINE-RECORD INVALID KEY` N, `REWRITE CARD-RECORD INVALID KEY` N, `RQ-REVERSAL` Y, `REWRITE HOLD-RECORD INVALID KEY` Y |
+| 4 | [case 02](02/) |
+| 5 | not reached: `REWRITE ACCT-ONLINE-RECORD INVALID KEY` N, `REWRITE CARD-RECORD INVALID KEY` N, `RQ-REVERSAL` N, `WRITE HOLD-RECORD INVALID KEY` Y |
+| 6 | [case 08](08/) |
 
 ## AUTHPUR
 
@@ -117,7 +107,7 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 08](08/) |
-| 2 | [case 22](22/) |
+| 2 | [case 23](23/) |
 | 3 | [case 01](01/) |
 
 ## AUTHREV
@@ -126,9 +116,9 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 13](13/) |
-| 2 | [case 14](14/) |
-| 3 | [case 15](15/) |
+| 1 | [case 14](14/) |
+| 2 | [case 15](15/) |
+| 3 | [case 16](16/) |
 | 4 | [case 02](02/) |
 
 ### [2000-APPROVE](../../../blueprints/pangaea/rules/AUTHREV.md#2000-approve)
@@ -136,7 +126,7 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 02](02/) |
-| 2 | [case 12](12/) |
+| 2 | [case 13](13/) |
 
 ## ATMWDL
 
@@ -144,15 +134,15 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 16](16/) |
-| 2 | [case 17](17/) |
+| 1 | [case 17](17/) |
+| 2 | [case 18](18/) |
 | 3 | [case 09](09/) |
 | 4 | not reached: `CR-MONTH-WITHDRAWALS < WS-FREE-WITHDRAWALS` Y, `CR-BLOCKED` N, `AO-OPEN` Y, `RQ-AMOUNT = 0 OR FUNCTION MOD(RQ-AMOUNT WS-NOTE) NOT = 0` N, `WS-DAY-CASH > CR-CASH-LIMIT` Y |
 | 5 | not reached: `CR-MONTH-WITHDRAWALS < WS-FREE-WITHDRAWALS` Y, `CR-BLOCKED` N, `AO-OPEN` Y, `RQ-AMOUNT = 0 OR FUNCTION MOD(RQ-AMOUNT WS-NOTE) NOT = 0` N, `WS-DAY-CASH > CR-CASH-LIMIT` N, `WS-TO-HOLD > WS-AVAILABLE` Y |
 | 6 | not reached: `CR-MONTH-WITHDRAWALS < WS-FREE-WITHDRAWALS` Y, `CR-BLOCKED` N, `AO-OPEN` Y, `RQ-AMOUNT = 0 OR FUNCTION MOD(RQ-AMOUNT WS-NOTE) NOT = 0` N, `WS-DAY-CASH > CR-CASH-LIMIT` N, `WS-TO-HOLD > WS-AVAILABLE` N |
-| 7 | [case 23](23/) |
-| 8 | [case 24](24/) |
-| 9 | [case 19](19/) |
+| 7 | [case 24](24/) |
+| 8 | [case 25](25/) |
+| 9 | [case 20](20/) |
 | 10 | not reached: `CR-MONTH-WITHDRAWALS < WS-FREE-WITHDRAWALS` N, `CR-BLOCKED` N, `AO-OPEN` Y, `RQ-AMOUNT = 0 OR FUNCTION MOD(RQ-AMOUNT WS-NOTE) NOT = 0` N, `WS-DAY-CASH > CR-CASH-LIMIT` Y |
 | 11 | not reached: `CR-MONTH-WITHDRAWALS < WS-FREE-WITHDRAWALS` N, `CR-BLOCKED` N, `AO-OPEN` Y, `RQ-AMOUNT = 0 OR FUNCTION MOD(RQ-AMOUNT WS-NOTE) NOT = 0` N, `WS-DAY-CASH > CR-CASH-LIMIT` N, `WS-TO-HOLD > WS-AVAILABLE` Y |
 | 12 | not reached: `CR-MONTH-WITHDRAWALS < WS-FREE-WITHDRAWALS` N, `CR-BLOCKED` N, `AO-OPEN` Y, `RQ-AMOUNT = 0 OR FUNCTION MOD(RQ-AMOUNT WS-NOTE) NOT = 0` N, `WS-DAY-CASH > CR-CASH-LIMIT` N, `WS-TO-HOLD > WS-AVAILABLE` N |
@@ -161,8 +151,8 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 18](18/) |
-| 2 | [case 25](25/) |
+| 1 | [case 19](19/) |
+| 2 | [case 26](26/) |
 | 3 | [case 09](09/) |
 
 ## ATMBAL
@@ -171,6 +161,6 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 20](20/) |
-| 2 | [case 21](21/) |
+| 1 | [case 21](21/) |
+| 2 | [case 22](22/) |
 | 3 | [case 09](09/) |

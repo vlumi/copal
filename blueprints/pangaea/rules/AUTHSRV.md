@@ -26,7 +26,7 @@ The business rules of [AUTHSRV](../programs/AUTHSRV.md), paragraph by paragraph:
 | → `READ CONTROL-FILE` | | 2 | 2 |
 | → `MOVE 'NO BANK CONTROL RECORD' TO WS-ABORT-MESSAGE` | | 3 | |
 | → `PERFORM 9900-ABORT` | | 4 | |
-| → `PERFORM 1100-FIND-LAST-HOLD` | | 5 | 3 |
+| → `PERFORM 1100-FIND-LAST-HOLD` | | | 3 |
 
 Source: [AUTHSRV.cbl:113](../../../pangaea/programs/AUTHSRV.cbl#L113).
 
@@ -125,26 +125,26 @@ Source: [AUTHSRV.cbl:219](../../../pangaea/programs/AUTHSRV.cbl#L219).
 
 ## 2400-SAVE-CHANGES
 
-| | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 |
-| --- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| `REWRITE ACCT-ONLINE-RECORD INVALID KEY` | Y | Y | Y | Y | Y | Y | Y | Y | N | N | N | N | N | N | N | N |
-| `REWRITE CARD-RECORD INVALID KEY` | Y | Y | Y | Y | N | N | N | N | Y | Y | Y | Y | N | N | N | N |
-| `RQ-REVERSAL` | Y | Y | N | N | Y | Y | N | N | Y | Y | N | N | Y | Y | N | N |
-| `REWRITE HOLD-RECORD INVALID KEY` | Y | N | | | Y | N | | | Y | N | | | Y | N | | |
-| `WRITE HOLD-RECORD INVALID KEY` | | | Y | N | | | Y | N | | | Y | N | | | Y | N |
-| → `REWRITE ACCT-ONLINE-RECORD` | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
-| → `MOVE 'CANNOT REWRITE THE ACCOUNT' TO WS-ABORT-MESSAGE` | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | | | | | | | | |
-| → `PERFORM 9900-ABORT` | 3, 6, 9 | 3, 6 | 3, 6, 11 | 3, 6 | 3, 7 | 3 | 3, 9 | 3 | 4, 7 | 4 | 4, 9 | 4 | 5 | | 7 | |
-| → `REWRITE CARD-RECORD` | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 |
-| → `MOVE 'CANNOT REWRITE THE CARD' TO WS-ABORT-MESSAGE` | 5 | 5 | 5 | 5 | | | | | 3 | 3 | 3 | 3 | | | | |
-| → `REWRITE HOLD-RECORD` | 7 | 7 | | | 5 | 5 | | | 5 | 5 | | | 3 | 3 | | |
-| → `MOVE 'CANNOT REWRITE THE HOLD' TO WS-ABORT-MESSAGE` | 8 | | | | 6 | | | | 6 | | | | 4 | | | |
-| → `ADD HD-AMOUNT TO WS-RELEASED-TOTAL` | 10 | 8 | | | 8 | 6 | | | 8 | 6 | | | 6 | 4 | | |
-| → `ADD 1 TO WS-LAST-HOLD-NO` | | | 7 | 7 | | | 5 | 5 | | | 5 | 5 | | | 3 | 3 |
-| → `MOVE WS-LAST-HOLD-NO TO HD-HOLD-NO RS-AUTH-CODE` | | | 8 | 8 | | | 6 | 6 | | | 6 | 6 | | | 4 | 4 |
-| → `WRITE HOLD-RECORD` | | | 9 | 9 | | | 7 | 7 | | | 7 | 7 | | | 5 | 5 |
-| → `MOVE 'CANNOT WRITE THE HOLD' TO WS-ABORT-MESSAGE` | | | 10 | | | | 8 | | | | 8 | | | | 6 | |
-| → `ADD HD-AMOUNT TO WS-HELD-TOTAL` | | | 12 | 10 | | | 10 | 8 | | | 10 | 8 | | | 8 | 6 |
-| → `ADD HD-FEE TO WS-HELD-TOTAL` | | | 13 | 11 | | | 11 | 9 | | | 11 | 9 | | | 9 | 7 |
+| | 1 | 2 | 3 | 4 | 5 | 6 |
+| --- | :-: | :-: | :-: | :-: | :-: | :-: |
+| `REWRITE ACCT-ONLINE-RECORD INVALID KEY` | Y | N | N | N | N | N |
+| `REWRITE CARD-RECORD INVALID KEY` | | Y | N | N | N | N |
+| `RQ-REVERSAL` | | | Y | Y | N | N |
+| `REWRITE HOLD-RECORD INVALID KEY` | | | Y | N | | |
+| `WRITE HOLD-RECORD INVALID KEY` | | | | | Y | N |
+| → `REWRITE ACCT-ONLINE-RECORD` | 1 | 1 | 1 | 1 | 1 | 1 |
+| → `MOVE 'CANNOT REWRITE THE ACCOUNT' TO WS-ABORT-MESSAGE` | 2 | | | | | |
+| → `PERFORM 9900-ABORT` | 3 | 4 | 5 | | 7 | |
+| → `REWRITE CARD-RECORD` | | 2 | 2 | 2 | 2 | 2 |
+| → `MOVE 'CANNOT REWRITE THE CARD' TO WS-ABORT-MESSAGE` | | 3 | | | | |
+| → `REWRITE HOLD-RECORD` | | | 3 | 3 | | |
+| → `MOVE 'CANNOT REWRITE THE HOLD' TO WS-ABORT-MESSAGE` | | | 4 | | | |
+| → `ADD HD-AMOUNT TO WS-RELEASED-TOTAL` | | | | 4 | | |
+| → `ADD 1 TO WS-LAST-HOLD-NO` | | | | | 3 | 3 |
+| → `MOVE WS-LAST-HOLD-NO TO HD-HOLD-NO RS-AUTH-CODE` | | | | | 4 | 4 |
+| → `WRITE HOLD-RECORD` | | | | | 5 | 5 |
+| → `MOVE 'CANNOT WRITE THE HOLD' TO WS-ABORT-MESSAGE` | | | | | 6 | |
+| → `ADD HD-AMOUNT TO WS-HELD-TOTAL` | | | | | | 6 |
+| → `ADD HD-FEE TO WS-HELD-TOTAL` | | | | | | 7 |
 
 Source: [AUTHSRV.cbl:230](../../../pangaea/programs/AUTHSRV.cbl#L230).

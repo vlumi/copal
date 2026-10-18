@@ -24,9 +24,9 @@ The business rules of [MONCHG](../programs/MONCHG.md), paragraph by paragraph: e
 | → `READ CONTROL-FILE` | | 2 | 2 |
 | → `MOVE 'NO BANK CONTROL RECORD' TO WS-ABORT-MESSAGE` | | 3 | |
 | → `PERFORM 9900-ABORT` | | 4 | |
-| → `MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE` | | 5 | 3 |
-| → `MOVE SPACES TO TRAN-RECORD` | | 6 | 4 |
-| → `PERFORM 1200-READ-ACCOUNT` | | 7 | 5 |
+| → `MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE` | | | 3 |
+| → `MOVE SPACES TO TRAN-RECORD` | | | 4 |
+| → `PERFORM 1200-READ-ACCOUNT` | | | 5 |
 
 Source: [MONCHG.cbl:122](../../../pangaea/programs/MONCHG.cbl#L122).
 

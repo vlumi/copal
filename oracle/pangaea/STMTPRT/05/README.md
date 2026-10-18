@@ -1,8 +1,7 @@
 # STMTPRT: case 05
 
-The run ended with return code 0.
+The run ended with return code 16.
 
 The first case to reach:
 
-- [STMTPRT, 3400-PRINT-HEADING, rule 1](../../../../blueprints/pangaea/rules/STMTPRT.md#3400-print-heading)
-- [STMTPRT, 3400-PRINT-HEADING, rule 3](../../../../blueprints/pangaea/rules/STMTPRT.md#3400-print-heading)
+- [STMTPRT, 3000-PRINT-STATEMENTS, rule 1](../../../../blueprints/pangaea/rules/STMTPRT.md#3000-print-statements)

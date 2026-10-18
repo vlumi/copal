@@ -22,8 +22,8 @@ The business rules of [ACCTLOAD](../programs/ACCTLOAD.md), paragraph by paragrap
 | → `READ CONTROL-FILE` | | 2 | 2 |
 | → `MOVE 'NO BANK CONTROL RECORD' TO WS-ABORT-MESSAGE` | | 3 | |
 | → `PERFORM 9900-ABORT` | | 4 | |
-| → `MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE` | | 5 | 3 |
-| → `PERFORM 1200-READ-ACCOUNT` | | 6 | 4 |
+| → `MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE` | | | 3 |
+| → `PERFORM 1200-READ-ACCOUNT` | | | 4 |
 
 Source: [ACCTLOAD.cbl:100](../../../pangaea/programs/ACCTLOAD.cbl#L100).
 
@@ -67,7 +67,7 @@ Source: [ACCTLOAD.cbl:125](../../../pangaea/programs/ACCTLOAD.cbl#L125).
 | → `WRITE ACCT-ONLINE-RECORD` | 11 | 11 |
 | → `MOVE 'MASTER NOT IN ACCOUNT NUMBER ORDER' TO WS-ABORT-MESSAGE` | 12 | |
 | → `PERFORM 9900-ABORT` | 13 | |
-| → `ADD 1 TO WS-LOADED-COUNT` | 14 | 12 |
-| → `ADD AM-BALANCE TO WS-LOADED-BALANCE` | 15 | 13 |
+| → `ADD 1 TO WS-LOADED-COUNT` | | 12 |
+| → `ADD AM-BALANCE TO WS-LOADED-BALANCE` | | 13 |
 
 Source: [ACCTLOAD.cbl:133](../../../pangaea/programs/ACCTLOAD.cbl#L133).
