@@ -128,14 +128,14 @@ The trail of a field stops where Pangaea's online day begins: at a `CALL`, at `A
 
 Done when: the trail of a card purchase in the master goes back through the night's batch, the card file and the hold, into `AUTHPUR` and the terminal's request, and every origin in the blueprints is one a path can reach.
 
-## 11. The oracle
+## 11. The oracle (done)
 
 The survey knows the rules; a rewrite needs evidence of what the programs do when each applies. The plan is in [plans/oracle.md](plans/oracle.md):
 
-- Running COBOL moves into bedrock, so that the survey can run the programs it reads, and Pangaea's machine room is built on the same.
-- Rule coverage from GnuCOBOL's statement trace, replayed against the decision tables.
-- Test data from the decision tables: each condition's literals and boundaries in the input fields the lineage says feed it, kept when a run reaches a new rule, with the rules between records, order, control totals and references, taken from the survey's own facts.
-- Golden cases per program, inputs and outputs, with each rule's coverage; then cases for the batches.
+- Running COBOL moves into bedrock, so that the survey can run the programs it reads, and Pangaea's machine room is built on the same (done).
+- Rule coverage from GnuCOBOL's statement trace, replayed against the decision tables (done).
+- Test data from the decision tables: each condition's literals and boundaries in the input fields the lineage says feed it, kept when a run reaches a new rule, with the rules between records, order, control totals and references, taken from the survey's own facts (done).
+- Golden cases per program, inputs and outputs, with each rule's coverage; then cases for the batches (done).
 
 Done when: every rule of every decision table in Pangaea is reached by a recorded case, or listed as unreached with the condition that blocks it, and the cases run green in CI.
 

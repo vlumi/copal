@@ -85,6 +85,8 @@ Cases for the daily and month-end jobs: the program cases' inputs for the jobs' 
 
 One pull request.
 
+As built: the job runner moved into bedrock, with the datasets and their catalog, in a pull request of its own, as the first option. The batch runs the jobs in an order the operator gives, `-jobs START,ONLINE,DAILY,MONTHLY` for Pangaea, on one catalog: the survey's schedule has the jobs in a cycle, as they run day after day, and the JCL does not say where a day starts. Run each alone, on inputs from the cases, the daily batch stopped at its posting, since its branch and card files came from the same case and collided once sorted; run after ONLINE, its card file is ONLINE's own, and every step of every job ends with return code 0. A job takes from the cases only what no job before it wrote: the cleanest case, the first with the lowest return code, of the first program that reads each dataset. The batch reaches fewer rules than the program cases, as it runs each program once, on clean data; it is the evidence of what passes between the steps.
+
 ## Later
 
 A model for naming paragraphs and explaining rules in prose, on top of the facts and now the evidence, stays last, as the brief says.
