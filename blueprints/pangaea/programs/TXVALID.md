@@ -214,9 +214,6 @@ Record [REJECT-RECORD](#reject-record), from copybook [REJREC](../copybooks/REJR
 | RJ-REASON | literal condition RJ-BAD-COUNTER | SET | 3200-VALIDATE-DETAIL | [TXVALID.cbl:234](../../../pangaea/programs/TXVALID.cbl#L234) |
 | RJ-REJECT-DATE | [WS-BUSINESS-DATE](#ws-business-date) | STRING | 1000-OPEN-FILES | [TXVALID.cbl:157](../../../pangaea/programs/TXVALID.cbl#L157) |
 | RJ-REJECT-DATE | literal '-' | STRING | 1000-OPEN-FILES | [TXVALID.cbl:157](../../../pangaea/programs/TXVALID.cbl#L157) |
-| RJ-REJECT-DATE | [WS-BUSINESS-DATE](#ws-business-date) | STRING | 1000-OPEN-FILES | [TXVALID.cbl:157](../../../pangaea/programs/TXVALID.cbl#L157) |
-| RJ-REJECT-DATE | literal '-' | STRING | 1000-OPEN-FILES | [TXVALID.cbl:157](../../../pangaea/programs/TXVALID.cbl#L157) |
-| RJ-REJECT-DATE | [WS-BUSINESS-DATE](#ws-business-date) | STRING | 1000-OPEN-FILES | [TXVALID.cbl:157](../../../pangaea/programs/TXVALID.cbl#L157) |
 | RJ-TRAN | [TRAN-RECORD](#tran-record) | MOVE | 3300-REJECT-RECORD | [TXVALID.cbl:247](../../../pangaea/programs/TXVALID.cbl#L247) |
 
 ### Into WS-FILE-ERROR

@@ -284,3 +284,17 @@ func TestOrderUnknown(t *testing.T) {
 		t.Errorf("WS-A comes from %q, want both literals", got)
 	}
 }
+
+// A statement that reads an item twice moves its value once.
+func TestEdgesOnce(t *testing.T) {
+	flow := analyze(t, "testdata/ORDER.cbl")
+	var moves []string
+	for _, e := range flow.Lineage {
+		if e.To == "WS-STAMP" {
+			moves = append(moves, e.From)
+		}
+	}
+	if !slices.Equal(moves, []string{"IN-CODE", "'-'"}) {
+		t.Errorf("the STRING moves %q into WS-STAMP, want IN-CODE and '-' once each", moves)
+	}
+}
