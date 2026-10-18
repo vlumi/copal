@@ -4,7 +4,7 @@
 //
 //	survey blueprints -copybooks dir -out dir [-title name] program.cbl... [job.jcl...]
 //	survey explore -copybooks dir [-addr host:port] [-title name] [-cases dir] program.cbl... [job.jcl...]
-//	survey oracle -copybooks dir [-out dir -rules dir] [-title name] [-program name] program.cbl...
+//	survey oracle -copybooks dir [-out dir -rules dir] [-title name] [-program name] [-jobs JOB,...] program.cbl... [job.jcl...]
 package main
 
 import (
@@ -13,6 +13,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"slices"
+	"strings"
 	"time"
 
 	"github.com/vlumi/copal/survey/blueprint"
@@ -23,7 +25,7 @@ import (
 const usage = `usage:
   survey blueprints -copybooks dir -out dir [-title name] program.cbl... [job.jcl...]
   survey explore -copybooks dir [-addr host:port] [-title name] [-cases dir] program.cbl... [job.jcl...]
-  survey oracle -copybooks dir [-out dir -rules dir] [-title name] [-program name] program.cbl...
+  survey oracle -copybooks dir [-out dir -rules dir] [-title name] [-program name] [-jobs JOB,...] program.cbl... [job.jcl...]
 `
 
 func main() {
@@ -90,6 +92,7 @@ func searchCases(args []string) error {
 	rules := flags.String("rules", "", "directory of the blueprints' decision tables, relative to the cases' directory")
 	title := flags.String("title", "the system", "name of the system, for the index")
 	only := flags.String("program", "", "the main program to search for, instead of every one")
+	order := flags.String("jobs", "", "jobs to run as a batch on the cases, in order, separated by commas")
 	_ = flags.Parse(args)
 	if *copybooks == "" || flags.NArg() == 0 {
 		fmt.Fprint(os.Stderr, usage)
@@ -110,7 +113,7 @@ func searchCases(args []string) error {
 		if p.Kind != blueprint.KindMain || *only != "" && p.Name != *only {
 			continue
 		}
-		result, err := oracle.Search(system, p, *copybooks, filepath.Join(scratch, p.Name))
+		result, err := oracle.Search(system, p, *copybooks, scratch)
 		if err != nil {
 			return err
 		}
@@ -126,10 +129,34 @@ func searchCases(args []string) error {
 			}
 		}
 	}
-	if *out != "" && *only == "" {
-		return os.WriteFile(filepath.Join(*out, "README.md"), oracle.Index(*title, results), 0o644)
+	if *out == "" || *only != "" {
+		return nil
 	}
-	return nil
+	byName := map[string]*oracle.Result{}
+	for _, r := range results {
+		byName[r.Program] = r
+	}
+	var jobs []*blueprint.Job
+	for _, name := range strings.Split(*order, ",") {
+		i := slices.IndexFunc(system.Jobs, func(j blueprint.Job) bool { return j.Name == name })
+		if i < 0 && name != "" {
+			return fmt.Errorf("no job %s", name)
+		}
+		if i >= 0 {
+			jobs = append(jobs, &system.Jobs[i])
+		}
+	}
+	batches, err := oracle.RunJobs(jobs, byName, scratch)
+	if err != nil {
+		return err
+	}
+	for _, batch := range batches {
+		fmt.Printf("%-8s a batch\n", batch.Job)
+		if err := writeCases(filepath.Join(*out, "jobs", batch.Job), batch.Files()); err != nil {
+			return err
+		}
+	}
+	return os.WriteFile(filepath.Join(*out, "README.md"), oracle.Index(*title, results, batches), 0o644)
 }
 
 // writeCases writes a program's cases to its directory, in place of those

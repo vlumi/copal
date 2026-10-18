@@ -72,7 +72,7 @@ simulate:  ## Send card traffic to the console's online channel until interrupte
 
 .PHONY: oracle
 oracle:  ## Search Pangaea's programs again for cases that reach their rules, and rewrite oracle/pangaea
-	go run ./survey/cmd/survey oracle -copybooks pangaea/copybooks -out oracle/pangaea -rules ../../blueprints/pangaea/rules -title pangaea pangaea/programs/*.cbl
+	go run ./survey/cmd/survey oracle -copybooks pangaea/copybooks -out oracle/pangaea -rules ../../blueprints/pangaea/rules -title pangaea -jobs START,ONLINE,DAILY,MONTHLY pangaea/programs/*.cbl pangaea/jobs/*.jcl
 
 .PHONY: blueprints
 blueprints:  ## Regenerate Pangaea's blueprints with Survey

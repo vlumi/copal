@@ -17,3 +17,12 @@ For each main program, input data that reaches the rules of its decision tables,
 | [TXPOST](TXPOST/) | 26 of 30 | 10 |
 | [TXSORT](TXSORT/) | 1 of 2 | 1 |
 | [TXVALID](TXVALID/) | 31 of 66 | 19 |
+
+And for each job, a batch: the job run through its steps on inputs from its programs' cleanest cases, with the datasets it wrote and its output.
+
+| Job | Steps |
+| --- | --- |
+| [START](jobs/START/) | LOAD RC=0000, CARDS RC=0000 |
+| [ONLINE](jobs/ONLINE/) | AUTH RC=0000, EXTRACT RC=0000 |
+| [DAILY](jobs/DAILY/) | VALID RC=0000, VALIDC RC=0000, ACCRUE RC=0000, CHARGE RC=0000, POSTMO RC=0000, SORT RC=0000, POST RC=0000, SORTCR RC=0000, POSTCR RC=0000, SORTRT RC=0000, POSTRT RC=0000, MAINT RC=0000, LOAD RC=0000, NEXTDAY RC=0000, CARDS RC=0000 |
+| [MONTHLY](jobs/MONTHLY/) | STMT RC=0000, LEDGER RC=0000 |

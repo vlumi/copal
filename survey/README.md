@@ -9,12 +9,12 @@ It does not translate COBOL into anything. It produces the understanding a trans
 ```sh
 survey blueprints -copybooks dir -out dir [-title name] program.cbl... [job.jcl...]
 survey explore -copybooks dir [-addr host:port] [-title name] [-cases dir] program.cbl... [job.jcl...]
-survey oracle -copybooks dir [-out dir -rules dir] [-title name] [-program name] program.cbl...
+survey oracle -copybooks dir [-out dir -rules dir] [-title name] [-program name] [-jobs JOB,...] program.cbl... [job.jcl...]
 ```
 
 Point it at the programs and the jobs, and tell it where the copybooks are. `blueprints` writes a directory of Markdown for people and JSON for tools, with SVG diagrams, and an index; [docs/blueprints.md](../docs/blueprints.md) explains how to read them. `explore` serves the same analysis as a web app, at `127.0.0.1:1192` by default, where every job, step, dataset, program, paragraph, field and copybook is a page and a link, each with a badge for its kind, a search finds any of them, and a field's values can be followed back across programs and job steps to the input they came from, or forward to everything they reach, highlighted on the diagrams. Its design views show the system as the business sees it: the entities, with who reads, writes and decides on each field across the programs, the state machines of their codes, and the layouts they hold dates in; who owns each entity, drawn as a first draft of a service decomposition; the boundary, the system's inputs, outputs, reports and streams; and the order of the jobs, derived from the generations they write and read.
 
-`oracle` compiles the programs with GnuCOBOL and searches, for each main program, for input data that reaches every rule of its decision tables and of the programs it calls, and writes the cases it found, as few as reach the same rules, with what the program wrote and returned and which rules each case reaches; `explore -cases` shows them on each program's page. [docs/blueprints.md](../docs/blueprints.md) explains how to read them.
+`oracle` compiles the programs with GnuCOBOL and searches, for each main program, for input data that reaches every rule of its decision tables and of the programs it calls, and writes the cases it found, as few as reach the same rules, with what the program wrote and returned and which rules each case reaches, and with `-jobs`, runs the jobs named, in that order, as a batch on the cases; `explore -cases` shows them on each program's page. [docs/blueprints.md](../docs/blueprints.md) explains how to read them.
 
 For the First Bank of Pangaea, `make blueprints` regenerates [blueprints/pangaea/](../blueprints/pangaea/README.md) and `make explore` serves the explorer.
 
