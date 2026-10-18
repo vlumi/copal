@@ -65,6 +65,23 @@ Checks: before implementing, read the programs and list the origins in today's g
 
 One pull request. Remove the debt from the brief.
 
+As built: the checks were made against an audit done separately, before the implementation's goldens were compared, of every origin in the goldens that no path can reach. The implementation removes exactly the audit's list, except where the two rules differ on purpose, and `TXPOST`'s `AM-BALANCE` keeps every posting.
+
+- `survey/internal/controlflow` lays out the paths through the statements, a performed range anew for each `PERFORM`, so that control returns only to the statement after the one that entered it. Every Pangaea program is covered; a `GO TO` out of a performed range would leave a program to the order-free analysis.
+- A statement overwrites the items it writes by plain name and does not also read: `MOVE`, `COMPUTE`, the arithmetic verbs into an item they do not update, `SET`, `ACCEPT`, `READ` and `RETURN` into their records, and a `WRITE FROM` into the file's record. A bare `WRITE` overwrites nothing.
+- Field origins start at the `WRITE`s of each record; `Trace` without a statement starts at every use of the item, and `Affects` at every statement that sets it and at the entry.
+
+What disappeared from the goldens, and why:
+
+- Every program's report line, written bare, no longer collects the count and amount lines written `FROM` other records, nor what those carry: the counters' initial values, their literals, the totals' inputs. A `MOVE SPACES` or a heading literal overwrites the line before each bare `WRITE`.
+- `STMTPRT`'s `STMT-LINE`, written bare only for blank lines, keeps only `SPACES`. Its sort record's fields lose the values the output procedure's `RETURN` reads back, which come after the input procedure's `RELEASE`.
+- `HOLDEXT`'s header, detail and trailer fields lose the feedback through `WS-ACCT-HASH` and `WS-AMOUNT-TOTAL`: the detail's amount is always the hold's amount or fee, set after the `MOVE SPACES`, and the trailer is written after the last detail. The report's amount line loses the same.
+- `TXPOST`'s transfer legs lose the input's account numbers and code, which `3500-WRITE-LEG` swaps and sets on every path; its audit and reject records lose the leg's values, which the restore from `WS-SAVED-TRAN` overwrites first.
+- `AUTHSRV`'s last authorization code loses `RQ-AUTH-CODE` and the held numbers passed to the programs called: the `READ` of the hold file overwrites the record first.
+- `GLSUM`'s ledger account and name lose `SPACES`, overwritten from the ledger table; `INTACCR`'s through date loses the accrual read in, overwritten by the business date.
+
+Where the audit and the implementation differ: a `READ` with `INVALID KEY` or a `RETURN` with `AT END` counts as leaving its record as it was, which it does on that path, so `AUTHSRV`'s keys moved in before a keyed read, and `STMTPRT`'s audit values in memory, stay. `MONCHG`'s transaction id gains `WS-TI-SEQ`'s initial value, which the audit found missing: `ADD 1` keeps the old value, and the bytes left once a statement overwrites part of a group are followed on their own. For the same reason a few file origins of `TXPOST`'s leg trailer are named by a narrower field over the same bytes. Values that only the outcome of a condition keeps from the write stay, as do a redefined record type's fields over another type's bytes; survey/README.md says so.
+
 ## Part 4: Pangaea's honest mess
 
 The bank is tidier than a real one. Give the survey real inconsistencies to find, each a change to Pangaea with its goldens:
