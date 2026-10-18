@@ -19,6 +19,9 @@
            IF WS-A = 1
                MOVE 3 TO WS-B
            END-IF
+           IF WS-B = 7
+               EXIT PARAGRAPH
+           END-IF
            MOVE WS-A TO WS-B.
        CHECK-PARA.
            IF WS-B = 3
