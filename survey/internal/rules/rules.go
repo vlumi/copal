@@ -56,12 +56,14 @@ const maxPaths = 64
 // Tables extracts the decision tables of a program, for each paragraph
 // and each inline loop that decides anything. A condition tested again
 // after a statement that may change what it refers to is a test of its
-// own.
-func Tables(p *cobol.Program, mayChange MayChange) []Table {
+// own, and a path that would find a condition other than the values it
+// knows decide is no rule: one that moves an error message into a field
+// does not then find the field's condition name for no error true.
+func Tables(p *cobol.Program, knowledge Knowledge) []Table {
 	var tables []Table
 	never := neverReturning(p)
 	for _, para := range p.Paragraphs {
-		e := &extractor{paragraph: para.Name, mayChange: mayChange, never: never}
+		e := &extractor{paragraph: para.Name, knowledge: knowledge, never: never}
 		if t, ok := newTable(para.Name, "", para.Pos, e.paths(para.Statements), e.collapsed); ok {
 			tables = append(tables, t)
 		}
@@ -78,6 +80,7 @@ type test struct {
 	refs      []string
 	outcome   bool
 	instance  int
+	cond      *cobol.Condition // nil for a conditional phrase
 }
 
 // label names a test's column: the condition, and for a test of it
@@ -96,11 +99,13 @@ func (t test) label() string {
 // named, which a condition refers to.
 type MayChange func(s cobol.Statement, names []string) bool
 
-// event is a test, or a statement that may change what a later test
-// refers to, on a path, in the order the path meets them.
+// event is a test, a statement that may change what a later test refers
+// to, or a value a statement gives a field, on a path, in the order the
+// path meets them.
 type event struct {
 	test   *test
 	change *cobol.Statement
+	assign *assignment
 }
 
 // path is one way through a list of statements: the tests and changes it
@@ -129,7 +134,7 @@ func (p path) tests() []test {
 type extractor struct {
 	paragraph string
 	loops     []Table
-	mayChange MayChange
+	knowledge Knowledge
 	collapsed []cobol.Pos
 	// never are the paragraphs that never return to a PERFORM of them.
 	never map[string]bool
@@ -161,7 +166,7 @@ func (e *extractor) paths(statements []cobol.Statement) []path {
 		case len(s.Branches) > 0:
 			alternatives = e.phrases(s)
 		}
-		action := []path{{actions: []string{s.Text}, events: changes(s), ended: e.endsPath(s)}}
+		action := []path{{actions: []string{s.Text}, events: append(changes(s), e.assignments(s)...), ended: e.endsPath(s)}}
 		if alternatives == nil {
 			alternatives = action
 		}
@@ -250,7 +255,7 @@ func (e *extractor) under(c *cobol.Condition, outcome bool, statements []cobol.S
 	for c.Op == "NOT" {
 		c, outcome = c.Parts[0], !outcome
 	}
-	return e.cross([]path{{events: []event{{test: &test{condition: c.String(), refs: c.Refs(), outcome: outcome}}}}}, e.paths(statements))
+	return e.cross([]path{{events: []event{{test: &test{condition: c.String(), refs: c.Refs(), outcome: outcome, cond: c}}}}}, e.paths(statements))
 }
 
 // cases lists the paths through the WHENs of an EVALUATE or SEARCH: each
@@ -314,8 +319,9 @@ func (e *extractor) cross(paths, next []path) []path {
 }
 
 // follow appends a path's events to those of the path before it. A test
-// of a condition the path before tested, with no change between that may
-// have changed it, must have the same outcome, and is the same test; a
+// whose outcome the values the path knows decide must have that outcome. A
+// test of a condition the path before tested, with no change between that
+// may have changed it, must have the same outcome, and is the same test; a
 // test after such a change is a new instance.
 func (e *extractor) follow(before, after []event) ([]event, bool) {
 	events := slices.Clone(before)
@@ -325,6 +331,11 @@ func (e *extractor) follow(before, after []event) ([]event, bool) {
 			continue
 		}
 		t := *ev.test
+		if t.cond != nil {
+			if outcome, known := e.evaluate(events, t.cond); known && outcome != t.outcome {
+				return nil, false
+			}
+		}
 		last, changed := e.lastTest(events, t)
 		switch {
 		case last != nil && !changed && last.outcome != t.outcome:
@@ -347,7 +358,7 @@ func (e *extractor) lastTest(events []event, t test) (*test, bool) {
 	changed := false
 	for _, ev := range slices.Backward(events) {
 		switch {
-		case ev.change != nil && !changed && e.mayChange(*ev.change, t.refs):
+		case ev.change != nil && !changed && e.knowledge.MayChange(*ev.change, t.refs):
 			changed = true
 		case ev.test != nil && ev.test.condition == t.condition:
 			return ev.test, changed

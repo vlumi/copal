@@ -4,4 +4,4 @@ The run ended with return code 12.
 
 The first case to reach:
 
-- [TXVALID, 2000-READ-HEADER, rule 13](../../../../blueprints/pangaea/rules/TXVALID.md#2000-read-header)
+- [TXVALID, 2000-READ-HEADER, rule 4](../../../../blueprints/pangaea/rules/TXVALID.md#2000-read-header)

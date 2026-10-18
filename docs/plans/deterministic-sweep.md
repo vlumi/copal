@@ -19,6 +19,8 @@ Most rules no case reaches are rules no run can take: a table does not weigh wha
 
 Checks: TXVALID's header check loses the rules that find the file good right after moving an error into it; the oracle's unreached rules shrink by those, and the rest are listed with their conditions as now.
 
+As built: the checks hold. The tables went from 408 rules to 338: AUTHSRV from 85 to 46, as a request of one type is no other; TXVALID from 66 to 39, its header check from 16 rules to 6; MONCHG from 25 to 21. Every program's cases reach as many rules as before, which says no rule a run takes was left out, and the unreached rules went from 142 to 72: 266 of 338 are reached. A value is known only by its field's name: a literal moved into a group tells nothing of its fields.
+
 ## Part 3: record types
 
 The oracle tells a file's record types apart, by the field the program tests to tell them, and the redefinition each type has. Make that a fact of the blueprint: each record's types, their values and their fields. Then:

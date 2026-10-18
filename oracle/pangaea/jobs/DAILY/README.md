@@ -4,10 +4,10 @@ The job run after the jobs before it in the batch, on what they wrote, and on in
 
 | Step | Program | Outcome | Rules reached |
 | --- | --- | --- | --: |
-| VALID | [TXVALID](../../TXVALID/) | RC=0000 | 8 of 66 |
-| VALIDC | [TXVALID](../../TXVALID/) | RC=0000 | 8 of 66 |
+| VALID | [TXVALID](../../TXVALID/) | RC=0000 | 8 of 39 |
+| VALIDC | [TXVALID](../../TXVALID/) | RC=0000 | 8 of 39 |
 | ACCRUE | [INTACCR](../../INTACCR/) | RC=0000 | 18 of 33 |
-| CHARGE | [MONCHG](../../MONCHG/) | RC=0000 | 5 of 25 |
+| CHARGE | [MONCHG](../../MONCHG/) | RC=0000 | 5 of 21 |
 | POSTMO | [TXPOST](../../TXPOST/) | RC=0000 | 10 of 30 |
 | SORT | [TXSORT](../../TXSORT/) | RC=0000 | 1 of 2 |
 | POST | [TXPOST](../../TXPOST/) | RC=0000 | 10 of 30 |

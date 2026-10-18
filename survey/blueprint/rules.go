@@ -157,3 +157,21 @@ func rulesMarkdown(dir string, r Rules) string {
 	}
 	return b.String()
 }
+
+// conditionNames resolves the condition names of a program's records: the
+// field each is declared on, and its values.
+func conditionNames(records []Record) rules.ConditionNames {
+	names := map[string]Condition{}
+	fields := map[string]string{}
+	for _, r := range records {
+		walk(r.Field, func(f Field) {
+			for _, c := range f.Conditions {
+				names[c.Name], fields[c.Name] = c, f.Name
+			}
+		})
+	}
+	return func(name string) (string, []string, bool) {
+		c, ok := names[name]
+		return fields[name], c.Values, ok
+	}
+}

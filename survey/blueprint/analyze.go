@@ -273,7 +273,10 @@ func Analyze(paths []string, copybookDir string) (*System, error) {
 	linkCalls(s.Programs)
 	for i := range s.Programs {
 		p := &s.Programs[i]
-		p.tables = rules.Tables(p.source, p.flow.WithCalls(callWrites(*p, s.Programs)).MayChange)
+		p.tables = rules.Tables(p.source, rules.Knowledge{
+			MayChange:      p.flow.WithCalls(callWrites(*p, s.Programs)).MayChange,
+			ConditionNames: conditionNames(p.Records),
+		})
 		p.Rules = newRules(p.Name, p.tables, p.Records)
 	}
 	var copybookPaths []string
