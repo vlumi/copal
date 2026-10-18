@@ -20,19 +20,19 @@ The business rules of [ACCTMNT](../programs/ACCTMNT.md), paragraph by paragraph:
 
 ## 0000-MAIN
 
-| | 1 | 2 | 3 | 4 |
-| --- | :-: | :-: | :-: | :-: |
-| `WS-BALANCES-OUT = WS-BALANCES-IN` | N | N | Y | Y |
-| `WS-REJECT-COUNT > 0` | Y | N | Y | N |
-| → `PERFORM 1000-INITIALIZE` | 1 | 1 | 1 | 1 |
-| → `PERFORM 2000-NEXT-ACCOUNT THRU 2999-EXIT UNTIL WS-MASTER-KEY = HIGH-VALUES AND WS-REQUEST-KEY = HIGH-VALUES` | 2 | 2 | 2 | 2 |
-| → `MOVE 'NEW MASTER OUT OF BALANCE' TO WS-ABORT-MESSAGE` | 3 | 3 | | |
-| → `PERFORM 9900-ABORT` | 4 | 4 | | |
-| → `PERFORM 8000-WRITE-REPORT` | 5 | 5 | 3 | 3 |
-| → `PERFORM 9000-CLOSE-FILES` | 6 | 6 | 4 | 4 |
-| → `MOVE 4 TO RETURN-CODE` | 7 | | 5 | |
-| → `STOP RUN` | 8 | 8 | 6 | 6 |
-| → `MOVE 0 TO RETURN-CODE` | | 7 | | 5 |
+| | 1 | 2 | 3 |
+| --- | :-: | :-: | :-: |
+| `WS-BALANCES-OUT = WS-BALANCES-IN` | N | Y | Y |
+| `WS-REJECT-COUNT > 0` | | Y | N |
+| → `PERFORM 1000-INITIALIZE` | 1 | 1 | 1 |
+| → `PERFORM 2000-NEXT-ACCOUNT THRU 2999-EXIT UNTIL WS-MASTER-KEY = HIGH-VALUES AND WS-REQUEST-KEY = HIGH-VALUES` | 2 | 2 | 2 |
+| → `MOVE 'NEW MASTER OUT OF BALANCE' TO WS-ABORT-MESSAGE` | 3 | | |
+| → `PERFORM 9900-ABORT` | 4 | | |
+| → `PERFORM 8000-WRITE-REPORT` | | 3 | 3 |
+| → `PERFORM 9000-CLOSE-FILES` | | 4 | 4 |
+| → `MOVE 4 TO RETURN-CODE` | | 5 | |
+| → `STOP RUN` | | 6 | 6 |
+| → `MOVE 0 TO RETURN-CODE` | | | 5 |
 
 Source: [ACCTMNT.cbl:138](../../../pangaea/programs/ACCTMNT.cbl#L138).
 
@@ -49,11 +49,11 @@ Source: [ACCTMNT.cbl:138](../../../pangaea/programs/ACCTMNT.cbl#L138).
 | → `READ CONTROL-FILE` | | 2 | 2 |
 | → `MOVE 'NO BANK CONTROL RECORD' TO WS-ABORT-MESSAGE` | | 3 | |
 | → `PERFORM 9900-ABORT` | | 4 | |
-| → `MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE` | | 5 | 3 |
-| → `MOVE SPACES TO REJECT-RECORD` | | 6 | 4 |
-| → `STRING WS-BUSINESS-DATE(1:4) '-' WS-BUSINESS-DATE(5:2) '-' WS-BUSINESS-DATE(7:2) DELIMITED BY SIZE INTO RJ-REJECT-DATE` | | 7 | 5 |
-| → `PERFORM 1200-READ-MASTER THRU 1200-EXIT` | | 8 | 6 |
-| → `PERFORM 1300-READ-REQUEST THRU 1300-EXIT` | | 9 | 7 |
+| → `MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE` | | | 3 |
+| → `MOVE SPACES TO REJECT-RECORD` | | | 4 |
+| → `STRING WS-BUSINESS-DATE(1:4) '-' WS-BUSINESS-DATE(5:2) '-' WS-BUSINESS-DATE(7:2) DELIMITED BY SIZE INTO RJ-REJECT-DATE` | | | 5 |
+| → `PERFORM 1200-READ-MASTER THRU 1200-EXIT` | | | 6 |
+| → `PERFORM 1300-READ-REQUEST THRU 1300-EXIT` | | | 7 |
 
 Source: [ACCTMNT.cbl:155](../../../pangaea/programs/ACCTMNT.cbl#L155).
 
@@ -69,8 +69,8 @@ Source: [ACCTMNT.cbl:155](../../../pangaea/programs/ACCTMNT.cbl#L155).
 | → `MOVE AI-ACCT-NO TO WS-MASTER-KEY` | | 2 | 2 |
 | → `MOVE 'MASTER NOT IN ACCOUNT ORDER' TO WS-ABORT-MESSAGE` | | 3 | |
 | → `PERFORM 9900-ABORT` | | 4 | |
-| → `MOVE WS-MASTER-KEY TO WS-PREV-MASTER-KEY` | | 5 | 3 |
-| → `ADD 1 TO WS-MASTERS-READ` | | 6 | 4 |
+| → `MOVE WS-MASTER-KEY TO WS-PREV-MASTER-KEY` | | | 3 |
+| → `ADD 1 TO WS-MASTERS-READ` | | | 4 |
 
 Source: [ACCTMNT.cbl:175](../../../pangaea/programs/ACCTMNT.cbl#L175).
 
@@ -87,8 +87,8 @@ Source: [ACCTMNT.cbl:175](../../../pangaea/programs/ACCTMNT.cbl#L175).
 | → `MOVE MR-REQUEST-ID TO WS-ROK-REQUEST-ID` | | 3 | 3 |
 | → `MOVE 'REQUESTS NOT IN ACCOUNT ORDER' TO WS-ABORT-MESSAGE` | | 4 | |
 | → `PERFORM 9900-ABORT` | | 5 | |
-| → `MOVE WS-REQUEST-ORDER-KEY TO WS-PREV-REQUEST-ORDER-KEY` | | 6 | 4 |
-| → `ADD 1 TO WS-REQUEST-COUNT` | | 7 | 5 |
+| → `MOVE WS-REQUEST-ORDER-KEY TO WS-PREV-REQUEST-ORDER-KEY` | | | 4 |
+| → `ADD 1 TO WS-REQUEST-COUNT` | | | 5 |
 
 Source: [ACCTMNT.cbl:190](../../../pangaea/programs/ACCTMNT.cbl#L190).
 

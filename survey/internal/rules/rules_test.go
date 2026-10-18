@@ -102,6 +102,11 @@ Y N   | OK = 1, again
 1 1   | PERFORM OPEN-PARA
 2     | DISPLAY 'STILL OK'
 `,
+		`ABORT-USE-PARA 
+Y N | BAD = 1
+1   | PERFORM ABORT-PARA
+  1 | DISPLAY 'GOOD'
+`,
 	}
 	if strings.Join(got, "\n") != strings.Join(want, "\n") {
 		t.Errorf("got\n%s\nwant\n%s", strings.Join(got, "\n"), strings.Join(want, "\n"))

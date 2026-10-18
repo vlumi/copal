@@ -22,8 +22,8 @@ The business rules of [CARDLOAD](../programs/CARDLOAD.md), paragraph by paragrap
 | → `READ CONTROL-FILE` | | 2 | 2 |
 | → `MOVE 'NO BANK CONTROL RECORD' TO WS-ABORT-MESSAGE` | | 3 | |
 | → `PERFORM 9900-ABORT` | | 4 | |
-| → `MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE` | | 5 | 3 |
-| → `PERFORM 1200-READ-CARD` | | 6 | 4 |
+| → `MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE` | | | 3 |
+| → `PERFORM 1200-READ-CARD` | | | 4 |
 
 Source: [CARDLOAD.cbl:92](../../../pangaea/programs/CARDLOAD.cbl#L92).
 
@@ -59,6 +59,6 @@ Source: [CARDLOAD.cbl:117](../../../pangaea/programs/CARDLOAD.cbl#L117).
 | → `WRITE ONLINE-CARD FROM CARD-RECORD` | 1 | 1 |
 | → `MOVE 'MASTER NOT IN CARD NUMBER ORDER' TO WS-ABORT-MESSAGE` | 2 | |
 | → `PERFORM 9900-ABORT` | 3 | |
-| → `ADD 1 TO WS-LOADED-COUNT` | 4 | 2 |
+| → `ADD 1 TO WS-LOADED-COUNT` | | 2 |
 
 Source: [CARDLOAD.cbl:128](../../../pangaea/programs/CARDLOAD.cbl#L128).

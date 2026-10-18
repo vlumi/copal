@@ -1,6 +1,6 @@
 # STMTPRT: cases
 
-9 cases reach 27 of the 34 rules of STMTPRT's decision tables. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's.
+10 cases reach 28 of the 34 rules of STMTPRT's decision tables. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's.
 
 ## [0000-MAIN](../../../blueprints/pangaea/rules/STMTPRT.md#0000-main)
 
@@ -8,7 +8,7 @@
 | --: | --- |
 | 1 | not reached: `WS-CLOSED-MONTH-NUMBER = 0` N, `SORT-RETURN = 0` N |
 | 2 | [case 01](01/) |
-| 3 | [case 08](08/) |
+| 3 | [case 09](09/) |
 
 ## [1000-INITIALIZE](../../../blueprints/pangaea/rules/STMTPRT.md#1000-initialize)
 
@@ -18,7 +18,7 @@
 | 2 | not reached: `WS-FILE-STATUSES = ALL '0'` Y, `READ ACCR-IN AT END` N, `WS-CM-MONTH = 12` Y |
 | 3 | [case 01](01/) |
 | 4 | not reached: `WS-FILE-STATUSES = ALL '0'` Y, `READ ACCR-IN AT END` Y, `WS-CM-MONTH = 12` Y |
-| 5 | [case 08](08/) |
+| 5 | [case 09](09/) |
 
 ## [2000-SELECT-POSTINGS](../../../blueprints/pangaea/rules/STMTPRT.md#2000-select-postings)
 
@@ -38,14 +38,14 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 04](04/) |
+| 1 | [case 05](05/) |
 | 2 | [case 01](01/) |
 
 ## [3000-PRINT-STATEMENTS, in its loop](../../../blueprints/pangaea/rules/STMTPRT.md#3000-print-statements-in-its-loop)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | not reached: `WS-POSTING-KEY < AM-ACCT-NO` Y |
+| 1 | [case 04](04/) |
 | 2 | [case 01](01/) |
 
 ## [3100-RETURN-POSTING](../../../blueprints/pangaea/rules/STMTPRT.md#3100-return-posting)
@@ -66,7 +66,7 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 06](06/) |
+| 1 | [case 07](07/) |
 | 2 | [case 01](01/) |
 | 3 | [case 01](01/) |
 
@@ -74,24 +74,24 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 05](05/) |
+| 1 | [case 06](06/) |
 | 2 | [case 01](01/) |
-| 3 | [case 05](05/) |
+| 3 | [case 06](06/) |
 | 4 | [case 01](01/) |
 
 ## [3500-PRINT-POSTING](../../../blueprints/pangaea/rules/STMTPRT.md#3500-print-posting)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 09](09/) |
+| 1 | [case 10](10/) |
 | 2 | [case 03](03/) |
-| 3 | [case 07](07/) |
+| 3 | [case 08](08/) |
 | 4 | [case 01](01/) |
 
 ## [8000-WRITE-REPORT](../../../blueprints/pangaea/rules/STMTPRT.md#8000-write-report)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 08](08/) |
+| 1 | [case 09](09/) |
 | 2 | not reached: `WS-CLOSED-MONTH-NUMBER = 0` N, `WS-PRINTED-COUNT = WS-SELECTED-COUNT` N |
 | 3 | [case 01](01/) |

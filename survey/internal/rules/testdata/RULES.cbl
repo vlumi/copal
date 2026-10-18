@@ -42,6 +42,14 @@
            IF OK = 1
                DISPLAY 'STILL OK'
            END-IF.
+       ABORT-USE-PARA.
+           IF BAD = 1
+               PERFORM ABORT-PARA
+           END-IF
+           DISPLAY 'GOOD'.
+       ABORT-PARA.
+           DISPLAY 'ABORT'
+           STOP RUN.
        WIDE-PARA.
            IF A1 = 1
                DISPLAY 'Y1'

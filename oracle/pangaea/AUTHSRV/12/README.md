@@ -4,4 +4,4 @@ The run ended with return code 0.
 
 The first case to reach:
 
-- [AUTHREV, 2000-APPROVE, rule 2](../../../../blueprints/pangaea/rules/AUTHREV.md#2000-approve)
+- [AUTHSRV, 1100-FIND-LAST-HOLD, rule 1](../../../../blueprints/pangaea/rules/AUTHSRV.md#1100-find-last-hold)

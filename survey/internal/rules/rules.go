@@ -59,8 +59,9 @@ const maxPaths = 64
 // own.
 func Tables(p *cobol.Program, mayChange MayChange) []Table {
 	var tables []Table
+	never := neverReturning(p)
 	for _, para := range p.Paragraphs {
-		e := &extractor{paragraph: para.Name, mayChange: mayChange}
+		e := &extractor{paragraph: para.Name, mayChange: mayChange, never: never}
 		if t, ok := newTable(para.Name, "", para.Pos, e.paths(para.Statements), e.collapsed); ok {
 			tables = append(tables, t)
 		}
@@ -130,6 +131,8 @@ type extractor struct {
 	loops     []Table
 	mayChange MayChange
 	collapsed []cobol.Pos
+	// never are the paragraphs that never return to a PERFORM of them.
+	never map[string]bool
 }
 
 // paths lists the ways through a list of statements.
@@ -158,7 +161,7 @@ func (e *extractor) paths(statements []cobol.Statement) []path {
 		case len(s.Branches) > 0:
 			alternatives = e.phrases(s)
 		}
-		action := []path{{actions: []string{s.Text}, events: changes(s), ended: endsPath(s)}}
+		action := []path{{actions: []string{s.Text}, events: changes(s), ended: e.endsPath(s)}}
 		if alternatives == nil {
 			alternatives = action
 		}
@@ -185,9 +188,54 @@ func startingAt(pos cobol.Pos, paths []path) []path {
 }
 
 // endsPath reports whether a path ends at a statement: one that ends
-// unconditionally, or EXIT PARAGRAPH, which leaves the paragraph.
-func endsPath(s cobol.Statement) bool {
-	return s.Verb == "EXIT PARAGRAPH" || structure.EndsUnconditionally([]cobol.Statement{s})
+// unconditionally, EXIT PARAGRAPH, which leaves the paragraph, or a PERFORM
+// of a paragraph that never returns.
+func (e *extractor) endsPath(s cobol.Statement) bool {
+	return s.Verb == "EXIT PARAGRAPH" || structure.EndsUnconditionally([]cobol.Statement{s}) || performsNeverReturning(s, e.never)
+}
+
+// performsNeverReturning reports whether a statement performs, once, a
+// paragraph that never returns.
+func performsNeverReturning(s cobol.Statement, never map[string]bool) bool {
+	return s.Verb == "PERFORM" && len(s.Branches) == 0 && s.Condition == nil && len(s.Reads) == 0 &&
+		len(s.Procedures) == 1 && s.Procedures[0].Thru == "" && never[s.Procedures[0].Name]
+}
+
+// neverReturning finds the paragraphs that never return to a PERFORM of
+// them: those whose every path ends in STOP RUN, GOBACK or EXIT PROGRAM,
+// or in a PERFORM of a paragraph that never returns.
+func neverReturning(p *cobol.Program) map[string]bool {
+	never := map[string]bool{}
+	for changed := true; changed; {
+		changed = false
+		for _, para := range p.Paragraphs {
+			if !never[para.Name] && stops(para.Statements, never) {
+				never[para.Name], changed = true, true
+			}
+		}
+	}
+	return never
+}
+
+// stops reports whether every path through the statements ends the run.
+func stops(statements []cobol.Statement, never map[string]bool) bool {
+	if len(statements) == 0 {
+		return false
+	}
+	last := statements[len(statements)-1]
+	switch last.Verb {
+	case "STOP", "GOBACK", "EXIT PROGRAM":
+		return true
+	case "IF", "EVALUATE":
+		return complete(last.Branches) && !slices.ContainsFunc(last.Branches, func(b cobol.Branch) bool { return !stops(b.Statements, never) })
+	}
+	return performsNeverReturning(last, never)
+}
+
+// complete reports whether a set of branches is taken whatever the
+// outcome: an IF with its ELSE, an EVALUATE with its WHEN OTHER.
+func complete(branches []cobol.Branch) bool {
+	return slices.ContainsFunc(branches, func(b cobol.Branch) bool { return b.Kind == "ELSE" || b.Kind == "OTHER" })
 }
 
 // changes is a statement as an event that may change what later tests

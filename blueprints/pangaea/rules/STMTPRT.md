@@ -27,10 +27,10 @@ The business rules of [STMTPRT](../programs/STMTPRT.md), paragraph by paragraph:
 | → `SORT STMT-SORT ON ASCENDING KEY SR-ACCT-NO SR-DATE SR-SEQ INPUT PROCEDURE IS 2000-SELECT-POSTINGS OUTPUT PROCEDURE IS 3000-PRINT-STATEMENTS` | 2 | 2 | |
 | → `MOVE 'SORT FAILED' TO WS-ABORT-MESSAGE` | 3 | | |
 | → `PERFORM 9900-ABORT` | 4 | | |
-| → `PERFORM 8000-WRITE-REPORT` | 5 | 3 | 2 |
-| → `PERFORM 9000-CLOSE-FILES` | 6 | 4 | 3 |
-| → `MOVE 0 TO RETURN-CODE` | 7 | 5 | 4 |
-| → `STOP RUN` | 8 | 6 | 5 |
+| → `PERFORM 8000-WRITE-REPORT` | | 3 | 2 |
+| → `PERFORM 9000-CLOSE-FILES` | | 4 | 3 |
+| → `MOVE 0 TO RETURN-CODE` | | 5 | 4 |
+| → `STOP RUN` | | 6 | 5 |
 
 Source: [STMTPRT.cbl:208](../../../pangaea/programs/STMTPRT.cbl#L208).
 
@@ -104,8 +104,8 @@ Each pass of `PERFORM UNTIL MASTER-AT-END`.
 | `WS-POSTING-KEY < AM-ACCT-NO` | Y | N |
 | → `MOVE 'POSTINGS FOR NO ACCOUNT' TO WS-ABORT-MESSAGE` | 1 | |
 | → `PERFORM 9900-ABORT` | 2 | |
-| → `PERFORM 3300-PRINT-STATEMENT` | 3 | 1 |
-| → `PERFORM 3200-READ-MASTER` | 4 | 2 |
+| → `PERFORM 3300-PRINT-STATEMENT` | | 1 |
+| → `PERFORM 3200-READ-MASTER` | | 2 |
 
 Source: [STMTPRT.cbl:285](../../../pangaea/programs/STMTPRT.cbl#L285).
 

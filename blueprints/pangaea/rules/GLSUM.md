@@ -81,27 +81,27 @@ Source: [GLSUM.cbl:207](../../../pangaea/programs/GLSUM.cbl#L207).
 
 ## 2100-POST-TO-LEDGER
 
-| | 1 | 2 | 3 | 4 |
-| --- | :-: | :-: | :-: | :-: |
-| `GS-CODE(GS-CX) = AU-TRAN-CODE` | Y | Y | N | N |
-| `AU-AMOUNT < 0` | Y | N | Y | N |
-| → `SET GS-CX TO 1` | 1 | 1 | 1 | 1 |
-| → `SEARCH GS-CODE-ENTRY` | 2 | 2 | 2 | 2 |
-| → `CONTINUE` | 3 | 3 | | |
-| → `COMPUTE WS-AMOUNT = 0 - AU-AMOUNT` | 4 | | 5 | |
-| → `MOVE WS-DEPOSITS-ACCOUNT TO WS-DEBIT-ACCOUNT` | 5 | | 6 | |
-| → `MOVE GS-CODE-GL-ACCOUNT(GS-CX) TO WS-CREDIT-ACCOUNT` | 6 | | 7 | |
-| → `MOVE WS-DEBIT-ACCOUNT TO WS-WANTED-ACCOUNT` | 7 | 7 | 8 | 8 |
-| → `PERFORM 2200-FIND-ACCOUNT` | 8, 11 | 8, 11 | 9, 12 | 9, 12 |
-| → `ADD WS-AMOUNT TO WS-LT-DEBITS(WS-TX)` | 9 | 9 | 10 | 10 |
-| → `MOVE WS-CREDIT-ACCOUNT TO WS-WANTED-ACCOUNT` | 10 | 10 | 11 | 11 |
-| → `ADD WS-AMOUNT TO WS-LT-CREDITS(WS-TX)` | 12 | 12 | 13 | 13 |
-| → `ADD 1 TO WS-POSTING-COUNT` | 13 | 13 | 14 | 14 |
-| → `MOVE AU-AMOUNT TO WS-AMOUNT` | | 4 | | 5 |
-| → `MOVE GS-CODE-GL-ACCOUNT(GS-CX) TO WS-DEBIT-ACCOUNT` | | 5 | | 6 |
-| → `MOVE WS-DEPOSITS-ACCOUNT TO WS-CREDIT-ACCOUNT` | | 6 | | 7 |
-| → `MOVE 'UNKNOWN TRANSACTION CODE' TO WS-ABORT-MESSAGE` | | | 3 | 3 |
-| → `PERFORM 9900-ABORT` | | | 4 | 4 |
+| | 1 | 2 | 3 |
+| --- | :-: | :-: | :-: |
+| `GS-CODE(GS-CX) = AU-TRAN-CODE` | Y | Y | N |
+| `AU-AMOUNT < 0` | Y | N | |
+| → `SET GS-CX TO 1` | 1 | 1 | 1 |
+| → `SEARCH GS-CODE-ENTRY` | 2 | 2 | 2 |
+| → `CONTINUE` | 3 | 3 | |
+| → `COMPUTE WS-AMOUNT = 0 - AU-AMOUNT` | 4 | | |
+| → `MOVE WS-DEPOSITS-ACCOUNT TO WS-DEBIT-ACCOUNT` | 5 | | |
+| → `MOVE GS-CODE-GL-ACCOUNT(GS-CX) TO WS-CREDIT-ACCOUNT` | 6 | | |
+| → `MOVE WS-DEBIT-ACCOUNT TO WS-WANTED-ACCOUNT` | 7 | 7 | |
+| → `PERFORM 2200-FIND-ACCOUNT` | 8, 11 | 8, 11 | |
+| → `ADD WS-AMOUNT TO WS-LT-DEBITS(WS-TX)` | 9 | 9 | |
+| → `MOVE WS-CREDIT-ACCOUNT TO WS-WANTED-ACCOUNT` | 10 | 10 | |
+| → `ADD WS-AMOUNT TO WS-LT-CREDITS(WS-TX)` | 12 | 12 | |
+| → `ADD 1 TO WS-POSTING-COUNT` | 13 | 13 | |
+| → `MOVE AU-AMOUNT TO WS-AMOUNT` | | 4 | |
+| → `MOVE GS-CODE-GL-ACCOUNT(GS-CX) TO WS-DEBIT-ACCOUNT` | | 5 | |
+| → `MOVE WS-DEPOSITS-ACCOUNT TO WS-CREDIT-ACCOUNT` | | 6 | |
+| → `MOVE 'UNKNOWN TRANSACTION CODE' TO WS-ABORT-MESSAGE` | | | 3 |
+| → `PERFORM 9900-ABORT` | | | 4 |
 
 Source: [GLSUM.cbl:224](../../../pangaea/programs/GLSUM.cbl#L224).
 

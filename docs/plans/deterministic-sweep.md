@@ -11,6 +11,8 @@ The ground rules of [design-views.md](design-views.md) apply: facts only, new fa
 
 Checks: no rule takes a statement after a `PERFORM` of an abort paragraph; AUTHSRV's `2100-AUTHORIZE` is a table again, with `RS-APPROVED` among its conditions.
 
+As built: both checks hold. The tables went from 384 rules to 368 with the paragraphs that never return, and to 408 with AUTHSRV's table back; the oracle's search reaches 266 of them, against 245 of 384 before. What AUTHSRV's table gained is mostly combinations of request types no run takes, which part 2 is for.
+
 ## Part 2: rules no run can take
 
 Most rules no case reaches are rules no run can take: a table does not weigh what one condition's outcome says about another's, or what a statement on the path has just moved. Along each path, keep the values the path knows: a literal moved into a field, or set by a condition name, and a condition's outcome tested before. A condition on a field whose value the path knows has a known outcome, and a path that would give it the other is no rule. A value is forgotten where a statement may change the field, as part 1 tells.

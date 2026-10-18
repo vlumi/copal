@@ -65,3 +65,22 @@ func TestInputs(t *testing.T) {
 		t.Errorf("inputs %+v, want %+v", got, want)
 	}
 }
+
+// A call writes the caller's fields over the bytes the program called
+// writes of what it is passed; a program outside the system may write all
+// it is passed by reference.
+func TestCallWrites(t *testing.T) {
+	s, err := Analyze([]string{"testdata/ASKER.cbl", "testdata/ANSWERER.cbl"}, "testdata/no-copybooks")
+	if err != nil {
+		t.Fatal(err)
+	}
+	asker := s.Programs[1]
+	writes := callWrites(asker, s.Programs)
+	calls := asker.source.Paragraphs[0].Statements
+	if items, known := writes(calls[0]); !known || !reflect.DeepEqual(items, []string{"WS-ANSWER"}) {
+		t.Errorf("ANSWERER writes %q, %v, want WS-ANSWER", items, known)
+	}
+	if _, known := writes(calls[1]); known {
+		t.Error("what ELSEWHERE writes is known")
+	}
+}

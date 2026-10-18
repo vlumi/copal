@@ -26,7 +26,7 @@ The business rules of [AUTHSRV](../programs/AUTHSRV.md), paragraph by paragraph:
 | → `READ CONTROL-FILE` | | 2 | 2 |
 | → `MOVE 'NO BANK CONTROL RECORD' TO WS-ABORT-MESSAGE` | | 3 | |
 | → `PERFORM 9900-ABORT` | | 4 | |
-| → `PERFORM 1100-FIND-LAST-HOLD` | | 5 | 3 |
+| → `PERFORM 1100-FIND-LAST-HOLD` | | | 3 |
 
 Source: [AUTHSRV.cbl:113](../../../pangaea/programs/AUTHSRV.cbl#L113).
 
@@ -70,26 +70,29 @@ Source: [AUTHSRV.cbl:149](../../../pangaea/programs/AUTHSRV.cbl#L149).
 
 ## 2100-AUTHORIZE
 
-| | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 |
-| --- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | N | N | N | N | N | N | N | N | N | N | N | N |
-| `RS-RESULT = SPACES AND RQ-REVERSAL` | Y | Y | Y | Y | Y | Y | N | N | N | N | N | N | Y | Y | Y | Y | Y | Y | N | N | N | N | N | N |
-| `RS-RESULT = SPACES` | Y | Y | Y | Y | Y | N | Y | Y | Y | Y | Y | N | Y | Y | Y | Y | Y | N | Y | Y | Y | Y | Y | N |
-| `RQ-PURCHASE` | Y | N | N | N | N | | Y | N | N | N | N | | Y | N | N | N | N | | Y | N | N | N | N | |
-| `RQ-REVERSAL` | | Y | N | N | N | | | Y | N | N | N | | | Y | N | N | N | | | Y | N | N | N | |
-| `RQ-WITHDRAWAL` | | | Y | N | N | | | | Y | N | N | | | | Y | N | N | | | | Y | N | N | |
-| `RQ-BALANCE-ENQUIRY` | | | | Y | N | | | | | Y | N | | | | | Y | N | | | | | Y | N | |
-| → `ADD 1 TO WS-REQUEST-COUNT` | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
-| → `MOVE SPACES TO AUTH-RESPONSE HOLD-RECORD` | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 |
-| → `PERFORM 2200-READ-CARD-AND-ACCOUNT` | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | | | | | | | | | | | | |
-| → `PERFORM 2300-READ-HOLD` | 4 | 4 | 4 | 4 | 4 | 4 | | | | | | | 5 | 5 | 5 | 5 | 5 | 5 | | | | | | |
-| → `CALL 'AUTHPUR' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD` | 5 | | | | | | 4 | | | | | | 6 | | | | | | 5 | | | | | |
-| → `IF RS-APPROVED` | 6 | 6 | 6 | 6 | 5 | 5 | 5 | 5 | 5 | 5 | 4 | 4 | 7 | 7 | 7 | 7 | 6 | 6 | 6 | 6 | 6 | 6 | 5 | 5 |
-| → `CALL 'AUTHREV' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD` | | 5 | | | | | | 4 | | | | | | 6 | | | | | | 5 | | | | |
-| → `CALL 'ATMWDL' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD` | | | 5 | | | | | | 4 | | | | | | 6 | | | | | | 5 | | | |
-| → `CALL 'ATMBAL' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD` | | | | 5 | | | | | | 4 | | | | | | 6 | | | | | | 5 | | |
-| → `SET RS-INVALID-REQUEST TO TRUE` | | | | | | | | | | | | | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 |
-| → `MOVE 'UNKNOWN REQUEST' TO RS-MESSAGE` | | | | | | | | | | | | | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 |
+| | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 | 48 | 49 | 50 | 51 | 52 | 53 | 54 | 55 | 56 | 57 | 58 | 59 | 60 | 61 | 62 | 63 | 64 |
+| --- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N |
+| `RS-RESULT = SPACES AND RQ-REVERSAL` | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N |
+| `RS-RESULT = SPACES` | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | N | N | N | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | N | N | N | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | N | N | N | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | N | N | N |
+| `RQ-PURCHASE` | Y | Y | Y | N | N | N | N | N | N | N | N | N | N | | | | Y | Y | Y | N | N | N | N | N | N | N | N | N | N | | | | Y | Y | Y | N | N | N | N | N | N | N | N | N | N | | | | Y | Y | Y | N | N | N | N | N | N | N | N | N | N | | | |
+| `RS-APPROVED` | Y | Y | N | Y | Y | N | Y | Y | N | Y | N | Y | N | Y | Y | N | Y | Y | N | Y | Y | N | Y | Y | N | Y | N | Y | N | Y | Y | N | Y | Y | N | Y | Y | N | Y | Y | N | Y | N | Y | N | Y | Y | N | Y | Y | N | Y | Y | N | Y | Y | N | Y | N | Y | N | Y | Y | N |
+| `RQ-BALANCE-ENQUIRY` | N | Y | | N | Y | | N | Y | | Y | Y | N | N | N | Y | | N | Y | | N | Y | | N | Y | | Y | Y | N | N | N | Y | | N | Y | | N | Y | | N | Y | | Y | Y | N | N | N | Y | | N | Y | | N | Y | | N | Y | | Y | Y | N | N | N | Y | |
+| `RQ-REVERSAL` | | | | Y | Y | Y | N | N | N | N | N | N | N | | | | | | | Y | Y | Y | N | N | N | N | N | N | N | | | | | | | Y | Y | Y | N | N | N | N | N | N | N | | | | | | | Y | Y | Y | N | N | N | N | N | N | N | | | |
+| `RQ-WITHDRAWAL` | | | | | | | Y | Y | Y | N | N | N | N | | | | | | | | | | Y | Y | Y | N | N | N | N | | | | | | | | | | Y | Y | Y | N | N | N | N | | | | | | | | | | Y | Y | Y | N | N | N | N | | | |
+| → `ADD 1 TO WS-REQUEST-COUNT` | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+| → `MOVE SPACES TO AUTH-RESPONSE HOLD-RECORD` | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 |
+| → `PERFORM 2200-READ-CARD-AND-ACCOUNT` | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
+| → `PERFORM 2300-READ-HOLD` | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | | | | | | | | | | | | | | | | | 5 | 5 | 5 | 5 | 5 | 5 | 5 | 5 | 5 | 5 | 5 | 5 | 5 | 5 | 5 | 5 | | | | | | | | | | | | | | | | |
+| → `CALL 'AUTHPUR' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD` | 5 | 5 | 5 | | | | | | | | | | | | | | 4 | 4 | 4 | | | | | | | | | | | | | | 6 | 6 | 6 | | | | | | | | | | | | | | 5 | 5 | 5 | | | | | | | | | | | | | |
+| → `ADD 1 TO WS-APPROVED-COUNT` | 6 | 6 | | 6 | 6 | | 6 | 6 | | 6 | | 5 | | 5 | 5 | | 5 | 5 | | 5 | 5 | | 5 | 5 | | 5 | | 4 | | 4 | 4 | | 7 | 7 | | 7 | 7 | | 7 | 7 | | 7 | | 6 | | 6 | 6 | | 6 | 6 | | 6 | 6 | | 6 | 6 | | 6 | | 5 | | 5 | 5 | |
+| → `PERFORM 2400-SAVE-CHANGES` | 7 | | | 7 | | | 7 | | | | | 6 | | 6 | | | 6 | | | 6 | | | 6 | | | | | 5 | | 5 | | | 8 | | | 8 | | | 8 | | | | | 7 | | 7 | | | 7 | | | 7 | | | 7 | | | | | 6 | | 6 | | |
+| → `ADD 1 TO WS-DECLINED-COUNT` | | | 6 | | | 6 | | | 6 | | 6 | | 5 | | | 5 | | | 5 | | | 5 | | | 5 | | 5 | | 4 | | | 4 | | | 7 | | | 7 | | | 7 | | 7 | | 6 | | | 6 | | | 6 | | | 6 | | | 6 | | 6 | | 5 | | | 5 |
+| → `CALL 'AUTHREV' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD` | | | | 5 | 5 | 5 | | | | | | | | | | | | | | 4 | 4 | 4 | | | | | | | | | | | | | | 6 | 6 | 6 | | | | | | | | | | | | | | 5 | 5 | 5 | | | | | | | | | | |
+| → `CALL 'ATMWDL' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD` | | | | | | | 5 | 5 | 5 | | | | | | | | | | | | | | 4 | 4 | 4 | | | | | | | | | | | | | | 6 | 6 | 6 | | | | | | | | | | | | | | 5 | 5 | 5 | | | | | | | |
+| → `CALL 'ATMBAL' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD` | | | | | | | | | | 5 | 5 | | | | | | | | | | | | | | | 4 | 4 | | | | | | | | | | | | | | | 6 | 6 | | | | | | | | | | | | | | | 5 | 5 | | | | | |
+| → `SET RS-INVALID-REQUEST TO TRUE` | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 |
+| → `MOVE 'UNKNOWN REQUEST' TO RS-MESSAGE` | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 |
 
 Source: [AUTHSRV.cbl:160](../../../pangaea/programs/AUTHSRV.cbl#L160).
 
@@ -125,26 +128,26 @@ Source: [AUTHSRV.cbl:219](../../../pangaea/programs/AUTHSRV.cbl#L219).
 
 ## 2400-SAVE-CHANGES
 
-| | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 |
-| --- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| `REWRITE ACCT-ONLINE-RECORD INVALID KEY` | Y | Y | Y | Y | Y | Y | Y | Y | N | N | N | N | N | N | N | N |
-| `REWRITE CARD-RECORD INVALID KEY` | Y | Y | Y | Y | N | N | N | N | Y | Y | Y | Y | N | N | N | N |
-| `RQ-REVERSAL` | Y | Y | N | N | Y | Y | N | N | Y | Y | N | N | Y | Y | N | N |
-| `REWRITE HOLD-RECORD INVALID KEY` | Y | N | | | Y | N | | | Y | N | | | Y | N | | |
-| `WRITE HOLD-RECORD INVALID KEY` | | | Y | N | | | Y | N | | | Y | N | | | Y | N |
-| → `REWRITE ACCT-ONLINE-RECORD` | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
-| → `MOVE 'CANNOT REWRITE THE ACCOUNT' TO WS-ABORT-MESSAGE` | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | | | | | | | | |
-| → `PERFORM 9900-ABORT` | 3, 6, 9 | 3, 6 | 3, 6, 11 | 3, 6 | 3, 7 | 3 | 3, 9 | 3 | 4, 7 | 4 | 4, 9 | 4 | 5 | | 7 | |
-| → `REWRITE CARD-RECORD` | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 |
-| → `MOVE 'CANNOT REWRITE THE CARD' TO WS-ABORT-MESSAGE` | 5 | 5 | 5 | 5 | | | | | 3 | 3 | 3 | 3 | | | | |
-| → `REWRITE HOLD-RECORD` | 7 | 7 | | | 5 | 5 | | | 5 | 5 | | | 3 | 3 | | |
-| → `MOVE 'CANNOT REWRITE THE HOLD' TO WS-ABORT-MESSAGE` | 8 | | | | 6 | | | | 6 | | | | 4 | | | |
-| → `ADD HD-AMOUNT TO WS-RELEASED-TOTAL` | 10 | 8 | | | 8 | 6 | | | 8 | 6 | | | 6 | 4 | | |
-| → `ADD 1 TO WS-LAST-HOLD-NO` | | | 7 | 7 | | | 5 | 5 | | | 5 | 5 | | | 3 | 3 |
-| → `MOVE WS-LAST-HOLD-NO TO HD-HOLD-NO RS-AUTH-CODE` | | | 8 | 8 | | | 6 | 6 | | | 6 | 6 | | | 4 | 4 |
-| → `WRITE HOLD-RECORD` | | | 9 | 9 | | | 7 | 7 | | | 7 | 7 | | | 5 | 5 |
-| → `MOVE 'CANNOT WRITE THE HOLD' TO WS-ABORT-MESSAGE` | | | 10 | | | | 8 | | | | 8 | | | | 6 | |
-| → `ADD HD-AMOUNT TO WS-HELD-TOTAL` | | | 12 | 10 | | | 10 | 8 | | | 10 | 8 | | | 8 | 6 |
-| → `ADD HD-FEE TO WS-HELD-TOTAL` | | | 13 | 11 | | | 11 | 9 | | | 11 | 9 | | | 9 | 7 |
+| | 1 | 2 | 3 | 4 | 5 | 6 |
+| --- | :-: | :-: | :-: | :-: | :-: | :-: |
+| `REWRITE ACCT-ONLINE-RECORD INVALID KEY` | Y | N | N | N | N | N |
+| `REWRITE CARD-RECORD INVALID KEY` | | Y | N | N | N | N |
+| `RQ-REVERSAL` | | | Y | Y | N | N |
+| `REWRITE HOLD-RECORD INVALID KEY` | | | Y | N | | |
+| `WRITE HOLD-RECORD INVALID KEY` | | | | | Y | N |
+| → `REWRITE ACCT-ONLINE-RECORD` | 1 | 1 | 1 | 1 | 1 | 1 |
+| → `MOVE 'CANNOT REWRITE THE ACCOUNT' TO WS-ABORT-MESSAGE` | 2 | | | | | |
+| → `PERFORM 9900-ABORT` | 3 | 4 | 5 | | 7 | |
+| → `REWRITE CARD-RECORD` | | 2 | 2 | 2 | 2 | 2 |
+| → `MOVE 'CANNOT REWRITE THE CARD' TO WS-ABORT-MESSAGE` | | 3 | | | | |
+| → `REWRITE HOLD-RECORD` | | | 3 | 3 | | |
+| → `MOVE 'CANNOT REWRITE THE HOLD' TO WS-ABORT-MESSAGE` | | | 4 | | | |
+| → `ADD HD-AMOUNT TO WS-RELEASED-TOTAL` | | | | 4 | | |
+| → `ADD 1 TO WS-LAST-HOLD-NO` | | | | | 3 | 3 |
+| → `MOVE WS-LAST-HOLD-NO TO HD-HOLD-NO RS-AUTH-CODE` | | | | | 4 | 4 |
+| → `WRITE HOLD-RECORD` | | | | | 5 | 5 |
+| → `MOVE 'CANNOT WRITE THE HOLD' TO WS-ABORT-MESSAGE` | | | | | 6 | |
+| → `ADD HD-AMOUNT TO WS-HELD-TOTAL` | | | | | | 6 |
+| → `ADD HD-FEE TO WS-HELD-TOTAL` | | | | | | 7 |
 
 Source: [AUTHSRV.cbl:230](../../../pangaea/programs/AUTHSRV.cbl#L230).
