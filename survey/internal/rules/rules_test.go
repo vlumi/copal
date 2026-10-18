@@ -80,6 +80,11 @@ Y N | READ IN-FILE AT END
 Y N | WS-RATE(WS-I) > 0
 1   | MOVE WS-RATE(WS-I) TO WS-BEST
 `,
+		`EXIT-PARA 
+Y N | DONE = 1
+1   | EXIT PARAGRAPH
+  1 | DISPLAY 'NOT DONE'
+`,
 	}
 	if strings.Join(got, "\n") != strings.Join(want, "\n") {
 		t.Errorf("got\n%s\nwant\n%s", strings.Join(got, "\n"), strings.Join(want, "\n"))

@@ -7,8 +7,9 @@
 // of an EVALUATE are tried in order, so a path through one is also a path
 // past those before it; an EVALUATE without WHEN OTHER has a path for when
 // nothing matches. A path ends at a statement that ends unconditionally,
-// such as GO TO or STOP RUN, so that in the IF ... GO TO chains of old
-// code the rest of the paragraph runs only on the paths that did not jump.
+// such as GO TO or STOP RUN, or at EXIT PARAGRAPH, so that in the IF ...
+// GO TO chains of old code the rest of the paragraph runs only on the
+// paths that did not jump.
 // The body of an inline PERFORM is a table of its own, for one pass
 // through the loop.
 package rules
@@ -105,7 +106,7 @@ func (e *extractor) paths(statements []cobol.Statement) []path {
 		case len(s.Branches) > 0:
 			alternatives = e.phrases(s)
 		}
-		action := []path{{actions: []string{s.Text}, ended: structure.EndsUnconditionally([]cobol.Statement{s})}}
+		action := []path{{actions: []string{s.Text}, ended: endsPath(s)}}
 		if alternatives == nil {
 			alternatives = action
 		}
@@ -116,6 +117,12 @@ func (e *extractor) paths(statements []cobol.Statement) []path {
 		paths = next
 	}
 	return paths
+}
+
+// endsPath reports whether a path ends at a statement: one that ends
+// unconditionally, or EXIT PARAGRAPH, which leaves the paragraph.
+func endsPath(s cobol.Statement) bool {
+	return s.Verb == "EXIT PARAGRAPH" || structure.EndsUnconditionally([]cobol.Statement{s})
 }
 
 // under prefixes the paths through statements with a condition's outcome.
