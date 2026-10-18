@@ -8,7 +8,7 @@ Copal is one Go module in four parts, each a directory at the top of the reposit
 
 - **Survey**, `survey/`, is the analyzer: it reads a COBOL system and writes its blueprints, and serves the explorer. Only `blueprint`, its model of a system, is exported; every analysis is under `survey/internal/`. [survey/README.md](../survey/README.md) describes the pipeline.
 - **Pangaea**, `pangaea/`, is the specimen: a legacy COBOL bank with the machine room that runs it in Go. It is written as a legacy system would be, documented as one in [pangaea/docs/](../pangaea/docs/README.md), and it knows nothing of the survey.
-- **Bedrock**, `bedrock/`, is the language layer both stand on: reading COBOL source and JCL, laying out records from copybooks, and reading and writing records by field. The survey analyzes with it, the bank's machine room runs the bank with it. None of it is analysis.
+- **Bedrock**, `bedrock/`, is the language layer both stand on: reading COBOL source and JCL, laying out records from copybooks, reading and writing records by field, and compiling and running COBOL programs with GnuCOBOL. The survey analyzes with it, the bank's machine room runs the bank with it. None of it is analysis.
 - **The console**, `console/`, is the one part built for the modernization rather than inherited from the past: it runs the bank, watches its online day, and shows each run's jobs as the survey draws them, with links into the blueprints. It is the only part that knows both the bank and the survey.
 
 ## The rule
