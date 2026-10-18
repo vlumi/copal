@@ -241,7 +241,15 @@ Written from [CARD-RECORD](#card-record).
 
 ### File REPORT-OUT
 
-Written from [WS-REPORT-COUNT-LINE](#ws-report-count-line).
+Written from [REPORT-LINE](#report-line) and [WS-REPORT-COUNT-LINE](#ws-report-count-line).
+
+#### Record REPORT-LINE
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| REPORT-LINE | 1-80 | file CONTROL-FILE BC-BUSINESS-DATE; initial value of WS-BLOCKED-COUNT; initial value of WS-EXPIRED-COUNT; initial value of WS-LOADED-COUNT; initial value of WS-READ-COUNT; literal '  OF WHICH BLOCKED'; literal 'CARDLOAD ONLINE CARD LOAD        BUSINESS DATE '; literal 'CARDS LOADED'; literal 'CARDS READ'; literal 'EXPIRED CARDS LEFT OUT'; literal 1; literal SPACES |
+
+#### Record WS-REPORT-COUNT-LINE
 
 | Field | Position | Origins |
 | --- | --: | --- |

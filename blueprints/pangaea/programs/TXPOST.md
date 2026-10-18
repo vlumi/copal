@@ -556,7 +556,22 @@ Written from [ACCT-MASTER-RECORD](#acct-master-record).
 
 ### File REPORT-OUT
 
-Written from [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
+Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-count-line) and [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
+
+#### Record REPORT-LINE
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| REPORT-LINE | 1-80 | file ACCT-IN AM-BALANCE; file CONTROL-FILE BC-BUSINESS-DATE; file TRAN-IN TD-AMOUNT; initial value of WS-CLOSING-TOTAL; initial value of WS-CREDIT-TOTAL; initial value of WS-DEBIT-TOTAL; initial value of WS-FEE-TOTAL; initial value of WS-LEG-COUNT; initial value of WS-MASTERS-READ; initial value of WS-MASTERS-WRITTEN; initial value of WS-OPENING-TOTAL; initial value of WS-POSTED-COUNT; initial value of WS-REJECT-COUNT; literal 'ACCOUNTS READ'; literal 'ACCOUNTS WRITTEN'; literal 'CLOSING BALANCES'; literal 'CREDITS'; literal 'DEBITS'; literal 'FEES'; literal 'NEW MASTER IN BALANCE'; literal 'OPENING BALANCES'; literal 'TRANSACTIONS POSTED'; literal 'TRANSACTIONS REJECTED'; literal 'TRANSFER LEGS WRITTEN'; literal 'TXPOST   TRANSACTION POSTING     BUSINESS DATE '; literal 1; literal SPACES |
+
+#### Record WS-REPORT-COUNT-LINE
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| WS-RC-LABEL | 1-30 | literal 'ACCOUNTS READ'; literal 'ACCOUNTS WRITTEN'; literal 'TRANSACTIONS POSTED'; literal 'TRANSACTIONS REJECTED'; literal 'TRANSFER LEGS WRITTEN' |
+| WS-RC-VALUE | 31-40 | initial value of WS-LEG-COUNT; initial value of WS-MASTERS-READ; initial value of WS-MASTERS-WRITTEN; initial value of WS-POSTED-COUNT; initial value of WS-REJECT-COUNT; literal 1 |
+
+#### Record WS-REPORT-AMOUNT-LINE
 
 | Field | Position | Origins |
 | --- | --: | --- |

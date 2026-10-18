@@ -431,7 +431,22 @@ Written from [HOLD-RECORD](#hold-record).
 
 ### File REPORT-OUT
 
-Written from [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
+Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-count-line) and [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
+
+#### Record REPORT-LINE
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| REPORT-LINE | 1-80 | call ATMBAL argument 1 RQ-AUTH-CODE; call ATMBAL argument 3 BC-BUSINESS-DATE; call ATMBAL argument 6 HD-AMOUNT; call ATMBAL argument 6 HD-FEE; call ATMBAL argument 6 HD-HOLD-NO; call ATMWDL argument 1 RQ-AUTH-CODE; call ATMWDL argument 3 BC-BUSINESS-DATE; call ATMWDL argument 6 HD-AMOUNT; call ATMWDL argument 6 HD-FEE; call ATMWDL argument 6 HD-HOLD-NO; call AUTHPUR argument 1 RQ-AUTH-CODE; call AUTHPUR argument 3 BC-BUSINESS-DATE; call AUTHPUR argument 6 HD-AMOUNT; call AUTHPUR argument 6 HD-FEE; call AUTHPUR argument 6 HD-HOLD-NO; call AUTHREV argument 1 RQ-AUTH-CODE; call AUTHREV argument 3 BC-BUSINESS-DATE; call AUTHREV argument 6 HD-AMOUNT; call AUTHREV argument 6 HD-FEE; call AUTHREV argument 6 HD-HOLD-NO; file CONTROL-FILE BC-BUSINESS-DATE; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; file HOLD-FILE HD-HOLD-NO; initial value of WS-APPROVED-COUNT; initial value of WS-DECLINED-COUNT; initial value of WS-HELD-TOTAL; initial value of WS-LAST-HOLD-NO; initial value of WS-RELEASED-TOTAL; initial value of WS-REQUEST-COUNT; literal 'APPROVED'; literal 'AUTHSRV  ONLINE AUTHORIZATIONS   BUSINESS DATE '; literal 'DECLINED'; literal 'HELD WITH FEES'; literal 'LAST AUTHORIZATION CODE'; literal 'RELEASED BY REVERSALS'; literal 'REQUESTS'; literal 1; literal SPACES; stream SYSIN RQ-AUTH-CODE |
+
+#### Record WS-REPORT-COUNT-LINE
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| WS-RC-LABEL | 1-30 | literal 'APPROVED'; literal 'DECLINED'; literal 'LAST AUTHORIZATION CODE'; literal 'REQUESTS' |
+| WS-RC-VALUE | 31-40 | call ATMBAL argument 1 RQ-AUTH-CODE; call ATMBAL argument 6 HD-HOLD-NO; call ATMWDL argument 1 RQ-AUTH-CODE; call ATMWDL argument 6 HD-HOLD-NO; call AUTHPUR argument 1 RQ-AUTH-CODE; call AUTHPUR argument 6 HD-HOLD-NO; call AUTHREV argument 1 RQ-AUTH-CODE; call AUTHREV argument 6 HD-HOLD-NO; file HOLD-FILE HD-HOLD-NO; initial value of WS-APPROVED-COUNT; initial value of WS-DECLINED-COUNT; initial value of WS-LAST-HOLD-NO; initial value of WS-REQUEST-COUNT; literal 1; stream SYSIN RQ-AUTH-CODE |
+
+#### Record WS-REPORT-AMOUNT-LINE
 
 | Field | Position | Origins |
 | --- | --: | --- |

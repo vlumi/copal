@@ -342,7 +342,22 @@ Written from [REJECT-RECORD](#reject-record).
 
 ### File REPORT-OUT
 
-Written from [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
+Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-count-line) and [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
+
+#### Record REPORT-LINE
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| REPORT-LINE | 1-80 | file CONTROL-FILE BC-BUSINESS-DATE; file TRAN-IN TD-AMOUNT; initial value of WS-AMOUNT-TOTAL; initial value of WS-DETAIL-COUNT; initial value of WS-FILE-ERROR; initial value of WS-REJECT-COUNT; initial value of WS-VALID-COUNT; literal 'AMOUNT TOTAL'; literal 'DETAILS READ'; literal 'DETAILS VALID'; literal 'EMPTY FILE'; literal 'FILE ACCEPTED'; literal 'FILE REJECTED: '; literal 'FIRST RECORD IS NOT A HEADER'; literal 'HEADER IS FROM AN UNKNOWN SOURCE'; literal 'HEADER IS NOT FOR THE BUSINESS DATE'; literal 'NO TRAILER'; literal 'RECORDS AFTER THE TRAILER'; literal 'RECORDS REJECTED'; literal 'SECOND HEADER'; literal 'TRAILER ACCOUNT HASH DIFFERS'; literal 'TRAILER AMOUNT TOTAL DIFFERS'; literal 'TRAILER DETAIL COUNT DIFFERS'; literal 'TXVALID  TRANSACTION VALIDATION  BUSINESS DATE '; literal 1; literal SPACES |
+
+#### Record WS-REPORT-COUNT-LINE
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| WS-RC-LABEL | 1-30 | literal 'DETAILS READ'; literal 'DETAILS VALID'; literal 'RECORDS REJECTED' |
+| WS-RC-VALUE | 31-40 | initial value of WS-DETAIL-COUNT; initial value of WS-REJECT-COUNT; initial value of WS-VALID-COUNT; literal 1 |
+
+#### Record WS-REPORT-AMOUNT-LINE
 
 | Field | Position | Origins |
 | --- | --: | --- |
