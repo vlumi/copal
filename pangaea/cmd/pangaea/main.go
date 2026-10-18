@@ -22,8 +22,8 @@ import (
 	"time"
 
 	"github.com/vlumi/copal/bedrock/jcl"
+	"github.com/vlumi/copal/bedrock/run"
 	"github.com/vlumi/copal/pangaea/bank"
-	"github.com/vlumi/copal/pangaea/compile"
 	"github.com/vlumi/copal/pangaea/dataset"
 	"github.com/vlumi/copal/pangaea/online"
 	"github.com/vlumi/copal/pangaea/records"
@@ -51,7 +51,7 @@ func main() {
 		"build":    build,
 		"load":     load,
 		"unload":   unload,
-		"run":      run,
+		"run":      runJob,
 		"reset":    reset,
 		"days":     days,
 		"online":   serveOnline,
@@ -74,7 +74,7 @@ func build(args []string) error {
 	copybooks := flags.String("copybooks", "pangaea/copybooks", "directory of the copybooks")
 	out := flags.String("out", "pangaea/build", "directory for the executables")
 	_ = flags.Parse(args)
-	names, err := compile.Programs(*src, *copybooks, *out)
+	names, err := run.Build{Sources: *src, Copybooks: *copybooks, Out: *out}.Programs()
 	if err != nil {
 		return err
 	}
@@ -112,7 +112,7 @@ func unload(args []string) error {
 	return store.UnloadAll(flags.Arg(0))
 }
 
-func run(args []string) error {
+func runJob(args []string) error {
 	flags := flag.NewFlagSet("run", flag.ExitOnError)
 	dir := flags.String("datasets", "", "dataset directory")
 	sysout := flags.String("sysout", "", "directory for the job log and reports")

@@ -9,8 +9,8 @@ import (
 	"testing"
 
 	"github.com/vlumi/copal/bedrock/jcl"
+	"github.com/vlumi/copal/bedrock/run"
 	"github.com/vlumi/copal/internal/golden"
-	"github.com/vlumi/copal/pangaea/compile"
 	"github.com/vlumi/copal/pangaea/dataset"
 	"github.com/vlumi/copal/pangaea/fixture"
 	"github.com/vlumi/copal/pangaea/records"
@@ -28,7 +28,7 @@ import (
 // rewrite the golden files.
 func TestDaily(t *testing.T) {
 	programs := t.TempDir()
-	if _, err := compile.Programs("programs", "copybooks", programs); err != nil {
+	if _, err := (run.Build{Sources: "programs", Copybooks: "copybooks", Out: programs}).Programs(); err != nil {
 		t.Fatal(err)
 	}
 	codec := newCodec(t)

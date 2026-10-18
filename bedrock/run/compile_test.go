@@ -1,4 +1,4 @@
-package compile
+package run
 
 import (
 	"errors"
@@ -10,7 +10,7 @@ import (
 
 func TestPrograms(t *testing.T) {
 	out := t.TempDir()
-	names, err := Programs("testdata/programs", "testdata/copybooks", out)
+	names, err := Build{Sources: "testdata/programs", Copybooks: "testdata/copybooks", Out: out}.Programs()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -32,7 +32,7 @@ func TestPrograms(t *testing.T) {
 // loads from COB_LIBRARY_PATH when another program calls it.
 func TestCalledPrograms(t *testing.T) {
 	out := t.TempDir()
-	if _, err := Programs("testdata/called", "testdata/copybooks", out); err != nil {
+	if _, err := (Build{Sources: "testdata/called", Copybooks: "testdata/copybooks", Out: out}).Programs(); err != nil {
 		t.Fatal(err)
 	}
 	cmd := exec.Command(filepath.Join(out, "CALLER"))
