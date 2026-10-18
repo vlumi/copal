@@ -83,7 +83,7 @@ EXPLORE_ADDR ?= 127.0.0.1:1192
 
 .PHONY: explore
 explore:  ## Explore Pangaea's analysis in the browser (EXPLORE_ADDR)
-	go run ./survey/cmd/survey explore -copybooks pangaea/copybooks -addr $(EXPLORE_ADDR) -title "the First Bank of Pangaea" pangaea/programs/*.cbl pangaea/jobs/*.jcl
+	go run ./survey/cmd/survey explore -copybooks pangaea/copybooks -addr $(EXPLORE_ADDR) -title "the First Bank of Pangaea" -cases oracle/pangaea pangaea/programs/*.cbl pangaea/jobs/*.jcl
 
 .PHONY: docs-diagrams
 docs-diagrams:  ## Redraw the diagrams of docs/architecture.md

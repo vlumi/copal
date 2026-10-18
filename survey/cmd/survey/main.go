@@ -3,7 +3,7 @@
 // programs.
 //
 //	survey blueprints -copybooks dir -out dir [-title name] program.cbl... [job.jcl...]
-//	survey explore -copybooks dir [-addr host:port] [-title name] program.cbl... [job.jcl...]
+//	survey explore -copybooks dir [-addr host:port] [-title name] [-cases dir] program.cbl... [job.jcl...]
 //	survey oracle -copybooks dir [-out dir -rules dir] [-title name] [-program name] program.cbl...
 package main
 
@@ -22,7 +22,7 @@ import (
 
 const usage = `usage:
   survey blueprints -copybooks dir -out dir [-title name] program.cbl... [job.jcl...]
-  survey explore -copybooks dir [-addr host:port] [-title name] program.cbl... [job.jcl...]
+  survey explore -copybooks dir [-addr host:port] [-title name] [-cases dir] program.cbl... [job.jcl...]
   survey oracle -copybooks dir [-out dir -rules dir] [-title name] [-program name] program.cbl...
 `
 
@@ -60,6 +60,7 @@ func serveExplorer(args []string) error {
 	copybooks := flags.String("copybooks", "", "directory of the copybooks")
 	addr := flags.String("addr", "127.0.0.1:1192", "address to serve on")
 	title := flags.String("title", "the system", "name of the system")
+	cases := flags.String("cases", "", "directory of the cases the oracle wrote")
 	_ = flags.Parse(args)
 	if *copybooks == "" || flags.NArg() == 0 {
 		fmt.Fprint(os.Stderr, usage)
@@ -69,7 +70,7 @@ func serveExplorer(args []string) error {
 	if err != nil {
 		return err
 	}
-	x, err := explore.New(system, *title)
+	x, err := explore.New(system, *title, *cases)
 	if err != nil {
 		return err
 	}

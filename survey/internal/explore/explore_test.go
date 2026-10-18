@@ -29,7 +29,7 @@ func newPangaea(t *testing.T) *httptest.Server {
 	if err != nil {
 		t.Fatal(err)
 	}
-	x, err := New(system, "Pangaea")
+	x, err := New(system, "Pangaea", "oracle/pangaea")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -90,6 +90,7 @@ func TestPages(t *testing.T) {
 			"Accepted as RQ-AMOUNT from SYSIN", "the SYSIN of AUTH in ONLINE"},
 		"/programs/TXPOST/fields/AM-BALANCE":     {"S9(11)V99", "Values moved into it", "3200-POST-DEBIT", "Follow its values back", "follow where its values go"},
 		"/programs/TXPOST/paragraphs/0000-MAIN":  {"Performs", "1000-INITIALIZE"},
+		"/programs/TXPOST/cases/01":              {"The run ended with return code", "<h3>TRAN-IN</h3>", "<h3>ACCT-OUT</h3>"},
 		"/source/pangaea/copybooks/ACCTMAST.cpy": {`id="L1"`, "ACCT-MASTER-RECORD"},
 		"/":                                      {`TRAN.DAILY</a></td><td><span class="badge kind-external">`, `AUTHPUR</a> <span class="badge kind-called">`},
 		"/copybooks/ACCTMAST": {`AM-BALANCE</a> <span class="badge kind-amount">`, `AM-STATUS</a> <span class="badge kind-code">`,
@@ -123,8 +124,8 @@ func TestPages(t *testing.T) {
 			`<a href="/jobs/ONLINE">ONLINE</a> runs before <a href="/jobs/DAILY">DAILY</a>: it writes a new generation of <a href="/datasets/TRAN.CARD">TRAN.CARD</a>`,
 			`<a href="/jobs/DAILY">DAILY</a> runs before <a href="/jobs/MONTHLY">MONTHLY</a>`, `href="/datasets/TRAN.AUDIT"`,
 			"run in a cycle", "cannot know the calendar"},
-		"/programs/AUTHPUR":     {"called program"},
-		"/programs/TXPOST":      {"main program", `<span class="badge kind-file">`},
+		"/programs/AUTHPUR":     {"called program", `cases of <a href="/programs/AUTHSRV">AUTHSRV</a>, which calls it,`},
+		"/programs/TXPOST":      {"main program", `<span class="badge kind-file">`, "<h2>Cases</h2>", `href="/programs/TXPOST/cases/01"`},
 		"/datasets/ACCT.ONLINE": {`<span class="badge kind-internal">`, `<span class="badge kind-indexed">`},
 		"/datasets/&&SORTED":    {`<span class="badge kind-temporary">`},
 		"/search?q=GL.SUMMARY":  {`<span class="badge kind-output">`},

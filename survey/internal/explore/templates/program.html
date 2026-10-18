@@ -26,6 +26,17 @@
   </tbody>
 </table>
 {{end}}
+{{with .Cases}}
+<h2>Cases</h2>
+<p>{{if eq .Main $p.Name}}{{.Cases}} cases{{else}}The {{.Cases}} cases of <a href="{{program .Main}}">{{.Main}}</a>, which calls it,{{end}} reach {{.Reached}} of the {{.Total}} rules of its decision tables: input data the oracle found, run through GnuCOBOL, with what the program wrote, the cases a rewrite has to match.</p>
+<table>
+  <thead><tr><th>Paragraph</th><th class="num">Rules reached</th><th>Rule by rule</th></tr></thead>
+  <tbody>
+  {{range .Unit.Tables}}<tr><td><a href="{{paragraph $p.Name .Paragraph}}">{{.Paragraph}}</a>{{if .Loop}}, in its loop{{end}}</td><td class="num">{{.Reached}} of {{len .ReachedBy}}</td><td>{{range $i, $c := .ReachedBy}}{{if $i}} · {{end}}{{add $i 1}}: {{if $c}}<a href="{{case $.View.Cases.Main $c}}">case {{$c}}</a>{{else}}none{{end}}{{end}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{end}}
 <h2>Paragraphs</h2>
 <table>
   <thead><tr><th>Paragraph</th><th>Description</th><th>Source</th></tr></thead>
