@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/vlumi/copal/bedrock/dataset"
 	"github.com/vlumi/copal/bedrock/record"
-	"github.com/vlumi/copal/pangaea/dataset"
 	"github.com/vlumi/copal/pangaea/records"
 	"github.com/vlumi/copal/survey/blueprint"
 )

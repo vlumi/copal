@@ -1,4 +1,4 @@
-// Package runner executes Pangaea's jobs, standing in for the mainframe's
+// Package runner executes a system's jobs, standing in for the mainframe's
 // job entry subsystem: it runs each step's program with its DD statements
 // bound to datasets, bypasses steps by their COND tests, catalogs the new
 // datasets and generations, deletes the temporary ones, and writes a job
@@ -14,9 +14,9 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/vlumi/copal/bedrock/dataset"
 	"github.com/vlumi/copal/bedrock/jcl"
 	cobolrun "github.com/vlumi/copal/bedrock/run"
-	"github.com/vlumi/copal/pangaea/dataset"
 )
 
 // JobLog is the file in the sysout directory that lists each step's outcome.

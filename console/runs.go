@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"slices"
 
-	"github.com/vlumi/copal/pangaea/runner"
+	"github.com/vlumi/copal/bedrock/runner"
 	"github.com/vlumi/copal/survey/blueprint"
 )
 

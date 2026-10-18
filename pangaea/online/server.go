@@ -8,9 +8,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/vlumi/copal/bedrock/runner"
 	"github.com/vlumi/copal/pangaea/bank"
 	"github.com/vlumi/copal/pangaea/records"
-	"github.com/vlumi/copal/pangaea/runner"
 )
 
 // Server is the bank's online channel: open for authorizations while an

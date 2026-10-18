@@ -3,7 +3,7 @@ package bank
 import (
 	"path/filepath"
 
-	"github.com/vlumi/copal/pangaea/dataset"
+	"github.com/vlumi/copal/bedrock/dataset"
 	"github.com/vlumi/copal/pangaea/generate"
 )
 

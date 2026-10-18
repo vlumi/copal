@@ -9,9 +9,9 @@ import (
 	"slices"
 	"sync"
 
-	"github.com/vlumi/copal/pangaea/dataset"
+	"github.com/vlumi/copal/bedrock/dataset"
+	"github.com/vlumi/copal/bedrock/runner"
 	"github.com/vlumi/copal/pangaea/generate"
-	"github.com/vlumi/copal/pangaea/runner"
 )
 
 // ErrOnlineDayRun is for opening the online day of a business day whose

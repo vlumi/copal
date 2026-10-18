@@ -4,7 +4,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/vlumi/copal/pangaea/runner"
+	"github.com/vlumi/copal/bedrock/runner"
 )
 
 var accounts = []Account{

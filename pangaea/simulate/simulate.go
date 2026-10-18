@@ -15,7 +15,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/vlumi/copal/pangaea/dataset"
+	"github.com/vlumi/copal/bedrock/dataset"
 	"github.com/vlumi/copal/pangaea/online"
 	"github.com/vlumi/copal/pangaea/records"
 )

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/vlumi/copal/pangaea/dataset"
+	"github.com/vlumi/copal/bedrock/dataset"
 	"github.com/vlumi/copal/pangaea/records"
 )
 
