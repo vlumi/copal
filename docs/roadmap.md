@@ -117,8 +117,17 @@ The explorer shows the system the way the code is organized. Designing a replace
 
 Done when: starting from the entities page, you can name the system's data model, its state machines, who owns each entity, its contracts with the outside, and what a change to an input field touches, without opening a program.
 
+## 10. Complete lineage
+
+The trail of a field stops where Pangaea's online day begins: at a `CALL`, at `ACCEPT`, and at the first record type a program writes to a file; and it ignores the order of statements. The plan is in [plans/complete-lineage.md](plans/complete-lineage.md):
+
+- Across `CALL`, by argument and parameter, both ways, and from `ACCEPT` and to `DISPLAY` as streams of the job.
+- Every record type a program writes to a file.
+- Origins along the control flow, so that a value every path overwrites is not one.
+- Pangaea's honest mess: one business date in three layouts, for the survey to find.
+
+Done when: the trail of a card purchase in the master goes back through the night's batch, the card file and the hold, into `AUTHPUR` and the terminal's request, and every origin in the blueprints is one a path can reach.
+
 ## Later
 
-The explorer's lineage does not yet follow values into a called program and back through its LINKAGE SECTION, nor from SYSIN through ACCEPT, so the online day's holds stop at AUTHSRV. A program's outputs keep only the first record type it writes to a file.
-
-From the brief, once the above stands: test data derived from the extracted conditions so every branch is reached, run through GnuCOBOL as the oracle a rewrite has to match; data that respects cross-record rules; and only then a model for naming and prose.
+From the brief: test data derived from the extracted conditions so every branch is reached, run through GnuCOBOL as the oracle a rewrite has to match; data that respects cross-record rules; and only then a model for naming and prose.
