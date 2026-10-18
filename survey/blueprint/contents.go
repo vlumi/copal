@@ -28,7 +28,7 @@ func withContents(md string) string {
 			first = i
 		}
 		title := strings.TrimSpace(line[level:])
-		anchor := headingAnchor(title)
+		anchor := HeadingAnchor(title)
 		if n := used[anchor]; n > 0 {
 			used[anchor]++
 			anchor = fmt.Sprintf("%s-%d", anchor, n)
@@ -44,9 +44,9 @@ func withContents(md string) string {
 	return strings.Join(lines[:first], "\n") + "\n" + contents + "\n" + strings.Join(lines[first:], "\n")
 }
 
-// headingAnchor is the anchor GitHub gives a heading: lower case, spaces as
+// HeadingAnchor is the anchor GitHub gives a heading: lower case, spaces as
 // hyphens, and punctuation other than hyphens and underscores dropped.
-func headingAnchor(title string) string {
+func HeadingAnchor(title string) string {
 	var b strings.Builder
 	for _, r := range strings.ToLower(title) {
 		switch {

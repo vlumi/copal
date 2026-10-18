@@ -104,6 +104,15 @@ func conditionFields(records []Record) map[string]string {
 	return fields
 }
 
+// Title is the heading of a decision table: its paragraph, and for an
+// inline loop's, that it is in its loop.
+func (t DecisionTable) Title() string {
+	if t.Loop != "" {
+		return t.Paragraph + ", in its loop"
+	}
+	return t.Paragraph
+}
+
 func rulesMarkdown(dir string, r Rules) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "# %s: decision tables\n\n", r.Program)
@@ -112,11 +121,7 @@ func rulesMarkdown(dir string, r Rules) string {
 		"in the order they run. The WHENs of an EVALUATE are tried in order, and an IF whose THEN jumps away has the rest "+
 		"of its paragraph as its ELSE. The body of an inline PERFORM has a table of its own, for one pass.\n", r.Program, r.Program)
 	for _, t := range r.Tables {
-		title := t.Paragraph
-		if t.Loop != "" {
-			title += ", in its loop"
-		}
-		fmt.Fprintf(&b, "\n## %s\n\n", title)
+		fmt.Fprintf(&b, "\n## %s\n\n", t.Title())
 		if t.Loop != "" {
 			fmt.Fprintf(&b, "Each pass of `%s`.\n\n", t.Loop)
 		}
