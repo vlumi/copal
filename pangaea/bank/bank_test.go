@@ -10,8 +10,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/vlumi/copal/bedrock/dataset"
 	"github.com/vlumi/copal/bedrock/run"
-	"github.com/vlumi/copal/pangaea/dataset"
 )
 
 // TestDaysAreReproducible resets two banks from the same seed, runs three

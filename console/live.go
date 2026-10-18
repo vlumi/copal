@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/vlumi/copal/bedrock/dataset"
 	"github.com/vlumi/copal/pangaea/bank"
-	"github.com/vlumi/copal/pangaea/dataset"
 	"github.com/vlumi/copal/pangaea/online"
 )
 

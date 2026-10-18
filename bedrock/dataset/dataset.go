@@ -1,4 +1,4 @@
-// Package dataset keeps Pangaea's datasets: files of fixed-length records
+// Package dataset keeps a system's datasets: files of fixed-length records
 // without delimiters, as on a mainframe, named by their dataset name and
 // listed with their record length in a catalog.
 //

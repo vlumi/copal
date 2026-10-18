@@ -12,12 +12,12 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/vlumi/copal/bedrock/dataset"
 	"github.com/vlumi/copal/bedrock/jcl"
 	"github.com/vlumi/copal/bedrock/record"
-	"github.com/vlumi/copal/pangaea/dataset"
+	"github.com/vlumi/copal/bedrock/runner"
 	"github.com/vlumi/copal/pangaea/generate"
 	"github.com/vlumi/copal/pangaea/records"
-	"github.com/vlumi/copal/pangaea/runner"
 )
 
 // StartDate is the first business day of every reset bank.
