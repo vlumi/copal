@@ -71,8 +71,8 @@ simulate:  ## Send card traffic to the console's online channel until interrupte
 	go run ./pangaea/cmd/pangaea simulate -api http://$(ADDR)/api -rate $(RATE)
 
 .PHONY: oracle
-oracle:  ## Search Pangaea's programs for cases that reach their rules, and report the coverage
-	go run ./survey/cmd/survey oracle -copybooks pangaea/copybooks pangaea/programs/*.cbl
+oracle:  ## Search Pangaea's programs again for cases that reach their rules, and rewrite oracle/pangaea
+	go run ./survey/cmd/survey oracle -copybooks pangaea/copybooks -out oracle/pangaea -rules ../../blueprints/pangaea/rules -title pangaea pangaea/programs/*.cbl
 
 .PHONY: blueprints
 blueprints:  ## Regenerate Pangaea's blueprints with Survey

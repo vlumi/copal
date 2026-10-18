@@ -21,7 +21,20 @@ type shape struct {
 	discriminator *layout.Field
 	types         []value
 	typeNames     []string
-	variants      map[*layout.Field]int // redefinition to type, -1 for none
+	variants      map[*layout.Field]int // redefinition to type, or anyType or noType
+}
+
+// The types of a redefinition that is no one type's: anyType is in every
+// record whose type has no redefinition of its own, noType in none.
+const (
+	anyType = -1
+	noType  = -2
+)
+
+// hasVariant reports whether a record of a type, -1 for none, has a
+// redefinition of the given type.
+func (s shape) hasVariant(variant, kind int) bool {
+	return variant == kind || variant == anyType && !slices.Contains(slices.Collect(maps.Values(s.variants)), kind)
 }
 
 // shapeOf finds the shape of an input: the first field of the record with
@@ -59,6 +72,19 @@ func (p *program) shapeOf(in input) shape {
 		}
 	}
 	switch {
+	case s.discriminator == nil && len(s.variants) > 0:
+		var declared []*layout.Field
+		for _, f := range in.root.Children {
+			if _, ok := s.variants[f]; ok {
+				declared = append(declared, f)
+			}
+		}
+		used := p.mostUsed(declared)
+		for f := range s.variants {
+			if f != used {
+				s.variants[f] = noType
+			}
+		}
 	case s.discriminator == nil:
 	case len(redefinitions) == len(s.types):
 		for k, f := range redefinitions {
@@ -71,6 +97,27 @@ func (p *program) shapeOf(in input) shape {
 		s.pairLast()
 	}
 	return s
+}
+
+// mostUsed is the field, of those given in the order they are declared,
+// whose fields the paragraphs read and write most, the first on a tie.
+func (p *program) mostUsed(fields []*layout.Field) *layout.Field {
+	uses := map[string]int{}
+	for _, para := range p.flow.Paragraphs {
+		for _, name := range append(slices.Clone(para.Reads), para.Writes...) {
+			uses[name]++
+		}
+	}
+	var best *layout.Field
+	bestUses := -1
+	for _, f := range fields {
+		n := 0
+		walk(f, func(g *layout.Field) { n += uses[g.Name] })
+		if n > bestUses {
+			best, bestUses = f, n
+		}
+	}
+	return best
 }
 
 // pairLast gives the one type no redefinition was found for the one
@@ -213,11 +260,14 @@ func (p *program) base() Case {
 		s := p.shapes[in.name()]
 		types := max(len(s.types), 1)
 		for k := range types {
-			index := 0
+			index, kind := 0, k
 			if len(s.variants) == 0 {
 				index = k
 			}
-			c[in.name()] = append(c[in.name()], p.typical(in, s, k, index, kinds))
+			if len(s.types) == 0 {
+				kind = -1
+			}
+			c[in.name()] = append(c[in.name()], p.typical(in, s, kind, index, kinds))
 		}
 	}
 	p.balance(c, nil)
@@ -233,7 +283,7 @@ func (p *program) base() Case {
 func (p *program) typical(in input, s shape, kind, index int, kinds map[string]string) []byte {
 	r := in.layout.Blank()
 	for _, f := range in.root.Children {
-		if t, ok := s.variants[f]; ok && t != kind {
+		if t, ok := s.variants[f]; ok && !s.hasVariant(t, kind) {
 			continue
 		}
 		walk(f, func(leaf *layout.Field) {
