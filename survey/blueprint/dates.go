@@ -124,3 +124,44 @@ func DateLayouts(entities []Entity) []DateLayout {
 	}
 	return layouts
 }
+
+// datesInText gives the kind of date to each text field of an entity whose
+// values come from a date: in the entity, in its copybook, and in each
+// program's record of it.
+func datesInText(entities []Entity, copybooks []Copybook, programs []Program, held heldRecords) {
+	for e := range entities {
+		for j, f := range entities[e].Fields {
+			if f.Kind != KindText || len(f.DatesFrom) == 0 {
+				continue
+			}
+			entities[e].Fields[j].Kind = KindDate
+			for _, c := range copybooks {
+				if c.Name == entities[e].Copybook {
+					for r := range c.Records {
+						setKind(&c.Records[r].Field, f.Name, KindDate)
+					}
+				}
+			}
+			for key, k := range held {
+				if k != e {
+					continue
+				}
+				i := slices.IndexFunc(programs, func(p Program) bool { return p.Name == key[0] })
+				r := slices.IndexFunc(programs[i].Records, func(r Record) bool { return r.Name == key[1] })
+				if fields := entityFields(programs[i].Records[r].Field); j < len(fields) {
+					setKind(&programs[i].Records[r].Field, fields[j].Name, KindDate)
+				}
+			}
+		}
+	}
+}
+
+// setKind sets the kind of a field among a field's fields.
+func setKind(f *Field, name, kind string) {
+	if f.Name == name {
+		f.Kind = kind
+	}
+	for i := range f.Fields {
+		setKind(&f.Fields[i], name, kind)
+	}
+}

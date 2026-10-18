@@ -80,6 +80,7 @@ func entities(copybooks []Copybook, programs []Program) []Entity {
 		}
 	}
 	datesFrom(list, programs, held)
+	datesInText(list, copybooks, programs, held)
 	relate(list, programs, held)
 	return list
 }
