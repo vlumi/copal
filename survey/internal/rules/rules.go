@@ -34,14 +34,19 @@ type Table struct {
 	Refs       [][]string // parallel to Conditions
 	Actions    []string
 	Rules      []Rule
+	// Collapsed are the statements inside decisions shown as actions, past
+	// maxPaths, whose paths the rules do not tell apart.
+	Collapsed []cobol.Pos
 }
 
 // Rule is one path: the outcome of each condition, Y, N or empty when the
-// path does not test it, and the actions it takes, in order, as indexes
-// into the table's actions.
+// path does not test it, the actions it takes, in order, as indexes into
+// the table's actions, and the statements it runs, in order, by position,
+// those inside the table's inline loops and collapsed decisions left out.
 type Rule struct {
 	Entries []string
 	Actions []int
+	Steps   []cobol.Pos
 }
 
 // maxPaths caps the paths of a table: a decision that would take a
@@ -56,7 +61,7 @@ func Tables(p *cobol.Program, mayChange MayChange) []Table {
 	var tables []Table
 	for _, para := range p.Paragraphs {
 		e := &extractor{paragraph: para.Name, mayChange: mayChange}
-		if t, ok := newTable(para.Name, "", para.Pos, e.paths(para.Statements)); ok {
+		if t, ok := newTable(para.Name, "", para.Pos, e.paths(para.Statements), e.collapsed); ok {
 			tables = append(tables, t)
 		}
 		tables = append(tables, e.loops...)
@@ -103,6 +108,7 @@ type event struct {
 type path struct {
 	events  []event
 	actions []string
+	steps   []cobol.Pos
 	ended   bool
 }
 
@@ -123,6 +129,7 @@ type extractor struct {
 	paragraph string
 	loops     []Table
 	mayChange MayChange
+	collapsed []cobol.Pos
 }
 
 // paths lists the ways through a list of statements.
@@ -142,9 +149,12 @@ func (e *extractor) paths(statements []cobol.Statement) []path {
 		case s.Verb == "SEARCH":
 			alternatives = e.cross([]path{{actions: []string{s.Text}, events: changes(s)}}, e.cases(s))
 		case s.Verb == "PERFORM" && len(s.Branches) > 0:
-			if t, ok := newTable(e.paragraph, s.Text, s.Pos, e.paths(s.Branches[0].Statements)); ok {
+			outer := e.collapsed
+			e.collapsed = nil
+			if t, ok := newTable(e.paragraph, s.Text, s.Pos, e.paths(s.Branches[0].Statements), e.collapsed); ok {
 				e.loops = append(e.loops, t)
 			}
+			e.collapsed = outer
 		case len(s.Branches) > 0:
 			alternatives = e.phrases(s)
 		}
@@ -152,13 +162,26 @@ func (e *extractor) paths(statements []cobol.Statement) []path {
 		if alternatives == nil {
 			alternatives = action
 		}
-		next := e.cross(paths, alternatives)
+		next := e.cross(paths, startingAt(s.Pos, alternatives))
 		if len(next) > maxPaths {
-			next = e.cross(paths, action)
+			next = e.cross(paths, startingAt(s.Pos, action))
+			for _, b := range s.Branches {
+				cobol.Walk(b.Statements, func(n cobol.Statement) { e.collapsed = append(e.collapsed, n.Pos) })
+			}
 		}
 		paths = next
 	}
 	return paths
+}
+
+// startingAt puts a statement at the start of the paths through it.
+func startingAt(pos cobol.Pos, paths []path) []path {
+	out := make([]path, len(paths))
+	for i, p := range paths {
+		p.steps = append([]cobol.Pos{pos}, p.steps...)
+		out[i] = p
+	}
+	return out
 }
 
 // endsPath reports whether a path ends at a statement: one that ends
@@ -234,7 +257,8 @@ func (e *extractor) cross(paths, next []path) []path {
 		}
 		for _, n := range next {
 			if events, ok := e.follow(p.events, n.events); ok {
-				out = append(out, path{events: events, actions: append(slices.Clone(p.actions), n.actions...), ended: n.ended})
+				out = append(out, path{events: events, actions: append(slices.Clone(p.actions), n.actions...),
+					steps: append(slices.Clone(p.steps), n.steps...), ended: n.ended})
 			}
 		}
 	}
@@ -285,8 +309,8 @@ func (e *extractor) lastTest(events []event, t test) (*test, bool) {
 }
 
 // newTable lays paths out as a table, if any of them tests a condition.
-func newTable(paragraph, loop string, pos cobol.Pos, paths []path) (Table, bool) {
-	t := Table{Paragraph: paragraph, Loop: loop, Pos: pos}
+func newTable(paragraph, loop string, pos cobol.Pos, paths []path, collapsed []cobol.Pos) (Table, bool) {
+	t := Table{Paragraph: paragraph, Loop: loop, Pos: pos, Collapsed: collapsed}
 	for _, p := range paths {
 		for _, test := range p.tests() {
 			if !slices.Contains(t.Conditions, test.label()) {
@@ -304,7 +328,7 @@ func newTable(paragraph, loop string, pos cobol.Pos, paths []path) (Table, bool)
 		return Table{}, false
 	}
 	for _, p := range paths {
-		r := Rule{Entries: make([]string, len(t.Conditions))}
+		r := Rule{Entries: make([]string, len(t.Conditions)), Steps: p.steps}
 		for _, test := range p.tests() {
 			entry := "N"
 			if test.outcome {
