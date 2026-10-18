@@ -315,6 +315,9 @@ func (t tracer) fromFile(src *Source, n Node, p *blueprint.Program, file string,
 	for _, ds := range dd.Datasets {
 		src.Datasets = append(src.Datasets, ds)
 		writers := t.writers(n, ds)
+		if slices.Contains(dd.Uses, "update") {
+			writers = append(writers, access{job: n.Job, step: n.Step, program: p.Name, file: file})
+		}
 		if len(writers) == 0 {
 			src.External = append(src.External, ds)
 		}
