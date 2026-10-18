@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/vlumi/copal/survey/blueprint"
@@ -260,13 +261,32 @@ func (s *Server) lookupProgram(r *http.Request) (*blueprint.Program, error) {
 	return p, nil
 }
 
-// ParagraphView is a paragraph of a program, and the values its statements
-// move.
+// ParagraphView is a paragraph of a program, the values its statements
+// move, and its decision tables, with the cases that reach each rule.
 type ParagraphView struct {
 	Program   *blueprint.Program
 	Paragraph blueprint.Paragraph
 	Lineage   []blueprint.Lineage
 	Fields    map[string]bool
+	Tables    []TableView
+}
+
+// TableView is a decision table laid out for a page: a row for each
+// condition and action, and for each rule, the first case that reaches
+// it, by the cases of Main, if there are cases.
+type TableView struct {
+	Table     blueprint.DecisionTable
+	Rules     []int
+	Rows      []TableRow
+	Main      string
+	ReachedBy []int
+}
+
+// TableRow is a condition or an action and its cell in each rule.
+type TableRow struct {
+	Text   string
+	Action bool
+	Cells  []string
 }
 
 func (s *Server) paragraph(r *http.Request) (any, error) {
@@ -284,7 +304,44 @@ func (s *Server) paragraph(r *http.Request) (any, error) {
 			v.Lineage = append(v.Lineage, e)
 		}
 	}
+	cases := s.casesOf(p.Name)
+	for t, table := range p.Rules.Tables {
+		if table.Paragraph == v.Paragraph.Name {
+			v.Tables = append(v.Tables, tableView(table, cases, t))
+		}
+	}
 	return v, nil
+}
+
+// tableView lays out a decision table, with the cases that reach its rules
+// if there are any: the table at the index among the program's.
+func tableView(t blueprint.DecisionTable, cases *CasesView, index int) TableView {
+	v := TableView{Table: t}
+	for i := range t.Rules {
+		v.Rules = append(v.Rules, i+1)
+	}
+	for i, c := range t.Conditions {
+		row := TableRow{Text: c}
+		for _, r := range t.Rules {
+			row.Cells = append(row.Cells, r.Entries[i])
+		}
+		v.Rows = append(v.Rows, row)
+	}
+	for i, a := range t.Actions {
+		row := TableRow{Text: a, Action: true}
+		for _, r := range t.Rules {
+			cell := ""
+			if order := slices.Index(r.Actions, i); order >= 0 {
+				cell = strconv.Itoa(order + 1)
+			}
+			row.Cells = append(row.Cells, cell)
+		}
+		v.Rows = append(v.Rows, row)
+	}
+	if cases != nil && index < len(cases.Unit.Tables) {
+		v.Main, v.ReachedBy = cases.Main, cases.Unit.Tables[index].ReachedBy
+	}
+	return v
 }
 
 // FieldView is a data item of a program: where it is, the paragraphs that

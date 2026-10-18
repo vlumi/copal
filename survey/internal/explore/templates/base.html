@@ -30,9 +30,9 @@
 {{define "states"}}{{$m := .Field.States}}
 {{if .Diagram}}<div class="diagram">{{.Diagram}}</div>
 <table>
-  <thead><tr><th>From</th><th>To</th><th>Program</th><th>Paragraph</th><th>Source</th></tr></thead>
+  <thead><tr><th>From</th><th>To</th><th>When</th><th>Program</th><th>Paragraph</th><th>Source</th></tr></thead>
   <tbody>
-  {{range $m.Transitions}}<tr><td>{{.From}}</td><td>{{.To}}</td><td><a href="{{program .Program}}">{{.Program}}</a></td><td><a href="{{paragraph .Program .Paragraph}}">{{.Paragraph}}</a></td><td>{{template "src" .Source}}</td></tr>
+  {{range $m.Transitions}}<tr><td>{{.From}}</td><td>{{.To}}</td><td>{{range $i, $w := .When}}{{if $i}}, {{end}}<code>{{$w.Condition}}</code> {{if $w.Holds}}Y{{else}}N{{end}}{{end}}</td><td><a href="{{program .Program}}">{{.Program}}</a></td><td><a href="{{paragraph .Program .Paragraph}}">{{.Paragraph}}</a></td><td>{{template "src" .Source}}</td></tr>
   {{end}}
   </tbody>
 </table>

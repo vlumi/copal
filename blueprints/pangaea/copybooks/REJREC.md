@@ -40,4 +40,4 @@ Copybook [REJREC.cpy](../../../pangaea/copybooks/REJREC.cpy), used by [ACCTMNT](
 | 88 | │ └ RJ-BAD-STATUS | | | | | | VALUE 'STAT' | [REJREC.cpy:29](../../../pangaea/copybooks/REJREC.cpy#L29) |
 | 05 | ├ RJ-TRAN | text | 13 | 80 | X(80) | | | [REJREC.cpy:30](../../../pangaea/copybooks/REJREC.cpy#L30) |
 | 05 | ├ FILLER | filler | 93 | 8 | X(8) | | | [REJREC.cpy:31](../../../pangaea/copybooks/REJREC.cpy#L31) |
-| 05 | └ RJ-REJECT-DATE | text | 101 | 10 | X(10) | | | [REJREC.cpy:32](../../../pangaea/copybooks/REJREC.cpy#L32) |
+| 05 | └ RJ-REJECT-DATE | date | 101 | 10 | X(10) | | | [REJREC.cpy:32](../../../pangaea/copybooks/REJREC.cpy#L32) |

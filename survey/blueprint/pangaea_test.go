@@ -55,6 +55,11 @@ func TestDateLayouts(t *testing.T) {
 			t.Errorf("%s is held as %q, want %q", field, got, layout)
 		}
 	}
+	for _, e := range system.Entities {
+		if f, ok := e.Field("RJ-REJECT-DATE"); ok && f.Kind != KindDate {
+			t.Errorf("RJ-REJECT-DATE, text filled from a date, is of kind %s", f.Kind)
+		}
+	}
 	for record, want := range map[string]FieldRef{
 		"REJECT-RECORD":      {Record: "BANK-CONTROL-RECORD", Field: "BC-BUSINESS-DATE"},
 		"ACCT-MASTER-RECORD": {Record: "MAINT-REQUEST", Field: "MR-EFFECTIVE-DATE"},

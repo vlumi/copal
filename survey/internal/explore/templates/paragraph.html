@@ -15,6 +15,18 @@
   </tbody>
 </table>
 {{end}}
+{{range .Tables}}{{$main := .Main}}
+<h2>Decision table{{if .Table.Loop}}, in its loop{{end}}</h2>
+<p class="note">{{with .Table.Loop}}Each pass of <code>{{.}}</code>. {{end}}Each column is a path through the decisions: the outcome of each condition it tests, and the actions it takes, in order.{{if .ReachedBy}} The last row is the first of the oracle's cases that reaches it.{{end}}</p>
+<div class="scroll"><table>
+  <thead><tr><th></th>{{range .Rules}}<th class="num">{{.}}</th>{{end}}</tr></thead>
+  <tbody>
+  {{range .Rows}}<tr><td>{{if .Action}}→ {{end}}<code>{{.Text}}</code></td>{{range .Cells}}<td class="num">{{.}}</td>{{end}}</tr>
+  {{end}}
+  {{if .ReachedBy}}<tr><td>reached by case</td>{{range .ReachedBy}}<td class="num">{{if .}}<a href="{{case $main .}}">{{.}}</a>{{else}}none{{end}}</td>{{end}}</tr>{{end}}
+  </tbody>
+</table></div>
+{{end}}
 {{if .Lineage}}<h2>Values moved</h2>{{template "lineage" (lineage $p .Fields .Lineage)}}{{end}}
 {{end}}
 {{end}}
