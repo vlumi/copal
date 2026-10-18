@@ -486,14 +486,14 @@ Written from [SORT-RECORD](#sort-record).
 
 | Field | Position | Origins |
 | --- | --: | --- |
-| SR-ACCT-NO | 1-10 | file AUDIT-IN AU-ACCT-NO; file STMT-SORT SR-ACCT-NO |
-| SR-DATE | 11-18 | file AUDIT-IN AU-BUSINESS-DATE; file STMT-SORT SR-DATE |
-| SR-SEQ | 19-26 | file STMT-SORT SR-SEQ; initial value of WS-SEQ; literal 1 |
-| SR-TRAN-ID | 27-36 | file AUDIT-IN AU-TRAN-ID; file STMT-SORT SR-TRAN-ID |
-| SR-TRAN-CODE | 37-38 | file AUDIT-IN AU-TRAN-CODE; file STMT-SORT SR-TRAN-CODE |
-| SR-AMOUNT | 39-49 | file AUDIT-IN AU-AMOUNT; file STMT-SORT SR-AMOUNT |
-| SR-BALANCE-BEFORE | 50-62 | file AUDIT-IN AU-BALANCE-BEFORE; file STMT-SORT SR-BALANCE-BEFORE |
-| SR-BALANCE-AFTER | 63-75 | file AUDIT-IN AU-BALANCE-AFTER; file STMT-SORT SR-BALANCE-AFTER |
+| SR-ACCT-NO | 1-10 | file AUDIT-IN AU-ACCT-NO |
+| SR-DATE | 11-18 | file AUDIT-IN AU-BUSINESS-DATE |
+| SR-SEQ | 19-26 | initial value of WS-SEQ; literal 1 |
+| SR-TRAN-ID | 27-36 | file AUDIT-IN AU-TRAN-ID |
+| SR-TRAN-CODE | 37-38 | file AUDIT-IN AU-TRAN-CODE |
+| SR-AMOUNT | 39-49 | file AUDIT-IN AU-AMOUNT |
+| SR-BALANCE-BEFORE | 50-62 | file AUDIT-IN AU-BALANCE-BEFORE |
+| SR-BALANCE-AFTER | 63-75 | file AUDIT-IN AU-BALANCE-AFTER |
 
 ### File STMT-OUT
 
@@ -523,7 +523,7 @@ Written from [WS-RULE-LINE](#ws-rule-line), [WS-TITLE-LINE](#ws-title-line), [WS
 
 | Field | Position | Origins |
 | --- | --: | --- |
-| STMT-LINE | 1-80 | file ACCT-IN AM-ACCT-NO; file ACCT-IN AM-BALANCE; file ACCT-IN AM-SHORT-NAME; file AUDIT-IN AU-AMOUNT; file AUDIT-IN AU-BALANCE-AFTER; file AUDIT-IN AU-BALANCE-BEFORE; file AUDIT-IN AU-TRAN-CODE; file AUDIT-IN AU-TRAN-ID; file STMT-SORT SR-AMOUNT; file STMT-SORT SR-BALANCE-AFTER; file STMT-SORT SR-BALANCE-BEFORE; file STMT-SORT SR-TRAN-CODE; file STMT-SORT SR-TRAN-ID; initial value of WS-RULE-LINE; literal ' '; literal 'CLOSING BALANCE'; literal 'CURRENT ACCOUNT'; literal 'CURRENT ACCOUNT, FROZEN'; literal 'OPENING BALANCE'; literal 'SAVINGS ACCOUNT'; literal 'SAVINGS ACCOUNT, FROZEN'; literal 'STATEMENT FOR '; literal 0; literal SPACE; literal SPACES |
+| STMT-LINE | 1-80 | literal SPACES |
 
 #### Record WS-HEADING-LINE
 
@@ -564,7 +564,7 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-coun
 
 | Field | Position | Origins |
 | --- | --: | --- |
-| REPORT-LINE | 1-80 | file AUDIT-IN AU-AMOUNT; file STMT-SORT SR-AMOUNT; initial value of WS-ACCOUNT-COUNT; initial value of WS-CREDIT-TOTAL; initial value of WS-DEBIT-TOTAL; initial value of WS-PRINTED-COUNT; initial value of WS-SELECTED-COUNT; initial value of WS-STATEMENT-COUNT; literal 'ACCOUNTS READ'; literal 'CREDITS'; literal 'DEBITS'; literal 'MONTH CLOSED                  '; literal 'NO MONTH CLOSED'; literal 'POSTINGS PRINTED'; literal 'POSTINGS SELECTED'; literal 'STATEMENTS PRINTED'; literal 'STMTPRT  MONTHLY STATEMENTS'; literal 0; literal 1; literal SPACES |
+| REPORT-LINE | 1-80 | literal 'MONTH CLOSED                  '; literal 'NO MONTH CLOSED'; literal 'STMTPRT  MONTHLY STATEMENTS'; literal SPACES |
 
 #### Record WS-REPORT-COUNT-LINE
 

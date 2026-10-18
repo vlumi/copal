@@ -500,18 +500,18 @@ Written from [TRAN-RECORD](#tran-record).
 | Field | Position | Origins |
 | --- | --: | --- |
 | TR-REC-TYPE | 1 | file TRAN-IN TR-REC-TYPE |
-| TR-BODY | 2-80 | file TRAN-IN TD-ACCT-NO; file TRAN-IN TD-COUNTER-ACCT-NO; file TRAN-IN TR-BODY; literal condition TD-TRANSFER-CREDIT; literal condition TD-TRANSFER-RETURN |
+| TR-BODY | 2-80 | file TRAN-IN TD-ACCT-NO; file TRAN-IN TD-COUNTER-ACCT-NO; file TRAN-IN TD-TRAN-ID; file TRAN-IN TR-BODY; literal condition TD-TRANSFER-CREDIT; literal condition TD-TRANSFER-RETURN |
 | TH-BUSINESS-DATE | 2-9 | file TRAN-IN TH-BUSINESS-DATE |
 | TH-SOURCE | 10-17 | file TRAN-IN TD-COUNTER-ACCT-NO; file TRAN-IN TH-SOURCE |
-| TH-FILE-SEQ | 18-23 | file TRAN-IN TD-COUNTER-ACCT-NO; file TRAN-IN TH-FILE-SEQ; literal condition TD-TRANSFER-CREDIT; literal condition TD-TRANSFER-RETURN |
+| TH-FILE-SEQ | 18-23 | file TRAN-IN TD-COUNTER-ACCT-NO; literal condition TD-TRANSFER-CREDIT; literal condition TD-TRANSFER-RETURN |
 | TD-TRAN-ID | 2-11 | file TRAN-IN TD-TRAN-ID |
-| TD-ACCT-NO | 12-21 | file TRAN-IN TD-ACCT-NO; file TRAN-IN TD-COUNTER-ACCT-NO |
-| TD-TRAN-CODE | 22-23 | file TRAN-IN TD-TRAN-CODE; literal condition TD-TRANSFER-CREDIT; literal condition TD-TRANSFER-RETURN |
+| TD-ACCT-NO | 12-21 | file TRAN-IN TD-COUNTER-ACCT-NO |
+| TD-TRAN-CODE | 22-23 | literal condition TD-TRANSFER-CREDIT; literal condition TD-TRANSFER-RETURN |
 | TD-AMOUNT | 24-34 | file TRAN-IN TD-AMOUNT |
 | TD-DESCRIPTION | 35-54 | file TRAN-IN TD-DESCRIPTION |
-| TD-COUNTER-ACCT-NO | 55-64 | file TRAN-IN TD-ACCT-NO; file TRAN-IN TD-COUNTER-ACCT-NO |
+| TD-COUNTER-ACCT-NO | 55-64 | file TRAN-IN TD-ACCT-NO |
 | TT-DETAIL-COUNT | 2-9 | file TRAN-IN TH-BUSINESS-DATE |
-| TT-AMOUNT-TOTAL | 10-24 | file TRAN-IN TD-ACCT-NO; file TRAN-IN TD-COUNTER-ACCT-NO; file TRAN-IN TT-AMOUNT-TOTAL; literal condition TD-TRANSFER-CREDIT; literal condition TD-TRANSFER-RETURN |
+| TT-AMOUNT-TOTAL | 10-24 | file TRAN-IN TD-AMOUNT; file TRAN-IN TD-COUNTER-ACCT-NO; file TRAN-IN TH-SOURCE; literal condition TD-TRANSFER-CREDIT; literal condition TD-TRANSFER-RETURN |
 | TT-ACCT-HASH | 25-39 | file TRAN-IN TT-ACCT-HASH |
 
 ### File AUDIT-OUT
@@ -522,8 +522,8 @@ Written from [AUDIT-RECORD](#audit-record).
 | --- | --: | --- |
 | AU-BUSINESS-DATE | 1-8 | file CONTROL-FILE BC-BUSINESS-DATE |
 | AU-TRAN-ID | 9-18 | file TRAN-IN TD-TRAN-ID |
-| AU-ACCT-NO | 19-28 | file TRAN-IN TD-ACCT-NO; file TRAN-IN TD-COUNTER-ACCT-NO |
-| AU-TRAN-CODE | 29-30 | file TRAN-IN TD-TRAN-CODE; literal condition TD-TRANSFER-CREDIT; literal condition TD-TRANSFER-RETURN |
+| AU-ACCT-NO | 19-28 | file TRAN-IN TD-ACCT-NO |
+| AU-TRAN-CODE | 29-30 | file TRAN-IN TD-TRAN-CODE |
 | AU-AMOUNT | 31-41 | file TRAN-IN TD-AMOUNT |
 | AU-BALANCE-BEFORE | 42-54 | file ACCT-IN AM-BALANCE; file TRAN-IN TD-AMOUNT |
 | AU-BALANCE-AFTER | 55-67 | file ACCT-IN AM-BALANCE; file TRAN-IN TD-AMOUNT |
@@ -536,7 +536,7 @@ Written from [REJECT-RECORD](#reject-record).
 | --- | --: | --- |
 | RJ-PROGRAM | 1-8 | literal 'TXPOST' |
 | RJ-REASON | 9-12 | literal condition RJ-CLOSED; literal condition RJ-FROZEN; literal condition RJ-NO-ACCOUNT; literal condition RJ-NO-FUNDS |
-| RJ-TRAN | 13-92 | file TRAN-IN TD-ACCT-NO; file TRAN-IN TD-COUNTER-ACCT-NO; file TRAN-IN TRAN-RECORD; literal condition TD-TRANSFER-CREDIT; literal condition TD-TRANSFER-RETURN |
+| RJ-TRAN | 13-92 | file TRAN-IN TRAN-RECORD |
 
 ### File ACCT-OUT
 
@@ -562,7 +562,7 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-coun
 
 | Field | Position | Origins |
 | --- | --: | --- |
-| REPORT-LINE | 1-80 | file ACCT-IN AM-BALANCE; file CONTROL-FILE BC-BUSINESS-DATE; file TRAN-IN TD-AMOUNT; initial value of WS-CLOSING-TOTAL; initial value of WS-CREDIT-TOTAL; initial value of WS-DEBIT-TOTAL; initial value of WS-FEE-TOTAL; initial value of WS-LEG-COUNT; initial value of WS-MASTERS-READ; initial value of WS-MASTERS-WRITTEN; initial value of WS-OPENING-TOTAL; initial value of WS-POSTED-COUNT; initial value of WS-REJECT-COUNT; literal 'ACCOUNTS READ'; literal 'ACCOUNTS WRITTEN'; literal 'CLOSING BALANCES'; literal 'CREDITS'; literal 'DEBITS'; literal 'FEES'; literal 'NEW MASTER IN BALANCE'; literal 'OPENING BALANCES'; literal 'TRANSACTIONS POSTED'; literal 'TRANSACTIONS REJECTED'; literal 'TRANSFER LEGS WRITTEN'; literal 'TXPOST   TRANSACTION POSTING     BUSINESS DATE '; literal 1; literal SPACES |
+| REPORT-LINE | 1-80 | file CONTROL-FILE BC-BUSINESS-DATE; literal 'NEW MASTER IN BALANCE'; literal 'TXPOST   TRANSACTION POSTING     BUSINESS DATE '; literal SPACES |
 
 #### Record WS-REPORT-COUNT-LINE
 

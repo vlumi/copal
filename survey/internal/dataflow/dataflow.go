@@ -24,6 +24,9 @@ type Flow struct {
 	// parameters are the positions of the items the program is passed
 	// with USING, 1-based, by name.
 	parameters map[string]int
+	// order is the order its statements run in, nil where the paths
+	// through them are not known.
+	order *order
 }
 
 // Paragraph is a paragraph's reads and writes, each item once, in the
@@ -65,6 +68,7 @@ func Analyze(p *cobol.Program, records *layout.ProgramRecords) Flow {
 	for i, item := range p.Using {
 		flow.parameters[item] = i + 1
 	}
+	byStatement := map[cobol.Pos]statementFacts{}
 	for _, para := range p.Paragraphs {
 		pf := Paragraph{Name: para.Name}
 		cobol.Walk(para.Statements, func(s cobol.Statement) {
@@ -75,11 +79,43 @@ func Analyze(p *cobol.Program, records *layout.ProgramRecords) Flow {
 			for _, w := range writes {
 				addOnce(&pf.Writes, w)
 			}
-			flow.Lineage = append(flow.Lineage, names.edges(para.Name, s)...)
+			sf := statementFacts{reads: reads, kills: names.kills(s, reads)}
+			for _, e := range names.edges(para.Name, s) {
+				sf.edges = append(sf.edges, len(flow.Lineage))
+				flow.Lineage = append(flow.Lineage, e)
+			}
+			byStatement[s.Pos] = sf
 		})
 		flow.Paragraphs = append(flow.Paragraphs, pf)
 	}
+	flow.order = newOrder(p, flow.storage, byStatement)
 	return flow
+}
+
+// Write is a statement that writes a record to a file: the record named in
+// its FROM, or the file's own record.
+type Write struct {
+	File, Record string
+	Pos          cobol.Pos
+}
+
+// Writes lists the statements that write records to files, in the order
+// the program declares them.
+func (f Flow) Writes() []Write {
+	var writes []Write
+	for _, e := range f.Lineage {
+		if !e.ToFile {
+			continue
+		}
+		w := Write{File: e.To, Record: e.From, Pos: e.Pos}
+		for _, from := range f.Lineage {
+			if from.Pos == e.Pos && from.To == e.From && !from.FromLiteral && !from.FromFile && !from.FromCall && !from.FromStream {
+				w.Record = from.From
+			}
+		}
+		writes = append(writes, w)
+	}
+	return writes
 }
 
 func addOnce(names *[]string, name string) {

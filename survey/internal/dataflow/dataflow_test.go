@@ -246,3 +246,41 @@ func TestCallsAndStreams(t *testing.T) {
 		t.Errorf("LK-DATE, only read, goes back as %+v", params)
 	}
 }
+
+// Values are followed back only along the paths control takes to where
+// the item is used, and stop where a statement overwrites them.
+func TestOrder(t *testing.T) {
+	flow := analyze(t, "testdata/ORDER.cbl")
+	for item, want := range map[string][]string{
+		// SPACES and 99999 are overwritten on every path to the WRITE.
+		"WS-AMOUNT": {"file IN-FILE IN-AMOUNT"},
+		// Both branches set the code.
+		"WS-CODE": {"file IN-FILE IN-CODE", "literal 'A'"},
+		// ADD keeps the count it adds to, back to its initial value.
+		"WS-COUNT": {"initial value of WS-COUNT", "literal 1"},
+		// An IF with no ELSE may leave the initial value.
+		"WS-NOTE": {"initial value of WS-NOTE", "literal 'NOTED'"},
+	} {
+		if got := originStrings(flow.Origins(item)); !slices.Equal(got, want) {
+			t.Errorf("%s comes from %q, want %q", item, got, want)
+		}
+	}
+	// The total is used only in the loop, so the 0 moved into it after
+	// the loop is not among its origins.
+	if got := originStrings(flow.Origins("WS-TOTAL")); !slices.Equal(got, []string{"file IN-FILE IN-AMOUNT", "initial value of WS-TOTAL"}) {
+		t.Errorf("WS-TOTAL comes from %q", got)
+	}
+	effect := flow.Affects("WS-NOTE")
+	if !slices.Equal(effect.Items, []string{"OUT-RECORD"}) {
+		t.Errorf("WS-NOTE reaches %q, want the record written", effect.Items)
+	}
+}
+
+// Where a GO TO leaves a performed range, the order is not known, and
+// every statement that moves a value into the item counts.
+func TestOrderUnknown(t *testing.T) {
+	flow := analyze(t, "testdata/ESCAPE.cbl")
+	if got := originStrings(flow.Origins("WS-A")); !slices.Equal(got, []string{"literal 1", "literal 2"}) {
+		t.Errorf("WS-A comes from %q, want both literals", got)
+	}
+}
