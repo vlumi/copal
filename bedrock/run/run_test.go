@@ -2,10 +2,12 @@ package run
 
 import (
 	"bytes"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
 
 // A run binds the program's files by DD name, gives it its standard
@@ -41,5 +43,21 @@ func TestStep(t *testing.T) {
 	}
 	if !strings.Contains(string(traced), "Paragraph: MAIN-PARA") || !strings.Contains(string(traced), "WRITE") {
 		t.Errorf("trace has no paragraph or WRITE:\n%s", traced)
+	}
+}
+
+// A program that runs past its timeout is killed, and the outcome says so.
+func TestStepTimeout(t *testing.T) {
+	programs := t.TempDir()
+	script := filepath.Join(programs, "LOOP")
+	if err := os.WriteFile(script, []byte("#!/bin/sh\nsleep 5\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	outcome, err := Step{Programs: programs, Program: "LOOP", Stdout: io.Discard, Timeout: 100 * time.Millisecond}.Run()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if outcome != (Outcome{Abended: true, TimedOut: true}) {
+		t.Errorf("outcome %+v, want killed for running out of time", outcome)
 	}
 }

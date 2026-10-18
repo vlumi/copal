@@ -96,6 +96,9 @@ func pipeline() diagram.Graph {
 			{ID: "lineage", Label: "lineage\nfields followed across programs"},
 			{ID: "blueprints", Label: "blueprints\nMarkdown, JSON, SVG", Data: true},
 			{ID: "explore", Label: "explore\nthe web app"},
+			{ID: "run", Label: "bedrock/run\ncompiling and running"},
+			{ID: "coverage", Label: "coverage\nrules a trace reached"},
+			{ID: "oracle", Label: "oracle\ncases that reach the rules"},
 		},
 		Edges: []diagram.Edge{
 			{From: "source", To: "cobol"},
@@ -118,6 +121,10 @@ func pipeline() diagram.Graph {
 			{From: "blueprint", To: "lineage"},
 			{From: "blueprint", To: "explore", Span: 2},
 			{From: "lineage", To: "explore"},
+			{From: "rules", To: "coverage"},
+			{From: "coverage", To: "oracle"},
+			{From: "blueprint", To: "oracle"},
+			{From: "run", To: "oracle"},
 		},
 	}
 }
