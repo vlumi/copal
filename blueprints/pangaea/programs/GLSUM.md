@@ -362,8 +362,8 @@ Written from [GL-SUMMARY-RECORD](#gl-summary-record).
 | Field | Position | Origins |
 | --- | --: | --- |
 | GL-MONTH | 1-6 | file ACCR-IN AC-DUE-MONTH; literal 0 |
-| GL-ACCOUNT | 7-10 | literal SPACES |
-| GL-ACCOUNT-NAME | 11-34 | literal SPACES |
+| GL-ACCOUNT | 7-10 | |
+| GL-ACCOUNT-NAME | 11-34 | |
 | GL-DEBITS | 35-42 | file AUDIT-IN AU-AMOUNT; literal 0 |
 | GL-CREDITS | 43-50 | file AUDIT-IN AU-AMOUNT; literal 0 |
 

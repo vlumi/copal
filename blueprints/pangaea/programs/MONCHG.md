@@ -325,17 +325,17 @@ Written from [TRAN-RECORD](#tran-record).
 | Field | Position | Origins |
 | --- | --: | --- |
 | TR-REC-TYPE | 1 | literal condition TR-DETAIL |
-| TR-BODY | 2-80 | file ACCR-IN AC-DUE; file ACCT-IN AM-ACCT-NO; initial value of WS-MAINTENANCE-FEE; literal 'CREDIT INTEREST'; literal 'MAINTENANCE FEE'; literal 'OVERDRAFT INTEREST'; literal 1; literal condition TD-INTEREST; literal condition TD-MAINTENANCE-FEE; literal condition TD-OVERDRAFT-INTEREST |
-| TH-BUSINESS-DATE | 2-9 | literal 1 |
+| TR-BODY | 2-80 | file ACCR-IN AC-DUE; file ACCT-IN AM-ACCT-NO; initial value of WS-MAINTENANCE-FEE; initial value of WS-TI-SEQ; literal 'CREDIT INTEREST'; literal 'MAINTENANCE FEE'; literal 'OVERDRAFT INTEREST'; literal 1; literal condition TD-INTEREST; literal condition TD-MAINTENANCE-FEE; literal condition TD-OVERDRAFT-INTEREST |
+| TH-BUSINESS-DATE | 2-9 | initial value of WS-TI-SEQ; literal 1 |
 | TH-SOURCE | 10-17 | file ACCT-IN AM-ACCT-NO; initial value of WS-TI-SEQ; literal 1 |
 | TH-FILE-SEQ | 18-23 | file ACCT-IN AM-ACCT-NO; literal condition TD-INTEREST; literal condition TD-MAINTENANCE-FEE; literal condition TD-OVERDRAFT-INTEREST |
-| TD-TRAN-ID | 2-11 | literal 1 |
+| TD-TRAN-ID | 2-11 | initial value of WS-TI-SEQ; literal 1 |
 | TD-ACCT-NO | 12-21 | file ACCT-IN AM-ACCT-NO |
 | TD-TRAN-CODE | 22-23 | literal condition TD-INTEREST; literal condition TD-MAINTENANCE-FEE; literal condition TD-OVERDRAFT-INTEREST |
 | TD-AMOUNT | 24-34 | file ACCR-IN AC-DUE; initial value of WS-MAINTENANCE-FEE |
 | TD-DESCRIPTION | 35-54 | literal 'CREDIT INTEREST'; literal 'MAINTENANCE FEE'; literal 'OVERDRAFT INTEREST' |
 | TD-COUNTER-ACCT-NO | 55-64 | literal SPACES |
-| TT-DETAIL-COUNT | 2-9 | literal 1 |
+| TT-DETAIL-COUNT | 2-9 | initial value of WS-TI-SEQ; literal 1 |
 | TT-AMOUNT-TOTAL | 10-24 | file ACCR-IN AC-DUE; file ACCT-IN AM-ACCT-NO; initial value of WS-MAINTENANCE-FEE; initial value of WS-TI-SEQ; literal 1; literal condition TD-INTEREST; literal condition TD-MAINTENANCE-FEE; literal condition TD-OVERDRAFT-INTEREST |
 | TT-ACCT-HASH | 25-39 | file ACCR-IN AC-DUE; initial value of WS-MAINTENANCE-FEE; literal 'CREDIT INTEREST'; literal 'MAINTENANCE FEE'; literal 'OVERDRAFT INTEREST' |
 

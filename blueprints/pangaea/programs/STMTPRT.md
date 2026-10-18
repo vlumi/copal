@@ -488,7 +488,7 @@ Written from [SORT-RECORD](#sort-record).
 | --- | --: | --- |
 | SR-ACCT-NO | 1-10 | file AUDIT-IN AU-ACCT-NO; file STMT-SORT SR-ACCT-NO |
 | SR-DATE | 11-18 | file AUDIT-IN AU-BUSINESS-DATE; file STMT-SORT SR-DATE |
-| SR-SEQ | 19-26 | file STMT-SORT SR-SEQ; initial value of WS-SEQ; literal 1 |
+| SR-SEQ | 19-26 | initial value of WS-SEQ; literal 1 |
 | SR-TRAN-ID | 27-36 | file AUDIT-IN AU-TRAN-ID; file STMT-SORT SR-TRAN-ID |
 | SR-TRAN-CODE | 37-38 | file AUDIT-IN AU-TRAN-CODE; file STMT-SORT SR-TRAN-CODE |
 | SR-AMOUNT | 39-49 | file AUDIT-IN AU-AMOUNT; file STMT-SORT SR-AMOUNT |

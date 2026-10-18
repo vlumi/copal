@@ -281,17 +281,17 @@ Written from [TRAN-RECORD](#tran-record).
 | TR-REC-TYPE | 1 | literal condition TR-DETAIL; literal condition TR-HEADER; literal condition TR-TRAILER |
 | TR-BODY | 2-80 | file CONTROL-FILE BC-BUSINESS-DATE; file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; file HOLD-FILE HD-HOLD-NO; file HOLD-FILE HD-TERMINAL; initial value of WS-ACCT-HASH; initial value of WS-AMOUNT-TOTAL; initial value of WS-DETAIL-COUNT; literal 'ATM FEE'; literal 0; literal 1; literal 2; literal condition TD-ATM-FEE; literal condition TD-ATM-WITHDRAWAL; literal condition TD-CARD-PURCHASE; literal condition TH-FROM-CARDS |
 | TH-BUSINESS-DATE | 2-9 | file CONTROL-FILE BC-BUSINESS-DATE; file HOLD-FILE HD-HOLD-NO; initial value of WS-DETAIL-COUNT; literal 1 |
-| TH-SOURCE | 10-17 | file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-ACCT-HASH; initial value of WS-AMOUNT-TOTAL; literal 1; literal 2; literal condition TH-FROM-CARDS |
-| TH-FILE-SEQ | 18-23 | file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-ACCT-HASH; initial value of WS-AMOUNT-TOTAL; literal 1; literal condition TD-ATM-FEE; literal condition TD-ATM-WITHDRAWAL; literal condition TD-CARD-PURCHASE; literal condition TH-FROM-CARDS |
-| TD-TRAN-ID | 2-11 | file CONTROL-FILE BC-BUSINESS-DATE; file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; file HOLD-FILE HD-HOLD-NO; initial value of WS-ACCT-HASH; initial value of WS-AMOUNT-TOTAL; initial value of WS-DETAIL-COUNT; literal 1; literal 2; literal condition TH-FROM-CARDS |
-| TD-ACCT-NO | 12-21 | file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-ACCT-HASH; initial value of WS-AMOUNT-TOTAL; literal 1; literal condition TH-FROM-CARDS |
-| TD-TRAN-CODE | 22-23 | file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-ACCT-HASH; initial value of WS-AMOUNT-TOTAL; literal 1; literal condition TD-ATM-FEE; literal condition TD-ATM-WITHDRAWAL; literal condition TD-CARD-PURCHASE; literal condition TH-FROM-CARDS |
-| TD-AMOUNT | 24-34 | file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-ACCT-HASH; initial value of WS-AMOUNT-TOTAL; literal 1; literal condition TH-FROM-CARDS |
-| TD-DESCRIPTION | 35-54 | file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; file HOLD-FILE HD-TERMINAL; initial value of WS-ACCT-HASH; initial value of WS-AMOUNT-TOTAL; literal 'ATM FEE'; literal 1; literal condition TH-FROM-CARDS |
+| TH-SOURCE | 10-17 | file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-AMOUNT-TOTAL; literal 1; literal 2; literal condition TH-FROM-CARDS |
+| TH-FILE-SEQ | 18-23 | file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-AMOUNT-TOTAL; literal 1; literal condition TD-ATM-FEE; literal condition TD-ATM-WITHDRAWAL; literal condition TD-CARD-PURCHASE |
+| TD-TRAN-ID | 2-11 | file CONTROL-FILE BC-BUSINESS-DATE; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; file HOLD-FILE HD-HOLD-NO; initial value of WS-AMOUNT-TOTAL; initial value of WS-DETAIL-COUNT; literal 1; literal 2; literal condition TH-FROM-CARDS |
+| TD-ACCT-NO | 12-21 | file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-AMOUNT-TOTAL; literal 1; literal condition TH-FROM-CARDS |
+| TD-TRAN-CODE | 22-23 | file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-AMOUNT-TOTAL; literal 1; literal condition TD-ATM-FEE; literal condition TD-ATM-WITHDRAWAL; literal condition TD-CARD-PURCHASE |
+| TD-AMOUNT | 24-34 | file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-ACCT-HASH; initial value of WS-AMOUNT-TOTAL |
+| TD-DESCRIPTION | 35-54 | file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-TERMINAL; initial value of WS-ACCT-HASH; literal 'ATM FEE' |
 | TD-COUNTER-ACCT-NO | 55-64 | literal 0 |
 | TT-DETAIL-COUNT | 2-9 | file CONTROL-FILE BC-BUSINESS-DATE; file HOLD-FILE HD-HOLD-NO; initial value of WS-DETAIL-COUNT; literal 1 |
-| TT-AMOUNT-TOTAL | 10-24 | file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-ACCT-HASH; initial value of WS-AMOUNT-TOTAL; literal 1; literal 2; literal condition TD-ATM-FEE; literal condition TD-ATM-WITHDRAWAL; literal condition TD-CARD-PURCHASE; literal condition TH-FROM-CARDS |
-| TT-ACCT-HASH | 25-39 | file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; file HOLD-FILE HD-TERMINAL; initial value of WS-ACCT-HASH; initial value of WS-AMOUNT-TOTAL; literal 'ATM FEE'; literal 1; literal condition TH-FROM-CARDS |
+| TT-AMOUNT-TOTAL | 10-24 | file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-AMOUNT-TOTAL; literal 1; literal 2; literal condition TD-ATM-FEE; literal condition TD-ATM-WITHDRAWAL; literal condition TD-CARD-PURCHASE; literal condition TH-FROM-CARDS |
+| TT-ACCT-HASH | 25-39 | file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; file HOLD-FILE HD-TERMINAL; initial value of WS-ACCT-HASH; literal 'ATM FEE' |
 
 ### File REPORT-OUT
 
@@ -301,7 +301,7 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-coun
 
 | Field | Position | Origins |
 | --- | --: | --- |
-| REPORT-LINE | 1-80 | file CONTROL-FILE BC-BUSINESS-DATE; file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-ACCT-HASH; initial value of WS-AMOUNT-TOTAL; initial value of WS-DETAIL-COUNT; initial value of WS-HOLD-COUNT; initial value of WS-REVERSED-COUNT; literal 'AMOUNT TOTAL'; literal 'HOLDEXT  HOLDS FOR POSTING       BUSINESS DATE '; literal 'HOLDS READ'; literal 'REVERSED, LEFT OUT'; literal 'TRANSACTIONS WRITTEN'; literal 1; literal SPACES; literal condition TH-FROM-CARDS |
+| REPORT-LINE | 1-80 | file CONTROL-FILE BC-BUSINESS-DATE; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-AMOUNT-TOTAL; initial value of WS-DETAIL-COUNT; initial value of WS-HOLD-COUNT; initial value of WS-REVERSED-COUNT; literal 'AMOUNT TOTAL'; literal 'HOLDEXT  HOLDS FOR POSTING       BUSINESS DATE '; literal 'HOLDS READ'; literal 'REVERSED, LEFT OUT'; literal 'TRANSACTIONS WRITTEN'; literal 1; literal SPACES |
 
 #### Record WS-REPORT-COUNT-LINE
 
@@ -315,7 +315,7 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-coun
 | Field | Position | Origins |
 | --- | --: | --- |
 | WS-RA-LABEL | 1-30 | literal 'AMOUNT TOTAL' |
-| WS-RA-VALUE | 31-50 | file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-ACCT-HASH; initial value of WS-AMOUNT-TOTAL; literal 1; literal condition TH-FROM-CARDS |
+| WS-RA-VALUE | 31-50 | file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-AMOUNT-TOTAL |
 
 ## Records
 

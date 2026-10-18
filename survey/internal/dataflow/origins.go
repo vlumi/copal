@@ -5,7 +5,9 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/vlumi/copal/bedrock/cobol"
 	"github.com/vlumi/copal/bedrock/layout"
+	"github.com/vlumi/copal/survey/internal/controlflow"
 )
 
 // Origin is where a data item's values come from in the end: a field of a
@@ -130,12 +132,17 @@ func (f Flow) Origins(item string) []Origin {
 // of its own length, is followed byte for byte. A literal moved into a
 // whole group around the item, such as MOVE SPACES TO A-RECORD, only
 // clears it, and counts only for an item with no other origin.
+//
+// The values are followed back from every statement that uses the item,
+// along the paths control can take to it, and stop where a statement
+// overwrites the bytes. Where the paths are not known, every statement
+// that moves a value into the bytes counts, whatever the order.
 func (f Flow) Trace(item string) Trace {
 	start, ok := f.storage.places[item]
 	if !ok {
 		return Trace{}
 	}
-	return f.trace(start)
+	return f.traceFrom(start, nil)
 }
 
 // TraceBytes traces where the values of some of a data item's bytes come
@@ -145,12 +152,112 @@ func (f Flow) TraceBytes(item string, start, length int) Trace {
 	if !ok {
 		return Trace{}
 	}
-	return f.trace(p)
+	return f.traceFrom(p, nil)
 }
 
-func (f Flow) trace(start place) Trace {
-	found, clearing := map[Origin]bool{}, map[Origin]bool{}
-	followed, cleared := map[int]bool{}, map[int]bool{}
+// TraceAt traces where a data item's values come from, as Trace does, as
+// the statements at the positions use them: the WRITEs of a record, say.
+func (f Flow) TraceAt(item string, positions []cobol.Pos) Trace {
+	start, ok := f.storage.places[item]
+	if !ok {
+		return Trace{}
+	}
+	return f.traceFrom(start, positions)
+}
+
+func (f Flow) traceFrom(start place, positions []cobol.Pos) Trace {
+	if f.order == nil {
+		return f.traceAll(start)
+	}
+	nodes := f.order.uses(start, f.Lineage, f.storage)
+	if positions != nil {
+		nodes = f.order.at(positions)
+	}
+	if len(nodes) == 0 {
+		return f.traceAll(start)
+	}
+	return f.traceOrdered(start, nodes)
+}
+
+// tracing collects the origins a trace finds and the edges it follows.
+type tracing struct {
+	flow              Flow
+	found, clearing   map[Origin]bool
+	followed, cleared map[int]bool
+}
+
+func newTracing(f Flow) *tracing {
+	return &tracing{flow: f, found: map[Origin]bool{}, clearing: map[Origin]bool{}, followed: map[int]bool{}, cleared: map[int]bool{}}
+}
+
+// place notes the origins of bytes the trace reaches: the item's initial
+// value and, in a program called, the caller's parameter.
+func (t *tracing) place(here place) {
+	name := t.flow.storage.at(here.record, here.start, here.length)
+	if p := t.flow.storage.places[name]; p.value {
+		t.found[Origin{Item: name}] = true
+	}
+	if n := t.flow.parameters[here.record]; n > 0 {
+		t.found[Origin{Parameter: n, Item: name}] = true
+	}
+}
+
+// edge follows a lineage edge back from the bytes it moves into: to its
+// origin, or to the bytes of the item it moves from, which it returns.
+func (t *tracing) edge(i int, here place) (from place, ok bool) {
+	e := t.flow.Lineage[i]
+	to, ok := t.flow.storage.places[e.To]
+	if e.ToFile || e.ToCall || e.ToStream || !ok || !to.overlaps(here) {
+		return place{}, false
+	}
+	name := t.flow.storage.at(here.record, here.start, here.length)
+	switch {
+	case e.FromFile:
+		t.found[Origin{File: e.From, Item: name}] = true
+	case e.FromCall:
+		t.found[Origin{Call: e.From, Arg: e.Arg, Item: name}] = true
+	case e.FromStream:
+		t.found[Origin{Stream: e.From, Item: name}] = true
+	case e.FromLiteral && to.group && to.length > here.length:
+		t.clearing[Origin{Literal: e.From}] = true
+		t.cleared[i] = true
+		return place{}, false
+	case e.FromLiteral:
+		t.found[Origin{Literal: e.From}] = true
+	default:
+		source, ok := t.flow.storage.places[e.From]
+		if !ok {
+			return place{}, false
+		}
+		t.followed[i] = true
+		return follow(here, to, source), true
+	}
+	t.followed[i] = true
+	return place{}, false
+}
+
+func (t *tracing) trace() Trace {
+	found, followed := t.found, t.followed
+	if len(found) == 0 {
+		found, followed = t.clearing, t.cleared
+	}
+	trace := Trace{Origins: make([]Origin, 0, len(found))}
+	for o := range found {
+		trace.Origins = append(trace.Origins, o)
+	}
+	slices.SortFunc(trace.Origins, func(a, b Origin) int { return strings.Compare(a.String(), b.String()) })
+	for i, e := range t.flow.Lineage {
+		if followed[i] {
+			trace.Edges = append(trace.Edges, e)
+		}
+	}
+	return trace
+}
+
+// traceAll follows every statement that moves a value into the bytes,
+// whatever the order.
+func (f Flow) traceAll(start place) Trace {
+	t := newTracing(f)
 	visited := map[place]bool{}
 	queue := []place{start}
 	for len(queue) > 0 {
@@ -160,56 +267,60 @@ func (f Flow) trace(start place) Trace {
 			continue
 		}
 		visited[here] = true
-		name := f.storage.at(here.record, here.start, here.length)
-		if p := f.storage.places[name]; p.value {
-			found[Origin{Item: name}] = true
-		}
-		if n := f.parameters[here.record]; n > 0 {
-			found[Origin{Parameter: n, Item: name}] = true
-		}
-		for i, e := range f.Lineage {
-			to, ok := f.storage.places[e.To]
-			if e.ToFile || e.ToCall || e.ToStream || !ok || !to.overlaps(here) {
-				continue
-			}
-			switch {
-			case e.FromFile:
-				found[Origin{File: e.From, Item: name}] = true
-				followed[i] = true
-			case e.FromCall:
-				found[Origin{Call: e.From, Arg: e.Arg, Item: name}] = true
-				followed[i] = true
-			case e.FromStream:
-				found[Origin{Stream: e.From, Item: name}] = true
-				followed[i] = true
-			case e.FromLiteral && to.group && to.length > here.length:
-				clearing[Origin{Literal: e.From}] = true
-				cleared[i] = true
-			case e.FromLiteral:
-				found[Origin{Literal: e.From}] = true
-				followed[i] = true
-			default:
-				if from, ok := f.storage.places[e.From]; ok {
-					queue = append(queue, follow(here, to, from))
-					followed[i] = true
-				}
+		t.place(here)
+		for i := range f.Lineage {
+			if from, ok := t.edge(i, here); ok {
+				queue = append(queue, from)
 			}
 		}
 	}
-	if len(found) == 0 {
-		found, followed = clearing, cleared
-	}
-	t := Trace{Origins: make([]Origin, 0, len(found))}
-	for o := range found {
-		t.Origins = append(t.Origins, o)
-	}
-	slices.SortFunc(t.Origins, func(a, b Origin) int { return strings.Compare(a.String(), b.String()) })
-	for i, e := range f.Lineage {
-		if followed[i] {
-			t.Edges = append(t.Edges, e)
+	return t.trace()
+}
+
+// traceOrdered follows the bytes back from the statements at the nodes,
+// along the paths control can take to them: through each statement's moves
+// into them, to what it moves from, and past it to the statements before,
+// for the bytes it does not overwrite. Bytes still to be followed at the
+// program's entry hold their initial values or the caller's.
+func (f Flow) traceOrdered(start place, nodes []int) Trace {
+	t := newTracing(f)
+	g := f.order.graph
+	visited := map[state]bool{}
+	var queue []state
+	before := func(n int, here place) {
+		for _, p := range g.Nodes[n].Prev {
+			queue = append(queue, state{p, here})
 		}
 	}
-	return t
+	for _, n := range nodes {
+		if usesAfter(g.Nodes[n].Statement) {
+			queue = append(queue, state{n, start})
+		} else {
+			before(n, start)
+		}
+	}
+	for len(queue) > 0 {
+		s := queue[0]
+		queue = queue[1:]
+		if visited[s] {
+			continue
+		}
+		visited[s] = true
+		if s.node == controlflow.Entry {
+			t.place(s.at)
+			continue
+		}
+		facts := f.order.facts[s.node]
+		for _, i := range facts.edges {
+			if from, ok := t.edge(i, s.at); ok {
+				queue = append(queue, state{s.node, from})
+			}
+		}
+		for _, left := range without(s.at, facts.kills) {
+			before(s.node, left)
+		}
+	}
+	return t.trace()
 }
 
 // follow maps bytes of a statement's target back to its source: the same

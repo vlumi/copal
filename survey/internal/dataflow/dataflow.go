@@ -24,6 +24,9 @@ type Flow struct {
 	// parameters are the positions of the items the program is passed
 	// with USING, 1-based, by name.
 	parameters map[string]int
+	// order is the order its statements run in, nil where the paths
+	// through them are not known.
+	order *order
 }
 
 // Paragraph is a paragraph's reads and writes, each item once, in the
@@ -65,6 +68,7 @@ func Analyze(p *cobol.Program, records *layout.ProgramRecords) Flow {
 	for i, item := range p.Using {
 		flow.parameters[item] = i + 1
 	}
+	byStatement := map[cobol.Pos]statementFacts{}
 	for _, para := range p.Paragraphs {
 		pf := Paragraph{Name: para.Name}
 		cobol.Walk(para.Statements, func(s cobol.Statement) {
@@ -75,10 +79,16 @@ func Analyze(p *cobol.Program, records *layout.ProgramRecords) Flow {
 			for _, w := range writes {
 				addOnce(&pf.Writes, w)
 			}
-			flow.Lineage = append(flow.Lineage, names.edges(para.Name, s)...)
+			sf := statementFacts{reads: reads, kills: names.kills(s, reads)}
+			for _, e := range names.edges(para.Name, s) {
+				sf.edges = append(sf.edges, len(flow.Lineage))
+				flow.Lineage = append(flow.Lineage, e)
+			}
+			byStatement[s.Pos] = sf
 		})
 		flow.Paragraphs = append(flow.Paragraphs, pf)
 	}
+	flow.order = newOrder(p, flow.storage, byStatement)
 	return flow
 }
 

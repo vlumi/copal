@@ -500,7 +500,7 @@ Written from [TRAN-RECORD](#tran-record).
 | Field | Position | Origins |
 | --- | --: | --- |
 | TR-REC-TYPE | 1 | file TRAN-IN TR-REC-TYPE |
-| TR-BODY | 2-80 | file TRAN-IN TD-ACCT-NO; file TRAN-IN TD-COUNTER-ACCT-NO; file TRAN-IN TR-BODY; literal condition TD-TRANSFER-CREDIT; literal condition TD-TRANSFER-RETURN |
+| TR-BODY | 2-80 | file TRAN-IN TD-ACCT-NO; file TRAN-IN TD-COUNTER-ACCT-NO; file TRAN-IN TD-TRAN-ID; file TRAN-IN TR-BODY; literal condition TD-TRANSFER-CREDIT; literal condition TD-TRANSFER-RETURN |
 | TH-BUSINESS-DATE | 2-9 | file TRAN-IN TH-BUSINESS-DATE |
 | TH-SOURCE | 10-17 | file TRAN-IN TD-COUNTER-ACCT-NO; file TRAN-IN TH-SOURCE |
 | TH-FILE-SEQ | 18-23 | file TRAN-IN TD-COUNTER-ACCT-NO; file TRAN-IN TH-FILE-SEQ; literal condition TD-TRANSFER-CREDIT; literal condition TD-TRANSFER-RETURN |
@@ -511,7 +511,7 @@ Written from [TRAN-RECORD](#tran-record).
 | TD-DESCRIPTION | 35-54 | file TRAN-IN TD-DESCRIPTION |
 | TD-COUNTER-ACCT-NO | 55-64 | file TRAN-IN TD-ACCT-NO; file TRAN-IN TD-COUNTER-ACCT-NO |
 | TT-DETAIL-COUNT | 2-9 | file TRAN-IN TH-BUSINESS-DATE |
-| TT-AMOUNT-TOTAL | 10-24 | file TRAN-IN TD-ACCT-NO; file TRAN-IN TD-COUNTER-ACCT-NO; file TRAN-IN TT-AMOUNT-TOTAL; literal condition TD-TRANSFER-CREDIT; literal condition TD-TRANSFER-RETURN |
+| TT-AMOUNT-TOTAL | 10-24 | file TRAN-IN TD-AMOUNT; file TRAN-IN TD-COUNTER-ACCT-NO; file TRAN-IN TH-SOURCE; file TRAN-IN TT-AMOUNT-TOTAL; literal condition TD-TRANSFER-CREDIT; literal condition TD-TRANSFER-RETURN |
 | TT-ACCT-HASH | 25-39 | file TRAN-IN TT-ACCT-HASH |
 
 ### File AUDIT-OUT
@@ -522,8 +522,8 @@ Written from [AUDIT-RECORD](#audit-record).
 | --- | --: | --- |
 | AU-BUSINESS-DATE | 1-8 | file CONTROL-FILE BC-BUSINESS-DATE |
 | AU-TRAN-ID | 9-18 | file TRAN-IN TD-TRAN-ID |
-| AU-ACCT-NO | 19-28 | file TRAN-IN TD-ACCT-NO; file TRAN-IN TD-COUNTER-ACCT-NO |
-| AU-TRAN-CODE | 29-30 | file TRAN-IN TD-TRAN-CODE; literal condition TD-TRANSFER-CREDIT; literal condition TD-TRANSFER-RETURN |
+| AU-ACCT-NO | 19-28 | file TRAN-IN TD-ACCT-NO |
+| AU-TRAN-CODE | 29-30 | file TRAN-IN TD-TRAN-CODE |
 | AU-AMOUNT | 31-41 | file TRAN-IN TD-AMOUNT |
 | AU-BALANCE-BEFORE | 42-54 | file ACCT-IN AM-BALANCE; file TRAN-IN TD-AMOUNT |
 | AU-BALANCE-AFTER | 55-67 | file ACCT-IN AM-BALANCE; file TRAN-IN TD-AMOUNT |
@@ -536,7 +536,7 @@ Written from [REJECT-RECORD](#reject-record).
 | --- | --: | --- |
 | RJ-PROGRAM | 1-8 | literal 'TXPOST' |
 | RJ-REASON | 9-12 | literal condition RJ-CLOSED; literal condition RJ-FROZEN; literal condition RJ-NO-ACCOUNT; literal condition RJ-NO-FUNDS |
-| RJ-TRAN | 13-92 | file TRAN-IN TD-ACCT-NO; file TRAN-IN TD-COUNTER-ACCT-NO; file TRAN-IN TRAN-RECORD; literal condition TD-TRANSFER-CREDIT; literal condition TD-TRANSFER-RETURN |
+| RJ-TRAN | 13-92 | file TRAN-IN TRAN-RECORD |
 
 ### File ACCT-OUT
 
