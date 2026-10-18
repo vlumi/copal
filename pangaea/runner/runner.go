@@ -40,6 +40,9 @@ type Runner struct {
 	// data writes to standard output, as it writes it, besides the step's
 	// output file.
 	Output io.Writer
+	// Traces, if set, is the directory where each step's program, compiled
+	// with trace code, writes its trace, to a file named after the step.
+	Traces string
 }
 
 // Result is the outcome of one step.
@@ -200,6 +203,9 @@ func (run *jobRun) runStep(step jcl.Step) (Result, error) {
 		return result, err
 	}
 	s := cobolrun.Step{Programs: run.Programs, Program: step.Program, DDs: dds, Stdout: output}
+	if run.Traces != "" {
+		s.TraceFile = filepath.Join(run.Traces, step.Name+".trace")
+	}
 	if slices.ContainsFunc(step.DDs, func(dd jcl.DD) bool { return dd.InStream }) {
 		s.Stdin = run.InStream
 		if run.Output != nil {
