@@ -16,14 +16,17 @@ type Entity struct {
 	Fields    []EntityField `json:"fields"`
 }
 
-// EntityField is a field of an entity, FILLER left out, with its kind,
-// its uses, one for each program that uses the entity, and for a code
-// field, its state machine.
+// EntityField is a field of an entity, FILLER left out, with its kind and
+// layout, its uses, one for each program that uses the entity, for a code
+// field, its state machine, and the date fields of other layouts its
+// values come from.
 type EntityField struct {
-	Name   string        `json:"name"`
-	Kind   string        `json:"kind"`
-	Uses   []FieldUse    `json:"uses,omitempty"`
-	States *StateMachine `json:"states,omitempty"`
+	Name      string        `json:"name"`
+	Kind      string        `json:"kind"`
+	Layout    string        `json:"layout"`
+	Uses      []FieldUse    `json:"uses,omitempty"`
+	States    *StateMachine `json:"states,omitempty"`
+	DatesFrom []FieldRef    `json:"datesFrom,omitempty"`
 }
 
 // FieldUse is what a program does with a field of an entity: the name it
@@ -44,12 +47,13 @@ type FieldUse struct {
 // and its fields are the copybook's, in the same order.
 func entities(copybooks []Copybook, programs []Program) []Entity {
 	var list []Entity
+	held := heldRecords{}
 	for _, c := range copybooks {
 		for _, r := range c.Records {
 			e := Entity{Record: r.Name, Copybook: c.Name}
 			fields := entityFields(r.Field)
 			for _, f := range fields {
-				ef := EntityField{Name: f.Name, Kind: f.Kind}
+				ef := EntityField{Name: f.Name, Kind: f.Kind, Layout: layoutOf(f)}
 				if f.Kind == KindCode {
 					ef.States = newStateMachine(f)
 				}
@@ -62,6 +66,7 @@ func entities(copybooks []Copybook, programs []Program) []Entity {
 					continue
 				}
 				e.Programs = append(e.Programs, p.Name)
+				held[[2]string{p.Name, p.Records[i].Name}] = len(list)
 				for j, f := range entityFields(p.Records[i].Field) {
 					e.Fields[j].Uses = append(e.Fields[j].Uses, fieldUse(*p, f.Name))
 					if m := e.Fields[j].States; m != nil {
@@ -72,6 +77,7 @@ func entities(copybooks []Copybook, programs []Program) []Entity {
 			list = append(list, e)
 		}
 	}
+	datesFrom(list, programs, held)
 	return list
 }
 

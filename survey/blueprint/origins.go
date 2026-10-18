@@ -26,6 +26,7 @@ type FieldOrigin struct {
 	Start   int      `json:"start"`
 	Length  int      `json:"length"`
 	Origins []string `json:"origins,omitempty"`
+	origins []dataflow.Origin
 }
 
 // outputs traces the fields of every record the program writes to a file,
@@ -45,7 +46,8 @@ func outputs(p Program, flow dataflow.Flow) []Output {
 		r := p.Records[slices.IndexFunc(p.Records, func(r Record) bool { return r.Name == out.Record })]
 		for _, f := range leaves(r.Field) {
 			fo := FieldOrigin{Name: f.Name, Start: f.Start, Length: f.Length}
-			for _, o := range flow.TraceAt(f.Name, writes[[2]string{out.File, out.Record}]).Origins {
+			fo.origins = flow.TraceAt(f.Name, writes[[2]string{out.File, out.Record}]).Origins
+			for _, o := range fo.origins {
 				fo.Origins = append(fo.Origins, o.String())
 			}
 			outs[i].Fields = append(outs[i].Fields, fo)

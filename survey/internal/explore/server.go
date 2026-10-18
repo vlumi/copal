@@ -399,14 +399,38 @@ func (s *Server) schedule(*http.Request) (any, error) {
 }
 
 // EntityView is an entity: the datasets it describes, with their kinds,
-// the programs that use it, and its fields with the programs that read,
-// write and decide on each.
+// the programs that use it, its fields with the programs that read, write
+// and decide on each, and when the entities hold dates in more than one
+// layout, the layouts, with its fields in each and those of the others.
 type EntityView struct {
 	Entity   *blueprint.Entity
 	Datasets []*blueprint.SystemDataset
 	Programs []*blueprint.Program
 	Fields   []EntityFieldUses
 	Machines []StateView
+	Dates    []DateLayoutView
+}
+
+// DateLayoutView is a layout the entities hold dates in: the entity's own
+// fields in it, each with the dates of other layouts its values come
+// from, and the other entities' fields.
+type DateLayoutView struct {
+	Layout    string
+	Here      []DateFieldView
+	Elsewhere []blueprint.FieldRef
+}
+
+// DateFieldView is a field of the entity in a date layout, and the date
+// fields of other layouts its values come from, with their layouts.
+type DateFieldView struct {
+	Field string
+	From  []DateSourceView
+}
+
+// DateSourceView is a date field its values come from, and its layout.
+type DateSourceView struct {
+	blueprint.FieldRef
+	Layout string
 }
 
 // StateView is a code field's state machine, drawn.
@@ -467,7 +491,37 @@ func (s *Server) entity(r *http.Request) (any, error) {
 			v.Machines = append(v.Machines, m)
 		}
 	}
+	v.Dates = s.dateLayouts(e)
 	return v, nil
+}
+
+// dateLayouts lays out the entities' date layouts for an entity's page:
+// none unless there is more than one and the entity holds a date.
+func (s *Server) dateLayouts(e *blueprint.Entity) []DateLayoutView {
+	layouts := blueprint.DateLayouts(s.index.system.Entities)
+	if len(layouts) < 2 || !slices.ContainsFunc(layouts, func(l blueprint.DateLayout) bool {
+		return slices.ContainsFunc(l.Fields, func(f blueprint.FieldRef) bool { return f.Record == e.Record })
+	}) {
+		return nil
+	}
+	views := make([]DateLayoutView, len(layouts))
+	for i, l := range layouts {
+		views[i].Layout = l.Layout
+		for _, ref := range l.Fields {
+			if ref.Record != e.Record {
+				views[i].Elsewhere = append(views[i].Elsewhere, ref)
+				continue
+			}
+			f, _ := e.Field(ref.Field)
+			view := DateFieldView{Field: f.Name}
+			for _, from := range f.DatesFrom {
+				source, _ := s.index.entities[from.Record].Field(from.Field)
+				view.From = append(view.From, DateSourceView{FieldRef: from, Layout: source.Layout})
+			}
+			views[i].Here = append(views[i].Here, view)
+		}
+	}
+	return views
 }
 
 // EntityFieldView is a field of an entity across every program that uses
