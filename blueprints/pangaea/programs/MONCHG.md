@@ -347,7 +347,7 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-coun
 
 | Field | Position | Origins |
 | --- | --: | --- |
-| REPORT-LINE | 1-80 | file ACCR-IN AC-DUE; file ACCR-IN AC-DUE-MONTH; file CONTROL-FILE BC-BUSINESS-DATE; initial value of WS-CLOSED-MONTH; initial value of WS-FEE-COUNT; initial value of WS-FEE-TOTAL; initial value of WS-INTEREST-COUNT; initial value of WS-INTEREST-TOTAL; initial value of WS-MAINTENANCE-FEE; initial value of WS-OVERDRAFT-COUNT; initial value of WS-OVERDRAFT-TOTAL; initial value of WS-WAIVED-COUNT; literal 'INTEREST CREDITED'; literal 'INTEREST CREDITS'; literal 'MAINTENANCE FEES CHARGED'; literal 'MAINTENANCE FEES WAIVED'; literal 'MAINTENANCE FEES'; literal 'MONCHG   MONTH-END CHARGES       BUSINESS DATE '; literal 'MONTH CLOSED                  '; literal 'NO MONTH CLOSED'; literal 'OVERDRAFT INTEREST CHARGED'; literal 'OVERDRAFT INTEREST CHARGES'; literal 1; literal SPACES |
+| REPORT-LINE | 1-80 | file ACCR-IN AC-DUE-MONTH; file CONTROL-FILE BC-BUSINESS-DATE; initial value of WS-CLOSED-MONTH; literal 'MONCHG   MONTH-END CHARGES       BUSINESS DATE '; literal 'MONTH CLOSED                  '; literal 'NO MONTH CLOSED'; literal SPACES |
 
 #### Record WS-REPORT-COUNT-LINE
 

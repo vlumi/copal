@@ -499,7 +499,7 @@ Written from [ACCRUAL-RECORD](#accrual-record).
 | Field | Position | Origins |
 | --- | --: | --- |
 | AC-ACCT-NO | 1-10 | file ACCR-IN AI-ACCT-NO; file ACCT-IN AM-ACCT-NO |
-| AC-THROUGH-DATE | 11-18 | file ACCR-IN ACCR-IN-RECORD; file CONTROL-FILE BC-BUSINESS-DATE |
+| AC-THROUGH-DATE | 11-18 | file CONTROL-FILE BC-BUSINESS-DATE |
 | AC-ACCRUED | 19-25 | file ACCR-IN ACCR-IN-RECORD; file ACCT-IN AM-BALANCE; file CONTROL-FILE BC-BUSINESS-DATE; file RATE-FILE RT-ANNUAL-RATE; literal 0; literal 365 |
 | AC-DUE | 26-30 | file ACCR-IN ACCR-IN-RECORD; file ACCT-IN AM-BALANCE; file CONTROL-FILE BC-BUSINESS-DATE; file RATE-FILE RT-ANNUAL-RATE; literal 0; literal 365 |
 | AC-DUE-MONTH | 31-36 | file ACCR-IN ACCR-IN-RECORD; file CONTROL-FILE BC-BUSINESS-DATE; literal 0 |
@@ -512,7 +512,7 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-coun
 
 | Field | Position | Origins |
 | --- | --: | --- |
-| REPORT-LINE | 1-80 | file ACCR-IN ACCR-IN-RECORD; file ACCT-IN AM-BALANCE; file CONTROL-FILE BC-BUSINESS-DATE; file RATE-FILE RT-ANNUAL-RATE; initial value of WS-ACCOUNT-COUNT; initial value of WS-CLOSED-MONTH; initial value of WS-CREDIT-ACCRUED; initial value of WS-CREDIT-DUE; initial value of WS-DEBIT-ACCRUED; initial value of WS-DEBIT-DUE; initial value of WS-RATE-COUNT; initial value of WS-STARTED-COUNT; literal 'ACCOUNTS ACCRUED'; literal 'ACCRUALS STARTED'; literal 'CREDIT INTEREST ACCRUED'; literal 'CREDIT INTEREST DUE'; literal 'DEBIT INTEREST ACCRUED'; literal 'DEBIT INTEREST DUE'; literal 'INTACCR  INTEREST ACCRUAL        BUSINESS DATE '; literal 'MONTH CLOSED                  '; literal 'NO MONTH CLOSED'; literal 'RATES'; literal 0; literal 1; literal 365; literal SPACES |
+| REPORT-LINE | 1-80 | file ACCR-IN ACCR-IN-RECORD; file CONTROL-FILE BC-BUSINESS-DATE; initial value of WS-CLOSED-MONTH; literal 'INTACCR  INTEREST ACCRUAL        BUSINESS DATE '; literal 'MONTH CLOSED                  '; literal 'NO MONTH CLOSED'; literal SPACES |
 
 #### Record WS-REPORT-COUNT-LINE
 

@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/vlumi/copal/bedrock/cobol"
 	"github.com/vlumi/copal/survey/internal/dataflow"
 )
 
@@ -28,46 +29,29 @@ type FieldOrigin struct {
 }
 
 // outputs traces the fields of every record the program writes to a file,
-// once for each file and record. A record written FROM another is
-// described by that one's fields.
+// once for each file and record, as the statements that write it use
+// them. A record written FROM another is described by that one's fields.
 func outputs(p Program, flow dataflow.Flow) []Output {
 	var outs []Output
-	for _, e := range p.Lineage {
-		if !e.ToFile {
-			continue
+	writes := map[[2]string][]cobol.Pos{}
+	for _, w := range flow.Writes() {
+		key := [2]string{w.File, w.Record}
+		if _, ok := writes[key]; !ok && slices.ContainsFunc(p.Records, func(r Record) bool { return r.Name == w.Record }) {
+			outs = append(outs, Output{File: w.File, Record: w.Record})
 		}
-		for _, record := range writtenFrom(p, e) {
-			i := slices.IndexFunc(p.Records, func(r Record) bool { return r.Name == record })
-			if i < 0 || slices.ContainsFunc(outs, func(o Output) bool { return o.File == e.To && o.Record == record }) {
-				continue
+		writes[key] = append(writes[key], w.Pos)
+	}
+	for i, out := range outs {
+		r := p.Records[slices.IndexFunc(p.Records, func(r Record) bool { return r.Name == out.Record })]
+		for _, f := range leaves(r.Field) {
+			fo := FieldOrigin{Name: f.Name, Start: f.Start, Length: f.Length}
+			for _, o := range flow.TraceAt(f.Name, writes[[2]string{out.File, out.Record}]).Origins {
+				fo.Origins = append(fo.Origins, o.String())
 			}
-			out := Output{File: e.To, Record: record}
-			for _, f := range leaves(p.Records[i].Field) {
-				fo := FieldOrigin{Name: f.Name, Start: f.Start, Length: f.Length}
-				for _, o := range flow.Origins(f.Name) {
-					fo.Origins = append(fo.Origins, o.String())
-				}
-				out.Fields = append(out.Fields, fo)
-			}
-			outs = append(outs, out)
+			outs[i].Fields = append(outs[i].Fields, fo)
 		}
 	}
 	return outs
-}
-
-// writtenFrom is the record a statement writes to a file: the record named
-// in its FROM, or the file's own record.
-func writtenFrom(p Program, write Lineage) []string {
-	var from []string
-	for _, e := range p.Lineage {
-		if e.Source == write.Source && e.To == write.From && e.FromItem() {
-			from = append(from, e.From)
-		}
-	}
-	if len(from) == 0 {
-		return []string{write.From}
-	}
-	return from
 }
 
 // leaves lists a record's elementary fields, FILLER left out, or the record

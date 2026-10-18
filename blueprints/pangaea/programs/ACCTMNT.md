@@ -475,7 +475,7 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-coun
 
 | Field | Position | Origins |
 | --- | --: | --- |
-| REPORT-LINE | 1-80 | file ACCT-IN ACCT-IN-RECORD; file CONTROL-FILE BC-BUSINESS-DATE; initial value of WS-BALANCES-OUT; initial value of WS-CLOSED-COUNT; initial value of WS-FROZEN-COUNT; initial value of WS-LIMIT-COUNT; initial value of WS-MASTERS-READ; initial value of WS-MASTERS-WRITTEN; initial value of WS-OPENED-COUNT; initial value of WS-REJECT-COUNT; initial value of WS-REQUEST-COUNT; initial value of WS-UNFROZEN-COUNT; literal 'ACCOUNTS CLOSED'; literal 'ACCOUNTS FROZEN'; literal 'ACCOUNTS OPENED'; literal 'ACCOUNTS READ'; literal 'ACCOUNTS UNFROZEN'; literal 'ACCOUNTS WRITTEN'; literal 'ACCTMNT  ACCOUNT MAINTENANCE     BUSINESS DATE '; literal 'BALANCES'; literal 'NEW MASTER IN BALANCE'; literal 'OVERDRAFT LIMITS CHANGED'; literal 'REQUESTS READ'; literal 'REQUESTS REJECTED'; literal 0; literal 1; literal SPACES |
+| REPORT-LINE | 1-80 | file CONTROL-FILE BC-BUSINESS-DATE; literal 'ACCTMNT  ACCOUNT MAINTENANCE     BUSINESS DATE '; literal 'NEW MASTER IN BALANCE'; literal SPACES |
 
 #### Record WS-REPORT-COUNT-LINE
 

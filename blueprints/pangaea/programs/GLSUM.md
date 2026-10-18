@@ -375,7 +375,7 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-coun
 
 | Field | Position | Origins |
 | --- | --: | --- |
-| REPORT-LINE | 1-80 | file AUDIT-IN AU-AMOUNT; initial value of WS-CREDIT-TOTAL; initial value of WS-DEBIT-TOTAL; initial value of WS-DEPOSITS-CHANGE; initial value of WS-POSTING-COUNT; initial value of WS-TRANSIT-NET; literal 'CUSTOMER DEPOSITS CHANGE'; literal 'GLSUM    GENERAL LEDGER SUMMARY'; literal 'LEDGER IN BALANCE'; literal 'MONTH CLOSED                  '; literal 'NO MONTH CLOSED'; literal 'POSTINGS'; literal 'TOTAL'; literal 'TRANSFERS IN TRANSIT DO NOT NET TO ZERO'; literal 'TRANSFERS IN TRANSIT NET'; literal 0; literal 1; literal SPACES |
+| REPORT-LINE | 1-80 | literal 'GLSUM    GENERAL LEDGER SUMMARY'; literal 'LEDGER IN BALANCE'; literal 'MONTH CLOSED                  '; literal 'NO MONTH CLOSED'; literal 'TRANSFERS IN TRANSIT DO NOT NET TO ZERO'; literal SPACES |
 
 #### Record WS-REPORT-COUNT-LINE
 

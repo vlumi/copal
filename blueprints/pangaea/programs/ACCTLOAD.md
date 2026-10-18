@@ -266,7 +266,7 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-coun
 
 | Field | Position | Origins |
 | --- | --: | --- |
-| REPORT-LINE | 1-80 | file ACCT-IN AM-BALANCE; file CONTROL-FILE BC-BUSINESS-DATE; initial value of WS-CLOSED-COUNT; initial value of WS-LOADED-BALANCE; initial value of WS-LOADED-COUNT; initial value of WS-READ-COUNT; literal 'ACCOUNTS LOADED'; literal 'ACCOUNTS READ'; literal 'ACCTLOAD ONLINE ACCOUNT LOAD     BUSINESS DATE '; literal 'BALANCES LOADED'; literal 'CLOSED ACCOUNTS LEFT OUT'; literal 1; literal SPACES |
+| REPORT-LINE | 1-80 | file CONTROL-FILE BC-BUSINESS-DATE; literal 'ACCTLOAD ONLINE ACCOUNT LOAD     BUSINESS DATE '; literal SPACES |
 
 #### Record WS-REPORT-COUNT-LINE
 

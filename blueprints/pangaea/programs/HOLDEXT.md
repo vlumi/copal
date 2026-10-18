@@ -301,7 +301,7 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-coun
 
 | Field | Position | Origins |
 | --- | --: | --- |
-| REPORT-LINE | 1-80 | file CONTROL-FILE BC-BUSINESS-DATE; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-AMOUNT-TOTAL; initial value of WS-DETAIL-COUNT; initial value of WS-HOLD-COUNT; initial value of WS-REVERSED-COUNT; literal 'AMOUNT TOTAL'; literal 'HOLDEXT  HOLDS FOR POSTING       BUSINESS DATE '; literal 'HOLDS READ'; literal 'REVERSED, LEFT OUT'; literal 'TRANSACTIONS WRITTEN'; literal 1; literal SPACES |
+| REPORT-LINE | 1-80 | file CONTROL-FILE BC-BUSINESS-DATE; literal 'HOLDEXT  HOLDS FOR POSTING       BUSINESS DATE '; literal SPACES |
 
 #### Record WS-REPORT-COUNT-LINE
 

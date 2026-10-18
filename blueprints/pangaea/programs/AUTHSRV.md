@@ -437,7 +437,7 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-coun
 
 | Field | Position | Origins |
 | --- | --: | --- |
-| REPORT-LINE | 1-80 | call ATMBAL argument 3 BC-BUSINESS-DATE; call ATMBAL argument 6 HD-AMOUNT; call ATMBAL argument 6 HD-FEE; call ATMWDL argument 3 BC-BUSINESS-DATE; call ATMWDL argument 6 HD-AMOUNT; call ATMWDL argument 6 HD-FEE; call AUTHPUR argument 3 BC-BUSINESS-DATE; call AUTHPUR argument 6 HD-AMOUNT; call AUTHPUR argument 6 HD-FEE; call AUTHREV argument 3 BC-BUSINESS-DATE; call AUTHREV argument 6 HD-AMOUNT; call AUTHREV argument 6 HD-FEE; file CONTROL-FILE BC-BUSINESS-DATE; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; file HOLD-FILE HD-HOLD-NO; initial value of WS-APPROVED-COUNT; initial value of WS-DECLINED-COUNT; initial value of WS-HELD-TOTAL; initial value of WS-LAST-HOLD-NO; initial value of WS-RELEASED-TOTAL; initial value of WS-REQUEST-COUNT; literal 'APPROVED'; literal 'AUTHSRV  ONLINE AUTHORIZATIONS   BUSINESS DATE '; literal 'DECLINED'; literal 'HELD WITH FEES'; literal 'LAST AUTHORIZATION CODE'; literal 'RELEASED BY REVERSALS'; literal 'REQUESTS'; literal 1; literal SPACES |
+| REPORT-LINE | 1-80 | call ATMBAL argument 3 BC-BUSINESS-DATE; call ATMWDL argument 3 BC-BUSINESS-DATE; call AUTHPUR argument 3 BC-BUSINESS-DATE; call AUTHREV argument 3 BC-BUSINESS-DATE; file CONTROL-FILE BC-BUSINESS-DATE; literal 'AUTHSRV  ONLINE AUTHORIZATIONS   BUSINESS DATE '; literal SPACES |
 
 #### Record WS-REPORT-COUNT-LINE
 
