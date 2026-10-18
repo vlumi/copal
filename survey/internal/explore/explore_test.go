@@ -89,7 +89,7 @@ func TestPages(t *testing.T) {
 		"/trace?program=HOLDEXT&field=TD-AMOUNT": {"Passed by reference to", ">AUTHPUR</a> as argument 6", "Passed in by the caller as parameter 1",
 			"Accepted as RQ-AMOUNT from SYSIN", "the SYSIN of AUTH in ONLINE"},
 		"/programs/TXPOST/fields/AM-BALANCE":     {"S9(11)V99", "Values moved into it", "3200-POST-DEBIT", "Follow its values back", "follow where its values go"},
-		"/programs/TXPOST/paragraphs/0000-MAIN":  {"Performs", "1000-INITIALIZE"},
+		"/programs/TXPOST/paragraphs/0000-MAIN":  {"Performs", "1000-INITIALIZE", "<h2>Decision table</h2>", "reached by case", `href="/programs/TXPOST/cases/`},
 		"/programs/TXPOST/cases/01":              {"The run ended with return code", "<h3>TRAN-IN</h3>", "<h3>ACCT-OUT</h3>"},
 		"/source/pangaea/copybooks/ACCTMAST.cpy": {`id="L1"`, "ACCT-MASTER-RECORD"},
 		"/":                                      {`TRAN.DAILY</a></td><td><span class="badge kind-external">`, `AUTHPUR</a> <span class="badge kind-called">`},
