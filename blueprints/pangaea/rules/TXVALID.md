@@ -54,21 +54,21 @@ Source: [TXVALID.cbl:136](../../../pangaea/programs/TXVALID.cbl#L136).
 
 ## 2000-READ-HEADER
 
-| | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 |
-| --- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| `READ TRAN-IN AT END` | Y | Y | Y | Y | Y | Y | Y | Y | N | N | N | N | N | N | N | N |
-| `FILE-IS-GOOD` | N | Y | Y | Y | Y | Y | Y | Y | N | Y | Y | Y | Y | Y | Y | Y |
-| `TR-HEADER` | | N | N | Y | Y | Y | Y | Y | | N | N | Y | Y | Y | Y | Y |
-| `FILE-IS-GOOD, again` | | Y | N | Y | N | Y | N | | | Y | N | Y | N | Y | N | |
-| `TH-BUSINESS-DATE = WS-BUSINESS-DATE` | | | | N | N | Y | Y | Y | | | | N | N | Y | Y | Y |
-| `NOT TH-FROM-BRANCHES AND NOT TH-FROM-CARDS` | | | | | | Y | Y | N | | | | | | Y | Y | N |
-| → `READ TRAN-IN` | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
-| → `MOVE 'EMPTY FILE' TO WS-FILE-ERROR` | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | | | | | | | | |
-| → `CONTINUE` | 3 | | | | | | | | 2 | | | | | | | |
-| → `MOVE 'FIRST RECORD IS NOT A HEADER' TO WS-FILE-ERROR` | | 3 | 3 | | | | | | | 2 | 2 | | | | | |
-| → `MOVE TH-SOURCE TO WS-SOURCE` | | 4 | | 4 | | 4 | | 3 | | 3 | | 3 | | 3 | | 2 |
-| → `MOVE 'HEADER IS NOT FOR THE BUSINESS DATE' TO WS-FILE-ERROR` | | | | 3 | 3 | | | | | | | 2 | 2 | | | |
-| → `MOVE 'HEADER IS FROM AN UNKNOWN SOURCE' TO WS-FILE-ERROR` | | | | | | 3 | 3 | | | | | | | 2 | 2 | |
+| | 1 | 2 | 3 | 4 | 5 | 6 |
+| --- | :-: | :-: | :-: | :-: | :-: | :-: |
+| `READ TRAN-IN AT END` | Y | N | N | N | N | N |
+| `FILE-IS-GOOD` | N | N | Y | Y | Y | Y |
+| `TR-HEADER` | | | N | Y | Y | Y |
+| `FILE-IS-GOOD, again` | | | N | N | N | |
+| `TH-BUSINESS-DATE = WS-BUSINESS-DATE` | | | | N | Y | Y |
+| `NOT TH-FROM-BRANCHES AND NOT TH-FROM-CARDS` | | | | | Y | N |
+| → `READ TRAN-IN` | 1 | 1 | 1 | 1 | 1 | 1 |
+| → `MOVE 'EMPTY FILE' TO WS-FILE-ERROR` | 2 | | | | | |
+| → `CONTINUE` | 3 | 2 | | | | |
+| → `MOVE 'FIRST RECORD IS NOT A HEADER' TO WS-FILE-ERROR` | | | 2 | | | |
+| → `MOVE 'HEADER IS NOT FOR THE BUSINESS DATE' TO WS-FILE-ERROR` | | | | 2 | | |
+| → `MOVE 'HEADER IS FROM AN UNKNOWN SOURCE' TO WS-FILE-ERROR` | | | | | 2 | |
+| → `MOVE TH-SOURCE TO WS-SOURCE` | | | | | | 2 |
 
 Source: [TXVALID.cbl:163](../../../pangaea/programs/TXVALID.cbl#L163).
 
@@ -76,16 +76,16 @@ Source: [TXVALID.cbl:163](../../../pangaea/programs/TXVALID.cbl#L163).
 
 Each pass of `PERFORM UNTIL TR-TRAILER OR NOT FILE-IS-GOOD`.
 
-| | 1 | 2 | 3 | 4 | 5 | 6 |
-| --- | :-: | :-: | :-: | :-: | :-: | :-: |
-| `TR-DETAIL` | Y | Y | N | N | N | N |
-| `FILE-IS-GOOD` | Y | N | Y | N | Y | N |
-| `TR-HEADER` | | | Y | Y | N | N |
-| → `PERFORM 3200-VALIDATE-DETAIL` | 1 | 1 | | | | |
-| → `PERFORM 3100-READ-NEXT` | 2 | | 2 | | 3 | |
-| → `MOVE 'SECOND HEADER' TO WS-FILE-ERROR` | | | 1 | 1 | | |
-| → `MOVE 'TYPE' TO RJ-REASON` | | | | | 1 | 1 |
-| → `PERFORM 3300-REJECT-RECORD` | | | | | 2 | 2 |
+| | 1 | 2 | 3 | 4 | 5 |
+| --- | :-: | :-: | :-: | :-: | :-: |
+| `TR-DETAIL` | Y | Y | N | N | N |
+| `FILE-IS-GOOD` | Y | N | N | Y | N |
+| `TR-HEADER` | | | Y | N | N |
+| → `PERFORM 3200-VALIDATE-DETAIL` | 1 | 1 | | | |
+| → `PERFORM 3100-READ-NEXT` | 2 | | | 3 | |
+| → `MOVE 'SECOND HEADER' TO WS-FILE-ERROR` | | | 1 | | |
+| → `MOVE 'TYPE' TO RJ-REASON` | | | | 1 | 1 |
+| → `PERFORM 3300-REJECT-RECORD` | | | | 2 | 2 |
 
 Source: [TXVALID.cbl:187](../../../pangaea/programs/TXVALID.cbl#L187).
 
@@ -101,43 +101,43 @@ Source: [TXVALID.cbl:203](../../../pangaea/programs/TXVALID.cbl#L203).
 
 ## 3200-VALIDATE-DETAIL
 
-| | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 |
-| --- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| `TD-AMOUNT IS NUMERIC` | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | N | N | N | N | N | N | N | N | N | N |
-| `TD-ACCT-NO IS NUMERIC` | Y | Y | Y | Y | Y | Y | Y | Y | N | N | Y | Y | Y | Y | Y | Y | Y | Y | N | N |
-| `(FROM-BRANCHES AND NOT TD-KNOWN-CODE) OR (FROM-CARDS AND NOT TD-CARD-CODE)` | Y | Y | N | N | N | N | N | N | | | Y | Y | N | N | N | N | N | N | | |
-| `DETAIL-IS-VALID` | Y | N | Y | N | Y | N | Y | N | Y | N | Y | N | Y | N | Y | N | Y | N | Y | N |
-| `TD-AMOUNT IS NOT NUMERIC OR TD-AMOUNT = ZERO` | | | Y | Y | N | N | N | N | | | | | Y | Y | N | N | N | N | | |
-| `TD-TRANSFER AND (TD-COUNTER-ACCT-NO IS NOT NUMERIC OR TD-COUNTER-ACCT-NO = TD-ACCT-NO)` | | | | | Y | Y | N | N | | | | | | | Y | Y | N | N | | |
-| → `ADD 1 TO WS-DETAIL-COUNT` | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
-| → `ADD TD-AMOUNT TO WS-AMOUNT-TOTAL` | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | | | | | | | | | | |
-| → `ADD TD-ACCT-NO TO WS-ACCT-HASH` | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | | | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | | |
-| → `SET DETAIL-IS-VALID TO TRUE` | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 2 | 2 |
-| → `SET RJ-BAD-CODE TO TRUE` | 5 | 5 | | | | | | | | | 4 | 4 | | | | | | | | |
-| → `SET DETAIL-IS-REJECTED TO TRUE` | 6 | 6 | 6 | 6 | 6 | 6 | | | 5 | 5 | 5 | 5 | 5 | 5 | 5 | 5 | | | 4 | 4 |
-| → `WRITE TRAN-OUT-RECORD FROM TRAN-RECORD` | 7 | | 7 | | 7 | | 5 | | 6 | | 6 | | 6 | | 6 | | 4 | | 5 | |
-| → `ADD 1 TO WS-VALID-COUNT` | 8 | | 8 | | 8 | | 6 | | 7 | | 7 | | 7 | | 7 | | 5 | | 6 | |
-| → `PERFORM 3300-REJECT-RECORD` | | 7 | | 7 | | 7 | | 5 | | 6 | | 6 | | 6 | | 6 | | 4 | | 5 |
-| → `SET RJ-BAD-AMOUNT TO TRUE` | | | 5 | 5 | | | | | | | | | 4 | 4 | | | | | | |
-| → `SET RJ-BAD-COUNTER TO TRUE` | | | | | 5 | 5 | | | | | | | | | 4 | 4 | | | | |
-| → `SET RJ-BAD-ACCOUNT TO TRUE` | | | | | | | | | 4 | 4 | | | | | | | | | 3 | 3 |
+| | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+| --- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| `TD-AMOUNT IS NUMERIC` | Y | Y | Y | Y | Y | N | N | N | N | N |
+| `TD-ACCT-NO IS NUMERIC` | Y | Y | Y | Y | N | Y | Y | Y | Y | N |
+| `(FROM-BRANCHES AND NOT TD-KNOWN-CODE) OR (FROM-CARDS AND NOT TD-CARD-CODE)` | Y | N | N | N | | Y | N | N | N | |
+| `DETAIL-IS-VALID` | N | N | N | Y | N | N | N | N | Y | N |
+| `TD-AMOUNT IS NOT NUMERIC OR TD-AMOUNT = ZERO` | | Y | N | N | | | Y | N | N | |
+| `TD-TRANSFER AND (TD-COUNTER-ACCT-NO IS NOT NUMERIC OR TD-COUNTER-ACCT-NO = TD-ACCT-NO)` | | | Y | N | | | | Y | N | |
+| → `ADD 1 TO WS-DETAIL-COUNT` | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+| → `ADD TD-AMOUNT TO WS-AMOUNT-TOTAL` | 2 | 2 | 2 | 2 | 2 | | | | | |
+| → `ADD TD-ACCT-NO TO WS-ACCT-HASH` | 3 | 3 | 3 | 3 | | 2 | 2 | 2 | 2 | |
+| → `SET DETAIL-IS-VALID TO TRUE` | 4 | 4 | 4 | 4 | 3 | 3 | 3 | 3 | 3 | 2 |
+| → `SET RJ-BAD-CODE TO TRUE` | 5 | | | | | 4 | | | | |
+| → `SET DETAIL-IS-REJECTED TO TRUE` | 6 | 6 | 6 | | 5 | 5 | 5 | 5 | | 4 |
+| → `PERFORM 3300-REJECT-RECORD` | 7 | 7 | 7 | | 6 | 6 | 6 | 6 | | 5 |
+| → `SET RJ-BAD-AMOUNT TO TRUE` | | 5 | | | | | 4 | | | |
+| → `SET RJ-BAD-COUNTER TO TRUE` | | | 5 | | | | | 4 | | |
+| → `WRITE TRAN-OUT-RECORD FROM TRAN-RECORD` | | | | 5 | | | | | 4 | |
+| → `ADD 1 TO WS-VALID-COUNT` | | | | 6 | | | | | 5 | |
+| → `SET RJ-BAD-ACCOUNT TO TRUE` | | | | | 4 | | | | | 3 |
 
 Source: [TXVALID.cbl:210](../../../pangaea/programs/TXVALID.cbl#L210).
 
 ## 4000-CHECK-TRAILER
 
-| | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 |
-| --- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| `TT-DETAIL-COUNT = WS-DETAIL-COUNT` | N | N | N | Y | Y | Y | Y | Y | Y | Y | Y | Y |
-| `FILE-IS-GOOD` | Y | Y | N | Y | Y | N | Y | Y | N | Y | Y | N |
-| `READ TRAN-IN AT END` | N | Y | | N | Y | | N | Y | | N | Y | |
-| `TT-AMOUNT-TOTAL = WS-AMOUNT-TOTAL` | | | | N | N | N | Y | Y | Y | Y | Y | Y |
-| `TT-ACCT-HASH = WS-ACCT-HASH` | | | | | | | N | N | N | Y | Y | Y |
-| → `MOVE 'TRAILER DETAIL COUNT DIFFERS' TO WS-FILE-ERROR` | 1 | 1 | 1 | | | | | | | | | |
-| → `READ TRAN-IN` | 2 | 2 | | 2 | 2 | | 2 | 2 | | 1 | 1 | |
-| → `MOVE 'RECORDS AFTER THE TRAILER' TO WS-FILE-ERROR` | 3 | | | 3 | | | 3 | | | 2 | | |
-| → `MOVE 'TRAILER AMOUNT TOTAL DIFFERS' TO WS-FILE-ERROR` | | | | 1 | 1 | 1 | | | | | | |
-| → `MOVE 'TRAILER ACCOUNT HASH DIFFERS' TO WS-FILE-ERROR` | | | | | | | 1 | 1 | 1 | | | |
+| | 1 | 2 | 3 | 4 | 5 | 6 |
+| --- | :-: | :-: | :-: | :-: | :-: | :-: |
+| `TT-DETAIL-COUNT = WS-DETAIL-COUNT` | N | Y | Y | Y | Y | Y |
+| `FILE-IS-GOOD` | N | N | N | Y | Y | N |
+| `TT-AMOUNT-TOTAL = WS-AMOUNT-TOTAL` | | N | Y | Y | Y | Y |
+| `TT-ACCT-HASH = WS-ACCT-HASH` | | | N | Y | Y | Y |
+| `READ TRAN-IN AT END` | | | | N | Y | |
+| → `MOVE 'TRAILER DETAIL COUNT DIFFERS' TO WS-FILE-ERROR` | 1 | | | | | |
+| → `MOVE 'TRAILER AMOUNT TOTAL DIFFERS' TO WS-FILE-ERROR` | | 1 | | | | |
+| → `MOVE 'TRAILER ACCOUNT HASH DIFFERS' TO WS-FILE-ERROR` | | | 1 | | | |
+| → `READ TRAN-IN` | | | | 1 | 1 | |
+| → `MOVE 'RECORDS AFTER THE TRAILER' TO WS-FILE-ERROR` | | | | 2 | | |
 
 Source: [TXVALID.cbl:252](../../../pangaea/programs/TXVALID.cbl#L252).
 

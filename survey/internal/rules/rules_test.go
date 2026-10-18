@@ -48,6 +48,13 @@ func byName(s cobol.Statement, names []string) bool {
 	return changes
 }
 
+// statusNames are the condition names of a STATUS field: open and closed.
+func statusNames(name string) (string, []string, bool) {
+	values := map[string]string{"STATUS-OPEN": "'O'", "STATUS-CLOSED": "'X'"}
+	v, ok := values[name]
+	return "STATUS", []string{v}, ok
+}
+
 func TestTables(t *testing.T) {
 	p, err := cobol.ReadProgram("testdata/RULES.cbl", nil)
 	if err != nil {
@@ -55,7 +62,7 @@ func TestTables(t *testing.T) {
 	}
 	var got []string
 	var refs [][]string
-	for _, table := range Tables(p, byName) {
+	for _, table := range Tables(p, Knowledge{MayChange: byName, ConditionNames: statusNames}) {
 		if table.Paragraph == "WIDE-PARA" {
 			checkWide(t, table)
 			continue
@@ -106,6 +113,16 @@ Y N   | OK = 1, again
 Y N | BAD = 1
 1   | PERFORM ABORT-PARA
   1 | DISPLAY 'GOOD'
+`,
+		`KNOWN-PARA 
+Y N N | KIND = 'A'
+N Y N | ERR = SPACES
+1     | MOVE 'BAD' TO ERR
+  1   | DISPLAY 'FINE'
+`,
+		`NAMED-PARA 
+N | STATUS-CLOSED
+1 | SET STATUS-OPEN TO TRUE
 `,
 	}
 	if strings.Join(got, "\n") != strings.Join(want, "\n") {

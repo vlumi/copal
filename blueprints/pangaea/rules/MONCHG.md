@@ -32,19 +32,19 @@ Source: [MONCHG.cbl:122](../../../pangaea/programs/MONCHG.cbl#L122).
 
 ## 1200-READ-ACCOUNT
 
-| | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 |
-| --- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| `READ ACCT-IN AT END` | Y | Y | Y | Y | Y | Y | N | N | N | N | N | N |
-| `READ ACCR-IN AT END` | Y | Y | Y | N | N | N | Y | Y | Y | N | N | N |
-| `MASTER-AT-END AND ACCRUALS-AT-END` | Y | N | N | Y | N | N | Y | N | N | Y | N | N |
-| `MASTER-AT-END OR ACCRUALS-AT-END OR AC-ACCT-NO NOT = AM-ACCT-NO` | | Y | N | | Y | N | | Y | N | | Y | N |
-| → `READ ACCT-IN` | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
-| → `SET MASTER-AT-END TO TRUE` | 2 | 2 | 2 | 2 | 2 | 2 | | | | | | |
-| → `READ ACCR-IN` | 3 | 3 | 3 | 3 | 3 | 3 | 2 | 2 | 2 | 2 | 2 | 2 |
-| → `SET ACCRUALS-AT-END TO TRUE` | 4 | 4 | 4 | | | | 3 | 3 | 3 | | | |
-| → `CONTINUE` | 5 | | | 4 | | | 4 | | | 3 | | |
-| → `MOVE 'ACCRUALS OUT OF STEP WITH THE MASTER' TO WS-ABORT-MESSAGE` | | 5 | | | 4 | | | 4 | | | 3 | |
-| → `PERFORM 9900-ABORT` | | 6 | | | 5 | | | 5 | | | 4 | |
+| | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+| --- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| `READ ACCT-IN AT END` | Y | Y | Y | N | N | N | N | N |
+| `READ ACCR-IN AT END` | Y | N | N | Y | Y | N | N | N |
+| `MASTER-AT-END AND ACCRUALS-AT-END` | Y | Y | N | Y | N | Y | N | N |
+| `MASTER-AT-END OR ACCRUALS-AT-END OR AC-ACCT-NO NOT = AM-ACCT-NO` | | | Y | | Y | | Y | N |
+| → `READ ACCT-IN` | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+| → `SET MASTER-AT-END TO TRUE` | 2 | 2 | 2 | | | | | |
+| → `READ ACCR-IN` | 3 | 3 | 3 | 2 | 2 | 2 | 2 | 2 |
+| → `SET ACCRUALS-AT-END TO TRUE` | 4 | | | 3 | 3 | | | |
+| → `CONTINUE` | 5 | 4 | | 4 | | 3 | | |
+| → `MOVE 'ACCRUALS OUT OF STEP WITH THE MASTER' TO WS-ABORT-MESSAGE` | | | 4 | | 4 | | 3 | |
+| → `PERFORM 9900-ABORT` | | | 5 | | 5 | | 4 | |
 
 Source: [MONCHG.cbl:140](../../../pangaea/programs/MONCHG.cbl#L140).
 

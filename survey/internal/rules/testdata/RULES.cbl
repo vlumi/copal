@@ -50,6 +50,18 @@
        ABORT-PARA.
            DISPLAY 'ABORT'
            STOP RUN.
+       KNOWN-PARA.
+           IF KIND = 'A'
+               MOVE 'BAD' TO ERR
+           END-IF
+           IF ERR = SPACES
+               DISPLAY 'FINE'
+           END-IF.
+       NAMED-PARA.
+           SET STATUS-OPEN TO TRUE
+           IF STATUS-CLOSED
+               DISPLAY 'CLOSED'
+           END-IF.
        WIDE-PARA.
            IF A1 = 1
                DISPLAY 'Y1'

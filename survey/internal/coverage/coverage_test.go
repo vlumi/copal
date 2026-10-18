@@ -51,7 +51,7 @@ func TestReplay(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, table := range Replay(p, rules.Tables(p, dataflow.Analyze(p, records).MayChange), events) {
+	for _, table := range Replay(p, rules.Tables(p, rules.Knowledge{MayChange: dataflow.Analyze(p, records).MayChange}), events) {
 		if table.Unmatched > 0 {
 			t.Errorf("%s %s: %d passes matched no rule", table.Table.Paragraph, table.Table.Loop, table.Unmatched)
 		}
