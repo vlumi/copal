@@ -239,8 +239,9 @@ func (p *program) readCases(dir string) ([]Case, error) {
 
 // Index writes the index of a system's cases: for each main program, the
 // rules its cases reach, its own and those of the programs it calls, and
-// how many cases there are.
-func Index(title string, results []*Result) []byte {
+// how many cases there are; and the batches, each job run on inputs from
+// its programs' cases.
+func Index(title string, results []*Result, batches []*Batch) []byte {
 	var b strings.Builder
 	fmt.Fprintf(&b, "# %s: cases\n\n", title)
 	b.WriteString("For each main program, input data that reaches the rules of its decision tables, and of the programs it calls, " +
@@ -253,6 +254,17 @@ func Index(title string, results []*Result) []byte {
 			reached, total = reached+n, total+m
 		}
 		fmt.Fprintf(&b, "| [%s](%s/) | %d of %d | %d |\n", r.Program, r.Program, reached, total, len(r.Cases))
+	}
+	if len(batches) > 0 {
+		b.WriteString("\nAnd for each job, a batch: the job run through its steps on inputs from its programs' cleanest cases, " +
+			"with the datasets it wrote and its output.\n\n| Job | Steps |\n| --- | --- |\n")
+		for _, batch := range batches {
+			var steps []string
+			for _, step := range batch.steps {
+				steps = append(steps, step.Step+" "+step.Outcome())
+			}
+			fmt.Fprintf(&b, "| [%s](jobs/%s/) | %s |\n", batch.Job, batch.Job, strings.Join(steps, ", "))
+		}
 	}
 	return []byte(b.String())
 }

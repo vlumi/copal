@@ -24,6 +24,7 @@ type Result struct {
 	First   map[rule]int
 	runs    []result
 	program *program
+	runner  *runner
 }
 
 // Rules counts the rules of a unit's tables, and those reached.
@@ -187,7 +188,7 @@ func (s *searcher) record(cases []Case) (*Result, error) {
 		return nil, err
 	}
 	res := &Result{Program: s.program.blueprint.Name, Units: s.program.units, Cases: cases, First: map[rule]int{},
-		runs: runs, program: s.program}
+		runs: runs, program: s.program, runner: s.runner}
 	for i, run := range runs {
 		for r := range run.reached {
 			if _, ok := res.First[r]; !ok {
