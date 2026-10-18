@@ -506,7 +506,22 @@ Written from [ACCRUAL-RECORD](#accrual-record).
 
 ### File REPORT-OUT
 
-Written from [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
+Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-count-line) and [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
+
+#### Record REPORT-LINE
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| REPORT-LINE | 1-80 | file ACCR-IN ACCR-IN-RECORD; file ACCT-IN AM-BALANCE; file CONTROL-FILE BC-BUSINESS-DATE; file RATE-FILE RT-ANNUAL-RATE; initial value of WS-ACCOUNT-COUNT; initial value of WS-CLOSED-MONTH; initial value of WS-CREDIT-ACCRUED; initial value of WS-CREDIT-DUE; initial value of WS-DEBIT-ACCRUED; initial value of WS-DEBIT-DUE; initial value of WS-RATE-COUNT; initial value of WS-STARTED-COUNT; literal 'ACCOUNTS ACCRUED'; literal 'ACCRUALS STARTED'; literal 'CREDIT INTEREST ACCRUED'; literal 'CREDIT INTEREST DUE'; literal 'DEBIT INTEREST ACCRUED'; literal 'DEBIT INTEREST DUE'; literal 'INTACCR  INTEREST ACCRUAL        BUSINESS DATE '; literal 'MONTH CLOSED                  '; literal 'NO MONTH CLOSED'; literal 'RATES'; literal 0; literal 1; literal 365; literal SPACES |
+
+#### Record WS-REPORT-COUNT-LINE
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| WS-RC-LABEL | 1-30 | literal 'ACCOUNTS ACCRUED'; literal 'ACCRUALS STARTED'; literal 'RATES' |
+| WS-RC-VALUE | 31-40 | initial value of WS-ACCOUNT-COUNT; initial value of WS-RATE-COUNT; initial value of WS-STARTED-COUNT; literal 1 |
+
+#### Record WS-REPORT-AMOUNT-LINE
 
 | Field | Position | Origins |
 | --- | --: | --- |

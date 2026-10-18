@@ -341,12 +341,27 @@ Written from [TRAN-RECORD](#tran-record).
 
 ### File REPORT-OUT
 
-Written from [WS-REPORT-COUNT-LINE](#ws-report-count-line).
+Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-count-line) and [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
+
+#### Record REPORT-LINE
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| REPORT-LINE | 1-80 | file ACCR-IN AC-DUE; file ACCR-IN AC-DUE-MONTH; file CONTROL-FILE BC-BUSINESS-DATE; initial value of WS-CLOSED-MONTH; initial value of WS-FEE-COUNT; initial value of WS-FEE-TOTAL; initial value of WS-INTEREST-COUNT; initial value of WS-INTEREST-TOTAL; initial value of WS-MAINTENANCE-FEE; initial value of WS-OVERDRAFT-COUNT; initial value of WS-OVERDRAFT-TOTAL; initial value of WS-WAIVED-COUNT; literal 'INTEREST CREDITED'; literal 'INTEREST CREDITS'; literal 'MAINTENANCE FEES CHARGED'; literal 'MAINTENANCE FEES WAIVED'; literal 'MAINTENANCE FEES'; literal 'MONCHG   MONTH-END CHARGES       BUSINESS DATE '; literal 'MONTH CLOSED                  '; literal 'NO MONTH CLOSED'; literal 'OVERDRAFT INTEREST CHARGED'; literal 'OVERDRAFT INTEREST CHARGES'; literal 1; literal SPACES |
+
+#### Record WS-REPORT-COUNT-LINE
 
 | Field | Position | Origins |
 | --- | --: | --- |
 | WS-RC-LABEL | 1-30 | literal 'INTEREST CREDITS'; literal 'MAINTENANCE FEES WAIVED'; literal 'MAINTENANCE FEES'; literal 'OVERDRAFT INTEREST CHARGES' |
 | WS-RC-VALUE | 31-40 | initial value of WS-FEE-COUNT; initial value of WS-INTEREST-COUNT; initial value of WS-OVERDRAFT-COUNT; initial value of WS-WAIVED-COUNT; literal 1 |
+
+#### Record WS-REPORT-AMOUNT-LINE
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| WS-RA-LABEL | 1-30 | literal 'INTEREST CREDITED'; literal 'MAINTENANCE FEES CHARGED'; literal 'OVERDRAFT INTEREST CHARGED' |
+| WS-RA-VALUE | 31-51 | file ACCR-IN AC-DUE; initial value of WS-FEE-TOTAL; initial value of WS-INTEREST-TOTAL; initial value of WS-MAINTENANCE-FEE; initial value of WS-OVERDRAFT-TOTAL |
 
 ## Records
 

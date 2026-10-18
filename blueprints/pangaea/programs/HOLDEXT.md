@@ -295,7 +295,22 @@ Written from [TRAN-RECORD](#tran-record).
 
 ### File REPORT-OUT
 
-Written from [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
+Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-count-line) and [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
+
+#### Record REPORT-LINE
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| REPORT-LINE | 1-80 | file CONTROL-FILE BC-BUSINESS-DATE; file HOLD-FILE HD-ACCT-NO; file HOLD-FILE HD-AMOUNT; file HOLD-FILE HD-FEE; initial value of WS-ACCT-HASH; initial value of WS-AMOUNT-TOTAL; initial value of WS-DETAIL-COUNT; initial value of WS-HOLD-COUNT; initial value of WS-REVERSED-COUNT; literal 'AMOUNT TOTAL'; literal 'HOLDEXT  HOLDS FOR POSTING       BUSINESS DATE '; literal 'HOLDS READ'; literal 'REVERSED, LEFT OUT'; literal 'TRANSACTIONS WRITTEN'; literal 1; literal SPACES; literal condition TH-FROM-CARDS |
+
+#### Record WS-REPORT-COUNT-LINE
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| WS-RC-LABEL | 1-30 | literal 'HOLDS READ'; literal 'REVERSED, LEFT OUT'; literal 'TRANSACTIONS WRITTEN' |
+| WS-RC-VALUE | 31-40 | initial value of WS-DETAIL-COUNT; initial value of WS-HOLD-COUNT; initial value of WS-REVERSED-COUNT; literal 1 |
+
+#### Record WS-REPORT-AMOUNT-LINE
 
 | Field | Position | Origins |
 | --- | --: | --- |

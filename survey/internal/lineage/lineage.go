@@ -301,7 +301,7 @@ func (t tracer) fromFile(src *Source, n Node, p *blueprint.Program, file string,
 	}
 	if sort, ok := sortOf(p, file); ok {
 		if len(sort.Using) == 0 {
-			src.Writers = append(src.Writers, over(Node{Job: n.Job, Step: n.Step, Program: p.Name}, outputs(p, file), start, length)...)
+			src.Writers = append(src.Writers, overEach(Node{Job: n.Job, Step: n.Step, Program: p.Name}, outputs(p, file), start, length)...)
 		}
 		for _, using := range sort.Using {
 			t.fromFile(src, n, p, using, start, length, depth+1)
@@ -331,7 +331,7 @@ func (t tracer) fromFile(src *Source, n Node, p *blueprint.Program, file string,
 				}
 				continue
 			}
-			src.Writers = append(src.Writers, over(at, outputs(q, w.file), start, length)...)
+			src.Writers = append(src.Writers, overEach(at, outputs(q, w.file), start, length)...)
 		}
 	}
 }
@@ -536,12 +536,16 @@ type record struct {
 	fields []span
 }
 
-func outputs(p *blueprint.Program, file string) record {
-	i := slices.IndexFunc(p.Outputs, func(out blueprint.Output) bool { return out.File == file })
-	if i < 0 {
-		return record{}
+// outputs lists the records a program writes to a file, one for each
+// record type: a header, the details and a trailer, say.
+func outputs(p *blueprint.Program, file string) []record {
+	var list []record
+	for _, out := range p.Outputs {
+		if out.File == file {
+			list = append(list, newRecord(p, out.Record, out.Fields, func(f blueprint.FieldOrigin) span { return span{f.Name, f.Start, f.Length} }))
+		}
 	}
-	return newRecord(p, p.Outputs[i].Record, p.Outputs[i].Fields, func(f blueprint.FieldOrigin) span { return span{f.Name, f.Start, f.Length} })
+	return list
 }
 
 func inputs(p *blueprint.Program, file string) record {
@@ -590,6 +594,20 @@ func over(at Node, r record, start, length int) []Node {
 		return nil
 	}
 	return []Node{{Job: at.Job, Step: at.Step, Program: at.Program, Field: r.whole.field, Start: from - r.whole.start + 1, Length: to - from}}
+}
+
+// overEach lists the fields over the bytes in each of the records, as
+// over does, each once.
+func overEach(at Node, records []record, start, length int) []Node {
+	var nodes []Node
+	for _, r := range records {
+		for _, n := range over(at, r, start, length) {
+			if !slices.Contains(nodes, n) {
+				nodes = append(nodes, n)
+			}
+		}
+	}
+	return nodes
 }
 
 // bytesOf is where a field is in the record of a file it belongs to.

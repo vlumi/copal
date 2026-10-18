@@ -51,6 +51,8 @@ Checks: `STMTPRT`'s `STMT-OUT` shows its statement lines as well as `WS-SUM-LINE
 
 One pull request; many goldens change.
 
+As built: the checks hold, with one correction to the plan. `HOLDEXT`'s header and `TXVALID`'s back to it already worked, since `TRAN-RECORD` is one record redefined and its leaves include every record type's fields. The change shows where a file is written `FROM` several working-storage records: every program's report, and `STMTPRT`'s statements, which also writes `STMT-LINE` itself for the blank lines. No dataset in Pangaea that another step reads is written that way, so a unit test covers the reader's side. A record written bare and `FROM` others is listed for both.
+
 ## Part 3: order-aware origins
 
 The [brief](../brief.md)'s debt: origins ignore the order of statements. A value that every path to the item's use overwrites is not an origin.

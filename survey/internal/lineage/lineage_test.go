@@ -59,6 +59,15 @@ func TestBackFromReport(t *testing.T) {
 	}
 }
 
+// A field over the bytes of one record type of a file finds the writer's
+// field over the same bytes of the same record type.
+func TestBackFromHeader(t *testing.T) {
+	hops := hopsOf(Back(pangaea(t), Node{Job: "DAILY", Step: "VALIDC", Program: "TXVALID", Field: "TH-BUSINESS-DATE"}))
+	if _, ok := hops[Node{Job: "ONLINE", Step: "EXTRACT", Program: "HOLDEXT", Field: "TH-BUSINESS-DATE"}]; !ok {
+		t.Error("the card file's business date does not go back to the online day's header")
+	}
+}
+
 // A field read from a dataset no step writes, by a program no job runs,
 // ends where it is read.
 func TestBackWithoutJob(t *testing.T) {
@@ -198,5 +207,27 @@ func TestForwardAcrossCalls(t *testing.T) {
 	}
 	if !slices.ContainsFunc(hops[online("AUTHSRV", "RS-AMOUNT")].Displays, func(d blueprint.Display) bool { return true }) {
 		t.Error("the response that shows the amount is not displayed")
+	}
+}
+
+// A writer's fields over the bytes are found in every record type it
+// writes to the file, a header's as well as a detail's.
+func TestOverEveryRecordType(t *testing.T) {
+	p := &blueprint.Program{
+		Records: []blueprint.Record{
+			{Field: blueprint.Field{Name: "WS-HEADER", Start: 1, Length: 20}},
+			{Field: blueprint.Field{Name: "WS-DETAIL", Start: 1, Length: 20}},
+		},
+		Outputs: []blueprint.Output{
+			{File: "OUT", Record: "WS-HEADER", Fields: []blueprint.FieldOrigin{{Name: "WS-H-DATE", Start: 1, Length: 8}}},
+			{File: "OUT", Record: "WS-DETAIL", Fields: []blueprint.FieldOrigin{{Name: "WS-D-ACCT", Start: 1, Length: 8}}},
+			{File: "OTHER", Record: "WS-OTHER", Fields: []blueprint.FieldOrigin{{Name: "WS-O-FIELD", Start: 1, Length: 8}}},
+		},
+	}
+	at := Node{Program: "WRITER"}
+	got := overEach(at, outputs(p, "OUT"), 1, 8)
+	want := []Node{{Program: "WRITER", Field: "WS-H-DATE"}, {Program: "WRITER", Field: "WS-D-ACCT"}}
+	if !slices.Equal(got, want) {
+		t.Errorf("fields over bytes 1-8: %v, want %v", got, want)
 	}
 }

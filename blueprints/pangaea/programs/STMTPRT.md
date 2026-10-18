@@ -497,7 +497,59 @@ Written from [SORT-RECORD](#sort-record).
 
 ### File STMT-OUT
 
-Written from [WS-SUM-LINE](#ws-sum-line).
+Written from [WS-RULE-LINE](#ws-rule-line), [WS-TITLE-LINE](#ws-title-line), [WS-ACCOUNT-LINE](#ws-account-line), [STMT-LINE](#stmt-line), [WS-HEADING-LINE](#ws-heading-line), [WS-BALANCE-LINE](#ws-balance-line), [WS-POSTING-LINE](#ws-posting-line) and [WS-SUM-LINE](#ws-sum-line).
+
+#### Record WS-RULE-LINE
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| WS-RULE-LINE | 1-80 | initial value of WS-RULE-LINE |
+
+#### Record WS-TITLE-LINE
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| WS-TL-PERIOD | 49-80 | literal ' '; literal 'STATEMENT FOR '; literal SPACE; literal SPACES |
+
+#### Record WS-ACCOUNT-LINE
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| WS-AL-ACCT-NO | 9-18 | file ACCT-IN AM-ACCT-NO |
+| WS-AL-NAME | 22-41 | file ACCT-IN AM-SHORT-NAME |
+| WS-AL-KIND | 58-80 | literal 'CURRENT ACCOUNT'; literal 'CURRENT ACCOUNT, FROZEN'; literal 'SAVINGS ACCOUNT'; literal 'SAVINGS ACCOUNT, FROZEN' |
+
+#### Record STMT-LINE
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| STMT-LINE | 1-80 | file ACCT-IN AM-ACCT-NO; file ACCT-IN AM-BALANCE; file ACCT-IN AM-SHORT-NAME; file AUDIT-IN AU-AMOUNT; file AUDIT-IN AU-BALANCE-AFTER; file AUDIT-IN AU-BALANCE-BEFORE; file AUDIT-IN AU-TRAN-CODE; file AUDIT-IN AU-TRAN-ID; file STMT-SORT SR-AMOUNT; file STMT-SORT SR-BALANCE-AFTER; file STMT-SORT SR-BALANCE-BEFORE; file STMT-SORT SR-TRAN-CODE; file STMT-SORT SR-TRAN-ID; initial value of WS-RULE-LINE; literal ' '; literal 'CLOSING BALANCE'; literal 'CURRENT ACCOUNT'; literal 'CURRENT ACCOUNT, FROZEN'; literal 'OPENING BALANCE'; literal 'SAVINGS ACCOUNT'; literal 'SAVINGS ACCOUNT, FROZEN'; literal 'STATEMENT FOR '; literal 0; literal SPACE; literal SPACES |
+
+#### Record WS-HEADING-LINE
+
+| Field | Position | Origins |
+| --- | --: | --- |
+
+#### Record WS-BALANCE-LINE
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| WS-BL-LABEL | 13-62 | literal 'CLOSING BALANCE'; literal 'OPENING BALANCE' |
+| WS-BL-BALANCE | 63-80 | file ACCT-IN AM-BALANCE; file AUDIT-IN AU-BALANCE-AFTER; file AUDIT-IN AU-BALANCE-BEFORE; file STMT-SORT SR-BALANCE-AFTER; file STMT-SORT SR-BALANCE-BEFORE |
+
+#### Record WS-POSTING-LINE
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| WS-PL-YEAR | 1-4 | |
+| WS-PL-MONTH | 6-7 | |
+| WS-PL-DAY | 9-10 | |
+| WS-PL-TRAN-ID | 13-22 | file AUDIT-IN AU-TRAN-ID; file STMT-SORT SR-TRAN-ID |
+| WS-PL-DESCRIPTION | 25-44 | file AUDIT-IN AU-TRAN-CODE; file STMT-SORT SR-TRAN-CODE |
+| WS-PL-AMOUNT | 45-61 | file AUDIT-IN AU-AMOUNT; file STMT-SORT SR-AMOUNT |
+| WS-PL-BALANCE | 63-80 | file AUDIT-IN AU-BALANCE-AFTER; file STMT-SORT SR-BALANCE-AFTER |
+
+#### Record WS-SUM-LINE
 
 | Field | Position | Origins |
 | --- | --: | --- |
@@ -506,7 +558,22 @@ Written from [WS-SUM-LINE](#ws-sum-line).
 
 ### File REPORT-OUT
 
-Written from [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
+Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-count-line) and [WS-REPORT-AMOUNT-LINE](#ws-report-amount-line).
+
+#### Record REPORT-LINE
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| REPORT-LINE | 1-80 | file AUDIT-IN AU-AMOUNT; file STMT-SORT SR-AMOUNT; initial value of WS-ACCOUNT-COUNT; initial value of WS-CREDIT-TOTAL; initial value of WS-DEBIT-TOTAL; initial value of WS-PRINTED-COUNT; initial value of WS-SELECTED-COUNT; initial value of WS-STATEMENT-COUNT; literal 'ACCOUNTS READ'; literal 'CREDITS'; literal 'DEBITS'; literal 'MONTH CLOSED                  '; literal 'NO MONTH CLOSED'; literal 'POSTINGS PRINTED'; literal 'POSTINGS SELECTED'; literal 'STATEMENTS PRINTED'; literal 'STMTPRT  MONTHLY STATEMENTS'; literal 0; literal 1; literal SPACES |
+
+#### Record WS-REPORT-COUNT-LINE
+
+| Field | Position | Origins |
+| --- | --: | --- |
+| WS-RC-LABEL | 1-30 | literal 'ACCOUNTS READ'; literal 'POSTINGS PRINTED'; literal 'POSTINGS SELECTED'; literal 'STATEMENTS PRINTED' |
+| WS-RC-VALUE | 31-40 | initial value of WS-ACCOUNT-COUNT; initial value of WS-PRINTED-COUNT; initial value of WS-SELECTED-COUNT; initial value of WS-STATEMENT-COUNT; literal 1 |
+
+#### Record WS-REPORT-AMOUNT-LINE
 
 | Field | Position | Origins |
 | --- | --: | --- |
