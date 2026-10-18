@@ -366,7 +366,7 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 	}
 	program.Outputs = outputs(program, flow)
 	program.Inputs = inputs(program, flow)
-	program.Rules = newRules(program.Name, rules.Tables(p), program.Records)
+	program.Rules = newRules(program.Name, rules.Tables(p, flow.MayChange), program.Records)
 	return program, nil
 }
 

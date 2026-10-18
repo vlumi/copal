@@ -37,6 +37,17 @@ func layout(t Table) string {
 	return b.String()
 }
 
+// byName says a statement may change the names it writes, and anything
+// at all if it performs a procedure.
+func byName(s cobol.Statement, names []string) bool {
+	changes := false
+	cobol.Walk([]cobol.Statement{s}, func(n cobol.Statement) {
+		changes = changes || len(n.Procedures) > 0 && n.Verb != "GO" ||
+			slices.ContainsFunc(n.Writes, func(w cobol.Operand) bool { return slices.Contains(names, w.Name) })
+	})
+	return changes
+}
+
 func TestTables(t *testing.T) {
 	p, err := cobol.ReadProgram("testdata/RULES.cbl", nil)
 	if err != nil {
@@ -44,7 +55,7 @@ func TestTables(t *testing.T) {
 	}
 	var got []string
 	var refs [][]string
-	for _, table := range Tables(p) {
+	for _, table := range Tables(p, byName) {
 		if table.Paragraph == "WIDE-PARA" {
 			checkWide(t, table)
 			continue
@@ -84,6 +95,12 @@ Y N | WS-RATE(WS-I) > 0
 Y N | DONE = 1
 1   | EXIT PARAGRAPH
   1 | DISPLAY 'NOT DONE'
+`,
+		`AGAIN-PARA 
+Y Y N | OK = 1
+Y N   | OK = 1, again
+1 1   | PERFORM OPEN-PARA
+2     | DISPLAY 'STILL OK'
 `,
 	}
 	if strings.Join(got, "\n") != strings.Join(want, "\n") {

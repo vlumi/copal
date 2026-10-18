@@ -15,6 +15,7 @@
 package rules
 
 import (
+	"fmt"
 	"slices"
 	"strings"
 
@@ -48,11 +49,13 @@ type Rule struct {
 const maxPaths = 64
 
 // Tables extracts the decision tables of a program, for each paragraph
-// and each inline loop that decides anything.
-func Tables(p *cobol.Program) []Table {
+// and each inline loop that decides anything. A condition tested again
+// after a statement that may change what it refers to is a test of its
+// own.
+func Tables(p *cobol.Program, mayChange MayChange) []Table {
 	var tables []Table
 	for _, para := range p.Paragraphs {
-		e := &extractor{paragraph: para.Name}
+		e := &extractor{paragraph: para.Name, mayChange: mayChange}
 		if t, ok := newTable(para.Name, "", para.Pos, e.paths(para.Statements)); ok {
 			tables = append(tables, t)
 		}
@@ -62,18 +65,56 @@ func Tables(p *cobol.Program) []Table {
 }
 
 // test is a condition, the names it refers to, and its outcome on a path.
+// A path that tests a condition again, after a statement that may have
+// changed what it refers to, tests a new instance of it.
 type test struct {
 	condition string
 	refs      []string
 	outcome   bool
+	instance  int
 }
 
-// path is one way through a list of statements. An ended path has left
-// them, by a jump or by stopping the run, and takes no more actions.
+// label names a test's column: the condition, and for a test of it
+// again, which time.
+func (t test) label() string {
+	switch t.instance {
+	case 0, 1:
+		return t.condition
+	case 2:
+		return t.condition + ", again"
+	}
+	return fmt.Sprintf("%s, again (%d)", t.condition, t.instance)
+}
+
+// MayChange reports whether a statement may change any of the data items
+// named, which a condition refers to.
+type MayChange func(s cobol.Statement, names []string) bool
+
+// event is a test, or a statement that may change what a later test
+// refers to, on a path, in the order the path meets them.
+type event struct {
+	test   *test
+	change *cobol.Statement
+}
+
+// path is one way through a list of statements: the tests and changes it
+// meets, and the actions it takes. An ended path has left them, by a jump
+// or by stopping the run, and takes no more actions.
 type path struct {
-	tests   []test
+	events  []event
 	actions []string
 	ended   bool
+}
+
+// tests lists the tests a path makes, in order.
+func (p path) tests() []test {
+	var tests []test
+	for _, e := range p.events {
+		if e.test != nil {
+			tests = append(tests, *e.test)
+		}
+	}
+	return tests
 }
 
 // extractor follows the paths of one paragraph, collecting the tables of
@@ -81,6 +122,7 @@ type path struct {
 type extractor struct {
 	paragraph string
 	loops     []Table
+	mayChange MayChange
 }
 
 // paths lists the ways through a list of statements.
@@ -98,7 +140,7 @@ func (e *extractor) paths(statements []cobol.Statement) []path {
 		case s.Verb == "EVALUATE":
 			alternatives = e.cases(s)
 		case s.Verb == "SEARCH":
-			alternatives = cross([]path{{actions: []string{s.Text}}}, e.cases(s))
+			alternatives = e.cross([]path{{actions: []string{s.Text}, events: changes(s)}}, e.cases(s))
 		case s.Verb == "PERFORM" && len(s.Branches) > 0:
 			if t, ok := newTable(e.paragraph, s.Text, s.Pos, e.paths(s.Branches[0].Statements)); ok {
 				e.loops = append(e.loops, t)
@@ -106,13 +148,13 @@ func (e *extractor) paths(statements []cobol.Statement) []path {
 		case len(s.Branches) > 0:
 			alternatives = e.phrases(s)
 		}
-		action := []path{{actions: []string{s.Text}, ended: endsPath(s)}}
+		action := []path{{actions: []string{s.Text}, events: changes(s), ended: endsPath(s)}}
 		if alternatives == nil {
 			alternatives = action
 		}
-		next := cross(paths, alternatives)
+		next := e.cross(paths, alternatives)
 		if len(next) > maxPaths {
-			next = cross(paths, action)
+			next = e.cross(paths, action)
 		}
 		paths = next
 	}
@@ -125,13 +167,19 @@ func endsPath(s cobol.Statement) bool {
 	return s.Verb == "EXIT PARAGRAPH" || structure.EndsUnconditionally([]cobol.Statement{s})
 }
 
+// changes is a statement as an event that may change what later tests
+// refer to.
+func changes(s cobol.Statement) []event {
+	return []event{{change: &s}}
+}
+
 // under prefixes the paths through statements with a condition's outcome.
 // NOT is turned around: the outcome of NOT A is the opposite of A's.
 func (e *extractor) under(c *cobol.Condition, outcome bool, statements []cobol.Statement) []path {
 	for c.Op == "NOT" {
 		c, outcome = c.Parts[0], !outcome
 	}
-	return cross([]path{{tests: []test{{c.String(), c.Refs(), outcome}}}}, e.paths(statements))
+	return e.cross([]path{{events: []event{{test: &test{condition: c.String(), refs: c.Refs(), outcome: outcome}}}}}, e.paths(statements))
 }
 
 // cases lists the paths through the WHENs of an EVALUATE or SEARCH: each
@@ -146,10 +194,10 @@ func (e *extractor) cases(s cobol.Statement) []path {
 			otherwise = b.Statements
 			continue
 		}
-		paths = append(paths, cross(past, e.under(b.Condition, true, b.Statements))...)
-		past = cross(past, e.under(b.Condition, false, nil))
+		paths = append(paths, e.cross(past, e.under(b.Condition, true, b.Statements))...)
+		past = e.cross(past, e.under(b.Condition, false, nil))
 	}
-	return append(paths, cross(past, e.paths(otherwise))...)
+	return append(paths, e.cross(past, e.paths(otherwise))...)
 }
 
 // phrases lists the paths through a statement's conditional phrases, such
@@ -159,49 +207,90 @@ func (e *extractor) phrases(s cobol.Statement) []path {
 	var paths []path
 	for _, b := range s.Branches {
 		kind, negated := strings.CutPrefix(b.Kind, "NOT ")
-		start := []path{{tests: []test{{condition: s.Text + " " + kind, outcome: !negated}}, actions: []string{s.Text}}}
-		paths = append(paths, cross(start, e.paths(b.Statements))...)
+		start := []path{{events: phraseEvents(s, kind, !negated), actions: []string{s.Text}}}
+		paths = append(paths, e.cross(start, e.paths(b.Statements))...)
 		if len(s.Branches) == 1 {
-			paths = append(paths, path{tests: []test{{condition: s.Text + " " + kind, outcome: negated}}, actions: []string{s.Text}})
+			paths = append(paths, path{events: phraseEvents(s, kind, negated), actions: []string{s.Text}})
 		}
 	}
 	return paths
 }
 
+// phraseEvents is a statement running and its phrase's condition, such
+// as AT END, being raised or not, then what the statement changes.
+func phraseEvents(s cobol.Statement, kind string, outcome bool) []event {
+	return append([]event{{test: &test{condition: s.Text + " " + kind, outcome: outcome}}}, changes(s)...)
+}
+
 // cross follows each path with each of the next, leaving out those that
-// would test one condition both ways. An ended path stays as it is.
-func cross(paths, next []path) []path {
+// would test one condition both ways with nothing between the tests that
+// may change it. An ended path stays as it is.
+func (e *extractor) cross(paths, next []path) []path {
 	var out []path
 	for _, p := range paths {
 		if p.ended {
 			out = append(out, p)
 			continue
 		}
-	nextPath:
 		for _, n := range next {
-			tests := slices.Clone(p.tests)
-			for _, t := range n.tests {
-				i := slices.IndexFunc(tests, func(u test) bool { return u.condition == t.condition })
-				switch {
-				case i < 0:
-					tests = append(tests, t)
-				case tests[i].outcome != t.outcome:
-					continue nextPath
-				}
+			if events, ok := e.follow(p.events, n.events); ok {
+				out = append(out, path{events: events, actions: append(slices.Clone(p.actions), n.actions...), ended: n.ended})
 			}
-			out = append(out, path{tests: tests, actions: append(slices.Clone(p.actions), n.actions...), ended: n.ended})
 		}
 	}
 	return out
+}
+
+// follow appends a path's events to those of the path before it. A test
+// of a condition the path before tested, with no change between that may
+// have changed it, must have the same outcome, and is the same test; a
+// test after such a change is a new instance.
+func (e *extractor) follow(before, after []event) ([]event, bool) {
+	events := slices.Clone(before)
+	for _, ev := range after {
+		if ev.test == nil {
+			events = append(events, ev)
+			continue
+		}
+		t := *ev.test
+		last, changed := e.lastTest(events, t)
+		switch {
+		case last != nil && !changed && last.outcome != t.outcome:
+			return nil, false
+		case last != nil && !changed:
+			continue
+		case last != nil:
+			t.instance = last.instance + 1
+		default:
+			t.instance = 1
+		}
+		events = append(events, event{test: &t})
+	}
+	return events, true
+}
+
+// lastTest finds the latest test of the condition among the events, and
+// whether a change after it may have changed what the condition refers to.
+func (e *extractor) lastTest(events []event, t test) (*test, bool) {
+	changed := false
+	for _, ev := range slices.Backward(events) {
+		switch {
+		case ev.change != nil && !changed && e.mayChange(*ev.change, t.refs):
+			changed = true
+		case ev.test != nil && ev.test.condition == t.condition:
+			return ev.test, changed
+		}
+	}
+	return nil, false
 }
 
 // newTable lays paths out as a table, if any of them tests a condition.
 func newTable(paragraph, loop string, pos cobol.Pos, paths []path) (Table, bool) {
 	t := Table{Paragraph: paragraph, Loop: loop, Pos: pos}
 	for _, p := range paths {
-		for _, test := range p.tests {
-			if !slices.Contains(t.Conditions, test.condition) {
-				t.Conditions = append(t.Conditions, test.condition)
+		for _, test := range p.tests() {
+			if !slices.Contains(t.Conditions, test.label()) {
+				t.Conditions = append(t.Conditions, test.label())
 				t.Refs = append(t.Refs, test.refs)
 			}
 		}
@@ -216,12 +305,12 @@ func newTable(paragraph, loop string, pos cobol.Pos, paths []path) (Table, bool)
 	}
 	for _, p := range paths {
 		r := Rule{Entries: make([]string, len(t.Conditions))}
-		for _, test := range p.tests {
+		for _, test := range p.tests() {
 			entry := "N"
 			if test.outcome {
 				entry = "Y"
 			}
-			r.Entries[slices.Index(t.Conditions, test.condition)] = entry
+			r.Entries[slices.Index(t.Conditions, test.label())] = entry
 		}
 		for _, a := range p.actions {
 			r.Actions = append(r.Actions, slices.Index(t.Actions, a))
