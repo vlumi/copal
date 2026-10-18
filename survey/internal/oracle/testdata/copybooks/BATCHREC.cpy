@@ -1,0 +1,20 @@
+       01  BATCH-RECORD.
+           05  BR-TYPE                 PIC X.
+               88  BR-HEADER           VALUE 'H'.
+               88  BR-ITEM             VALUE 'I'.
+               88  BR-TRAILER          VALUE 'T'.
+           05  BR-BODY                 PIC X(29).
+           05  BR-HEADER-BODY REDEFINES BR-BODY.
+               10  BH-DATE             PIC 9(8).
+               10  FILLER              PIC X(21).
+           05  BR-ITEM-BODY REDEFINES BR-BODY.
+               10  BI-ACCT-NO          PIC 9(6).
+               10  BI-AMOUNT           PIC 9(5)V99.
+               10  BI-KIND             PIC X.
+                   88  BI-CREDIT       VALUE 'C'.
+                   88  BI-DEBIT        VALUE 'D'.
+               10  FILLER              PIC X(15).
+           05  BR-TRAILER-BODY REDEFINES BR-BODY.
+               10  BT-COUNT            PIC 9(6).
+               10  BT-TOTAL            PIC 9(9)V99.
+               10  FILLER              PIC X(12).
