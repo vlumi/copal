@@ -43,3 +43,5 @@ As built: links are of two kinds, a field moved into the record key of an indexe
 - **Rejection reasons:** for each code field, the rules across the programs that set each of its values, with their conditions: the system's validations in one table.
 - **Kinds from lineage:** a text field that holds a date, by its origins, is a date in text.
 - **Decision tables in the explorer**, beside their coverage by the oracle's cases.
+
+As built: rejection reasons are not a table of their own but the reason of each transition of a code field's state machine: the outcomes of the other conditions the rule tests. RJ-REASON's machine is then the catalog: RJ-HAS-BALANCE when `AM-BALANCE = 0` is false, RJ-CLOSED when `AM-CLOSED` holds, and the rest. A text field whose values come from a date is a date in its entity, its copybook and the programs' records of it. Each paragraph's page in the explorer lays out its decision tables, with the first case that reaches each rule.

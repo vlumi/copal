@@ -139,15 +139,15 @@ The survey knows the rules; a rewrite needs evidence of what the programs do whe
 
 Done when: every rule of every decision table in Pangaea is reached by a recorded case, or listed as unreached with the condition that blocks it, and the cases run green in CI.
 
-## 12. A deterministic sweep
+## 12. A deterministic sweep (done)
 
 Before a model, everything the code says, right and published. The plan is in [plans/deterministic-sweep.md](plans/deterministic-sweep.md):
 
-- Wrong facts: a path that performs a paragraph that never returns ends there; a call changes only what the program called writes.
-- Rules no run can take, by the values a path knows, left out.
-- Record types as a fact: origins, inputs and lineage by type.
-- Design facts between records: keys and links, control totals, record order, and the interfaces of called programs.
-- Rejection reasons, kinds from lineage, and decision tables in the explorer.
+- Wrong facts: a path that performs a paragraph that never returns ends there; a call changes only what the program called writes (done).
+- Rules no run can take, by the values a path knows, left out (done).
+- Record types as a fact: origins, inputs and lineage by type (done).
+- Design facts between records: keys and links, control totals, and the interfaces of called programs (done); record order is the data's, not the code's.
+- Rejection reasons, kinds from lineage, and decision tables in the explorer (done).
 
 Done when: every fact the survey derives for its own use is in the blueprints, and the oracle's unreached rules are only rules a run could take.
 
