@@ -38,6 +38,10 @@ pangaea-daily:  ## Run the daily batch on the fixture and show its reports
 pangaea-golden:  ## Rewrite Pangaea's golden outputs from a run on the fixture
 	go test ./pangaea -run TestDaily -update
 
+.PHONY: laurasia-golden
+laurasia-golden:  ## Rewrite Laurasia's golden outputs from a run of its fixtures
+	go test ./laurasia -update
+
 SEED ?= 1
 ACCOUNTS ?= 3000
 N ?= 1
