@@ -4,7 +4,8 @@ import "slices"
 
 // EntityLink is a link between the fields of two entities, as the
 // programs that rely on it use it: "key", a field moved into the other's
-// record key to read its record by; "equal", fields compared for equality.
+// record key to read its record by; "equal", fields compared for equality;
+// "merge", fields compared for order, the two read side by side in it.
 type EntityLink struct {
 	Kind     string   `json:"kind"`
 	From     FieldRef `json:"from"`

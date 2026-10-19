@@ -11,8 +11,11 @@ import (
 
 // Link is a relation between the records of two inputs that a program
 // relies on: a field of one that it moves into the record key of an
-// indexed file, to read that file's record by it, "key"; or a field of
-// one that it compares for equality with a field of another, "equal".
+// indexed file, to read that file's record by it, "key"; a field of one
+// that it compares for equality with a field of another, "equal"; or
+// fields it compares for order, "merge", to read the two inputs side by
+// side in the order of those fields, matching their records where the
+// fields are equal.
 type Link struct {
 	Kind   string    `json:"kind"`
 	From   FileField `json:"from"`
@@ -48,7 +51,7 @@ func inputLinks(p Program, source *cobol.Program, flow dataflow.Flow) []Link {
 	var links []Link
 	add := func(l Link) {
 		if !slices.ContainsFunc(links, func(m Link) bool {
-			return m.Kind == l.Kind && (m.From == l.From && m.To == l.To || l.Kind == "equal" && m.From == l.To && m.To == l.From)
+			return m.Kind == l.Kind && (m.From == l.From && m.To == l.To || l.Kind != "key" && m.From == l.To && m.To == l.From)
 		}) {
 			links = append(links, l)
 		}
@@ -67,7 +70,7 @@ func inputLinks(p Program, source *cobol.Program, flow dataflow.Flow) []Link {
 			if !parts[e.To] || e.FromFile || e.FromLiteral {
 				continue
 			}
-			for _, from := range inputOrigins(flow, e.From) {
+			for _, from := range inputOrigins(p, flow, e.From) {
 				if from.File != f.Name {
 					add(Link{Kind: "key", From: from, To: FileField{File: f.Name, Field: e.To}, Source: e.Pos.String()})
 				}
@@ -75,41 +78,123 @@ func inputLinks(p Program, source *cobol.Program, flow dataflow.Flow) []Link {
 		}
 	}
 	for _, c := range conditions(source) {
-		for _, pair := range equalities(c.condition) {
-			a, aok := soleInputOrigin(flow, pair[0])
-			b, bok := soleInputOrigin(flow, pair[1])
-			if aok && bok && a.File != b.File {
-				add(Link{Kind: "equal", From: a, To: b, Source: c.pos.String()})
+		for _, compared := range comparisons(c.condition) {
+			a, aok := soleInputOrigin(p, flow, compared.pair[0])
+			b, bok := soleInputOrigin(p, flow, compared.pair[1])
+			merge := compared.kind != "merge" || endsWithHighValues(flow, compared.pair[0]) || endsWithHighValues(flow, compared.pair[1])
+			if aok && bok && a.File != b.File && merge {
+				add(Link{Kind: compared.kind, From: a, To: b, Source: c.pos.String()})
 			}
 		}
 	}
-	return links
+	return slices.DeleteFunc(links, func(l Link) bool {
+		return l.Kind == "equal" && slices.ContainsFunc(links, func(m Link) bool {
+			return m.Kind == "merge" && (m.From == l.From && m.To == l.To || m.From == l.To && m.To == l.From)
+		})
+	})
+}
+
+// endsWithHighValues reports whether an item takes the highest value it
+// can hold, HIGH-VALUES or all nines, as the key of a file read in order
+// does at the file's end, so that a merge reads the other file to its end
+// too.
+func endsWithHighValues(flow dataflow.Flow, item string) bool {
+	return slices.ContainsFunc(flow.Origins(item), func(o dataflow.Origin) bool { return isHighest(o.Literal) })
+}
+
+// isHighest reports whether a literal, as written, is the highest value
+// of an item: HIGH-VALUE, HIGH-VALUES, or nines alone, ALL '9' among them.
+func isHighest(literal string) bool {
+	switch literal {
+	case "", "ALL":
+		return false
+	case "HIGH-VALUE", "HIGH-VALUES":
+		return true
+	}
+	return strings.Trim(strings.TrimPrefix(literal, "ALL "), `'"9`) == ""
+}
+
+// comparison is a pair of data items a condition compares: for equality,
+// or inequality, "equal", or for order, "merge"; a merge only where one of
+// them is a key that takes the highest value at the end of its file.
+type comparison struct {
+	pair [2]string
+	kind string
+}
+
+// comparisons lists the pairs of data items a condition compares, with
+// how.
+func comparisons(c *cobol.Condition) []comparison {
+	var list []comparison
+	for _, pair := range equalities(c) {
+		list = append(list, comparison{pair, "equal"})
+	}
+	for _, pair := range orderings(c) {
+		list = append(list, comparison{pair, "merge"})
+	}
+	return list
+}
+
+// orderings lists the pairs of data items a condition compares for order.
+func orderings(c *cobol.Condition) [][2]string {
+	var pairs [][2]string
+	for _, part := range c.Parts {
+		pairs = append(pairs, orderings(part)...)
+	}
+	switch c.Op {
+	case "<", ">", "<=", ">=":
+		if c.Left.Name != "" && c.Right.Name != "" {
+			pairs = append(pairs, [2]string{c.Left.Name, c.Right.Name})
+		}
+	}
+	return pairs
 }
 
 // soleInputOrigin is the field of an input an item's values come from, if
 // they come from that one alone of the inputs' fields, besides literals,
 // such as HIGH-VALUES at the end of a file, and initial values.
-func soleInputOrigin(flow dataflow.Flow, item string) (FileField, bool) {
-	fields := inputOrigins(flow, item)
+func soleInputOrigin(p Program, flow dataflow.Flow, item string) (FileField, bool) {
+	fields := inputOrigins(p, flow, item)
 	if len(fields) != 1 {
 		return FileField{}, false
 	}
 	return fields[0], true
 }
 
-// inputOrigins lists the fields of the inputs an item's values come from.
-func inputOrigins(flow dataflow.Flow, item string) []FileField {
+// inputOrigins lists the fields of the inputs an item's values come from:
+// for bytes of a record the program reads whole into another, the field of
+// that one over them.
+func inputOrigins(p Program, flow dataflow.Flow, item string) []FileField {
 	var fields []FileField
 	for _, o := range flow.Origins(item) {
-		file := o.File
+		file, field := o.File, o.Item
 		if o.Stream != "" {
 			file = o.Stream
 		}
-		if file != "" && !slices.Contains(fields, FileField{File: file, Field: o.Item}) {
-			fields = append(fields, FileField{File: file, Field: o.Item})
+		if o.Length > 0 {
+			if name, ok := fieldReadInto(p, flow, o); ok {
+				field = name
+			}
+		}
+		if file != "" && !slices.Contains(fields, FileField{File: file, Field: field}) {
+			fields = append(fields, FileField{File: file, Field: field})
 		}
 	}
 	return fields
+}
+
+// fieldReadInto is the field over an origin's bytes of the record its
+// file's record is read into, or moved into whole.
+func fieldReadInto(p Program, flow dataflow.Flow, o dataflow.Origin) (string, bool) {
+	for _, e := range flow.Lineage {
+		if e.Verb != "READ" && e.Verb != "MOVE" || e.FromFile || e.From != o.Item {
+			continue
+		}
+		if into, ok := recordField(p, e.To); ok {
+			return fieldOver(into, into.Start+o.Start-1, o.Length)
+		}
+	}
+	return "", false
 }
 
 // condition is a condition a program tests, and where.
@@ -314,13 +399,11 @@ func parameters(p Program) []Parameter {
 func writeRelations(b *strings.Builder, dir string, p Program) {
 	if len(p.Links) > 0 {
 		b.WriteString("\n## Links between records\n\nFields of one input the program relies on to find or match the records of another: " +
-			"moved into an indexed file's record key to read it by, or compared for equality, each side's values from that field alone.\n\n" +
+			"moved into an indexed file's record key to read it by, compared for equality, or compared for order to merge the two in that order, " +
+			"each side's values from that field alone.\n\n" +
 			"| Field | Of | Links to | Of | How | Source |\n| --- | --- | --- | --- | --- | --- |\n")
 		for _, l := range p.Links {
-			how := "equal to"
-			if l.Kind == "key" {
-				how = "key to read by"
-			}
+			how := map[string]string{"key": "key to read by", "equal": "equal to", "merge": "merged in order with"}[l.Kind]
 			b.WriteString(row(l.From.Field, l.From.File, l.To.Field, l.To.File, how, sourceLink(dir, l.Source, true)))
 		}
 	}

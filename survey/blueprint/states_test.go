@@ -2,6 +2,7 @@ package blueprint
 
 import (
 	"reflect"
+	"slices"
 	"strings"
 	"testing"
 )
@@ -51,5 +52,19 @@ func TestStateMachine(t *testing.T) {
 	}
 	if svg, err := g.SVG(); err != nil || !strings.Contains(string(svg), ">P SHUT-IT</text>") {
 		t.Errorf("svg %s, %v", svg, err)
+	}
+}
+
+func TestConjuncts(t *testing.T) {
+	for condition, want := range map[string][]string{
+		"HOLDING-CASE AND DC-OPEN AND DE-CHARGEBACK": {"HOLDING-CASE", "DC-OPEN", "DE-CHARGEBACK"},
+		"A AND (B OR C)":      {"A", "(B OR C)"},
+		"A OR B AND C":        {"A OR B AND C"},
+		"A = 'X AND Y' AND B": {"A = 'X AND Y'", "B"},
+		"AM-CLOSED":           {"AM-CLOSED"},
+	} {
+		if got := conjuncts(condition); !slices.Equal(got, want) {
+			t.Errorf("conjuncts(%q) = %q, want %q", condition, got, want)
+		}
 	}
 }

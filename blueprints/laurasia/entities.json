@@ -135,6 +135,22 @@
           }
         ]
       }
+    ],
+    "links": [
+      {
+        "kind": "merge",
+        "from": {
+          "record": "PRES-RECORD",
+          "field": "PS-AUTH-CODE"
+        },
+        "to": {
+          "record": "AUTH-ENTRY",
+          "field": "AL-AUTH-CODE"
+        },
+        "programs": [
+          "MATCH"
+        ]
+      }
     ]
   },
   {
@@ -1245,7 +1261,7 @@
               ]
             },
             {
-              "from": "any",
+              "from": "DC-OPEN",
               "to": "DC-CHARGED-BACK",
               "program": "DISPUTE",
               "paragraph": "APPLY-EVENT",
@@ -1254,11 +1270,19 @@
                 {
                   "condition": "HOLDING-NOTHING AND DE-OPENED",
                   "holds": false
+                },
+                {
+                  "condition": "HOLDING-CASE",
+                  "holds": true
+                },
+                {
+                  "condition": "DE-CHARGEBACK",
+                  "holds": true
                 }
               ]
             },
             {
-              "from": "any",
+              "from": "DC-CHARGED-BACK",
               "to": "DC-WON",
               "program": "DISPUTE",
               "paragraph": "APPLY-EVENT",
@@ -1267,11 +1291,19 @@
                 {
                   "condition": "HOLDING-NOTHING AND DE-OPENED",
                   "holds": false
+                },
+                {
+                  "condition": "HOLDING-CASE",
+                  "holds": true
+                },
+                {
+                  "condition": "DE-MERCHANT-ACCEPTS",
+                  "holds": true
                 }
               ]
             },
             {
-              "from": "any",
+              "from": "DC-CHARGED-BACK",
               "to": "DC-REPRESENTED",
               "program": "DISPUTE",
               "paragraph": "APPLY-EVENT",
@@ -1280,11 +1312,19 @@
                 {
                   "condition": "HOLDING-NOTHING AND DE-OPENED",
                   "holds": false
+                },
+                {
+                  "condition": "HOLDING-CASE",
+                  "holds": true
+                },
+                {
+                  "condition": "DE-REPRESENTMENT",
+                  "holds": true
                 }
               ]
             },
             {
-              "from": "any",
+              "from": "DC-REPRESENTED",
               "to": "DC-LOST",
               "program": "DISPUTE",
               "paragraph": "APPLY-EVENT",
@@ -1293,11 +1333,19 @@
                 {
                   "condition": "HOLDING-NOTHING AND DE-OPENED",
                   "holds": false
+                },
+                {
+                  "condition": "HOLDING-CASE",
+                  "holds": true
+                },
+                {
+                  "condition": "DE-ISSUER-DROPS",
+                  "holds": true
                 }
               ]
             },
             {
-              "from": "any",
+              "from": "DC-REPRESENTED",
               "to": "DC-PRE-ARBITRATION",
               "program": "DISPUTE",
               "paragraph": "APPLY-EVENT",
@@ -1306,6 +1354,56 @@
                 {
                   "condition": "HOLDING-NOTHING AND DE-OPENED",
                   "holds": false
+                },
+                {
+                  "condition": "HOLDING-CASE",
+                  "holds": true
+                },
+                {
+                  "condition": "DE-PRE-ARBITRATION",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "DC-PRE-ARBITRATION",
+              "to": "DC-WON",
+              "program": "DISPUTE",
+              "paragraph": "APPLY-EVENT",
+              "source": "laurasia/programs/dispute.cbl:139",
+              "when": [
+                {
+                  "condition": "HOLDING-NOTHING AND DE-OPENED",
+                  "holds": false
+                },
+                {
+                  "condition": "HOLDING-CASE",
+                  "holds": true
+                },
+                {
+                  "condition": "DE-RULED-FOR-ISSUER",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "DC-PRE-ARBITRATION",
+              "to": "DC-LOST",
+              "program": "DISPUTE",
+              "paragraph": "APPLY-EVENT",
+              "source": "laurasia/programs/dispute.cbl:145",
+              "when": [
+                {
+                  "condition": "HOLDING-NOTHING AND DE-OPENED",
+                  "holds": false
+                },
+                {
+                  "condition": "HOLDING-CASE",
+                  "holds": true
+                },
+                {
+                  "condition": "DE-RULED-FOR-MERCHANT",
+                  "holds": true
                 }
               ]
             }
@@ -1372,6 +1470,22 @@
               "APPLY-EVENT"
             ]
           }
+        ]
+      }
+    ],
+    "links": [
+      {
+        "kind": "merge",
+        "from": {
+          "record": "DISPUTE-CASE",
+          "field": "DC-CASE-NO"
+        },
+        "to": {
+          "record": "DISPUTE-EVENT",
+          "field": "DE-CASE-NO"
+        },
+        "programs": [
+          "DISPUTE"
         ]
       }
     ]
@@ -1531,6 +1645,22 @@
               "APPLY-EVENT"
             ]
           }
+        ]
+      }
+    ],
+    "links": [
+      {
+        "kind": "merge",
+        "from": {
+          "record": "DISPUTE-CASE",
+          "field": "DC-CASE-NO"
+        },
+        "to": {
+          "record": "DISPUTE-EVENT",
+          "field": "DE-CASE-NO"
+        },
+        "programs": [
+          "DISPUTE"
         ]
       }
     ]
@@ -2659,6 +2789,20 @@
       }
     ],
     "links": [
+      {
+        "kind": "merge",
+        "from": {
+          "record": "PRES-RECORD",
+          "field": "PS-AUTH-CODE"
+        },
+        "to": {
+          "record": "AUTH-ENTRY",
+          "field": "AL-AUTH-CODE"
+        },
+        "programs": [
+          "MATCH"
+        ]
+      },
       {
         "kind": "key",
         "from": {

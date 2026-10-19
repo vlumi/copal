@@ -586,11 +586,11 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-coun
 
 ## Links between records
 
-Fields of one input the program relies on to find or match the records of another: moved into an indexed file's record key to read it by, or compared for equality, each side's values from that field alone.
+Fields of one input the program relies on to find or match the records of another: moved into an indexed file's record key to read it by, compared for equality, or compared for order to merge the two in that order, each side's values from that field alone.
 
 | Field | Of | Links to | Of | How | Source |
 | --- | --- | --- | --- | --- | --- |
-| TD-ACCT-NO | TRAN-IN | AM-ACCT-NO | ACCT-IN | equal to | [TXPOST.cbl:247](../../../pangaea/programs/TXPOST.cbl#L247) |
+| TD-ACCT-NO | TRAN-IN | AM-ACCT-NO | ACCT-IN | merged in order with | [TXPOST.cbl:247](../../../pangaea/programs/TXPOST.cbl#L247) |
 
 ## Records
 

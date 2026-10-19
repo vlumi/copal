@@ -73,6 +73,7 @@ Program [ACCTMNT.cbl](../../../pangaea/programs/ACCTMNT.cbl): 6 files, 21 paragr
   - [File REJECT-OUT](#file-reject-out)
   - [File ACCT-OUT](#file-acct-out)
   - [File REPORT-OUT](#file-report-out)
+- [Links between records](#links-between-records)
 - [Records](#records)
   - [BANK-CONTROL-RECORD](#bank-control-record)
   - [ACCT-IN-RECORD](#acct-in-record)
@@ -510,6 +511,14 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-coun
 | --- | --: | --- |
 | WS-RA-LABEL | 1-30 | literal 'BALANCES' |
 | WS-RA-VALUE | 31-51 | file ACCT-IN ACCT-IN-RECORD 57-69; initial value of WS-BALANCES-OUT; literal 0 |
+
+## Links between records
+
+Fields of one input the program relies on to find or match the records of another: moved into an indexed file's record key to read it by, compared for equality, or compared for order to merge the two in that order, each side's values from that field alone.
+
+| Field | Of | Links to | Of | How | Source |
+| --- | --- | --- | --- | --- | --- |
+| MR-ACCT-NO | MAINT-IN | AI-ACCT-NO | ACCT-IN | merged in order with | [ACCTMNT.cbl:210](../../../pangaea/programs/ACCTMNT.cbl#L210) |
 
 ## Records
 
