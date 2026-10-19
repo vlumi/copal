@@ -1,6 +1,6 @@
 # ACCTMNT: cases
 
-12 cases reach 36 of the 41 rules of ACCTMNT's decision tables. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's.
+13 cases reach 37 of the 41 rules of ACCTMNT's decision tables. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's.
 
 ## [0000-MAIN](../../../blueprints/pangaea/rules/ACCTMNT.md#0000-main)
 
@@ -8,13 +8,13 @@
 | --: | --- |
 | 1 | not reached: `WS-BALANCES-OUT = WS-BALANCES-IN` N |
 | 2 | [case 01](01/) |
-| 3 | [case 12](12/) |
+| 3 | [case 13](13/) |
 
 ## [1000-INITIALIZE](../../../blueprints/pangaea/rules/ACCTMNT.md#1000-initialize)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | not reached: `WS-FILE-STATUSES = ALL '0'` N |
+| 1 | [case 07](07/) |
 | 2 | [case 04](04/) |
 | 3 | [case 01](01/) |
 
@@ -58,10 +58,10 @@
 | 2 | [case 01](01/) |
 | 3 | [case 03](03/) |
 | 4 | [case 03](03/) |
-| 5 | [case 07](07/) |
-| 6 | [case 07](07/) |
-| 7 | [case 07](07/) |
-| 8 | [case 11](11/) |
+| 5 | [case 08](08/) |
+| 6 | [case 08](08/) |
+| 7 | [case 08](08/) |
+| 8 | [case 12](12/) |
 
 ## [2210-OPEN](../../../blueprints/pangaea/rules/ACCTMNT.md#2210-open)
 
@@ -70,7 +70,7 @@
 | 1 | [case 03](03/) |
 | 2 | [case 02](02/) |
 | 3 | [case 05](05/) |
-| 4 | [case 08](08/) |
+| 4 | [case 09](09/) |
 | 5 | [case 01](01/) |
 
 ## [2220-CLOSE](../../../blueprints/pangaea/rules/ACCTMNT.md#2220-close)
@@ -84,22 +84,22 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 09](09/) |
-| 2 | [case 07](07/) |
+| 1 | [case 10](10/) |
+| 2 | [case 08](08/) |
 
 ## [2240-UNFREEZE](../../../blueprints/pangaea/rules/ACCTMNT.md#2240-unfreeze)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 10](10/) |
-| 2 | [case 07](07/) |
+| 1 | [case 11](11/) |
+| 2 | [case 08](08/) |
 
 ## [2250-LIMIT](../../../blueprints/pangaea/rules/ACCTMNT.md#2250-limit)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 07](07/) |
-| 2 | [case 12](12/) |
+| 1 | [case 08](08/) |
+| 2 | [case 13](13/) |
 
 ## [2800-WRITE-HELD](../../../blueprints/pangaea/rules/ACCTMNT.md#2800-write-held)
 

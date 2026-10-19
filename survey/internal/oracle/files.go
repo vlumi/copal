@@ -18,14 +18,20 @@ import (
 // program's directory; coverage.json, the same for tools; and for each
 // case, NN/README.md, what it returned
 // and the rules it reaches first, NN/input/FILE.txt, its input files,
-// field by field, and NN/output/FILE.txt, what it wrote, a record a line.
+// field by field, NN/input/failed.txt, the file it fails and how, if it
+// fails one, and NN/output/FILE.txt, what it wrote, a record a line.
 func (r *Result) Files(rulesDir string) map[string][]byte {
 	files := map[string][]byte{"README.md": []byte(r.coverage(rulesDir)), "coverage.json": r.coverageJSON()}
 	for i, c := range r.Cases {
 		dir := caseName(i)
 		files[dir+"/README.md"] = []byte(r.caseReadme(i, "../"+rulesDir))
 		for _, in := range r.program.inputs {
-			files[dir+"/input/"+in.name()+".txt"] = r.program.encode(in, c[in.name()])
+			if _, fails := c.failsFile(in.name()); !fails {
+				files[dir+"/input/"+in.name()+".txt"] = r.program.encode(in, c[in.name()])
+			}
+		}
+		if len(c[failed]) > 0 {
+			files[dir+"/input/"+failedName] = lines(c[failed])
 		}
 		for name, data := range r.runs[i].outputs {
 			files[dir+"/output/"+name+".txt"] = data
@@ -54,7 +60,7 @@ func (r *Result) coverage(rulesDir string) string {
 	}
 	b.WriteString(". Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, " +
 		"and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from " +
-		"its own conditions, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its " +
+		"its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its " +
 		"conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's.\n")
 	for u, unit := range r.Units {
 		level := "##"
@@ -100,6 +106,9 @@ func (r *Result) caseReadme(i int, rulesDir string) string {
 		b.WriteString("The run abended.\n")
 	default:
 		fmt.Fprintf(&b, "The run ended with return code %d.\n", run.outcome.RC)
+	}
+	if file, how, ok := r.Cases[i].failedFile(); ok {
+		fmt.Fprintf(&b, "\n%s\n", how.describe(file))
 	}
 	var first []string
 	for u, unit := range r.Units {
@@ -217,7 +226,15 @@ func (p *program) readCases(dir string) ([]Case, error) {
 			return cases, nil
 		}
 		c := Case{}
+		if data, err := os.ReadFile(filepath.Join(caseDir, "input", failedName)); err == nil {
+			c[failed] = [][]byte{bytes.TrimSuffix(data, []byte("\n"))}
+		} else if !os.IsNotExist(err) {
+			return nil, err
+		}
 		for _, in := range p.inputs {
+			if _, fails := c.failsFile(in.name()); fails {
+				continue
+			}
 			data, err := os.ReadFile(filepath.Join(caseDir, "input", in.name()+".txt"))
 			if err != nil {
 				return nil, err

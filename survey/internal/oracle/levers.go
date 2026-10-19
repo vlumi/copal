@@ -12,7 +12,7 @@ import (
 // lever is one change to a case: a value put into a field of an input, in
 // each record that has the field, or the value of another input field,
 // give or take one, or a change to an input's records: none at all, one
-// of each type more, or none of one type.
+// of each type more, or none of one type; or the input file failed.
 type lever struct {
 	input  string
 	field  *layout.Field
@@ -21,6 +21,8 @@ type lever struct {
 	delta  int64
 	change recordChange
 	kind   int
+	// failure is how the input fails, for a lever that fails it.
+	failure failure
 	// also is a second field change made with this one, for a condition
 	// that tests two fields together.
 	also *lever
@@ -34,12 +36,13 @@ const (
 	emptyInput
 	doubled
 	withoutType
+	failFile
 )
 
 // levers lists the changes worth trying, in a fixed order: for each
 // condition of the program, the values it compares with and their
 // boundaries, put into the input fields the condition depends on; then the
-// changes to each input's records.
+// changes to each input's records; then the failures of each input file.
 func (p *program) levers() []lever {
 	var levers []lever
 	add := func(l lever) {
@@ -93,6 +96,9 @@ func (p *program) levers() []lever {
 		for k := range p.shapes[in.name()].types {
 			add(lever{input: in.name(), change: withoutType, kind: k})
 		}
+	}
+	for _, l := range p.failures() {
+		add(l)
 	}
 	return levers
 }
@@ -419,6 +425,9 @@ func over(f blueprint.Field, start, length int) (string, bool) {
 // apply makes a candidate from a case with the lever's change, if it
 // changes anything.
 func (l lever) apply(p *program, c Case) (Case, bool) {
+	if l.change == failFile {
+		return c.fail(l.input, l.failure)
+	}
 	next := c.clone()
 	records := next[l.input]
 	s := p.shapes[l.input]

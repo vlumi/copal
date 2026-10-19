@@ -1,6 +1,6 @@
 # GLSUM: cases
 
-5 cases reach 17 of the 26 rules of GLSUM's decision tables. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's.
+7 cases reach 19 of the 26 rules of GLSUM's decision tables. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's.
 
 ## [0000-MAIN](../../../blueprints/pangaea/rules/GLSUM.md#0000-main)
 
@@ -15,7 +15,7 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | not reached: `WS-FILE-STATUSES = ALL '0'` N |
+| 1 | [case 05](05/) |
 | 2 | not reached: `WS-FILE-STATUSES = ALL '0'` Y, `READ ACCR-IN AT END` N, `WS-CM-MONTH = 12` Y |
 | 3 | [case 01](01/) |
 | 4 | not reached: `WS-FILE-STATUSES = ALL '0'` Y, `READ ACCR-IN AT END` Y, `WS-CM-MONTH = 12` Y |
@@ -25,7 +25,7 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | not reached: `WS-AUDIT-STATUS = '10'` N |
+| 1 | [case 06](06/) |
 | 2 | [case 02](02/) |
 
 ## [2000-POST-MONTH, in its loop](../../../blueprints/pangaea/rules/GLSUM.md#2000-post-month-in-its-loop)
@@ -39,7 +39,7 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 05](05/) |
+| 1 | [case 07](07/) |
 | 2 | [case 03](03/) |
 | 3 | [case 01](01/) |
 

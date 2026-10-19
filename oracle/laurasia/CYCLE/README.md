@@ -1,6 +1,6 @@
 # CYCLE: cases
 
-7 cases reach 6 of the 10 rules of CYCLE's decision tables, and of the programs it calls, 3 of the 3 of INTCALC, 4 of the 4 of MINPAY. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's.
+8 cases reach 7 of the 10 rules of CYCLE's decision tables, and of the programs it calls, 3 of the 3 of INTCALC, 4 of the 4 of MINPAY. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's.
 
 ## CYCLE
 
@@ -8,7 +8,7 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | not reached: `WS-ACCOUNTS-STATUS = '00'` N |
+| 1 | [case 06](06/) |
 | 2 | [case 01](01/) |
 
 ### [MAIN, in its loop](../../../blueprints/laurasia/rules/CYCLE.md#main-in-its-loop)
@@ -35,8 +35,8 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 06](06/) |
-| 2 | [case 07](07/) |
+| 1 | [case 07](07/) |
+| 2 | [case 08](08/) |
 | 3 | [case 01](01/) |
 
 ## MINPAY

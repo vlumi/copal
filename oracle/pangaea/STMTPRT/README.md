@@ -1,6 +1,6 @@
 # STMTPRT: cases
 
-10 cases reach 28 of the 34 rules of STMTPRT's decision tables. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's.
+12 cases reach 30 of the 34 rules of STMTPRT's decision tables. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's.
 
 ## [0000-MAIN](../../../blueprints/pangaea/rules/STMTPRT.md#0000-main)
 
@@ -14,7 +14,7 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | not reached: `WS-FILE-STATUSES = ALL '0'` N |
+| 1 | [case 10](10/) |
 | 2 | not reached: `WS-FILE-STATUSES = ALL '0'` Y, `READ ACCR-IN AT END` N, `WS-CM-MONTH = 12` Y |
 | 3 | [case 01](01/) |
 | 4 | not reached: `WS-FILE-STATUSES = ALL '0'` Y, `READ ACCR-IN AT END` Y, `WS-CM-MONTH = 12` Y |
@@ -24,7 +24,7 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | not reached: `WS-AUDIT-STATUS = '10'` N |
+| 1 | [case 11](11/) |
 | 2 | [case 01](01/) |
 
 ## [2000-SELECT-POSTINGS, in its loop](../../../blueprints/pangaea/rules/STMTPRT.md#2000-select-postings-in-its-loop)
@@ -83,7 +83,7 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 10](10/) |
+| 1 | [case 12](12/) |
 | 2 | [case 03](03/) |
 | 3 | [case 08](08/) |
 | 4 | [case 01](01/) |

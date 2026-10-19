@@ -1,8 +1,7 @@
 # ACCTMNT: case 12
 
-The run ended with return code 0.
+The run ended with return code 4.
 
 The first case to reach:
 
-- [ACCTMNT, 0000-MAIN, rule 3](../../../../blueprints/pangaea/rules/ACCTMNT.md#0000-main)
-- [ACCTMNT, 2250-LIMIT, rule 2](../../../../blueprints/pangaea/rules/ACCTMNT.md#2250-limit)
+- [ACCTMNT, 2200-APPLY-REQUEST, rule 8](../../../../blueprints/pangaea/rules/ACCTMNT.md#2200-apply-request)

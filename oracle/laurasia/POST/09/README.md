@@ -4,4 +4,4 @@ The run ended with return code 0.
 
 The first case to reach:
 
-- [OVLFEE, MAIN, rule 3](../../../../blueprints/laurasia/rules/OVLFEE.md#main)
+- [POST, CHARGE-OVER-LIMIT, rule 2](../../../../blueprints/laurasia/rules/POST.md#charge-over-limit)

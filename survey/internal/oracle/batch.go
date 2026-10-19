@@ -222,11 +222,12 @@ func (b *Batch) provideDataset(readers []reading, store *dataset.Store, dir stri
 }
 
 // cleanest is the case of a program whose run ended best: the first that
-// ended with the lowest return code, an abend counting as worst.
+// ended with the lowest return code, an abend counting as worst, of those
+// that fail no file.
 func (r *Result) cleanest() (Case, bool) {
 	best := -1
 	for i, run := range r.runs {
-		if run.outcome.Abended {
+		if _, _, fails := r.Cases[i].failedFile(); fails || run.outcome.Abended {
 			continue
 		}
 		if best < 0 || run.outcome.RC < r.runs[best].outcome.RC {

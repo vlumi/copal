@@ -54,7 +54,10 @@ func (r *runner) run(c Case, dir string, record bool) (result, error) {
 		path := filepath.Join(dir, f.Name)
 		dds[f.Assign] = path
 		var err error
+		how, fails := c.failsFile(f.Name)
 		switch {
+		case fails:
+			dds[f.Assign], err = prepareFailure(how, path)
 		case reads(f) && keyed(f):
 			err = r.load(f, c[f.Name], path, dir)
 		case reads(f):
@@ -79,7 +82,7 @@ func (r *runner) run(c Case, dir string, record bool) (result, error) {
 	}
 	res := result{outcome: outcome, stdout: stdout.Bytes()}
 	if record {
-		if res.outputs, err = r.outputs(dir); err != nil {
+		if res.outputs, err = r.outputs(c, dir); err != nil {
 			return result{}, err
 		}
 	}
@@ -104,13 +107,13 @@ func (r *runner) run(c Case, dir string, record bool) (result, error) {
 	return res, nil
 }
 
-// outputs reads what a run wrote to the files the program writes or
-// updates, a record a line: an indexed file through its unloader, in key
-// order.
-func (r *runner) outputs(dir string) (map[string][]byte, error) {
+// outputs reads what a run of a case wrote to the files the program
+// writes or updates, a record a line: an indexed file through its
+// unloader, in key order. A file the case fails holds nothing to read.
+func (r *runner) outputs(c Case, dir string) (map[string][]byte, error) {
 	outputs := map[string][]byte{}
 	for _, f := range r.program.blueprint.Files {
-		if !writes(f) && !slices.Contains(f.Opened, "I-O") {
+		if _, fails := c.failsFile(f.Name); fails || !writes(f) && !slices.Contains(f.Opened, "I-O") {
 			continue
 		}
 		data, err := r.read(f, filepath.Join(dir, f.Name), filepath.Join(dir, f.Name+".unload"))

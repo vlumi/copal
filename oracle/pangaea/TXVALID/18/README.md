@@ -1,7 +1,9 @@
 # TXVALID: case 18
 
-The run ended with return code 4.
+The run ended with return code 16.
+
+CONTROL-FILE is missing, so opening it fails.
 
 The first case to reach:
 
-- [TXVALID, 3200-VALIDATE-DETAIL, rule 6](../../../../blueprints/pangaea/rules/TXVALID.md#3200-validate-detail)
+- [TXVALID, 1000-OPEN-FILES, rule 1](../../../../blueprints/pangaea/rules/TXVALID.md#1000-open-files)

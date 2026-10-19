@@ -4,15 +4,15 @@ For each main program, input data that reaches the rules of its decision tables,
 
 | Program | Rules reached | Cases |
 | --- | --: | --: |
-| [ACCTLD](ACCTLD/) | 4 of 5 | 1 |
-| [ACCTUL](ACCTUL/) | 1 of 2 | 1 |
-| [CLRIN](CLRIN/) | 20 of 24 | 11 |
-| [CYCLE](CYCLE/) | 13 of 17 | 7 |
+| [ACCTLD](ACCTLD/) | 5 of 5 | 2 |
+| [ACCTUL](ACCTUL/) | 2 of 2 | 2 |
+| [CLRIN](CLRIN/) | 22 of 24 | 13 |
+| [CYCLE](CYCLE/) | 14 of 17 | 8 |
 | [DISPUTE](DISPUTE/) | 21 of 22 | 4 |
-| [FEELD](FEELD/) | 22 of 23 | 16 |
-| [IXFEE](IXFEE/) | 22 of 29 | 14 |
+| [FEELD](FEELD/) | 23 of 23 | 17 |
+| [IXFEE](IXFEE/) | 23 of 29 | 15 |
 | [MATCH](MATCH/) | 15 of 15 | 4 |
-| [POST](POST/) | 17 of 21 | 9 |
+| [POST](POST/) | 18 of 21 | 10 |
 | [SETTLE](SETTLE/) | 12 of 12 | 2 |
 
 And for each job, a batch: the job run through its steps on inputs from its programs' cleanest cases, with the datasets it wrote and its output.

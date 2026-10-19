@@ -1,6 +1,6 @@
 # TXVALID: cases
 
-19 cases reach 31 of the 39 rules of TXVALID's decision tables. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's.
+20 cases reach 32 of the 39 rules of TXVALID's decision tables. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's.
 
 ## [0000-MAIN](../../../blueprints/pangaea/rules/TXVALID.md#0000-main)
 
@@ -16,7 +16,7 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | not reached: `WS-CONTROL-STATUS NOT = '00' OR WS-TRAN-IN-STATUS NOT = '00' OR WS-TRAN-OUT-STATUS NOT = '00' OR NOT REJECTS-OPENED OR WS-REPORT-STATUS NOT = '00'` Y |
+| 1 | [case 18](18/) |
 | 2 | [case 13](13/) |
 | 3 | [case 01](01/) |
 
@@ -57,11 +57,11 @@
 | 3 | [case 10](10/) |
 | 4 | [case 01](01/) |
 | 5 | [case 09](09/) |
-| 6 | [case 18](18/) |
+| 6 | [case 19](19/) |
 | 7 | [case 07](07/) |
 | 8 | not reached: `TD-AMOUNT IS NUMERIC` N, `TD-ACCT-NO IS NUMERIC` Y, `(FROM-BRANCHES AND NOT TD-KNOWN-CODE) OR (FROM-CARDS AND NOT TD-CARD-CODE)` N, `DETAIL-IS-VALID` N, `TD-AMOUNT IS NOT NUMERIC OR TD-AMOUNT = ZERO` N, `TD-TRANSFER AND (TD-COUNTER-ACCT-NO IS NOT NUMERIC OR TD-COUNTER-ACCT-NO = TD-ACCT-NO)` Y |
 | 9 | not reached: `TD-AMOUNT IS NUMERIC` N, `TD-ACCT-NO IS NUMERIC` Y, `(FROM-BRANCHES AND NOT TD-KNOWN-CODE) OR (FROM-CARDS AND NOT TD-CARD-CODE)` N, `DETAIL-IS-VALID` Y, `TD-AMOUNT IS NOT NUMERIC OR TD-AMOUNT = ZERO` N, `TD-TRANSFER AND (TD-COUNTER-ACCT-NO IS NOT NUMERIC OR TD-COUNTER-ACCT-NO = TD-ACCT-NO)` N |
-| 10 | [case 19](19/) |
+| 10 | [case 20](20/) |
 
 ## [4000-CHECK-TRAILER](../../../blueprints/pangaea/rules/TXVALID.md#4000-check-trailer)
 

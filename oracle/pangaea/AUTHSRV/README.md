@@ -1,6 +1,6 @@
 # AUTHSRV: cases
 
-26 cases reach 26 of the 46 rules of AUTHSRV's decision tables, and of the programs it calls, 9 of the 9 of AUTHPUR, 6 of the 6 of AUTHREV, 9 of the 15 of ATMWDL, 3 of the 3 of ATMBAL. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's.
+27 cases reach 27 of the 46 rules of AUTHSRV's decision tables, and of the programs it calls, 9 of the 9 of AUTHPUR, 6 of the 6 of AUTHREV, 9 of the 15 of ATMWDL, 3 of the 3 of ATMBAL. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's.
 
 ## AUTHSRV
 
@@ -8,7 +8,7 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | not reached: `WS-FILE-STATUSES = ALL '0'` N |
+| 1 | [case 13](13/) |
 | 2 | [case 10](10/) |
 | 3 | [case 01](01/) |
 
@@ -41,7 +41,7 @@
 | 1 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` Y, `RS-RESULT = SPACES` Y, `RQ-PURCHASE` Y, `RS-APPROVED` Y, `RQ-BALANCE-ENQUIRY` N |
 | 2 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` Y, `RS-RESULT = SPACES` Y, `RQ-PURCHASE` Y, `RS-APPROVED` N |
 | 3 | [case 02](02/) |
-| 4 | [case 14](14/) |
+| 4 | [case 15](15/) |
 | 5 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` Y, `RS-RESULT = SPACES` Y, `RQ-PURCHASE` N, `RS-APPROVED` Y, `RQ-BALANCE-ENQUIRY` N, `RQ-REVERSAL` N, `RQ-WITHDRAWAL` Y |
 | 6 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` Y, `RS-RESULT = SPACES` Y, `RQ-PURCHASE` N, `RS-APPROVED` N, `RQ-REVERSAL` N, `RQ-WITHDRAWAL` Y |
 | 7 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` Y, `RS-RESULT = SPACES` Y, `RQ-PURCHASE` N, `RS-APPROVED` Y, `RQ-BALANCE-ENQUIRY` Y, `RQ-REVERSAL` N, `RQ-WITHDRAWAL` N |
@@ -57,7 +57,7 @@
 | 17 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` N, `RS-RESULT = SPACES` Y, `RQ-PURCHASE` N, `RS-APPROVED` Y, `RQ-BALANCE-ENQUIRY` N, `RQ-REVERSAL` N, `RQ-WITHDRAWAL` Y |
 | 18 | [case 09](09/) |
 | 19 | [case 09](09/) |
-| 20 | [case 21](21/) |
+| 20 | [case 22](22/) |
 | 21 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` N, `RS-RESULT = SPACES` Y, `RQ-PURCHASE` N, `RS-APPROVED` N, `RQ-BALANCE-ENQUIRY` N, `RQ-REVERSAL` N, `RQ-WITHDRAWAL` N |
 | 22 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` N, `RS-RESULT = SPACES` N, `RS-APPROVED` Y, `RQ-BALANCE-ENQUIRY` N |
 | 23 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` N, `RS-RESULT = SPACES` N, `RS-APPROVED` Y, `RQ-BALANCE-ENQUIRY` Y |
@@ -108,7 +108,7 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 08](08/) |
-| 2 | [case 23](23/) |
+| 2 | [case 24](24/) |
 | 3 | [case 01](01/) |
 
 ## AUTHREV
@@ -117,9 +117,9 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 14](14/) |
-| 2 | [case 15](15/) |
-| 3 | [case 16](16/) |
+| 1 | [case 15](15/) |
+| 2 | [case 16](16/) |
+| 3 | [case 17](17/) |
 | 4 | [case 02](02/) |
 
 ### [2000-APPROVE](../../../blueprints/pangaea/rules/AUTHREV.md#2000-approve)
@@ -127,7 +127,7 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 02](02/) |
-| 2 | [case 13](13/) |
+| 2 | [case 14](14/) |
 
 ## ATMWDL
 
@@ -135,15 +135,15 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 17](17/) |
-| 2 | [case 18](18/) |
+| 1 | [case 18](18/) |
+| 2 | [case 19](19/) |
 | 3 | [case 09](09/) |
 | 4 | not reached: `CR-MONTH-WITHDRAWALS < WS-FREE-WITHDRAWALS` Y, `CR-BLOCKED` N, `AO-OPEN` Y, `RQ-AMOUNT = 0 OR FUNCTION MOD(RQ-AMOUNT WS-NOTE) NOT = 0` N, `WS-DAY-CASH > CR-CASH-LIMIT` Y |
 | 5 | not reached: `CR-MONTH-WITHDRAWALS < WS-FREE-WITHDRAWALS` Y, `CR-BLOCKED` N, `AO-OPEN` Y, `RQ-AMOUNT = 0 OR FUNCTION MOD(RQ-AMOUNT WS-NOTE) NOT = 0` N, `WS-DAY-CASH > CR-CASH-LIMIT` N, `WS-TO-HOLD > WS-AVAILABLE` Y |
 | 6 | not reached: `CR-MONTH-WITHDRAWALS < WS-FREE-WITHDRAWALS` Y, `CR-BLOCKED` N, `AO-OPEN` Y, `RQ-AMOUNT = 0 OR FUNCTION MOD(RQ-AMOUNT WS-NOTE) NOT = 0` N, `WS-DAY-CASH > CR-CASH-LIMIT` N, `WS-TO-HOLD > WS-AVAILABLE` N |
-| 7 | [case 24](24/) |
-| 8 | [case 25](25/) |
-| 9 | [case 20](20/) |
+| 7 | [case 25](25/) |
+| 8 | [case 26](26/) |
+| 9 | [case 21](21/) |
 | 10 | not reached: `CR-MONTH-WITHDRAWALS < WS-FREE-WITHDRAWALS` N, `CR-BLOCKED` N, `AO-OPEN` Y, `RQ-AMOUNT = 0 OR FUNCTION MOD(RQ-AMOUNT WS-NOTE) NOT = 0` N, `WS-DAY-CASH > CR-CASH-LIMIT` Y |
 | 11 | not reached: `CR-MONTH-WITHDRAWALS < WS-FREE-WITHDRAWALS` N, `CR-BLOCKED` N, `AO-OPEN` Y, `RQ-AMOUNT = 0 OR FUNCTION MOD(RQ-AMOUNT WS-NOTE) NOT = 0` N, `WS-DAY-CASH > CR-CASH-LIMIT` N, `WS-TO-HOLD > WS-AVAILABLE` Y |
 | 12 | not reached: `CR-MONTH-WITHDRAWALS < WS-FREE-WITHDRAWALS` N, `CR-BLOCKED` N, `AO-OPEN` Y, `RQ-AMOUNT = 0 OR FUNCTION MOD(RQ-AMOUNT WS-NOTE) NOT = 0` N, `WS-DAY-CASH > CR-CASH-LIMIT` N, `WS-TO-HOLD > WS-AVAILABLE` N |
@@ -152,8 +152,8 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 19](19/) |
-| 2 | [case 26](26/) |
+| 1 | [case 20](20/) |
+| 2 | [case 27](27/) |
 | 3 | [case 09](09/) |
 
 ## ATMBAL
@@ -162,6 +162,6 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 21](21/) |
-| 2 | [case 22](22/) |
+| 1 | [case 22](22/) |
+| 2 | [case 23](23/) |
 | 3 | [case 09](09/) |

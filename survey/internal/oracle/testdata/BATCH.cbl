@@ -4,15 +4,18 @@
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
            SELECT CONTROL-IN ASSIGN TO CTLIN
-               ORGANIZATION IS SEQUENTIAL.
+               ORGANIZATION IS SEQUENTIAL
+               FILE STATUS IS WS-CONTROL-STATUS.
            SELECT ACCT-IN ASSIGN TO ACCTIN
                ORGANIZATION IS INDEXED
                ACCESS MODE IS RANDOM
                RECORD KEY IS AC-ACCT-NO.
            SELECT BATCH-IN ASSIGN TO BATCHIN
-               ORGANIZATION IS SEQUENTIAL.
+               ORGANIZATION IS SEQUENTIAL
+               FILE STATUS IS WS-BATCH-STATUS.
            SELECT REPORT-OUT ASSIGN TO RPTOUT
-               ORGANIZATION IS LINE SEQUENTIAL.
+               ORGANIZATION IS LINE SEQUENTIAL
+               FILE STATUS IS WS-REPORT-STATUS.
        DATA DIVISION.
        FILE SECTION.
        FD  CONTROL-IN.
@@ -29,6 +32,9 @@
        FD  REPORT-OUT.
        01  REPORT-LINE                 PIC X(40).
        WORKING-STORAGE SECTION.
+       01  WS-CONTROL-STATUS           PIC XX.
+       01  WS-BATCH-STATUS             PIC XX.
+       01  WS-REPORT-STATUS            PIC XX.
        01  WS-BUSINESS-DATE            PIC 9(8).
        01  WS-COUNT                    PIC 9(6)       VALUE 0.
        01  WS-TOTAL                    PIC 9(9)V99    VALUE 0.
@@ -38,6 +44,14 @@
        PROCEDURE DIVISION.
        MAIN-PARA.
            OPEN INPUT CONTROL-IN ACCT-IN BATCH-IN OUTPUT REPORT-OUT
+           IF WS-CONTROL-STATUS NOT = '00' OR WS-BATCH-STATUS NOT = '00'
+               MOVE 16 TO RETURN-CODE
+               STOP RUN
+           END-IF
+           IF WS-REPORT-STATUS NOT = '00'
+               MOVE 20 TO RETURN-CODE
+               STOP RUN
+           END-IF
            READ CONTROL-IN
                AT END
                    MOVE 16 TO RETURN-CODE
@@ -75,9 +89,15 @@
            STOP RUN.
        READ-BATCH.
            READ BATCH-IN
-               AT END
+           EVALUATE WS-BATCH-STATUS
+               WHEN '00'
+                   CONTINUE
+               WHEN '10'
                    SET END-OF-BATCH TO TRUE
-           END-READ.
+               WHEN OTHER
+                   MOVE 'CANNOT READ' TO REPORT-LINE
+                   GO TO FINISH-BAD
+           END-EVALUATE.
        CHECK-ITEM.
            ADD 1 TO WS-COUNT
            ADD BI-AMOUNT TO WS-TOTAL
