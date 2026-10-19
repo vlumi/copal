@@ -1,0 +1,173 @@
+{
+  "job": "cycle",
+  "kind": "script",
+  "source": "laurasia/scripts/cycle.sh",
+  "description": [
+    "cycle.sh: close the billing cycles of the cards whose cycle day it is.",
+    "",
+    "usage: cycle.sh DATE, the business date as YYYYMMDD.",
+    "environment: LCS_BIN, the programs; LCS_DATA, the data.",
+    "",
+    "history",
+    "2013-06-03 rk  lcs-0219 original version."
+  ],
+  "steps": [
+    {
+      "step": "CYCLE",
+      "program": "CYCLE",
+      "arguments": [
+        "$DATE"
+      ],
+      "stopsIf": "RC \u003e= 8",
+      "description": [
+        "interest, minimum payments and statements"
+      ],
+      "source": "laurasia/scripts/cycle.sh:20",
+      "dds": [
+        {
+          "dd": "ACCOUNTS",
+          "datasets": [
+            "$DATA/master/accounts.idx"
+          ],
+          "indexed": true,
+          "file": "ACCOUNTS",
+          "uses": [
+            "update"
+          ],
+          "copybook": "cardacct",
+          "source": "laurasia/scripts/cycle.sh:20"
+        },
+        {
+          "dd": "POSTOUT",
+          "datasets": [
+            "$DATA/outbound/INTEREST.$DATE.txt"
+          ],
+          "file": "POSTINGS-OUT",
+          "uses": [
+            "write"
+          ],
+          "copybook": "postrec",
+          "source": "laurasia/scripts/cycle.sh:20"
+        },
+        {
+          "dd": "STMTOUT",
+          "datasets": [
+            "$DATA/outbound/STATEMENTS.$DATE.txt"
+          ],
+          "file": "STATEMENTS-OUT",
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/cycle.sh:20"
+        },
+        {
+          "dd": "stdout",
+          "datasets": [
+            "$DATA/reports/cycle.$DATE.out"
+          ],
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/cycle.sh:20"
+        }
+      ]
+    },
+    {
+      "step": "ACCTUL",
+      "program": "ACCTUL",
+      "description": [
+        "the accounts as they stand after the cycle"
+      ],
+      "source": "laurasia/scripts/cycle.sh:28",
+      "dds": [
+        {
+          "dd": "ACCOUNTS",
+          "datasets": [
+            "$DATA/master/accounts.idx"
+          ],
+          "indexed": true,
+          "file": "ACCOUNTS",
+          "uses": [
+            "read"
+          ],
+          "copybook": "cardacct",
+          "source": "laurasia/scripts/cycle.sh:28"
+        },
+        {
+          "dd": "ACCTOUT",
+          "datasets": [
+            "$DATA/outbound/ACCOUNTS.CYCLE.$DATE.txt"
+          ],
+          "file": "ACCOUNTS-OUT",
+          "uses": [
+            "write"
+          ],
+          "copybook": "cardacct",
+          "source": "laurasia/scripts/cycle.sh:28"
+        },
+        {
+          "dd": "stdout",
+          "datasets": [
+            "$DATA/reports/acctul.cycle.$DATE.out"
+          ],
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/cycle.sh:28"
+        }
+      ]
+    }
+  ],
+  "datasets": [
+    {
+      "dataset": "$DATA/master/accounts.idx",
+      "copybook": "cardacct",
+      "kind": "internal",
+      "indexed": true,
+      "writtenBy": [
+        "CYCLE"
+      ],
+      "readBy": [
+        "CYCLE",
+        "ACCTUL"
+      ]
+    },
+    {
+      "dataset": "$DATA/outbound/INTEREST.$DATE.txt",
+      "copybook": "postrec",
+      "kind": "output",
+      "writtenBy": [
+        "CYCLE"
+      ]
+    },
+    {
+      "dataset": "$DATA/outbound/STATEMENTS.$DATE.txt",
+      "kind": "output",
+      "writtenBy": [
+        "CYCLE"
+      ]
+    },
+    {
+      "dataset": "$DATA/reports/cycle.$DATE.out",
+      "kind": "output",
+      "writtenBy": [
+        "CYCLE"
+      ]
+    },
+    {
+      "dataset": "$DATA/outbound/ACCOUNTS.CYCLE.$DATE.txt",
+      "copybook": "cardacct",
+      "kind": "output",
+      "writtenBy": [
+        "ACCTUL"
+      ]
+    },
+    {
+      "dataset": "$DATA/reports/acctul.cycle.$DATE.out",
+      "kind": "output",
+      "writtenBy": [
+        "ACCTUL"
+      ]
+    }
+  ]
+}

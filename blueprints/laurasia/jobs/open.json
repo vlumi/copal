@@ -1,0 +1,87 @@
+{
+  "job": "open",
+  "kind": "script",
+  "source": "laurasia/scripts/open.sh",
+  "description": [
+    "open.sh: open the card processor: load the card accounts into the indexed",
+    "account file the nights post to.",
+    "",
+    "usage: open.sh",
+    "environment: LCS_BIN, the programs; LCS_DATA, the data.",
+    "",
+    "history",
+    "2011-04-04 rk  lcs-0102 original version."
+  ],
+  "steps": [
+    {
+      "step": "ACCTLD",
+      "program": "ACCTLD",
+      "stopsIf": "RC \u003e= 8",
+      "description": [
+        "the accounts, from the card system's extract"
+      ],
+      "source": "laurasia/scripts/open.sh:19",
+      "dds": [
+        {
+          "dd": "ACCTIN",
+          "datasets": [
+            "$DATA/inbound/accounts.txt"
+          ],
+          "file": "ACCOUNTS-IN",
+          "uses": [
+            "read"
+          ],
+          "source": "laurasia/scripts/open.sh:19"
+        },
+        {
+          "dd": "ACCOUNTS",
+          "datasets": [
+            "$DATA/master/accounts.idx"
+          ],
+          "indexed": true,
+          "file": "ACCOUNTS",
+          "uses": [
+            "write"
+          ],
+          "copybook": "cardacct",
+          "source": "laurasia/scripts/open.sh:19"
+        },
+        {
+          "dd": "stdout",
+          "datasets": [
+            "$DATA/reports/acctld.out"
+          ],
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/open.sh:19"
+        }
+      ]
+    }
+  ],
+  "datasets": [
+    {
+      "dataset": "$DATA/inbound/accounts.txt",
+      "kind": "external",
+      "readBy": [
+        "ACCTLD"
+      ]
+    },
+    {
+      "dataset": "$DATA/master/accounts.idx",
+      "copybook": "cardacct",
+      "kind": "internal",
+      "indexed": true,
+      "writtenBy": [
+        "ACCTLD"
+      ]
+    },
+    {
+      "dataset": "$DATA/reports/acctld.out",
+      "kind": "output",
+      "writtenBy": [
+        "ACCTLD"
+      ]
+    }
+  ]
+}

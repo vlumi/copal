@@ -82,7 +82,7 @@ oracle:  ## Search Pangaea's programs again for cases that reach their rules, an
 blueprints:  ## Regenerate Pangaea's and Laurasia's blueprints with Survey
 	rm -rf blueprints/pangaea blueprints/laurasia
 	go run ./survey/cmd/survey blueprints -copybooks pangaea/copybooks -out blueprints/pangaea -title pangaea pangaea/programs/*.cbl pangaea/jobs/*.jcl
-	go run ./survey/cmd/survey blueprints -dialect mf -copybooks laurasia/copybooks -out blueprints/laurasia -title laurasia laurasia/programs/*.cbl
+	go run ./survey/cmd/survey blueprints -dialect mf -copybooks laurasia/copybooks -out blueprints/laurasia -title laurasia laurasia/programs/*.cbl laurasia/scripts/*.sh
 
 EXPLORE_ADDR ?= 127.0.0.1:1192
 

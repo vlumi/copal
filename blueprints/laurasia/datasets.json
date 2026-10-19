@@ -1,0 +1,554 @@
+[
+  {
+    "dataset": "$DATA/inbound/AUTH.$DATE.txt",
+    "copybook": "authlog",
+    "kind": "external",
+    "readBy": [
+      {
+        "job": "nightly",
+        "step": "AUTHSORT"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/inbound/CLR.$DATE.txt",
+    "copybook": "clrrec",
+    "kind": "external",
+    "readBy": [
+      {
+        "job": "nightly",
+        "step": "CLRIN"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/inbound/DISPEVT.$DATE.txt",
+    "copybook": "dispevt",
+    "kind": "external",
+    "readBy": [
+      {
+        "job": "disputes",
+        "step": "DSPSORT"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/inbound/FEES.txt",
+    "copybook": "feedef",
+    "kind": "external",
+    "readBy": [
+      {
+        "job": "nightly",
+        "step": "FEELD"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/inbound/accounts.txt",
+    "kind": "external",
+    "readBy": [
+      {
+        "job": "open",
+        "step": "ACCTLD"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/master/accounts.idx",
+    "copybook": "cardacct",
+    "indexed": true,
+    "kind": "internal",
+    "writtenBy": [
+      {
+        "job": "cycle",
+        "step": "CYCLE"
+      },
+      {
+        "job": "nightly",
+        "step": "POST"
+      },
+      {
+        "job": "open",
+        "step": "ACCTLD"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "cycle",
+        "step": "CYCLE"
+      },
+      {
+        "job": "cycle",
+        "step": "ACCTUL"
+      },
+      {
+        "job": "nightly",
+        "step": "POST"
+      },
+      {
+        "job": "nightly",
+        "step": "ACCTUL"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/master/disputes.txt",
+    "copybook": "dispcase",
+    "kind": "internal",
+    "writtenBy": [
+      {
+        "job": "disputes",
+        "step": "DSPNEW"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "disputes",
+        "step": "DISPUTE"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/outbound/ACCOUNTS.$DATE.txt",
+    "copybook": "cardacct",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "ACCTUL"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/outbound/ACCOUNTS.CYCLE.$DATE.txt",
+    "copybook": "cardacct",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "cycle",
+        "step": "ACCTUL"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/outbound/CLRREJ.$DATE.txt",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "CLRIN"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/outbound/DISPREJ.$DATE.txt",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "disputes",
+        "step": "DISPUTE"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/outbound/INTEREST.$DATE.txt",
+    "copybook": "postrec",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "cycle",
+        "step": "CYCLE"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/outbound/PAYOUT.$DATE.txt",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "SETTLE"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/outbound/POSTINGS.$DATE.txt",
+    "copybook": "postrec",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "POST"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/outbound/POSTREJ.$DATE.txt",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "POST"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/outbound/STATEMENTS.$DATE.txt",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "cycle",
+        "step": "CYCLE"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/reports/acctld.out",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "open",
+        "step": "ACCTLD"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/reports/acctul.$DATE.out",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "ACCTUL"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/reports/acctul.cycle.$DATE.out",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "cycle",
+        "step": "ACCTUL"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/reports/clrin.$DATE.out",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "CLRIN"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/reports/clrin.$DATE.txt",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "CLRIN"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/reports/cycle.$DATE.out",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "cycle",
+        "step": "CYCLE"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/reports/dispute.$DATE.out",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "disputes",
+        "step": "DISPUTE"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/reports/feeld.$DATE.out",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "FEELD"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/reports/ixfee.$DATE.out",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "IXFEE"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/reports/ixfee.$DATE.txt",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "IXFEE"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/reports/match.$DATE.out",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "MATCH"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/reports/match.$DATE.txt",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "MATCH"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/reports/post.$DATE.out",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "POST"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/reports/post.$DATE.txt",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "POST"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/reports/settle.$DATE.out",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "SETTLE"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/reports/settle.$DATE.txt",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "SETTLE"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/work/$DATE/adjustments.bymerchant",
+    "kind": "internal",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "ADJSORT"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "nightly",
+        "step": "SETTLE"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/work/$DATE/adjustments.txt",
+    "kind": "internal",
+    "writtenBy": [
+      {
+        "job": "disputes",
+        "step": "DISPUTE"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "nightly",
+        "step": "ADJSORT"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/work/$DATE/auth.byauth",
+    "copybook": "authlog",
+    "kind": "internal",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "AUTHSORT"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "nightly",
+        "step": "MATCH"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/work/$DATE/dispevt.sorted",
+    "copybook": "dispevt",
+    "kind": "internal",
+    "writtenBy": [
+      {
+        "job": "disputes",
+        "step": "DSPSORT"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "disputes",
+        "step": "DISPUTE"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/work/$DATE/disputes.new",
+    "copybook": "dispcase",
+    "kind": "internal",
+    "writtenBy": [
+      {
+        "job": "disputes",
+        "step": "DISPUTE"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "disputes",
+        "step": "DSPNEW"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/work/$DATE/fees.rel",
+    "copybook": "feerec",
+    "kind": "internal",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "FEELD"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "nightly",
+        "step": "IXFEE"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/work/$DATE/pres.byauth",
+    "copybook": "presrec",
+    "kind": "internal",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "PRESSORT"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "nightly",
+        "step": "MATCH"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/work/$DATE/pres.bymerchant",
+    "copybook": "presrec",
+    "kind": "internal",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "SETLSORT"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "nightly",
+        "step": "SETTLE"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/work/$DATE/pres.matched",
+    "copybook": "presrec",
+    "kind": "internal",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "MATCH"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "nightly",
+        "step": "IXFEE"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/work/$DATE/pres.priced",
+    "copybook": "presrec",
+    "kind": "internal",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "IXFEE"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "nightly",
+        "step": "POST"
+      },
+      {
+        "job": "nightly",
+        "step": "SETLSORT"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/work/$DATE/pres.txt",
+    "copybook": "presrec",
+    "kind": "internal",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "CLRIN"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "nightly",
+        "step": "PRESSORT"
+      }
+    ]
+  }
+]

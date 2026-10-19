@@ -228,12 +228,12 @@ Written from [DISPUTE-CASE](#dispute-case).
 
 | Field | Position | Origins |
 | --- | --: | --- |
-| DC-CASE-NO | 1-8 | file EVENTS-IN DE-CASE-NO; file MASTER-IN MASTER-IN-RECORD; literal ALL '9' |
-| DC-STATUS | 9-10 | file MASTER-IN MASTER-IN-RECORD; literal condition DC-CHARGED-BACK; literal condition DC-LOST; literal condition DC-OPEN; literal condition DC-PRE-ARBITRATION; literal condition DC-REPRESENTED; literal condition DC-WON |
-| DC-MERCHANT | 11-20 | file EVENTS-IN DE-MERCHANT; file MASTER-IN MASTER-IN-RECORD |
-| DC-AMOUNT | 21-32 | file EVENTS-IN DE-AMOUNT; file MASTER-IN MASTER-IN-RECORD |
-| DC-OPENED | 33-40 | file EVENTS-IN DE-DATE; file MASTER-IN MASTER-IN-RECORD |
-| DC-UPDATED | 41-48 | file EVENTS-IN DE-DATE; file MASTER-IN MASTER-IN-RECORD |
+| DC-CASE-NO | 1-8 | file EVENTS-IN DE-CASE-NO; file MASTER-IN MASTER-IN-RECORD 1-8; literal ALL '9' |
+| DC-STATUS | 9-10 | file MASTER-IN MASTER-IN-RECORD 9-10; literal condition DC-CHARGED-BACK; literal condition DC-LOST; literal condition DC-OPEN; literal condition DC-PRE-ARBITRATION; literal condition DC-REPRESENTED; literal condition DC-WON |
+| DC-MERCHANT | 11-20 | file EVENTS-IN DE-MERCHANT; file MASTER-IN MASTER-IN-RECORD 11-20 |
+| DC-AMOUNT | 21-32 | file EVENTS-IN DE-AMOUNT; file MASTER-IN MASTER-IN-RECORD 21-32 |
+| DC-OPENED | 33-40 | file EVENTS-IN DE-DATE; file MASTER-IN MASTER-IN-RECORD 33-40 |
+| DC-UPDATED | 41-48 | file EVENTS-IN DE-DATE; file MASTER-IN MASTER-IN-RECORD 41-48 |
 
 ### File REJECT-OUT
 
@@ -250,9 +250,9 @@ Written from [ADJUSTMENT](#adjustment).
 
 | Field | Position | Origins |
 | --- | --: | --- |
-| AD-MERCHANT | 1-10 | file EVENTS-IN DE-MERCHANT; file MASTER-IN MASTER-IN-RECORD |
-| AD-AMOUNT | 11-22 | file EVENTS-IN DE-AMOUNT; file MASTER-IN MASTER-IN-RECORD |
-| AD-CASE-NO | 23-30 | file EVENTS-IN DE-CASE-NO; file MASTER-IN MASTER-IN-RECORD; literal ALL '9' |
+| AD-MERCHANT | 1-10 | file EVENTS-IN DE-MERCHANT; file MASTER-IN MASTER-IN-RECORD 11-20 |
+| AD-AMOUNT | 11-22 | file EVENTS-IN DE-AMOUNT; file MASTER-IN MASTER-IN-RECORD 21-32 |
+| AD-CASE-NO | 23-30 | file EVENTS-IN DE-CASE-NO; file MASTER-IN MASTER-IN-RECORD 1-8; literal ALL '9' |
 | AD-EVENT | 31-32 | file EVENTS-IN DE-EVENT |
 
 ## Links between records

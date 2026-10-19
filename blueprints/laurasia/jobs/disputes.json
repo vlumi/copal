@@ -1,0 +1,228 @@
+{
+  "job": "disputes",
+  "kind": "script",
+  "source": "laurasia/scripts/disputes.sh",
+  "description": [
+    "disputes.sh: move the disputes on by the day's events, and leave the",
+    "merchants' adjustments for the night's settlement.",
+    "",
+    "usage: disputes.sh DATE, the business date as YYYYMMDD.",
+    "environment: LCS_BIN, the programs; LCS_DATA, the data.",
+    "",
+    "history",
+    "2015-03-23 mt  lcs-0302 original version."
+  ],
+  "steps": [
+    {
+      "step": "DSPSORT",
+      "kind": "sort",
+      "program": "sort",
+      "keys": [
+        "1-8"
+      ],
+      "stopsIf": "RC != 0",
+      "description": [
+        "the events in case order, each case's in the order given"
+      ],
+      "source": "laurasia/scripts/disputes.sh:20",
+      "dds": [
+        {
+          "dd": "input",
+          "datasets": [
+            "$DATA/inbound/DISPEVT.$DATE.txt"
+          ],
+          "uses": [
+            "read"
+          ],
+          "source": "laurasia/scripts/disputes.sh:20"
+        },
+        {
+          "dd": "output",
+          "datasets": [
+            "$DATA/work/$DATE/dispevt.sorted"
+          ],
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/disputes.sh:20"
+        }
+      ]
+    },
+    {
+      "step": "DISPUTE",
+      "program": "DISPUTE",
+      "arguments": [
+        "$DATE"
+      ],
+      "stopsIf": "RC \u003e= 8",
+      "description": [
+        "the cases moved on, a new master, the adjustments"
+      ],
+      "source": "laurasia/scripts/disputes.sh:31",
+      "dds": [
+        {
+          "dd": "DISPIN",
+          "datasets": [
+            "$DATA/master/disputes.txt"
+          ],
+          "file": "MASTER-IN",
+          "uses": [
+            "read"
+          ],
+          "source": "laurasia/scripts/disputes.sh:31"
+        },
+        {
+          "dd": "DISPEVT",
+          "datasets": [
+            "$DATA/work/$DATE/dispevt.sorted"
+          ],
+          "file": "EVENTS-IN",
+          "uses": [
+            "read"
+          ],
+          "copybook": "dispevt",
+          "source": "laurasia/scripts/disputes.sh:31"
+        },
+        {
+          "dd": "DISPOUT",
+          "datasets": [
+            "$DATA/work/$DATE/disputes.new"
+          ],
+          "file": "MASTER-OUT",
+          "uses": [
+            "write"
+          ],
+          "copybook": "dispcase",
+          "source": "laurasia/scripts/disputes.sh:31"
+        },
+        {
+          "dd": "ADJOUT",
+          "datasets": [
+            "$DATA/work/$DATE/adjustments.txt"
+          ],
+          "file": "ADJUST-OUT",
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/disputes.sh:31"
+        },
+        {
+          "dd": "DISPREJ",
+          "datasets": [
+            "$DATA/outbound/DISPREJ.$DATE.txt"
+          ],
+          "file": "REJECT-OUT",
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/disputes.sh:31"
+        },
+        {
+          "dd": "stdout",
+          "datasets": [
+            "$DATA/reports/dispute.$DATE.out"
+          ],
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/disputes.sh:31"
+        }
+      ]
+    },
+    {
+      "step": "DSPNEW",
+      "kind": "move",
+      "program": "mv",
+      "description": [
+        "the new master in place of the old"
+      ],
+      "source": "laurasia/scripts/disputes.sh:37",
+      "dds": [
+        {
+          "dd": "input",
+          "datasets": [
+            "$DATA/work/$DATE/disputes.new"
+          ],
+          "uses": [
+            "read"
+          ],
+          "source": "laurasia/scripts/disputes.sh:37"
+        },
+        {
+          "dd": "output",
+          "datasets": [
+            "$DATA/master/disputes.txt"
+          ],
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/disputes.sh:37"
+        }
+      ]
+    }
+  ],
+  "datasets": [
+    {
+      "dataset": "$DATA/inbound/DISPEVT.$DATE.txt",
+      "copybook": "dispevt",
+      "kind": "external",
+      "readBy": [
+        "DSPSORT"
+      ]
+    },
+    {
+      "dataset": "$DATA/work/$DATE/dispevt.sorted",
+      "copybook": "dispevt",
+      "kind": "internal",
+      "writtenBy": [
+        "DSPSORT"
+      ],
+      "readBy": [
+        "DISPUTE"
+      ]
+    },
+    {
+      "dataset": "$DATA/master/disputes.txt",
+      "copybook": "dispcase",
+      "kind": "internal",
+      "writtenBy": [
+        "DSPNEW"
+      ],
+      "readBy": [
+        "DISPUTE"
+      ]
+    },
+    {
+      "dataset": "$DATA/work/$DATE/disputes.new",
+      "copybook": "dispcase",
+      "kind": "internal",
+      "writtenBy": [
+        "DISPUTE"
+      ],
+      "readBy": [
+        "DSPNEW"
+      ]
+    },
+    {
+      "dataset": "$DATA/work/$DATE/adjustments.txt",
+      "kind": "internal",
+      "writtenBy": [
+        "DISPUTE"
+      ]
+    },
+    {
+      "dataset": "$DATA/outbound/DISPREJ.$DATE.txt",
+      "kind": "output",
+      "writtenBy": [
+        "DISPUTE"
+      ]
+    },
+    {
+      "dataset": "$DATA/reports/dispute.$DATE.out",
+      "kind": "output",
+      "writtenBy": [
+        "DISPUTE"
+      ]
+    }
+  ]
+}

@@ -478,14 +478,14 @@ Written from [ACCT-MASTER-RECORD](#acct-master-record).
 | Field | Position | Origins |
 | --- | --: | --- |
 | AM-ACCT-NO | 1-10 | file ACCT-IN AI-ACCT-NO; file MAINT-IN MR-ACCT-NO |
-| AM-CUST-NO | 11-18 | file ACCT-IN ACCT-IN-RECORD; file MAINT-IN MR-CUST-NO |
-| AM-SHORT-NAME | 19-38 | file ACCT-IN ACCT-IN-RECORD; file MAINT-IN MR-SHORT-NAME |
-| AM-ACCT-TYPE | 39 | file ACCT-IN ACCT-IN-RECORD; file MAINT-IN MR-ACCT-TYPE |
-| AM-STATUS | 40 | file ACCT-IN ACCT-IN-RECORD; literal condition AM-CLOSED; literal condition AM-FROZEN; literal condition AM-OPEN |
-| AM-OPEN-DATE | 41-48 | file ACCT-IN ACCT-IN-RECORD; file MAINT-IN MR-EFFECTIVE-DATE; literal 19; literal 20 |
-| AM-LAST-ACTIVITY-DATE | 49-56 | file ACCT-IN ACCT-IN-RECORD; file CONTROL-FILE BC-BUSINESS-DATE |
-| AM-BALANCE | 57-69 | file ACCT-IN ACCT-IN-RECORD; literal 0 |
-| AM-OVERDRAFT-LIMIT | 70-78 | file ACCT-IN ACCT-IN-RECORD; file MAINT-IN MR-OVERDRAFT-LIMIT; literal 0 |
+| AM-CUST-NO | 11-18 | file ACCT-IN ACCT-IN-RECORD 11-18; file MAINT-IN MR-CUST-NO |
+| AM-SHORT-NAME | 19-38 | file ACCT-IN ACCT-IN-RECORD 19-38; file MAINT-IN MR-SHORT-NAME |
+| AM-ACCT-TYPE | 39 | file ACCT-IN ACCT-IN-RECORD 39-39; file MAINT-IN MR-ACCT-TYPE |
+| AM-STATUS | 40 | file ACCT-IN ACCT-IN-RECORD 40-40; literal condition AM-CLOSED; literal condition AM-FROZEN; literal condition AM-OPEN |
+| AM-OPEN-DATE | 41-48 | file ACCT-IN ACCT-IN-RECORD 41-48; file MAINT-IN MR-EFFECTIVE-DATE; literal 19; literal 20 |
+| AM-LAST-ACTIVITY-DATE | 49-56 | file ACCT-IN ACCT-IN-RECORD 49-56; file CONTROL-FILE BC-BUSINESS-DATE |
+| AM-BALANCE | 57-69 | file ACCT-IN ACCT-IN-RECORD 57-69; literal 0 |
+| AM-OVERDRAFT-LIMIT | 70-78 | file ACCT-IN ACCT-IN-RECORD 70-78; file MAINT-IN MR-OVERDRAFT-LIMIT; literal 0 |
 
 ### File REPORT-OUT
 
@@ -509,7 +509,7 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-coun
 | Field | Position | Origins |
 | --- | --: | --- |
 | WS-RA-LABEL | 1-30 | literal 'BALANCES' |
-| WS-RA-VALUE | 31-51 | file ACCT-IN ACCT-IN-RECORD; initial value of WS-BALANCES-OUT; literal 0 |
+| WS-RA-VALUE | 31-51 | file ACCT-IN ACCT-IN-RECORD 57-69; initial value of WS-BALANCES-OUT; literal 0 |
 
 ## Records
 

@@ -255,6 +255,9 @@ func (t tracer) back(n Node, p *blueprint.Program) Hop {
 		if !ok {
 			continue
 		}
+		if o.Length > 0 {
+			start, length = o.Start, o.Length
+		}
 		src := Source{File: o.File, Field: o.Item}
 		t.fromFile(&src, n, p, o.File, start, length, 0)
 		hop.Sources = append(hop.Sources, src)
@@ -312,16 +315,34 @@ func (t tracer) fromFile(src *Source, n Node, p *blueprint.Program, file string,
 	if !ok {
 		return
 	}
-	for _, ds := range dd.Datasets {
+	var update *access
+	if slices.Contains(dd.Uses, "update") {
+		update = &access{job: n.Job, step: n.Step, program: p.Name, file: file}
+	}
+	t.fromDatasets(src, n, dd.Datasets, update, start, length, depth)
+}
+
+// fromDatasets finds the writers of the bytes a step reads from datasets:
+// the steps that wrote them, the step itself if it updates them, and
+// through a step that passes the records on, such as a script's sort, the
+// writers of the datasets it read.
+func (t tracer) fromDatasets(src *Source, n Node, datasets []string, update *access, start, length, depth int) {
+	for _, ds := range datasets {
 		src.Datasets = append(src.Datasets, ds)
 		writers := t.writers(n, ds)
-		if slices.Contains(dd.Uses, "update") {
-			writers = append(writers, access{job: n.Job, step: n.Step, program: p.Name, file: file})
+		if update != nil {
+			writers = append(writers, *update)
 		}
 		if len(writers) == 0 {
 			src.External = append(src.External, ds)
 		}
 		for _, w := range writers {
+			if step, ok := t.step(w.job, w.step); ok && step.PassesRecords() && depth <= maxSorts {
+				at := Node{Job: w.job, Step: w.step, Program: step.Program}
+				src.Sorts = append(src.Sorts, at)
+				t.fromDatasets(src, at, passedFrom(step), nil, start, length, depth+1)
+				continue
+			}
 			q := t.programs[w.program]
 			if q == nil {
 				continue
@@ -357,13 +378,26 @@ func (t tracer) toFile(tgt *Target, n Node, p *blueprint.Program, file string, s
 	if dd.Sysout {
 		tgt.Report = dd.Name
 	}
-	for _, ds := range dd.Datasets {
+	t.toDatasets(tgt, n, dd.Datasets, start, length, depth)
+}
+
+// toDatasets finds the readers of the bytes a step writes to datasets: the
+// steps that read them, and through a step that passes the records on,
+// such as a script's sort, the readers of the dataset it writes.
+func (t tracer) toDatasets(tgt *Target, n Node, datasets []string, start, length, depth int) {
+	for _, ds := range datasets {
 		tgt.Datasets = append(tgt.Datasets, ds)
 		readers := t.readers(n, ds)
 		if len(readers) == 0 {
 			tgt.Outputs = append(tgt.Outputs, ds)
 		}
 		for _, r := range readers {
+			if step, ok := t.step(r.job, r.step); ok && step.PassesRecords() && depth <= maxSorts {
+				at := Node{Job: r.job, Step: r.step, Program: step.Program}
+				tgt.Sorts = append(tgt.Sorts, at)
+				t.toDatasets(tgt, at, passedTo(step), start, length, depth+1)
+				continue
+			}
 			q := t.programs[r.program]
 			if q == nil {
 				continue
@@ -489,12 +523,27 @@ func (t tracer) anyJob(uses func(blueprint.DD) bool, match func(string) bool) []
 func bound(job string, step blueprint.Step, uses func(blueprint.DD) bool, match func(string) bool) []access {
 	var list []access
 	for _, dd := range step.DDs {
-		if dd.File == "" || !uses(dd) || !slices.ContainsFunc(dd.Datasets, match) {
+		if dd.File == "" && !step.PassesRecords() || !uses(dd) || !slices.ContainsFunc(dd.Datasets, match) {
 			continue
 		}
 		list = append(list, access{job: job, step: step.Name, program: step.Program, file: dd.File})
 	}
 	return list
+}
+
+// passedFrom and passedTo are the datasets a step that passes records on
+// reads and writes.
+func passedFrom(step blueprint.Step) []string { return passedThrough(step, "read") }
+func passedTo(step blueprint.Step) []string   { return passedThrough(step, "write") }
+
+func passedThrough(step blueprint.Step, use string) []string {
+	var datasets []string
+	for _, dd := range step.DDs {
+		if slices.Contains(dd.Uses, use) {
+			datasets = append(datasets, dd.Datasets...)
+		}
+	}
+	return datasets
 }
 
 func writes(dd blueprint.DD) bool {

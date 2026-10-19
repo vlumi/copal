@@ -501,9 +501,9 @@ Written from [ACCRUAL-RECORD](#accrual-record).
 | --- | --: | --- |
 | AC-ACCT-NO | 1-10 | file ACCR-IN AI-ACCT-NO; file ACCT-IN AM-ACCT-NO |
 | AC-THROUGH-DATE | 11-18 | file CONTROL-FILE BC-BUSINESS-DATE |
-| AC-ACCRUED | 19-25 | file ACCR-IN ACCR-IN-RECORD; file ACCT-IN AM-BALANCE; file CONTROL-FILE BC-BUSINESS-DATE; file RATE-FILE RT-ANNUAL-RATE; literal 0; literal 365 |
-| AC-DUE | 26-30 | file ACCR-IN ACCR-IN-RECORD; file ACCT-IN AM-BALANCE; file CONTROL-FILE BC-BUSINESS-DATE; file RATE-FILE RT-ANNUAL-RATE; literal 0; literal 365 |
-| AC-DUE-MONTH | 31-36 | file ACCR-IN ACCR-IN-RECORD; file CONTROL-FILE BC-BUSINESS-DATE; literal 0 |
+| AC-ACCRUED | 19-25 | file ACCR-IN ACCR-IN-RECORD 11-18; file ACCR-IN ACCR-IN-RECORD 19-25; file ACCT-IN AM-BALANCE; file CONTROL-FILE BC-BUSINESS-DATE; file RATE-FILE RT-ANNUAL-RATE; literal 0; literal 365 |
+| AC-DUE | 26-30 | file ACCR-IN ACCR-IN-RECORD 11-18; file ACCR-IN ACCR-IN-RECORD 19-25; file ACCT-IN AM-BALANCE; file CONTROL-FILE BC-BUSINESS-DATE; file RATE-FILE RT-ANNUAL-RATE; literal 0; literal 365 |
+| AC-DUE-MONTH | 31-36 | file ACCR-IN ACCR-IN-RECORD 11-14; file ACCR-IN ACCR-IN-RECORD 15-16; file CONTROL-FILE BC-BUSINESS-DATE 1-4; file CONTROL-FILE BC-BUSINESS-DATE 5-6; literal 0 |
 
 ### File REPORT-OUT
 
@@ -513,7 +513,7 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-coun
 
 | Field | Position | Origins |
 | --- | --: | --- |
-| REPORT-LINE | 1-80 | file ACCR-IN ACCR-IN-RECORD; file CONTROL-FILE BC-BUSINESS-DATE; initial value of WS-CLOSED-MONTH; literal 'INTACCR  INTEREST ACCRUAL        BUSINESS DATE '; literal 'MONTH CLOSED                  '; literal 'NO MONTH CLOSED'; literal SPACES |
+| REPORT-LINE | 1-80 | file ACCR-IN ACCR-IN-RECORD 11-14; file ACCR-IN ACCR-IN-RECORD 15-16; file CONTROL-FILE BC-BUSINESS-DATE; file CONTROL-FILE BC-BUSINESS-DATE 1-4; file CONTROL-FILE BC-BUSINESS-DATE 5-6; initial value of WS-CLOSED-MONTH; literal 'INTACCR  INTEREST ACCRUAL        BUSINESS DATE '; literal 'MONTH CLOSED                  '; literal 'NO MONTH CLOSED'; literal SPACES |
 
 #### Record WS-REPORT-COUNT-LINE
 
@@ -527,7 +527,7 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-coun
 | Field | Position | Origins |
 | --- | --: | --- |
 | WS-RA-LABEL | 1-30 | literal 'CREDIT INTEREST ACCRUED'; literal 'CREDIT INTEREST DUE'; literal 'DEBIT INTEREST ACCRUED'; literal 'DEBIT INTEREST DUE' |
-| WS-RA-VALUE | 31-49 | file ACCR-IN ACCR-IN-RECORD; file ACCT-IN AM-BALANCE; file CONTROL-FILE BC-BUSINESS-DATE; file RATE-FILE RT-ANNUAL-RATE; initial value of WS-CREDIT-ACCRUED; initial value of WS-CREDIT-DUE; initial value of WS-DEBIT-ACCRUED; initial value of WS-DEBIT-DUE; literal 0; literal 365 |
+| WS-RA-VALUE | 31-49 | file ACCR-IN ACCR-IN-RECORD 11-18; file ACCR-IN ACCR-IN-RECORD 19-25; file ACCT-IN AM-BALANCE; file CONTROL-FILE BC-BUSINESS-DATE; file RATE-FILE RT-ANNUAL-RATE; initial value of WS-CREDIT-ACCRUED; initial value of WS-CREDIT-DUE; initial value of WS-DEBIT-ACCRUED; initial value of WS-DEBIT-DUE; literal 0; literal 365 |
 
 ## Links between records
 

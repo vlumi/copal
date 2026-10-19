@@ -8,7 +8,8 @@ import (
 )
 
 // JobOrder is one job running before another, as the generations of the
-// datasets between them say.
+// datasets between them say, or the files one creates and the other
+// reads.
 type JobOrder struct {
 	Before   string   `json:"before"`
 	After    string   `json:"after"`
@@ -18,17 +19,26 @@ type JobOrder struct {
 // jobOrder derives the order of the jobs from the generations they write
 // and read: a job that writes a new generation of a dataset, NAME(+1),
 // runs before a job that reads its current one, NAME(0), an earlier one,
-// NAME(-1), or every generation by its name. A job that reads what it
-// writes itself runs before its own next run. The JCL says nothing else
-// about when a job runs.
+// NAME(-1), or every generation by its name; and a job that creates a
+// dataset of no generations, writing it whole rather than adding to it or
+// updating it, as a script does a file, runs before a job that reads it.
+// A job that reads what it writes itself runs before its own next run, and
+// for a dataset it creates, if it reads it before it creates it. A job that
+// another runs as a step is part of that one's run, not before or after
+// it. The jobs say nothing else about when a job runs.
 func jobOrder(jobs []Job) []JobOrder {
 	var order []JobOrder
 	for _, writer := range jobs {
+		created := createdDatasets(writer)
 		for _, reader := range jobs {
+			if slices.ContainsFunc(reader.Steps, func(s Step) bool { return s.Runs == writer.Name }) {
+				continue
+			}
 			o := JobOrder{Before: writer.Name, After: reader.Name}
 			for _, w := range writer.Datasets {
 				base, generation, _ := strings.Cut(w.Name, "(")
-				if len(w.WrittenBy) == 0 || !strings.HasPrefix(generation, "+") {
+				byCreation := created[w.Name] && (reader.Name != writer.Name || readBeforeCreated(writer, w.Name))
+				if len(w.WrittenBy) == 0 || !strings.HasPrefix(generation, "+") && !byCreation {
 					continue
 				}
 				if slices.ContainsFunc(reader.Datasets, func(r Dataset) bool { return len(r.ReadBy) > 0 && readsWritten(r.Name, base) }) {
@@ -41,6 +51,44 @@ func jobOrder(jobs []Job) []JobOrder {
 		}
 	}
 	return order
+}
+
+// createdDatasets are the datasets of no generations, and not temporary,
+// that a job's steps write whole.
+func createdDatasets(job Job) map[string]bool {
+	created := map[string]bool{}
+	for _, step := range job.Steps {
+		for _, dd := range step.DDs {
+			if !slices.Equal(dd.Uses, []string{useWrite}) {
+				continue
+			}
+			for _, ds := range dd.Datasets {
+				if !strings.ContainsAny(ds, "(&") {
+					created[ds] = true
+				}
+			}
+		}
+	}
+	return created
+}
+
+// readBeforeCreated reports whether a step of a job reads a dataset
+// before any step writes it whole.
+func readBeforeCreated(job Job, name string) bool {
+	for _, step := range job.Steps {
+		for _, dd := range step.DDs {
+			if !slices.Contains(dd.Datasets, name) {
+				continue
+			}
+			if slices.Equal(dd.Uses, []string{useWrite}) {
+				return false
+			}
+			if dd.reads() {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // readsWritten reports whether a dataset read, as a job names it, is a
