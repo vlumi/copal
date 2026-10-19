@@ -37,7 +37,7 @@ The hard part of moving a COBOL core system to anything newer is rarely the tran
 
 - Test data derived from the extracted conditions so that every branch is reached, run through GnuCOBOL to record real outputs: the oracle a rewrite would have to match (done, milestone 11).
 - Data that respects cross-field and cross-record rules (control totals, header-before-detail, references to existing accounts), which format-only generation gets wrong (done, milestones 11 and 12).
-- Only then a model, for naming paragraphs and explaining rules in prose, on top of the facts the analysis established: milestone 14, [plans/model-prose.md](plans/model-prose.md).
+- Only then a model, for naming paragraphs and explaining rules in prose, on top of the facts the analysis established: milestone 16, after the deterministic work, [plans/model-prose.md](plans/model-prose.md).
 
 ## Not the goal
 
