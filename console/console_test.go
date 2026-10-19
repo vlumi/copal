@@ -10,6 +10,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/vlumi/copal/bedrock/cobol"
 	"github.com/vlumi/copal/bedrock/run"
 	"github.com/vlumi/copal/pangaea/bank"
 	"github.com/vlumi/copal/survey/blueprint"
@@ -19,7 +20,7 @@ import (
 // the browser, then reads every page.
 func TestConsole(t *testing.T) {
 	programs := t.TempDir()
-	if _, err := (run.Build{Dialect: run.IBM, Sources: "../pangaea/programs", Copybooks: "../pangaea/copybooks", Out: programs}).Programs(); err != nil {
+	if _, err := (run.Build{Dialect: cobol.IBM, Sources: "../pangaea/programs", Copybooks: "../pangaea/copybooks", Out: programs}).Programs(); err != nil {
 		t.Fatal(err)
 	}
 	b := bank.Bank{Dir: t.TempDir(), Programs: programs, Copybooks: "../pangaea/copybooks", Jobs: "../pangaea/jobs"}
@@ -27,7 +28,7 @@ func TestConsole(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	system, err := blueprint.Analyze(append(sources, b.JobFiles()...), "../pangaea/copybooks")
+	system, err := blueprint.Analyze(append(sources, b.JobFiles()...), "../pangaea/copybooks", cobol.IBM)
 	if err != nil {
 		t.Fatal(err)
 	}

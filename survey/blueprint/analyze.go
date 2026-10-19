@@ -20,6 +20,7 @@ import (
 // System is the analysis of a set of programs, the copybooks they use and
 // the jobs that run them.
 type System struct {
+	Dialect   cobol.Dialect
 	Programs  []Program
 	Copybooks []Copybook
 	Jobs      []Job
@@ -37,6 +38,7 @@ type Program struct {
 	Description    []string         `json:"description,omitempty"`
 	Identification []Identification `json:"identification,omitempty"`
 	Files          []File           `json:"files"`
+	Constants      []Constant       `json:"constants,omitempty"`
 	Records        []Record         `json:"records"`
 	Paragraphs     []Paragraph      `json:"paragraphs"`
 	// ReadsSysin is set for a program that ACCEPTs from the job's SYSIN.
@@ -161,16 +163,23 @@ type Identification struct {
 // and the modes the program opens it in: INPUT, OUTPUT, EXTEND or I-O,
 // counting a SORT's USING files as input and its GIVING files as output.
 type File struct {
-	Name         string   `json:"name"`
-	Kind         string   `json:"kind"`
-	Assign       string   `json:"assign"`
-	Organization string   `json:"organization"`
-	Access       string   `json:"access,omitempty"` // RANDOM or DYNAMIC; empty for SEQUENTIAL
-	RecordKey    string   `json:"recordKey,omitempty"`
-	Status       string   `json:"status,omitempty"`
-	Opened       []string `json:"opened,omitempty"`
-	Records      []string `json:"records"`
-	Source       string   `json:"source"`
+	Name         string `json:"name"`
+	Kind         string `json:"kind"`
+	Assign       string `json:"assign"`
+	Organization string `json:"organization"`
+	Access       string `json:"access,omitempty"` // RANDOM or DYNAMIC; empty for SEQUENTIAL
+	RecordKey    string `json:"recordKey,omitempty"`
+	RelativeKey  string `json:"relativeKey,omitempty"`
+	Status       string `json:"status,omitempty"`
+	// MinLength and MaxLength are the record lengths the file's RECORD
+	// clause gives, if it has one, and LengthIn the item a variable
+	// length is in.
+	MinLength int      `json:"minLength,omitempty"`
+	MaxLength int      `json:"maxLength,omitempty"`
+	LengthIn  string   `json:"lengthIn,omitempty"`
+	Opened    []string `json:"opened,omitempty"`
+	Records   []string `json:"records"`
+	Source    string   `json:"source"`
 }
 
 // Record is a level-01 or level-77 item and the fields under it. Section is
@@ -200,6 +209,7 @@ type Field struct {
 	Digits      int         `json:"digits,omitempty"`
 	Scale       int         `json:"scale,omitempty"`
 	Signed      bool        `json:"signed,omitempty"`
+	Sign        string      `json:"sign,omitempty"` // LEADING or TRAILING, and SEPARATE, as a SIGN clause says
 	Occurs      int         `json:"occurs,omitempty"`
 	OccursMin   int         `json:"occursMin,omitempty"`
 	DependingOn string      `json:"dependingOn,omitempty"`
@@ -262,8 +272,8 @@ type Copybook struct {
 
 // Analyze reads the programs, the jobs, which are the paths ending in
 // .jcl, and every copybook in copybookDir.
-func Analyze(paths []string, copybookDir string) (*System, error) {
-	s := &System{}
+func Analyze(paths []string, copybookDir string, dialect cobol.Dialect) (*System, error) {
+	s := &System{Dialect: dialect}
 	var programPaths, jobPaths []string
 	for _, path := range paths {
 		if strings.EqualFold(filepath.Ext(path), ".jcl") {
@@ -273,7 +283,7 @@ func Analyze(paths []string, copybookDir string) (*System, error) {
 		}
 	}
 	for _, path := range programPaths {
-		program, err := analyzeProgram(path, copybookDir)
+		program, err := analyzeProgram(path, copybookDir, dialect)
 		if err != nil {
 			return nil, err
 		}
@@ -299,7 +309,7 @@ func Analyze(paths []string, copybookDir string) (*System, error) {
 	}
 	slices.Sort(copybookPaths)
 	for _, path := range copybookPaths {
-		copybook, err := analyzeCopybook(path, copybookDir, s.Programs)
+		copybook, err := analyzeCopybook(path, copybookDir, dialect, s.Programs)
 		if err != nil {
 			return nil, err
 		}
@@ -322,7 +332,7 @@ func Analyze(paths []string, copybookDir string) (*System, error) {
 	return s, nil
 }
 
-func analyzeProgram(path, copybookDir string) (Program, error) {
+func analyzeProgram(path, copybookDir string, dialect cobol.Dialect) (Program, error) {
 	p, err := cobol.ReadProgram(path, []string{copybookDir})
 	if err != nil {
 		return Program{}, err
@@ -332,7 +342,8 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 		program.Identification = append(program.Identification, Identification{Paragraph: e.Paragraph, Text: e.Text})
 	}
 
-	laidOut, err := layout.Program(p)
+	program.Constants = constants(p)
+	laidOut, err := layout.Program(p, dialect)
 	if err != nil {
 		return Program{}, err
 	}
@@ -449,7 +460,11 @@ func describeFile(p *cobol.Program, fd cobol.FileDescription) (File, error) {
 		Assign:       selected.Assign,
 		Organization: selected.Organization,
 		RecordKey:    selected.RecordKey,
+		RelativeKey:  selected.RelativeKey,
 		Status:       selected.Status,
+		MinLength:    fd.MinLength,
+		MaxLength:    fd.MaxLength,
+		LengthIn:     fd.LengthIn,
 		Source:       selected.Pos.String(),
 	}
 	if selected.Access != "SEQUENTIAL" {
@@ -469,6 +484,32 @@ func newRecord(f *layout.Field, section, file, programPath string, keys map[stri
 	return r
 }
 
+// Constant is a level-78 constant: a name for a value.
+type Constant struct {
+	Name   string `json:"name"`
+	Value  string `json:"value"`
+	Source string `json:"source"`
+}
+
+// constants lists a program's level-78 constants.
+func constants(p *cobol.Program) []Constant {
+	var list []Constant
+	for _, e := range p.WorkingStorage {
+		if e.Level == 78 && len(e.Values) == 1 {
+			list = append(list, Constant{Name: e.Name, Value: e.Values[0], Source: e.Pos.String()})
+		}
+	}
+	return list
+}
+
+// signClause is where a field's sign is, as its SIGN clause says.
+func signClause(f *layout.Field) string {
+	if f.SignSeparate {
+		return f.Sign + " SEPARATE"
+	}
+	return f.Sign
+}
+
 func newField(f *layout.Field, keys map[string]bool) Field {
 	field := Field{
 		Level:       f.Level,
@@ -481,6 +522,7 @@ func newField(f *layout.Field, keys map[string]bool) Field {
 		Digits:      f.Digits,
 		Scale:       f.Scale,
 		Signed:      f.Signed,
+		Sign:        signClause(f),
 		Occurs:      f.Occurs,
 		OccursMin:   f.OccursMin,
 		DependingOn: f.DependingOn,
@@ -531,12 +573,12 @@ func newParagraph(para structure.Paragraph) Paragraph {
 	return p
 }
 
-func analyzeCopybook(path, copybookDir string, programs []Program) (Copybook, error) {
+func analyzeCopybook(path, copybookDir string, dialect cobol.Dialect, programs []Program) (Copybook, error) {
 	entries, err := cobol.ReadDataEntries(path, []string{copybookDir})
 	if err != nil {
 		return Copybook{}, err
 	}
-	records, err := layout.Records(entries)
+	records, err := layout.Records(entries, dialect)
 	if err != nil {
 		return Copybook{}, err
 	}

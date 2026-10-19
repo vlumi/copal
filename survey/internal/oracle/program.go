@@ -18,12 +18,14 @@ import (
 	"github.com/vlumi/copal/survey/internal/rules"
 )
 
-// program is a main program prepared for the search: its source, its
-// blueprint, its records laid out, its data flow, its decision tables, the
+// program is a main program prepared for the search: its source, the
+// dialect it is written in, its blueprint, its records laid out, its data
+// flow, its decision tables, the
 // inputs it reads, with the shape of each, by name, and the units whose
 // rules a run of it can reach: itself, and the programs it calls.
 type program struct {
 	source    *cobol.Program
+	dialect   cobol.Dialect
 	blueprint *blueprint.Program
 	records   *layout.ProgramRecords
 	flow      dataflow.Flow
@@ -64,11 +66,11 @@ func (in input) name() string {
 }
 
 func prepare(system *blueprint.System, bp *blueprint.Program, copybookDir string) (*program, error) {
-	source, records, flow, err := analyze(bp, copybookDir)
+	source, records, flow, err := analyze(bp, copybookDir, system.Dialect)
 	if err != nil {
 		return nil, err
 	}
-	p := &program{source: source, blueprint: bp, records: records, flow: flow, tables: bp.Tables(), shapes: map[string]shape{}}
+	p := &program{source: source, dialect: system.Dialect, blueprint: bp, records: records, flow: flow, tables: bp.Tables(), shapes: map[string]shape{}}
 	p.units = []Unit{{Program: bp.Name, Tables: p.tables, source: source, records: records, blueprint: bp}}
 	if err := p.addCallees(system, bp, copybookDir); err != nil {
 		return nil, err
@@ -91,12 +93,12 @@ func prepare(system *blueprint.System, bp *blueprint.Program, copybookDir string
 	return p, nil
 }
 
-func analyze(bp *blueprint.Program, copybookDir string) (*cobol.Program, *layout.ProgramRecords, dataflow.Flow, error) {
+func analyze(bp *blueprint.Program, copybookDir string, dialect cobol.Dialect) (*cobol.Program, *layout.ProgramRecords, dataflow.Flow, error) {
 	source, err := cobol.ReadProgram(bp.Source, []string{copybookDir})
 	if err != nil {
 		return nil, nil, dataflow.Flow{}, err
 	}
-	records, err := layout.Program(source)
+	records, err := layout.Program(source, dialect)
 	if err != nil {
 		return nil, nil, dataflow.Flow{}, err
 	}
@@ -112,7 +114,7 @@ func (p *program) addCallees(system *blueprint.System, bp *blueprint.Program, co
 			continue
 		}
 		callee := &system.Programs[i]
-		source, records, _, err := analyze(callee, copybookDir)
+		source, records, _, err := analyze(callee, copybookDir, system.Dialect)
 		if err != nil {
 			return err
 		}

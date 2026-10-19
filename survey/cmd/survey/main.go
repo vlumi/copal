@@ -2,9 +2,9 @@
 // its explorer, or searches for cases that reach the rules of its
 // programs.
 //
-//	survey blueprints -copybooks dir -out dir [-title name] program.cbl... [job.jcl...]
-//	survey explore -copybooks dir [-addr host:port] [-title name] [-cases dir] program.cbl... [job.jcl...]
-//	survey oracle -copybooks dir [-out dir -rules dir] [-title name] [-program name] [-jobs JOB,...] program.cbl... [job.jcl...]
+//	survey blueprints -copybooks dir -out dir [-dialect ibm|mf] [-title name] program.cbl... [job.jcl...]
+//	survey explore -copybooks dir [-dialect ibm|mf] [-addr host:port] [-title name] [-cases dir] program.cbl... [job.jcl...]
+//	survey oracle -copybooks dir [-dialect ibm|mf] [-out dir -rules dir] [-title name] [-program name] [-jobs JOB,...] program.cbl... [job.jcl...]
 package main
 
 import (
@@ -17,15 +17,16 @@ import (
 	"strings"
 	"time"
 
+	"github.com/vlumi/copal/bedrock/cobol"
 	"github.com/vlumi/copal/survey/blueprint"
 	"github.com/vlumi/copal/survey/internal/explore"
 	"github.com/vlumi/copal/survey/internal/oracle"
 )
 
 const usage = `usage:
-  survey blueprints -copybooks dir -out dir [-title name] program.cbl... [job.jcl...]
-  survey explore -copybooks dir [-addr host:port] [-title name] [-cases dir] program.cbl... [job.jcl...]
-  survey oracle -copybooks dir [-out dir -rules dir] [-title name] [-program name] [-jobs JOB,...] program.cbl... [job.jcl...]
+  survey blueprints -copybooks dir -out dir [-dialect ibm|mf] [-title name] program.cbl... [job.jcl...]
+  survey explore -copybooks dir [-dialect ibm|mf] [-addr host:port] [-title name] [-cases dir] program.cbl... [job.jcl...]
+  survey oracle -copybooks dir [-dialect ibm|mf] [-out dir -rules dir] [-title name] [-program name] [-jobs JOB,...] program.cbl... [job.jcl...]
 `
 
 func main() {
@@ -43,6 +44,7 @@ func main() {
 func writeBlueprints(args []string) error {
 	flags := flag.NewFlagSet("blueprints", flag.ExitOnError)
 	copybooks := flags.String("copybooks", "", "directory of the copybooks")
+	dialect := flags.String("dialect", cobol.IBM.Name, "the dialect the system is written in, ibm or mf")
 	out := flags.String("out", "", "directory to write the blueprints to")
 	title := flags.String("title", "", "name of the system, for the index")
 	_ = flags.Parse(args)
@@ -50,7 +52,7 @@ func writeBlueprints(args []string) error {
 		fmt.Fprint(os.Stderr, usage)
 		os.Exit(2)
 	}
-	system, err := blueprint.Analyze(flags.Args(), *copybooks)
+	system, err := analyzeSystem(flags.Args(), *copybooks, *dialect)
 	if err != nil {
 		return err
 	}
@@ -60,6 +62,7 @@ func writeBlueprints(args []string) error {
 func serveExplorer(args []string) error {
 	flags := flag.NewFlagSet("explore", flag.ExitOnError)
 	copybooks := flags.String("copybooks", "", "directory of the copybooks")
+	dialect := flags.String("dialect", cobol.IBM.Name, "the dialect the system is written in, ibm or mf")
 	addr := flags.String("addr", "127.0.0.1:1192", "address to serve on")
 	title := flags.String("title", "the system", "name of the system")
 	cases := flags.String("cases", "", "directory of the cases the oracle wrote")
@@ -68,7 +71,7 @@ func serveExplorer(args []string) error {
 		fmt.Fprint(os.Stderr, usage)
 		os.Exit(2)
 	}
-	system, err := blueprint.Analyze(flags.Args(), *copybooks)
+	system, err := analyzeSystem(flags.Args(), *copybooks, *dialect)
 	if err != nil {
 		return err
 	}
@@ -88,6 +91,7 @@ func serveExplorer(args []string) error {
 func searchCases(args []string) error {
 	flags := flag.NewFlagSet("oracle", flag.ExitOnError)
 	copybooks := flags.String("copybooks", "", "directory of the copybooks")
+	dialect := flags.String("dialect", cobol.IBM.Name, "the dialect the system is written in, ibm or mf")
 	out := flags.String("out", "", "directory to write the cases to")
 	rules := flags.String("rules", "", "directory of the blueprints' decision tables, relative to the cases' directory")
 	title := flags.String("title", "the system", "name of the system, for the index")
@@ -98,7 +102,7 @@ func searchCases(args []string) error {
 		fmt.Fprint(os.Stderr, usage)
 		os.Exit(2)
 	}
-	system, err := blueprint.Analyze(flags.Args(), *copybooks)
+	system, err := analyzeSystem(flags.Args(), *copybooks, *dialect)
 	if err != nil {
 		return err
 	}
@@ -157,6 +161,16 @@ func searchCases(args []string) error {
 		}
 	}
 	return os.WriteFile(filepath.Join(*out, "README.md"), oracle.Index(*title, results, batches), 0o644)
+}
+
+// analyzeSystem reads the programs, jobs and copybooks of a system written
+// in the dialect named.
+func analyzeSystem(paths []string, copybooks, dialect string) (*blueprint.System, error) {
+	d, ok := cobol.DialectNamed(dialect)
+	if !ok {
+		return nil, fmt.Errorf("no dialect %s", dialect)
+	}
+	return blueprint.Analyze(paths, copybooks, d)
 }
 
 // writeCases writes a program's cases to its directory, in place of those

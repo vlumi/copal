@@ -4,10 +4,12 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/vlumi/copal/bedrock/cobol"
 )
 
 func TestCalls(t *testing.T) {
-	s, err := Analyze([]string{"testdata/CALLER.cbl", "testdata/CALLEE.cbl"}, "testdata/no-copybooks")
+	s, err := Analyze([]string{"testdata/CALLER.cbl", "testdata/CALLEE.cbl"}, "testdata/no-copybooks", cobol.IBM)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -40,7 +42,7 @@ func TestCalls(t *testing.T) {
 // A program's DISPLAYs to the job's output are listed, those upon another
 // device not.
 func TestDisplays(t *testing.T) {
-	s, err := Analyze([]string{"testdata/REPLY.cbl"}, "testdata/no-copybooks")
+	s, err := Analyze([]string{"testdata/REPLY.cbl"}, "testdata/no-copybooks", cobol.IBM)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -53,7 +55,7 @@ func TestDisplays(t *testing.T) {
 // A program's inputs are the records it reads from files, a record read
 // INTO another described by that one, with where each field's values go.
 func TestInputs(t *testing.T) {
-	s, err := Analyze([]string{"testdata/REPLY.cbl"}, "testdata/no-copybooks")
+	s, err := Analyze([]string{"testdata/REPLY.cbl"}, "testdata/no-copybooks", cobol.IBM)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -70,7 +72,7 @@ func TestInputs(t *testing.T) {
 // writes of what it is passed; a program outside the system may write all
 // it is passed by reference.
 func TestCallWrites(t *testing.T) {
-	s, err := Analyze([]string{"testdata/ASKER.cbl", "testdata/ANSWERER.cbl"}, "testdata/no-copybooks")
+	s, err := Analyze([]string{"testdata/ASKER.cbl", "testdata/ANSWERER.cbl"}, "testdata/no-copybooks", cobol.IBM)
 	if err != nil {
 		t.Fatal(err)
 	}

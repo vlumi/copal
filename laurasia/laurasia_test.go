@@ -13,6 +13,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/vlumi/copal/bedrock/cobol"
 	"github.com/vlumi/copal/bedrock/run"
 	"github.com/vlumi/copal/internal/golden"
 )
@@ -27,7 +28,7 @@ func TestNights(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := (run.Build{Dialect: run.MicroFocus, Sources: "programs", Copybooks: "copybooks", Out: bin}).Programs(); err != nil {
+	if _, err := (run.Build{Dialect: cobol.MicroFocus, Sources: "programs", Copybooks: "copybooks", Out: bin}).Programs(); err != nil {
 		t.Fatal(err)
 	}
 	fixtures, err := filepath.Glob("testdata/*/RUN")

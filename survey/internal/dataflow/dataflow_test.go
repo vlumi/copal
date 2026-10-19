@@ -15,7 +15,7 @@ func TestAnalyze(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	records, err := layout.Program(p)
+	records, err := layout.Program(p, cobol.IBM)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -69,7 +69,7 @@ func TestOrigins(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	records, err := layout.Program(p)
+	records, err := layout.Program(p, cobol.IBM)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -97,7 +97,7 @@ func TestTrace(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	records, err := layout.Program(p)
+	records, err := layout.Program(p, cobol.IBM)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -125,7 +125,7 @@ func TestAffects(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	records, err := layout.Program(p)
+	records, err := layout.Program(p, cobol.IBM)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -154,7 +154,7 @@ func TestShare(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	records, err := layout.Program(p)
+	records, err := layout.Program(p, cobol.IBM)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -177,7 +177,7 @@ func TestBytes(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	records, err := layout.Program(p)
+	records, err := layout.Program(p, cobol.IBM)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -199,7 +199,7 @@ func analyze(t *testing.T, path string) Flow {
 	if err != nil {
 		t.Fatal(err)
 	}
-	records, err := layout.Program(p)
+	records, err := layout.Program(p, cobol.IBM)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -306,7 +306,7 @@ func TestMayChange(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	records, err := layout.Program(p)
+	records, err := layout.Program(p, cobol.IBM)
 	if err != nil {
 		t.Fatal(err)
 	}
