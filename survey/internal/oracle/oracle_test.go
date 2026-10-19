@@ -12,7 +12,9 @@ import (
 // that differ and totals that match, an account that exists, one that does
 // not and one that is closed, a large debit, and files that cannot be
 // opened or read, from a base case that passes and the levers the
-// program's own conditions and files give.
+// program's own conditions and files give. The one rule it cannot reach,
+// a count the program keeps twice found to differ, is the one it marks as
+// totals the program adds up itself.
 func TestSearch(t *testing.T) {
 	system, err := blueprint.Analyze([]string{"testdata/BATCH.cbl"}, "testdata/copybooks", cobol.IBM)
 	if err != nil {
@@ -22,11 +24,20 @@ func TestSearch(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	own := 0
 	for ti, table := range res.Units[0].Tables {
 		for ri, r := range table.Rules {
-			if _, ok := res.First[rule{0, ti, ri}]; !ok {
-				t.Errorf("%s %s rule %d not reached: %v %v", table.Paragraph, table.Loop, ri+1, table.Conditions, r.Entries)
+			_, reached := res.First[rule{0, ti, ri}]
+			marked := res.Units[0].checksOwnTotals(table, r)
+			if marked {
+				own++
+			}
+			if reached == marked {
+				t.Errorf("%s %s rule %d reached %v, marked as own totals %v: %v %v", table.Paragraph, table.Loop, ri+1, reached, marked, table.Conditions, r.Entries)
 			}
 		}
+	}
+	if own != 1 {
+		t.Errorf("%d rules marked as own totals, want 1", own)
 	}
 }

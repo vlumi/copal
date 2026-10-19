@@ -36,4 +36,6 @@ The table is as the plan began. Part 3 found most of the second row to be the fo
    The rules reached go from 437 of 508 to 443 of 494, and 51 are left. What a called program returns is still not carried back: AUTHSRV's three rules that find a request approved after a paragraph that only declines are the one kind left that it would rule out. IXFEE's six rules on a group out of range are the other side, values no caller passes.
 4. **Totals that agree by construction.** Rules that only bad data reaches, such as totals that disagree when the program computed both, listed apart from the rest, with the reason.
 
+   As built: a rule no case reaches is marked when it finds two totals the program adds up itself to differ: an equality, found false, of two items of the program's working storage that it only ever adds to, from zero. No input field sets either, so the search has nothing to change to reach the rule; it takes the program's own arithmetic disagreeing with itself. The cases' README says so in the rule's cell, and `coverage.json` lists the rules as `ownTotals`. Three are marked: GLSUM's debits and credits, ACCTMNT's balances in and out, and STMTPRT's statements selected and printed. The mark says why the search cannot reach a rule, not that no run can: it is no proof that the totals always agree.
+
 Each part one pull request.

@@ -61,7 +61,9 @@ func (r *Result) coverage(rulesDir string) string {
 	b.WriteString(". Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, " +
 		"and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from " +
 		"its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its " +
-		"conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's.\n")
+		"conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's. " +
+		"A rule that finds two totals the program adds up itself to differ, items of its own that it only adds to, says so: no input " +
+		"field sets either, so the search has nothing to change to reach it.\n")
 	for u, unit := range r.Units {
 		level := "##"
 		if len(r.Units) > 1 {
@@ -76,6 +78,8 @@ func (r *Result) coverage(rulesDir string) string {
 				cell := "not reached: " + outcomes(table.Conditions, rl.Entries)
 				if c, ok := r.First[rule{u, t, i}]; ok {
 					cell = fmt.Sprintf("[case %s](%s/)", caseName(c), caseName(c))
+				} else if unit.checksOwnTotals(table, rl) {
+					cell = "not reached, totals the program adds up itself found to differ: " + outcomes(table.Conditions, rl.Entries)
 				}
 				fmt.Fprintf(&b, "| %d | %s |\n", i+1, cell)
 			}
