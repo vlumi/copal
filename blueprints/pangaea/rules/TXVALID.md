@@ -126,18 +126,18 @@ Source: [TXVALID.cbl:210](../../../pangaea/programs/TXVALID.cbl#L210).
 
 ## 4000-CHECK-TRAILER
 
-| | 1 | 2 | 3 | 4 | 5 | 6 |
-| --- | :-: | :-: | :-: | :-: | :-: | :-: |
-| `TT-DETAIL-COUNT = WS-DETAIL-COUNT` | N | Y | Y | Y | Y | Y |
-| `FILE-IS-GOOD` | N | N | N | Y | Y | N |
-| `TT-AMOUNT-TOTAL = WS-AMOUNT-TOTAL` | | N | Y | Y | Y | Y |
-| `TT-ACCT-HASH = WS-ACCT-HASH` | | | N | Y | Y | Y |
-| `READ TRAN-IN AT END` | | | | N | Y | |
-| → `MOVE 'TRAILER DETAIL COUNT DIFFERS' TO WS-FILE-ERROR` | 1 | | | | | |
-| → `MOVE 'TRAILER AMOUNT TOTAL DIFFERS' TO WS-FILE-ERROR` | | 1 | | | | |
-| → `MOVE 'TRAILER ACCOUNT HASH DIFFERS' TO WS-FILE-ERROR` | | | 1 | | | |
-| → `READ TRAN-IN` | | | | 1 | 1 | |
-| → `MOVE 'RECORDS AFTER THE TRAILER' TO WS-FILE-ERROR` | | | | 2 | | |
+| | 1 | 2 | 3 | 4 | 5 |
+| --- | :-: | :-: | :-: | :-: | :-: |
+| `TT-DETAIL-COUNT = WS-DETAIL-COUNT` | N | Y | Y | Y | Y |
+| `FILE-IS-GOOD` | N | N | N | Y | Y |
+| `TT-AMOUNT-TOTAL = WS-AMOUNT-TOTAL` | | N | Y | Y | Y |
+| `TT-ACCT-HASH = WS-ACCT-HASH` | | | N | Y | Y |
+| `READ TRAN-IN AT END` | | | | N | Y |
+| → `MOVE 'TRAILER DETAIL COUNT DIFFERS' TO WS-FILE-ERROR` | 1 | | | | |
+| → `MOVE 'TRAILER AMOUNT TOTAL DIFFERS' TO WS-FILE-ERROR` | | 1 | | | |
+| → `MOVE 'TRAILER ACCOUNT HASH DIFFERS' TO WS-FILE-ERROR` | | | 1 | | |
+| → `READ TRAN-IN` | | | | 1 | 1 |
+| → `MOVE 'RECORDS AFTER THE TRAILER' TO WS-FILE-ERROR` | | | | 2 | |
 
 Source: [TXVALID.cbl:252](../../../pangaea/programs/TXVALID.cbl#L252).
 

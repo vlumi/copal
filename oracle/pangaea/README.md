@@ -9,14 +9,14 @@ For each main program, input data that reaches the rules of its decision tables,
 | [AUTHSRV](AUTHSRV/) | 60 of 68 | 32 |
 | [BANKDATE](BANKDATE/) | 3 of 3 | 3 |
 | [CARDLOAD](CARDLOAD/) | 10 of 10 | 5 |
-| [GLSUM](GLSUM/) | 19 of 26 | 7 |
+| [GLSUM](GLSUM/) | 19 of 25 | 7 |
 | [HOLDEXT](HOLDEXT/) | 11 of 11 | 6 |
 | [INTACCR](INTACCR/) | 27 of 33 | 9 |
 | [MONCHG](MONCHG/) | 18 of 21 | 11 |
 | [STMTPRT](STMTPRT/) | 30 of 34 | 12 |
 | [TXPOST](TXPOST/) | 30 of 30 | 13 |
 | [TXSORT](TXSORT/) | 2 of 2 | 2 |
-| [TXVALID](TXVALID/) | 32 of 35 | 20 |
+| [TXVALID](TXVALID/) | 32 of 34 | 20 |
 
 And for each job, a batch: the job run through its steps on inputs from its programs' cleanest cases, with the datasets it wrote and its output.
 

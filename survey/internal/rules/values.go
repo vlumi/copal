@@ -13,10 +13,12 @@ import (
 type ConditionNames func(name string) (field string, values []string, ok bool)
 
 // Knowledge is what the rules know of the program's data: what a statement
-// may change, and what a condition name stands for.
+// may change, what a condition name stands for, and the values fields of
+// the working storage start with, by name.
 type Knowledge struct {
 	MayChange      MayChange
 	ConditionNames ConditionNames
+	InitialValues  map[string]string
 }
 
 // assignment is a value a statement gives a field: a literal moved into

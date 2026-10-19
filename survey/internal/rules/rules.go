@@ -60,13 +60,14 @@ const maxPaths = 64
 // after a statement that may change what it refers to is a test of its
 // own, and a path that would find a condition other than the values it
 // knows decide is no rule: one that moves an error message into a field
-// does not then find the field's condition name for no error true.
+// does not then find the field's condition name for no error true. A
+// paragraph's paths start from what holds wherever it is entered.
 func Tables(p *cobol.Program, knowledge Knowledge) []Table {
 	var tables []Table
-	never := neverReturning(p)
-	for _, para := range p.Paragraphs {
-		e := &extractor{paragraph: para.Name, knowledge: knowledge, never: never}
-		if t, ok := newTable(para.Name, "", para.Pos, e.paths(para.Statements), e.collapsed); ok {
+	g := newProgram(p, knowledge)
+	for i, para := range p.Paragraphs {
+		e := g.follow(i)
+		if t, ok := newTable(para.Name, "", para.Pos, e.top, e.collapsed); ok {
 			tables = append(tables, t)
 		}
 		tables = append(tables, e.loops...)
@@ -135,9 +136,12 @@ func (p path) tests() []test {
 }
 
 // extractor follows the paths of one paragraph, collecting the tables of
-// its inline loops on the way.
+// its inline loops on the way: top are the paths through the paragraph,
+// and bodies those through each pass of its inline loops.
 type extractor struct {
 	paragraph string
+	top       []path
+	bodies    [][]path
 	loops     []Table
 	knowledge Knowledge
 	collapsed []cobol.Pos
@@ -170,7 +174,9 @@ func (e *extractor) pathsKnowing(given []event, statements []cobol.Statement) []
 		case s.Verb == "PERFORM" && len(s.Branches) > 0:
 			outer := e.collapsed
 			e.collapsed = nil
-			if t, ok := newTable(e.paragraph, s.Text, s.Pos, e.pathsKnowing(passing(s), s.Branches[0].Statements), e.collapsed); ok {
+			body := e.pathsKnowing(passing(s), s.Branches[0].Statements)
+			e.bodies = append(e.bodies, body)
+			if t, ok := newTable(e.paragraph, s.Text, s.Pos, body, e.collapsed); ok {
 				e.loops = append(e.loops, t)
 			}
 			e.collapsed = outer

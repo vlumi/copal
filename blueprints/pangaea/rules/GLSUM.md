@@ -16,18 +16,18 @@ The business rules of [GLSUM](../programs/GLSUM.md), paragraph by paragraph: eac
 
 ## 0000-MAIN
 
-| | 1 | 2 | 3 | 4 |
-| --- | :-: | :-: | :-: | :-: |
-| `WS-CLOSED-MONTH-NUMBER = 0` | N | N | Y | Y |
-| `WS-TRANSIT-NET = 0` | N | Y | N | Y |
-| → `PERFORM 1000-INITIALIZE` | 1 | 1 | 1 | 1 |
-| → `PERFORM 2000-POST-MONTH` | 2 | 2 | | |
-| → `PERFORM 3000-WRITE-LEDGER` | 3 | 3 | | |
-| → `PERFORM 8000-WRITE-REPORT` | 4 | 4 | 2 | 2 |
-| → `PERFORM 9000-CLOSE-FILES` | 5 | 5 | 3 | 3 |
-| → `MOVE 4 TO RETURN-CODE` | 6 | | 4 | |
-| → `STOP RUN` | 7 | 7 | 5 | 5 |
-| → `MOVE 0 TO RETURN-CODE` | | 6 | | 4 |
+| | 1 | 2 | 3 |
+| --- | :-: | :-: | :-: |
+| `WS-CLOSED-MONTH-NUMBER = 0` | N | N | Y |
+| `WS-TRANSIT-NET = 0` | N | Y | Y |
+| → `PERFORM 1000-INITIALIZE` | 1 | 1 | 1 |
+| → `PERFORM 2000-POST-MONTH` | 2 | 2 | |
+| → `PERFORM 3000-WRITE-LEDGER` | 3 | 3 | |
+| → `PERFORM 8000-WRITE-REPORT` | 4 | 4 | 2 |
+| → `PERFORM 9000-CLOSE-FILES` | 5 | 5 | 3 |
+| → `MOVE 4 TO RETURN-CODE` | 6 | | |
+| → `STOP RUN` | 7 | 7 | 5 |
+| → `MOVE 0 TO RETURN-CODE` | | 6 | 4 |
 
 Source: [GLSUM.cbl:161](../../../pangaea/programs/GLSUM.cbl#L161).
 
