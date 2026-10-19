@@ -35,14 +35,14 @@ The hard part of moving a COBOL core system to anything newer is rarely the tran
 
 ## Later, not now
 
-- Test data derived from the extracted conditions so that every branch is reached, run through GnuCOBOL to record real outputs: the oracle a rewrite would have to match.
-- Data that respects cross-field and cross-record rules (control totals, header-before-detail, references to existing accounts), which format-only generation gets wrong.
-- Only then a model, for naming paragraphs and explaining rules in prose, on top of the facts the analysis established.
+- Test data derived from the extracted conditions so that every branch is reached, run through GnuCOBOL to record real outputs: the oracle a rewrite would have to match (done, milestone 11).
+- Data that respects cross-field and cross-record rules (control totals, header-before-detail, references to existing accounts), which format-only generation gets wrong (done, milestones 11 and 12).
+- Only then a model, for naming paragraphs and explaining rules in prose, on top of the facts the analysis established: milestone 14, [plans/model-prose.md](plans/model-prose.md).
 
 ## Not the goal
 
 - Translating COBOL into Java or anything else.
-- Supporting every dialect. What the specimens use first; real-world breadth only if the project ever needs it. Bedrock's COBOL may become an open-source library ([roadmap.md](roadmap.md), milestone 14), but it starts pre-production, a comprehensive starting point, and grows toward stable only as real code is run through it.
+- Supporting every dialect. What the specimens use first; real-world breadth only if the project ever needs it. Bedrock's COBOL may become an open-source library ([roadmap.md](roadmap.md), milestone 15), but it starts pre-production, a comprehensive starting point, and grows toward stable only as real code is run through it.
 
 ## Decisions
 
