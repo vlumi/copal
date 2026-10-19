@@ -42,7 +42,7 @@ The hard part of moving a COBOL core system to anything newer is rarely the tran
 ## Not the goal
 
 - Translating COBOL into Java or anything else.
-- Supporting every dialect. Pangaea's subset first; real-world breadth only if the project ever needs it.
+- Supporting every dialect. What the specimens use first; real-world breadth only if the project ever needs it. Bedrock's COBOL may become an open-source library ([roadmap.md](roadmap.md), milestone 14), but it starts pre-production, a comprehensive starting point, and grows toward stable only as real code is run through it.
 
 ## Decisions
 

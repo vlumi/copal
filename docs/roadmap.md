@@ -163,6 +163,16 @@ Laurasia Card Services, a card processor written in another shop's COBOL, run by
 
 Done when: the survey's blueprints and cases of Laurasia are as right as Pangaea's, with no special case for either.
 
+## 14. Bedrock's COBOL as a library
+
+What reads COBOL, lays out its records and reads them by field, `cobol`, `layout` and `record`, and `jcl` with them, as an open-source library of its own, for anyone else reading COBOL. Running it, `run`, `runner` and `dataset`, is this project's harness and stays here. The parsers evaluated before bedrock was written did not keep positions, lay out records or compute data flow that could be trusted; a library that does is worth having even unfinished.
+
+- First a module of its own within this repository, with the public API it would have, so that the survey and both specimens use it only through that.
+- Then its own repository, versioned below 1.0 and published as pre-production: a comprehensive starting point that is honest about what it has been run against, two specimens written for it, and what it has not.
+- Stability comes only from real code. Its API and coverage settle as code it was not written for is run through it, by this project or by others; in a vacuum it stays pre-production.
+
+Done when: it is published, the survey and the specimens import it from there, and its README says what it covers, what it has been tested against, and what it does not yet read.
+
 ## Later
 
 From the brief: a model for naming paragraphs and explaining rules in prose, on top of the facts the analysis established and the evidence the oracle recorded.
