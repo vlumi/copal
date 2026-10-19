@@ -39,6 +39,7 @@ Program [settle.cbl](../../../laurasia/programs/settle.cbl): 4 files, 6 paragrap
 - [Field origins](#field-origins)
   - [File PAYOUT-OUT](#file-payout-out)
   - [File REPORT-OUT](#file-report-out)
+- [Links between records](#links-between-records)
 - [Records](#records)
   - [PRES-RECORD](#pres-record)
   - [ADJUSTMENT](#adjustment)
@@ -256,6 +257,14 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT](#ws-report-count) an
 | --- | --: | --- |
 | RA-LABEL | 1-30 | literal 'PAID' |
 | RA-VALUE | 31-45 | file ADJUST-IN AD-AMOUNT; file PRES-IN PS-AMOUNT; file PRES-IN PS-FEE; initial value of WS-PAID-TOTAL; literal ZERO |
+
+## Links between records
+
+Fields of one input the program relies on to find or match the records of another: moved into an indexed file's record key to read it by, compared for equality, or compared for order to merge the two in that order, each side's values from that field alone.
+
+| Field | Of | Links to | Of | How | Source |
+| --- | --- | --- | --- | --- | --- |
+| PS-MERCHANT | PRES-IN | AD-MERCHANT | ADJUST-IN | merged in order with | [settle.cbl:100](../../../laurasia/programs/settle.cbl#L100) |
 
 ## Records
 

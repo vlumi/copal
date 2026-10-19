@@ -126,7 +126,7 @@ func TestRelations(t *testing.T) {
 	hasLink := func(program, kind, from, to string) bool {
 		return slices.ContainsFunc(byName[program].Links, func(l Link) bool { return l.Kind == kind && l.From.Field == from && l.To.Field == to })
 	}
-	if !hasLink("TXPOST", "equal", "TD-ACCT-NO", "AM-ACCT-NO") || !hasLink("AUTHSRV", "key", "RQ-CARD-NO", "CR-CARD-NO") {
+	if !hasLink("TXPOST", "merge", "TD-ACCT-NO", "AM-ACCT-NO") || !hasLink("AUTHSRV", "key", "RQ-CARD-NO", "CR-CARD-NO") {
 		t.Errorf("links: TXPOST %+v, AUTHSRV %+v", byName["TXPOST"].Links, byName["AUTHSRV"].Links)
 	}
 	if want := (Total{File: "TRAN-IN", Field: "TT-AMOUNT-TOTAL", Sum: "TD-AMOUNT", Type: "TR-DETAIL"}); !slices.ContainsFunc(byName["TXVALID"].Totals, func(u Total) bool {

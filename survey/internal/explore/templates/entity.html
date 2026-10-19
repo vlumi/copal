@@ -30,7 +30,7 @@
   <tbody>
   {{range .}}<tr><td><a href="{{entityField .From.Record .From.Field}}">{{.From.Field}}</a>{{if ne .From.Record $e.Record}} of <a href="{{entity .From.Record}}">{{.From.Record}}</a>{{end}}</td>
     <td><a href="{{entityField .To.Record .To.Field}}">{{.To.Field}}</a>{{if ne .To.Record $e.Record}} of <a href="{{entity .To.Record}}">{{.To.Record}}</a>{{end}}</td>
-    <td>{{if eq .Kind "key"}}key to read by{{else}}equal to{{end}}</td>
+    <td>{{if eq .Kind "key"}}key to read by{{else if eq .Kind "merge"}}merged in order with{{else}}equal to{{end}}</td>
     <td>{{range $i, $p := .Programs}}{{if $i}}, {{end}}<a href="{{program $p}}">{{$p}}</a>{{end}}</td></tr>
   {{end}}
   </tbody>

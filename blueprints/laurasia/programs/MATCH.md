@@ -40,6 +40,7 @@ Program [match.cbl](../../../laurasia/programs/match.cbl): 4 files, 7 paragraphs
 - [Field origins](#field-origins)
   - [File PRES-OUT](#file-pres-out)
   - [File REPORT-OUT](#file-report-out)
+- [Links between records](#links-between-records)
 - [Records](#records)
   - [PRES-IN-RECORD](#pres-in-record)
   - [AUTH-ENTRY](#auth-entry)
@@ -237,6 +238,14 @@ Written from [REPORT-LINE](#report-line) and [WS-REPORT-COUNT](#ws-report-count)
 | --- | --: | --- |
 | RC-LABEL | 1-30 | literal 'AUTHORIZATIONS LAPSED'; literal 'MATCHED'; literal 'NOT MATCHED' |
 | RC-VALUE | 31-38 | initial value of WS-LAPSED; initial value of WS-MATCHED; initial value of WS-NOT-MATCHED; literal 1 |
+
+## Links between records
+
+Fields of one input the program relies on to find or match the records of another: moved into an indexed file's record key to read it by, compared for equality, or compared for order to merge the two in that order, each side's values from that field alone.
+
+| Field | Of | Links to | Of | How | Source |
+| --- | --- | --- | --- | --- | --- |
+| PS-AUTH-CODE | PRES-IN | AL-AUTH-CODE | AUTH-IN | merged in order with | [match.cbl:87](../../../laurasia/programs/match.cbl#L87) |
 
 ## Records
 
