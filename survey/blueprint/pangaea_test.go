@@ -5,6 +5,7 @@ import (
 	"slices"
 	"testing"
 
+	"github.com/vlumi/copal/bedrock/cobol"
 	"github.com/vlumi/copal/internal/golden"
 )
 
@@ -20,7 +21,7 @@ func TestPangaea(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	system, err := Analyze(append(programs, jobs...), "pangaea/copybooks")
+	system, err := Analyze(append(programs, jobs...), "pangaea/copybooks", cobol.IBM)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -40,7 +41,7 @@ func TestDateLayouts(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	system, err := Analyze(programs, "pangaea/copybooks")
+	system, err := Analyze(programs, "pangaea/copybooks", cobol.IBM)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -80,7 +81,7 @@ func TestDateLayouts(t *testing.T) {
 // in redefinitions; each type's fields get the origins of its own writes.
 func TestRecordTypes(t *testing.T) {
 	t.Chdir("../..")
-	system, err := Analyze([]string{"pangaea/programs/HOLDEXT.cbl"}, "pangaea/copybooks")
+	system, err := Analyze([]string{"pangaea/programs/HOLDEXT.cbl"}, "pangaea/copybooks", cobol.IBM)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -114,7 +115,7 @@ func TestRelations(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	system, err := Analyze(programs, "pangaea/copybooks")
+	system, err := Analyze(programs, "pangaea/copybooks", cobol.IBM)
 	if err != nil {
 		t.Fatal(err)
 	}

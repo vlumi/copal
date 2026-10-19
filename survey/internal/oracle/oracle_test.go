@@ -3,6 +3,7 @@ package oracle
 import (
 	"testing"
 
+	"github.com/vlumi/copal/bedrock/cobol"
 	"github.com/vlumi/copal/survey/blueprint"
 )
 
@@ -12,7 +13,7 @@ import (
 // not and one that is closed, and a large debit, from a base case that
 // passes and the levers the program's own conditions give.
 func TestSearch(t *testing.T) {
-	system, err := blueprint.Analyze([]string{"testdata/BATCH.cbl"}, "testdata/copybooks")
+	system, err := blueprint.Analyze([]string{"testdata/BATCH.cbl"}, "testdata/copybooks", cobol.IBM)
 	if err != nil {
 		t.Fatal(err)
 	}

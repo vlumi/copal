@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/vlumi/copal/bedrock/cobol"
 	"github.com/vlumi/copal/bedrock/dataset"
 	"github.com/vlumi/copal/bedrock/jcl"
 	"github.com/vlumi/copal/bedrock/run"
@@ -28,7 +29,7 @@ import (
 // rewrite the golden files.
 func TestDaily(t *testing.T) {
 	programs := t.TempDir()
-	if _, err := (run.Build{Dialect: run.IBM, Sources: "programs", Copybooks: "copybooks", Out: programs}).Programs(); err != nil {
+	if _, err := (run.Build{Dialect: cobol.IBM, Sources: "programs", Copybooks: "copybooks", Out: programs}).Programs(); err != nil {
 		t.Fatal(err)
 	}
 	codec := newCodec(t)

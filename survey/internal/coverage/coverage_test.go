@@ -19,7 +19,7 @@ import (
 func traced(t *testing.T, name string) (*cobol.Program, []Event) {
 	t.Helper()
 	programs, dir := t.TempDir(), t.TempDir()
-	if _, err := (run.Build{Dialect: run.IBM, Sources: "testdata", Copybooks: "testdata", Out: programs, Trace: true}).Programs(); err != nil {
+	if _, err := (run.Build{Dialect: cobol.IBM, Sources: "testdata", Copybooks: "testdata", Out: programs, Trace: true}).Programs(); err != nil {
 		t.Fatal(err)
 	}
 	trace := filepath.Join(dir, "trace")
@@ -47,7 +47,7 @@ func traced(t *testing.T, name string) (*cobol.Program, []Event) {
 func TestReplay(t *testing.T) {
 	p, events := traced(t, "COVER")
 	got := map[string][]int{}
-	records, err := layout.Program(p)
+	records, err := layout.Program(p, cobol.IBM)
 	if err != nil {
 		t.Fatal(err)
 	}

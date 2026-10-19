@@ -7,6 +7,7 @@ package records
 import (
 	"path/filepath"
 
+	"github.com/vlumi/copal/bedrock/cobol"
 	"github.com/vlumi/copal/bedrock/record"
 )
 
@@ -38,7 +39,7 @@ func Load(copybookDir string) (*Layouts, error) {
 		{&l.Request, "AUTHMSG", "AUTH-REQUEST"},
 		{&l.Response, "AUTHMSG", "AUTH-RESPONSE"},
 	} {
-		layout, err := record.FromCopybook(filepath.Join(copybookDir, c.copybook+".cpy"), []string{copybookDir}, c.name)
+		layout, err := record.FromCopybook(filepath.Join(copybookDir, c.copybook+".cpy"), []string{copybookDir}, c.name, cobol.IBM)
 		if err != nil {
 			return nil, err
 		}

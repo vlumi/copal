@@ -20,6 +20,7 @@ import (
 // System is the analysis of a set of programs, the copybooks they use and
 // the jobs that run them.
 type System struct {
+	Dialect   cobol.Dialect
 	Programs  []Program
 	Copybooks []Copybook
 	Jobs      []Job
@@ -262,8 +263,8 @@ type Copybook struct {
 
 // Analyze reads the programs, the jobs, which are the paths ending in
 // .jcl, and every copybook in copybookDir.
-func Analyze(paths []string, copybookDir string) (*System, error) {
-	s := &System{}
+func Analyze(paths []string, copybookDir string, dialect cobol.Dialect) (*System, error) {
+	s := &System{Dialect: dialect}
 	var programPaths, jobPaths []string
 	for _, path := range paths {
 		if strings.EqualFold(filepath.Ext(path), ".jcl") {
@@ -273,7 +274,7 @@ func Analyze(paths []string, copybookDir string) (*System, error) {
 		}
 	}
 	for _, path := range programPaths {
-		program, err := analyzeProgram(path, copybookDir)
+		program, err := analyzeProgram(path, copybookDir, dialect)
 		if err != nil {
 			return nil, err
 		}
@@ -299,7 +300,7 @@ func Analyze(paths []string, copybookDir string) (*System, error) {
 	}
 	slices.Sort(copybookPaths)
 	for _, path := range copybookPaths {
-		copybook, err := analyzeCopybook(path, copybookDir, s.Programs)
+		copybook, err := analyzeCopybook(path, copybookDir, dialect, s.Programs)
 		if err != nil {
 			return nil, err
 		}
@@ -322,7 +323,7 @@ func Analyze(paths []string, copybookDir string) (*System, error) {
 	return s, nil
 }
 
-func analyzeProgram(path, copybookDir string) (Program, error) {
+func analyzeProgram(path, copybookDir string, dialect cobol.Dialect) (Program, error) {
 	p, err := cobol.ReadProgram(path, []string{copybookDir})
 	if err != nil {
 		return Program{}, err
@@ -332,7 +333,7 @@ func analyzeProgram(path, copybookDir string) (Program, error) {
 		program.Identification = append(program.Identification, Identification{Paragraph: e.Paragraph, Text: e.Text})
 	}
 
-	laidOut, err := layout.Program(p)
+	laidOut, err := layout.Program(p, dialect)
 	if err != nil {
 		return Program{}, err
 	}
@@ -531,12 +532,12 @@ func newParagraph(para structure.Paragraph) Paragraph {
 	return p
 }
 
-func analyzeCopybook(path, copybookDir string, programs []Program) (Copybook, error) {
+func analyzeCopybook(path, copybookDir string, dialect cobol.Dialect, programs []Program) (Copybook, error) {
 	entries, err := cobol.ReadDataEntries(path, []string{copybookDir})
 	if err != nil {
 		return Copybook{}, err
 	}
-	records, err := layout.Records(entries)
+	records, err := layout.Records(entries, dialect)
 	if err != nil {
 		return Copybook{}, err
 	}

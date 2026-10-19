@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/vlumi/copal/bedrock/cobol"
 	"github.com/vlumi/copal/console"
 	"github.com/vlumi/copal/pangaea/bank"
 	"github.com/vlumi/copal/survey/blueprint"
@@ -39,7 +40,7 @@ func serve(args []string) error {
 	if err != nil {
 		return err
 	}
-	system, err := blueprint.Analyze(append(programs, b.JobFiles()...), b.Copybooks)
+	system, err := blueprint.Analyze(append(programs, b.JobFiles()...), b.Copybooks, cobol.IBM)
 	if err != nil {
 		return err
 	}

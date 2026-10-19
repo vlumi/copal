@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/vlumi/copal/bedrock/cobol"
 	"github.com/vlumi/copal/bedrock/layout"
 	"github.com/vlumi/copal/bedrock/run"
 	"github.com/vlumi/copal/survey/blueprint"
@@ -318,7 +319,7 @@ func newRunner(p *program, sources, copybookDir, scratch string) (*runner, error
 	dir := filepath.Join(scratch, p.blueprint.Name)
 	r := &runner{program: p, programs: filepath.Join(scratch, "programs"), loaders: filepath.Join(dir, "loaders")}
 	if _, err := os.Stat(r.programs); os.IsNotExist(err) {
-		if _, err := (run.Build{Dialect: run.IBM, Sources: sources, Copybooks: copybookDir, Out: r.programs, Trace: true}).Programs(); err != nil {
+		if _, err := (run.Build{Dialect: p.dialect, Sources: sources, Copybooks: copybookDir, Out: r.programs, Trace: true}).Programs(); err != nil {
 			return nil, err
 		}
 	}
@@ -348,7 +349,8 @@ func newRunner(p *program, sources, copybookDir, scratch string) (*runner, error
 			}
 		}
 	}
-	if _, err := (run.Build{Dialect: run.IBM, Sources: loaderSources, Copybooks: loaderSources, Out: r.loaders}).Programs(); err != nil {
+	// The loaders are the oracle's own, in IBM's fixed format.
+	if _, err := (run.Build{Dialect: cobol.IBM, Sources: loaderSources, Copybooks: loaderSources, Out: r.loaders}).Programs(); err != nil {
 		return nil, err
 	}
 	return r, nil

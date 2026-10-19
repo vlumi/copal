@@ -6,6 +6,7 @@ import (
 	"slices"
 	"testing"
 
+	"github.com/vlumi/copal/bedrock/cobol"
 	"github.com/vlumi/copal/survey/blueprint"
 )
 
@@ -19,7 +20,7 @@ func pangaea(t *testing.T) *blueprint.System {
 	if err != nil {
 		t.Fatal(err)
 	}
-	s, err := blueprint.Analyze(append(programs, jobs...), "../../../pangaea/copybooks")
+	s, err := blueprint.Analyze(append(programs, jobs...), "../../../pangaea/copybooks", cobol.IBM)
 	if err != nil {
 		t.Fatal(err)
 	}

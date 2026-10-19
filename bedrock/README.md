@@ -2,8 +2,8 @@
 
 The language layer that the survey and the bank's machine room both stand on. Nothing here is analysis; it is how COBOL source, copybooks, records and JCL are read, and how COBOL programs are compiled and run.
 
-- [cobol/](cobol/): lexing fixed-format and free-format source, expanding `COPY` with `REPLACING`, and parsing the divisions, data entries and statements of the subset the specimens use, every token with the file and line it came from.
-- [layout/](layout/): record layouts from data description entries: position, length, picture, usage, `OCCURS`, `REDEFINES` and condition names.
+- [cobol/](cobol/): lexing fixed-format and free-format source, expanding `COPY` with `REPLACING`, and parsing the divisions, data entries and statements of the subset the specimens use, every token with the file and line it came from; and the dialects, IBM and Micro Focus, and what they lay out differently.
+- [layout/](layout/): record layouts from data description entries, in a dialect: position, length, picture, usage, `OCCURS`, `REDEFINES` and condition names.
 - [record/](record/): reading and writing the fields of a record through its layout, including packed decimal and the overpunched signs of display numbers.
 - [jcl/](jcl/): jobs, steps and DD statements from job files, with generations, temporary datasets and concatenations.
 - [dataset/](dataset/): a system's datasets, files of fixed-length records named by dataset name, with generations, and the catalog that lists them with their record lengths, indexed ones among them.

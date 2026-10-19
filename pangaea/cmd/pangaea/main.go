@@ -21,6 +21,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/vlumi/copal/bedrock/cobol"
 	"github.com/vlumi/copal/bedrock/dataset"
 	"github.com/vlumi/copal/bedrock/jcl"
 	"github.com/vlumi/copal/bedrock/run"
@@ -74,7 +75,7 @@ func build(args []string) error {
 	copybooks := flags.String("copybooks", "pangaea/copybooks", "directory of the copybooks")
 	out := flags.String("out", "pangaea/build", "directory for the executables")
 	_ = flags.Parse(args)
-	names, err := run.Build{Dialect: run.IBM, Sources: *src, Copybooks: *copybooks, Out: *out}.Programs()
+	names, err := run.Build{Dialect: cobol.IBM, Sources: *src, Copybooks: *copybooks, Out: *out}.Programs()
 	if err != nil {
 		return err
 	}
