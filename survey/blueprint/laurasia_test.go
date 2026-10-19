@@ -25,6 +25,9 @@ func TestLaurasia(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if system.Annotations, err = ReadAnnotations("annotations/laurasia"); err != nil {
+		t.Fatal(err)
+	}
 	files, err := system.Render("blueprints/laurasia", "laurasia")
 	if err != nil {
 		t.Fatal(err)

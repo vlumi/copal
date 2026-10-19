@@ -27,6 +27,9 @@ type System struct {
 	Datasets  []SystemDataset
 	Entities  []Entity
 	Schedule  []JobOrder
+	// Annotations are the prose a model wrote about the system, which the
+	// blueprints show beside the facts; Analyze leaves them to be read.
+	Annotations []Annotation
 }
 
 // Program is the blueprint of one program. Its Kind is "called" for a
