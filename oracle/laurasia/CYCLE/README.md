@@ -1,6 +1,6 @@
 # CYCLE: cases
 
-8 cases reach 7 of the 10 rules of CYCLE's decision tables, and of the programs it calls, 3 of the 3 of INTCALC, 4 of the 4 of MINPAY. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's. A rule that finds two totals the program adds up itself to differ, items of its own that it only adds to, says so: no input field sets either, so the search has nothing to change to reach it.
+8 cases reach 7 of the 10 rules of CYCLE's decision tables, and of the programs it calls, 3 of the 3 of INTCALC, 4 of the 4 of MINPAY. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's. A rule that finds two totals the program adds up itself to differ, items of its own that it only adds to, says so: no input field sets either, so the search has nothing to change to reach it. A rule that finds a write or rewrite by key to fail says so too: the search fails a file only when it is opened or read, and a program that writes keys it made new, or rewrites the record it read, meets that failure only when something else changes the file meanwhile.
 
 ## CYCLE
 
@@ -22,11 +22,11 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | not reached: `NOT CA-WAS-PAID-IN-FULL AND CA-STATEMENT-BALANCE > ZERO` Y, `WS-INTEREST > ZERO` Y, `REWRITE CARD-ACCOUNT INVALID KEY` Y |
+| 1 | not reached, a write or rewrite by key found to fail: `NOT CA-WAS-PAID-IN-FULL AND CA-STATEMENT-BALANCE > ZERO` Y, `WS-INTEREST > ZERO` Y, `REWRITE CARD-ACCOUNT INVALID KEY` Y |
 | 2 | [case 01](01/) |
-| 3 | not reached: `NOT CA-WAS-PAID-IN-FULL AND CA-STATEMENT-BALANCE > ZERO` Y, `WS-INTEREST > ZERO` N, `REWRITE CARD-ACCOUNT INVALID KEY` Y |
+| 3 | not reached, a write or rewrite by key found to fail: `NOT CA-WAS-PAID-IN-FULL AND CA-STATEMENT-BALANCE > ZERO` Y, `WS-INTEREST > ZERO` N, `REWRITE CARD-ACCOUNT INVALID KEY` Y |
 | 4 | [case 04](04/) |
-| 5 | not reached: `NOT CA-WAS-PAID-IN-FULL AND CA-STATEMENT-BALANCE > ZERO` N, `WS-INTEREST > ZERO` N, `REWRITE CARD-ACCOUNT INVALID KEY` Y |
+| 5 | not reached, a write or rewrite by key found to fail: `NOT CA-WAS-PAID-IN-FULL AND CA-STATEMENT-BALANCE > ZERO` N, `WS-INTEREST > ZERO` N, `REWRITE CARD-ACCOUNT INVALID KEY` Y |
 | 6 | [case 02](02/) |
 
 ## INTCALC
