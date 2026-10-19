@@ -6,7 +6,7 @@ For each main program, input data that reaches the rules of its decision tables,
 | --- | --: | --: |
 | [ACCTLOAD](ACCTLOAD/) | 9 of 9 | 4 |
 | [ACCTMNT](ACCTMNT/) | 37 of 41 | 13 |
-| [AUTHSRV](AUTHSRV/) | 54 of 79 | 27 |
+| [AUTHSRV](AUTHSRV/) | 60 of 68 | 32 |
 | [BANKDATE](BANKDATE/) | 3 of 3 | 3 |
 | [CARDLOAD](CARDLOAD/) | 10 of 10 | 5 |
 | [GLSUM](GLSUM/) | 19 of 26 | 7 |
@@ -16,7 +16,7 @@ For each main program, input data that reaches the rules of its decision tables,
 | [STMTPRT](STMTPRT/) | 30 of 34 | 12 |
 | [TXPOST](TXPOST/) | 30 of 30 | 13 |
 | [TXSORT](TXSORT/) | 2 of 2 | 2 |
-| [TXVALID](TXVALID/) | 32 of 39 | 20 |
+| [TXVALID](TXVALID/) | 32 of 37 | 20 |
 
 And for each job, a batch: the job run through its steps on inputs from its programs' cleanest cases, with the datasets it wrote and its output.
 

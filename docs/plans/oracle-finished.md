@@ -13,6 +13,8 @@ Read [oracle.md](oracle.md) and [deterministic-sweep.md](deterministic-sweep.md)
 | Totals that agree by construction | a few | `WS-DEBIT-TOTAL = WS-CREDIT-TOTAL` N, in GLSUM |
 | Combinations within a program the survey does not rule out | the rest | `WS-REQUEST-KEY < WS-MASTER-KEY` with `WS-MASTER-KEY = WS-ACTIVE-KEY`, in ACCTMNT |
 
+The table is as the plan began. Part 3 found most of the second row to be the fourth: AUTHSRV's paths that contradict themselves, and rules the search had not reached.
+
 ## Parts
 
 1. **A batch of Laurasia's scripts.** `survey oracle -jobs` takes scripts as well as jobs, and runs them as they are run, with sh, on inputs from the programs' cases.
@@ -24,6 +26,14 @@ Read [oracle.md](oracle.md) and [deterministic-sweep.md](deterministic-sweep.md)
 
    As built: three levers for each file, tried after the changes to records, and one failure a case. A file a program reads may be missing, so that opening it fails with status 35; a sequential one may be a directory, so that it opens and reading it fails with status 30; and a file it only writes may be bound to a path in a directory that is not there, so that creating it fails with status 30. GnuCOBOL gives the same statuses on macOS and on Linux, through the same indexed file handler. A record of the wrong length was left out: GnuCOBOL reads a short record of a fixed-length file without an error, and a long line of a line sequential one with status 06, which no program tests. A case records its failure in `input/failed.txt`, and a batch never takes its inputs from one. The rules reached go from 413 to 437 of 508: every rule that only a file status other than success takes is reached, 24 in all, and 71 rules are left.
 3. **What a called program returns.** A field the called program sets is carried back into the caller, so that a combination of conditions no call can return is left out of the caller's rules, as one no path can take is.
+
+   As built, this part found something else. AUTHSRV's unreached rules were not about what its called programs return. Most were paths that contradict themselves within AUTHSRV, and the rest were rules the search did not reach. Three changes, each with its goldens:
+
+   - **An AND or OR holds for its parts.** A path that found an AND true has every part true that nothing since may have changed, an OR found false every part false, and an AND found false cannot have every part found true later. A comparison with a literal is known false where a test found the field not to have that value. AUTHSRV's and CLRIN's tables lose 12 rules no run can take.
+   - **A condition tested holds within a later one.** A part of a later condition the path has already tested, with nothing changed since, has the outcome found. TXVALID's tables lose 2 rules.
+   - **Levers through what a called program computes.** A condition of a called program on an item it computes takes levers on the caller's input fields the item comes from, through the items passed, and an item a FUNCTION MOD or REM divides takes the divisor as a value to try. ATMWDL now approves a withdrawal, and AUTHSRV's cases reach 6 more rules.
+
+   The rules reached go from 437 of 508 to 443 of 494, and 51 are left. What a called program returns is still not carried back: AUTHSRV's three rules that find a request approved after a paragraph that only declines are the one kind left that it would rule out. IXFEE's six rules on a group out of range are the other side, values no caller passes.
 4. **Totals that agree by construction.** Rules that only bad data reaches, such as totals that disagree when the program computed both, listed apart from the rest, with the reason.
 
 Each part one pull request.

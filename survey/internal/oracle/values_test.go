@@ -3,6 +3,7 @@ package oracle
 import (
 	"testing"
 
+	"github.com/vlumi/copal/bedrock/cobol"
 	"github.com/vlumi/copal/bedrock/layout"
 )
 
@@ -26,6 +27,27 @@ func TestLiteral(t *testing.T) {
 	} {
 		if got, ok := literal(c.field, c.lit); !ok || got != c.want {
 			t.Errorf("literal %s for %s: %v, %v, want %v", c.lit, c.field.Name, got, ok, c.want)
+		}
+	}
+}
+
+// What a FUNCTION MOD or REM divides an item by is a value worth trying
+// for it: a literal as written, or the VALUE of the field named.
+func TestDivisor(t *testing.T) {
+	records := &layout.ProgramRecords{WorkingStorage: []*layout.Field{{Name: "WS-NOTE", Values: []string{"20"}}}}
+	for _, c := range []struct {
+		text string
+		want string
+		ok   bool
+	}{
+		{"FUNCTION MOD(RQ-AMOUNT WS-NOTE)", "20", true},
+		{"FUNCTION REM(RQ-AMOUNT 50)", "50", true},
+		{"FUNCTION MOD(OTHER WS-NOTE)", "", false},
+		{"RQ-AMOUNT", "", false},
+	} {
+		got, ok := divisor(records, &cobol.Operand{Text: c.text}, "RQ-AMOUNT")
+		if got != c.want || ok != c.ok {
+			t.Errorf("divisor of %s: %q, %v, want %q, %v", c.text, got, ok, c.want, c.ok)
 		}
 	}
 }

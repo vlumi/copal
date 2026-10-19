@@ -1847,8 +1847,8 @@
                   "RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY",
                   "RS-RESULT = SPACES AND RQ-REVERSAL",
                   "RQ-PURCHASE",
-                  "RQ-BALANCE-ENQUIRY",
                   "RQ-REVERSAL",
+                  "RQ-BALANCE-ENQUIRY",
                   "RQ-WITHDRAWAL"
                 ]
               },
@@ -5633,39 +5633,6 @@
                 },
                 {
                   "condition": "TD-AMOUNT IS NOT NUMERIC OR TD-AMOUNT = ZERO",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "RJ-BAD-COUNTER",
-              "program": "TXVALID",
-              "paragraph": "3200-VALIDATE-DETAIL",
-              "source": "pangaea/programs/TXVALID.cbl:234",
-              "when": [
-                {
-                  "condition": "TD-AMOUNT IS NUMERIC",
-                  "holds": false
-                },
-                {
-                  "condition": "TD-ACCT-NO IS NUMERIC",
-                  "holds": true
-                },
-                {
-                  "condition": "(FROM-BRANCHES AND NOT TD-KNOWN-CODE) OR (FROM-CARDS AND NOT TD-CARD-CODE)",
-                  "holds": false
-                },
-                {
-                  "condition": "DETAIL-IS-VALID",
-                  "holds": false
-                },
-                {
-                  "condition": "TD-AMOUNT IS NOT NUMERIC OR TD-AMOUNT = ZERO",
-                  "holds": false
-                },
-                {
-                  "condition": "TD-TRANSFER AND (TD-COUNTER-ACCT-NO IS NOT NUMERIC OR TD-COUNTER-ACCT-NO = TD-ACCT-NO)",
                   "holds": true
                 }
               ]

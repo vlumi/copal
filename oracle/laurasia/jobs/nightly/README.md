@@ -6,7 +6,7 @@ The script ended with exit status 0.
 
 | Step | Program | Outcome | Rules reached |
 | --- | --- | --- | --: |
-| CLRIN | [CLRIN](../../CLRIN/) | RC=0004 | 7 of 24 |
+| CLRIN | [CLRIN](../../CLRIN/) | RC=0004 | 7 of 23 |
 | PRESSORT | sort | RC=0000 | |
 | AUTHSORT | sort | RC=0000 | |
 | MATCH | [MATCH](../../MATCH/) | RC=0000 | 5 of 15 |

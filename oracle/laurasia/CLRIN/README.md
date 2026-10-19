@@ -1,6 +1,6 @@
 # CLRIN: cases
 
-13 cases reach 22 of the 24 rules of CLRIN's decision tables. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's.
+13 cases reach 22 of the 23 rules of CLRIN's decision tables. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's.
 
 ## [MAIN](../../../blueprints/laurasia/rules/CLRIN.md#main)
 
@@ -25,9 +25,8 @@
 | --: | --- |
 | 1 | [case 05](05/) |
 | 2 | [case 02](02/) |
-| 3 | not reached: `IS-BATCH-HEADER` Y, `IS-BATCH-TRAILER AND BT-COUNT = WS-BATCH-COUNT AND BT-AMOUNT = WS-BATCH-AMOUNT` Y, `IS-BATCH-TRAILER` N |
-| 4 | [case 06](06/) |
-| 5 | [case 09](09/) |
+| 3 | [case 06](06/) |
+| 4 | [case 09](09/) |
 
 ## [TAKE-PRESENTMENT](../../../blueprints/laurasia/rules/CLRIN.md#take-presentment)
 

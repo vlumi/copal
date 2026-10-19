@@ -97,6 +97,21 @@
                GO TO OPEN-PARA
            END-IF
            DISPLAY 'AFTER'.
+       JOINED-PARA.
+           IF DONE = 1 AND OK = 1
+               DISPLAY 'BOTH'
+           END-IF
+           ADD 1 TO OK
+           IF DONE = 1
+               DISPLAY 'DONE'
+           END-IF.
+       CLASS-PARA.
+           IF AMT IS NUMERIC
+               DISPLAY 'NUMBER'
+           END-IF
+           IF AMT IS NOT NUMERIC OR AMT = ZERO
+               DISPLAY 'BAD'
+           END-IF.
        OPEN-PARA.
            EXIT.
        REJECT-PARA.
