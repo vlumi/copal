@@ -137,34 +137,88 @@ func (m *StateMachine) addTransition(t Transition) {
 }
 
 // reasons are the outcomes of the conditions a rule tests other than those
-// on the field itself: why the rule sets the state it sets.
+// on the field itself: why the rule sets the state it sets. Of a
+// conjunction the rule finds true, with the field in it, the other parts
+// are reasons, each true.
 func (c codeField) reasons(t DecisionTable, r DecisionRule) []Outcome {
 	var when []Outcome
 	for i, condition := range t.Conditions {
-		if r.Entries[i] != "" && !slices.Contains(t.ConditionRefs[i], c.name) {
+		switch {
+		case r.Entries[i] == "":
+		case !slices.Contains(t.ConditionRefs[i], c.name):
 			when = append(when, Outcome{Condition: condition, Holds: r.Entries[i] == "Y"})
+		case r.Entries[i] == "Y":
+			for _, part := range conjuncts(condition) {
+				if _, held := c.state(part); !held {
+					when = append(when, Outcome{Condition: part, Holds: true})
+				}
+			}
 		}
 	}
 	return when
 }
 
-// heldIn lists the states a rule holds the field in, or any state.
+// heldIn lists the states a rule holds the field in, or any state: those
+// of the conditions on the field it finds true, alone or as a part of a
+// conjunction.
 func (c codeField) heldIn(t DecisionTable, r DecisionRule) []string {
 	var states []string
 	for i, condition := range t.Conditions {
 		if r.Entries[i] != "Y" || !slices.Contains(t.ConditionRefs[i], c.name) {
 			continue
 		}
-		if state, ok := c.states[condition]; ok {
-			states = append(states, state)
-		} else if value, ok := strings.CutPrefix(condition, c.name+" = "); ok && c.values[value] != "" {
-			states = append(states, c.values[value])
+		for _, part := range conjuncts(condition) {
+			if state, ok := c.state(part); ok {
+				states = append(states, state)
+			}
 		}
 	}
 	if len(states) == 0 {
 		return []string{AnyState}
 	}
 	return states
+}
+
+// state is the state a condition holds the field in: its condition name,
+// or FIELD = 'value' with the value of one.
+func (c codeField) state(condition string) (string, bool) {
+	if state, ok := c.states[condition]; ok {
+		return state, true
+	}
+	if value, ok := strings.CutPrefix(condition, c.name+" = "); ok && c.values[value] != "" {
+		return c.values[value], true
+	}
+	return "", false
+}
+
+// conjuncts splits a condition into the parts an AND joins at its top
+// level, A AND B AND C, which all hold when it does; a condition with OR
+// at its top level is one part, as it does not say which held.
+func conjuncts(condition string) []string {
+	var parts []string
+	depth, start := 0, 0
+	var quote byte
+	for i := 0; i < len(condition); i++ {
+		switch {
+		case quote != 0:
+			if condition[i] == quote {
+				quote = 0
+			}
+		case condition[i] == '\'' || condition[i] == '"':
+			quote = condition[i]
+		case condition[i] == '(':
+			depth++
+		case condition[i] == ')':
+			depth--
+		case depth > 0:
+		case strings.HasPrefix(condition[i:], " OR "):
+			return []string{condition}
+		case strings.HasPrefix(condition[i:], " AND "):
+			parts = append(parts, condition[start:i])
+			start = i + len(" AND ")
+		}
+	}
+	return append(parts, condition[start:])
 }
 
 // set is the state an action sets the field to, if it sets one.
