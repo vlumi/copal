@@ -1,9 +1,7 @@
 # ACCTMNT: case 07
 
-The run ended with return code 16.
-
-CONTROL-FILE is missing, so opening it fails.
+The run ended with return code 4.
 
 The first case to reach:
 
-- [ACCTMNT, 1000-INITIALIZE, rule 1](../../../../blueprints/pangaea/rules/ACCTMNT.md#1000-initialize)
+- [ACCTMNT, 2210-OPEN, rule 2](../../../../blueprints/pangaea/rules/ACCTMNT.md#2210-open)

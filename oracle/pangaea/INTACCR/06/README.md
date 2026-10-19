@@ -1,9 +1,11 @@
 # INTACCR: case 06
 
-The run ended with return code 16.
-
-RATE-FILE is a directory, so it opens but reading it fails.
+The run ended with return code 0.
 
 The first case to reach:
 
-- [INTACCR, 1100-LOAD-RATES, rule 1](../../../../blueprints/pangaea/rules/INTACCR.md#1100-load-rates)
+- [INTACCR, 0000-MAIN, rule 2](../../../../blueprints/pangaea/rules/INTACCR.md#0000-main)
+- [INTACCR, 1300-READ-ACCRUAL, rule 1](../../../../blueprints/pangaea/rules/INTACCR.md#1300-read-accrual)
+- [INTACCR, 1400-TAKE-ACCRUAL, rule 1](../../../../blueprints/pangaea/rules/INTACCR.md#1400-take-accrual)
+- [INTACCR, 2000-ACCRUE-ACCOUNT, rule 2](../../../../blueprints/pangaea/rules/INTACCR.md#2000-accrue-account)
+- [INTACCR, 8000-WRITE-REPORT, rule 1](../../../../blueprints/pangaea/rules/INTACCR.md#8000-write-report)

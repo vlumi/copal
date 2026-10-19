@@ -297,7 +297,31 @@ func (p *program) base() Case {
 			c[in.name()] = append(c[in.name()], p.typical(in, s, kind, index, kinds))
 		}
 	}
+	c = p.matchKeys(c, kinds)
 	p.balance(c, nil)
+	return c
+}
+
+// matchKeys gives each field of text that the program compares with a
+// field of another input of a kind of its own, a key, a number or a code,
+// that field's value, so that the base case's records find each other: an
+// accrual's account number held as text, say, the account's number.
+func (p *program) matchKeys(c Case, kinds map[string]string) Case {
+	for _, cond := range p.conditions() {
+		for _, pair := range relations(cond) {
+			for _, to := range p.origins(pair[0]) {
+				for _, from := range p.origins(pair[1]) {
+					if to.input == from.input ||
+						kinds[to.field.Name] != blueprint.KindText || kinds[from.field.Name] == blueprint.KindText {
+						continue
+					}
+					if next, ok := (lever{input: to.input, field: to.field, from: from, change: copyField}).apply(p, c); ok {
+						c = next
+					}
+				}
+			}
+		}
+	}
 	return c
 }
 

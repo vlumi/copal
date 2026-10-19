@@ -5,13 +5,13 @@ For each main program, input data that reaches the rules of its decision tables,
 | Program | Rules reached | Cases |
 | --- | --: | --: |
 | [ACCTLOAD](ACCTLOAD/) | 9 of 9 | 4 |
-| [ACCTMNT](ACCTMNT/) | 37 of 41 | 13 |
+| [ACCTMNT](ACCTMNT/) | 38 of 41 | 13 |
 | [AUTHSRV](AUTHSRV/) | 60 of 65 | 32 |
 | [BANKDATE](BANKDATE/) | 3 of 3 | 3 |
 | [CARDLOAD](CARDLOAD/) | 10 of 10 | 5 |
 | [GLSUM](GLSUM/) | 20 of 25 | 7 |
 | [HOLDEXT](HOLDEXT/) | 11 of 11 | 6 |
-| [INTACCR](INTACCR/) | 27 of 33 | 9 |
+| [INTACCR](INTACCR/) | 28 of 33 | 10 |
 | [MONCHG](MONCHG/) | 18 of 21 | 11 |
 | [STMTPRT](STMTPRT/) | 31 of 34 | 12 |
 | [TXPOST](TXPOST/) | 30 of 30 | 13 |
