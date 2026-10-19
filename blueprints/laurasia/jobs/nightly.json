@@ -1,0 +1,887 @@
+{
+  "job": "nightly",
+  "kind": "script",
+  "source": "laurasia/scripts/nightly.sh",
+  "description": [
+    "nightly.sh: the night's run: take in the clearing file, match it to the",
+    "day's authorizations, price the interchange, post to the cards, move the",
+    "disputes on, and settle with the merchants.",
+    "",
+    "usage: nightly.sh DATE, the business date as YYYYMMDD.",
+    "environment: LCS_BIN, the programs; LCS_SCRIPTS, the scripts; LCS_DATA,",
+    "the data.",
+    "",
+    "history",
+    "2011-04-04 rk  lcs-0102 original version.",
+    "2012-01-09 ah  lcs-0140 interchange.",
+    "2015-03-23 mt  lcs-0302 disputes before settlement."
+  ],
+  "steps": [
+    {
+      "step": "CLRIN",
+      "program": "CLRIN",
+      "arguments": [
+        "$DATE"
+      ],
+      "stopsIf": "RC \u003e= 8",
+      "description": [
+        "the clearing file, checked batch by batch"
+      ],
+      "source": "laurasia/scripts/nightly.sh:28",
+      "dds": [
+        {
+          "dd": "CLRIN",
+          "datasets": [
+            "$DATA/inbound/CLR.$DATE.txt"
+          ],
+          "file": "CLEARING-IN",
+          "uses": [
+            "read"
+          ],
+          "copybook": "clrrec",
+          "source": "laurasia/scripts/nightly.sh:28"
+        },
+        {
+          "dd": "PRESOUT",
+          "datasets": [
+            "$DATA/work/$DATE/pres.txt"
+          ],
+          "file": "PRES-OUT",
+          "uses": [
+            "write"
+          ],
+          "copybook": "presrec",
+          "source": "laurasia/scripts/nightly.sh:28"
+        },
+        {
+          "dd": "CLRREJ",
+          "datasets": [
+            "$DATA/outbound/CLRREJ.$DATE.txt"
+          ],
+          "file": "REJECT-OUT",
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/nightly.sh:28"
+        },
+        {
+          "dd": "CLRRPT",
+          "datasets": [
+            "$DATA/reports/clrin.$DATE.txt"
+          ],
+          "file": "REPORT-OUT",
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/nightly.sh:28"
+        },
+        {
+          "dd": "stdout",
+          "datasets": [
+            "$DATA/reports/clrin.$DATE.out"
+          ],
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/nightly.sh:28"
+        }
+      ]
+    },
+    {
+      "step": "PRESSORT",
+      "kind": "sort",
+      "program": "sort",
+      "keys": [
+        "29-34"
+      ],
+      "stopsIf": "RC != 0",
+      "description": [
+        "the presentments in authorization code order"
+      ],
+      "source": "laurasia/scripts/nightly.sh:34",
+      "dds": [
+        {
+          "dd": "input",
+          "datasets": [
+            "$DATA/work/$DATE/pres.txt"
+          ],
+          "uses": [
+            "read"
+          ],
+          "source": "laurasia/scripts/nightly.sh:34"
+        },
+        {
+          "dd": "output",
+          "datasets": [
+            "$DATA/work/$DATE/pres.byauth"
+          ],
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/nightly.sh:34"
+        }
+      ]
+    },
+    {
+      "step": "AUTHSORT",
+      "kind": "sort",
+      "program": "sort",
+      "keys": [
+        "1-6"
+      ],
+      "stopsIf": "RC != 0",
+      "description": [
+        "the day's authorizations in authorization code order"
+      ],
+      "source": "laurasia/scripts/nightly.sh:40",
+      "dds": [
+        {
+          "dd": "input",
+          "datasets": [
+            "$DATA/inbound/AUTH.$DATE.txt"
+          ],
+          "uses": [
+            "read"
+          ],
+          "source": "laurasia/scripts/nightly.sh:40"
+        },
+        {
+          "dd": "output",
+          "datasets": [
+            "$DATA/work/$DATE/auth.byauth"
+          ],
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/nightly.sh:40"
+        }
+      ]
+    },
+    {
+      "step": "MATCH",
+      "program": "MATCH",
+      "arguments": [
+        "$DATE"
+      ],
+      "stopsIf": "RC \u003e= 8",
+      "description": [
+        "each presentment marked by its authorization"
+      ],
+      "source": "laurasia/scripts/nightly.sh:50",
+      "dds": [
+        {
+          "dd": "PRESIN",
+          "datasets": [
+            "$DATA/work/$DATE/pres.byauth"
+          ],
+          "file": "PRES-IN",
+          "uses": [
+            "read"
+          ],
+          "copybook": "presrec",
+          "source": "laurasia/scripts/nightly.sh:50"
+        },
+        {
+          "dd": "AUTHIN",
+          "datasets": [
+            "$DATA/work/$DATE/auth.byauth"
+          ],
+          "file": "AUTH-IN",
+          "uses": [
+            "read"
+          ],
+          "copybook": "authlog",
+          "source": "laurasia/scripts/nightly.sh:50"
+        },
+        {
+          "dd": "PRESOUT",
+          "datasets": [
+            "$DATA/work/$DATE/pres.matched"
+          ],
+          "file": "PRES-OUT",
+          "uses": [
+            "write"
+          ],
+          "copybook": "presrec",
+          "source": "laurasia/scripts/nightly.sh:50"
+        },
+        {
+          "dd": "MATCHRPT",
+          "datasets": [
+            "$DATA/reports/match.$DATE.txt"
+          ],
+          "file": "REPORT-OUT",
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/nightly.sh:50"
+        },
+        {
+          "dd": "stdout",
+          "datasets": [
+            "$DATA/reports/match.$DATE.out"
+          ],
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/nightly.sh:50"
+        }
+      ]
+    },
+    {
+      "step": "FEELD",
+      "program": "FEELD",
+      "arguments": [
+        "$DATE"
+      ],
+      "stopsIf": "RC \u003e= 8",
+      "description": [
+        "the fee schedule into the fee table"
+      ],
+      "source": "laurasia/scripts/nightly.sh:58",
+      "dds": [
+        {
+          "dd": "FEESCHED",
+          "datasets": [
+            "$DATA/inbound/FEES.txt"
+          ],
+          "file": "FEE-SCHEDULE",
+          "uses": [
+            "read"
+          ],
+          "copybook": "feedef",
+          "source": "laurasia/scripts/nightly.sh:58"
+        },
+        {
+          "dd": "FEETAB",
+          "datasets": [
+            "$DATA/work/$DATE/fees.rel"
+          ],
+          "file": "FEE-TABLE",
+          "uses": [
+            "write"
+          ],
+          "copybook": "feerec",
+          "source": "laurasia/scripts/nightly.sh:58"
+        },
+        {
+          "dd": "stdout",
+          "datasets": [
+            "$DATA/reports/feeld.$DATE.out"
+          ],
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/nightly.sh:58"
+        }
+      ]
+    },
+    {
+      "step": "IXFEE",
+      "program": "IXFEE",
+      "arguments": [
+        "$DATE"
+      ],
+      "stopsIf": "RC \u003e= 8",
+      "description": [
+        "the interchange of each matched presentment"
+      ],
+      "source": "laurasia/scripts/nightly.sh:68",
+      "dds": [
+        {
+          "dd": "PRESIN",
+          "datasets": [
+            "$DATA/work/$DATE/pres.matched"
+          ],
+          "file": "PRES-IN",
+          "uses": [
+            "read"
+          ],
+          "copybook": "presrec",
+          "source": "laurasia/scripts/nightly.sh:68"
+        },
+        {
+          "dd": "FEETAB",
+          "datasets": [
+            "$DATA/work/$DATE/fees.rel"
+          ],
+          "file": "FEE-TABLE",
+          "uses": [
+            "read"
+          ],
+          "copybook": "feerec",
+          "source": "laurasia/scripts/nightly.sh:68"
+        },
+        {
+          "dd": "PRESOUT",
+          "datasets": [
+            "$DATA/work/$DATE/pres.priced"
+          ],
+          "file": "PRES-OUT",
+          "uses": [
+            "write"
+          ],
+          "copybook": "presrec",
+          "source": "laurasia/scripts/nightly.sh:68"
+        },
+        {
+          "dd": "FEERPT",
+          "datasets": [
+            "$DATA/reports/ixfee.$DATE.txt"
+          ],
+          "file": "REPORT-OUT",
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/nightly.sh:68"
+        },
+        {
+          "dd": "stdout",
+          "datasets": [
+            "$DATA/reports/ixfee.$DATE.out"
+          ],
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/nightly.sh:68"
+        }
+      ]
+    },
+    {
+      "step": "POST",
+      "program": "POST",
+      "arguments": [
+        "$DATE"
+      ],
+      "stopsIf": "RC \u003e= 8",
+      "description": [
+        "the purchases on the cards' accounts"
+      ],
+      "source": "laurasia/scripts/nightly.sh:79",
+      "dds": [
+        {
+          "dd": "PRESIN",
+          "datasets": [
+            "$DATA/work/$DATE/pres.priced"
+          ],
+          "file": "PRES-IN",
+          "uses": [
+            "read"
+          ],
+          "copybook": "presrec",
+          "source": "laurasia/scripts/nightly.sh:79"
+        },
+        {
+          "dd": "ACCOUNTS",
+          "datasets": [
+            "$DATA/master/accounts.idx"
+          ],
+          "indexed": true,
+          "file": "ACCOUNTS",
+          "uses": [
+            "update"
+          ],
+          "copybook": "cardacct",
+          "source": "laurasia/scripts/nightly.sh:79"
+        },
+        {
+          "dd": "POSTOUT",
+          "datasets": [
+            "$DATA/outbound/POSTINGS.$DATE.txt"
+          ],
+          "file": "POSTINGS-OUT",
+          "uses": [
+            "write"
+          ],
+          "copybook": "postrec",
+          "source": "laurasia/scripts/nightly.sh:79"
+        },
+        {
+          "dd": "POSTREJ",
+          "datasets": [
+            "$DATA/outbound/POSTREJ.$DATE.txt"
+          ],
+          "file": "REJECT-OUT",
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/nightly.sh:79"
+        },
+        {
+          "dd": "POSTRPT",
+          "datasets": [
+            "$DATA/reports/post.$DATE.txt"
+          ],
+          "file": "REPORT-OUT",
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/nightly.sh:79"
+        },
+        {
+          "dd": "stdout",
+          "datasets": [
+            "$DATA/reports/post.$DATE.out"
+          ],
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/nightly.sh:79"
+        }
+      ]
+    },
+    {
+      "step": "DISPUTES",
+      "kind": "script",
+      "runs": "disputes",
+      "arguments": [
+        "$DATE"
+      ],
+      "stopsIf": "RC \u003e= 8",
+      "description": [
+        "the disputes moved on, the merchants' adjustments"
+      ],
+      "source": "laurasia/scripts/nightly.sh:85",
+      "dds": null
+    },
+    {
+      "step": "SETLSORT",
+      "kind": "sort",
+      "program": "sort",
+      "keys": [
+        "35-44"
+      ],
+      "stopsIf": "RC != 0",
+      "description": [
+        "the priced presentments in merchant order"
+      ],
+      "source": "laurasia/scripts/nightly.sh:90",
+      "dds": [
+        {
+          "dd": "input",
+          "datasets": [
+            "$DATA/work/$DATE/pres.priced"
+          ],
+          "uses": [
+            "read"
+          ],
+          "source": "laurasia/scripts/nightly.sh:90"
+        },
+        {
+          "dd": "output",
+          "datasets": [
+            "$DATA/work/$DATE/pres.bymerchant"
+          ],
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/nightly.sh:90"
+        }
+      ]
+    },
+    {
+      "step": "ADJSORT",
+      "kind": "sort",
+      "program": "sort",
+      "keys": [
+        "1-10"
+      ],
+      "stopsIf": "RC != 0",
+      "description": [
+        "the adjustments in merchant order"
+      ],
+      "source": "laurasia/scripts/nightly.sh:96",
+      "dds": [
+        {
+          "dd": "input",
+          "datasets": [
+            "$DATA/work/$DATE/adjustments.txt"
+          ],
+          "uses": [
+            "read"
+          ],
+          "source": "laurasia/scripts/nightly.sh:96"
+        },
+        {
+          "dd": "output",
+          "datasets": [
+            "$DATA/work/$DATE/adjustments.bymerchant"
+          ],
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/nightly.sh:96"
+        }
+      ]
+    },
+    {
+      "step": "SETTLE",
+      "program": "SETTLE",
+      "arguments": [
+        "$DATE"
+      ],
+      "stopsIf": "RC \u003e= 8",
+      "description": [
+        "what each merchant is paid"
+      ],
+      "source": "laurasia/scripts/nightly.sh:106",
+      "dds": [
+        {
+          "dd": "PRESIN",
+          "datasets": [
+            "$DATA/work/$DATE/pres.bymerchant"
+          ],
+          "file": "PRES-IN",
+          "uses": [
+            "read"
+          ],
+          "copybook": "presrec",
+          "source": "laurasia/scripts/nightly.sh:106"
+        },
+        {
+          "dd": "ADJIN",
+          "datasets": [
+            "$DATA/work/$DATE/adjustments.bymerchant"
+          ],
+          "file": "ADJUST-IN",
+          "uses": [
+            "read"
+          ],
+          "source": "laurasia/scripts/nightly.sh:106"
+        },
+        {
+          "dd": "PAYOUT",
+          "datasets": [
+            "$DATA/outbound/PAYOUT.$DATE.txt"
+          ],
+          "file": "PAYOUT-OUT",
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/nightly.sh:106"
+        },
+        {
+          "dd": "SETLRPT",
+          "datasets": [
+            "$DATA/reports/settle.$DATE.txt"
+          ],
+          "file": "REPORT-OUT",
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/nightly.sh:106"
+        },
+        {
+          "dd": "stdout",
+          "datasets": [
+            "$DATA/reports/settle.$DATE.out"
+          ],
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/nightly.sh:106"
+        }
+      ]
+    },
+    {
+      "step": "ACCTUL",
+      "program": "ACCTUL",
+      "description": [
+        "the accounts as they stand, for the card system"
+      ],
+      "source": "laurasia/scripts/nightly.sh:114",
+      "dds": [
+        {
+          "dd": "ACCOUNTS",
+          "datasets": [
+            "$DATA/master/accounts.idx"
+          ],
+          "indexed": true,
+          "file": "ACCOUNTS",
+          "uses": [
+            "read"
+          ],
+          "copybook": "cardacct",
+          "source": "laurasia/scripts/nightly.sh:114"
+        },
+        {
+          "dd": "ACCTOUT",
+          "datasets": [
+            "$DATA/outbound/ACCOUNTS.$DATE.txt"
+          ],
+          "file": "ACCOUNTS-OUT",
+          "uses": [
+            "write"
+          ],
+          "copybook": "cardacct",
+          "source": "laurasia/scripts/nightly.sh:114"
+        },
+        {
+          "dd": "stdout",
+          "datasets": [
+            "$DATA/reports/acctul.$DATE.out"
+          ],
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/nightly.sh:114"
+        }
+      ]
+    }
+  ],
+  "datasets": [
+    {
+      "dataset": "$DATA/inbound/CLR.$DATE.txt",
+      "copybook": "clrrec",
+      "kind": "external",
+      "readBy": [
+        "CLRIN"
+      ]
+    },
+    {
+      "dataset": "$DATA/work/$DATE/pres.txt",
+      "copybook": "presrec",
+      "kind": "internal",
+      "writtenBy": [
+        "CLRIN"
+      ],
+      "readBy": [
+        "PRESSORT"
+      ]
+    },
+    {
+      "dataset": "$DATA/outbound/CLRREJ.$DATE.txt",
+      "kind": "output",
+      "writtenBy": [
+        "CLRIN"
+      ]
+    },
+    {
+      "dataset": "$DATA/reports/clrin.$DATE.txt",
+      "kind": "output",
+      "writtenBy": [
+        "CLRIN"
+      ]
+    },
+    {
+      "dataset": "$DATA/reports/clrin.$DATE.out",
+      "kind": "output",
+      "writtenBy": [
+        "CLRIN"
+      ]
+    },
+    {
+      "dataset": "$DATA/work/$DATE/pres.byauth",
+      "copybook": "presrec",
+      "kind": "internal",
+      "writtenBy": [
+        "PRESSORT"
+      ],
+      "readBy": [
+        "MATCH"
+      ]
+    },
+    {
+      "dataset": "$DATA/inbound/AUTH.$DATE.txt",
+      "copybook": "authlog",
+      "kind": "external",
+      "readBy": [
+        "AUTHSORT"
+      ]
+    },
+    {
+      "dataset": "$DATA/work/$DATE/auth.byauth",
+      "copybook": "authlog",
+      "kind": "internal",
+      "writtenBy": [
+        "AUTHSORT"
+      ],
+      "readBy": [
+        "MATCH"
+      ]
+    },
+    {
+      "dataset": "$DATA/work/$DATE/pres.matched",
+      "copybook": "presrec",
+      "kind": "internal",
+      "writtenBy": [
+        "MATCH"
+      ],
+      "readBy": [
+        "IXFEE"
+      ]
+    },
+    {
+      "dataset": "$DATA/reports/match.$DATE.txt",
+      "kind": "output",
+      "writtenBy": [
+        "MATCH"
+      ]
+    },
+    {
+      "dataset": "$DATA/reports/match.$DATE.out",
+      "kind": "output",
+      "writtenBy": [
+        "MATCH"
+      ]
+    },
+    {
+      "dataset": "$DATA/inbound/FEES.txt",
+      "copybook": "feedef",
+      "kind": "external",
+      "readBy": [
+        "FEELD"
+      ]
+    },
+    {
+      "dataset": "$DATA/work/$DATE/fees.rel",
+      "copybook": "feerec",
+      "kind": "internal",
+      "writtenBy": [
+        "FEELD"
+      ],
+      "readBy": [
+        "IXFEE"
+      ]
+    },
+    {
+      "dataset": "$DATA/reports/feeld.$DATE.out",
+      "kind": "output",
+      "writtenBy": [
+        "FEELD"
+      ]
+    },
+    {
+      "dataset": "$DATA/work/$DATE/pres.priced",
+      "copybook": "presrec",
+      "kind": "internal",
+      "writtenBy": [
+        "IXFEE"
+      ],
+      "readBy": [
+        "POST",
+        "SETLSORT"
+      ]
+    },
+    {
+      "dataset": "$DATA/reports/ixfee.$DATE.txt",
+      "kind": "output",
+      "writtenBy": [
+        "IXFEE"
+      ]
+    },
+    {
+      "dataset": "$DATA/reports/ixfee.$DATE.out",
+      "kind": "output",
+      "writtenBy": [
+        "IXFEE"
+      ]
+    },
+    {
+      "dataset": "$DATA/master/accounts.idx",
+      "copybook": "cardacct",
+      "kind": "internal",
+      "indexed": true,
+      "writtenBy": [
+        "POST"
+      ],
+      "readBy": [
+        "POST",
+        "ACCTUL"
+      ]
+    },
+    {
+      "dataset": "$DATA/outbound/POSTINGS.$DATE.txt",
+      "copybook": "postrec",
+      "kind": "output",
+      "writtenBy": [
+        "POST"
+      ]
+    },
+    {
+      "dataset": "$DATA/outbound/POSTREJ.$DATE.txt",
+      "kind": "output",
+      "writtenBy": [
+        "POST"
+      ]
+    },
+    {
+      "dataset": "$DATA/reports/post.$DATE.txt",
+      "kind": "output",
+      "writtenBy": [
+        "POST"
+      ]
+    },
+    {
+      "dataset": "$DATA/reports/post.$DATE.out",
+      "kind": "output",
+      "writtenBy": [
+        "POST"
+      ]
+    },
+    {
+      "dataset": "$DATA/work/$DATE/pres.bymerchant",
+      "copybook": "presrec",
+      "kind": "internal",
+      "writtenBy": [
+        "SETLSORT"
+      ],
+      "readBy": [
+        "SETTLE"
+      ]
+    },
+    {
+      "dataset": "$DATA/work/$DATE/adjustments.txt",
+      "kind": "internal",
+      "readBy": [
+        "ADJSORT"
+      ]
+    },
+    {
+      "dataset": "$DATA/work/$DATE/adjustments.bymerchant",
+      "kind": "internal",
+      "writtenBy": [
+        "ADJSORT"
+      ],
+      "readBy": [
+        "SETTLE"
+      ]
+    },
+    {
+      "dataset": "$DATA/outbound/PAYOUT.$DATE.txt",
+      "kind": "output",
+      "writtenBy": [
+        "SETTLE"
+      ]
+    },
+    {
+      "dataset": "$DATA/reports/settle.$DATE.txt",
+      "kind": "output",
+      "writtenBy": [
+        "SETTLE"
+      ]
+    },
+    {
+      "dataset": "$DATA/reports/settle.$DATE.out",
+      "kind": "output",
+      "writtenBy": [
+        "SETTLE"
+      ]
+    },
+    {
+      "dataset": "$DATA/outbound/ACCOUNTS.$DATE.txt",
+      "copybook": "cardacct",
+      "kind": "output",
+      "writtenBy": [
+        "ACCTUL"
+      ]
+    },
+    {
+      "dataset": "$DATA/reports/acctul.$DATE.out",
+      "kind": "output",
+      "writtenBy": [
+        "ACCTUL"
+      ]
+    }
+  ]
+}

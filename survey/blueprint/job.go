@@ -12,9 +12,11 @@ import (
 
 // Job is the blueprint of a job: its steps, the datasets each step's DD
 // statements bind, how the step's program uses each, and what does not
-// fit between the job and its programs.
+// fit between the job and its programs. A job of Kind script is a batch
+// script, whose DDs are the files its DD_ variables name.
 type Job struct {
 	Name        string    `json:"job"`
+	Kind        string    `json:"kind,omitempty"`
 	Source      string    `json:"source"`
 	Description []string  `json:"description,omitempty"`
 	Steps       []Step    `json:"steps"`
@@ -35,12 +37,20 @@ type Dataset struct {
 	ReadBy    []string `json:"readBy,omitempty"`
 }
 
-// Step is one step of a job: the program it runs, the return code test
-// that bypasses it, and its DD statements.
+// Step is one step of a job: the program it runs, with the arguments a
+// script passes it, the return code test that bypasses it, or after which
+// a script stops, and its DD statements. A step of a script may instead
+// be a sort, by its Keys, or a move, which read the input DD and write the
+// output one and pass the records on unchanged, or run another script.
 type Step struct {
 	Name        string   `json:"step"`
-	Program     string   `json:"program"`
+	Kind        string   `json:"kind,omitempty"`
+	Program     string   `json:"program,omitempty"`
+	Runs        string   `json:"runs,omitempty"`
+	Arguments   []string `json:"arguments,omitempty"`
+	Keys        []string `json:"keys,omitempty"`
 	Cond        string   `json:"cond,omitempty"`
+	StopsIf     string   `json:"stopsIf,omitempty"`
 	Description []string `json:"description,omitempty"`
 	Source      string   `json:"source"`
 	DDs         []DD     `json:"dds"`
@@ -152,8 +162,10 @@ func datasetBase(name string) string {
 
 // describeDatasets names each dataset's record layout from every job: the
 // copybook of the record a program declares for a file bound to the
-// dataset, in any generation. Two programs that describe one dataset with
-// different copybooks are a finding of each job that names it.
+// dataset, in any generation, or of the dataset a sort or a move makes it
+// from, or makes from it, as they pass the records on unchanged. Two
+// programs that describe one dataset with different copybooks are a
+// finding of each job that names it.
 func describeDatasets(jobs []Job) {
 	copybooks := map[string][]string{}
 	for _, job := range jobs {
@@ -169,6 +181,7 @@ func describeDatasets(jobs []Job) {
 			}
 		}
 	}
+	passCopybooks(jobs, copybooks)
 	for j := range jobs {
 		reported := map[string]bool{}
 		for i, d := range jobs[j].Datasets {
@@ -184,6 +197,43 @@ func describeDatasets(jobs []Job) {
 			}
 		}
 	}
+}
+
+// passCopybooks gives the datasets on either side of a sort or a move the
+// copybooks of the other, until none is left to pass.
+func passCopybooks(jobs []Job, copybooks map[string][]string) {
+	for changed := true; changed; {
+		changed = false
+		for _, job := range jobs {
+			for _, step := range job.Steps {
+				if !step.PassesRecords() {
+					continue
+				}
+				var names []string
+				for _, dd := range step.DDs {
+					for _, ds := range dd.Datasets {
+						names = append(names, datasetBase(ds))
+					}
+				}
+				for _, a := range names {
+					for _, b := range names {
+						for _, c := range copybooks[b] {
+							if list := copybooks[a]; !slices.Contains(list, c) {
+								copybooks[a] = append(list, c)
+								changed = true
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+// PassesRecords reports whether a step passes the records it reads on
+// unchanged: a script's sort or move.
+func (step Step) PassesRecords() bool {
+	return step.Kind == StepSort || step.Kind == StepMove
 }
 
 func newDD(path string, d jcl.DD) DD {
@@ -347,6 +397,10 @@ var networkKeys = []diagram.Key{
 	diagram.TextKey("NAME(+1) generation written"),
 }
 
+// scriptKeys say how to read a script's network, which has no generations
+// and no temporary datasets.
+var scriptKeys = []diagram.Key{networkKeys[0], networkKeys[1], networkKeys[2], networkKeys[4], networkKeys[5]}
+
 // JobNotes add to a job's diagram what a run of it did, a line under each
 // step's label, such as its return code, and under the label of each
 // dataset a DD names alone, such as its records; and say where steps and
@@ -389,12 +443,16 @@ func JobGraph(job Job, notes JobNotes) diagram.Graph {
 	for _, d := range job.Datasets {
 		datasets[d.Name] = d
 	}
-	g := diagram.Graph{Legend: networkKeys}
+	keys := networkKeys
+	if job.Kind == KindScript {
+		keys = scriptKeys
+	}
+	g := diagram.Graph{Legend: keys}
 	path := notes.Path
 	if path == nil {
 		path = &JobPath{}
 	} else {
-		g.Legend = append(slices.Clone(networkKeys), diagram.NodeKey(diagram.Node{Highlight: true}, "on the path followed"))
+		g.Legend = append(slices.Clone(keys), diagram.NodeKey(diagram.Node{Highlight: true}, "on the path followed"))
 	}
 	highlighted := map[string]bool{}
 	edge := func(from, to, step, ds string) diagram.Edge {
@@ -452,7 +510,7 @@ func JobGraph(job Job, notes JobNotes) diagram.Graph {
 				}
 			}
 		}
-		node := diagram.Node{ID: id, Label: step.Name + "\nprogram " + step.Program, Title: strings.Join(step.Description, " "),
+		node := diagram.Node{ID: id, Label: step.Name + "\n" + step.runs(), Title: strings.Join(step.Description, " "),
 			Highlight: path.Steps[step.Name]}
 		if notes.Step != nil {
 			node.Label = withNote(node.Label, notes.Step(step))
@@ -460,7 +518,7 @@ func JobGraph(job Job, notes JobNotes) diagram.Graph {
 		switch {
 		case notes.StepLink != nil:
 			node.Link = notes.StepLink(step)
-		case notes.ProgramLink != nil:
+		case notes.ProgramLink != nil && step.Program != "" && step.Kind == "":
 			node.Link = notes.ProgramLink(step.Program)
 		}
 		g.Nodes = append(g.Nodes, node)
@@ -504,6 +562,20 @@ func feeds(step, next Step, read, written map[string]bool) bool {
 	return false
 }
 
+// runs says what a step runs: its program, a sort by its keys, a move, or
+// another script.
+func (step Step) runs() string {
+	switch step.Kind {
+	case StepSort:
+		return "sort by columns " + strings.Join(step.Keys, ", ")
+	case StepMove:
+		return "move"
+	case StepScript:
+		return "script " + step.Runs
+	}
+	return "program " + step.Program
+}
+
 func copybookLink(name string) string {
 	if name == "" {
 		return ""
@@ -528,15 +600,29 @@ func jobMarkdown(dir string, job Job) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "# %s\n\n", job.Name)
 	writeDescription(&b, job.Description)
-	fmt.Fprintf(&b, "Job %s: %d steps.\n", sourceLink(dir, job.Source, false), len(job.Steps))
+	kind, stopped, binds := "Job", "Bypassed by", "| DD | Dataset | DISP | File | Copybook | Use |\n| --- | --- | --- | --- | --- | --- |\n"
+	if job.Kind == KindScript {
+		kind, stopped, binds = "Script", "Stops the script if", "| Name | File | File in the program | Copybook | Use |\n| --- | --- | --- | --- | --- |\n"
+	}
+	fmt.Fprintf(&b, "%s %s: %d steps.\n", kind, sourceLink(dir, job.Source, false), len(job.Steps))
 	fmt.Fprintf(&b, "\n## Network\n\n![The steps of %s and the datasets they read and write](%s.svg)\n", job.Name, job.Name)
 
-	b.WriteString("\n## Steps\n\n| Step | Program | Reads | Writes | Bypassed by | Description | Source |\n" +
+	b.WriteString("\n## Steps\n\n| Step | Program | Reads | Writes | " + stopped + " | Description | Source |\n" +
 		"| --- | --- | --- | --- | --- | --- | --- |\n")
 	for _, step := range job.Steps {
-		cond := ""
+		cond := step.StopsIf
 		if step.Cond != "" {
 			cond = "COND=" + step.Cond
+		}
+		program := fmt.Sprintf("[%s](../programs/%s.md)", step.Program, step.Program)
+		switch step.Kind {
+		case StepScript:
+			program = fmt.Sprintf("script [%s](%s.md)", step.Runs, step.Runs)
+		case StepSort, StepMove:
+			program = step.runs()
+		}
+		if len(step.Arguments) > 0 {
+			program += ", with " + strings.Join(step.Arguments, " ")
 		}
 		var reads, writes []string
 		for _, dd := range step.DDs {
@@ -547,12 +633,15 @@ func jobMarkdown(dir string, job Job) string {
 				writes = append(writes, dd.Datasets...)
 			}
 		}
-		b.WriteString(row(step.Name, fmt.Sprintf("[%s](../programs/%s.md)", step.Program, step.Program),
+		b.WriteString(row(step.Name, program,
 			strings.Join(reads, ", "), strings.Join(writes, ", "), cond,
 			strings.Join(step.Description, " "), sourceLink(dir, step.Source, true)))
 	}
 	for _, step := range job.Steps {
-		fmt.Fprintf(&b, "\n### %s\n\n| DD | Dataset | DISP | File | Copybook | Use |\n| --- | --- | --- | --- | --- | --- |\n", step.Name)
+		if len(step.DDs) == 0 {
+			continue
+		}
+		fmt.Fprintf(&b, "\n### %s\n\n%s", step.Name, binds)
 		for _, dd := range step.DDs {
 			datasets := strings.Join(dd.Datasets, ", ")
 			switch {
@@ -565,6 +654,10 @@ func jobMarkdown(dir string, job Job) string {
 			case dd.Indexed:
 				datasets += " (indexed)"
 			}
+			if job.Kind == KindScript {
+				b.WriteString(row(dd.Name, datasets, dd.File, copybookLink(dd.Copybook), strings.Join(dd.Uses, ", ")))
+				continue
+			}
 			b.WriteString(row(dd.Name, datasets, dd.Disp, dd.File, copybookLink(dd.Copybook), strings.Join(dd.Uses, ", ")))
 		}
 	}
@@ -575,7 +668,10 @@ func jobMarkdown(dir string, job Job) string {
 		b.WriteString(row(d.Name, copybookLink(d.Copybook), strings.Join(d.WrittenBy, ", "), strings.Join(d.ReadBy, ", ")))
 	}
 	b.WriteString("\n## Findings\n\n")
-	if len(job.Findings) == 0 {
+	switch {
+	case len(job.Findings) == 0 && job.Kind == KindScript:
+		b.WriteString("None: every program's file is bound by a DD_ variable.\n")
+	case len(job.Findings) == 0:
 		b.WriteString("None: every DD is assigned a file, every file a DD, and every disposition fits its use.\n")
 	}
 	for _, f := range job.Findings {

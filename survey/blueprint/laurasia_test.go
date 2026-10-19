@@ -17,7 +17,11 @@ func TestLaurasia(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	system, err := Analyze(programs, "laurasia/copybooks", cobol.MicroFocus)
+	scripts, err := filepath.Glob("laurasia/scripts/*.sh")
+	if err != nil {
+		t.Fatal(err)
+	}
+	system, err := Analyze(append(programs, scripts...), "laurasia/copybooks", cobol.MicroFocus)
 	if err != nil {
 		t.Fatal(err)
 	}

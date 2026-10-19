@@ -279,12 +279,12 @@ type Copybook struct {
 }
 
 // Analyze reads the programs, the jobs, which are the paths ending in
-// .jcl, and every copybook in copybookDir.
+// .jcl, and the batch scripts, in .sh, and every copybook in copybookDir.
 func Analyze(paths []string, copybookDir string, dialect cobol.Dialect) (*System, error) {
 	s := &System{Dialect: dialect}
 	var programPaths, jobPaths []string
 	for _, path := range paths {
-		if strings.EqualFold(filepath.Ext(path), ".jcl") {
+		if ext := strings.ToLower(filepath.Ext(path)); ext == ".jcl" || ext == ".sh" {
 			jobPaths = append(jobPaths, path)
 		} else {
 			programPaths = append(programPaths, path)
@@ -325,7 +325,11 @@ func Analyze(paths []string, copybookDir string, dialect cobol.Dialect) (*System
 	}
 	s.Entities = entities(s.Copybooks, s.Programs)
 	for _, path := range jobPaths {
-		job, err := analyzeJob(path, s.Programs)
+		analyze := analyzeJob
+		if strings.EqualFold(filepath.Ext(path), ".sh") {
+			analyze = analyzeScript
+		}
+		job, err := analyze(path, s.Programs)
 		if err != nil {
 			return nil, err
 		}
