@@ -175,3 +175,31 @@ func conditionNames(records []Record) rules.ConditionNames {
 		return fields[name], c.Values, ok
 	}
 }
+
+// initialValues are the values a program's working storage starts with:
+// of each elementary field of one VALUE, in no table and no redefinition,
+// by a name no other field of the program has.
+func initialValues(records []Record) map[string]string {
+	values := map[string]string{}
+	count := map[string]int{}
+	var visit func(f Field, plain bool)
+	visit = func(f Field, plain bool) {
+		count[f.Name]++
+		plain = plain && f.Occurs == 0 && f.Redefines == ""
+		if plain && len(f.Fields) == 0 && len(f.Values) == 1 {
+			values[f.Name] = f.Values[0]
+		}
+		for _, child := range f.Fields {
+			visit(child, plain)
+		}
+	}
+	for _, r := range records {
+		visit(r.Field, r.Section == "working-storage")
+	}
+	for name := range values {
+		if count[name] > 1 {
+			delete(values, name)
+		}
+	}
+	return values
+}

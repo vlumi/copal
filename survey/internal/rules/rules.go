@@ -12,7 +12,8 @@
 // GO TO chains of old code the rest of the paragraph runs only on the
 // paths that did not jump.
 // The body of an inline PERFORM is a table of its own, for one pass
-// through the loop.
+// through the loop, which starts knowing the loop's UNTIL condition false
+// unless the loop tests it after each pass.
 package rules
 
 import (
@@ -59,13 +60,14 @@ const maxPaths = 64
 // after a statement that may change what it refers to is a test of its
 // own, and a path that would find a condition other than the values it
 // knows decide is no rule: one that moves an error message into a field
-// does not then find the field's condition name for no error true.
+// does not then find the field's condition name for no error true. A
+// paragraph's paths start from what holds wherever it is entered.
 func Tables(p *cobol.Program, knowledge Knowledge) []Table {
 	var tables []Table
-	never := neverReturning(p)
-	for _, para := range p.Paragraphs {
-		e := &extractor{paragraph: para.Name, knowledge: knowledge, never: never}
-		if t, ok := newTable(para.Name, "", para.Pos, e.paths(para.Statements), e.collapsed); ok {
+	g := newProgram(p, knowledge)
+	for i, para := range p.Paragraphs {
+		e := g.follow(i)
+		if t, ok := newTable(para.Name, "", para.Pos, e.top, e.collapsed); ok {
 			tables = append(tables, t)
 		}
 		tables = append(tables, e.loops...)
@@ -82,6 +84,9 @@ type test struct {
 	outcome   bool
 	instance  int
 	cond      *cobol.Condition // nil for a conditional phrase
+	// given is a test the path knows the outcome of when it starts, which
+	// its table does not show.
+	given bool
 }
 
 // label names a test's column: the condition, and for a test of it
@@ -123,7 +128,7 @@ type path struct {
 func (p path) tests() []test {
 	var tests []test
 	for _, e := range p.events {
-		if e.test != nil {
+		if e.test != nil && !e.test.given {
 			tests = append(tests, *e.test)
 		}
 	}
@@ -131,9 +136,12 @@ func (p path) tests() []test {
 }
 
 // extractor follows the paths of one paragraph, collecting the tables of
-// its inline loops on the way.
+// its inline loops on the way: top are the paths through the paragraph,
+// and bodies those through each pass of its inline loops.
 type extractor struct {
 	paragraph string
+	top       []path
+	bodies    [][]path
 	loops     []Table
 	knowledge Knowledge
 	collapsed []cobol.Pos
@@ -143,7 +151,13 @@ type extractor struct {
 
 // paths lists the ways through a list of statements.
 func (e *extractor) paths(statements []cobol.Statement) []path {
-	paths := []path{{}}
+	return e.pathsKnowing(nil, statements)
+}
+
+// pathsKnowing lists the ways through a list of statements, from a start
+// that knows the outcomes of some tests.
+func (e *extractor) pathsKnowing(given []event, statements []cobol.Statement) []path {
+	paths := []path{{events: given}}
 	for _, s := range statements {
 		var alternatives []path
 		switch {
@@ -156,11 +170,13 @@ func (e *extractor) paths(statements []cobol.Statement) []path {
 		case s.Verb == "EVALUATE":
 			alternatives = e.cases(s)
 		case s.Verb == "SEARCH":
-			alternatives = e.cross([]path{{actions: []string{s.Text}, events: changes(s)}}, e.cases(s))
+			alternatives = e.cross([]path{{actions: []string{s.Text}, events: changes(head(s))}}, e.cases(s))
 		case s.Verb == "PERFORM" && len(s.Branches) > 0:
 			outer := e.collapsed
 			e.collapsed = nil
-			if t, ok := newTable(e.paragraph, s.Text, s.Pos, e.paths(s.Branches[0].Statements), e.collapsed); ok {
+			body := e.pathsKnowing(passing(s), s.Branches[0].Statements)
+			e.bodies = append(e.bodies, body)
+			if t, ok := newTable(e.paragraph, s.Text, s.Pos, body, e.collapsed); ok {
 				e.loops = append(e.loops, t)
 			}
 			e.collapsed = outer
@@ -250,13 +266,29 @@ func changes(s cobol.Statement) []event {
 	return []event{{change: &s}}
 }
 
+// passing is what a pass through a loop knows when it starts: that the
+// PERFORM's UNTIL condition is false, unless it is tested after each pass.
+func passing(s cobol.Statement) []event {
+	if s.Condition == nil || s.TestAfter {
+		return nil
+	}
+	given := testOf(s.Condition, false)
+	given.given = true
+	return []event{{test: given}}
+}
+
 // under prefixes the paths through statements with a condition's outcome.
-// NOT is turned around: the outcome of NOT A is the opposite of A's.
 func (e *extractor) under(c *cobol.Condition, outcome bool, statements []cobol.Statement) []path {
+	return e.cross([]path{{events: []event{{test: testOf(c, outcome)}}}}, e.paths(statements))
+}
+
+// testOf is a test of a condition with an outcome. NOT is turned around:
+// the outcome of NOT A is the opposite of A's.
+func testOf(c *cobol.Condition, outcome bool) *test {
 	for c.Op == "NOT" {
 		c, outcome = c.Parts[0], !outcome
 	}
-	return e.cross([]path{{events: []event{{test: &test{condition: c.String(), refs: c.Refs(), outcome: outcome, cond: c}}}}}, e.paths(statements))
+	return &test{condition: c.String(), refs: c.Refs(), outcome: outcome, cond: c}
 }
 
 // cases lists the paths through the WHENs of an EVALUATE or SEARCH: each
@@ -296,7 +328,14 @@ func (e *extractor) phrases(s cobol.Statement) []path {
 // phraseEvents is a statement running and its phrase's condition, such
 // as AT END, being raised or not, then what the statement changes.
 func phraseEvents(s cobol.Statement, kind string, outcome bool) []event {
-	return append([]event{{test: &test{condition: s.Text + " " + kind, outcome: outcome}}}, changes(s)...)
+	return append([]event{{test: &test{condition: s.Text + " " + kind, outcome: outcome}}}, changes(head(s))...)
+}
+
+// head is a statement without the statements nested in it, whose paths
+// meet those as changes of their own.
+func head(s cobol.Statement) cobol.Statement {
+	s.Branches = nil
+	return s
 }
 
 // cross follows each path with each of the next, leaving out those that
@@ -322,8 +361,9 @@ func (e *extractor) cross(paths, next []path) []path {
 // follow appends a path's events to those of the path before it. A test
 // whose outcome the values the path knows decide must have that outcome. A
 // test of a condition the path before tested, with no change between that
-// may have changed it, must have the same outcome, and is the same test; a
-// test after such a change is a new instance.
+// may have changed it, must have the same outcome, and is the same test,
+// unless the path was given the outcome; a test after such a change is a
+// new instance.
 func (e *extractor) follow(before, after []event) ([]event, bool) {
 	events := slices.Clone(before)
 	for _, ev := range after {
@@ -341,7 +381,7 @@ func (e *extractor) follow(before, after []event) ([]event, bool) {
 		switch {
 		case last != nil && !changed && last.outcome != t.outcome:
 			return nil, false
-		case last != nil && !changed:
+		case last != nil && !changed && !last.given:
 			continue
 		case last != nil:
 			t.instance = last.instance + 1

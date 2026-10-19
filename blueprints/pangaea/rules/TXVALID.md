@@ -54,21 +54,21 @@ Source: [TXVALID.cbl:136](../../../pangaea/programs/TXVALID.cbl#L136).
 
 ## 2000-READ-HEADER
 
-| | 1 | 2 | 3 | 4 | 5 | 6 |
-| --- | :-: | :-: | :-: | :-: | :-: | :-: |
-| `READ TRAN-IN AT END` | Y | N | N | N | N | N |
-| `FILE-IS-GOOD` | N | N | Y | Y | Y | Y |
-| `TR-HEADER` | | | N | Y | Y | Y |
-| `FILE-IS-GOOD, again` | | | N | N | N | |
-| `TH-BUSINESS-DATE = WS-BUSINESS-DATE` | | | | N | Y | Y |
-| `NOT TH-FROM-BRANCHES AND NOT TH-FROM-CARDS` | | | | | Y | N |
-| → `READ TRAN-IN` | 1 | 1 | 1 | 1 | 1 | 1 |
-| → `MOVE 'EMPTY FILE' TO WS-FILE-ERROR` | 2 | | | | | |
-| → `CONTINUE` | 3 | 2 | | | | |
-| → `MOVE 'FIRST RECORD IS NOT A HEADER' TO WS-FILE-ERROR` | | | 2 | | | |
-| → `MOVE 'HEADER IS NOT FOR THE BUSINESS DATE' TO WS-FILE-ERROR` | | | | 2 | | |
-| → `MOVE 'HEADER IS FROM AN UNKNOWN SOURCE' TO WS-FILE-ERROR` | | | | | 2 | |
-| → `MOVE TH-SOURCE TO WS-SOURCE` | | | | | | 2 |
+| | 1 | 2 | 3 | 4 | 5 |
+| --- | :-: | :-: | :-: | :-: | :-: |
+| `READ TRAN-IN AT END` | Y | N | N | N | N |
+| `FILE-IS-GOOD` | N | Y | Y | Y | Y |
+| `TR-HEADER` | | N | Y | Y | Y |
+| `FILE-IS-GOOD, again` | | N | N | N | |
+| `TH-BUSINESS-DATE = WS-BUSINESS-DATE` | | | N | Y | Y |
+| `NOT TH-FROM-BRANCHES AND NOT TH-FROM-CARDS` | | | | Y | N |
+| → `READ TRAN-IN` | 1 | 1 | 1 | 1 | 1 |
+| → `MOVE 'EMPTY FILE' TO WS-FILE-ERROR` | 2 | | | | |
+| → `CONTINUE` | 3 | | | | |
+| → `MOVE 'FIRST RECORD IS NOT A HEADER' TO WS-FILE-ERROR` | | 2 | | | |
+| → `MOVE 'HEADER IS NOT FOR THE BUSINESS DATE' TO WS-FILE-ERROR` | | | 2 | | |
+| → `MOVE 'HEADER IS FROM AN UNKNOWN SOURCE' TO WS-FILE-ERROR` | | | | 2 | |
+| → `MOVE TH-SOURCE TO WS-SOURCE` | | | | | 2 |
 
 Source: [TXVALID.cbl:163](../../../pangaea/programs/TXVALID.cbl#L163).
 
@@ -76,16 +76,16 @@ Source: [TXVALID.cbl:163](../../../pangaea/programs/TXVALID.cbl#L163).
 
 Each pass of `PERFORM UNTIL TR-TRAILER OR NOT FILE-IS-GOOD`.
 
-| | 1 | 2 | 3 | 4 | 5 |
-| --- | :-: | :-: | :-: | :-: | :-: |
-| `TR-DETAIL` | Y | Y | N | N | N |
-| `FILE-IS-GOOD` | Y | N | N | Y | N |
-| `TR-HEADER` | | | Y | N | N |
-| → `PERFORM 3200-VALIDATE-DETAIL` | 1 | 1 | | | |
-| → `PERFORM 3100-READ-NEXT` | 2 | | | 3 | |
-| → `MOVE 'SECOND HEADER' TO WS-FILE-ERROR` | | | 1 | | |
-| → `MOVE 'TYPE' TO RJ-REASON` | | | | 1 | 1 |
-| → `PERFORM 3300-REJECT-RECORD` | | | | 2 | 2 |
+| | 1 | 2 | 3 |
+| --- | :-: | :-: | :-: |
+| `TR-DETAIL` | Y | N | N |
+| `FILE-IS-GOOD` | Y | N | Y |
+| `TR-HEADER` | | Y | N |
+| → `PERFORM 3200-VALIDATE-DETAIL` | 1 | | |
+| → `PERFORM 3100-READ-NEXT` | 2 | | 3 |
+| → `MOVE 'SECOND HEADER' TO WS-FILE-ERROR` | | 1 | |
+| → `MOVE 'TYPE' TO RJ-REASON` | | | 1 |
+| → `PERFORM 3300-REJECT-RECORD` | | | 2 |
 
 Source: [TXVALID.cbl:187](../../../pangaea/programs/TXVALID.cbl#L187).
 
@@ -126,18 +126,18 @@ Source: [TXVALID.cbl:210](../../../pangaea/programs/TXVALID.cbl#L210).
 
 ## 4000-CHECK-TRAILER
 
-| | 1 | 2 | 3 | 4 | 5 | 6 |
-| --- | :-: | :-: | :-: | :-: | :-: | :-: |
-| `TT-DETAIL-COUNT = WS-DETAIL-COUNT` | N | Y | Y | Y | Y | Y |
-| `FILE-IS-GOOD` | N | N | N | Y | Y | N |
-| `TT-AMOUNT-TOTAL = WS-AMOUNT-TOTAL` | | N | Y | Y | Y | Y |
-| `TT-ACCT-HASH = WS-ACCT-HASH` | | | N | Y | Y | Y |
-| `READ TRAN-IN AT END` | | | | N | Y | |
-| → `MOVE 'TRAILER DETAIL COUNT DIFFERS' TO WS-FILE-ERROR` | 1 | | | | | |
-| → `MOVE 'TRAILER AMOUNT TOTAL DIFFERS' TO WS-FILE-ERROR` | | 1 | | | | |
-| → `MOVE 'TRAILER ACCOUNT HASH DIFFERS' TO WS-FILE-ERROR` | | | 1 | | | |
-| → `READ TRAN-IN` | | | | 1 | 1 | |
-| → `MOVE 'RECORDS AFTER THE TRAILER' TO WS-FILE-ERROR` | | | | 2 | | |
+| | 1 | 2 | 3 | 4 | 5 |
+| --- | :-: | :-: | :-: | :-: | :-: |
+| `TT-DETAIL-COUNT = WS-DETAIL-COUNT` | N | Y | Y | Y | Y |
+| `FILE-IS-GOOD` | N | N | N | Y | Y |
+| `TT-AMOUNT-TOTAL = WS-AMOUNT-TOTAL` | | N | Y | Y | Y |
+| `TT-ACCT-HASH = WS-ACCT-HASH` | | | N | Y | Y |
+| `READ TRAN-IN AT END` | | | | N | Y |
+| → `MOVE 'TRAILER DETAIL COUNT DIFFERS' TO WS-FILE-ERROR` | 1 | | | | |
+| → `MOVE 'TRAILER AMOUNT TOTAL DIFFERS' TO WS-FILE-ERROR` | | 1 | | | |
+| → `MOVE 'TRAILER ACCOUNT HASH DIFFERS' TO WS-FILE-ERROR` | | | 1 | | |
+| → `READ TRAN-IN` | | | | 1 | 1 |
+| → `MOVE 'RECORDS AFTER THE TRAILER' TO WS-FILE-ERROR` | | | | 2 | |
 
 Source: [TXVALID.cbl:252](../../../pangaea/programs/TXVALID.cbl#L252).
 

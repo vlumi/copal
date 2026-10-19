@@ -112,6 +112,30 @@
            IF AMT IS NOT NUMERIC OR AMT = ZERO
                DISPLAY 'BAD'
            END-IF.
+       PHRASE-PARA.
+           MOVE SPACES TO ERR
+           READ IN-FILE
+               AT END
+                   MOVE 'EMPTY' TO ERR
+           END-READ
+           IF ERR = SPACES
+               DISPLAY 'READ'
+           END-IF.
+       PASS-PARA.
+           PERFORM UNTIL DONE = 1 OR BAD = 1
+               IF BAD = 1
+                   DISPLAY 'NEVER'
+               END-IF
+               ADD 1 TO DONE
+               IF DONE = 1
+                   DISPLAY 'DONE'
+               END-IF
+           END-PERFORM
+           PERFORM WITH TEST AFTER UNTIL BAD = 1
+               IF BAD = 1
+                   DISPLAY 'LAST'
+               END-IF
+           END-PERFORM.
        OPEN-PARA.
            EXIT.
        REJECT-PARA.

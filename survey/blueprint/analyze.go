@@ -307,6 +307,7 @@ func Analyze(paths []string, copybookDir string, dialect cobol.Dialect) (*System
 		p.tables = rules.Tables(p.source, rules.Knowledge{
 			MayChange:      p.flow.WithCalls(callWrites(*p, s.Programs)).MayChange,
 			ConditionNames: conditionNames(p.Records),
+			InitialValues:  initialValues(p.Records),
 		})
 		p.Rules = newRules(p.Name, p.tables, p.Records)
 	}

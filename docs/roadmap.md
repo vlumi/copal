@@ -172,7 +172,7 @@ The oracle runs Pangaea's jobs as well as its programs, and on both specimens it
 - What a called program returns. Most of the rules this was for were paths that contradict themselves, now left out of the tables, or rules the search reaches now through what a called program computes from what it is passed (done). Carrying back what a called program sets is not built; three of AUTHSRV's rules wait on it.
 - Totals that agree by construction, such as debits and credits, marked where no case reaches them, with the reason (done).
 
-Where it stands: 443 of the 494 rules are reached, 3 are marked as totals the program adds up itself, and 48 are left. The plan lists them by kind: a rewrite that fails after a read, values no caller passes, a result no called paragraph sets, and the rest within programs.
+Where it stands: 443 of the 489 rules are reached, 3 are marked as totals the program adds up itself, and 43 are left. The plan lists them by kind: a rewrite that fails after a read, values no caller passes, a result no called paragraph sets, and the rest within programs.
 
 Done when: every rule of both specimens is reached by a recorded case, left out as one no run can take, or listed as reached only by an I/O error or bad data that no case records, with the reason.
 
