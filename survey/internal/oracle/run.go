@@ -69,7 +69,11 @@ func (r *runner) run(c Case, dir string, record bool) (result, error) {
 	}
 	trace := filepath.Join(dir, "trace")
 	var stdout bytes.Buffer
-	outcome, err := run.Step{Programs: r.programs, Program: r.program.source.ID, DDs: dds, Stdout: &stdout,
+	var args []string
+	if line := c[commandLine]; len(line) > 0 {
+		args = []string{strings.TrimRight(string(line[0]), " ")}
+	}
+	outcome, err := run.Step{Programs: r.programs, Program: r.program.source.ID, Args: args, DDs: dds, Stdout: &stdout,
 		Stdin: bytes.NewReader(lines(c[sysin])), TraceFile: trace, Timeout: timeout}.Run()
 	if err != nil {
 		return result{}, err

@@ -205,7 +205,7 @@ func (p *program) origins(item string) []target {
 	for _, o := range p.flow.Origins(item) {
 		name := o.File
 		if o.Stream != "" {
-			name = sysin
+			name = o.Stream
 		}
 		i := slices.IndexFunc(p.inputs, func(in input) bool { return in.name() == name })
 		if i < 0 || name == "" {

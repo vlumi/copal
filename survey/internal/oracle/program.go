@@ -47,21 +47,26 @@ type Unit struct {
 	blueprint *blueprint.Program
 }
 
-// input is a file the program reads, or its SYSIN, with the layout of its
-// records.
+// input is a file the program reads, or a stream it accepts from, its
+// SYSIN or its command line, with the layout of its records.
 type input struct {
-	file   blueprint.File // empty for SYSIN
+	file   blueprint.File // empty for a stream
+	stream string
 	root   *layout.Field
 	layout *record.Layout
 }
 
-// sysin is the name an input that is the program's SYSIN goes by in a
-// case.
-const sysin = "SYSIN"
+// sysin and commandLine are the names the streams a program accepts from
+// go by in a case: the lines of its SYSIN, and the one line of its
+// command line.
+const (
+	sysin       = "SYSIN"
+	commandLine = dataflow.CommandLine
+)
 
 func (in input) name() string {
 	if in.file.Name == "" {
-		return sysin
+		return in.stream
 	}
 	return in.file.Name
 }
@@ -84,8 +89,10 @@ func prepare(system *blueprint.System, bp *blueprint.Program, copybookDir string
 			p.inputs = append(p.inputs, input{file: f, root: r, layout: record.New(r)})
 		}
 	}
-	if r := accepted(source, records); r != nil {
-		p.inputs = append(p.inputs, input{root: r, layout: record.New(r)})
+	for _, stream := range []string{sysin, commandLine} {
+		if r := accepted(source, records, stream); r != nil {
+			p.inputs = append(p.inputs, input{stream: stream, root: r, layout: record.New(r)})
+		}
 	}
 	for _, in := range p.inputs {
 		p.shapes[in.name()] = p.shapeOf(in)
@@ -177,12 +184,14 @@ func find(f *layout.Field, name string) *layout.Field {
 	return nil
 }
 
-// accepted is the record a program ACCEPTs from its SYSIN, if it does.
-func accepted(p *cobol.Program, records *layout.ProgramRecords) *layout.Field {
+// accepted is the record a program ACCEPTs from a stream, its SYSIN or its
+// command line, if it does.
+func accepted(p *cobol.Program, records *layout.ProgramRecords, stream string) *layout.Field {
+	device := map[string]string{sysin: "", commandLine: "COMMAND-LINE"}[stream]
 	var name string
 	for _, para := range p.Paragraphs {
 		cobol.Walk(para.Statements, func(s cobol.Statement) {
-			if s.Verb == "ACCEPT" && s.Device == "" && len(s.Writes) > 0 && name == "" {
+			if s.Verb == "ACCEPT" && s.Device == device && len(s.Writes) > 0 && name == "" {
 				name = s.Writes[0].Name
 			}
 		})
