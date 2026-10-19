@@ -47,21 +47,26 @@ type Unit struct {
 	blueprint *blueprint.Program
 }
 
-// input is a file the program reads, or its SYSIN, with the layout of its
-// records.
+// input is a file the program reads, or a stream it accepts from, its
+// SYSIN or its command line, with the layout of its records.
 type input struct {
-	file   blueprint.File // empty for SYSIN
+	file   blueprint.File // empty for a stream
+	stream string
 	root   *layout.Field
 	layout *record.Layout
 }
 
-// sysin is the name an input that is the program's SYSIN goes by in a
-// case.
-const sysin = "SYSIN"
+// sysin and commandLine are the names the streams a program accepts from
+// go by in a case: the lines of its SYSIN, and the one line of its
+// command line.
+const (
+	sysin       = "SYSIN"
+	commandLine = dataflow.CommandLine
+)
 
 func (in input) name() string {
 	if in.file.Name == "" {
-		return sysin
+		return in.stream
 	}
 	return in.file.Name
 }
@@ -81,11 +86,14 @@ func prepare(system *blueprint.System, bp *blueprint.Program, copybookDir string
 			continue
 		}
 		if r := fileRecord(records, f.Name); r != nil {
+			r = readInto(flow, records, r)
 			p.inputs = append(p.inputs, input{file: f, root: r, layout: record.New(r)})
 		}
 	}
-	if r := accepted(source, records); r != nil {
-		p.inputs = append(p.inputs, input{root: r, layout: record.New(r)})
+	for _, stream := range []string{sysin, commandLine} {
+		if r := accepted(source, records, stream); r != nil {
+			p.inputs = append(p.inputs, input{stream: stream, root: r, layout: record.New(r)})
+		}
 	}
 	for _, in := range p.inputs {
 		p.shapes[in.name()] = p.shapeOf(in)
@@ -153,15 +161,48 @@ func writes(f blueprint.File) bool {
 	return false
 }
 
-// fileRecord is the first record of a file's description, which its other
-// records, if any, redefine.
+// fileRecord is the record of a file's description: its one record, or of
+// several, which share the file's record area, the first with the others
+// redefining it, as REDEFINES would lay them out in one record.
 func fileRecord(records *layout.ProgramRecords, file string) *layout.Field {
 	for _, f := range records.Files {
-		if f.File == file && len(f.Records) > 0 {
+		if f.File != file || len(f.Records) == 0 {
+			continue
+		}
+		if len(f.Records) == 1 {
 			return f.Records[0]
 		}
+		area := &layout.Field{Level: 1, Name: file, Start: 1, Category: layout.Group}
+		for i, r := range f.Records {
+			child := *r
+			if i > 0 {
+				child.Redefines = f.Records[0].Name
+			}
+			area.Children = append(area.Children, &child)
+			area.Length = max(area.Length, r.Size())
+		}
+		return area
 	}
 	return nil
+}
+
+// readInto is the layout of a file's record: the record itself, or, for one
+// of no fields, read whole into a record of fields as long, that one.
+func readInto(flow dataflow.Flow, records *layout.ProgramRecords, r *layout.Field) *layout.Field {
+	if len(r.Children) > 0 {
+		return r
+	}
+	for _, e := range flow.Lineage {
+		if e.Verb != "READ" && e.Verb != "MOVE" || e.FromFile || e.From != r.Name {
+			continue
+		}
+		for _, into := range records.All() {
+			if into.Name == e.To && len(into.Children) > 0 && into.Size() == r.Size() {
+				return into
+			}
+		}
+	}
+	return r
 }
 
 // find finds a field by name among a record's fields, at any level.
@@ -177,12 +218,14 @@ func find(f *layout.Field, name string) *layout.Field {
 	return nil
 }
 
-// accepted is the record a program ACCEPTs from its SYSIN, if it does.
-func accepted(p *cobol.Program, records *layout.ProgramRecords) *layout.Field {
+// accepted is the record a program ACCEPTs from a stream, its SYSIN or its
+// command line, if it does.
+func accepted(p *cobol.Program, records *layout.ProgramRecords, stream string) *layout.Field {
+	device := map[string]string{sysin: "", commandLine: "COMMAND-LINE"}[stream]
 	var name string
 	for _, para := range p.Paragraphs {
 		cobol.Walk(para.Statements, func(s cobol.Statement) {
-			if s.Verb == "ACCEPT" && s.Device == "" && len(s.Writes) > 0 && name == "" {
+			if s.Verb == "ACCEPT" && s.Device == device && len(s.Writes) > 0 && name == "" {
 				name = s.Writes[0].Name
 			}
 		})

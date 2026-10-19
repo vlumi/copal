@@ -38,6 +38,7 @@ Program [clrin.cbl](../../../laurasia/programs/clrin.cbl): 4 files, 11 paragraph
   - [Into PRES-RECORD](#into-pres-record)
   - [Into REJECT-LINE](#into-reject-line)
   - [Into REPORT-LINE](#into-report-line)
+  - [Into WS-RUN-DATE](#into-ws-run-date)
   - [Into WS-STATUSES](#into-ws-statuses)
   - [Into WS-IO-FAILED](#into-ws-io-failed)
   - [Into WS-BATCH](#into-ws-batch)
@@ -52,6 +53,7 @@ Program [clrin.cbl](../../../laurasia/programs/clrin.cbl): 4 files, 11 paragraph
   - [File PRES-OUT](#file-pres-out)
   - [File REJECT-OUT](#file-reject-out)
   - [File REPORT-OUT](#file-report-out)
+- [Links between records](#links-between-records)
 - [Control totals](#control-totals)
 - [Records](#records)
   - [CLR-FILE-HEADER](#clr-file-header)
@@ -222,6 +224,14 @@ Record [REPORT-LINE](#report-line).
 | REPORT-LINE | [WS-REPORT-COUNT](#ws-report-count) | WRITE | WRITE-REPORT | [clrin.cbl:228](../../../laurasia/programs/clrin.cbl#L228) |
 | REPORT-LINE | [WS-REPORT-COUNT](#ws-report-count) | WRITE | WRITE-REPORT | [clrin.cbl:231](../../../laurasia/programs/clrin.cbl#L231) |
 
+### Into WS-RUN-DATE
+
+Record [WS-RUN-DATE](#ws-run-date).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-RUN-DATE | COMMAND-LINE | ACCEPT | MAIN | [clrin.cbl:95](../../../laurasia/programs/clrin.cbl#L95) |
+
 ### Into WS-STATUSES
 
 Record [WS-STATUSES](#ws-statuses).
@@ -376,7 +386,7 @@ Written from [REPORT-LINE](#report-line) and [WS-REPORT-COUNT](#ws-report-count)
 
 | Field | Position | Origins |
 | --- | --: | --- |
-| REPORT-LINE | 1-60 | literal 'CLRIN    CLEARING FILE OF '; literal SPACES |
+| REPORT-LINE | 1-60 | literal 'CLRIN    CLEARING FILE OF '; literal SPACES; stream COMMAND-LINE WS-RUN-DATE |
 
 #### Record WS-REPORT-COUNT
 
@@ -384,6 +394,14 @@ Written from [REPORT-LINE](#report-line) and [WS-REPORT-COUNT](#ws-report-count)
 | --- | --: | --- |
 | RC-LABEL | 1-30 | literal 'BATCHES'; literal 'PRESENTMENTS TAKEN'; literal 'RECORDS REJECTED' |
 | RC-VALUE | 31-38 | initial value of WS-BATCHES; initial value of WS-REJECTED; initial value of WS-TAKEN; literal 1 |
+
+## Links between records
+
+Fields of one input the program relies on to find or match the records of another: moved into an indexed file's record key to read it by, compared for equality, or compared for order to merge the two in that order, each side's values from that field alone.
+
+| Field | Of | Links to | Of | How | Source |
+| --- | --- | --- | --- | --- | --- |
+| FH-FILE-DATE | CLEARING-IN | WS-RUN-DATE | COMMAND-LINE | equal to | [clrin.cbl:102](../../../laurasia/programs/clrin.cbl#L102) |
 
 ## Control totals
 

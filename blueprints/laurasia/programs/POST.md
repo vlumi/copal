@@ -33,6 +33,7 @@ Program [post.cbl](../../../laurasia/programs/post.cbl): 5 files, 6 paragraphs. 
   - [Into POSTING](#into-posting)
   - [Into REJECT-LINE](#into-reject-line)
   - [Into REPORT-LINE](#into-report-line)
+  - [Into WS-RUN-DATE](#into-ws-run-date)
   - [Into WS-AT-END](#into-ws-at-end)
   - [Into WS-FEE-PROGRAM](#into-ws-fee-program)
   - [Into WS-REJECT-REASON](#into-ws-reject-reason)
@@ -171,6 +172,14 @@ Record [REPORT-LINE](#report-line).
 | REPORT-LINE | [WS-REPORT-AMOUNT](#ws-report-amount) | WRITE | WRITE-REPORT | [post.cbl:174](../../../laurasia/programs/post.cbl#L174) |
 | REPORT-LINE | [WS-REPORT-AMOUNT](#ws-report-amount) | WRITE | WRITE-REPORT | [post.cbl:177](../../../laurasia/programs/post.cbl#L177) |
 
+### Into WS-RUN-DATE
+
+Record [WS-RUN-DATE](#ws-run-date).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-RUN-DATE | COMMAND-LINE | ACCEPT | MAIN | [post.cbl:76](../../../laurasia/programs/post.cbl#L76) |
+
 ### Into WS-AT-END
 
 Record [WS-AT-END](#ws-at-end).
@@ -285,7 +294,7 @@ Written from [POSTING](#posting).
 | PO-KIND | 27 | literal 'F'; literal 'P' |
 | PO-AMOUNT | 28-37 | file PRES-IN PS-AMOUNT |
 | PO-REFERENCE | 38-43 | file PRES-IN PS-AUTH-CODE |
-| PO-DATE | 44-51 | |
+| PO-DATE | 44-51 | stream COMMAND-LINE WS-RUN-DATE |
 
 ### File REJECT-OUT
 

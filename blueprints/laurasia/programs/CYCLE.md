@@ -29,6 +29,7 @@ Program [cycle.cbl](../../../laurasia/programs/cycle.cbl): 3 files, 4 paragraphs
   - [Into CARD-ACCOUNT](#into-card-account)
   - [Into POSTING](#into-posting)
   - [Into STATEMENT-LINE](#into-statement-line)
+  - [Into WS-RUN-DATE](#into-ws-run-date)
   - [Into WS-INTEREST-CENTS](#into-ws-interest-cents)
   - [Into WS-INTEREST](#into-ws-interest)
   - [Into WS-MINIMUM](#into-ws-minimum)
@@ -40,6 +41,7 @@ Program [cycle.cbl](../../../laurasia/programs/cycle.cbl): 3 files, 4 paragraphs
   - [File ACCOUNTS](#file-accounts)
   - [File POSTINGS-OUT](#file-postings-out)
   - [File STATEMENTS-OUT](#file-statements-out)
+- [Links between records](#links-between-records)
 - [Records](#records)
   - [CARD-ACCOUNT](#card-account)
   - [POSTING](#posting)
@@ -132,6 +134,14 @@ Record [STATEMENT-LINE](#statement-line).
 | STATEMENT-LINE | [WS-STATEMENT-AMOUNT](#ws-statement-amount) | WRITE | WRITE-STATEMENT | [cycle.cbl:116](../../../laurasia/programs/cycle.cbl#L116) |
 | STATEMENT-LINE | [WS-STATEMENT-AMOUNT](#ws-statement-amount) | WRITE | WRITE-STATEMENT | [cycle.cbl:119](../../../laurasia/programs/cycle.cbl#L119) |
 | STATEMENT-LINE | [WS-STATEMENT-AMOUNT](#ws-statement-amount) | WRITE | WRITE-STATEMENT | [cycle.cbl:122](../../../laurasia/programs/cycle.cbl#L122) |
+
+### Into WS-RUN-DATE
+
+Record [WS-RUN-DATE](#ws-run-date).
+
+| Into | From | Statement | Paragraph | Source |
+| --- | --- | --- | --- | --- |
+| WS-RUN-DATE | COMMAND-LINE | ACCEPT | MAIN | [cycle.cbl:63](../../../laurasia/programs/cycle.cbl#L63) |
 
 ### Into WS-INTEREST-CENTS
 
@@ -240,7 +250,7 @@ Written from [POSTING](#posting).
 | PO-KIND | 27 | literal condition PO-INTEREST |
 | PO-AMOUNT | 28-37 | call INTCALC returns WS-INTEREST-CENTS; literal ZERO |
 | PO-REFERENCE | 38-43 | literal SPACES |
-| PO-DATE | 44-51 | |
+| PO-DATE | 44-51 | stream COMMAND-LINE WS-RUN-DATE |
 
 ### File STATEMENTS-OUT
 
@@ -252,7 +262,7 @@ Written from [WS-STATEMENT-HEAD](#ws-statement-head) and [WS-STATEMENT-AMOUNT](#
 | --- | --: | --- |
 | SH-CARD-NO | 1-16 | file ACCOUNTS CA-CARD-NO |
 | SH-ACCOUNT-NO | 18-27 | file ACCOUNTS CA-ACCOUNT-NO |
-| SH-DATE | 32-39 | |
+| SH-DATE | 32-39 | stream COMMAND-LINE WS-RUN-DATE |
 
 #### Record WS-STATEMENT-AMOUNT
 
@@ -260,6 +270,14 @@ Written from [WS-STATEMENT-HEAD](#ws-statement-head) and [WS-STATEMENT-AMOUNT](#
 | --- | --: | --- |
 | SA-LABEL | 5-34 | literal 'INTEREST'; literal 'MINIMUM PAYMENT'; literal 'NEW BALANCE'; literal 'PREVIOUS BALANCE' |
 | SA-VALUE | 35-45 | call INTCALC argument 2 CA-STATEMENT-BALANCE; call INTCALC returns WS-INTEREST-CENTS; call MINPAY argument 1 CA-BALANCE; call MINPAY argument 2 WS-MINIMUM; file ACCOUNTS CA-BALANCE; file ACCOUNTS CA-STATEMENT-BALANCE; literal ZERO |
+
+## Links between records
+
+Fields of one input the program relies on to find or match the records of another: moved into an indexed file's record key to read it by, compared for equality, or compared for order to merge the two in that order, each side's values from that field alone.
+
+| Field | Of | Links to | Of | How | Source |
+| --- | --- | --- | --- | --- | --- |
+| CA-CYCLE-DAY | ACCOUNTS | WS-RUN-DAY | COMMAND-LINE | equal to | [cycle.cbl:71](../../../laurasia/programs/cycle.cbl#L71) |
 
 ## Records
 

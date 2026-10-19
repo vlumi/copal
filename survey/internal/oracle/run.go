@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/vlumi/copal/bedrock/cobol"
-	"github.com/vlumi/copal/bedrock/layout"
 	"github.com/vlumi/copal/bedrock/run"
 	"github.com/vlumi/copal/survey/blueprint"
 	"github.com/vlumi/copal/survey/internal/coverage"
@@ -56,11 +55,11 @@ func (r *runner) run(c Case, dir string, record bool) (result, error) {
 		dds[f.Assign] = path
 		var err error
 		switch {
-		case reads(f) && f.Organization == "INDEXED":
+		case reads(f) && keyed(f):
 			err = r.load(f, c[f.Name], path, dir)
 		case reads(f):
 			err = os.WriteFile(path, sequential(f, c[f.Name]), 0o644)
-		case writes(f) && f.Organization != "INDEXED":
+		case writes(f) && !keyed(f):
 			err = os.WriteFile(path, nil, 0o644)
 		}
 		if err != nil {
@@ -69,7 +68,11 @@ func (r *runner) run(c Case, dir string, record bool) (result, error) {
 	}
 	trace := filepath.Join(dir, "trace")
 	var stdout bytes.Buffer
-	outcome, err := run.Step{Programs: r.programs, Program: r.program.source.ID, DDs: dds, Stdout: &stdout,
+	var args []string
+	if line := c[commandLine]; len(line) > 0 {
+		args = []string{strings.TrimRight(string(line[0]), " ")}
+	}
+	outcome, err := run.Step{Programs: r.programs, Program: r.program.source.ID, Args: args, DDs: dds, Stdout: &stdout,
 		Stdin: bytes.NewReader(lines(c[sysin])), TraceFile: trace, Timeout: timeout}.Run()
 	if err != nil {
 		return result{}, err
@@ -111,7 +114,7 @@ func (r *runner) outputs(dir string) (map[string][]byte, error) {
 			continue
 		}
 		path := filepath.Join(dir, f.Name)
-		if f.Organization == "INDEXED" {
+		if keyed(f) {
 			unloaded := path + ".unload"
 			outcome, err := run.Step{Programs: r.loaders, Program: unloaderName(f), DDs: map[string]string{"UNLOADIN": path, "UNLOADOUT": unloaded},
 				Stdout: io.Discard, Timeout: timeout}.Run()
@@ -193,8 +196,14 @@ func lines(records [][]byte) []byte {
 	return b.Bytes()
 }
 
-// load writes an indexed file through its loader, which reads the records
-// from a sequential file.
+// keyed reports whether a file is read and written by key, indexed or
+// relative, through a loader and an unloader rather than as it is.
+func keyed(f blueprint.File) bool {
+	return f.Organization == "INDEXED" || f.Organization == "RELATIVE"
+}
+
+// load writes an indexed or relative file through its loader, which reads
+// the records from a sequential file.
 func (r *runner) load(f blueprint.File, records [][]byte, path, dir string) error {
 	in := path + ".load"
 	if err := os.WriteFile(in, bytes.Join(records, nil), 0o644); err != nil {
@@ -217,7 +226,8 @@ func unloaderName(f blueprint.File) string {
 }
 
 // unloaderSource is a program that writes the records of an indexed file,
-// in key order, to a sequential one.
+// in key order, or of a relative one, in record number order, to a
+// sequential one.
 func unloaderSource(f blueprint.File, length, keyStart, keyLength int) string {
 	return fmt.Sprintf(`       IDENTIFICATION DIVISION.
        PROGRAM-ID. %s.
@@ -225,9 +235,7 @@ func unloaderSource(f blueprint.File, length, keyStart, keyLength int) string {
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
            SELECT UNLOAD-IN ASSIGN TO UNLOADIN
-               ORGANIZATION IS INDEXED
-               ACCESS MODE IS SEQUENTIAL
-               RECORD KEY IS UNLOAD-KEY.
+%s
            SELECT UNLOAD-OUT ASSIGN TO UNLOADOUT
                ORGANIZATION IS SEQUENTIAL.
        DATA DIVISION.
@@ -252,7 +260,26 @@ func unloaderSource(f blueprint.File, length, keyStart, keyLength int) string {
            END-PERFORM
            CLOSE UNLOAD-IN UNLOAD-OUT
            STOP RUN.
-`, unloaderName(f), keyFields("UNLOAD-KEY", length, keyStart, keyLength), length)
+`, unloaderName(f), organization(f, "UNLOAD-KEY", "SEQUENTIAL"), recordFields(f, "UNLOAD-KEY", length, keyStart, keyLength), length)
+}
+
+// organization writes a loader's or unloader's ORGANIZATION and ACCESS
+// MODE clauses for a file, and for an indexed file its RECORD KEY.
+func organization(f blueprint.File, key, access string) string {
+	if f.Organization == "RELATIVE" {
+		return "               ORGANIZATION IS RELATIVE\n               ACCESS MODE IS SEQUENTIAL."
+	}
+	return fmt.Sprintf("               ORGANIZATION IS INDEXED\n               ACCESS MODE IS %s\n               RECORD KEY IS %s.", access, key)
+}
+
+// recordFields lays out a loader's or unloader's record of a file: an
+// indexed file's key and the fillers around it, a relative file's one
+// filler.
+func recordFields(f blueprint.File, key string, length, keyStart, keyLength int) string {
+	if f.Organization == "RELATIVE" {
+		return fmt.Sprintf("           05  FILLER                  PIC X(%d).", length)
+	}
+	return keyFields(key, length, keyStart, keyLength)
 }
 
 // keyFields lays out a record of the given length as its key, at the
@@ -270,7 +297,8 @@ func keyFields(key string, length, keyStart, keyLength int) string {
 }
 
 // loaderSource is a program that writes the records of a sequential file
-// into an indexed one, by the key at the given bytes.
+// into an indexed one, by the key at the given bytes, or into a relative
+// one, in order, so that the nth record is record number n.
 func loaderSource(f blueprint.File, length, keyStart, keyLength int) string {
 	return fmt.Sprintf(`       IDENTIFICATION DIVISION.
        PROGRAM-ID. %s.
@@ -280,9 +308,7 @@ func loaderSource(f blueprint.File, length, keyStart, keyLength int) string {
            SELECT LOAD-IN ASSIGN TO LOADIN
                ORGANIZATION IS SEQUENTIAL.
            SELECT LOAD-OUT ASSIGN TO LOADOUT
-               ORGANIZATION IS INDEXED
-               ACCESS MODE IS RANDOM
-               RECORD KEY IS LOAD-KEY.
+%s
        DATA DIVISION.
        FILE SECTION.
        FD  LOAD-IN.
@@ -308,13 +334,13 @@ func loaderSource(f blueprint.File, length, keyStart, keyLength int) string {
            END-PERFORM
            CLOSE LOAD-IN LOAD-OUT
            STOP RUN.
-`, loaderName(f), length, keyFields("LOAD-KEY", length, keyStart, keyLength))
+`, loaderName(f), organization(f, "LOAD-KEY", "RANDOM"), length, recordFields(f, "LOAD-KEY", length, keyStart, keyLength))
 }
 
 // newRunner prepares the runs of a program in a scratch directory: the
 // system's programs compiled there with trace code, once for every
-// program the scratch directory serves, and for each indexed file the
-// program uses, a loader and an unloader.
+// program the scratch directory serves, and for each indexed or relative
+// file the program uses, a loader and an unloader.
 func newRunner(p *program, sources, copybookDir, scratch string) (*runner, error) {
 	dir := filepath.Join(scratch, p.blueprint.Name)
 	r := &runner{program: p, programs: filepath.Join(scratch, "programs"), loaders: filepath.Join(dir, "loaders")}
@@ -328,21 +354,24 @@ func newRunner(p *program, sources, copybookDir, scratch string) (*runner, error
 		return nil, err
 	}
 	for _, f := range p.blueprint.Files {
-		if f.Organization != "INDEXED" {
+		if !keyed(f) {
 			continue
 		}
 		root := fileRecord(p.records, f.Name)
-		var key *layout.Field
-		if root != nil {
-			key = find(root, f.RecordKey)
+		if root == nil {
+			return nil, fmt.Errorf("%s: no record", f.Name)
 		}
-		if key == nil {
-			return nil, fmt.Errorf("%s: no record key %s", f.Name, f.RecordKey)
+		length, keyStart, keyLength := root.Size(), 0, 0
+		if f.Organization == "INDEXED" {
+			key := find(root, f.RecordKey)
+			if key == nil {
+				return nil, fmt.Errorf("%s: no record key %s", f.Name, f.RecordKey)
+			}
+			keyStart, keyLength = key.Start-root.Start+1, key.Size()
 		}
-		length, keyStart := root.Size(), key.Start-root.Start+1
 		for name, source := range map[string]string{
-			loaderName(f):   loaderSource(f, length, keyStart, key.Size()),
-			unloaderName(f): unloaderSource(f, length, keyStart, key.Size()),
+			loaderName(f):   loaderSource(f, length, keyStart, keyLength),
+			unloaderName(f): unloaderSource(f, length, keyStart, keyLength),
 		} {
 			if err := os.WriteFile(filepath.Join(loaderSources, name+".cbl"), []byte(source), 0o644); err != nil {
 				return nil, err

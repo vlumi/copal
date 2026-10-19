@@ -223,7 +223,7 @@ func (n *names) edges(paragraph string, s cobol.Statement) []Edge {
 	switch {
 	case s.Verb == "CALL" && s.Calls != "":
 		return n.callEdges(paragraph, s)
-	case (s.Verb == "ACCEPT" || s.Verb == "DISPLAY") && s.Device == "":
+	case s.Verb == "ACCEPT" && (s.Device == "" || s.Device == CommandLine), s.Verb == "DISPLAY" && s.Device == "":
 		return n.streamEdges(paragraph, s)
 	case !lineageVerbs[s.Verb]:
 		return nil
@@ -302,14 +302,22 @@ func (n *names) callEdges(paragraph string, s cobol.Statement) []Edge {
 	return edges
 }
 
-// streamEdges lists the values an ACCEPT moves from the job's SYSIN, or a
-// DISPLAY to its SYSOUT.
+// CommandLine is the stream of a program's command line, which ACCEPT ...
+// FROM COMMAND-LINE reads.
+const CommandLine = "COMMAND-LINE"
+
+// streamEdges lists the values an ACCEPT moves from the job's SYSIN or
+// the program's command line, or a DISPLAY to its SYSOUT.
 func (n *names) streamEdges(paragraph string, s cobol.Statement) []Edge {
 	var edges []Edge
 	if s.Verb == "ACCEPT" {
+		stream := "SYSIN"
+		if s.Device == CommandLine {
+			stream = CommandLine
+		}
 		for _, op := range s.Writes {
 			if op.Name != "" {
-				edges = append(edges, Edge{From: "SYSIN", FromStream: true, To: n.item(op.Name), Paragraph: paragraph, Verb: s.Verb, Pos: s.Pos})
+				edges = append(edges, Edge{From: stream, FromStream: true, To: n.item(op.Name), Paragraph: paragraph, Verb: s.Verb, Pos: s.Pos})
 			}
 		}
 		return edges

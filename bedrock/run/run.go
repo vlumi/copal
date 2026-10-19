@@ -14,13 +14,15 @@ import (
 
 // Step is one run of a compiled program: the directory of the compiled
 // programs, where the runtime also finds the modules the program calls,
-// its DD names bound to files, what it reads as SYSIN on standard input,
+// the arguments on its command line, its DD names bound to files, what it
+// reads as SYSIN on standard input,
 // where its standard output and error go, for a program compiled with
 // trace code, the file the trace is written to, and, if set, how long it
 // may run before it is killed.
 type Step struct {
 	Programs  string
 	Program   string
+	Args      []string
 	DDs       map[string]string
 	Stdin     io.Reader
 	Stdout    io.Writer
@@ -46,7 +48,7 @@ func (s Step) Run() (Outcome, error) {
 		ctx, cancel = context.WithTimeout(ctx, s.Timeout)
 		defer cancel()
 	}
-	cmd := exec.CommandContext(ctx, filepath.Join(s.Programs, s.Program))
+	cmd := exec.CommandContext(ctx, filepath.Join(s.Programs, s.Program), s.Args...)
 	cmd.Env = append(os.Environ(), "COB_LIBRARY_PATH="+s.Programs)
 	for _, dd := range slices.Sorted(maps.Keys(s.DDs)) {
 		cmd.Env = append(cmd.Env, "DD_"+dd+"="+s.DDs[dd])

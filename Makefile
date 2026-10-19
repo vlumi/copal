@@ -75,8 +75,9 @@ simulate:  ## Send card traffic to the console's online channel until interrupte
 	go run ./pangaea/cmd/pangaea simulate -api http://$(ADDR)/api -rate $(RATE)
 
 .PHONY: oracle
-oracle:  ## Search Pangaea's programs again for cases that reach their rules, and rewrite oracle/pangaea
+oracle:  ## Search both specimens' programs again for cases that reach their rules, and rewrite oracle/
 	go run ./survey/cmd/survey oracle -copybooks pangaea/copybooks -out oracle/pangaea -rules ../../blueprints/pangaea/rules -title pangaea -jobs START,ONLINE,DAILY,MONTHLY pangaea/programs/*.cbl pangaea/jobs/*.jcl
+	go run ./survey/cmd/survey oracle -dialect mf -copybooks laurasia/copybooks -out oracle/laurasia -rules ../../blueprints/laurasia/rules -title laurasia laurasia/programs/*.cbl laurasia/scripts/*.sh
 
 .PHONY: blueprints
 blueprints:  ## Regenerate Pangaea's and Laurasia's blueprints with Survey
@@ -89,6 +90,10 @@ EXPLORE_ADDR ?= 127.0.0.1:1192
 .PHONY: explore
 explore:  ## Explore Pangaea's analysis in the browser (EXPLORE_ADDR)
 	go run ./survey/cmd/survey explore -copybooks pangaea/copybooks -addr $(EXPLORE_ADDR) -title "the First Bank of Pangaea" -cases oracle/pangaea pangaea/programs/*.cbl pangaea/jobs/*.jcl
+
+.PHONY: explore-laurasia
+explore-laurasia:  ## Explore Laurasia's analysis in the browser (EXPLORE_ADDR)
+	go run ./survey/cmd/survey explore -dialect mf -copybooks laurasia/copybooks -addr $(EXPLORE_ADDR) -title "Laurasia Card Services" -cases oracle/laurasia laurasia/programs/*.cbl laurasia/scripts/*.sh
 
 .PHONY: docs-diagrams
 docs-diagrams:  ## Redraw the diagrams of docs/architecture.md
