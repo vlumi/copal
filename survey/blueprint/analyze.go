@@ -413,9 +413,7 @@ func describeProgram(p *cobol.Program, path string, dialect cobol.Dialect) (Prog
 	for _, r := range laidOut.Linkage {
 		program.Records = append(program.Records, newRecord(r, "linkage", "", path, keys))
 	}
-	for i := range program.Records {
-		recordTypes(p, &program.Records[i])
-	}
+	recordTypes(p, program.Records)
 	program.Using = p.Using
 	program.Kind = programKind(p.Using)
 	program.ReadsSysin = readsSysin(p)

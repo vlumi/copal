@@ -61,7 +61,7 @@ func outputs(p Program, flow dataflow.Flow) []Output {
 		}
 		for k, t := range r.Types {
 			if len(byType[k]) > 0 {
-				outs = append(outs, traced(flow, Output{File: key[0], Record: key[1], Type: t.Name}, typeLeaves(r, t), byType[k]))
+				outs = append(outs, traced(flow, Output{File: key[0], Record: key[1], Type: t.Name}, typeLeaves(p.Records, r, t), byType[k]))
 			}
 		}
 	}

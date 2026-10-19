@@ -36,6 +36,8 @@ type Total struct {
 	Sum    string `json:"sum,omitempty"`
 	Type   string `json:"type,omitempty"`
 	Source string `json:"source"`
+	// added is the paragraph that adds up the total.
+	added string
 }
 
 // inputLinks finds the links a program relies on: each field of an
@@ -150,11 +152,10 @@ func equalities(c *cobol.Condition) [][2]string {
 
 // programTotals finds the control totals a program checks: each
 // comparison for equality of a field of an input with an item that is no
-// input's,
-// which the program adds a field of the same input up into, or adds 1
-// to. A sum is over the records of the type whose fields the summed field
-// is among; a count of records of no known type, over those a sum of the
-// same input adds up.
+// input's, which the program adds a field of the same input up into, of
+// any of its records, or adds 1 to. A sum is over the records of the type
+// whose fields the summed field is among; a count of records of no known
+// type, over those of a sum the same paragraph adds up.
 func programTotals(p Program, source *cobol.Program, flow dataflow.Flow) []Total {
 	var totals []Total
 	for _, c := range conditions(source) {
@@ -173,7 +174,7 @@ func programTotals(p Program, source *cobol.Program, flow dataflow.Flow) []Total
 		if t.Sum != "" || t.Type != "" {
 			continue
 		}
-		if j := slices.IndexFunc(totals, func(u Total) bool { return u.File == t.File && u.Sum != "" }); j >= 0 {
+		if j := slices.IndexFunc(totals, func(u Total) bool { return u.File == t.File && u.Sum != "" && u.added == t.added }); j >= 0 {
 			totals[i].Type = totals[j].Type
 		}
 	}
@@ -191,10 +192,10 @@ func totalOf(p Program, flow dataflow.Flow, field, item string) (Total, bool) {
 		}
 		switch {
 		case e.FromLiteral && e.From == "1":
-			return Total{File: r.File, Field: field}, true
+			return Total{File: r.File, Field: field, added: e.Paragraph}, true
 		case !e.FromLiteral && e.From != field:
-			if summed, found := inputRecord(p, e.From); found && summed.Name == r.Name {
-				return Total{File: r.File, Field: field, Sum: e.From, Type: typeHolding(r, e.From)}, true
+			if summed, found := inputRecord(p, e.From); found && summed.File == r.File {
+				return Total{File: r.File, Field: field, Sum: e.From, Type: typeHolding(p.Records, r.File, e.From), added: e.Paragraph}, true
 			}
 		}
 	}
@@ -220,13 +221,21 @@ func isInputField(p Program, name string) bool {
 	return ok
 }
 
-// typeHolding is the record type whose redefinition holds a field, if any.
-func typeHolding(r Record, field string) string {
+// typeHolding is the type of a file's records whose redefinition, or
+// record, holds a field, if any.
+func typeHolding(records []Record, file, field string) string {
+	i := slices.IndexFunc(records, func(r Record) bool { return r.File == file && len(r.Types) > 0 })
+	if i < 0 {
+		return ""
+	}
+	r := records[i]
 	for _, t := range r.Types {
-		if v, ok := findField(r.Field, t.Fields); ok && t.Fields != "" {
-			if _, in := findField(v, field); in {
-				return t.Name
-			}
+		holder, ok := findField(r.Field, t.Fields)
+		if j := slices.IndexFunc(records, func(s Record) bool { return s.File == file && s.Name == t.Fields }); j >= 0 {
+			holder, ok = records[j].Field, true
+		}
+		if _, in := findField(holder, field); ok && t.Fields != "" && in {
+			return t.Name
 		}
 	}
 	return ""
