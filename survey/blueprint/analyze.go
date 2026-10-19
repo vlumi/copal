@@ -32,9 +32,12 @@ type System struct {
 // Program is the blueprint of one program. Its Kind is "called" for a
 // program that is passed items when called, "main" for one that is not.
 type Program struct {
-	Name           string           `json:"program"`
-	Kind           string           `json:"kind"`
-	Source         string           `json:"source"`
+	Name   string `json:"program"`
+	Kind   string `json:"kind"`
+	Source string `json:"source"`
+	// Within is the program this one is nested in, if it is, which alone
+	// can call it.
+	Within         string           `json:"within,omitempty"`
 	Description    []string         `json:"description,omitempty"`
 	Identification []Identification `json:"identification,omitempty"`
 	Files          []File           `json:"files"`
@@ -286,11 +289,11 @@ func Analyze(paths []string, copybookDir string, dialect cobol.Dialect) (*System
 		}
 	}
 	for _, path := range programPaths {
-		program, err := analyzeProgram(path, copybookDir, dialect)
+		programs, err := analyzeFile(path, copybookDir, dialect)
 		if err != nil {
 			return nil, err
 		}
-		s.Programs = append(s.Programs, program)
+		s.Programs = append(s.Programs, programs...)
 	}
 	slices.SortFunc(s.Programs, func(a, b Program) int { return strings.Compare(a.Name, b.Name) })
 	linkCalls(s.Programs)
@@ -335,11 +338,36 @@ func Analyze(paths []string, copybookDir string, dialect cobol.Dialect) (*System
 	return s, nil
 }
 
-func analyzeProgram(path, copybookDir string, dialect cobol.Dialect) (Program, error) {
+// analyzeFile reads a program's source and describes the program and the
+// programs nested in it.
+func analyzeFile(path, copybookDir string, dialect cobol.Dialect) ([]Program, error) {
 	p, err := cobol.ReadProgram(path, []string{copybookDir})
 	if err != nil {
-		return Program{}, err
+		return nil, err
 	}
+	return describeNested(p, "", path, dialect)
+}
+
+// describeNested describes a program, nested in another if within names
+// one, and the programs nested in it.
+func describeNested(p *cobol.Program, within, path string, dialect cobol.Dialect) ([]Program, error) {
+	program, err := describeProgram(p, path, dialect)
+	if err != nil {
+		return nil, err
+	}
+	program.Within = within
+	programs := []Program{program}
+	for _, inner := range p.Contains {
+		nested, err := describeNested(inner, p.ID, path, dialect)
+		if err != nil {
+			return nil, err
+		}
+		programs = append(programs, nested...)
+	}
+	return programs, nil
+}
+
+func describeProgram(p *cobol.Program, path string, dialect cobol.Dialect) (Program, error) {
 	program := Program{Name: p.ID, Source: path, Description: cobol.CommentText(p.Comment)}
 	for _, e := range p.Identification {
 		program.Identification = append(program.Identification, Identification{Paragraph: e.Paragraph, Text: e.Text})

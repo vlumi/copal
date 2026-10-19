@@ -139,6 +139,9 @@ func programMarkdown(dir string, p Program) string {
 	fmt.Fprintf(&b, "# %s\n\n", p.Name)
 	writeDescription(&b, p.Description)
 	fmt.Fprintf(&b, "Program %s: %d files, %d paragraphs.", sourceLink(dir, p.Source, false), len(p.Files), len(p.Paragraphs))
+	if p.Within != "" {
+		fmt.Fprintf(&b, " Nested in [%s](%s.md), which alone can call it.", p.Within, p.Within)
+	}
 	if n := len(p.Rules.Tables); n > 0 {
 		fmt.Fprintf(&b, " Its business rules: [%d decision tables](../rules/%s.md).", n, p.Name)
 	}
