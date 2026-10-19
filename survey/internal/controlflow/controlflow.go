@@ -1,7 +1,8 @@
 // Package controlflow finds the paths control can take through a program's
 // statements: in order within a paragraph, into the branches of IF,
 // EVALUATE, SEARCH and the conditional phrases, round the loops of PERFORM,
-// to the target of a GO TO, out of the paragraph at EXIT PARAGRAPH, on
+// to the target of a GO TO, out of the paragraph at EXIT PARAGRAPH and
+// out of the section at EXIT SECTION, on
 // from one paragraph into the next, and into a performed range and back to
 // the statement after the PERFORM.
 //
@@ -24,8 +25,9 @@ import (
 //
 // Covered is false when the graph leaves out paths the program can take: a
 // GO TO out of a performed range, a PERFORM of a range already being
-// performed, a target the program does not declare, or an EXIT SECTION or
-// EXIT PERFORM, which it does not follow.
+// performed, a target the program does not declare, an EXIT SECTION that
+// leaves the range performed, or an EXIT PERFORM, which it does not
+// follow.
 type Graph struct {
 	Nodes   []Node
 	Covered bool
@@ -87,8 +89,10 @@ type builder struct {
 	// active are the ranges being laid out, from the outermost PERFORM in.
 	active [][2]int
 	// paragraphEnd is where control goes when the paragraph being laid
-	// out ends, which EXIT PARAGRAPH goes to.
-	paragraphEnd int
+	// out ends, which EXIT PARAGRAPH goes to, and sectionEnd when its
+	// section ends, which EXIT SECTION goes to, or -1 if that is outside
+	// the range being laid out.
+	paragraphEnd, sectionEnd int
 }
 
 func (b *builder) node(s *cobol.Statement) int {
@@ -132,12 +136,35 @@ func (b *builder) performed(first, last, exit int) int {
 		if i < last {
 			next = start(i + 1)
 		}
-		outer := b.paragraphEnd
-		b.paragraphEnd = next
+		outerParagraph, outerSection := b.paragraphEnd, b.sectionEnd
+		b.paragraphEnd, b.sectionEnd = next, b.endOfSection(i, last, exit, start)
 		b.link(starts[i], b.sequence(r, b.program.Paragraphs[i].Statements, next))
-		b.paragraphEnd = outer
+		b.paragraphEnd, b.sectionEnd = outerParagraph, outerSection
 	}
 	return entry
+}
+
+// endOfSection is where control goes when the section of paragraph i ends,
+// within a range that ends at last and goes on to exit: the start of the
+// paragraph after the section's last, or exit if that is the range's
+// last; -1 if the section ends past the range, or there is none.
+func (b *builder) endOfSection(i, last, exit int, start func(int) int) int {
+	paragraphs := b.program.Paragraphs
+	section := paragraphs[i].Section
+	if section == "" {
+		return -1
+	}
+	end := i
+	for end+1 < len(paragraphs) && paragraphs[end+1].Section == section {
+		end++
+	}
+	switch {
+	case end > last:
+		return -1
+	case end == last:
+		return exit
+	}
+	return start(end + 1)
 }
 
 // scope is the range of paragraphs being laid out, and the nodes of their
@@ -163,7 +190,13 @@ func (b *builder) statement(r scope, s *cobol.Statement, next int) int {
 		b.link(n, End)
 	case "EXIT PARAGRAPH":
 		b.link(n, b.paragraphEnd)
-	case "EXIT SECTION", "EXIT PERFORM":
+	case "EXIT SECTION":
+		if b.sectionEnd < 0 {
+			b.graph.Covered = false
+		} else {
+			b.link(n, b.sectionEnd)
+		}
+	case "EXIT PERFORM":
 		b.graph.Covered = false
 	case "GO":
 		b.goTo(r, n, s, next)
@@ -251,7 +284,7 @@ func (b *builder) span(ref cobol.ProcedureRef) (first, last int, ok bool) {
 
 func (b *builder) section(name string) (first, last int, ok bool) {
 	for i, para := range b.program.Paragraphs {
-		if para.Section != name || para.Name == name {
+		if para.Section != name {
 			continue
 		}
 		if !ok {
