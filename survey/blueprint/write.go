@@ -139,6 +139,9 @@ func programMarkdown(dir string, p Program) string {
 	fmt.Fprintf(&b, "# %s\n\n", p.Name)
 	writeDescription(&b, p.Description)
 	fmt.Fprintf(&b, "Program %s: %d files, %d paragraphs.", sourceLink(dir, p.Source, false), len(p.Files), len(p.Paragraphs))
+	if p.Within != "" {
+		fmt.Fprintf(&b, " Nested in [%s](%s.md), which alone can call it.", p.Within, p.Within)
+	}
 	if n := len(p.Rules.Tables); n > 0 {
 		fmt.Fprintf(&b, " Its business rules: [%d decision tables](../rules/%s.md).", n, p.Name)
 	}
@@ -185,6 +188,7 @@ func programMarkdown(dir string, p Program) string {
 			strings.Join(para.PerformedBy, ", "), strings.Join(para.ReachedBy, ", ")))
 	}
 
+	writeDeclaratives(&b, dir, p)
 	writeCalls(&b, dir, p)
 	writeDataFlow(&b, dir, p)
 	writeOrigins(&b, p)
@@ -220,6 +224,23 @@ func copybookMarkdown(dir string, c Copybook) string {
 		writeLayout(&b, dir, r.Field)
 	}
 	return b.String()
+}
+
+// writeDeclaratives writes the sections a program's runtime runs when an
+// input or output statement fails.
+func writeDeclaratives(b *strings.Builder, dir string, p Program) {
+	if len(p.Declaratives) == 0 {
+		return
+	}
+	b.WriteString("\n## Declaratives\n\nSections the runtime runs when an input or output statement fails, after which control goes on after the statement.\n\n" +
+		"| Section | Runs on a failure of | Source |\n| --- | --- | --- |\n")
+	for _, d := range p.Declaratives {
+		on := slices.Clone(d.Files)
+		for _, mode := range d.Modes {
+			on = append(on, "any file opened "+mode)
+		}
+		b.WriteString(row(d.Section, strings.Join(on, ", "), sourceLink(dir, d.Source, true)))
+	}
 }
 
 // writeLayout writes a record's fields as a table, one row per field and

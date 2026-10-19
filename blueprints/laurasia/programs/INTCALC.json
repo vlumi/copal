@@ -1,0 +1,184 @@
+{
+  "program": "INTCALC",
+  "kind": "called",
+  "source": "laurasia/programs/intcalc.cbl",
+  "description": [
+    "intcalc: a month's interest on a statement balance, in cents, as the",
+    "return code: a twelfth of the yearly rate of the card's product.",
+    "",
+    "history",
+    "2013-06-03 rk  lcs-0219 original version.",
+    "2021-03-01 mt  lcs-0481 the rate by product."
+  ],
+  "files": null,
+  "records": [
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-YEARLY-RATE",
+      "start": 1,
+      "length": 4,
+      "picture": "V9(4)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "amount",
+      "digits": 4,
+      "scale": 4,
+      "source": "laurasia/programs/intcalc.cbl:13"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-CENTS",
+      "start": 1,
+      "length": 4,
+      "picture": "S9(9)",
+      "usage": "COMP-5",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 9,
+      "signed": true,
+      "source": "laurasia/programs/intcalc.cbl:14"
+    },
+    {
+      "section": "linkage",
+      "level": 1,
+      "name": "LK-PRODUCT",
+      "start": 1,
+      "length": 2,
+      "picture": "X(2)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "code",
+      "conditions": [
+        {
+          "name": "LK-CLASSIC",
+          "values": [
+            "'CL'"
+          ],
+          "source": "laurasia/programs/intcalc.cbl:17"
+        },
+        {
+          "name": "LK-GOLD",
+          "values": [
+            "'GD'"
+          ],
+          "source": "laurasia/programs/intcalc.cbl:18"
+        },
+        {
+          "name": "LK-BUSINESS",
+          "values": [
+            "'BZ'"
+          ],
+          "source": "laurasia/programs/intcalc.cbl:19"
+        }
+      ],
+      "source": "laurasia/programs/intcalc.cbl:16"
+    },
+    {
+      "section": "linkage",
+      "level": 1,
+      "name": "LK-BALANCE",
+      "start": 1,
+      "length": 10,
+      "picture": "S9(7)V99",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "amount",
+      "digits": 9,
+      "scale": 2,
+      "signed": true,
+      "sign": "LEADING SEPARATE",
+      "source": "laurasia/programs/intcalc.cbl:20"
+    }
+  ],
+  "paragraphs": [
+    {
+      "name": "MAIN",
+      "section": "MAIN",
+      "source": "laurasia/programs/intcalc.cbl:23",
+      "reads": [
+        "LK-PRODUCT",
+        "LK-BALANCE",
+        "WS-YEARLY-RATE",
+        "WS-CENTS"
+      ],
+      "writes": [
+        "WS-YEARLY-RATE",
+        "WS-CENTS",
+        "RETURN-CODE"
+      ]
+    }
+  ],
+  "using": [
+    "LK-PRODUCT",
+    "LK-BALANCE"
+  ],
+  "lineage": [
+    {
+      "from": "0.1690",
+      "to": "WS-YEARLY-RATE",
+      "fromLiteral": true,
+      "paragraph": "MAIN",
+      "verb": "MOVE",
+      "source": "laurasia/programs/intcalc.cbl:26"
+    },
+    {
+      "from": "0.1490",
+      "to": "WS-YEARLY-RATE",
+      "fromLiteral": true,
+      "paragraph": "MAIN",
+      "verb": "MOVE",
+      "source": "laurasia/programs/intcalc.cbl:28"
+    },
+    {
+      "from": "0.1990",
+      "to": "WS-YEARLY-RATE",
+      "fromLiteral": true,
+      "paragraph": "MAIN",
+      "verb": "MOVE",
+      "source": "laurasia/programs/intcalc.cbl:30"
+    },
+    {
+      "from": "LK-BALANCE",
+      "to": "WS-CENTS",
+      "paragraph": "MAIN",
+      "verb": "COMPUTE",
+      "source": "laurasia/programs/intcalc.cbl:32"
+    },
+    {
+      "from": "WS-YEARLY-RATE",
+      "to": "WS-CENTS",
+      "paragraph": "MAIN",
+      "verb": "COMPUTE",
+      "source": "laurasia/programs/intcalc.cbl:32"
+    },
+    {
+      "from": "WS-CENTS",
+      "to": "RETURN-CODE",
+      "paragraph": "MAIN",
+      "verb": "MOVE",
+      "source": "laurasia/programs/intcalc.cbl:33"
+    }
+  ],
+  "parameters": [
+    {
+      "item": "LK-PRODUCT",
+      "fields": [
+        {
+          "name": "LK-PRODUCT",
+          "reads": true
+        }
+      ]
+    },
+    {
+      "item": "LK-BALANCE",
+      "fields": [
+        {
+          "name": "LK-BALANCE",
+          "reads": true
+        }
+      ]
+    }
+  ]
+}

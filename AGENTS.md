@@ -9,7 +9,7 @@ Copal is a project in four parts, and two specimens. Survey, in `survey/`, reads
 - The specimens are fiction written for this project. Never copy real proprietary code, layouts or data into them.
 - The specimens run: every program compiles with GnuCOBOL, Pangaea's in IBM dialect and Laurasia's in Micro Focus dialect, and their batches produce outputs that are checked in as golden files. A change to a specimen updates its golden outputs in the same commit.
 - A coupling to one specimen that the other shows is fixed generically, never by special-casing either.
-- Survey's blueprints for Pangaea are golden files too, so a change in the analyzer shows as a diff in the blueprints.
+- Survey's blueprints of both specimens are golden files too, so a change in the analyzer shows as a diff in the blueprints.
 - The dependencies run one way, and `make ci` checks it: `bedrock` imports nothing else; `survey`, `pangaea` and `laurasia` import `bedrock`, never each other; only `console` imports the rest. Survey's tests read the specimens as their fixtures, which is data, not an import.
 - Code is organized by feature, not by layer.
 - All text is English with en-US spelling: code, comments, documentation, commit messages, and the specimens' programs and data. Comments are minimal.
@@ -29,4 +29,4 @@ Copal is a project in four parts, and two specimens. Survey, in `survey/`, reads
 
 - This is a showcase: the code should read well to a stranger. Idiomatic for its language, small functions with names that say what they do, clear package boundaries, no dead code, no speculative abstractions.
 - Build iteratively: working first, then dedicated cleanup commits. Do not gold-plate mid-feature; record debt worth a cleanup pass in docs/brief.md.
-- Every analysis step is covered by tests, and by the golden blueprints for Pangaea. Linters and formatters run in `make ci` and stay clean.
+- Every analysis step is covered by tests, and by the golden blueprints of the specimens. Linters and formatters run in `make ci` and stay clean.

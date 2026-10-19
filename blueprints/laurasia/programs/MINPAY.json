@@ -1,0 +1,122 @@
+{
+  "program": "MINPAY",
+  "kind": "called",
+  "source": "laurasia/programs/cycle.cbl",
+  "within": "CYCLE",
+  "description": [
+    "minpay: the minimum payment of a balance: the whole of a small one,",
+    "otherwise a fiftieth of it, but at least the floor."
+  ],
+  "files": null,
+  "constants": [
+    {
+      "name": "PAYMENT-FLOOR",
+      "value": "25.00",
+      "source": "laurasia/programs/cycle.cbl:131"
+    }
+  ],
+  "records": [
+    {
+      "section": "linkage",
+      "level": 1,
+      "name": "LK-BALANCE",
+      "start": 1,
+      "length": 10,
+      "picture": "S9(7)V99",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "amount",
+      "digits": 9,
+      "scale": 2,
+      "signed": true,
+      "sign": "LEADING SEPARATE",
+      "source": "laurasia/programs/cycle.cbl:133"
+    },
+    {
+      "section": "linkage",
+      "level": 1,
+      "name": "LK-MINIMUM",
+      "start": 1,
+      "length": 9,
+      "picture": "S9(7)V99",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "amount",
+      "digits": 9,
+      "scale": 2,
+      "signed": true,
+      "source": "laurasia/programs/cycle.cbl:134"
+    }
+  ],
+  "paragraphs": [
+    {
+      "name": "MAIN",
+      "section": "MAIN",
+      "source": "laurasia/programs/cycle.cbl:137",
+      "reads": [
+        "LK-BALANCE",
+        "PAYMENT-FLOOR",
+        "LK-MINIMUM"
+      ],
+      "writes": [
+        "LK-MINIMUM"
+      ]
+    }
+  ],
+  "using": [
+    "LK-BALANCE",
+    "LK-MINIMUM"
+  ],
+  "lineage": [
+    {
+      "from": "ZERO",
+      "to": "LK-MINIMUM",
+      "fromLiteral": true,
+      "paragraph": "MAIN",
+      "verb": "MOVE",
+      "source": "laurasia/programs/cycle.cbl:140"
+    },
+    {
+      "from": "LK-BALANCE",
+      "to": "LK-MINIMUM",
+      "paragraph": "MAIN",
+      "verb": "MOVE",
+      "source": "laurasia/programs/cycle.cbl:142"
+    },
+    {
+      "from": "LK-BALANCE",
+      "to": "LK-MINIMUM",
+      "paragraph": "MAIN",
+      "verb": "COMPUTE",
+      "source": "laurasia/programs/cycle.cbl:144"
+    },
+    {
+      "from": "PAYMENT-FLOOR",
+      "to": "LK-MINIMUM",
+      "paragraph": "MAIN",
+      "verb": "MOVE",
+      "source": "laurasia/programs/cycle.cbl:146"
+    }
+  ],
+  "parameters": [
+    {
+      "item": "LK-BALANCE",
+      "fields": [
+        {
+          "name": "LK-BALANCE",
+          "reads": true
+        }
+      ]
+    },
+    {
+      "item": "LK-MINIMUM",
+      "fields": [
+        {
+          "name": "LK-MINIMUM",
+          "reads": true,
+          "writes": true
+        }
+      ]
+    }
+  ]
+}

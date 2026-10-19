@@ -1,0 +1,270 @@
+{
+  "program": "SETTLE",
+  "tables": [
+    {
+      "paragraph": "MAIN",
+      "source": "laurasia/programs/settle.cbl:72",
+      "conditions": [
+        "WS-OWING-COUNT \u003e ZERO"
+      ],
+      "conditionRefs": [
+        [
+          "WS-OWING-COUNT"
+        ]
+      ],
+      "actions": [
+        "OPEN INPUT PRES-IN ADJUST-IN OUTPUT PAYOUT-OUT REPORT-OUT",
+        "PERFORM READ-PRESENTMENT",
+        "PERFORM READ-ADJUSTMENT",
+        "PERFORM SETTLE-MERCHANT UNTIL WS-PRES-KEY = HIGH-VALUES AND WS-ADJUST-KEY = HIGH-VALUES",
+        "PERFORM WRITE-REPORT",
+        "CLOSE PRES-IN ADJUST-IN PAYOUT-OUT REPORT-OUT",
+        "STOP RUN RETURNING 4",
+        "STOP RUN RETURNING 0"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "READ-PRESENTMENT",
+      "source": "laurasia/programs/settle.cbl:85",
+      "conditions": [
+        "READ PRES-IN AT END"
+      ],
+      "conditionRefs": [
+        null
+      ],
+      "actions": [
+        "READ PRES-IN",
+        "MOVE HIGH-VALUES TO WS-PRES-KEY",
+        "MOVE PS-MERCHANT TO WS-PRES-KEY"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "READ-ADJUSTMENT",
+      "source": "laurasia/programs/settle.cbl:91",
+      "conditions": [
+        "READ ADJUST-IN AT END"
+      ],
+      "conditionRefs": [
+        null
+      ],
+      "actions": [
+        "READ ADJUST-IN",
+        "MOVE HIGH-VALUES TO WS-ADJUST-KEY",
+        "MOVE AD-MERCHANT TO WS-ADJUST-KEY"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "SETTLE-MERCHANT",
+      "source": "laurasia/programs/settle.cbl:99",
+      "conditions": [
+        "WS-PRES-KEY \u003c WS-ADJUST-KEY"
+      ],
+      "conditionRefs": [
+        [
+          "WS-PRES-KEY",
+          "WS-ADJUST-KEY"
+        ]
+      ],
+      "actions": [
+        "MOVE WS-PRES-KEY TO WS-MERCHANT",
+        "MOVE ZERO TO WS-GROSS WS-INTERCHANGE WS-ADJUSTMENTS",
+        "PERFORM UNTIL WS-PRES-KEY NOT = WS-MERCHANT",
+        "PERFORM UNTIL WS-ADJUST-KEY NOT = WS-MERCHANT",
+        "PERFORM WRITE-PAYOUT",
+        "MOVE WS-ADJUST-KEY TO WS-MERCHANT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            5,
+            1,
+            2,
+            3,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "SETTLE-MERCHANT",
+      "loop": "PERFORM UNTIL WS-PRES-KEY NOT = WS-MERCHANT",
+      "source": "laurasia/programs/settle.cbl:106",
+      "conditions": [
+        "PS-MATCHED"
+      ],
+      "conditionRefs": [
+        [
+          "PS-MATCH"
+        ]
+      ],
+      "actions": [
+        "ADD PS-AMOUNT TO WS-GROSS",
+        "ADD PS-FEE TO WS-INTERCHANGE",
+        "PERFORM READ-PRESENTMENT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "WRITE-PAYOUT",
+      "source": "laurasia/programs/settle.cbl:119",
+      "conditions": [
+        "PA-NET \u003c ZERO"
+      ],
+      "conditionRefs": [
+        [
+          "PA-NET"
+        ]
+      ],
+      "actions": [
+        "MOVE WS-MERCHANT TO PA-MERCHANT",
+        "MOVE WS-GROSS TO PA-GROSS",
+        "MOVE WS-INTERCHANGE TO PA-INTERCHANGE",
+        "MOVE WS-ADJUSTMENTS TO PA-ADJUSTMENTS",
+        "COMPUTE PA-NET = WS-GROSS - WS-INTERCHANGE + WS-ADJUSTMENTS",
+        "SET PA-OWES TO TRUE",
+        "ADD 1 TO WS-OWING-COUNT",
+        "WRITE PAYOUT",
+        "SET PA-PAID TO TRUE",
+        "ADD 1 TO WS-PAID-COUNT",
+        "ADD PA-NET TO WS-PAID-TOTAL"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            8,
+            9,
+            10,
+            7
+          ]
+        }
+      ]
+    }
+  ]
+}

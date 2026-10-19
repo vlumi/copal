@@ -1,0 +1,475 @@
+{
+  "program": "ACCTUL",
+  "kind": "main",
+  "source": "laurasia/programs/acctul.cbl",
+  "description": [
+    "acctul: unload the indexed account file, in card number order",
+    "",
+    "history",
+    "2011-04-04 rk  lcs-0102 original version."
+  ],
+  "files": [
+    {
+      "name": "ACCOUNTS",
+      "kind": "FD",
+      "assign": "ACCOUNTS",
+      "organization": "INDEXED",
+      "recordKey": "CA-CARD-NO",
+      "status": "WS-ACCOUNTS-STATUS",
+      "opened": [
+        "INPUT"
+      ],
+      "records": [
+        "CARD-ACCOUNT"
+      ],
+      "source": "laurasia/programs/acctul.cbl:12"
+    },
+    {
+      "name": "ACCOUNTS-OUT",
+      "kind": "FD",
+      "assign": "ACCTOUT",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "ACCOUNT-LINE"
+      ],
+      "source": "laurasia/programs/acctul.cbl:17"
+    }
+  ],
+  "records": [
+    {
+      "section": "file",
+      "file": "ACCOUNTS",
+      "copybook": "cardacct",
+      "level": 1,
+      "name": "CARD-ACCOUNT",
+      "start": 1,
+      "length": 61,
+      "category": "group",
+      "kind": "group",
+      "description": "cardacct: a card's account, indexed by card number: its credit limit, its balance, and the balance its last statement showed. history 2011-04-04 rk  lcs-0102 original version. 2013-06-03 rk  lcs-0219 billing cycle day and paid in full flag.",
+      "source": "laurasia/copybooks/cardacct.cpy:8",
+      "fields": [
+        {
+          "level": 5,
+          "name": "CA-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "picture": "X(16)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "key",
+          "source": "laurasia/copybooks/cardacct.cpy:9"
+        },
+        {
+          "level": 5,
+          "name": "CA-ACCOUNT-NO",
+          "start": 17,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/cardacct.cpy:10"
+        },
+        {
+          "level": 5,
+          "name": "CA-PRODUCT",
+          "start": 27,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "CA-CLASSIC",
+              "values": [
+                "'CL'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:12"
+            },
+            {
+              "name": "CA-GOLD",
+              "values": [
+                "'GD'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:13"
+            },
+            {
+              "name": "CA-BUSINESS",
+              "values": [
+                "'BZ'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:14"
+            }
+          ],
+          "source": "laurasia/copybooks/cardacct.cpy:11"
+        },
+        {
+          "level": 5,
+          "name": "CA-STATUS",
+          "start": 29,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "CA-ACTIVE",
+              "values": [
+                "'A'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:16"
+            },
+            {
+              "name": "CA-BLOCKED",
+              "values": [
+                "'B'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:17"
+            },
+            {
+              "name": "CA-CLOSED",
+              "values": [
+                "'C'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:18"
+            }
+          ],
+          "source": "laurasia/copybooks/cardacct.cpy:15"
+        },
+        {
+          "level": 5,
+          "name": "CA-LIMIT",
+          "start": 30,
+          "length": 9,
+          "picture": "9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "scale": 2,
+          "source": "laurasia/copybooks/cardacct.cpy:19"
+        },
+        {
+          "level": 5,
+          "name": "CA-BALANCE",
+          "start": 39,
+          "length": 10,
+          "picture": "S9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/cardacct.cpy:20"
+        },
+        {
+          "level": 5,
+          "name": "CA-STATEMENT-BALANCE",
+          "start": 49,
+          "length": 10,
+          "picture": "S9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/cardacct.cpy:21"
+        },
+        {
+          "level": 5,
+          "name": "CA-CYCLE-DAY",
+          "start": 59,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 2,
+          "source": "laurasia/copybooks/cardacct.cpy:22"
+        },
+        {
+          "level": 5,
+          "name": "CA-PAID-IN-FULL",
+          "start": 61,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "CA-WAS-PAID-IN-FULL",
+              "values": [
+                "'Y'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:24"
+            }
+          ],
+          "source": "laurasia/copybooks/cardacct.cpy:23"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "ACCOUNTS-OUT",
+      "level": 1,
+      "name": "ACCOUNT-LINE",
+      "start": 1,
+      "length": 61,
+      "picture": "X(61)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/acctul.cbl:25"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ACCOUNTS-STATUS",
+      "start": 1,
+      "length": 2,
+      "picture": "XX",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "code",
+      "conditions": [
+        {
+          "name": "ACCOUNTS-AT-END",
+          "values": [
+            "'10'"
+          ],
+          "source": "laurasia/programs/acctul.cbl:29"
+        }
+      ],
+      "source": "laurasia/programs/acctul.cbl:28"
+    }
+  ],
+  "paragraphs": [
+    {
+      "name": "MAIN",
+      "section": "MAIN",
+      "source": "laurasia/programs/acctul.cbl:32",
+      "reads": [
+        "WS-ACCOUNTS-STATUS",
+        "CARD-ACCOUNT"
+      ],
+      "writes": [
+        "RETURN-CODE",
+        "CARD-ACCOUNT",
+        "ACCOUNT-LINE"
+      ]
+    }
+  ],
+  "lineage": [
+    {
+      "from": "ACCOUNTS",
+      "to": "CARD-ACCOUNT",
+      "fromFile": true,
+      "paragraph": "MAIN",
+      "verb": "READ",
+      "source": "laurasia/programs/acctul.cbl:37"
+    },
+    {
+      "from": "CARD-ACCOUNT",
+      "to": "ACCOUNT-LINE",
+      "paragraph": "MAIN",
+      "verb": "WRITE",
+      "source": "laurasia/programs/acctul.cbl:39"
+    },
+    {
+      "from": "ACCOUNT-LINE",
+      "to": "ACCOUNTS-OUT",
+      "toFile": true,
+      "paragraph": "MAIN",
+      "verb": "WRITE",
+      "source": "laurasia/programs/acctul.cbl:39"
+    },
+    {
+      "from": "ACCOUNTS",
+      "to": "CARD-ACCOUNT",
+      "fromFile": true,
+      "paragraph": "MAIN",
+      "verb": "READ",
+      "source": "laurasia/programs/acctul.cbl:40"
+    }
+  ],
+  "outputs": [
+    {
+      "file": "ACCOUNTS-OUT",
+      "record": "CARD-ACCOUNT",
+      "fields": [
+        {
+          "name": "CA-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "origins": [
+            "file ACCOUNTS CA-CARD-NO"
+          ]
+        },
+        {
+          "name": "CA-ACCOUNT-NO",
+          "start": 17,
+          "length": 10,
+          "origins": [
+            "file ACCOUNTS CA-ACCOUNT-NO"
+          ]
+        },
+        {
+          "name": "CA-PRODUCT",
+          "start": 27,
+          "length": 2,
+          "origins": [
+            "file ACCOUNTS CA-PRODUCT"
+          ]
+        },
+        {
+          "name": "CA-STATUS",
+          "start": 29,
+          "length": 1,
+          "origins": [
+            "file ACCOUNTS CA-STATUS"
+          ]
+        },
+        {
+          "name": "CA-LIMIT",
+          "start": 30,
+          "length": 9,
+          "origins": [
+            "file ACCOUNTS CA-LIMIT"
+          ]
+        },
+        {
+          "name": "CA-BALANCE",
+          "start": 39,
+          "length": 10,
+          "origins": [
+            "file ACCOUNTS CA-BALANCE"
+          ]
+        },
+        {
+          "name": "CA-STATEMENT-BALANCE",
+          "start": 49,
+          "length": 10,
+          "origins": [
+            "file ACCOUNTS CA-STATEMENT-BALANCE"
+          ]
+        },
+        {
+          "name": "CA-CYCLE-DAY",
+          "start": 59,
+          "length": 2,
+          "origins": [
+            "file ACCOUNTS CA-CYCLE-DAY"
+          ]
+        },
+        {
+          "name": "CA-PAID-IN-FULL",
+          "start": 61,
+          "length": 1,
+          "origins": [
+            "file ACCOUNTS CA-PAID-IN-FULL"
+          ]
+        }
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "file": "ACCOUNTS",
+      "record": "CARD-ACCOUNT",
+      "fields": [
+        {
+          "name": "CA-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "reaches": [
+            "ACCOUNT-LINE",
+            "file ACCOUNTS-OUT"
+          ]
+        },
+        {
+          "name": "CA-ACCOUNT-NO",
+          "start": 17,
+          "length": 10,
+          "reaches": [
+            "ACCOUNT-LINE",
+            "file ACCOUNTS-OUT"
+          ]
+        },
+        {
+          "name": "CA-PRODUCT",
+          "start": 27,
+          "length": 2,
+          "reaches": [
+            "ACCOUNT-LINE",
+            "file ACCOUNTS-OUT"
+          ]
+        },
+        {
+          "name": "CA-STATUS",
+          "start": 29,
+          "length": 1,
+          "reaches": [
+            "ACCOUNT-LINE",
+            "file ACCOUNTS-OUT"
+          ]
+        },
+        {
+          "name": "CA-LIMIT",
+          "start": 30,
+          "length": 9,
+          "reaches": [
+            "ACCOUNT-LINE",
+            "file ACCOUNTS-OUT"
+          ]
+        },
+        {
+          "name": "CA-BALANCE",
+          "start": 39,
+          "length": 10,
+          "reaches": [
+            "ACCOUNT-LINE",
+            "file ACCOUNTS-OUT"
+          ]
+        },
+        {
+          "name": "CA-STATEMENT-BALANCE",
+          "start": 49,
+          "length": 10,
+          "reaches": [
+            "ACCOUNT-LINE",
+            "file ACCOUNTS-OUT"
+          ]
+        },
+        {
+          "name": "CA-CYCLE-DAY",
+          "start": 59,
+          "length": 2,
+          "reaches": [
+            "ACCOUNT-LINE",
+            "file ACCOUNTS-OUT"
+          ]
+        },
+        {
+          "name": "CA-PAID-IN-FULL",
+          "start": 61,
+          "length": 1,
+          "reaches": [
+            "ACCOUNT-LINE",
+            "file ACCOUNTS-OUT"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1933 @@
+{
+  "program": "POST",
+  "kind": "main",
+  "source": "laurasia/programs/post.cbl",
+  "description": [
+    "post: post the night's matched presentments to the cards' accounts",
+    "",
+    "each presentment matched to an approval is a purchase on its card's",
+    "account. a purchase that takes the balance over the credit limit still",
+    "posts, as it was approved, but may cost an over-limit fee, which the fee",
+    "program the account's product names works out. a presentment for a card",
+    "with no account, or a blocked or closed one, is rejected for the",
+    "disputes desk; a presentment not matched is not posted.",
+    "",
+    "return codes: 0 all posted, 4 some rejected, 16 cannot update.",
+    "",
+    "history",
+    "2011-04-04 rk  lcs-0102 original version.",
+    "2013-06-03 rk  lcs-0219 over-limit fees.",
+    "2020-02-10 mt  lcs-0466 the fee program by name, for the business cards'."
+  ],
+  "files": [
+    {
+      "name": "PRES-IN",
+      "kind": "FD",
+      "assign": "PRESIN",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "INPUT"
+      ],
+      "records": [
+        "PRES-RECORD"
+      ],
+      "source": "laurasia/programs/post.cbl:23"
+    },
+    {
+      "name": "ACCOUNTS",
+      "kind": "FD",
+      "assign": "ACCOUNTS",
+      "organization": "INDEXED",
+      "access": "RANDOM",
+      "recordKey": "CA-CARD-NO",
+      "status": "WS-ACCOUNTS-STATUS",
+      "opened": [
+        "I-O"
+      ],
+      "records": [
+        "CARD-ACCOUNT"
+      ],
+      "source": "laurasia/programs/post.cbl:25"
+    },
+    {
+      "name": "POSTINGS-OUT",
+      "kind": "FD",
+      "assign": "POSTOUT",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "POSTING"
+      ],
+      "source": "laurasia/programs/post.cbl:30"
+    },
+    {
+      "name": "REJECT-OUT",
+      "kind": "FD",
+      "assign": "POSTREJ",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "REJECT-LINE"
+      ],
+      "source": "laurasia/programs/post.cbl:32"
+    },
+    {
+      "name": "REPORT-OUT",
+      "kind": "FD",
+      "assign": "POSTRPT",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "REPORT-LINE"
+      ],
+      "source": "laurasia/programs/post.cbl:34"
+    }
+  ],
+  "records": [
+    {
+      "section": "file",
+      "file": "PRES-IN",
+      "copybook": "presrec",
+      "level": 1,
+      "name": "PRES-RECORD",
+      "start": 1,
+      "length": 76,
+      "category": "group",
+      "kind": "group",
+      "description": "presrec: a presentment on its way through the night, a record a line. clrin fills in where it came from, match its authorization's outcome, ixfee the interchange fee. history 2011-04-04 rk  lcs-0102 original version. 2014-02-17 rk  lcs-0251 match status and interchange fee.",
+      "source": "laurasia/copybooks/presrec.cpy:9",
+      "fields": [
+        {
+          "level": 5,
+          "name": "PS-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "picture": "X(16)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/presrec.cpy:10"
+        },
+        {
+          "level": 5,
+          "name": "PS-AMOUNT",
+          "start": 17,
+          "length": 12,
+          "picture": "S9(9)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 11,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/presrec.cpy:11"
+        },
+        {
+          "level": 5,
+          "name": "PS-AUTH-CODE",
+          "start": 29,
+          "length": 6,
+          "picture": "X(6)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/presrec.cpy:12"
+        },
+        {
+          "level": 5,
+          "name": "PS-MERCHANT",
+          "start": 35,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/presrec.cpy:13"
+        },
+        {
+          "level": 5,
+          "name": "PS-MCC",
+          "start": 45,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 4,
+          "source": "laurasia/copybooks/presrec.cpy:14"
+        },
+        {
+          "level": 5,
+          "name": "PS-REGION",
+          "start": 49,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PS-DOMESTIC",
+              "values": [
+                "'D'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:16"
+            },
+            {
+              "name": "PS-INTERNATIONAL",
+              "values": [
+                "'I'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:17"
+            }
+          ],
+          "source": "laurasia/copybooks/presrec.cpy:15"
+        },
+        {
+          "level": 5,
+          "name": "PS-PRODUCT",
+          "start": 50,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PS-CLASSIC",
+              "values": [
+                "'CL'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:19"
+            },
+            {
+              "name": "PS-GOLD",
+              "values": [
+                "'GD'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:20"
+            },
+            {
+              "name": "PS-BUSINESS",
+              "values": [
+                "'BZ'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:21"
+            }
+          ],
+          "source": "laurasia/copybooks/presrec.cpy:18"
+        },
+        {
+          "level": 5,
+          "name": "PS-TXN-DATE",
+          "start": 52,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "date",
+          "digits": 8,
+          "source": "laurasia/copybooks/presrec.cpy:22"
+        },
+        {
+          "level": 5,
+          "name": "PS-BATCH-NO",
+          "start": 60,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 6,
+          "source": "laurasia/copybooks/presrec.cpy:23"
+        },
+        {
+          "level": 5,
+          "name": "PS-MATCH",
+          "start": 66,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PS-UNMATCHED",
+              "values": [
+                "' '"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:25"
+            },
+            {
+              "name": "PS-MATCHED",
+              "values": [
+                "'M'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:26"
+            },
+            {
+              "name": "PS-DECLINED",
+              "values": [
+                "'D'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:27"
+            },
+            {
+              "name": "PS-NO-AUTH",
+              "values": [
+                "'U'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:28"
+            },
+            {
+              "name": "PS-OVER-AUTH",
+              "values": [
+                "'X'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:29"
+            }
+          ],
+          "source": "laurasia/copybooks/presrec.cpy:24"
+        },
+        {
+          "level": 5,
+          "name": "PS-FEE",
+          "start": 67,
+          "length": 10,
+          "picture": "S9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/presrec.cpy:30"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "ACCOUNTS",
+      "copybook": "cardacct",
+      "level": 1,
+      "name": "CARD-ACCOUNT",
+      "start": 1,
+      "length": 61,
+      "category": "group",
+      "kind": "group",
+      "description": "cardacct: a card's account, indexed by card number: its credit limit, its balance, and the balance its last statement showed. history 2011-04-04 rk  lcs-0102 original version. 2013-06-03 rk  lcs-0219 billing cycle day and paid in full flag.",
+      "source": "laurasia/copybooks/cardacct.cpy:8",
+      "fields": [
+        {
+          "level": 5,
+          "name": "CA-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "picture": "X(16)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "key",
+          "source": "laurasia/copybooks/cardacct.cpy:9"
+        },
+        {
+          "level": 5,
+          "name": "CA-ACCOUNT-NO",
+          "start": 17,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/cardacct.cpy:10"
+        },
+        {
+          "level": 5,
+          "name": "CA-PRODUCT",
+          "start": 27,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "CA-CLASSIC",
+              "values": [
+                "'CL'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:12"
+            },
+            {
+              "name": "CA-GOLD",
+              "values": [
+                "'GD'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:13"
+            },
+            {
+              "name": "CA-BUSINESS",
+              "values": [
+                "'BZ'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:14"
+            }
+          ],
+          "source": "laurasia/copybooks/cardacct.cpy:11"
+        },
+        {
+          "level": 5,
+          "name": "CA-STATUS",
+          "start": 29,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "CA-ACTIVE",
+              "values": [
+                "'A'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:16"
+            },
+            {
+              "name": "CA-BLOCKED",
+              "values": [
+                "'B'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:17"
+            },
+            {
+              "name": "CA-CLOSED",
+              "values": [
+                "'C'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:18"
+            }
+          ],
+          "source": "laurasia/copybooks/cardacct.cpy:15"
+        },
+        {
+          "level": 5,
+          "name": "CA-LIMIT",
+          "start": 30,
+          "length": 9,
+          "picture": "9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "scale": 2,
+          "source": "laurasia/copybooks/cardacct.cpy:19"
+        },
+        {
+          "level": 5,
+          "name": "CA-BALANCE",
+          "start": 39,
+          "length": 10,
+          "picture": "S9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/cardacct.cpy:20"
+        },
+        {
+          "level": 5,
+          "name": "CA-STATEMENT-BALANCE",
+          "start": 49,
+          "length": 10,
+          "picture": "S9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/cardacct.cpy:21"
+        },
+        {
+          "level": 5,
+          "name": "CA-CYCLE-DAY",
+          "start": 59,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 2,
+          "source": "laurasia/copybooks/cardacct.cpy:22"
+        },
+        {
+          "level": 5,
+          "name": "CA-PAID-IN-FULL",
+          "start": 61,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "CA-WAS-PAID-IN-FULL",
+              "values": [
+                "'Y'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:24"
+            }
+          ],
+          "source": "laurasia/copybooks/cardacct.cpy:23"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "POSTINGS-OUT",
+      "copybook": "postrec",
+      "level": 1,
+      "name": "POSTING",
+      "start": 1,
+      "length": 51,
+      "category": "group",
+      "kind": "group",
+      "description": "postrec: a posting to a card's account, a record a line. history 2011-04-04 rk  lcs-0102 original version.",
+      "source": "laurasia/copybooks/postrec.cpy:6",
+      "fields": [
+        {
+          "level": 5,
+          "name": "PO-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "picture": "X(16)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/postrec.cpy:7"
+        },
+        {
+          "level": 5,
+          "name": "PO-ACCOUNT-NO",
+          "start": 17,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/postrec.cpy:8"
+        },
+        {
+          "level": 5,
+          "name": "PO-KIND",
+          "start": 27,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PO-PURCHASE",
+              "values": [
+                "'P'"
+              ],
+              "source": "laurasia/copybooks/postrec.cpy:10"
+            },
+            {
+              "name": "PO-OVER-LIMIT-FEE",
+              "values": [
+                "'F'"
+              ],
+              "source": "laurasia/copybooks/postrec.cpy:11"
+            },
+            {
+              "name": "PO-INTEREST",
+              "values": [
+                "'I'"
+              ],
+              "source": "laurasia/copybooks/postrec.cpy:12"
+            }
+          ],
+          "source": "laurasia/copybooks/postrec.cpy:9"
+        },
+        {
+          "level": 5,
+          "name": "PO-AMOUNT",
+          "start": 28,
+          "length": 10,
+          "picture": "S9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/postrec.cpy:13"
+        },
+        {
+          "level": 5,
+          "name": "PO-REFERENCE",
+          "start": 38,
+          "length": 6,
+          "picture": "X(6)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/postrec.cpy:14"
+        },
+        {
+          "level": 5,
+          "name": "PO-DATE",
+          "start": 44,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "date",
+          "digits": 8,
+          "source": "laurasia/copybooks/postrec.cpy:15"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "REJECT-OUT",
+      "level": 1,
+      "name": "REJECT-LINE",
+      "start": 1,
+      "length": 81,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/post.cbl:46",
+      "fields": [
+        {
+          "level": 5,
+          "name": "RJ-REASON",
+          "start": 1,
+          "length": 4,
+          "picture": "X(4)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/post.cbl:47"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 5,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "filler",
+          "source": "laurasia/programs/post.cbl:48"
+        },
+        {
+          "level": 5,
+          "name": "RJ-PRESENTMENT",
+          "start": 6,
+          "length": 76,
+          "picture": "X(76)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/post.cbl:49"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "REPORT-OUT",
+      "level": 1,
+      "name": "REPORT-LINE",
+      "start": 1,
+      "length": 60,
+      "picture": "X(60)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/post.cbl:51"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-RUN-DATE",
+      "start": 1,
+      "length": 8,
+      "picture": "9(8)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "date",
+      "digits": 8,
+      "source": "laurasia/programs/post.cbl:54"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ACCOUNTS-STATUS",
+      "start": 1,
+      "length": 2,
+      "picture": "XX",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/post.cbl:55"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-AT-END",
+      "start": 1,
+      "length": 1,
+      "picture": "X",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "code",
+      "values": [
+        "'N'"
+      ],
+      "conditions": [
+        {
+          "name": "PRESENTMENTS-AT-END",
+          "values": [
+            "'Y'"
+          ],
+          "source": "laurasia/programs/post.cbl:57"
+        }
+      ],
+      "source": "laurasia/programs/post.cbl:56"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-FEE-PROGRAM",
+      "start": 1,
+      "length": 8,
+      "picture": "X(8)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/post.cbl:58"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REJECT-REASON",
+      "start": 1,
+      "length": 4,
+      "picture": "X(4)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/post.cbl:59"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-OVER-AMOUNT",
+      "start": 1,
+      "length": 9,
+      "picture": "S9(7)V99",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "amount",
+      "digits": 9,
+      "scale": 2,
+      "signed": true,
+      "source": "laurasia/programs/post.cbl:60"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-FEE",
+      "start": 1,
+      "length": 9,
+      "picture": "S9(7)V99",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "amount",
+      "digits": 9,
+      "scale": 2,
+      "signed": true,
+      "source": "laurasia/programs/post.cbl:61"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-TOTALS",
+      "start": 1,
+      "length": 38,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/post.cbl:62",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-POSTED",
+          "start": 1,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 8,
+          "values": [
+            "ZERO"
+          ],
+          "source": "laurasia/programs/post.cbl:63"
+        },
+        {
+          "level": 5,
+          "name": "WS-REJECTED",
+          "start": 9,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 8,
+          "values": [
+            "ZERO"
+          ],
+          "source": "laurasia/programs/post.cbl:64"
+        },
+        {
+          "level": 5,
+          "name": "WS-PURCHASES",
+          "start": 17,
+          "length": 11,
+          "picture": "S9(9)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 11,
+          "scale": 2,
+          "signed": true,
+          "values": [
+            "ZERO"
+          ],
+          "source": "laurasia/programs/post.cbl:65"
+        },
+        {
+          "level": 5,
+          "name": "WS-FEES",
+          "start": 28,
+          "length": 11,
+          "picture": "S9(9)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 11,
+          "scale": 2,
+          "signed": true,
+          "values": [
+            "ZERO"
+          ],
+          "source": "laurasia/programs/post.cbl:66"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REPORT-COUNT",
+      "start": 1,
+      "length": 38,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/post.cbl:67",
+      "fields": [
+        {
+          "level": 5,
+          "name": "RC-LABEL",
+          "start": 1,
+          "length": 30,
+          "picture": "X(30)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/post.cbl:68"
+        },
+        {
+          "level": 5,
+          "name": "RC-VALUE",
+          "start": 31,
+          "length": 8,
+          "picture": "Z(7)9",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "kind": "edited",
+          "source": "laurasia/programs/post.cbl:69"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REPORT-AMOUNT",
+      "start": 1,
+      "length": 43,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/post.cbl:70",
+      "fields": [
+        {
+          "level": 5,
+          "name": "RA-LABEL",
+          "start": 1,
+          "length": 30,
+          "picture": "X(30)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/post.cbl:71"
+        },
+        {
+          "level": 5,
+          "name": "RA-VALUE",
+          "start": 31,
+          "length": 13,
+          "picture": "-(9)9.99",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "kind": "edited",
+          "source": "laurasia/programs/post.cbl:72"
+        }
+      ]
+    }
+  ],
+  "paragraphs": [
+    {
+      "name": "MAIN",
+      "section": "MAIN",
+      "source": "laurasia/programs/post.cbl:75",
+      "performs": [
+        {
+          "target": "POST-PRESENTMENT",
+          "source": "laurasia/programs/post.cbl:88"
+        },
+        {
+          "target": "WRITE-REPORT",
+          "source": "laurasia/programs/post.cbl:92"
+        }
+      ],
+      "reads": [
+        "WS-ACCOUNTS-STATUS",
+        "WS-AT-END",
+        "PS-MATCH",
+        "WS-REJECTED"
+      ],
+      "writes": [
+        "WS-RUN-DATE",
+        "RETURN-CODE",
+        "PRES-RECORD",
+        "WS-AT-END"
+      ]
+    },
+    {
+      "name": "POST-PRESENTMENT",
+      "section": "POST-PRESENTMENT",
+      "source": "laurasia/programs/post.cbl:99",
+      "performs": [
+        {
+          "target": "REJECT-PRESENTMENT",
+          "source": "laurasia/programs/post.cbl:104"
+        },
+        {
+          "target": "REJECT-PRESENTMENT",
+          "source": "laurasia/programs/post.cbl:110"
+        },
+        {
+          "target": "REJECT-PRESENTMENT",
+          "source": "laurasia/programs/post.cbl:114"
+        },
+        {
+          "target": "WRITE-POSTING",
+          "source": "laurasia/programs/post.cbl:120"
+        },
+        {
+          "target": "CHARGE-OVER-LIMIT",
+          "source": "laurasia/programs/post.cbl:123"
+        }
+      ],
+      "performedBy": [
+        "MAIN"
+      ],
+      "reads": [
+        "PS-CARD-NO",
+        "CA-STATUS",
+        "PS-AMOUNT",
+        "CA-BALANCE",
+        "WS-PURCHASES",
+        "CA-LIMIT"
+      ],
+      "writes": [
+        "CA-CARD-NO",
+        "CARD-ACCOUNT",
+        "RJ-REASON",
+        "CA-BALANCE",
+        "PO-KIND",
+        "PO-AMOUNT",
+        "WS-PURCHASES",
+        "RETURN-CODE"
+      ]
+    },
+    {
+      "name": "CHARGE-OVER-LIMIT",
+      "section": "CHARGE-OVER-LIMIT",
+      "description": "the fee for going over the limit, by the program the card's product names; one that charges none returns zero.",
+      "source": "laurasia/programs/post.cbl:131",
+      "performs": [
+        {
+          "target": "WRITE-POSTING",
+          "source": "laurasia/programs/post.cbl:144"
+        }
+      ],
+      "performedBy": [
+        "POST-PRESENTMENT"
+      ],
+      "reads": [
+        "CA-PRODUCT",
+        "CA-BALANCE",
+        "CA-LIMIT",
+        "WS-FEE-PROGRAM",
+        "WS-OVER-AMOUNT",
+        "WS-FEE",
+        "WS-FEES"
+      ],
+      "writes": [
+        "WS-FEE-PROGRAM",
+        "WS-OVER-AMOUNT",
+        "CA-PRODUCT",
+        "WS-FEE",
+        "CA-BALANCE",
+        "WS-FEES",
+        "PO-KIND",
+        "PO-AMOUNT"
+      ]
+    },
+    {
+      "name": "WRITE-POSTING",
+      "section": "WRITE-POSTING",
+      "source": "laurasia/programs/post.cbl:147",
+      "performedBy": [
+        "POST-PRESENTMENT",
+        "CHARGE-OVER-LIMIT"
+      ],
+      "reads": [
+        "CA-CARD-NO",
+        "CA-ACCOUNT-NO",
+        "PS-AUTH-CODE",
+        "WS-RUN-DATE",
+        "WS-POSTED"
+      ],
+      "writes": [
+        "PO-CARD-NO",
+        "PO-ACCOUNT-NO",
+        "PO-REFERENCE",
+        "PO-DATE",
+        "POSTING",
+        "WS-POSTED"
+      ]
+    },
+    {
+      "name": "REJECT-PRESENTMENT",
+      "section": "REJECT-PRESENTMENT",
+      "source": "laurasia/programs/post.cbl:155",
+      "performedBy": [
+        "POST-PRESENTMENT"
+      ],
+      "reads": [
+        "RJ-REASON",
+        "WS-REJECT-REASON",
+        "PRES-RECORD",
+        "WS-REJECTED"
+      ],
+      "writes": [
+        "WS-REJECT-REASON",
+        "REJECT-LINE",
+        "RJ-REASON",
+        "RJ-PRESENTMENT",
+        "WS-REJECTED"
+      ]
+    },
+    {
+      "name": "WRITE-REPORT",
+      "section": "WRITE-REPORT",
+      "source": "laurasia/programs/post.cbl:163",
+      "performedBy": [
+        "MAIN"
+      ],
+      "reads": [
+        "WS-POSTED",
+        "WS-REPORT-COUNT",
+        "WS-REJECTED",
+        "WS-PURCHASES",
+        "WS-REPORT-AMOUNT",
+        "WS-FEES"
+      ],
+      "writes": [
+        "REPORT-LINE",
+        "RC-LABEL",
+        "RC-VALUE",
+        "RA-LABEL",
+        "RA-VALUE"
+      ]
+    }
+  ],
+  "lineage": [
+    {
+      "from": "PRES-IN",
+      "to": "PRES-RECORD",
+      "fromFile": true,
+      "paragraph": "MAIN",
+      "verb": "READ",
+      "source": "laurasia/programs/post.cbl:84"
+    },
+    {
+      "from": "condition PRESENTMENTS-AT-END",
+      "to": "WS-AT-END",
+      "fromLiteral": true,
+      "paragraph": "MAIN",
+      "verb": "SET",
+      "source": "laurasia/programs/post.cbl:85"
+    },
+    {
+      "from": "PS-CARD-NO",
+      "to": "CA-CARD-NO",
+      "paragraph": "POST-PRESENTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:100"
+    },
+    {
+      "from": "ACCOUNTS",
+      "to": "CARD-ACCOUNT",
+      "fromFile": true,
+      "paragraph": "POST-PRESENTMENT",
+      "verb": "READ",
+      "source": "laurasia/programs/post.cbl:101"
+    },
+    {
+      "from": "'CARD'",
+      "to": "RJ-REASON",
+      "fromLiteral": true,
+      "paragraph": "POST-PRESENTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:103"
+    },
+    {
+      "from": "'BLKD'",
+      "to": "RJ-REASON",
+      "fromLiteral": true,
+      "paragraph": "POST-PRESENTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:109"
+    },
+    {
+      "from": "'CLSD'",
+      "to": "RJ-REASON",
+      "fromLiteral": true,
+      "paragraph": "POST-PRESENTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:113"
+    },
+    {
+      "from": "PS-AMOUNT",
+      "to": "CA-BALANCE",
+      "paragraph": "POST-PRESENTMENT",
+      "verb": "ADD",
+      "source": "laurasia/programs/post.cbl:117"
+    },
+    {
+      "from": "'P'",
+      "to": "PO-KIND",
+      "fromLiteral": true,
+      "paragraph": "POST-PRESENTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:118"
+    },
+    {
+      "from": "PS-AMOUNT",
+      "to": "PO-AMOUNT",
+      "paragraph": "POST-PRESENTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:119"
+    },
+    {
+      "from": "PS-AMOUNT",
+      "to": "WS-PURCHASES",
+      "paragraph": "POST-PRESENTMENT",
+      "verb": "ADD",
+      "source": "laurasia/programs/post.cbl:121"
+    },
+    {
+      "from": "CARD-ACCOUNT",
+      "to": "ACCOUNTS",
+      "toFile": true,
+      "paragraph": "POST-PRESENTMENT",
+      "verb": "REWRITE",
+      "source": "laurasia/programs/post.cbl:125"
+    },
+    {
+      "from": "'ovlbiz'",
+      "to": "WS-FEE-PROGRAM",
+      "fromLiteral": true,
+      "paragraph": "CHARGE-OVER-LIMIT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:134"
+    },
+    {
+      "from": "'ovlfee'",
+      "to": "WS-FEE-PROGRAM",
+      "fromLiteral": true,
+      "paragraph": "CHARGE-OVER-LIMIT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:136"
+    },
+    {
+      "from": "CA-BALANCE",
+      "to": "WS-OVER-AMOUNT",
+      "paragraph": "CHARGE-OVER-LIMIT",
+      "verb": "COMPUTE",
+      "source": "laurasia/programs/post.cbl:138"
+    },
+    {
+      "from": "CA-LIMIT",
+      "to": "WS-OVER-AMOUNT",
+      "paragraph": "CHARGE-OVER-LIMIT",
+      "verb": "COMPUTE",
+      "source": "laurasia/programs/post.cbl:138"
+    },
+    {
+      "from": "WS-FEE",
+      "to": "CA-BALANCE",
+      "paragraph": "CHARGE-OVER-LIMIT",
+      "verb": "ADD",
+      "source": "laurasia/programs/post.cbl:141"
+    },
+    {
+      "from": "WS-FEES",
+      "to": "CA-BALANCE",
+      "paragraph": "CHARGE-OVER-LIMIT",
+      "verb": "ADD",
+      "source": "laurasia/programs/post.cbl:141"
+    },
+    {
+      "from": "WS-FEE",
+      "to": "WS-FEES",
+      "paragraph": "CHARGE-OVER-LIMIT",
+      "verb": "ADD",
+      "source": "laurasia/programs/post.cbl:141"
+    },
+    {
+      "from": "CA-BALANCE",
+      "to": "WS-FEES",
+      "paragraph": "CHARGE-OVER-LIMIT",
+      "verb": "ADD",
+      "source": "laurasia/programs/post.cbl:141"
+    },
+    {
+      "from": "'F'",
+      "to": "PO-KIND",
+      "fromLiteral": true,
+      "paragraph": "CHARGE-OVER-LIMIT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:142"
+    },
+    {
+      "from": "WS-FEE",
+      "to": "PO-AMOUNT",
+      "paragraph": "CHARGE-OVER-LIMIT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:143"
+    },
+    {
+      "from": "CA-CARD-NO",
+      "to": "PO-CARD-NO",
+      "paragraph": "WRITE-POSTING",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:148"
+    },
+    {
+      "from": "CA-ACCOUNT-NO",
+      "to": "PO-ACCOUNT-NO",
+      "paragraph": "WRITE-POSTING",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:149"
+    },
+    {
+      "from": "PS-AUTH-CODE",
+      "to": "PO-REFERENCE",
+      "paragraph": "WRITE-POSTING",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:150"
+    },
+    {
+      "from": "WS-RUN-DATE",
+      "to": "PO-DATE",
+      "paragraph": "WRITE-POSTING",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:151"
+    },
+    {
+      "from": "POSTING",
+      "to": "POSTINGS-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-POSTING",
+      "verb": "WRITE",
+      "source": "laurasia/programs/post.cbl:152"
+    },
+    {
+      "from": "1",
+      "to": "WS-POSTED",
+      "fromLiteral": true,
+      "paragraph": "WRITE-POSTING",
+      "verb": "ADD",
+      "source": "laurasia/programs/post.cbl:153"
+    },
+    {
+      "from": "RJ-REASON",
+      "to": "WS-REJECT-REASON",
+      "paragraph": "REJECT-PRESENTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:156"
+    },
+    {
+      "from": "SPACES",
+      "to": "REJECT-LINE",
+      "fromLiteral": true,
+      "paragraph": "REJECT-PRESENTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:157"
+    },
+    {
+      "from": "WS-REJECT-REASON",
+      "to": "RJ-REASON",
+      "paragraph": "REJECT-PRESENTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:158"
+    },
+    {
+      "from": "PRES-RECORD",
+      "to": "RJ-PRESENTMENT",
+      "paragraph": "REJECT-PRESENTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:159"
+    },
+    {
+      "from": "REJECT-LINE",
+      "to": "REJECT-OUT",
+      "toFile": true,
+      "paragraph": "REJECT-PRESENTMENT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/post.cbl:160"
+    },
+    {
+      "from": "1",
+      "to": "WS-REJECTED",
+      "fromLiteral": true,
+      "paragraph": "REJECT-PRESENTMENT",
+      "verb": "ADD",
+      "source": "laurasia/programs/post.cbl:161"
+    },
+    {
+      "from": "'POST     CARD ACCOUNTS'",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:164"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/post.cbl:165"
+    },
+    {
+      "from": "'POSTINGS'",
+      "to": "RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:166"
+    },
+    {
+      "from": "WS-POSTED",
+      "to": "RC-VALUE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:167"
+    },
+    {
+      "from": "WS-REPORT-COUNT",
+      "to": "REPORT-LINE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/post.cbl:168"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/post.cbl:168"
+    },
+    {
+      "from": "'PRESENTMENTS REJECTED'",
+      "to": "RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:169"
+    },
+    {
+      "from": "WS-REJECTED",
+      "to": "RC-VALUE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:170"
+    },
+    {
+      "from": "WS-REPORT-COUNT",
+      "to": "REPORT-LINE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/post.cbl:171"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/post.cbl:171"
+    },
+    {
+      "from": "'PURCHASES'",
+      "to": "RA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:172"
+    },
+    {
+      "from": "WS-PURCHASES",
+      "to": "RA-VALUE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:173"
+    },
+    {
+      "from": "WS-REPORT-AMOUNT",
+      "to": "REPORT-LINE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/post.cbl:174"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/post.cbl:174"
+    },
+    {
+      "from": "'OVER-LIMIT FEES'",
+      "to": "RA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:175"
+    },
+    {
+      "from": "WS-FEES",
+      "to": "RA-VALUE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/post.cbl:176"
+    },
+    {
+      "from": "WS-REPORT-AMOUNT",
+      "to": "REPORT-LINE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/post.cbl:177"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/post.cbl:177"
+    }
+  ],
+  "outputs": [
+    {
+      "file": "ACCOUNTS",
+      "record": "CARD-ACCOUNT",
+      "fields": [
+        {
+          "name": "CA-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "origins": [
+            "file ACCOUNTS CA-CARD-NO",
+            "file PRES-IN PS-CARD-NO"
+          ]
+        },
+        {
+          "name": "CA-ACCOUNT-NO",
+          "start": 17,
+          "length": 10,
+          "origins": [
+            "file ACCOUNTS CA-ACCOUNT-NO"
+          ]
+        },
+        {
+          "name": "CA-PRODUCT",
+          "start": 27,
+          "length": 2,
+          "origins": [
+            "file ACCOUNTS CA-PRODUCT"
+          ]
+        },
+        {
+          "name": "CA-STATUS",
+          "start": 29,
+          "length": 1,
+          "origins": [
+            "file ACCOUNTS CA-STATUS"
+          ]
+        },
+        {
+          "name": "CA-LIMIT",
+          "start": 30,
+          "length": 9,
+          "origins": [
+            "file ACCOUNTS CA-LIMIT"
+          ]
+        },
+        {
+          "name": "CA-BALANCE",
+          "start": 39,
+          "length": 10,
+          "origins": [
+            "file ACCOUNTS CA-BALANCE",
+            "file PRES-IN PS-AMOUNT",
+            "initial value of WS-FEES"
+          ]
+        },
+        {
+          "name": "CA-STATEMENT-BALANCE",
+          "start": 49,
+          "length": 10,
+          "origins": [
+            "file ACCOUNTS CA-STATEMENT-BALANCE"
+          ]
+        },
+        {
+          "name": "CA-CYCLE-DAY",
+          "start": 59,
+          "length": 2,
+          "origins": [
+            "file ACCOUNTS CA-CYCLE-DAY"
+          ]
+        },
+        {
+          "name": "CA-PAID-IN-FULL",
+          "start": 61,
+          "length": 1,
+          "origins": [
+            "file ACCOUNTS CA-PAID-IN-FULL"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "POSTINGS-OUT",
+      "record": "POSTING",
+      "fields": [
+        {
+          "name": "PO-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "origins": [
+            "file ACCOUNTS CA-CARD-NO",
+            "file PRES-IN PS-CARD-NO"
+          ]
+        },
+        {
+          "name": "PO-ACCOUNT-NO",
+          "start": 17,
+          "length": 10,
+          "origins": [
+            "file ACCOUNTS CA-ACCOUNT-NO"
+          ]
+        },
+        {
+          "name": "PO-KIND",
+          "start": 27,
+          "length": 1,
+          "origins": [
+            "literal 'F'",
+            "literal 'P'"
+          ]
+        },
+        {
+          "name": "PO-AMOUNT",
+          "start": 28,
+          "length": 10,
+          "origins": [
+            "file PRES-IN PS-AMOUNT"
+          ]
+        },
+        {
+          "name": "PO-REFERENCE",
+          "start": 38,
+          "length": 6,
+          "origins": [
+            "file PRES-IN PS-AUTH-CODE"
+          ]
+        },
+        {
+          "name": "PO-DATE",
+          "start": 44,
+          "length": 8
+        }
+      ]
+    },
+    {
+      "file": "REJECT-OUT",
+      "record": "REJECT-LINE",
+      "fields": [
+        {
+          "name": "RJ-REASON",
+          "start": 1,
+          "length": 4,
+          "origins": [
+            "literal 'BLKD'",
+            "literal 'CARD'",
+            "literal 'CLSD'"
+          ]
+        },
+        {
+          "name": "RJ-PRESENTMENT",
+          "start": 6,
+          "length": 76,
+          "origins": [
+            "file PRES-IN PRES-RECORD"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "REPORT-OUT",
+      "record": "REPORT-LINE",
+      "fields": [
+        {
+          "name": "REPORT-LINE",
+          "start": 1,
+          "length": 60,
+          "origins": [
+            "literal 'POST     CARD ACCOUNTS'"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "REPORT-OUT",
+      "record": "WS-REPORT-COUNT",
+      "fields": [
+        {
+          "name": "RC-LABEL",
+          "start": 1,
+          "length": 30,
+          "origins": [
+            "literal 'POSTINGS'",
+            "literal 'PRESENTMENTS REJECTED'"
+          ]
+        },
+        {
+          "name": "RC-VALUE",
+          "start": 31,
+          "length": 8,
+          "origins": [
+            "initial value of WS-POSTED",
+            "initial value of WS-REJECTED",
+            "literal 1"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "REPORT-OUT",
+      "record": "WS-REPORT-AMOUNT",
+      "fields": [
+        {
+          "name": "RA-LABEL",
+          "start": 1,
+          "length": 30,
+          "origins": [
+            "literal 'OVER-LIMIT FEES'",
+            "literal 'PURCHASES'"
+          ]
+        },
+        {
+          "name": "RA-VALUE",
+          "start": 31,
+          "length": 13,
+          "origins": [
+            "file ACCOUNTS CA-BALANCE",
+            "file PRES-IN PS-AMOUNT",
+            "initial value of WS-FEES",
+            "initial value of WS-PURCHASES"
+          ]
+        }
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "file": "PRES-IN",
+      "record": "PRES-RECORD",
+      "fields": [
+        {
+          "name": "PS-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "reaches": [
+            "CA-CARD-NO",
+            "RJ-PRESENTMENT",
+            "PO-CARD-NO",
+            "file REJECT-OUT",
+            "file POSTINGS-OUT",
+            "file ACCOUNTS"
+          ]
+        },
+        {
+          "name": "PS-AMOUNT",
+          "start": 17,
+          "length": 12,
+          "reaches": [
+            "CA-BALANCE",
+            "PO-AMOUNT",
+            "RJ-PRESENTMENT",
+            "WS-PURCHASES",
+            "WS-OVER-AMOUNT",
+            "WS-FEES",
+            "RA-VALUE",
+            "REPORT-LINE",
+            "file REJECT-OUT",
+            "file POSTINGS-OUT",
+            "file ACCOUNTS",
+            "file REPORT-OUT"
+          ]
+        },
+        {
+          "name": "PS-AUTH-CODE",
+          "start": 29,
+          "length": 6,
+          "reaches": [
+            "RJ-PRESENTMENT",
+            "PO-REFERENCE",
+            "file REJECT-OUT",
+            "file POSTINGS-OUT"
+          ]
+        },
+        {
+          "name": "PS-MERCHANT",
+          "start": 35,
+          "length": 10,
+          "reaches": [
+            "RJ-PRESENTMENT",
+            "file REJECT-OUT"
+          ]
+        },
+        {
+          "name": "PS-MCC",
+          "start": 45,
+          "length": 4,
+          "reaches": [
+            "RJ-PRESENTMENT",
+            "file REJECT-OUT"
+          ]
+        },
+        {
+          "name": "PS-REGION",
+          "start": 49,
+          "length": 1,
+          "reaches": [
+            "RJ-PRESENTMENT",
+            "file REJECT-OUT"
+          ]
+        },
+        {
+          "name": "PS-PRODUCT",
+          "start": 50,
+          "length": 2,
+          "reaches": [
+            "RJ-PRESENTMENT",
+            "file REJECT-OUT"
+          ]
+        },
+        {
+          "name": "PS-TXN-DATE",
+          "start": 52,
+          "length": 8,
+          "reaches": [
+            "RJ-PRESENTMENT",
+            "file REJECT-OUT"
+          ]
+        },
+        {
+          "name": "PS-BATCH-NO",
+          "start": 60,
+          "length": 6,
+          "reaches": [
+            "RJ-PRESENTMENT",
+            "file REJECT-OUT"
+          ]
+        },
+        {
+          "name": "PS-MATCH",
+          "start": 66,
+          "length": 1,
+          "reaches": [
+            "RJ-PRESENTMENT",
+            "file REJECT-OUT"
+          ]
+        },
+        {
+          "name": "PS-FEE",
+          "start": 67,
+          "length": 10,
+          "reaches": [
+            "RJ-PRESENTMENT",
+            "file REJECT-OUT"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "ACCOUNTS",
+      "record": "CARD-ACCOUNT",
+      "fields": [
+        {
+          "name": "CA-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "reaches": [
+            "PO-CARD-NO",
+            "file POSTINGS-OUT",
+            "file ACCOUNTS"
+          ]
+        },
+        {
+          "name": "CA-ACCOUNT-NO",
+          "start": 17,
+          "length": 10,
+          "reaches": [
+            "PO-ACCOUNT-NO",
+            "file POSTINGS-OUT",
+            "file ACCOUNTS"
+          ]
+        },
+        {
+          "name": "CA-PRODUCT",
+          "start": 27,
+          "length": 2,
+          "reaches": [
+            "file ACCOUNTS"
+          ]
+        },
+        {
+          "name": "CA-STATUS",
+          "start": 29,
+          "length": 1,
+          "reaches": [
+            "file ACCOUNTS"
+          ]
+        },
+        {
+          "name": "CA-LIMIT",
+          "start": 30,
+          "length": 9,
+          "reaches": [
+            "WS-OVER-AMOUNT",
+            "file ACCOUNTS"
+          ]
+        },
+        {
+          "name": "CA-BALANCE",
+          "start": 39,
+          "length": 10,
+          "reaches": [
+            "WS-FEES",
+            "WS-OVER-AMOUNT",
+            "RA-VALUE",
+            "REPORT-LINE",
+            "file ACCOUNTS",
+            "file REPORT-OUT"
+          ]
+        },
+        {
+          "name": "CA-STATEMENT-BALANCE",
+          "start": 49,
+          "length": 10,
+          "reaches": [
+            "file ACCOUNTS"
+          ]
+        },
+        {
+          "name": "CA-CYCLE-DAY",
+          "start": 59,
+          "length": 2,
+          "reaches": [
+            "file ACCOUNTS"
+          ]
+        },
+        {
+          "name": "CA-PAID-IN-FULL",
+          "start": 61,
+          "length": 1,
+          "reaches": [
+            "file ACCOUNTS"
+          ]
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "kind": "key",
+      "from": {
+        "file": "PRES-IN",
+        "field": "PS-CARD-NO"
+      },
+      "to": {
+        "file": "ACCOUNTS",
+        "field": "CA-CARD-NO"
+      },
+      "source": "laurasia/programs/post.cbl:100"
+    }
+  ]
+}

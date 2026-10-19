@@ -1,0 +1,260 @@
+{
+  "program": "IXFEE",
+  "tables": [
+    {
+      "paragraph": "MAIN",
+      "source": "laurasia/programs/ixfee.cbl:69",
+      "conditions": [
+        "WS-FEE-STATUS = '00'",
+        "WS-DEFAULT-COUNT \u003e ZERO"
+      ],
+      "conditionRefs": [
+        [
+          "WS-FEE-STATUS"
+        ],
+        [
+          "WS-DEFAULT-COUNT"
+        ]
+      ],
+      "actions": [
+        "OPEN INPUT PRES-IN FEE-TABLE OUTPUT PRES-OUT REPORT-OUT",
+        "STOP RUN RETURNING 16",
+        "PERFORM UNTIL PRESENTMENTS-AT-END",
+        "PERFORM WRITE-REPORT",
+        "CLOSE PRES-IN FEE-TABLE PRES-OUT REPORT-OUT",
+        "STOP RUN RETURNING 4",
+        "STOP RUN RETURNING 0"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            4,
+            6
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "MAIN",
+      "loop": "PERFORM UNTIL PRESENTMENTS-AT-END",
+      "source": "laurasia/programs/ixfee.cbl:75",
+      "conditions": [
+        "READ PRES-IN INTO PRES-RECORD AT END"
+      ],
+      "conditionRefs": [
+        null
+      ],
+      "actions": [
+        "READ PRES-IN INTO PRES-RECORD",
+        "SET PRESENTMENTS-AT-END TO TRUE",
+        "PERFORM PRICE-PRESENTMENT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "PRICE-PRESENTMENT",
+      "source": "laurasia/programs/ixfee.cbl:88",
+      "conditions": [
+        "PS-MATCHED",
+        "READ FEE-TABLE INVALID KEY"
+      ],
+      "conditionRefs": [
+        [
+          "PS-MATCH"
+        ],
+        null
+      ],
+      "actions": [
+        "MOVE ZERO TO PS-FEE",
+        "PERFORM FIND-GROUP",
+        "CALL 'feeslot' USING PS-PRODUCT PS-REGION WS-GROUP RETURNING WS-SLOT",
+        "READ FEE-TABLE",
+        "ADD 1 TO WS-DEFAULT-COUNT",
+        "COMPUTE PS-FEE ROUNDED = PS-AMOUNT * DEFAULT-RATE + DEFAULT-FIXED-CENTS / 100",
+        "ADD PS-FEE TO WS-FEES",
+        "WRITE PRES-RECORD",
+        "COMPUTE PS-FEE ROUNDED = PS-AMOUNT * FS-RATE + FS-FIXED-CENTS / 100"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            8,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "FIND-GROUP",
+      "source": "laurasia/programs/ixfee.cbl:105",
+      "conditions": [
+        "PS-MCC \u003e= 5411 AND PS-MCC \u003c= 5499",
+        "PS-MCC \u003e= 5811 AND PS-MCC \u003c= 5814",
+        "(PS-MCC \u003e= 3000 AND PS-MCC \u003c= 3999) OR (PS-MCC \u003e= 4111 AND PS-MCC \u003c= 4789)",
+        "PS-MCC = 5541 OR PS-MCC = 5542 OR PS-MCC = 5983"
+      ],
+      "conditionRefs": [
+        [
+          "PS-MCC"
+        ],
+        [
+          "PS-MCC"
+        ],
+        [
+          "PS-MCC"
+        ],
+        [
+          "PS-MCC"
+        ]
+      ],
+      "actions": [
+        "SET GROUP-GROCERY TO TRUE",
+        "SET GROUP-RESTAURANTS TO TRUE",
+        "SET GROUP-TRAVEL TO TRUE",
+        "SET GROUP-FUEL TO TRUE",
+        "SET GROUP-OTHER TO TRUE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            ""
+          ],
+          "actions": [
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            4
+          ]
+        }
+      ]
+    }
+  ]
+}

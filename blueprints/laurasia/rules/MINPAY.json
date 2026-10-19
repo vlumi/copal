@@ -1,0 +1,81 @@
+{
+  "program": "MINPAY",
+  "tables": [
+    {
+      "paragraph": "MAIN",
+      "source": "laurasia/programs/cycle.cbl:137",
+      "conditions": [
+        "LK-BALANCE \u003e ZERO",
+        "LK-BALANCE \u003e PAYMENT-FLOOR",
+        "LK-MINIMUM \u003c PAYMENT-FLOOR"
+      ],
+      "conditionRefs": [
+        [
+          "LK-BALANCE"
+        ],
+        [
+          "LK-BALANCE",
+          "PAYMENT-FLOOR"
+        ],
+        [
+          "LK-MINIMUM",
+          "PAYMENT-FLOOR"
+        ]
+      ],
+      "actions": [
+        "MOVE ZERO TO LK-MINIMUM",
+        "GOBACK",
+        "MOVE LK-BALANCE TO LK-MINIMUM",
+        "COMPUTE LK-MINIMUM ROUNDED = LK-BALANCE / 50",
+        "MOVE PAYMENT-FLOOR TO LK-MINIMUM"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            ""
+          ],
+          "actions": [
+            2,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            3,
+            4,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            3,
+            1
+          ]
+        }
+      ]
+    }
+  ]
+}

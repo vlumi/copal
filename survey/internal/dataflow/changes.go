@@ -20,7 +20,8 @@ func (f Flow) WithCalls(writes CallWrites) Flow {
 
 // MayChange reports whether a statement may change any of the data items
 // named: whether it, a statement nested in it, or a statement of a
-// paragraph it performs, at any depth, writes bytes one of them shares.
+// paragraph it performs, or of the DECLARATIVES its failure on a file
+// runs, at any depth, writes bytes one of them shares.
 // A program called may change what WithCalls says it writes, or else the
 // items passed to it by reference, and a condition name stands for its
 // field.
@@ -47,7 +48,11 @@ func (f Flow) written(s cobol.Statement, performed map[string]bool) []string {
 		if n.Verb == "GO" {
 			return
 		}
-		for _, ref := range n.Procedures {
+		refs := slices.Clone(n.Procedures)
+		for _, section := range f.program.ErrorProcedures(n) {
+			refs = append(refs, cobol.ProcedureRef{Name: section})
+		}
+		for _, ref := range refs {
 			for _, para := range f.span(ref) {
 				if performed[para.Name] {
 					continue
@@ -65,20 +70,9 @@ func (f Flow) written(s cobol.Statement, performed map[string]bool) []string {
 // span lists the paragraphs a procedure reference names: a paragraph, the
 // paragraphs of a section, or those from one through another.
 func (f Flow) span(ref cobol.ProcedureRef) []cobol.Paragraph {
-	paragraphs := f.program.Paragraphs
-	first := slices.IndexFunc(paragraphs, func(p cobol.Paragraph) bool { return p.Name == ref.Name || p.Section == ref.Name })
-	if first < 0 {
+	first, last, ok := f.program.Span(ref)
+	if !ok {
 		return nil
 	}
-	last := first
-	end := ref.Name
-	if ref.Thru != "" {
-		end = ref.Thru
-	}
-	for i := first; i < len(paragraphs); i++ {
-		if paragraphs[i].Name == end || paragraphs[i].Section == end {
-			last = i
-		}
-	}
-	return paragraphs[first : last+1]
+	return f.program.Paragraphs[first : last+1]
 }

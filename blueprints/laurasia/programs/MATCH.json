@@ -1,0 +1,1267 @@
+{
+  "program": "MATCH",
+  "kind": "main",
+  "source": "laurasia/programs/match.cbl",
+  "description": [
+    "match: match the presentments to their authorizations",
+    "",
+    "reads the presentments and the day's authorizations, both in",
+    "authorization code order, and marks each presentment: matched to an",
+    "approval, presented on a declined authorization, for more than the",
+    "approval allows, or with no authorization at all. authorizations no",
+    "presentment claims are counted; they lapse.",
+    "",
+    "return codes: 0 all matched, 4 some not.",
+    "",
+    "history",
+    "2011-04-04 rk  lcs-0102 original version.",
+    "2014-02-17 rk  lcs-0251 marks instead of rejects.",
+    "2018-05-14 ah  lcs-0421 a presentment may exceed its approval by 15%."
+  ],
+  "files": [
+    {
+      "name": "PRES-IN",
+      "kind": "FD",
+      "assign": "PRESIN",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "INPUT"
+      ],
+      "records": [
+        "PRES-IN-RECORD"
+      ],
+      "source": "laurasia/programs/match.cbl:22"
+    },
+    {
+      "name": "AUTH-IN",
+      "kind": "FD",
+      "assign": "AUTHIN",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "INPUT"
+      ],
+      "records": [
+        "AUTH-ENTRY"
+      ],
+      "source": "laurasia/programs/match.cbl:24"
+    },
+    {
+      "name": "PRES-OUT",
+      "kind": "FD",
+      "assign": "PRESOUT",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "PRES-RECORD"
+      ],
+      "source": "laurasia/programs/match.cbl:26"
+    },
+    {
+      "name": "REPORT-OUT",
+      "kind": "FD",
+      "assign": "MATCHRPT",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "REPORT-LINE"
+      ],
+      "source": "laurasia/programs/match.cbl:28"
+    }
+  ],
+  "constants": [
+    {
+      "name": "TOLERANCE",
+      "value": "1.15",
+      "source": "laurasia/programs/match.cbl:43"
+    }
+  ],
+  "records": [
+    {
+      "section": "file",
+      "file": "PRES-IN",
+      "level": 1,
+      "name": "PRES-IN-RECORD",
+      "start": 1,
+      "length": 76,
+      "picture": "X(76)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/match.cbl:34"
+    },
+    {
+      "section": "file",
+      "file": "AUTH-IN",
+      "copybook": "authlog",
+      "level": 1,
+      "name": "AUTH-ENTRY",
+      "start": 1,
+      "length": 44,
+      "category": "group",
+      "kind": "group",
+      "description": "authlog: the online side's authorizations of the day, a record a line, the ones given in stand-in, when the issuer could not answer, marked. history 2011-04-04 rk  lcs-0102 original version.",
+      "source": "laurasia/copybooks/authlog.cpy:7",
+      "fields": [
+        {
+          "level": 5,
+          "name": "AL-AUTH-CODE",
+          "start": 1,
+          "length": 6,
+          "picture": "X(6)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/authlog.cpy:8"
+        },
+        {
+          "level": 5,
+          "name": "AL-CARD-NO",
+          "start": 7,
+          "length": 16,
+          "picture": "X(16)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/authlog.cpy:9"
+        },
+        {
+          "level": 5,
+          "name": "AL-AMOUNT",
+          "start": 23,
+          "length": 12,
+          "picture": "S9(9)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 11,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/authlog.cpy:10"
+        },
+        {
+          "level": 5,
+          "name": "AL-DECISION",
+          "start": 35,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "AL-APPROVED",
+              "values": [
+                "'A'"
+              ],
+              "source": "laurasia/copybooks/authlog.cpy:12"
+            },
+            {
+              "name": "AL-DECLINED",
+              "values": [
+                "'D'"
+              ],
+              "source": "laurasia/copybooks/authlog.cpy:13"
+            }
+          ],
+          "source": "laurasia/copybooks/authlog.cpy:11"
+        },
+        {
+          "level": 5,
+          "name": "AL-STAND-IN",
+          "start": 36,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "AL-IN-STAND-IN",
+              "values": [
+                "'Y'"
+              ],
+              "source": "laurasia/copybooks/authlog.cpy:15"
+            }
+          ],
+          "source": "laurasia/copybooks/authlog.cpy:14"
+        },
+        {
+          "level": 5,
+          "name": "AL-DATE",
+          "start": 37,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "date",
+          "digits": 8,
+          "source": "laurasia/copybooks/authlog.cpy:16"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "PRES-OUT",
+      "copybook": "presrec",
+      "level": 1,
+      "name": "PRES-RECORD",
+      "start": 1,
+      "length": 76,
+      "category": "group",
+      "kind": "group",
+      "description": "presrec: a presentment on its way through the night, a record a line. clrin fills in where it came from, match its authorization's outcome, ixfee the interchange fee. history 2011-04-04 rk  lcs-0102 original version. 2014-02-17 rk  lcs-0251 match status and interchange fee.",
+      "source": "laurasia/copybooks/presrec.cpy:9",
+      "fields": [
+        {
+          "level": 5,
+          "name": "PS-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "picture": "X(16)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/presrec.cpy:10"
+        },
+        {
+          "level": 5,
+          "name": "PS-AMOUNT",
+          "start": 17,
+          "length": 12,
+          "picture": "S9(9)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 11,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/presrec.cpy:11"
+        },
+        {
+          "level": 5,
+          "name": "PS-AUTH-CODE",
+          "start": 29,
+          "length": 6,
+          "picture": "X(6)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/presrec.cpy:12"
+        },
+        {
+          "level": 5,
+          "name": "PS-MERCHANT",
+          "start": 35,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/presrec.cpy:13"
+        },
+        {
+          "level": 5,
+          "name": "PS-MCC",
+          "start": 45,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 4,
+          "source": "laurasia/copybooks/presrec.cpy:14"
+        },
+        {
+          "level": 5,
+          "name": "PS-REGION",
+          "start": 49,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PS-DOMESTIC",
+              "values": [
+                "'D'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:16"
+            },
+            {
+              "name": "PS-INTERNATIONAL",
+              "values": [
+                "'I'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:17"
+            }
+          ],
+          "source": "laurasia/copybooks/presrec.cpy:15"
+        },
+        {
+          "level": 5,
+          "name": "PS-PRODUCT",
+          "start": 50,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PS-CLASSIC",
+              "values": [
+                "'CL'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:19"
+            },
+            {
+              "name": "PS-GOLD",
+              "values": [
+                "'GD'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:20"
+            },
+            {
+              "name": "PS-BUSINESS",
+              "values": [
+                "'BZ'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:21"
+            }
+          ],
+          "source": "laurasia/copybooks/presrec.cpy:18"
+        },
+        {
+          "level": 5,
+          "name": "PS-TXN-DATE",
+          "start": 52,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "date",
+          "digits": 8,
+          "source": "laurasia/copybooks/presrec.cpy:22"
+        },
+        {
+          "level": 5,
+          "name": "PS-BATCH-NO",
+          "start": 60,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 6,
+          "source": "laurasia/copybooks/presrec.cpy:23"
+        },
+        {
+          "level": 5,
+          "name": "PS-MATCH",
+          "start": 66,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PS-UNMATCHED",
+              "values": [
+                "' '"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:25"
+            },
+            {
+              "name": "PS-MATCHED",
+              "values": [
+                "'M'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:26"
+            },
+            {
+              "name": "PS-DECLINED",
+              "values": [
+                "'D'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:27"
+            },
+            {
+              "name": "PS-NO-AUTH",
+              "values": [
+                "'U'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:28"
+            },
+            {
+              "name": "PS-OVER-AUTH",
+              "values": [
+                "'X'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:29"
+            }
+          ],
+          "source": "laurasia/copybooks/presrec.cpy:24"
+        },
+        {
+          "level": 5,
+          "name": "PS-FEE",
+          "start": 67,
+          "length": 10,
+          "picture": "S9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/presrec.cpy:30"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "REPORT-OUT",
+      "level": 1,
+      "name": "REPORT-LINE",
+      "start": 1,
+      "length": 60,
+      "picture": "X(60)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/match.cbl:40"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-PRES-KEY",
+      "start": 1,
+      "length": 6,
+      "picture": "X(6)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/match.cbl:44"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-AUTH-KEY",
+      "start": 1,
+      "length": 6,
+      "picture": "X(6)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/match.cbl:45"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-COUNTS",
+      "start": 1,
+      "length": 24,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/match.cbl:46",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-MATCHED",
+          "start": 1,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 8,
+          "values": [
+            "ZERO"
+          ],
+          "source": "laurasia/programs/match.cbl:47"
+        },
+        {
+          "level": 5,
+          "name": "WS-NOT-MATCHED",
+          "start": 9,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 8,
+          "values": [
+            "ZERO"
+          ],
+          "source": "laurasia/programs/match.cbl:48"
+        },
+        {
+          "level": 5,
+          "name": "WS-LAPSED",
+          "start": 17,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 8,
+          "values": [
+            "ZERO"
+          ],
+          "source": "laurasia/programs/match.cbl:49"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-AUTH-CLAIMED",
+      "start": 1,
+      "length": 1,
+      "picture": "X",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "code",
+      "values": [
+        "'N'"
+      ],
+      "conditions": [
+        {
+          "name": "AUTH-CLAIMED",
+          "values": [
+            "'Y'"
+          ],
+          "source": "laurasia/programs/match.cbl:51"
+        }
+      ],
+      "source": "laurasia/programs/match.cbl:50"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REPORT-COUNT",
+      "start": 1,
+      "length": 38,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/match.cbl:52",
+      "fields": [
+        {
+          "level": 5,
+          "name": "RC-LABEL",
+          "start": 1,
+          "length": 30,
+          "picture": "X(30)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/match.cbl:53"
+        },
+        {
+          "level": 5,
+          "name": "RC-VALUE",
+          "start": 31,
+          "length": 8,
+          "picture": "Z(7)9",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "kind": "edited",
+          "source": "laurasia/programs/match.cbl:54"
+        }
+      ]
+    }
+  ],
+  "paragraphs": [
+    {
+      "name": "MAIN",
+      "section": "MAIN",
+      "source": "laurasia/programs/match.cbl:57",
+      "performs": [
+        {
+          "target": "READ-PRESENTMENT",
+          "source": "laurasia/programs/match.cbl:60"
+        },
+        {
+          "target": "READ-AUTHORIZATION",
+          "source": "laurasia/programs/match.cbl:61"
+        },
+        {
+          "target": "MATCH-NEXT",
+          "source": "laurasia/programs/match.cbl:62"
+        },
+        {
+          "target": "WRITE-REPORT",
+          "source": "laurasia/programs/match.cbl:63"
+        }
+      ],
+      "reads": [
+        "WS-PRES-KEY",
+        "WS-AUTH-KEY",
+        "WS-NOT-MATCHED"
+      ],
+      "writes": [
+        "RETURN-CODE"
+      ]
+    },
+    {
+      "name": "READ-PRESENTMENT",
+      "section": "READ-PRESENTMENT",
+      "source": "laurasia/programs/match.cbl:70",
+      "performedBy": [
+        "MAIN",
+        "MATCH-NEXT"
+      ],
+      "reads": [
+        "PS-AUTH-CODE"
+      ],
+      "writes": [
+        "PRES-RECORD",
+        "PRES-IN-RECORD",
+        "WS-PRES-KEY"
+      ]
+    },
+    {
+      "name": "READ-AUTHORIZATION",
+      "section": "READ-AUTHORIZATION",
+      "source": "laurasia/programs/match.cbl:76",
+      "performedBy": [
+        "MAIN",
+        "MATCH-NEXT"
+      ],
+      "reads": [
+        "AL-AUTH-CODE"
+      ],
+      "writes": [
+        "AUTH-ENTRY",
+        "WS-AUTH-KEY",
+        "WS-AUTH-CLAIMED"
+      ]
+    },
+    {
+      "name": "MATCH-NEXT",
+      "section": "MATCH-NEXT",
+      "description": "the lower key goes first: a presentment with no authorization, or an authorization no presentment claims. several presentments may claim one authorization.",
+      "source": "laurasia/programs/match.cbl:86",
+      "performs": [
+        {
+          "target": "WRITE-PRESENTMENT",
+          "source": "laurasia/programs/match.cbl:90"
+        },
+        {
+          "target": "READ-PRESENTMENT",
+          "source": "laurasia/programs/match.cbl:91"
+        },
+        {
+          "target": "READ-AUTHORIZATION",
+          "source": "laurasia/programs/match.cbl:96"
+        },
+        {
+          "target": "MARK-PRESENTMENT",
+          "source": "laurasia/programs/match.cbl:98"
+        },
+        {
+          "target": "WRITE-PRESENTMENT",
+          "source": "laurasia/programs/match.cbl:100"
+        },
+        {
+          "target": "READ-PRESENTMENT",
+          "source": "laurasia/programs/match.cbl:101"
+        }
+      ],
+      "performedBy": [
+        "MAIN"
+      ],
+      "reads": [
+        "WS-PRES-KEY",
+        "WS-AUTH-KEY",
+        "WS-AUTH-CLAIMED",
+        "WS-LAPSED"
+      ],
+      "writes": [
+        "PS-MATCH",
+        "WS-LAPSED",
+        "WS-AUTH-CLAIMED"
+      ]
+    },
+    {
+      "name": "MARK-PRESENTMENT",
+      "section": "MARK-PRESENTMENT",
+      "source": "laurasia/programs/match.cbl:104",
+      "performedBy": [
+        "MATCH-NEXT"
+      ],
+      "reads": [
+        "AL-DECISION",
+        "PS-AMOUNT",
+        "AL-AMOUNT",
+        "TOLERANCE"
+      ],
+      "writes": [
+        "PS-MATCH"
+      ]
+    },
+    {
+      "name": "WRITE-PRESENTMENT",
+      "section": "WRITE-PRESENTMENT",
+      "source": "laurasia/programs/match.cbl:114",
+      "performedBy": [
+        "MATCH-NEXT"
+      ],
+      "reads": [
+        "PS-MATCH",
+        "WS-MATCHED",
+        "WS-NOT-MATCHED"
+      ],
+      "writes": [
+        "PRES-RECORD",
+        "WS-MATCHED",
+        "WS-NOT-MATCHED"
+      ]
+    },
+    {
+      "name": "WRITE-REPORT",
+      "section": "WRITE-REPORT",
+      "source": "laurasia/programs/match.cbl:122",
+      "performedBy": [
+        "MAIN"
+      ],
+      "reads": [
+        "WS-MATCHED",
+        "WS-REPORT-COUNT",
+        "WS-NOT-MATCHED",
+        "WS-LAPSED"
+      ],
+      "writes": [
+        "REPORT-LINE",
+        "RC-LABEL",
+        "RC-VALUE"
+      ]
+    }
+  ],
+  "lineage": [
+    {
+      "from": "PRES-IN",
+      "to": "PRES-IN-RECORD",
+      "fromFile": true,
+      "paragraph": "READ-PRESENTMENT",
+      "verb": "READ",
+      "source": "laurasia/programs/match.cbl:71"
+    },
+    {
+      "from": "PRES-IN-RECORD",
+      "to": "PRES-RECORD",
+      "paragraph": "READ-PRESENTMENT",
+      "verb": "READ",
+      "source": "laurasia/programs/match.cbl:71"
+    },
+    {
+      "from": "HIGH-VALUES",
+      "to": "WS-PRES-KEY",
+      "fromLiteral": true,
+      "paragraph": "READ-PRESENTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/match.cbl:72"
+    },
+    {
+      "from": "PS-AUTH-CODE",
+      "to": "WS-PRES-KEY",
+      "paragraph": "READ-PRESENTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/match.cbl:73"
+    },
+    {
+      "from": "AUTH-IN",
+      "to": "AUTH-ENTRY",
+      "fromFile": true,
+      "paragraph": "READ-AUTHORIZATION",
+      "verb": "READ",
+      "source": "laurasia/programs/match.cbl:77"
+    },
+    {
+      "from": "HIGH-VALUES",
+      "to": "WS-AUTH-KEY",
+      "fromLiteral": true,
+      "paragraph": "READ-AUTHORIZATION",
+      "verb": "MOVE",
+      "source": "laurasia/programs/match.cbl:78"
+    },
+    {
+      "from": "AL-AUTH-CODE",
+      "to": "WS-AUTH-KEY",
+      "paragraph": "READ-AUTHORIZATION",
+      "verb": "MOVE",
+      "source": "laurasia/programs/match.cbl:79"
+    },
+    {
+      "from": "'N'",
+      "to": "WS-AUTH-CLAIMED",
+      "fromLiteral": true,
+      "paragraph": "READ-AUTHORIZATION",
+      "verb": "MOVE",
+      "source": "laurasia/programs/match.cbl:81"
+    },
+    {
+      "from": "condition PS-NO-AUTH",
+      "to": "PS-MATCH",
+      "fromLiteral": true,
+      "paragraph": "MATCH-NEXT",
+      "verb": "SET",
+      "source": "laurasia/programs/match.cbl:89"
+    },
+    {
+      "from": "1",
+      "to": "WS-LAPSED",
+      "fromLiteral": true,
+      "paragraph": "MATCH-NEXT",
+      "verb": "ADD",
+      "source": "laurasia/programs/match.cbl:94"
+    },
+    {
+      "from": "condition AUTH-CLAIMED",
+      "to": "WS-AUTH-CLAIMED",
+      "fromLiteral": true,
+      "paragraph": "MATCH-NEXT",
+      "verb": "SET",
+      "source": "laurasia/programs/match.cbl:99"
+    },
+    {
+      "from": "condition PS-DECLINED",
+      "to": "PS-MATCH",
+      "fromLiteral": true,
+      "paragraph": "MARK-PRESENTMENT",
+      "verb": "SET",
+      "source": "laurasia/programs/match.cbl:107"
+    },
+    {
+      "from": "condition PS-OVER-AUTH",
+      "to": "PS-MATCH",
+      "fromLiteral": true,
+      "paragraph": "MARK-PRESENTMENT",
+      "verb": "SET",
+      "source": "laurasia/programs/match.cbl:109"
+    },
+    {
+      "from": "condition PS-MATCHED",
+      "to": "PS-MATCH",
+      "fromLiteral": true,
+      "paragraph": "MARK-PRESENTMENT",
+      "verb": "SET",
+      "source": "laurasia/programs/match.cbl:111"
+    },
+    {
+      "from": "PRES-RECORD",
+      "to": "PRES-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-PRESENTMENT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/match.cbl:115"
+    },
+    {
+      "from": "1",
+      "to": "WS-MATCHED",
+      "fromLiteral": true,
+      "paragraph": "WRITE-PRESENTMENT",
+      "verb": "ADD",
+      "source": "laurasia/programs/match.cbl:117"
+    },
+    {
+      "from": "1",
+      "to": "WS-NOT-MATCHED",
+      "fromLiteral": true,
+      "paragraph": "WRITE-PRESENTMENT",
+      "verb": "ADD",
+      "source": "laurasia/programs/match.cbl:119"
+    },
+    {
+      "from": "'MATCH    PRESENTMENTS TO AUTHORIZATIONS'",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/match.cbl:123"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/match.cbl:124"
+    },
+    {
+      "from": "'MATCHED'",
+      "to": "RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/match.cbl:125"
+    },
+    {
+      "from": "WS-MATCHED",
+      "to": "RC-VALUE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/match.cbl:126"
+    },
+    {
+      "from": "WS-REPORT-COUNT",
+      "to": "REPORT-LINE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/match.cbl:127"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/match.cbl:127"
+    },
+    {
+      "from": "'NOT MATCHED'",
+      "to": "RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/match.cbl:128"
+    },
+    {
+      "from": "WS-NOT-MATCHED",
+      "to": "RC-VALUE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/match.cbl:129"
+    },
+    {
+      "from": "WS-REPORT-COUNT",
+      "to": "REPORT-LINE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/match.cbl:130"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/match.cbl:130"
+    },
+    {
+      "from": "'AUTHORIZATIONS LAPSED'",
+      "to": "RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/match.cbl:131"
+    },
+    {
+      "from": "WS-LAPSED",
+      "to": "RC-VALUE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/match.cbl:132"
+    },
+    {
+      "from": "WS-REPORT-COUNT",
+      "to": "REPORT-LINE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/match.cbl:133"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/match.cbl:133"
+    }
+  ],
+  "outputs": [
+    {
+      "file": "PRES-OUT",
+      "record": "PRES-RECORD",
+      "fields": [
+        {
+          "name": "PS-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "origins": [
+            "file PRES-IN PRES-IN-RECORD"
+          ]
+        },
+        {
+          "name": "PS-AMOUNT",
+          "start": 17,
+          "length": 12,
+          "origins": [
+            "file PRES-IN PRES-IN-RECORD"
+          ]
+        },
+        {
+          "name": "PS-AUTH-CODE",
+          "start": 29,
+          "length": 6,
+          "origins": [
+            "file PRES-IN PRES-IN-RECORD"
+          ]
+        },
+        {
+          "name": "PS-MERCHANT",
+          "start": 35,
+          "length": 10,
+          "origins": [
+            "file PRES-IN PRES-IN-RECORD"
+          ]
+        },
+        {
+          "name": "PS-MCC",
+          "start": 45,
+          "length": 4,
+          "origins": [
+            "file PRES-IN PRES-IN-RECORD"
+          ]
+        },
+        {
+          "name": "PS-REGION",
+          "start": 49,
+          "length": 1,
+          "origins": [
+            "file PRES-IN PRES-IN-RECORD"
+          ]
+        },
+        {
+          "name": "PS-PRODUCT",
+          "start": 50,
+          "length": 2,
+          "origins": [
+            "file PRES-IN PRES-IN-RECORD"
+          ]
+        },
+        {
+          "name": "PS-TXN-DATE",
+          "start": 52,
+          "length": 8,
+          "origins": [
+            "file PRES-IN PRES-IN-RECORD"
+          ]
+        },
+        {
+          "name": "PS-BATCH-NO",
+          "start": 60,
+          "length": 6,
+          "origins": [
+            "file PRES-IN PRES-IN-RECORD"
+          ]
+        },
+        {
+          "name": "PS-MATCH",
+          "start": 66,
+          "length": 1,
+          "origins": [
+            "literal condition PS-DECLINED",
+            "literal condition PS-MATCHED",
+            "literal condition PS-NO-AUTH",
+            "literal condition PS-OVER-AUTH"
+          ]
+        },
+        {
+          "name": "PS-FEE",
+          "start": 67,
+          "length": 10,
+          "origins": [
+            "file PRES-IN PRES-IN-RECORD"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "REPORT-OUT",
+      "record": "REPORT-LINE",
+      "fields": [
+        {
+          "name": "REPORT-LINE",
+          "start": 1,
+          "length": 60,
+          "origins": [
+            "literal 'MATCH    PRESENTMENTS TO AUTHORIZATIONS'"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "REPORT-OUT",
+      "record": "WS-REPORT-COUNT",
+      "fields": [
+        {
+          "name": "RC-LABEL",
+          "start": 1,
+          "length": 30,
+          "origins": [
+            "literal 'AUTHORIZATIONS LAPSED'",
+            "literal 'MATCHED'",
+            "literal 'NOT MATCHED'"
+          ]
+        },
+        {
+          "name": "RC-VALUE",
+          "start": 31,
+          "length": 8,
+          "origins": [
+            "initial value of WS-LAPSED",
+            "initial value of WS-MATCHED",
+            "initial value of WS-NOT-MATCHED",
+            "literal 1"
+          ]
+        }
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "file": "PRES-IN",
+      "record": "PRES-RECORD",
+      "fields": [
+        {
+          "name": "PS-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "reaches": [
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "PS-AMOUNT",
+          "start": 17,
+          "length": 12,
+          "reaches": [
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "PS-AUTH-CODE",
+          "start": 29,
+          "length": 6,
+          "reaches": [
+            "WS-PRES-KEY",
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "PS-MERCHANT",
+          "start": 35,
+          "length": 10,
+          "reaches": [
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "PS-MCC",
+          "start": 45,
+          "length": 4,
+          "reaches": [
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "PS-REGION",
+          "start": 49,
+          "length": 1,
+          "reaches": [
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "PS-PRODUCT",
+          "start": 50,
+          "length": 2,
+          "reaches": [
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "PS-TXN-DATE",
+          "start": 52,
+          "length": 8,
+          "reaches": [
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "PS-BATCH-NO",
+          "start": 60,
+          "length": 6,
+          "reaches": [
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "PS-MATCH",
+          "start": 66,
+          "length": 1,
+          "reaches": [
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "PS-FEE",
+          "start": 67,
+          "length": 10,
+          "reaches": [
+            "file PRES-OUT"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "AUTH-IN",
+      "record": "AUTH-ENTRY",
+      "fields": [
+        {
+          "name": "AL-AUTH-CODE",
+          "start": 1,
+          "length": 6,
+          "reaches": [
+            "WS-AUTH-KEY"
+          ]
+        },
+        {
+          "name": "AL-CARD-NO",
+          "start": 7,
+          "length": 16
+        },
+        {
+          "name": "AL-AMOUNT",
+          "start": 23,
+          "length": 12
+        },
+        {
+          "name": "AL-DECISION",
+          "start": 35,
+          "length": 1
+        },
+        {
+          "name": "AL-STAND-IN",
+          "start": 36,
+          "length": 1
+        },
+        {
+          "name": "AL-DATE",
+          "start": 37,
+          "length": 8
+        }
+      ]
+    }
+  ]
+}

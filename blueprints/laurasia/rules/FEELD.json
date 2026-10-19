@@ -1,0 +1,142 @@
+{
+  "program": "FEELD",
+  "tables": [
+    {
+      "paragraph": "MAIN",
+      "source": "laurasia/programs/feeld.cbl:41",
+      "conditions": [
+        "WS-FEE-STATUS = '00'"
+      ],
+      "conditionRefs": [
+        [
+          "WS-FEE-STATUS"
+        ]
+      ],
+      "actions": [
+        "OPEN INPUT FEE-SCHEDULE OUTPUT FEE-TABLE",
+        "STOP RUN RETURNING 16",
+        "PERFORM UNTIL SCHEDULE-AT-END",
+        "CLOSE FEE-SCHEDULE FEE-TABLE",
+        "STOP RUN RETURNING WS-RESULT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "MAIN",
+      "loop": "PERFORM UNTIL SCHEDULE-AT-END",
+      "source": "laurasia/programs/feeld.cbl:46",
+      "conditions": [
+        "READ FEE-SCHEDULE AT END"
+      ],
+      "conditionRefs": [
+        null
+      ],
+      "actions": [
+        "READ FEE-SCHEDULE",
+        "SET SCHEDULE-AT-END TO TRUE",
+        "PERFORM LOAD-FEE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "LOAD-FEE",
+      "source": "laurasia/programs/feeld.cbl:55",
+      "conditions": [
+        "WS-SLOT = ZERO",
+        "WRITE FEE-SLOT-RECORD INVALID KEY"
+      ],
+      "conditionRefs": [
+        [
+          "WS-SLOT"
+        ],
+        null
+      ],
+      "actions": [
+        "CALL 'feeslot' USING FD-PRODUCT FD-REGION FD-GROUP RETURNING WS-SLOT",
+        "MOVE 8 TO WS-RESULT",
+        "EXIT SECTION",
+        "MOVE FD-RATE TO FS-RATE",
+        "MOVE FD-FIXED TO FS-FIXED-CENTS",
+        "WRITE FEE-SLOT-RECORD"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            3,
+            4,
+            5,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            3,
+            4,
+            5
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -8,6 +8,7 @@
 package oracle
 
 import (
+	"fmt"
 	"slices"
 
 	"github.com/vlumi/copal/bedrock/cobol"
@@ -94,9 +95,13 @@ func prepare(system *blueprint.System, bp *blueprint.Program, copybookDir string
 }
 
 func analyze(bp *blueprint.Program, copybookDir string, dialect cobol.Dialect) (*cobol.Program, *layout.ProgramRecords, dataflow.Flow, error) {
-	source, err := cobol.ReadProgram(bp.Source, []string{copybookDir})
+	file, err := cobol.ReadProgram(bp.Source, []string{copybookDir})
 	if err != nil {
 		return nil, nil, dataflow.Flow{}, err
+	}
+	source, ok := file.Find(bp.Name)
+	if !ok {
+		return nil, nil, dataflow.Flow{}, fmt.Errorf("%s: no program %s", bp.Source, bp.Name)
 	}
 	records, err := layout.Program(source, dialect)
 	if err != nil {

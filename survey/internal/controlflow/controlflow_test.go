@@ -142,3 +142,21 @@ func TestSections(t *testing.T) {
 		t.Error("EXIT SECTION of a performed section runs on into the next section")
 	}
 }
+
+func TestDeclaratives(t *testing.T) {
+	g := graph(t, "testdata/DECLARE.cbl")
+	if !g.Covered {
+		t.Fatal("graph does not cover the program")
+	}
+	start := g.Nodes[Entry].Next[0]
+	if !slices.ContainsFunc(g.Nodes[start].Next, func(n int) bool { return slices.Contains(at(g, "OPEN INPUT IN-FILE"), n) }) {
+		t.Error("the program does not start after the DECLARATIVES")
+	}
+	failed := at(g, "MOVE 'y' TO WS-FAILED")
+	if !reaches(g, at(g, "OPEN INPUT IN-FILE"), failed) {
+		t.Error("a failed OPEN does not run the declarative for its file")
+	}
+	if !reaches(g, failed, at(g, "MOVE 'z' TO WS-FAILED")) {
+		t.Error("the declarative does not return to the statement after the OPEN")
+	}
+}

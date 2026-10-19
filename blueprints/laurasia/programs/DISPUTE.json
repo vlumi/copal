@@ -1,0 +1,1329 @@
+{
+  "program": "DISPUTE",
+  "kind": "main",
+  "source": "laurasia/programs/dispute.cbl",
+  "description": [
+    "dispute: move the disputes on by the day's events",
+    "",
+    "applies the day's dispute events, in case order, to the dispute master,",
+    "and writes the new master. a dispute opens when the cardholder claims;",
+    "the chargeback takes the amount back from the merchant; the merchant",
+    "may accept it, or represent, which gives the amount back; the issuer",
+    "may then drop the dispute, or take it to pre-arbitration, where the",
+    "network rules for one side. an event a case cannot take where it stands",
+    "is rejected. each move of money is an adjustment for the merchant's",
+    "settlement.",
+    "",
+    "return codes: 0 all applied, 4 some rejected, 16 cases out of order.",
+    "",
+    "history",
+    "2015-03-23 mt  lcs-0302 original version.",
+    "2019-11-04 mt  lcs-0455 pre-arbitration."
+  ],
+  "files": [
+    {
+      "name": "MASTER-IN",
+      "kind": "FD",
+      "assign": "DISPIN",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "INPUT"
+      ],
+      "records": [
+        "MASTER-IN-RECORD"
+      ],
+      "source": "laurasia/programs/dispute.cbl:24"
+    },
+    {
+      "name": "EVENTS-IN",
+      "kind": "FD",
+      "assign": "DISPEVT",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "INPUT"
+      ],
+      "records": [
+        "DISPUTE-EVENT"
+      ],
+      "source": "laurasia/programs/dispute.cbl:26"
+    },
+    {
+      "name": "MASTER-OUT",
+      "kind": "FD",
+      "assign": "DISPOUT",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "DISPUTE-CASE"
+      ],
+      "source": "laurasia/programs/dispute.cbl:28"
+    },
+    {
+      "name": "ADJUST-OUT",
+      "kind": "FD",
+      "assign": "ADJOUT",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "ADJUSTMENT"
+      ],
+      "source": "laurasia/programs/dispute.cbl:30"
+    },
+    {
+      "name": "REJECT-OUT",
+      "kind": "FD",
+      "assign": "DISPREJ",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "REJECT-LINE"
+      ],
+      "source": "laurasia/programs/dispute.cbl:32"
+    }
+  ],
+  "records": [
+    {
+      "section": "file",
+      "file": "MASTER-IN",
+      "level": 1,
+      "name": "MASTER-IN-RECORD",
+      "start": 1,
+      "length": 48,
+      "picture": "X(48)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/dispute.cbl:38"
+    },
+    {
+      "section": "file",
+      "file": "EVENTS-IN",
+      "copybook": "dispevt",
+      "level": 1,
+      "name": "DISPUTE-EVENT",
+      "start": 1,
+      "length": 40,
+      "category": "group",
+      "kind": "group",
+      "description": "dispevt: an event in a dispute's life, from the cardholder's claim to the network's ruling. history 2015-03-23 mt  lcs-0302 original version. 2019-11-04 mt  lcs-0455 pre-arbitration.",
+      "source": "laurasia/copybooks/dispevt.cpy:8",
+      "fields": [
+        {
+          "level": 5,
+          "name": "DE-CASE-NO",
+          "start": 1,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 8,
+          "source": "laurasia/copybooks/dispevt.cpy:9"
+        },
+        {
+          "level": 5,
+          "name": "DE-EVENT",
+          "start": 9,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "DE-OPENED",
+              "values": [
+                "'OP'"
+              ],
+              "source": "laurasia/copybooks/dispevt.cpy:11"
+            },
+            {
+              "name": "DE-CHARGEBACK",
+              "values": [
+                "'CB'"
+              ],
+              "source": "laurasia/copybooks/dispevt.cpy:12"
+            },
+            {
+              "name": "DE-REPRESENTMENT",
+              "values": [
+                "'RP'"
+              ],
+              "source": "laurasia/copybooks/dispevt.cpy:13"
+            },
+            {
+              "name": "DE-PRE-ARBITRATION",
+              "values": [
+                "'PA'"
+              ],
+              "source": "laurasia/copybooks/dispevt.cpy:14"
+            },
+            {
+              "name": "DE-MERCHANT-ACCEPTS",
+              "values": [
+                "'AC'"
+              ],
+              "source": "laurasia/copybooks/dispevt.cpy:15"
+            },
+            {
+              "name": "DE-ISSUER-DROPS",
+              "values": [
+                "'DR'"
+              ],
+              "source": "laurasia/copybooks/dispevt.cpy:16"
+            },
+            {
+              "name": "DE-RULED-FOR-ISSUER",
+              "values": [
+                "'RI'"
+              ],
+              "source": "laurasia/copybooks/dispevt.cpy:17"
+            },
+            {
+              "name": "DE-RULED-FOR-MERCHANT",
+              "values": [
+                "'RM'"
+              ],
+              "source": "laurasia/copybooks/dispevt.cpy:18"
+            }
+          ],
+          "source": "laurasia/copybooks/dispevt.cpy:10"
+        },
+        {
+          "level": 5,
+          "name": "DE-MERCHANT",
+          "start": 11,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/dispevt.cpy:19"
+        },
+        {
+          "level": 5,
+          "name": "DE-AMOUNT",
+          "start": 21,
+          "length": 12,
+          "picture": "S9(9)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 11,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/dispevt.cpy:20"
+        },
+        {
+          "level": 5,
+          "name": "DE-DATE",
+          "start": 33,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "date",
+          "digits": 8,
+          "source": "laurasia/copybooks/dispevt.cpy:21"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "MASTER-OUT",
+      "copybook": "dispcase",
+      "level": 1,
+      "name": "DISPUTE-CASE",
+      "start": 1,
+      "length": 48,
+      "category": "group",
+      "kind": "group",
+      "description": "dispcase: a cardholder's dispute of a presentment, a case in the dispute master, with where it stands. history 2015-03-23 mt  lcs-0302 original version. 2019-11-04 mt  lcs-0455 pre-arbitration.",
+      "source": "laurasia/copybooks/dispcase.cpy:8",
+      "fields": [
+        {
+          "level": 5,
+          "name": "DC-CASE-NO",
+          "start": 1,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 8,
+          "source": "laurasia/copybooks/dispcase.cpy:9"
+        },
+        {
+          "level": 5,
+          "name": "DC-STATUS",
+          "start": 9,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "DC-OPEN",
+              "values": [
+                "'OP'"
+              ],
+              "source": "laurasia/copybooks/dispcase.cpy:11"
+            },
+            {
+              "name": "DC-CHARGED-BACK",
+              "values": [
+                "'CB'"
+              ],
+              "source": "laurasia/copybooks/dispcase.cpy:12"
+            },
+            {
+              "name": "DC-REPRESENTED",
+              "values": [
+                "'RP'"
+              ],
+              "source": "laurasia/copybooks/dispcase.cpy:13"
+            },
+            {
+              "name": "DC-PRE-ARBITRATION",
+              "values": [
+                "'PA'"
+              ],
+              "source": "laurasia/copybooks/dispcase.cpy:14"
+            },
+            {
+              "name": "DC-WON",
+              "values": [
+                "'WN'"
+              ],
+              "source": "laurasia/copybooks/dispcase.cpy:15"
+            },
+            {
+              "name": "DC-LOST",
+              "values": [
+                "'LS'"
+              ],
+              "source": "laurasia/copybooks/dispcase.cpy:16"
+            }
+          ],
+          "source": "laurasia/copybooks/dispcase.cpy:10"
+        },
+        {
+          "level": 5,
+          "name": "DC-MERCHANT",
+          "start": 11,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/dispcase.cpy:17"
+        },
+        {
+          "level": 5,
+          "name": "DC-AMOUNT",
+          "start": 21,
+          "length": 12,
+          "picture": "S9(9)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 11,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/dispcase.cpy:18"
+        },
+        {
+          "level": 5,
+          "name": "DC-OPENED",
+          "start": 33,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 8,
+          "source": "laurasia/copybooks/dispcase.cpy:19"
+        },
+        {
+          "level": 5,
+          "name": "DC-UPDATED",
+          "start": 41,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "date",
+          "digits": 8,
+          "source": "laurasia/copybooks/dispcase.cpy:20"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "ADJUST-OUT",
+      "level": 1,
+      "name": "ADJUSTMENT",
+      "start": 1,
+      "length": 32,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/dispute.cbl:44",
+      "fields": [
+        {
+          "level": 5,
+          "name": "AD-MERCHANT",
+          "start": 1,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/dispute.cbl:45"
+        },
+        {
+          "level": 5,
+          "name": "AD-AMOUNT",
+          "start": 11,
+          "length": 12,
+          "picture": "S9(9)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 11,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/programs/dispute.cbl:46"
+        },
+        {
+          "level": 5,
+          "name": "AD-CASE-NO",
+          "start": 23,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 8,
+          "source": "laurasia/programs/dispute.cbl:47"
+        },
+        {
+          "level": 5,
+          "name": "AD-EVENT",
+          "start": 31,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/dispute.cbl:48"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "REJECT-OUT",
+      "level": 1,
+      "name": "REJECT-LINE",
+      "start": 1,
+      "length": 45,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/dispute.cbl:50",
+      "fields": [
+        {
+          "level": 5,
+          "name": "RJ-REASON",
+          "start": 1,
+          "length": 4,
+          "picture": "X(4)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/dispute.cbl:51"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 5,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "filler",
+          "source": "laurasia/programs/dispute.cbl:52"
+        },
+        {
+          "level": 5,
+          "name": "RJ-EVENT",
+          "start": 6,
+          "length": 40,
+          "picture": "X(40)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/dispute.cbl:53"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-MASTER-KEY",
+      "start": 1,
+      "length": 8,
+      "picture": "9(8)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 8,
+      "source": "laurasia/programs/dispute.cbl:56"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-EVENT-KEY",
+      "start": 1,
+      "length": 8,
+      "picture": "9(8)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 8,
+      "source": "laurasia/programs/dispute.cbl:57"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-HELD-CASE",
+      "start": 1,
+      "length": 48,
+      "picture": "X(48)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/dispute.cbl:58"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-HOLDING",
+      "start": 1,
+      "length": 1,
+      "picture": "X",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "code",
+      "values": [
+        "'N'"
+      ],
+      "conditions": [
+        {
+          "name": "HOLDING-CASE",
+          "values": [
+            "'Y'"
+          ],
+          "source": "laurasia/programs/dispute.cbl:60"
+        },
+        {
+          "name": "HOLDING-NOTHING",
+          "values": [
+            "'N'"
+          ],
+          "source": "laurasia/programs/dispute.cbl:61"
+        }
+      ],
+      "source": "laurasia/programs/dispute.cbl:59"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-RESULT",
+      "start": 1,
+      "length": 2,
+      "picture": "99",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 2,
+      "values": [
+        "ZERO"
+      ],
+      "source": "laurasia/programs/dispute.cbl:62"
+    }
+  ],
+  "paragraphs": [
+    {
+      "name": "MAIN",
+      "section": "MAIN",
+      "source": "laurasia/programs/dispute.cbl:65",
+      "performs": [
+        {
+          "target": "READ-MASTER",
+          "source": "laurasia/programs/dispute.cbl:68"
+        },
+        {
+          "target": "READ-EVENT",
+          "source": "laurasia/programs/dispute.cbl:69"
+        },
+        {
+          "target": "APPLY-NEXT",
+          "source": "laurasia/programs/dispute.cbl:70"
+        }
+      ],
+      "reads": [
+        "WS-MASTER-KEY",
+        "WS-EVENT-KEY",
+        "WS-RESULT"
+      ],
+      "writes": [
+        "RETURN-CODE"
+      ]
+    },
+    {
+      "name": "READ-MASTER",
+      "section": "READ-MASTER",
+      "source": "laurasia/programs/dispute.cbl:74",
+      "performedBy": [
+        "MAIN",
+        "APPLY-NEXT"
+      ],
+      "reads": [
+        "MASTER-IN-RECORD",
+        "DC-CASE-NO"
+      ],
+      "writes": [
+        "MASTER-IN-RECORD",
+        "WS-MASTER-KEY",
+        "DISPUTE-CASE"
+      ]
+    },
+    {
+      "name": "READ-EVENT",
+      "section": "READ-EVENT",
+      "source": "laurasia/programs/dispute.cbl:82",
+      "performedBy": [
+        "MAIN",
+        "APPLY-EVENTS"
+      ],
+      "reads": [
+        "DE-CASE-NO"
+      ],
+      "writes": [
+        "DISPUTE-EVENT",
+        "WS-EVENT-KEY"
+      ]
+    },
+    {
+      "name": "APPLY-NEXT",
+      "section": "APPLY-NEXT",
+      "description": "the lower case number first: a case with no events today is copied, the events of a case are applied to it in turn, and an event of no case opens one, if it opens.",
+      "source": "laurasia/programs/dispute.cbl:91",
+      "performs": [
+        {
+          "target": "READ-MASTER",
+          "source": "laurasia/programs/dispute.cbl:96"
+        },
+        {
+          "target": "READ-MASTER",
+          "source": "laurasia/programs/dispute.cbl:100"
+        },
+        {
+          "target": "APPLY-EVENTS",
+          "source": "laurasia/programs/dispute.cbl:101"
+        },
+        {
+          "target": "APPLY-EVENTS",
+          "source": "laurasia/programs/dispute.cbl:104"
+        }
+      ],
+      "performedBy": [
+        "MAIN"
+      ],
+      "reads": [
+        "WS-MASTER-KEY",
+        "WS-EVENT-KEY",
+        "MASTER-IN-RECORD"
+      ],
+      "writes": [
+        "DISPUTE-CASE",
+        "WS-HELD-CASE",
+        "WS-HOLDING"
+      ]
+    },
+    {
+      "name": "APPLY-EVENTS",
+      "section": "APPLY-EVENTS",
+      "source": "laurasia/programs/dispute.cbl:107",
+      "performs": [
+        {
+          "target": "APPLY-EVENT",
+          "source": "laurasia/programs/dispute.cbl:113"
+        },
+        {
+          "target": "READ-EVENT",
+          "source": "laurasia/programs/dispute.cbl:117"
+        }
+      ],
+      "performedBy": [
+        "APPLY-NEXT"
+      ],
+      "reads": [
+        "WS-EVENT-KEY",
+        "DC-CASE-NO",
+        "WS-HOLDING",
+        "WS-HELD-CASE",
+        "DISPUTE-CASE"
+      ],
+      "writes": [
+        "DC-CASE-NO",
+        "DISPUTE-CASE",
+        "WS-HELD-CASE"
+      ]
+    },
+    {
+      "name": "APPLY-EVENT",
+      "section": "APPLY-EVENT",
+      "description": "the state machine of a dispute.",
+      "source": "laurasia/programs/dispute.cbl:125",
+      "performs": [
+        {
+          "target": "WRITE-ADJUSTMENT",
+          "source": "laurasia/programs/dispute.cbl:137"
+        },
+        {
+          "target": "WRITE-ADJUSTMENT",
+          "source": "laurasia/programs/dispute.cbl:143"
+        },
+        {
+          "target": "WRITE-ADJUSTMENT",
+          "source": "laurasia/programs/dispute.cbl:151"
+        }
+      ],
+      "performedBy": [
+        "APPLY-EVENTS"
+      ],
+      "reads": [
+        "WS-HOLDING",
+        "DE-EVENT",
+        "DC-STATUS",
+        "DE-CASE-NO",
+        "DE-MERCHANT",
+        "DE-AMOUNT",
+        "DE-DATE",
+        "DC-AMOUNT",
+        "DISPUTE-EVENT"
+      ],
+      "writes": [
+        "DC-CASE-NO",
+        "DC-MERCHANT",
+        "DC-AMOUNT",
+        "DC-OPENED",
+        "DC-STATUS",
+        "WS-HOLDING",
+        "AD-AMOUNT",
+        "REJECT-LINE",
+        "RJ-REASON",
+        "RJ-EVENT",
+        "WS-RESULT",
+        "DC-UPDATED"
+      ]
+    },
+    {
+      "name": "WRITE-ADJUSTMENT",
+      "section": "WRITE-ADJUSTMENT",
+      "source": "laurasia/programs/dispute.cbl:164",
+      "performedBy": [
+        "APPLY-EVENT"
+      ],
+      "reads": [
+        "DC-MERCHANT",
+        "DC-CASE-NO",
+        "DE-EVENT"
+      ],
+      "writes": [
+        "AD-MERCHANT",
+        "AD-CASE-NO",
+        "AD-EVENT",
+        "ADJUSTMENT"
+      ]
+    }
+  ],
+  "lineage": [
+    {
+      "from": "MASTER-IN",
+      "to": "MASTER-IN-RECORD",
+      "fromFile": true,
+      "paragraph": "READ-MASTER",
+      "verb": "READ",
+      "source": "laurasia/programs/dispute.cbl:75"
+    },
+    {
+      "from": "ALL '9'",
+      "to": "WS-MASTER-KEY",
+      "fromLiteral": true,
+      "paragraph": "READ-MASTER",
+      "verb": "MOVE",
+      "source": "laurasia/programs/dispute.cbl:76"
+    },
+    {
+      "from": "MASTER-IN-RECORD",
+      "to": "DISPUTE-CASE",
+      "paragraph": "READ-MASTER",
+      "verb": "MOVE",
+      "source": "laurasia/programs/dispute.cbl:78"
+    },
+    {
+      "from": "DC-CASE-NO",
+      "to": "WS-MASTER-KEY",
+      "paragraph": "READ-MASTER",
+      "verb": "MOVE",
+      "source": "laurasia/programs/dispute.cbl:79"
+    },
+    {
+      "from": "EVENTS-IN",
+      "to": "DISPUTE-EVENT",
+      "fromFile": true,
+      "paragraph": "READ-EVENT",
+      "verb": "READ",
+      "source": "laurasia/programs/dispute.cbl:83"
+    },
+    {
+      "from": "ALL '9'",
+      "to": "WS-EVENT-KEY",
+      "fromLiteral": true,
+      "paragraph": "READ-EVENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/dispute.cbl:84"
+    },
+    {
+      "from": "DE-CASE-NO",
+      "to": "WS-EVENT-KEY",
+      "paragraph": "READ-EVENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/dispute.cbl:85"
+    },
+    {
+      "from": "MASTER-IN-RECORD",
+      "to": "DISPUTE-CASE",
+      "paragraph": "APPLY-NEXT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/dispute.cbl:94"
+    },
+    {
+      "from": "DISPUTE-CASE",
+      "to": "MASTER-OUT",
+      "toFile": true,
+      "paragraph": "APPLY-NEXT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/dispute.cbl:95"
+    },
+    {
+      "from": "MASTER-IN-RECORD",
+      "to": "WS-HELD-CASE",
+      "paragraph": "APPLY-NEXT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/dispute.cbl:98"
+    },
+    {
+      "from": "condition HOLDING-CASE",
+      "to": "WS-HOLDING",
+      "fromLiteral": true,
+      "paragraph": "APPLY-NEXT",
+      "verb": "SET",
+      "source": "laurasia/programs/dispute.cbl:99"
+    },
+    {
+      "from": "condition HOLDING-NOTHING",
+      "to": "WS-HOLDING",
+      "fromLiteral": true,
+      "paragraph": "APPLY-NEXT",
+      "verb": "SET",
+      "source": "laurasia/programs/dispute.cbl:103"
+    },
+    {
+      "from": "WS-EVENT-KEY",
+      "to": "DC-CASE-NO",
+      "paragraph": "APPLY-EVENTS",
+      "verb": "MOVE",
+      "source": "laurasia/programs/dispute.cbl:108"
+    },
+    {
+      "from": "WS-HELD-CASE",
+      "to": "DISPUTE-CASE",
+      "paragraph": "APPLY-EVENTS",
+      "verb": "MOVE",
+      "source": "laurasia/programs/dispute.cbl:111"
+    },
+    {
+      "from": "DISPUTE-CASE",
+      "to": "WS-HELD-CASE",
+      "paragraph": "APPLY-EVENTS",
+      "verb": "MOVE",
+      "source": "laurasia/programs/dispute.cbl:115"
+    },
+    {
+      "from": "WS-HELD-CASE",
+      "to": "DISPUTE-CASE",
+      "paragraph": "APPLY-EVENTS",
+      "verb": "MOVE",
+      "source": "laurasia/programs/dispute.cbl:120"
+    },
+    {
+      "from": "DISPUTE-CASE",
+      "to": "MASTER-OUT",
+      "toFile": true,
+      "paragraph": "APPLY-EVENTS",
+      "verb": "WRITE",
+      "source": "laurasia/programs/dispute.cbl:121"
+    },
+    {
+      "from": "DE-CASE-NO",
+      "to": "DC-CASE-NO",
+      "paragraph": "APPLY-EVENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/dispute.cbl:128"
+    },
+    {
+      "from": "DE-MERCHANT",
+      "to": "DC-MERCHANT",
+      "paragraph": "APPLY-EVENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/dispute.cbl:129"
+    },
+    {
+      "from": "DE-AMOUNT",
+      "to": "DC-AMOUNT",
+      "paragraph": "APPLY-EVENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/dispute.cbl:130"
+    },
+    {
+      "from": "DE-DATE",
+      "to": "DC-OPENED",
+      "paragraph": "APPLY-EVENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/dispute.cbl:131"
+    },
+    {
+      "from": "condition DC-OPEN",
+      "to": "DC-STATUS",
+      "fromLiteral": true,
+      "paragraph": "APPLY-EVENT",
+      "verb": "SET",
+      "source": "laurasia/programs/dispute.cbl:132"
+    },
+    {
+      "from": "condition HOLDING-CASE",
+      "to": "WS-HOLDING",
+      "fromLiteral": true,
+      "paragraph": "APPLY-EVENT",
+      "verb": "SET",
+      "source": "laurasia/programs/dispute.cbl:133"
+    },
+    {
+      "from": "condition DC-CHARGED-BACK",
+      "to": "DC-STATUS",
+      "fromLiteral": true,
+      "paragraph": "APPLY-EVENT",
+      "verb": "SET",
+      "source": "laurasia/programs/dispute.cbl:135"
+    },
+    {
+      "from": "DC-AMOUNT",
+      "to": "AD-AMOUNT",
+      "paragraph": "APPLY-EVENT",
+      "verb": "COMPUTE",
+      "source": "laurasia/programs/dispute.cbl:136"
+    },
+    {
+      "from": "condition DC-WON",
+      "to": "DC-STATUS",
+      "fromLiteral": true,
+      "paragraph": "APPLY-EVENT",
+      "verb": "SET",
+      "source": "laurasia/programs/dispute.cbl:139"
+    },
+    {
+      "from": "condition DC-REPRESENTED",
+      "to": "DC-STATUS",
+      "fromLiteral": true,
+      "paragraph": "APPLY-EVENT",
+      "verb": "SET",
+      "source": "laurasia/programs/dispute.cbl:141"
+    },
+    {
+      "from": "DC-AMOUNT",
+      "to": "AD-AMOUNT",
+      "paragraph": "APPLY-EVENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/dispute.cbl:142"
+    },
+    {
+      "from": "condition DC-LOST",
+      "to": "DC-STATUS",
+      "fromLiteral": true,
+      "paragraph": "APPLY-EVENT",
+      "verb": "SET",
+      "source": "laurasia/programs/dispute.cbl:145"
+    },
+    {
+      "from": "condition DC-PRE-ARBITRATION",
+      "to": "DC-STATUS",
+      "fromLiteral": true,
+      "paragraph": "APPLY-EVENT",
+      "verb": "SET",
+      "source": "laurasia/programs/dispute.cbl:147"
+    },
+    {
+      "from": "condition DC-WON",
+      "to": "DC-STATUS",
+      "fromLiteral": true,
+      "paragraph": "APPLY-EVENT",
+      "verb": "SET",
+      "source": "laurasia/programs/dispute.cbl:149"
+    },
+    {
+      "from": "DC-AMOUNT",
+      "to": "AD-AMOUNT",
+      "paragraph": "APPLY-EVENT",
+      "verb": "COMPUTE",
+      "source": "laurasia/programs/dispute.cbl:150"
+    },
+    {
+      "from": "condition DC-LOST",
+      "to": "DC-STATUS",
+      "fromLiteral": true,
+      "paragraph": "APPLY-EVENT",
+      "verb": "SET",
+      "source": "laurasia/programs/dispute.cbl:153"
+    },
+    {
+      "from": "SPACES",
+      "to": "REJECT-LINE",
+      "fromLiteral": true,
+      "paragraph": "APPLY-EVENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/dispute.cbl:155"
+    },
+    {
+      "from": "'STAT'",
+      "to": "RJ-REASON",
+      "fromLiteral": true,
+      "paragraph": "APPLY-EVENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/dispute.cbl:156"
+    },
+    {
+      "from": "DISPUTE-EVENT",
+      "to": "RJ-EVENT",
+      "paragraph": "APPLY-EVENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/dispute.cbl:157"
+    },
+    {
+      "from": "REJECT-LINE",
+      "to": "REJECT-OUT",
+      "toFile": true,
+      "paragraph": "APPLY-EVENT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/dispute.cbl:158"
+    },
+    {
+      "from": "4",
+      "to": "WS-RESULT",
+      "fromLiteral": true,
+      "paragraph": "APPLY-EVENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/dispute.cbl:159"
+    },
+    {
+      "from": "DE-DATE",
+      "to": "DC-UPDATED",
+      "paragraph": "APPLY-EVENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/dispute.cbl:162"
+    },
+    {
+      "from": "DC-MERCHANT",
+      "to": "AD-MERCHANT",
+      "paragraph": "WRITE-ADJUSTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/dispute.cbl:165"
+    },
+    {
+      "from": "DC-CASE-NO",
+      "to": "AD-CASE-NO",
+      "paragraph": "WRITE-ADJUSTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/dispute.cbl:166"
+    },
+    {
+      "from": "DE-EVENT",
+      "to": "AD-EVENT",
+      "paragraph": "WRITE-ADJUSTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/dispute.cbl:167"
+    },
+    {
+      "from": "ADJUSTMENT",
+      "to": "ADJUST-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-ADJUSTMENT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/dispute.cbl:168"
+    }
+  ],
+  "outputs": [
+    {
+      "file": "MASTER-OUT",
+      "record": "DISPUTE-CASE",
+      "fields": [
+        {
+          "name": "DC-CASE-NO",
+          "start": 1,
+          "length": 8,
+          "origins": [
+            "file EVENTS-IN DE-CASE-NO",
+            "file MASTER-IN MASTER-IN-RECORD",
+            "literal ALL '9'"
+          ]
+        },
+        {
+          "name": "DC-STATUS",
+          "start": 9,
+          "length": 2,
+          "origins": [
+            "file MASTER-IN MASTER-IN-RECORD",
+            "literal condition DC-CHARGED-BACK",
+            "literal condition DC-LOST",
+            "literal condition DC-OPEN",
+            "literal condition DC-PRE-ARBITRATION",
+            "literal condition DC-REPRESENTED",
+            "literal condition DC-WON"
+          ]
+        },
+        {
+          "name": "DC-MERCHANT",
+          "start": 11,
+          "length": 10,
+          "origins": [
+            "file EVENTS-IN DE-MERCHANT",
+            "file MASTER-IN MASTER-IN-RECORD"
+          ]
+        },
+        {
+          "name": "DC-AMOUNT",
+          "start": 21,
+          "length": 12,
+          "origins": [
+            "file EVENTS-IN DE-AMOUNT",
+            "file MASTER-IN MASTER-IN-RECORD"
+          ]
+        },
+        {
+          "name": "DC-OPENED",
+          "start": 33,
+          "length": 8,
+          "origins": [
+            "file EVENTS-IN DE-DATE",
+            "file MASTER-IN MASTER-IN-RECORD"
+          ]
+        },
+        {
+          "name": "DC-UPDATED",
+          "start": 41,
+          "length": 8,
+          "origins": [
+            "file EVENTS-IN DE-DATE",
+            "file MASTER-IN MASTER-IN-RECORD"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "REJECT-OUT",
+      "record": "REJECT-LINE",
+      "fields": [
+        {
+          "name": "RJ-REASON",
+          "start": 1,
+          "length": 4,
+          "origins": [
+            "literal 'STAT'"
+          ]
+        },
+        {
+          "name": "RJ-EVENT",
+          "start": 6,
+          "length": 40,
+          "origins": [
+            "file EVENTS-IN DISPUTE-EVENT"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "ADJUST-OUT",
+      "record": "ADJUSTMENT",
+      "fields": [
+        {
+          "name": "AD-MERCHANT",
+          "start": 1,
+          "length": 10,
+          "origins": [
+            "file EVENTS-IN DE-MERCHANT",
+            "file MASTER-IN MASTER-IN-RECORD"
+          ]
+        },
+        {
+          "name": "AD-AMOUNT",
+          "start": 11,
+          "length": 12,
+          "origins": [
+            "file EVENTS-IN DE-AMOUNT",
+            "file MASTER-IN MASTER-IN-RECORD"
+          ]
+        },
+        {
+          "name": "AD-CASE-NO",
+          "start": 23,
+          "length": 8,
+          "origins": [
+            "file EVENTS-IN DE-CASE-NO",
+            "file MASTER-IN MASTER-IN-RECORD",
+            "literal ALL '9'"
+          ]
+        },
+        {
+          "name": "AD-EVENT",
+          "start": 31,
+          "length": 2,
+          "origins": [
+            "file EVENTS-IN DE-EVENT"
+          ]
+        }
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "file": "MASTER-IN",
+      "record": "MASTER-IN-RECORD",
+      "fields": [
+        {
+          "name": "MASTER-IN-RECORD",
+          "start": 1,
+          "length": 48,
+          "reaches": [
+            "DISPUTE-CASE",
+            "WS-MASTER-KEY",
+            "WS-HELD-CASE",
+            "AD-AMOUNT",
+            "AD-MERCHANT",
+            "AD-CASE-NO",
+            "DC-CASE-NO",
+            "file MASTER-OUT",
+            "file ADJUST-OUT"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "EVENTS-IN",
+      "record": "DISPUTE-EVENT",
+      "fields": [
+        {
+          "name": "DE-CASE-NO",
+          "start": 1,
+          "length": 8,
+          "reaches": [
+            "WS-EVENT-KEY",
+            "DC-CASE-NO",
+            "RJ-EVENT",
+            "WS-HELD-CASE",
+            "AD-CASE-NO",
+            "file REJECT-OUT",
+            "file ADJUST-OUT",
+            "file MASTER-OUT"
+          ]
+        },
+        {
+          "name": "DE-EVENT",
+          "start": 9,
+          "length": 2,
+          "reaches": [
+            "RJ-EVENT",
+            "AD-EVENT",
+            "file REJECT-OUT",
+            "file ADJUST-OUT"
+          ]
+        },
+        {
+          "name": "DE-MERCHANT",
+          "start": 11,
+          "length": 10,
+          "reaches": [
+            "DC-MERCHANT",
+            "RJ-EVENT",
+            "WS-HELD-CASE",
+            "AD-MERCHANT",
+            "file REJECT-OUT",
+            "file MASTER-OUT",
+            "file ADJUST-OUT"
+          ]
+        },
+        {
+          "name": "DE-AMOUNT",
+          "start": 21,
+          "length": 12,
+          "reaches": [
+            "DC-AMOUNT",
+            "RJ-EVENT",
+            "WS-HELD-CASE",
+            "AD-AMOUNT",
+            "file REJECT-OUT",
+            "file MASTER-OUT",
+            "file ADJUST-OUT"
+          ]
+        },
+        {
+          "name": "DE-DATE",
+          "start": 33,
+          "length": 8,
+          "reaches": [
+            "DC-UPDATED",
+            "RJ-EVENT",
+            "DC-OPENED",
+            "WS-HELD-CASE",
+            "file REJECT-OUT",
+            "file MASTER-OUT"
+          ]
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "kind": "equal",
+      "from": {
+        "file": "MASTER-IN",
+        "field": "MASTER-IN-RECORD"
+      },
+      "to": {
+        "file": "EVENTS-IN",
+        "field": "DE-CASE-NO"
+      },
+      "source": "laurasia/programs/dispute.cbl:92"
+    }
+  ]
+}

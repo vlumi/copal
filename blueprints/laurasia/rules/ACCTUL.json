@@ -1,0 +1,48 @@
+{
+  "program": "ACCTUL",
+  "tables": [
+    {
+      "paragraph": "MAIN",
+      "source": "laurasia/programs/acctul.cbl:32",
+      "conditions": [
+        "WS-ACCOUNTS-STATUS = '00'"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ACCOUNTS-STATUS"
+        ]
+      ],
+      "actions": [
+        "OPEN INPUT ACCOUNTS OUTPUT ACCOUNTS-OUT",
+        "STOP RUN RETURNING 16",
+        "READ ACCOUNTS NEXT RECORD",
+        "PERFORM UNTIL ACCOUNTS-AT-END",
+        "CLOSE ACCOUNTS ACCOUNTS-OUT",
+        "STOP RUN RETURNING 0"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      ]
+    }
+  ]
+}
