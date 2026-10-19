@@ -12,7 +12,7 @@ Copal is a study of one problem: understanding a legacy COBOL batch system well 
 | [bedrock/](bedrock/) | What both stand on: reading COBOL source and JCL, laying out records from copybooks, and reading and writing records by field. The survey analyzes with it; the bank's machine room runs the bank with it. |
 | [console/](console/) | Built for the modernization: a web window that runs the bank, watches its online day, and shows each run's jobs as the survey draws them, with links to the blueprints. The one part that knows both the bank and the survey. |
 
-The survey of Pangaea is checked in as [blueprints/pangaea/](blueprints/pangaea/README.md), golden files that `make ci` regenerates and compares, so a change in the analyzer shows as a diff in what it says about the bank. The dependencies run one way: `bedrock` imports nothing else, `survey`, `pangaea` and `laurasia` import `bedrock`, and only `console` imports the rest; `make ci` checks it.
+The survey of Pangaea is checked in as [blueprints/pangaea/](blueprints/pangaea/README.md), and of Laurasia as [blueprints/laurasia/](blueprints/laurasia/README.md), golden files that `make ci` regenerates and compares, so a change in the analyzer shows as a diff in what it says about either. The dependencies run one way: `bedrock` imports nothing else, `survey`, `pangaea` and `laurasia` import `bedrock`, and only `console` imports the rest; `make ci` checks it.
 
 Survey does not translate COBOL into anything. It produces the understanding a translation needs, and later the tests a rewrite has to pass.
 
