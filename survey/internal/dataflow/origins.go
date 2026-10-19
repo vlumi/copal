@@ -34,6 +34,8 @@ func (o Origin) String() string {
 		return "file " + o.File + " " + o.Item
 	case o.Literal != "":
 		return "literal " + o.Literal
+	case o.Call != "" && o.Arg == 0:
+		return fmt.Sprintf("call %s returns %s", o.Call, o.Item)
 	case o.Call != "":
 		return fmt.Sprintf("call %s argument %d %s", o.Call, o.Arg, o.Item)
 	case o.Parameter > 0:

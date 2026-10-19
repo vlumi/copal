@@ -647,7 +647,6 @@
         "CA-PAID-IN-FULL",
         "CA-STATEMENT-BALANCE",
         "CA-PRODUCT",
-        "RETURNING",
         "WS-INTEREST-CENTS",
         "WS-INTEREST",
         "CA-BALANCE",
@@ -658,7 +657,6 @@
         "WS-INTEREST",
         "CA-PRODUCT",
         "CA-STATEMENT-BALANCE",
-        "RETURNING",
         "WS-INTEREST-CENTS",
         "CA-BALANCE",
         "WS-MINIMUM",
@@ -720,24 +718,21 @@
   ],
   "calls": [
     {
-      "program": "intcalc",
+      "program": "INTCALC",
       "using": [
         "CA-PRODUCT",
-        "CA-STATEMENT-BALANCE",
-        "RETURNING",
-        "WS-INTEREST-CENTS"
+        "CA-STATEMENT-BALANCE"
       ],
-      "external": true,
+      "returning": "WS-INTEREST-CENTS",
       "paragraph": "CLOSE-CYCLE",
       "source": "laurasia/programs/cycle.cbl:82"
     },
     {
-      "program": "minpay",
+      "program": "MINPAY",
       "using": [
         "CA-BALANCE",
         "WS-MINIMUM"
       ],
-      "external": true,
       "paragraph": "CLOSE-CYCLE",
       "source": "laurasia/programs/cycle.cbl:89"
     }
@@ -769,7 +764,7 @@
     },
     {
       "from": "CA-PRODUCT",
-      "to": "intcalc",
+      "to": "INTCALC",
       "toCall": true,
       "arg": 1,
       "paragraph": "CLOSE-CYCLE",
@@ -777,7 +772,7 @@
       "source": "laurasia/programs/cycle.cbl:82"
     },
     {
-      "from": "intcalc",
+      "from": "INTCALC",
       "to": "CA-PRODUCT",
       "fromCall": true,
       "arg": 1,
@@ -787,7 +782,7 @@
     },
     {
       "from": "CA-STATEMENT-BALANCE",
-      "to": "intcalc",
+      "to": "INTCALC",
       "toCall": true,
       "arg": 2,
       "paragraph": "CLOSE-CYCLE",
@@ -795,7 +790,7 @@
       "source": "laurasia/programs/cycle.cbl:82"
     },
     {
-      "from": "intcalc",
+      "from": "INTCALC",
       "to": "CA-STATEMENT-BALANCE",
       "fromCall": true,
       "arg": 2,
@@ -804,37 +799,9 @@
       "source": "laurasia/programs/cycle.cbl:82"
     },
     {
-      "from": "RETURNING",
-      "to": "intcalc",
-      "toCall": true,
-      "arg": 3,
-      "paragraph": "CLOSE-CYCLE",
-      "verb": "CALL",
-      "source": "laurasia/programs/cycle.cbl:82"
-    },
-    {
-      "from": "intcalc",
-      "to": "RETURNING",
-      "fromCall": true,
-      "arg": 3,
-      "paragraph": "CLOSE-CYCLE",
-      "verb": "CALL",
-      "source": "laurasia/programs/cycle.cbl:82"
-    },
-    {
-      "from": "WS-INTEREST-CENTS",
-      "to": "intcalc",
-      "toCall": true,
-      "arg": 4,
-      "paragraph": "CLOSE-CYCLE",
-      "verb": "CALL",
-      "source": "laurasia/programs/cycle.cbl:82"
-    },
-    {
-      "from": "intcalc",
+      "from": "INTCALC",
       "to": "WS-INTEREST-CENTS",
       "fromCall": true,
-      "arg": 4,
       "paragraph": "CLOSE-CYCLE",
       "verb": "CALL",
       "source": "laurasia/programs/cycle.cbl:82"
@@ -855,7 +822,7 @@
     },
     {
       "from": "CA-BALANCE",
-      "to": "minpay",
+      "to": "MINPAY",
       "toCall": true,
       "arg": 1,
       "paragraph": "CLOSE-CYCLE",
@@ -863,7 +830,7 @@
       "source": "laurasia/programs/cycle.cbl:89"
     },
     {
-      "from": "minpay",
+      "from": "MINPAY",
       "to": "CA-BALANCE",
       "fromCall": true,
       "arg": 1,
@@ -873,7 +840,7 @@
     },
     {
       "from": "WS-MINIMUM",
-      "to": "minpay",
+      "to": "MINPAY",
       "toCall": true,
       "arg": 2,
       "paragraph": "CLOSE-CYCLE",
@@ -881,7 +848,7 @@
       "source": "laurasia/programs/cycle.cbl:89"
     },
     {
-      "from": "minpay",
+      "from": "MINPAY",
       "to": "WS-MINIMUM",
       "fromCall": true,
       "arg": 2,
@@ -1147,7 +1114,7 @@
           "start": 27,
           "length": 2,
           "origins": [
-            "call intcalc argument 1 CA-PRODUCT",
+            "call INTCALC argument 1 CA-PRODUCT",
             "file ACCOUNTS CA-PRODUCT"
           ]
         },
@@ -1172,8 +1139,8 @@
           "start": 39,
           "length": 10,
           "origins": [
-            "call intcalc argument 4 WS-INTEREST-CENTS",
-            "call minpay argument 1 CA-BALANCE",
+            "call INTCALC returns WS-INTEREST-CENTS",
+            "call MINPAY argument 1 CA-BALANCE",
             "file ACCOUNTS CA-BALANCE",
             "literal ZERO"
           ]
@@ -1183,8 +1150,8 @@
           "start": 49,
           "length": 10,
           "origins": [
-            "call intcalc argument 4 WS-INTEREST-CENTS",
-            "call minpay argument 1 CA-BALANCE",
+            "call INTCALC returns WS-INTEREST-CENTS",
+            "call MINPAY argument 1 CA-BALANCE",
             "file ACCOUNTS CA-BALANCE",
             "literal ZERO"
           ]
@@ -1240,7 +1207,7 @@
           "start": 28,
           "length": 10,
           "origins": [
-            "call intcalc argument 4 WS-INTEREST-CENTS",
+            "call INTCALC returns WS-INTEREST-CENTS",
             "literal ZERO"
           ]
         },
@@ -1306,10 +1273,10 @@
           "start": 35,
           "length": 11,
           "origins": [
-            "call intcalc argument 2 CA-STATEMENT-BALANCE",
-            "call intcalc argument 4 WS-INTEREST-CENTS",
-            "call minpay argument 1 CA-BALANCE",
-            "call minpay argument 2 WS-MINIMUM",
+            "call INTCALC argument 2 CA-STATEMENT-BALANCE",
+            "call INTCALC returns WS-INTEREST-CENTS",
+            "call MINPAY argument 1 CA-BALANCE",
+            "call MINPAY argument 2 WS-MINIMUM",
             "file ACCOUNTS CA-BALANCE",
             "file ACCOUNTS CA-STATEMENT-BALANCE",
             "literal ZERO"

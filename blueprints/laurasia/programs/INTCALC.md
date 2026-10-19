@@ -48,7 +48,7 @@ Program [intcalc.cbl](../../../laurasia/programs/intcalc.cbl): 0 files, 1 paragr
 
 ## Calls
 
-Called with LK-PRODUCT, LK-BALANCE by no program.
+Called with LK-PRODUCT, LK-BALANCE by [CYCLE](CYCLE.md).
 
 ## Data flow
 

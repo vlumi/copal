@@ -141,6 +141,8 @@ func (e Lineage) FromText() string {
 		return "file " + e.From
 	case e.FromLiteral:
 		return "literal " + e.From
+	case e.FromCall && e.Arg == 0:
+		return fmt.Sprintf("call %s, what it returns", e.From)
 	case e.FromCall:
 		return fmt.Sprintf("call %s argument %d", e.From, e.Arg)
 	}
@@ -416,7 +418,6 @@ func describeProgram(p *cobol.Program, path string, dialect cobol.Dialect) (Prog
 	}
 	program.Using = p.Using
 	program.Kind = programKind(p.Using)
-	program.Calls = programCalls(p)
 	program.ReadsSysin = readsSysin(p)
 	program.Displays = displays(p)
 
@@ -426,6 +427,7 @@ func describeProgram(p *cobol.Program, path string, dialect cobol.Dialect) (Prog
 	}
 	flow := dataflow.Analyze(p, laidOut)
 	program.flow = flow
+	program.Calls = programCalls(p, program, flow)
 	for i, para := range paragraphs {
 		bp := newParagraph(para)
 		bp.Reads, bp.Writes = flow.Paragraphs[i].Reads, flow.Paragraphs[i].Writes
