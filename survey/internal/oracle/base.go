@@ -311,7 +311,7 @@ func (p *program) matchKeys(c Case, kinds map[string]string) Case {
 		for _, pair := range relations(cond) {
 			for _, to := range p.origins(pair[0]) {
 				for _, from := range p.origins(pair[1]) {
-					if to.input == from.input ||
+					if to.input == from.input || to.part != (part{}) || from.part != (part{}) ||
 						kinds[to.field.Name] != blueprint.KindText || kinds[from.field.Name] == blueprint.KindText {
 						continue
 					}

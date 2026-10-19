@@ -1,7 +1,7 @@
 # INTACCR: case 07
 
-The run ended with return code 16.
+The run ended with return code 0.
 
 The first case to reach:
 
-- [INTACCR, 1000-INITIALIZE, rule 2](../../../../blueprints/pangaea/rules/INTACCR.md#1000-initialize)
+- [INTACCR, 2200-FIND-MONTH-START, rule 1](../../../../blueprints/pangaea/rules/INTACCR.md#2200-find-month-start)

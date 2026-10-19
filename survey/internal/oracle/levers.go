@@ -1,6 +1,7 @@
 package oracle
 
 import (
+	"fmt"
 	"slices"
 	"strings"
 
@@ -16,6 +17,7 @@ import (
 type lever struct {
 	input  string
 	field  *layout.Field
+	part   part
 	value  value
 	from   target
 	delta  int64
@@ -75,7 +77,7 @@ func (p *program) levers() []lever {
 		for _, pair := range relations(c) {
 			for _, to := range p.origins(pair[0]) {
 				for _, from := range p.origins(pair[1]) {
-					if to.field == from.field {
+					if to.field == from.field || to.part != (part{}) || from.part != (part{}) {
 						continue
 					}
 					for _, delta := range []int64{0, 1, -1} {
@@ -109,8 +111,8 @@ func (p *program) fieldLevers(u Unit, c *cobol.Condition) []lever {
 	var levers []lever
 	for _, item := range c.Refs() {
 		for _, target := range p.callerOrigins(u, item) {
-			for _, v := range valuesFor(u.records, constantsOf(u.blueprint), c, item, target.field) {
-				l := lever{input: target.input, field: target.field, value: v}
+			for _, v := range valuesFor(u.records, constantsOf(u.blueprint), c, item, target.part.of(target.field)) {
+				l := lever{input: target.input, field: target.field, part: target.part, value: v}
 				if !slices.Contains(levers, l) {
 					levers = append(levers, l)
 				}
@@ -195,10 +197,35 @@ func (p *program) inputField(f blueprint.FileField) (target, bool) {
 	return target{}, false
 }
 
-// target is a field of an input.
+// target is a field of an input, or a part of one.
 type target struct {
 	input string
 	field *layout.Field
+	part  part
+}
+
+// part is digits of a field of digits, from offset, 0-based, for length,
+// which a lever sets alone: the month of a date, say. The zero part is
+// the whole field.
+type part struct{ offset, length int }
+
+// of is a field as its part: a number of the part's digits.
+func (pt part) of(f *layout.Field) *layout.Field {
+	if pt.length == 0 {
+		return f
+	}
+	return &layout.Field{Name: fmt.Sprintf("%s(%d:%d)", f.Name, pt.offset+1, pt.length), Start: f.Start + pt.offset,
+		Length: pt.length, Category: layout.Numeric, Digits: pt.length, Picture: fmt.Sprintf("9(%d)", pt.length)}
+}
+
+// set writes a number into a part of a field of a record, if it fits.
+func (pt part) set(r []byte, root, f *layout.Field, v value) bool {
+	if v.kind != numberValue || v.number < 0 || v.number > largest(pt.of(f)) {
+		return false
+	}
+	start := f.Start - root.Start + pt.offset
+	copy(r[start:start+pt.length], fmt.Sprintf("%0*d", pt.length, v.number))
+	return true
 }
 
 // origins lists the input fields an item's values come from: the fields
@@ -221,6 +248,9 @@ func (p *program) origins(item string) []target {
 		f := find(p.inputs[i].root, o.Item)
 		if over := fieldOverBytes(p.inputs[i].root, o.Start, o.Length); o.Length > 0 && over != nil {
 			f = over
+		} else if digits := digitsOver(p.inputs[i].root, o.Start, o.Length); o.Length > 0 && digits != nil {
+			targets = append(targets, target{input: name, field: digits, part: part{offset: o.Start - digits.Start, length: o.Length}})
+			continue
 		}
 		if f != nil {
 			for _, leaf := range leaves(f) {
@@ -239,6 +269,24 @@ func fieldOverBytes(f *layout.Field, start, length int) *layout.Field {
 	}
 	for _, child := range f.Children {
 		if found := fieldOverBytes(child, start, length); found != nil {
+			return found
+		}
+	}
+	return nil
+}
+
+// digitsOver is the elementary field of unsigned digits whose bytes the
+// bytes from start, 1-based, for length, are within, if one is.
+func digitsOver(f *layout.Field, start, length int) *layout.Field {
+	if len(f.Children) == 0 {
+		within := f.Start <= start && start+length <= f.Start+f.Size()
+		if within && numeric(f) && !f.Signed && f.Size() == f.Digits {
+			return f
+		}
+		return nil
+	}
+	for _, child := range f.Children {
+		if found := digitsOver(child, start, length); found != nil {
 			return found
 		}
 	}
@@ -299,7 +347,7 @@ func valuesFor(records *layout.ProgramRecords, constants map[string]string, c *c
 				}
 			}
 		case "NAME":
-			if field := conditionField(records, c.Left.Text); field != nil {
+			if field := conditionField(records, c.Left.Name); field != nil && (c.Left.Name == item || field.Name == item) {
 				for _, cond := range field.Conditions {
 					for _, v := range cond.Values {
 						addLiteral(v)
@@ -521,7 +569,13 @@ func (l lever) apply(p *program, c Case) (Case, bool) {
 				continue
 			}
 			before := slices.Clone(r)
-			if set(r, in.root, l.field, in.layout, v) && !slices.Equal(before, r) {
+			written := false
+			if l.part != (part{}) {
+				written = l.part.set(r, in.root, l.field, v)
+			} else {
+				written = set(r, in.root, l.field, in.layout, v)
+			}
+			if written && !slices.Equal(before, r) {
 				changed = true
 			}
 			records[i] = r
