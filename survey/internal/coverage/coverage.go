@@ -16,16 +16,18 @@ import (
 	"regexp"
 	"slices"
 	"strconv"
+	"strings"
 
 	"github.com/vlumi/copal/bedrock/cobol"
 	"github.com/vlumi/copal/survey/internal/rules"
 )
 
-// Event is a line of a trace: a program entering a paragraph, or executing
-// the statement at a line of a source file.
+// Event is a line of a trace: a program entering a paragraph or section,
+// or executing the statement at a line of a source file. Names are
+// upper-cased, as COBOL words are whatever their case in the source.
 type Event struct {
 	Program   string
-	Paragraph string // the paragraph entered; empty for a statement
+	Paragraph string // the paragraph or section entered; empty for a statement
 	File      string // the source file's name, without its directory
 	Line      int
 }
@@ -33,12 +35,15 @@ type Event struct {
 var (
 	sourceLine = regexp.MustCompile(`^Source:\s+'(.+)'$`)
 	traceLine  = regexp.MustCompile(`^Program-Id:\s+(\S+)\s+(.*?)\s*Line:\s+(\d+)$`)
-	paragraph  = regexp.MustCompile(`^Paragraph:\s+(\S+)`)
-	entry      = regexp.MustCompile(`^(Entry|Section):`)
+	paragraph  = regexp.MustCompile(`^(?:Paragraph|Section):\s+(\S+)`)
+	entry      = regexp.MustCompile(`^Entry:`)
 )
 
-// Read reads a trace into its events, leaving out entries to programs and
-// sections, which no rule needs.
+// Read reads a trace into its events, leaving out entries to programs,
+// which no rule needs, and the tests of WHEN, which are no statement but
+// share the line of the one after them when it is written on the same
+// line. A section entered starts its own statements, the paragraph named
+// after it.
 func Read(r io.Reader) ([]Event, error) {
 	var events []Event
 	file := ""
@@ -54,11 +59,11 @@ func Read(r io.Reader) ([]Event, error) {
 			continue
 		}
 		n, _ := strconv.Atoi(m[3])
-		e := Event{Program: m[1], File: file, Line: n}
+		e := Event{Program: strings.ToUpper(m[1]), File: file, Line: n}
 		switch p := paragraph.FindStringSubmatch(m[2]); {
 		case p != nil:
-			e.Paragraph = p[1]
-		case entry.MatchString(m[2]):
+			e.Paragraph = strings.ToUpper(p[1])
+		case entry.MatchString(m[2]), strings.TrimSpace(m[2]) == "WHEN":
 			continue
 		}
 		events = append(events, e)
