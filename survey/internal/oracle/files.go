@@ -63,7 +63,9 @@ func (r *Result) coverage(rulesDir string) string {
 		"its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its " +
 		"conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's. " +
 		"A rule that finds two totals the program adds up itself to differ, items of its own that it only adds to, says so: no input " +
-		"field sets either, so the search has nothing to change to reach it.\n")
+		"field sets either, so the search has nothing to change to reach it. A rule that finds a write or rewrite by key to fail says so " +
+		"too: the search fails a file only when it is opened or read, and a program that writes keys it made new, or rewrites the record " +
+		"it read, meets that failure only when something else changes the file meanwhile.\n")
 	for u, unit := range r.Units {
 		level := "##"
 		if len(r.Units) > 1 {
@@ -78,8 +80,8 @@ func (r *Result) coverage(rulesDir string) string {
 				cell := "not reached: " + outcomes(table.Conditions, rl.Entries)
 				if c, ok := r.First[rule{u, t, i}]; ok {
 					cell = fmt.Sprintf("[case %s](%s/)", caseName(c), caseName(c))
-				} else if unit.checksOwnTotals(table, rl) {
-					cell = "not reached, totals the program adds up itself found to differ: " + outcomes(table.Conditions, rl.Entries)
+				} else if why := unit.mark(table, rl); why != unmarked {
+					cell = "not reached, " + why.String() + ": " + outcomes(table.Conditions, rl.Entries)
 				}
 				fmt.Fprintf(&b, "| %d | %s |\n", i+1, cell)
 			}

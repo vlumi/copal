@@ -9,6 +9,53 @@ import (
 	"github.com/vlumi/copal/survey/internal/rules"
 )
 
+// mark is why the search cannot reach a rule no case reaches, when it
+// knows: the rule finds the program's own totals to differ, or a write
+// or rewrite by key to fail.
+type mark int
+
+const (
+	unmarked mark = iota
+	ownTotals
+	failedWrite
+)
+
+// String says what a mark finds, for a rule's cell.
+func (m mark) String() string {
+	return map[mark]string{
+		ownTotals:   "totals the program adds up itself found to differ",
+		failedWrite: "a write or rewrite by key found to fail",
+	}[m]
+}
+
+// mark finds why the search cannot reach a rule of a unit's table.
+func (u Unit) mark(t rules.Table, r rules.Rule) mark {
+	switch {
+	case u.checksOwnTotals(t, r):
+		return ownTotals
+	case failsWrite(t, r):
+		return failedWrite
+	}
+	return unmarked
+}
+
+// failsWrite reports whether a rule finds a WRITE or REWRITE by key to
+// fail, its INVALID KEY raised. The search fails a file only when it is
+// opened or read; a write fails on a key the file holds, and a rewrite on
+// one it does not, which a program that writes keys it made new, or
+// rewrites the record it read, meets only when something else changed the
+// file meanwhile.
+func failsWrite(t rules.Table, r rules.Rule) bool {
+	for i, entry := range r.Entries {
+		label, _, _ := strings.Cut(t.Conditions[i], ", again")
+		if entry == "Y" && strings.HasSuffix(label, " INVALID KEY") &&
+			(strings.HasPrefix(label, "WRITE ") || strings.HasPrefix(label, "REWRITE ")) {
+			return true
+		}
+	}
+	return false
+}
+
 // checksOwnTotals reports whether a rule of a unit's table finds two
 // totals the program adds up itself to differ: an equality, found false,
 // of two items of its working storage that it only ever adds to, from a
