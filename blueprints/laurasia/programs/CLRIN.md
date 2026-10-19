@@ -391,15 +391,17 @@ Fields of an input the program checks against what it adds up from the input's o
 
 | Field | Of | Is | Over the records of type | Source |
 | --- | --- | --- | --- | --- |
-| BT-COUNT | CLEARING-IN | their count | | [clrin.cbl:137](../../../laurasia/programs/clrin.cbl#L137) |
-| FT-BATCH-COUNT | CLEARING-IN | their count | | [clrin.cbl:212](../../../laurasia/programs/clrin.cbl#L212) |
-| FT-RECORD-COUNT | CLEARING-IN | their count | | [clrin.cbl:212](../../../laurasia/programs/clrin.cbl#L212) |
+| BT-COUNT | CLEARING-IN | their count | IS-PRESENTMENT | [clrin.cbl:137](../../../laurasia/programs/clrin.cbl#L137) |
+| BT-AMOUNT | CLEARING-IN | the sum of PR-AMOUNT | IS-PRESENTMENT | [clrin.cbl:137](../../../laurasia/programs/clrin.cbl#L137) |
+| FT-BATCH-COUNT | CLEARING-IN | their count | IS-PRESENTMENT | [clrin.cbl:212](../../../laurasia/programs/clrin.cbl#L212) |
+| FT-RECORD-COUNT | CLEARING-IN | their count | IS-PRESENTMENT | [clrin.cbl:212](../../../laurasia/programs/clrin.cbl#L212) |
+| FT-AMOUNT | CLEARING-IN | the sum of PR-AMOUNT | IS-PRESENTMENT | [clrin.cbl:212](../../../laurasia/programs/clrin.cbl#L212) |
 
 ## Records
 
 ### CLR-FILE-HEADER
 
-File CLEARING-IN. 18 bytes, layout in copybook [clrrec](../copybooks/clrrec.md).
+File CLEARING-IN. 18 bytes, layout in copybook [clrrec](../copybooks/clrrec.md). Its types, told apart by CLR-RECORD-TYPE: `IS-FILE-HEADER`, 'FH', its fields in CLR-FILE-HEADER; `IS-BATCH-HEADER`, 'BH', its fields in CLR-BATCH-HEADER; `IS-PRESENTMENT`, 'PR', its fields in CLR-PRESENTMENT; `IS-BATCH-TRAILER`, 'BT', its fields in CLR-BATCH-TRAILER; `IS-FILE-TRAILER`, 'FT', its fields in CLR-FILE-TRAILER.
 
 ### CLR-BATCH-HEADER
 

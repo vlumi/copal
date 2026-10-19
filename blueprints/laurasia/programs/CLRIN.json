@@ -96,6 +96,34 @@
       "section": "file",
       "file": "CLEARING-IN",
       "copybook": "clrrec",
+      "typeField": "CLR-RECORD-TYPE",
+      "types": [
+        {
+          "name": "IS-FILE-HEADER",
+          "value": "'FH'",
+          "fields": "CLR-FILE-HEADER"
+        },
+        {
+          "name": "IS-BATCH-HEADER",
+          "value": "'BH'",
+          "fields": "CLR-BATCH-HEADER"
+        },
+        {
+          "name": "IS-PRESENTMENT",
+          "value": "'PR'",
+          "fields": "CLR-PRESENTMENT"
+        },
+        {
+          "name": "IS-BATCH-TRAILER",
+          "value": "'BT'",
+          "fields": "CLR-BATCH-TRAILER"
+        },
+        {
+          "name": "IS-FILE-TRAILER",
+          "value": "'FT'",
+          "fields": "CLR-FILE-TRAILER"
+        }
+      ],
       "level": 1,
       "name": "CLR-FILE-HEADER",
       "start": 1,
@@ -2214,6 +2242,7 @@
     {
       "file": "CLEARING-IN",
       "record": "CLR-FILE-HEADER",
+      "type": "IS-FILE-HEADER",
       "fields": [
         {
           "name": "CLR-RECORD-TYPE",
@@ -2236,22 +2265,243 @@
           "length": 4
         }
       ]
+    },
+    {
+      "file": "CLEARING-IN",
+      "record": "CLR-FILE-HEADER",
+      "type": "IS-BATCH-HEADER",
+      "fields": [
+        {
+          "name": "CLR-RECORD-TYPE",
+          "start": 1,
+          "length": 2
+        },
+        {
+          "name": "BH-BATCH-NO",
+          "start": 3,
+          "length": 6,
+          "reaches": [
+            "WS-BATCH-NO",
+            "RJ-BATCH-NO",
+            "PS-BATCH-NO",
+            "file REJECT-OUT",
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "BH-ACQUIRER",
+          "start": 9,
+          "length": 6
+        }
+      ]
+    },
+    {
+      "file": "CLEARING-IN",
+      "record": "CLR-FILE-HEADER",
+      "type": "IS-PRESENTMENT",
+      "fields": [
+        {
+          "name": "CLR-RECORD-TYPE",
+          "start": 1,
+          "length": 2
+        },
+        {
+          "name": "PR-CARD-NO",
+          "start": 3,
+          "length": 16,
+          "reaches": [
+            "PS-CARD-NO",
+            "WS-RECORD-READ",
+            "RJ-RECORD",
+            "PR-CARD-NO",
+            "WS-HELD-PRESENTMENT",
+            "file REJECT-OUT",
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "PR-AMOUNT",
+          "start": 19,
+          "length": 12,
+          "reaches": [
+            "WS-RECORD-READ",
+            "PS-AMOUNT",
+            "WS-BATCH-AMOUNT",
+            "WS-AMOUNT",
+            "RJ-RECORD",
+            "PR-AMOUNT",
+            "WS-HELD-PRESENTMENT",
+            "file REJECT-OUT",
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "PR-AUTH-CODE",
+          "start": 31,
+          "length": 6,
+          "reaches": [
+            "WS-RECORD-READ",
+            "PS-AUTH-CODE",
+            "RJ-RECORD",
+            "PR-AUTH-CODE",
+            "WS-HELD-PRESENTMENT",
+            "file REJECT-OUT",
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "PR-MERCHANT",
+          "start": 37,
+          "length": 10,
+          "reaches": [
+            "WS-RECORD-READ",
+            "PS-MERCHANT",
+            "RJ-RECORD",
+            "PR-MERCHANT",
+            "WS-HELD-PRESENTMENT",
+            "file REJECT-OUT",
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "PR-MCC",
+          "start": 47,
+          "length": 4,
+          "reaches": [
+            "WS-RECORD-READ",
+            "PS-MCC",
+            "RJ-RECORD",
+            "PR-MCC",
+            "WS-HELD-PRESENTMENT",
+            "file REJECT-OUT",
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "PR-REGION",
+          "start": 51,
+          "length": 1,
+          "reaches": [
+            "WS-RECORD-READ",
+            "RJ-RECORD",
+            "PS-REGION",
+            "PR-REGION",
+            "WS-HELD-PRESENTMENT",
+            "file REJECT-OUT",
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "PR-PRODUCT",
+          "start": 52,
+          "length": 2,
+          "reaches": [
+            "WS-RECORD-READ",
+            "RJ-RECORD",
+            "PS-PRODUCT",
+            "PR-PRODUCT",
+            "WS-HELD-PRESENTMENT",
+            "file REJECT-OUT",
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "PR-TXN-DATE",
+          "start": 54,
+          "length": 8,
+          "reaches": [
+            "WS-RECORD-READ",
+            "RJ-RECORD",
+            "PR-TXN-DATE",
+            "PS-TXN-DATE",
+            "WS-HELD-PRESENTMENT",
+            "file REJECT-OUT",
+            "file PRES-OUT"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "CLEARING-IN",
+      "record": "CLR-FILE-HEADER",
+      "type": "IS-BATCH-TRAILER",
+      "fields": [
+        {
+          "name": "CLR-RECORD-TYPE",
+          "start": 1,
+          "length": 2
+        },
+        {
+          "name": "BT-COUNT",
+          "start": 3,
+          "length": 6
+        },
+        {
+          "name": "BT-AMOUNT",
+          "start": 9,
+          "length": 16
+        }
+      ]
+    },
+    {
+      "file": "CLEARING-IN",
+      "record": "CLR-FILE-HEADER",
+      "type": "IS-FILE-TRAILER",
+      "fields": [
+        {
+          "name": "CLR-RECORD-TYPE",
+          "start": 1,
+          "length": 2
+        },
+        {
+          "name": "FT-BATCH-COUNT",
+          "start": 3,
+          "length": 4
+        },
+        {
+          "name": "FT-RECORD-COUNT",
+          "start": 7,
+          "length": 8
+        },
+        {
+          "name": "FT-AMOUNT",
+          "start": 15,
+          "length": 18
+        }
+      ]
     }
   ],
   "totals": [
     {
       "file": "CLEARING-IN",
       "field": "BT-COUNT",
+      "type": "IS-PRESENTMENT",
+      "source": "laurasia/programs/clrin.cbl:137"
+    },
+    {
+      "file": "CLEARING-IN",
+      "field": "BT-AMOUNT",
+      "sum": "PR-AMOUNT",
+      "type": "IS-PRESENTMENT",
       "source": "laurasia/programs/clrin.cbl:137"
     },
     {
       "file": "CLEARING-IN",
       "field": "FT-BATCH-COUNT",
+      "type": "IS-PRESENTMENT",
       "source": "laurasia/programs/clrin.cbl:212"
     },
     {
       "file": "CLEARING-IN",
       "field": "FT-RECORD-COUNT",
+      "type": "IS-PRESENTMENT",
+      "source": "laurasia/programs/clrin.cbl:212"
+    },
+    {
+      "file": "CLEARING-IN",
+      "field": "FT-AMOUNT",
+      "sum": "PR-AMOUNT",
+      "type": "IS-PRESENTMENT",
       "source": "laurasia/programs/clrin.cbl:212"
     }
   ]

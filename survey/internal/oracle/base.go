@@ -159,8 +159,12 @@ func (p *program) blueprintShape(in input) (shape, bool) {
 		if !ok {
 			return shape{}, false
 		}
+		variant := find(in.root, t.Fields)
+		if variant == nil {
+			return shape{}, false // a type that is a record of its own
+		}
 		s.types, s.typeNames = append(s.types, v), append(s.typeNames, t.Name)
-		s.variants[find(in.root, t.Fields)] = k
+		s.variants[variant] = k
 	}
 	return s, true
 }

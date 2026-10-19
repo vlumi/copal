@@ -67,7 +67,7 @@ func inputs(p Program, flow dataflow.Flow) []Input {
 			continue
 		}
 		for _, t := range r.Types {
-			ins = append(ins, affected(flow, Input{File: e.From, Record: record, Type: t.Name}, typeLeaves(r, t)))
+			ins = append(ins, affected(flow, Input{File: e.From, Record: record, Type: t.Name}, typeLeaves(p.Records, r, t)))
 		}
 	}
 	return ins
