@@ -137,6 +137,16 @@ Y N Y | AMT IS NOT NUMERIC OR AMT = ZERO
 1 1   | DISPLAY 'NUMBER'
 2   1 | DISPLAY 'BAD'
 `,
+		`PASS-PARA PERFORM UNTIL DONE = 1 OR BAD = 1
+N N | BAD = 1
+Y N | DONE = 1
+1 1 | ADD 1 TO DONE
+2   | DISPLAY 'DONE'
+`,
+		`PASS-PARA PERFORM WITH TEST AFTER UNTIL BAD = 1
+Y N | BAD = 1
+1   | DISPLAY 'LAST'
+`,
 		`LEAVE-SECTION 
 Y N | DONE = 1
 1   | EXIT SECTION
@@ -146,7 +156,7 @@ Y N | DONE = 1
 	if strings.Join(got, "\n") != strings.Join(want, "\n") {
 		t.Errorf("got\n%s\nwant\n%s", strings.Join(got, "\n"), strings.Join(want, "\n"))
 	}
-	wantRefs := [][]string{{"AM-CLOSED"}, {"AM-CURRENT", "AM-OPEN"}, {"AM-BALANCE"}, {"WS-RATE", "WS-I"}}
+	wantRefs := [][]string{{"AM-CLOSED"}, {"AM-CURRENT", "AM-OPEN"}, {"AM-BALANCE"}, {"WS-RATE", "WS-I"}, {"BAD"}, {"DONE"}, {"BAD"}}
 	if !slices.EqualFunc(refs, wantRefs, slices.Equal) {
 		t.Errorf("condition refs %q, want %q", refs, wantRefs)
 	}

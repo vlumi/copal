@@ -76,16 +76,16 @@ Source: [TXVALID.cbl:163](../../../pangaea/programs/TXVALID.cbl#L163).
 
 Each pass of `PERFORM UNTIL TR-TRAILER OR NOT FILE-IS-GOOD`.
 
-| | 1 | 2 | 3 | 4 | 5 |
-| --- | :-: | :-: | :-: | :-: | :-: |
-| `TR-DETAIL` | Y | Y | N | N | N |
-| `FILE-IS-GOOD` | Y | N | N | Y | N |
-| `TR-HEADER` | | | Y | N | N |
-| → `PERFORM 3200-VALIDATE-DETAIL` | 1 | 1 | | | |
-| → `PERFORM 3100-READ-NEXT` | 2 | | | 3 | |
-| → `MOVE 'SECOND HEADER' TO WS-FILE-ERROR` | | | 1 | | |
-| → `MOVE 'TYPE' TO RJ-REASON` | | | | 1 | 1 |
-| → `PERFORM 3300-REJECT-RECORD` | | | | 2 | 2 |
+| | 1 | 2 | 3 |
+| --- | :-: | :-: | :-: |
+| `TR-DETAIL` | Y | N | N |
+| `FILE-IS-GOOD` | Y | N | Y |
+| `TR-HEADER` | | Y | N |
+| → `PERFORM 3200-VALIDATE-DETAIL` | 1 | | |
+| → `PERFORM 3100-READ-NEXT` | 2 | | 3 |
+| → `MOVE 'SECOND HEADER' TO WS-FILE-ERROR` | | 1 | |
+| → `MOVE 'TYPE' TO RJ-REASON` | | | 1 |
+| → `PERFORM 3300-REJECT-RECORD` | | | 2 |
 
 Source: [TXVALID.cbl:187](../../../pangaea/programs/TXVALID.cbl#L187).
 
