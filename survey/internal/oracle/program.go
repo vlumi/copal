@@ -44,6 +44,7 @@ type Unit struct {
 	Tables    []rules.Table
 	source    *cobol.Program
 	records   *layout.ProgramRecords
+	flow      dataflow.Flow
 	blueprint *blueprint.Program
 }
 
@@ -77,7 +78,7 @@ func prepare(system *blueprint.System, bp *blueprint.Program, copybookDir string
 		return nil, err
 	}
 	p := &program{source: source, dialect: system.Dialect, blueprint: bp, records: records, flow: flow, tables: bp.Tables(), shapes: map[string]shape{}}
-	p.units = []Unit{{Program: bp.Name, Tables: p.tables, source: source, records: records, blueprint: bp}}
+	p.units = []Unit{{Program: bp.Name, Tables: p.tables, source: source, records: records, flow: flow, blueprint: bp}}
 	if err := p.addCallees(system, bp, copybookDir); err != nil {
 		return nil, err
 	}
@@ -127,12 +128,12 @@ func (p *program) addCallees(system *blueprint.System, bp *blueprint.Program, co
 			continue
 		}
 		callee := &system.Programs[i]
-		source, records, _, err := analyze(callee, copybookDir, system.Dialect)
+		source, records, flow, err := analyze(callee, copybookDir, system.Dialect)
 		if err != nil {
 			return err
 		}
 		p.units = append(p.units, Unit{Program: callee.Name, Tables: callee.Tables(), source: source,
-			records: records, blueprint: callee})
+			records: records, flow: flow, blueprint: callee})
 		if err := p.addCallees(system, callee, copybookDir); err != nil {
 			return err
 		}

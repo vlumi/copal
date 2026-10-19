@@ -108,7 +108,7 @@ func (p *program) levers() []lever {
 func (p *program) fieldLevers(u Unit, c *cobol.Condition) []lever {
 	var levers []lever
 	for _, item := range c.Refs() {
-		for _, target := range p.origins(p.inCaller(u, item)) {
+		for _, target := range p.callerOrigins(u, item) {
 			for _, v := range valuesFor(u.records, constantsOf(u.blueprint), c, item, target.field) {
 				l := lever{input: target.input, field: target.field, value: v}
 				if !slices.Contains(levers, l) {
@@ -261,7 +261,8 @@ func leaves(f *layout.Field) []*layout.Field {
 
 // valuesFor lists the values worth putting into an input field for a
 // condition on an item: the literals and level-78 constants the condition
-// compares the item with, and for a number one above and below; the values of the condition names
+// compares the item with, and what it divides the item by, and for a
+// number one above and below; the values of the condition names
 // it tests, and a value of none of them; for a class test, a value of the
 // class and one not; and for a number that reaches the item through other
 // statements, zero, one, minus one and its largest.
@@ -285,6 +286,9 @@ func valuesFor(records *layout.ProgramRecords, constants map[string]string, c *c
 		switch c.Op {
 		case "=", "<", ">", "<=", ">=":
 			for _, sides := range [][2]*cobol.Operand{{c.Left, c.Right}, {c.Right, c.Left}} {
+				if d, ok := divisor(records, sides[0], item); ok {
+					addLiteral(d)
+				}
 				if sides[0] == nil || sides[0].Name != item || sides[1] == nil {
 					continue
 				}
@@ -319,6 +323,38 @@ func valuesFor(records *layout.ProgramRecords, constants map[string]string, c *c
 	return values
 }
 
+// divisor is what an operand divides an item by, as written, if it is a
+// FUNCTION MOD or REM of the item: a literal, or the VALUE of the field it
+// names.
+func divisor(records *layout.ProgramRecords, op *cobol.Operand, item string) (string, bool) {
+	if op == nil {
+		return "", false
+	}
+	args, ok := strings.CutPrefix(op.Text, "FUNCTION MOD(")
+	if !ok {
+		args, ok = strings.CutPrefix(op.Text, "FUNCTION REM(")
+	}
+	words := strings.Fields(strings.TrimSuffix(args, ")"))
+	if !ok || len(words) != 2 || words[0] != item {
+		return "", false
+	}
+	var by *layout.Field
+	for _, r := range records.All() {
+		walk(r, func(f *layout.Field) {
+			if by == nil && f.Name == words[1] {
+				by = f
+			}
+		})
+	}
+	if by == nil {
+		return words[1], true
+	}
+	if len(by.Values) == 1 {
+		return by.Values[0], true
+	}
+	return "", false
+}
+
 // constantsOf are a program's level-78 constants, by name, with their
 // values as written.
 func constantsOf(bp *blueprint.Program) map[string]string {
@@ -340,6 +376,28 @@ func conditionField(records *layout.ProgramRecords, name string) *layout.Field {
 		})
 	}
 	return found
+}
+
+// callerOrigins lists the input fields a unit's item's values come from:
+// those of the item of the program run it is, or, for an item of a program
+// called that is no item passed to it, those of the items passed that its
+// values come from.
+func (p *program) callerOrigins(u Unit, item string) []target {
+	if name := p.inCaller(u, item); name != "" || u.blueprint == p.blueprint {
+		return p.origins(name)
+	}
+	var targets []target
+	for _, o := range u.flow.Origins(item) {
+		if o.Parameter == 0 {
+			continue
+		}
+		for _, t := range p.origins(p.inCaller(u, o.Item)) {
+			if !slices.Contains(targets, t) {
+				targets = append(targets, t)
+			}
+		}
+	}
+	return targets
 }
 
 // inCaller is the item of the program run that a unit's item is: itself
