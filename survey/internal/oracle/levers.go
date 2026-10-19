@@ -465,10 +465,14 @@ func (s shape) typeOfRecord(in input, r []byte) int {
 	return -1
 }
 
-// has reports whether a record has a field: whether the field is outside
-// the record's redefinitions, or in the one of the record's type, or in
-// one of no type, when the record's type has none of its own.
+// has reports whether a record has a field: whether the field is the type
+// field, which every record has wherever it is declared, or is outside the
+// record's redefinitions, or in the one of the record's type, or in one of
+// no type, when the record's type has none of its own.
 func (s shape) has(in input, r []byte, f *layout.Field) bool {
+	if f == s.discriminator {
+		return true
+	}
 	for variant, k := range s.variants {
 		if find(variant, f.Name) == f {
 			return s.hasVariant(k, s.typeOfRecord(in, r))

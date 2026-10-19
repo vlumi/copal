@@ -160,13 +160,27 @@ func writes(f blueprint.File) bool {
 	return false
 }
 
-// fileRecord is the first record of a file's description, which its other
-// records, if any, redefine.
+// fileRecord is the record of a file's description: its one record, or of
+// several, which share the file's record area, the first with the others
+// redefining it, as REDEFINES would lay them out in one record.
 func fileRecord(records *layout.ProgramRecords, file string) *layout.Field {
 	for _, f := range records.Files {
-		if f.File == file && len(f.Records) > 0 {
+		if f.File != file || len(f.Records) == 0 {
+			continue
+		}
+		if len(f.Records) == 1 {
 			return f.Records[0]
 		}
+		area := &layout.Field{Level: 1, Name: file, Start: 1, Category: layout.Group}
+		for i, r := range f.Records {
+			child := *r
+			if i > 0 {
+				child.Redefines = f.Records[0].Name
+			}
+			area.Children = append(area.Children, &child)
+			area.Length = max(area.Length, r.Size())
+		}
+		return area
 	}
 	return nil
 }

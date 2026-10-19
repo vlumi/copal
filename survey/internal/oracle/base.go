@@ -137,10 +137,13 @@ func (s shape) pairLast() {
 }
 
 // blueprintShape is the shape the blueprint gives a record of types, each
-// paired with its redefinition: the redefinition no type has is in no
-// record of a type.
+// paired with its redefinition, or of a file of several records, each
+// paired with its record: the redefinition no type has is in no record of
+// a type.
 func (p *program) blueprintShape(in input) (shape, bool) {
-	i := slices.IndexFunc(p.blueprint.Records, func(r blueprint.Record) bool { return r.Name == in.root.Name })
+	i := slices.IndexFunc(p.blueprint.Records, func(r blueprint.Record) bool {
+		return r.Name == in.root.Name || r.File != "" && r.File == in.file.Name && len(r.Types) > 0
+	})
 	if i < 0 {
 		return shape{}, false
 	}
@@ -159,12 +162,8 @@ func (p *program) blueprintShape(in input) (shape, bool) {
 		if !ok {
 			return shape{}, false
 		}
-		variant := find(in.root, t.Fields)
-		if variant == nil {
-			return shape{}, false // a type that is a record of its own
-		}
 		s.types, s.typeNames = append(s.types, v), append(s.typeNames, t.Name)
-		s.variants[variant] = k
+		s.variants[find(in.root, t.Fields)] = k
 	}
 	return s, true
 }
