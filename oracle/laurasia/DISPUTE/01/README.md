@@ -12,7 +12,7 @@ The first case to reach:
 - [DISPUTE, APPLY-NEXT, rule 3](../../../../blueprints/laurasia/rules/DISPUTE.md#apply-next)
 - [DISPUTE, APPLY-EVENTS, rule 1](../../../../blueprints/laurasia/rules/DISPUTE.md#apply-events)
 - [DISPUTE, APPLY-EVENTS, in its loop, rule 1](../../../../blueprints/laurasia/rules/DISPUTE.md#apply-events-in-its-loop)
-- [DISPUTE, APPLY-EVENTS, in its loop, rule 3](../../../../blueprints/laurasia/rules/DISPUTE.md#apply-events-in-its-loop)
+- [DISPUTE, APPLY-EVENTS, in its loop, rule 2](../../../../blueprints/laurasia/rules/DISPUTE.md#apply-events-in-its-loop)
 - [DISPUTE, APPLY-EVENT, rule 1](../../../../blueprints/laurasia/rules/DISPUTE.md#apply-event)
 - [DISPUTE, APPLY-EVENT, rule 2](../../../../blueprints/laurasia/rules/DISPUTE.md#apply-event)
 - [DISPUTE, APPLY-EVENT, rule 4](../../../../blueprints/laurasia/rules/DISPUTE.md#apply-event)

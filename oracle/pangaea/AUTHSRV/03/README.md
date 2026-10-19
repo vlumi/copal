@@ -4,4 +4,4 @@ The run ended with return code 0.
 
 The first case to reach:
 
-- [AUTHSRV, 2100-AUTHORIZE, rule 14](../../../../blueprints/pangaea/rules/AUTHSRV.md#2100-authorize)
+- [AUTHSRV, 2100-AUTHORIZE, rule 11](../../../../blueprints/pangaea/rules/AUTHSRV.md#2100-authorize)

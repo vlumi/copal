@@ -66,14 +66,14 @@ Source: [dispute.cbl:107](../../../laurasia/programs/dispute.cbl#L107).
 
 Each pass of `PERFORM UNTIL WS-EVENT-KEY NOT = DC-CASE-NO`.
 
-| | 1 | 2 | 3 | 4 |
-| --- | :-: | :-: | :-: | :-: |
-| `HOLDING-CASE` | Y | Y | N | N |
-| `HOLDING-CASE, again` | Y | N | Y | N |
-| → `MOVE WS-HELD-CASE TO DISPUTE-CASE` | 1 | 1 | | |
-| → `PERFORM APPLY-EVENT` | 2 | 2 | 1 | 1 |
-| → `MOVE DISPUTE-CASE TO WS-HELD-CASE` | 3 | | 2 | |
-| → `PERFORM READ-EVENT` | 4 | 3 | 3 | 2 |
+| | 1 | 2 | 3 |
+| --- | :-: | :-: | :-: |
+| `HOLDING-CASE` | Y | N | N |
+| `HOLDING-CASE, again` | Y | Y | N |
+| → `MOVE WS-HELD-CASE TO DISPUTE-CASE` | 1 | | |
+| → `PERFORM APPLY-EVENT` | 2 | 1 | 1 |
+| → `MOVE DISPUTE-CASE TO WS-HELD-CASE` | 3 | 2 | |
+| → `PERFORM READ-EVENT` | 4 | 3 | 2 |
 
 Source: [dispute.cbl:109](../../../laurasia/programs/dispute.cbl#L109).
 

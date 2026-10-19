@@ -203,3 +203,35 @@ func initialValues(records []Record) map[string]string {
 	}
 	return values
 }
+
+// textFields finds the elementary alphanumeric fields each group of a
+// program's records holds, in no table, by names no other field of the
+// program has: those a MOVE of SPACES to the group blanks.
+func textFields(records []Record) func(group string) []string {
+	count := map[string]int{}
+	for _, r := range records {
+		walk(r.Field, func(f Field) { count[f.Name]++ })
+	}
+	fields := map[string][]string{}
+	var visit func(f Field) []string
+	visit = func(f Field) []string {
+		var held []string
+		for _, child := range f.Fields {
+			held = append(held, visit(child)...)
+		}
+		if len(f.Fields) > 0 && count[f.Name] == 1 {
+			fields[f.Name] = held
+		}
+		switch {
+		case f.Occurs > 0:
+			return nil
+		case len(f.Fields) == 0 && f.Category == "alphanumeric" && count[f.Name] == 1:
+			return []string{f.Name}
+		}
+		return held
+	}
+	for _, r := range records {
+		visit(r.Field)
+	}
+	return func(group string) []string { return fields[group] }
+}

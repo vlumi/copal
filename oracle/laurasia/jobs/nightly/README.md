@@ -15,7 +15,7 @@ The script ended with exit status 0.
 | POST | [POST](../../POST/) | RC=0000 | 2 of 21 |
 | DISPUTES | disputes | RC=0000 | |
 | DISPUTES.DSPSORT | sort | RC=0000 | |
-| DISPUTES.DISPUTE | [DISPUTE](../../DISPUTE/) | RC=0004 | 15 of 22 |
+| DISPUTES.DISPUTE | [DISPUTE](../../DISPUTE/) | RC=0004 | 15 of 21 |
 | DISPUTES.DSPNEW | mv | RC=0000 | |
 | SETLSORT | sort | RC=0000 | |
 | ADJSORT | sort | RC=0000 | |

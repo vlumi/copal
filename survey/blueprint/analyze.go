@@ -304,10 +304,13 @@ func Analyze(paths []string, copybookDir string, dialect cobol.Dialect) (*System
 	linkCalls(s.Programs)
 	for i := range s.Programs {
 		p := &s.Programs[i]
+		flow := p.flow.WithCalls(callWrites(*p, s.Programs))
 		p.tables = rules.Tables(p.source, rules.Knowledge{
-			MayChange:      p.flow.WithCalls(callWrites(*p, s.Programs)).MayChange,
+			MayChange:      flow.MayChange,
+			Writers:        flow.Writers,
 			ConditionNames: conditionNames(p.Records),
 			InitialValues:  initialValues(p.Records),
+			TextFields:     textFields(p.Records),
 		})
 		p.Rules = newRules(p.Name, p.tables, p.Records)
 	}

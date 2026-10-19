@@ -70,29 +70,29 @@ Source: [AUTHSRV.cbl:149](../../../pangaea/programs/AUTHSRV.cbl#L149).
 
 ## 2100-AUTHORIZE
 
-| | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
-| --- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | N |
-| `RS-RESULT = SPACES AND RQ-REVERSAL` | Y | Y | Y | Y | N | N | N | N | N | N | N | N | N | N |
-| `RS-RESULT = SPACES` | Y | Y | N | N | Y | Y | Y | Y | Y | Y | N | N | N | N |
-| `RQ-PURCHASE` | N | N | | | Y | Y | N | N | N | N | | | | |
-| `RQ-REVERSAL` | Y | Y | | | | | N | N | N | N | | | | |
-| `RS-APPROVED` | Y | N | Y | N | Y | N | Y | N | Y | N | Y | Y | N | N |
-| `RQ-BALANCE-ENQUIRY` | N | | N | | N | | N | | Y | Y | N | Y | | |
-| `RQ-WITHDRAWAL` | | | | | | | Y | Y | N | N | | | | |
-| → `ADD 1 TO WS-REQUEST-COUNT` | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
-| → `MOVE SPACES TO AUTH-RESPONSE HOLD-RECORD` | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 |
-| → `PERFORM 2200-READ-CARD-AND-ACCOUNT` | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | |
-| → `PERFORM 2300-READ-HOLD` | 4 | 4 | 4 | 4 | | | | | | | | | | |
-| → `CALL 'AUTHREV' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD` | 5 | 5 | | | | | | | | | | | | |
-| → `ADD 1 TO WS-APPROVED-COUNT` | 6 | | 5 | | 5 | | 5 | | 5 | | 4 | 4 | | |
-| → `PERFORM 2400-SAVE-CHANGES` | 7 | | 6 | | 6 | | 6 | | | | 5 | | | |
-| → `ADD 1 TO WS-DECLINED-COUNT` | | 6 | | 5 | | 5 | | 5 | | 5 | | | 4 | 5 |
-| → `CALL 'AUTHPUR' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD` | | | | | 4 | 4 | | | | | | | | |
-| → `CALL 'ATMWDL' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD` | | | | | | | 4 | 4 | | | | | | |
-| → `CALL 'ATMBAL' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD` | | | | | | | | | 4 | 4 | | | | |
-| → `SET RS-INVALID-REQUEST TO TRUE` | | | | | | | | | | | | | | 3 |
-| → `MOVE 'UNKNOWN REQUEST' TO RS-MESSAGE` | | | | | | | | | | | | | | 4 |
+| | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 |
+| --- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | N |
+| `RS-RESULT = SPACES AND RQ-REVERSAL` | Y | Y | Y | N | N | N | N | N | N | N | N |
+| `RS-RESULT = SPACES` | Y | Y | N | Y | Y | Y | Y | Y | Y | N | N |
+| `RQ-PURCHASE` | N | N | | Y | Y | N | N | N | N | | |
+| `RQ-REVERSAL` | Y | Y | | | | N | N | N | N | | |
+| `RS-APPROVED` | Y | N | N | Y | N | Y | N | Y | N | N | N |
+| `RQ-BALANCE-ENQUIRY` | N | | | N | | N | | Y | Y | | |
+| `RQ-WITHDRAWAL` | | | | | | Y | Y | N | N | | |
+| → `ADD 1 TO WS-REQUEST-COUNT` | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+| → `MOVE SPACES TO AUTH-RESPONSE HOLD-RECORD` | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 |
+| → `PERFORM 2200-READ-CARD-AND-ACCOUNT` | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | |
+| → `PERFORM 2300-READ-HOLD` | 4 | 4 | 4 | | | | | | | | |
+| → `CALL 'AUTHREV' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD` | 5 | 5 | | | | | | | | | |
+| → `ADD 1 TO WS-APPROVED-COUNT` | 6 | | | 5 | | 5 | | 5 | | | |
+| → `PERFORM 2400-SAVE-CHANGES` | 7 | | | 6 | | 6 | | | | | |
+| → `ADD 1 TO WS-DECLINED-COUNT` | | 6 | 5 | | 5 | | 5 | | 5 | 4 | 5 |
+| → `CALL 'AUTHPUR' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD` | | | | 4 | 4 | | | | | | |
+| → `CALL 'ATMWDL' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD` | | | | | | 4 | 4 | | | | |
+| → `CALL 'ATMBAL' USING AUTH-REQUEST AUTH-RESPONSE BANK-CONTROL-RECORD ACCT-ONLINE-RECORD CARD-RECORD HOLD-RECORD` | | | | | | | | 4 | 4 | | |
+| → `SET RS-INVALID-REQUEST TO TRUE` | | | | | | | | | | | 3 |
+| → `MOVE 'UNKNOWN REQUEST' TO RS-MESSAGE` | | | | | | | | | | | 4 |
 
 Source: [AUTHSRV.cbl:160](../../../pangaea/programs/AUTHSRV.cbl#L160).
 
