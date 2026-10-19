@@ -31,6 +31,8 @@ Not code, not a translation, and not a guess at an intent the facts do not suppo
 ## Parts
 
 1. **Annotations without a model.** The annotation files and their hashes, staleness, the check of the names a sentence uses, and their place in the blueprints and the explorer, all built and tested with a writer that needs no model and writes from the facts alone, so that the whole pipeline is golden before a model is called.
+
+   As built: `blueprint` gives a paragraph's facts as text with its hash, checks an annotation's names against them, reads and writes `annotations/<specimen>/`, a file a program, and shows the prose on the program's page, and in the explorer on the paragraph's, marked as a model's, or that it is stale. `annotate.Paragraphs` keeps what is current and has a writer write the rest, rejecting what names anything its facts do not; it is tested with a writer that needs no model. The golden tests and `make blueprints` read the annotations; none exist yet, so no blueprint changed. A name the check takes as the code's is one in backquotes or in capitals with a hyphen, as COBOL's are; the prompt of part 2 asks for backquotes.
 2. **The model and the paragraphs.** The client, the prompt, and `make annotate`, on the paragraphs and sections of both specimens; the first annotations checked in and read against the source.
 3. **Decision rules in prose.**
 4. **Programs, entities, fields and states.**
