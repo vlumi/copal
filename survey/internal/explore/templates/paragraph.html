@@ -4,6 +4,8 @@
 <h1><span class="kind">paragraph</span> {{.Name}}</h1>
 <p class="crumbs">of <a href="{{program $p}}">{{$p}}</a> · {{template "src" .Source}}</p>
 {{if .Description}}<p>{{.Description}}</p>{{end}}
+{{with $.View.Prose}}<aside class="prose"><p class="note">By a model, {{.Writer}}, prompt {{.Prompt}}: its reading of the facts below, not a fact of the survey's.</p>
+{{if $.View.Stale}}<p>Stale: the facts have changed since it was written.</p>{{else}}<p><strong>{{.Name}}.</strong> {{.Text}}</p>{{end}}</aside>{{end}}
 <table>
   <tbody>
   <tr><th>Performs</th><td>{{range $i, $x := .Performs}}{{if $i}}, {{end}}<a href="{{paragraph $p $x.Target}}">{{$x.Target}}</a>{{with $x.Thru}} thru <a href="{{paragraph $p .}}">{{.}}</a>{{end}}{{end}}</td></tr>
