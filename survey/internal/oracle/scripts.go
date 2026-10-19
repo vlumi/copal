@@ -105,6 +105,13 @@ func (s scriptStep) expand(text string) string {
 	return s.script.Expand(text, func(parameter string) string { return s.values[parameter] })
 }
 
+// path is a file's path as the step names it, expanded and clean, so
+// that a parameter left blank, as in $DATA/work/$DATE/file, names the
+// same file wherever it is written.
+func (s scriptStep) path(text string) string {
+	return filepath.Clean(s.expand(text))
+}
+
 // command is the name of what the step runs, as the oracle's own stands in
 // for it.
 func (s scriptStep) command() string {
@@ -334,7 +341,7 @@ func (b *Batch) provideFiles(steps []scriptStep, sr *scriptRun, dir string) erro
 				continue
 			}
 			for _, dd := range slices.Sorted(maps.Keys(step.Bindings)) {
-				path := step.expand(step.Bindings[dd])
+				path := step.path(step.Bindings[dd])
 				f, ok := fileAssigned(r, dd)
 				if !ok {
 					continue
@@ -350,17 +357,17 @@ func (b *Batch) provideFiles(steps []scriptStep, sr *scriptRun, dir string) erro
 			}
 		case script.Sort, script.Move:
 			for _, in := range step.Input {
-				path := step.expand(in)
+				path := step.path(in)
 				if written[path] || exists(path) {
 					continue
 				}
-				if r, dd, ok := sr.reader(steps[i+1:], step.expand(step.Output)); ok {
+				if r, dd, ok := sr.reader(steps[i+1:], step.path(step.Output)); ok {
 					if err := b.provideFile(r, dd, path, sr, dir); err != nil {
 						return err
 					}
 				}
 			}
-			written[step.expand(step.Output)] = true
+			written[step.path(step.Output)] = true
 		}
 	}
 	return nil
@@ -377,13 +384,13 @@ func (sr *scriptRun) reader(steps []scriptStep, path string) (*Result, string, b
 				continue
 			}
 			for dd, bound := range step.Bindings {
-				if f, ok := fileAssigned(r, dd); ok && reads(f) && step.expand(bound) == path {
+				if f, ok := fileAssigned(r, dd); ok && reads(f) && step.path(bound) == path {
 					return r, dd, true
 				}
 			}
 		case script.Sort, script.Move:
-			if slices.ContainsFunc(step.Input, func(in string) bool { return step.expand(in) == path }) {
-				return sr.reader(steps[i+1:], step.expand(step.Output))
+			if slices.ContainsFunc(step.Input, func(in string) bool { return step.path(in) == path }) {
+				return sr.reader(steps[i+1:], step.path(step.Output))
 			}
 		}
 	}
@@ -608,7 +615,7 @@ func (b *Batch) binding(steps []scriptStep, path string) (*Result, blueprint.Fil
 			continue
 		}
 		for dd, bound := range step.Bindings {
-			if step.expand(bound) == path {
+			if step.path(bound) == path {
 				if f, ok := fileAssigned(r, dd); ok {
 					return r, f, true
 				}
