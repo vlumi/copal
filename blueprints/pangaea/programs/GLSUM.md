@@ -59,6 +59,7 @@ Program [GLSUM.cbl](../../../pangaea/programs/GLSUM.cbl): 4 files, 9 paragraphs.
 - [Field origins](#field-origins)
   - [File GL-OUT](#file-gl-out)
   - [File REPORT-OUT](#file-report-out)
+- [Links between records](#links-between-records)
 - [Records](#records)
   - [ACCRUAL-RECORD](#accrual-record)
   - [AUDIT-RECORD](#audit-record)
@@ -373,7 +374,7 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-coun
 
 | Field | Position | Origins |
 | --- | --: | --- |
-| REPORT-LINE | 1-80 | literal 'GLSUM    GENERAL LEDGER SUMMARY'; literal 'LEDGER IN BALANCE'; literal 'MONTH CLOSED                  '; literal 'NO MONTH CLOSED'; literal 'TRANSFERS IN TRANSIT DO NOT NET TO ZERO'; literal SPACES |
+| REPORT-LINE | 1-80 | file ACCR-IN AC-DUE-MONTH; literal 'GLSUM    GENERAL LEDGER SUMMARY'; literal 'LEDGER IN BALANCE'; literal 'MONTH CLOSED                  '; literal 'NO MONTH CLOSED'; literal 'TRANSFERS IN TRANSIT DO NOT NET TO ZERO'; literal 0; literal SPACES |
 
 #### Record WS-REPORT-COUNT-LINE
 
@@ -402,6 +403,14 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-coun
 | --- | --: | --- |
 | WS-RA-LABEL | 1-30 | literal 'CUSTOMER DEPOSITS CHANGE'; literal 'TRANSFERS IN TRANSIT NET' |
 | WS-RA-VALUE | 31-51 | file AUDIT-IN AU-AMOUNT; initial value of WS-DEPOSITS-CHANGE; initial value of WS-TRANSIT-NET; literal 0 |
+
+## Links between records
+
+Fields of one input the program relies on to find or match the records of another: moved into an indexed file's record key to read it by, compared for equality, or compared for order to merge the two in that order, each side's values from that field alone.
+
+| Field | Of | Links to | Of | How | Source |
+| --- | --- | --- | --- | --- | --- |
+| AU-BUSINESS-DATE | AUDIT-IN | AC-DUE-MONTH | ACCR-IN | equal to | [GLSUM.cbl:210](../../../pangaea/programs/GLSUM.cbl#L210) |
 
 ## Records
 

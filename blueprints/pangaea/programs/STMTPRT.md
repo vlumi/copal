@@ -69,6 +69,7 @@ Program [STMTPRT.cbl](../../../pangaea/programs/STMTPRT.cbl): 6 files, 14 paragr
   - [File STMT-SORT](#file-stmt-sort)
   - [File STMT-OUT](#file-stmt-out)
   - [File REPORT-OUT](#file-report-out)
+- [Links between records](#links-between-records)
 - [Records](#records)
   - [ACCRUAL-RECORD](#accrual-record)
   - [ACCT-MASTER-RECORD](#acct-master-record)
@@ -509,7 +510,7 @@ Written from [WS-RULE-LINE](#ws-rule-line), [WS-TITLE-LINE](#ws-title-line), [WS
 
 | Field | Position | Origins |
 | --- | --: | --- |
-| WS-TL-PERIOD | 49-80 | literal ' '; literal 'STATEMENT FOR '; literal SPACE; literal SPACES |
+| WS-TL-PERIOD | 49-80 | file ACCR-IN AC-DUE-MONTH 31-34; literal ' '; literal 'STATEMENT FOR '; literal 0; literal SPACE; literal SPACES |
 
 #### Record WS-ACCOUNT-LINE
 
@@ -541,9 +542,9 @@ Written from [WS-RULE-LINE](#ws-rule-line), [WS-TITLE-LINE](#ws-title-line), [WS
 
 | Field | Position | Origins |
 | --- | --: | --- |
-| WS-PL-YEAR | 1-4 | |
-| WS-PL-MONTH | 6-7 | |
-| WS-PL-DAY | 9-10 | |
+| WS-PL-YEAR | 1-4 | file AUDIT-IN AU-BUSINESS-DATE 1-4; file STMT-SORT SR-DATE 11-14 |
+| WS-PL-MONTH | 6-7 | file AUDIT-IN AU-BUSINESS-DATE 5-6; file STMT-SORT SR-DATE 15-16 |
+| WS-PL-DAY | 9-10 | file AUDIT-IN AU-BUSINESS-DATE 7-8; file STMT-SORT SR-DATE 17-18 |
 | WS-PL-TRAN-ID | 13-22 | file AUDIT-IN AU-TRAN-ID; file STMT-SORT SR-TRAN-ID |
 | WS-PL-DESCRIPTION | 25-44 | file AUDIT-IN AU-TRAN-CODE; file STMT-SORT SR-TRAN-CODE |
 | WS-PL-AMOUNT | 45-61 | file AUDIT-IN AU-AMOUNT; file STMT-SORT SR-AMOUNT |
@@ -564,7 +565,7 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-coun
 
 | Field | Position | Origins |
 | --- | --: | --- |
-| REPORT-LINE | 1-80 | literal 'MONTH CLOSED                  '; literal 'NO MONTH CLOSED'; literal 'STMTPRT  MONTHLY STATEMENTS'; literal SPACES |
+| REPORT-LINE | 1-80 | file ACCR-IN AC-DUE-MONTH; literal 'MONTH CLOSED                  '; literal 'NO MONTH CLOSED'; literal 'STMTPRT  MONTHLY STATEMENTS'; literal 0; literal SPACES |
 
 #### Record WS-REPORT-COUNT-LINE
 
@@ -579,6 +580,14 @@ Written from [REPORT-LINE](#report-line), [WS-REPORT-COUNT-LINE](#ws-report-coun
 | --- | --: | --- |
 | WS-RA-LABEL | 1-30 | literal 'CREDITS'; literal 'DEBITS' |
 | WS-RA-VALUE | 31-51 | file AUDIT-IN AU-AMOUNT; file STMT-SORT SR-AMOUNT; initial value of WS-CREDIT-TOTAL; initial value of WS-DEBIT-TOTAL; literal 0 |
+
+## Links between records
+
+Fields of one input the program relies on to find or match the records of another: moved into an indexed file's record key to read it by, compared for equality, or compared for order to merge the two in that order, each side's values from that field alone.
+
+| Field | Of | Links to | Of | How | Source |
+| --- | --- | --- | --- | --- | --- |
+| AU-BUSINESS-DATE | AUDIT-IN | AC-DUE-MONTH | ACCR-IN | equal to | [STMTPRT.cbl:255](../../../pangaea/programs/STMTPRT.cbl#L255) |
 
 ## Records
 

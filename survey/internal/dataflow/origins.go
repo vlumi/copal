@@ -66,7 +66,8 @@ func (p place) overlaps(q place) bool {
 
 // storage is where every item the program declares lives, so that values
 // can be followed by bytes, not just by name: into a group, out of a field
-// of it, through a field that redefines another.
+// of it, through a field that redefines another. A record that redefines
+// another lives in the other's bytes.
 type storage struct {
 	places map[string]place
 	items  map[string][]string // each record's items, in declaration order
@@ -84,8 +85,14 @@ func newStorage(records *layout.ProgramRecords) *storage {
 			walk(record, child)
 		}
 	}
+	recordOf := map[string]string{}
 	for _, r := range records.All() {
-		walk(r.Name, r)
+		record := r.Name
+		if redefined, ok := recordOf[r.Redefines]; ok {
+			record = redefined
+		}
+		recordOf[r.Name] = record
+		walk(record, r)
 	}
 	for name, n := range seen {
 		if n > 1 {
