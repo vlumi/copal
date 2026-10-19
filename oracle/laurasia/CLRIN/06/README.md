@@ -1,8 +1,7 @@
 # CLRIN: case 06
 
-The run ended with return code 8.
+The run ended with return code 4.
 
 The first case to reach:
 
-- [CLRIN, TAKE-BATCH, rule 1](../../../../blueprints/laurasia/rules/CLRIN.md#take-batch)
-- [CLRIN, REJECT-RECORD, rule 2](../../../../blueprints/laurasia/rules/CLRIN.md#reject-record)
+- [CLRIN, CHECK-FILE-TRAILER, rule 2](../../../../blueprints/laurasia/rules/CLRIN.md#check-file-trailer)
