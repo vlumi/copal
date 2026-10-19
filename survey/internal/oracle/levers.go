@@ -2,6 +2,7 @@ package oracle
 
 import (
 	"slices"
+	"strings"
 
 	"github.com/vlumi/copal/bedrock/cobol"
 	"github.com/vlumi/copal/bedrock/layout"
@@ -102,7 +103,7 @@ func (p *program) fieldLevers(u Unit, c *cobol.Condition) []lever {
 	var levers []lever
 	for _, item := range c.Refs() {
 		for _, target := range p.origins(p.inCaller(u, item)) {
-			for _, v := range valuesFor(u.records, c, item, target.field) {
+			for _, v := range valuesFor(u.records, constantsOf(u.blueprint), c, item, target.field) {
 				l := lever{input: target.input, field: target.field, value: v}
 				if !slices.Contains(levers, l) {
 					levers = append(levers, l)
@@ -211,13 +212,31 @@ func (p *program) origins(item string) []target {
 		if i < 0 || name == "" {
 			continue
 		}
-		if f := find(p.inputs[i].root, o.Item); f != nil {
+		f := find(p.inputs[i].root, o.Item)
+		if over := fieldOverBytes(p.inputs[i].root, o.Start, o.Length); o.Length > 0 && over != nil {
+			f = over
+		}
+		if f != nil {
 			for _, leaf := range leaves(f) {
 				targets = append(targets, target{input: name, field: leaf})
 			}
 		}
 	}
 	return targets
+}
+
+// fieldOverBytes is the field of a record over the bytes from start,
+// 1-based, for length, if one is over them exactly.
+func fieldOverBytes(f *layout.Field, start, length int) *layout.Field {
+	if f.Start == start && f.Size() == length && f.Name != "FILLER" {
+		return f
+	}
+	for _, child := range f.Children {
+		if found := fieldOverBytes(child, start, length); found != nil {
+			return found
+		}
+	}
+	return nil
 }
 
 // leaves lists a field's elementary fields, or the field itself.
@@ -235,12 +254,12 @@ func leaves(f *layout.Field) []*layout.Field {
 }
 
 // valuesFor lists the values worth putting into an input field for a
-// condition on an item: the literals the condition compares the item with,
-// and for a number one above and below; the values of the condition names
+// condition on an item: the literals and level-78 constants the condition
+// compares the item with, and for a number one above and below; the values of the condition names
 // it tests, and a value of none of them; for a class test, a value of the
 // class and one not; and for a number that reaches the item through other
 // statements, zero, one, minus one and its largest.
-func valuesFor(records *layout.ProgramRecords, c *cobol.Condition, item string, f *layout.Field) []value {
+func valuesFor(records *layout.ProgramRecords, constants map[string]string, c *cobol.Condition, item string, f *layout.Field) []value {
 	var values []value
 	addLiteral := func(lit string) {
 		v, ok := literal(f, lit)
@@ -260,7 +279,12 @@ func valuesFor(records *layout.ProgramRecords, c *cobol.Condition, item string, 
 		switch c.Op {
 		case "=", "<", ">", "<=", ">=":
 			for _, sides := range [][2]*cobol.Operand{{c.Left, c.Right}, {c.Right, c.Left}} {
-				if sides[0] != nil && sides[0].Name == item && sides[1] != nil && sides[1].Name == "" && len(sides[1].Refs) == 0 {
+				if sides[0] == nil || sides[0].Name != item || sides[1] == nil {
+					continue
+				}
+				if value, ok := constants[sides[1].Name]; ok {
+					addLiteral(value)
+				} else if sides[1].Name == "" && len(sides[1].Refs) == 0 {
 					addLiteral(sides[1].Text)
 				}
 			}
@@ -275,6 +299,9 @@ func valuesFor(records *layout.ProgramRecords, c *cobol.Condition, item string, 
 			}
 		case "IS":
 			values = append(values, text("X"), number(0), number(1), number(-1))
+			if c.Class == "NUMERIC" && !numeric(f) {
+				values = append(values, text(strings.Repeat("1", f.Size())))
+			}
 		}
 	}
 	visit(c)
@@ -284,6 +311,16 @@ func valuesFor(records *layout.ProgramRecords, c *cobol.Condition, item string, 
 		values = append(values, text(""))
 	}
 	return values
+}
+
+// constantsOf are a program's level-78 constants, by name, with their
+// values as written.
+func constantsOf(bp *blueprint.Program) map[string]string {
+	constants := map[string]string{}
+	for _, c := range bp.Constants {
+		constants[c.Name] = c.Value
+	}
+	return constants
 }
 
 // conditionField is the field a condition name is declared on.
@@ -320,7 +357,7 @@ func (p *program) inCaller(u Unit, item string) string {
 			if call.Program != u.Program || len(call.Using) <= n {
 				continue
 			}
-			if arg, _, ok := locate(p.blueprint, call.Using[n], call.Using[n]); ok {
+			if arg, ok := fieldOf(p.blueprint, call.Using[n]); ok {
 				if name, ok := over(arg, arg.Start+field.Start-record.Start, field.Length); ok {
 					return name
 				}
@@ -328,6 +365,17 @@ func (p *program) inCaller(u Unit, item string) string {
 		}
 	}
 	return ""
+}
+
+// fieldOf finds a field of any of a program's records by name: an argument
+// passed, which may be a record or a field of one.
+func fieldOf(bp *blueprint.Program, name string) (blueprint.Field, bool) {
+	for _, r := range bp.Records {
+		if f, ok := findField(r.Field, name); ok {
+			return f, true
+		}
+	}
+	return blueprint.Field{}, false
 }
 
 // locate finds a field within a program's record by name.

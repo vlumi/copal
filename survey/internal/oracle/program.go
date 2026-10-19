@@ -86,6 +86,7 @@ func prepare(system *blueprint.System, bp *blueprint.Program, copybookDir string
 			continue
 		}
 		if r := fileRecord(records, f.Name); r != nil {
+			r = readInto(flow, records, r)
 			p.inputs = append(p.inputs, input{file: f, root: r, layout: record.New(r)})
 		}
 	}
@@ -183,6 +184,25 @@ func fileRecord(records *layout.ProgramRecords, file string) *layout.Field {
 		return area
 	}
 	return nil
+}
+
+// readInto is the layout of a file's record: the record itself, or, for one
+// of no fields, read whole into a record of fields as long, that one.
+func readInto(flow dataflow.Flow, records *layout.ProgramRecords, r *layout.Field) *layout.Field {
+	if len(r.Children) > 0 {
+		return r
+	}
+	for _, e := range flow.Lineage {
+		if e.Verb != "READ" && e.Verb != "MOVE" || e.FromFile || e.From != r.Name {
+			continue
+		}
+		for _, into := range records.All() {
+			if into.Name == e.To && len(into.Children) > 0 && into.Size() == r.Size() {
+				return into
+			}
+		}
+	}
+	return r
 }
 
 // find finds a field by name among a record's fields, at any level.
