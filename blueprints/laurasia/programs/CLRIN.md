@@ -393,7 +393,7 @@ Fields of an input the program checks against what it adds up from the input's o
 | --- | --- | --- | --- | --- |
 | BT-COUNT | CLEARING-IN | their count | IS-PRESENTMENT | [clrin.cbl:137](../../../laurasia/programs/clrin.cbl#L137) |
 | BT-AMOUNT | CLEARING-IN | the sum of PR-AMOUNT | IS-PRESENTMENT | [clrin.cbl:137](../../../laurasia/programs/clrin.cbl#L137) |
-| FT-BATCH-COUNT | CLEARING-IN | their count | IS-PRESENTMENT | [clrin.cbl:212](../../../laurasia/programs/clrin.cbl#L212) |
+| FT-BATCH-COUNT | CLEARING-IN | their count | | [clrin.cbl:212](../../../laurasia/programs/clrin.cbl#L212) |
 | FT-RECORD-COUNT | CLEARING-IN | their count | IS-PRESENTMENT | [clrin.cbl:212](../../../laurasia/programs/clrin.cbl#L212) |
 | FT-AMOUNT | CLEARING-IN | the sum of PR-AMOUNT | IS-PRESENTMENT | [clrin.cbl:212](../../../laurasia/programs/clrin.cbl#L212) |
 

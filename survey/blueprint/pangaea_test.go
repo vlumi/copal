@@ -130,7 +130,7 @@ func TestRelations(t *testing.T) {
 		t.Errorf("links: TXPOST %+v, AUTHSRV %+v", byName["TXPOST"].Links, byName["AUTHSRV"].Links)
 	}
 	if want := (Total{File: "TRAN-IN", Field: "TT-AMOUNT-TOTAL", Sum: "TD-AMOUNT", Type: "TR-DETAIL"}); !slices.ContainsFunc(byName["TXVALID"].Totals, func(u Total) bool {
-		u.Source = ""
+		u.Source, u.added = "", ""
 		return u == want
 	}) {
 		t.Errorf("TXVALID's totals %+v", byName["TXVALID"].Totals)

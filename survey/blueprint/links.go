@@ -36,6 +36,8 @@ type Total struct {
 	Sum    string `json:"sum,omitempty"`
 	Type   string `json:"type,omitempty"`
 	Source string `json:"source"`
+	// added is the paragraph that adds up the total.
+	added string
 }
 
 // inputLinks finds the links a program relies on: each field of an
@@ -153,7 +155,7 @@ func equalities(c *cobol.Condition) [][2]string {
 // input's, which the program adds a field of the same input up into, of
 // any of its records, or adds 1 to. A sum is over the records of the type
 // whose fields the summed field is among; a count of records of no known
-// type, over those a sum of the same input adds up.
+// type, over those of a sum the same paragraph adds up.
 func programTotals(p Program, source *cobol.Program, flow dataflow.Flow) []Total {
 	var totals []Total
 	for _, c := range conditions(source) {
@@ -172,7 +174,7 @@ func programTotals(p Program, source *cobol.Program, flow dataflow.Flow) []Total
 		if t.Sum != "" || t.Type != "" {
 			continue
 		}
-		if j := slices.IndexFunc(totals, func(u Total) bool { return u.File == t.File && u.Sum != "" }); j >= 0 {
+		if j := slices.IndexFunc(totals, func(u Total) bool { return u.File == t.File && u.Sum != "" && u.added == t.added }); j >= 0 {
 			totals[i].Type = totals[j].Type
 		}
 	}
@@ -190,10 +192,10 @@ func totalOf(p Program, flow dataflow.Flow, field, item string) (Total, bool) {
 		}
 		switch {
 		case e.FromLiteral && e.From == "1":
-			return Total{File: r.File, Field: field}, true
+			return Total{File: r.File, Field: field, added: e.Paragraph}, true
 		case !e.FromLiteral && e.From != field:
 			if summed, found := inputRecord(p, e.From); found && summed.File == r.File {
-				return Total{File: r.File, Field: field, Sum: e.From, Type: typeHolding(p.Records, r.File, e.From)}, true
+				return Total{File: r.File, Field: field, Sum: e.From, Type: typeHolding(p.Records, r.File, e.From), added: e.Paragraph}, true
 			}
 		}
 	}
