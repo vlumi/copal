@@ -72,7 +72,7 @@ func (r *runner) run(c Case, dir string, record bool) (result, error) {
 	if line := c[commandLine]; len(line) > 0 {
 		args = []string{strings.TrimRight(string(line[0]), " ")}
 	}
-	outcome, err := run.Step{Programs: r.programs, Program: r.program.source.ID, Args: args, DDs: dds, Stdout: &stdout,
+	outcome, err := run.Step{Programs: r.programs, Program: executable(r.program.blueprint), Args: args, DDs: dds, Stdout: &stdout,
 		Stdin: bytes.NewReader(lines(c[sysin])), TraceFile: trace, Timeout: timeout}.Run()
 	if err != nil {
 		return result{}, err
@@ -194,6 +194,12 @@ func lines(records [][]byte) []byte {
 		b.WriteByte('\n')
 	}
 	return b.Bytes()
+}
+
+// executable is the name of a program's executable, which run.Build names
+// after its source file, whatever the case of its PROGRAM-ID.
+func executable(bp *blueprint.Program) string {
+	return strings.TrimSuffix(filepath.Base(bp.Source), ".cbl")
 }
 
 // keyed reports whether a file is read and written by key, indexed or
