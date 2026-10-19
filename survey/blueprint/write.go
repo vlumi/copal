@@ -156,10 +156,23 @@ func programMarkdown(dir string, p Program) string {
 		if f.RecordKey != "" {
 			organization += ", key " + f.RecordKey
 		}
+		if f.RelativeKey != "" {
+			organization += ", record number in " + f.RelativeKey
+		}
+		if f.LengthIn != "" {
+			organization += fmt.Sprintf(", records of %d to %d characters, length in %s", f.MinLength, f.MaxLength, f.LengthIn)
+		}
 		if f.Access != "" {
 			organization += ", " + f.Access + " access"
 		}
 		b.WriteString(row(f.Name, f.Kind, f.Assign, organization, f.Status, strings.Join(f.Opened, ", "), strings.Join(f.Records, ", ")))
+	}
+
+	if len(p.Constants) > 0 {
+		b.WriteString("\n## Constants\n\n| Constant | Value | Source |\n| --- | --- | --- |\n")
+		for _, c := range p.Constants {
+			b.WriteString(row(c.Name, c.Value, sourceLink(dir, c.Source, true)))
+		}
 	}
 
 	fmt.Fprintf(&b, "\n## Flow\n\n![The paragraphs of %s and how control moves between them](%s.svg)\n", p.Name, p.Name)
@@ -289,6 +302,9 @@ func fieldNotes(f Field) string {
 	}
 	if len(f.IndexedBy) > 0 {
 		notes = append(notes, "INDEXED BY "+strings.Join(f.IndexedBy, ", "))
+	}
+	if f.Sign != "" {
+		notes = append(notes, "SIGN "+f.Sign)
 	}
 	if len(f.Values) > 0 {
 		notes = append(notes, "VALUE "+strings.Join(f.Values, ", "))
