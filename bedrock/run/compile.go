@@ -15,16 +15,29 @@ import (
 	"github.com/vlumi/copal/bedrock/cobol"
 )
 
-// flags make GnuCOBOL behave like an IBM compiler: IBM dialect, and signed
-// display numbers with the EBCDIC overpunch (+5 as 'E', -5 as 'N') rather
-// than the ASCII one. Warnings are errors.
-var flags = []string{"-std=ibm", "-fsign=EBCDIC", "-Wall", "-Werror"}
+// Dialect is the COBOL a system is written in, as the flags that make
+// GnuCOBOL compile it like that system's compiler.
+type Dialect []string
+
+var (
+	// IBM is an IBM compiler's COBOL, with signed display numbers in the
+	// EBCDIC overpunch (+5 as 'E', -5 as 'N') rather than the ASCII one.
+	IBM = Dialect{"-std=ibm", "-fsign=EBCDIC"}
+	// MicroFocus is Micro Focus COBOL.
+	MicroFocus = Dialect{"-std=mf"}
+)
+
+// warnings are errors, whatever the dialect.
+var warnings = []string{"-Wall", "-Werror"}
 
 // Build is the compiling of a directory of programs: where their sources
-// and copybooks are, where the compiled programs go, and whether they
-// carry the trace code that a run with a trace file turns on.
+// and copybooks are, where the compiled programs go, the dialect they are
+// written in, and whether they carry the trace code that a run with a
+// trace file turns on. A source sets its own format, fixed unless it says
+// >>SOURCE FORMAT IS FREE.
 type Build struct {
 	Sources, Copybooks, Out string
+	Dialect                 Dialect
 	Trace                   bool
 }
 
@@ -40,9 +53,12 @@ func (b Build) Programs() ([]string, error) {
 	if err := os.MkdirAll(b.Out, 0o755); err != nil {
 		return nil, err
 	}
-	options := flags
+	if len(b.Dialect) == 0 {
+		return nil, fmt.Errorf("compiling %s: no dialect", b.Sources)
+	}
+	options := append(slices.Clone([]string(b.Dialect)), warnings...)
 	if b.Trace {
-		options = append(slices.Clone(flags), "-ftraceall")
+		options = append(options, "-ftraceall")
 	}
 	var names []string
 	for _, source := range sources {

@@ -318,7 +318,7 @@ func newRunner(p *program, sources, copybookDir, scratch string) (*runner, error
 	dir := filepath.Join(scratch, p.blueprint.Name)
 	r := &runner{program: p, programs: filepath.Join(scratch, "programs"), loaders: filepath.Join(dir, "loaders")}
 	if _, err := os.Stat(r.programs); os.IsNotExist(err) {
-		if _, err := (run.Build{Sources: sources, Copybooks: copybookDir, Out: r.programs, Trace: true}).Programs(); err != nil {
+		if _, err := (run.Build{Dialect: run.IBM, Sources: sources, Copybooks: copybookDir, Out: r.programs, Trace: true}).Programs(); err != nil {
 			return nil, err
 		}
 	}
@@ -348,7 +348,7 @@ func newRunner(p *program, sources, copybookDir, scratch string) (*runner, error
 			}
 		}
 	}
-	if _, err := (run.Build{Sources: loaderSources, Copybooks: loaderSources, Out: r.loaders}).Programs(); err != nil {
+	if _, err := (run.Build{Dialect: run.IBM, Sources: loaderSources, Copybooks: loaderSources, Out: r.loaders}).Programs(); err != nil {
 		return nil, err
 	}
 	return r, nil

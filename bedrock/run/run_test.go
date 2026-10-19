@@ -15,7 +15,7 @@ import (
 // writes the statements it executes to the trace file.
 func TestStep(t *testing.T) {
 	programs, dir := t.TempDir(), t.TempDir()
-	if _, err := (Build{Sources: "testdata/files", Copybooks: "testdata/copybooks", Out: programs, Trace: true}).Programs(); err != nil {
+	if _, err := (Build{Dialect: IBM, Sources: "testdata/files", Copybooks: "testdata/copybooks", Out: programs, Trace: true}).Programs(); err != nil {
 		t.Fatal(err)
 	}
 	in, out, trace := filepath.Join(dir, "in"), filepath.Join(dir, "out"), filepath.Join(dir, "trace")

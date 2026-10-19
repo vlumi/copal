@@ -19,7 +19,7 @@ import (
 // same, byte for byte, but for what readTree leaves out.
 func TestDaysAreReproducible(t *testing.T) {
 	programs := t.TempDir()
-	if _, err := (run.Build{Sources: "../programs", Copybooks: "../copybooks", Out: programs}).Programs(); err != nil {
+	if _, err := (run.Build{Dialect: run.IBM, Sources: "../programs", Copybooks: "../copybooks", Out: programs}).Programs(); err != nil {
 		t.Fatal(err)
 	}
 	var trees []map[string][]byte
@@ -119,7 +119,7 @@ func readTree(t *testing.T, dir string) map[string][]byte {
 // batch again and ends up as a bank whose day never failed.
 func TestFailedDayIsBackedOut(t *testing.T) {
 	programs := t.TempDir()
-	if _, err := (run.Build{Sources: "../programs", Copybooks: "../copybooks", Out: programs}).Programs(); err != nil {
+	if _, err := (run.Build{Dialect: run.IBM, Sources: "../programs", Copybooks: "../copybooks", Out: programs}).Programs(); err != nil {
 		t.Fatal(err)
 	}
 	newBank := func(programs string) Bank {
@@ -190,7 +190,7 @@ func TestFailedDayIsBackedOut(t *testing.T) {
 // business day: after it, the day's batch is next.
 func TestOnlineDay(t *testing.T) {
 	programs := t.TempDir()
-	if _, err := (run.Build{Sources: "../programs", Copybooks: "../copybooks", Out: programs}).Programs(); err != nil {
+	if _, err := (run.Build{Dialect: run.IBM, Sources: "../programs", Copybooks: "../copybooks", Out: programs}).Programs(); err != nil {
 		t.Fatal(err)
 	}
 	b := Bank{Dir: t.TempDir(), Programs: programs, Copybooks: "../copybooks", Jobs: "../jobs"}
