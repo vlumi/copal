@@ -4,6 +4,8 @@ The survey's facts now hold on two specimens written by different hands. What th
 
 The deliverable is prose a reader can trust as far as it goes: every sentence about a fact the survey states, marked as a model's, kept apart from the facts, and checked by the survey before it is kept.
 
+Part 1 is built. The rest waits, [milestone 16](../roadmap.md#16-names-and-prose-by-a-model), until the deterministic work before it is done: until then no part of the repository calls a model or needs an API key.
+
 ## Ground rules
 
 - The model writes names and prose, and nothing else. It is given facts the analysis established and the source lines they come from, and it adds no fact: no link, rule, type, state or relation exists because a model wrote it.

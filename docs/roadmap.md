@@ -159,21 +159,20 @@ Laurasia Card Services, a card processor written in another shop's COBOL, run by
 - The survey run on it as it is, and every break and wrong fact written down: 21 findings (done).
 - The language: sections, declaratives, several records under an FD, variable-length and relative files, and the rest (done).
 - The batch read from shell scripts as well as JCL (done).
-- Lineage, the design views and the oracle on Laurasia (done); the oracle's batch run of its scripts is left.
+- Lineage, the design views and the oracle on Laurasia (done); the oracle's batch run of its scripts moved to milestone 14.
 
 Done when: the survey's blueprints and cases of Laurasia are as right as Pangaea's, with no special case for either.
 
-## 14. Names and prose by a model
+## 14. The oracle, finished
 
-The facts hold on two specimens; now a model writes what they cannot say, on top of them and apart from them. The plan is in [plans/model-prose.md](plans/model-prose.md):
+The oracle runs Pangaea's jobs as well as its programs, and on both specimens it leaves 95 rules unreached. Most of them a run could reach, or the survey could show no run can:
 
-- Annotations kept apart from the facts, each with a hash of the facts it was written from, checked before it is kept, and shown marked as a model's; built first with no model at all.
-- What each paragraph and section is for, and a name that says it.
-- Decision rules in sentences.
-- Programs, entities, fields and states.
-- A reading of the prose against the code.
+- The batch run of Laurasia's scripts, as it runs Pangaea's jobs, so that the oracle's batch is no more coupled to JCL than the survey is.
+- I/O errors: the rules that only a file status other than success takes, reached by runs that fail a file on purpose and the same way every time, a missing file or a record of the wrong length.
+- What a called program returns: a field the called program sets is carried back into the caller, so that a combination of conditions no call can return is left out of the caller's rules, as one no path can take is.
+- Totals that agree by construction, such as debits and credits, listed as rules only bad data reaches, apart from the rest.
 
-Done when: every program, paragraph, rule and entity of both specimens has prose that names only what the survey established, `make ci` needs no model, and a change in the facts marks the prose it touches stale.
+Done when: every rule of both specimens is reached by a recorded case, left out as one no run can take, or listed as reached only by an I/O error or bad data that no case records, with the reason.
 
 ## 15. Bedrock's COBOL as a library
 
@@ -185,6 +184,18 @@ What reads COBOL, lays out its records and reads them by field, `cobol`, `layout
 
 Done when: it is published, the survey and the specimens import it from there, and its README says what it covers, what it has been tested against, and what it does not yet read.
 
+## 16. Names and prose by a model
+
+The facts hold on two specimens; a model could write what they cannot say, on top of them and apart from them. It waits until the deterministic work is done: until then the repository builds, tests and renders its blueprints with no model and no API key, and nothing in it is non-deterministic. The plan is in [plans/model-prose.md](plans/model-prose.md):
+
+- Annotations kept apart from the facts, each with a hash of the facts it was written from, checked before it is kept, and shown marked as a model's; built first with no model at all (done).
+- What each paragraph and section is for, and a name that says it.
+- Decision rules in sentences.
+- Programs, entities, fields and states.
+- A reading of the prose against the code.
+
+Done when: every program, paragraph, rule and entity of both specimens has prose that names only what the survey established, `make ci` needs no model, and a change in the facts marks the prose it touches stale.
+
 ## Later
 
-The oracle's batch run of Laurasia's scripts, as it runs Pangaea's jobs.
+Decision rules in sentences written from their conditions and the level-88 names in the code, with no model: reproducible, golden, and what a model's prose would later stand beside.
