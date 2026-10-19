@@ -23,6 +23,10 @@ type Origin struct {
 	Arg       int    // the position of the argument passed, 1-based
 	Parameter int    // the position of the USING item passed in, 1-based
 	Stream    string // SYSIN, for an item accepted from it
+	// Start and Length are the bytes of a file's record the values come
+	// from, 1-based, when they are a part of Item and not all of it, as of
+	// a record read whole into another.
+	Start, Length int
 }
 
 // String writes the origin: "file TRAN-IN TD-AMOUNT", "literal 'TXPOST'",
@@ -30,6 +34,8 @@ type Origin struct {
 // "parameter 1 RQ-AMOUNT", "stream SYSIN AUTH-REQUEST".
 func (o Origin) String() string {
 	switch {
+	case o.File != "" && o.Length > 0:
+		return fmt.Sprintf("file %s %s %d-%d", o.File, o.Item, o.Start, o.Start+o.Length-1)
 	case o.File != "":
 		return "file " + o.File + " " + o.Item
 	case o.Literal != "":
@@ -215,7 +221,11 @@ func (t *tracing) edge(i int, here place) (from place, ok bool) {
 	name := t.flow.storage.at(here.record, here.start, here.length)
 	switch {
 	case e.FromFile:
-		t.found[Origin{File: e.From, Item: name}] = true
+		o := Origin{File: e.From, Item: name}
+		if item := t.flow.storage.places[name]; here.length < item.length {
+			o.Start, o.Length = here.start, here.length
+		}
+		t.found[o] = true
 	case e.FromCall:
 		t.found[Origin{Call: e.From, Arg: e.Arg, Item: name}] = true
 	case e.FromStream:

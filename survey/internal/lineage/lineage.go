@@ -255,6 +255,9 @@ func (t tracer) back(n Node, p *blueprint.Program) Hop {
 		if !ok {
 			continue
 		}
+		if o.Length > 0 {
+			start, length = o.Start, o.Length
+		}
 		src := Source{File: o.File, Field: o.Item}
 		t.fromFile(&src, n, p, o.File, start, length, 0)
 		hop.Sources = append(hop.Sources, src)
