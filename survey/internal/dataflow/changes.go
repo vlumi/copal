@@ -65,20 +65,9 @@ func (f Flow) written(s cobol.Statement, performed map[string]bool) []string {
 // span lists the paragraphs a procedure reference names: a paragraph, the
 // paragraphs of a section, or those from one through another.
 func (f Flow) span(ref cobol.ProcedureRef) []cobol.Paragraph {
-	paragraphs := f.program.Paragraphs
-	first := slices.IndexFunc(paragraphs, func(p cobol.Paragraph) bool { return p.Name == ref.Name || p.Section == ref.Name })
-	if first < 0 {
+	first, last, ok := f.program.Span(ref)
+	if !ok {
 		return nil
 	}
-	last := first
-	end := ref.Name
-	if ref.Thru != "" {
-		end = ref.Thru
-	}
-	for i := first; i < len(paragraphs); i++ {
-		if paragraphs[i].Name == end || paragraphs[i].Section == end {
-			last = i
-		}
-	}
-	return paragraphs[first : last+1]
+	return f.program.Paragraphs[first : last+1]
 }

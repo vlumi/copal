@@ -1,7 +1,9 @@
 package structure
 
 import (
+	"fmt"
 	"reflect"
+	"slices"
 	"testing"
 
 	"github.com/vlumi/copal/bedrock/cobol"
@@ -84,5 +86,24 @@ func TestGoTosAndFallThrough(t *testing.T) {
 	}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got  %+v\nwant %+v", got, want)
+	}
+}
+
+func TestSections(t *testing.T) {
+	p, err := cobol.ReadProgram("testdata/SECTIONS.cbl", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	paragraphs, err := Paragraphs(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got []string
+	for _, para := range paragraphs {
+		got = append(got, fmt.Sprintf("%s/%s %v", para.Section, para.Name, para.PerformedBy))
+	}
+	want := []string{"MAIN/MAIN []", "CHECK/CHECK [MAIN]", "CHECK/CHECK-MORE [MAIN]", "TAIL-ONLY/TAIL-STEP [MAIN]"}
+	if !slices.Equal(got, want) {
+		t.Errorf("got  %q\nwant %q", got, want)
 	}
 }

@@ -47,10 +47,6 @@ type Perform struct {
 
 // Paragraphs analyzes the program's procedure division.
 func Paragraphs(p *cobol.Program) ([]Paragraph, error) {
-	index := map[string]int{}
-	for i, para := range p.Paragraphs {
-		index[para.Name] = i
-	}
 	paragraphs := make([]Paragraph, len(p.Paragraphs))
 	for i, para := range p.Paragraphs {
 		paragraphs[i] = Paragraph{Name: para.Name, Section: para.Section, Comment: para.Comment, Pos: para.Pos}
@@ -59,9 +55,9 @@ func Paragraphs(p *cobol.Program) ([]Paragraph, error) {
 			for _, ref := range s.Procedures {
 				switch {
 				case err != nil:
-				case ref.Thru != "" && !known(index, ref.Thru):
+				case ref.Thru != "" && !known(p, ref.Thru):
 					err = fmt.Errorf("%s: %s THRU %s: no such paragraph", s.Pos, ref.Name, ref.Thru)
-				case !known(index, ref.Name):
+				case !known(p, ref.Name):
 					err = fmt.Errorf("%s: %s: no such paragraph", s.Pos, ref.Name)
 				case s.Verb == "GO":
 					paragraphs[i].GoTos = append(paragraphs[i].GoTos, GoTo{Target: ref.Name, Pos: s.Pos})
@@ -78,20 +74,14 @@ func Paragraphs(p *cobol.Program) ([]Paragraph, error) {
 	ends := map[int]bool{}
 	for _, para := range paragraphs {
 		for _, perform := range para.Performs {
-			if perform.Thru != "" {
-				ends[index[perform.Thru]] = true
-			} else {
-				ends[index[perform.Target]] = true
-			}
+			_, last, _ := p.Span(cobol.ProcedureRef{Name: perform.Target, Thru: perform.Thru})
+			ends[last] = true
 		}
 	}
 	for _, para := range paragraphs {
 		for _, perform := range para.Performs {
-			first, last := index[perform.Target], index[perform.Target]
-			if perform.Thru != "" {
-				last = index[perform.Thru]
-			}
-			if last < first {
+			first, last, ok := p.Span(cobol.ProcedureRef{Name: perform.Target, Thru: perform.Thru})
+			if !ok {
 				return nil, fmt.Errorf("%s: %s THRU %s: the range runs backward", perform.Pos, perform.Target, perform.Thru)
 			}
 			for i := first; i <= last; i++ {
@@ -104,10 +94,12 @@ func Paragraphs(p *cobol.Program) ([]Paragraph, error) {
 	}
 	for _, para := range paragraphs {
 		for _, goTo := range para.GoTos {
-			addOnce(&paragraphs[index[goTo.Target]].ReachedBy, para.Name)
+			first, _, _ := p.Span(cobol.ProcedureRef{Name: goTo.Target})
+			addOnce(&paragraphs[first].ReachedBy, para.Name)
 		}
 		if para.FallsInto != "" {
-			addOnce(&paragraphs[index[para.FallsInto]].ReachedBy, para.Name)
+			first, _, _ := p.Span(cobol.ProcedureRef{Name: para.FallsInto})
+			addOnce(&paragraphs[first].ReachedBy, para.Name)
 		}
 	}
 	return paragraphs, nil
@@ -119,8 +111,9 @@ func addOnce(names *[]string, name string) {
 	}
 }
 
-func known(index map[string]int, name string) bool {
-	_, ok := index[name]
+// known reports whether a name is a paragraph or section of the program.
+func known(p *cobol.Program, name string) bool {
+	_, _, ok := p.Span(cobol.ProcedureRef{Name: name})
 	return ok
 }
 

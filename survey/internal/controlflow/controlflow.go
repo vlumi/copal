@@ -54,10 +54,7 @@ const maxNodes = 100_000
 // New lays out the paths through a program's procedure division, which
 // starts at its first paragraph.
 func New(p *cobol.Program) *Graph {
-	b := &builder{program: p, graph: &Graph{Nodes: make([]Node, 2), Covered: true}, index: map[string]int{}}
-	for i, para := range p.Paragraphs {
-		b.index[para.Name] = i
-	}
+	b := &builder{program: p, graph: &Graph{Nodes: make([]Node, 2), Covered: true}}
 	if len(p.Paragraphs) > 0 {
 		b.link(Entry, b.performed(0, len(p.Paragraphs)-1, End))
 	} else {
@@ -85,7 +82,6 @@ func (g *Graph) Reachable() []bool {
 type builder struct {
 	program *cobol.Program
 	graph   *Graph
-	index   map[string]int
 	// active are the ranges being laid out, from the outermost PERFORM in.
 	active [][2]int
 	// paragraphEnd is where control goes when the paragraph being laid
@@ -212,7 +208,7 @@ func (b *builder) statement(r scope, s *cobol.Statement, next int) int {
 
 func (b *builder) goTo(r scope, n int, s *cobol.Statement, next int) {
 	for _, ref := range s.Procedures {
-		i, ok := b.index[ref.Name]
+		i, _, ok := b.program.Span(cobol.ProcedureRef{Name: ref.Name})
 		if !ok || i < r.first || i > r.last {
 			b.graph.Covered = false
 			continue
@@ -255,44 +251,12 @@ func (b *builder) sort(n int, s *cobol.Statement, next int) {
 // procedure lays out a performed paragraph, section or THRU range, going
 // on to exit when it ends, and returns the node control enters it by.
 func (b *builder) procedure(ref cobol.ProcedureRef, exit int) int {
-	first, last, ok := b.span(ref)
+	first, last, ok := b.program.Span(ref)
 	if !ok || slices.ContainsFunc(b.active, func(a [2]int) bool { return a == [2]int{first, last} }) {
 		b.graph.Covered = false
 		return exit
 	}
 	return b.performed(first, last, exit)
-}
-
-// span is the paragraphs a procedure reference names: a paragraph, the
-// paragraphs of a section, or the range from one through another.
-func (b *builder) span(ref cobol.ProcedureRef) (first, last int, ok bool) {
-	first, last, ok = b.section(ref.Name)
-	if !ok {
-		first, ok = b.index[ref.Name]
-		last = first
-	}
-	if ok && ref.Thru != "" {
-		var thru int
-		_, thru, ok = b.section(ref.Thru)
-		if !ok {
-			thru, ok = b.index[ref.Thru]
-		}
-		last = thru
-	}
-	return first, last, ok && first <= last
-}
-
-func (b *builder) section(name string) (first, last int, ok bool) {
-	for i, para := range b.program.Paragraphs {
-		if para.Section != name {
-			continue
-		}
-		if !ok {
-			first, ok = i, true
-		}
-		last = i
-	}
-	return first, last, ok
 }
 
 // branches lays out the statements nested in another: each branch, and
