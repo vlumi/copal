@@ -114,3 +114,31 @@ func TestGoToOutOfRange(t *testing.T) {
 		t.Error("a GO TO out of a performed range is covered")
 	}
 }
+
+func TestSections(t *testing.T) {
+	g := graph(t, "testdata/SECTIONS.cbl")
+	if !g.Covered {
+		t.Fatal("graph does not cover the program")
+	}
+	exit := at(g, "EXIT SECTION")
+	if len(exit) != 1 {
+		t.Fatalf("EXIT SECTION laid out %d times, want once", len(exit))
+	}
+	if !reaches(g, at(g, "PERFORM CHECK"), at(g, "MOVE 3 TO WS-A")) {
+		t.Error("a PERFORM of a section does not run its own statements")
+	}
+	if !reaches(g, at(g, "PERFORM CHECK"), at(g, "MOVE 4 TO WS-A")) {
+		t.Error("a PERFORM of a section does not run its paragraphs after its own statements")
+	}
+	for _, skipped := range []string{"MOVE 3 TO WS-A", "MOVE 4 TO WS-A"} {
+		if reaches(g, exit, at(g, skipped)) {
+			t.Errorf("EXIT SECTION runs on to %s", skipped)
+		}
+	}
+	if !reaches(g, exit, at(g, "MOVE 2 TO WS-A")) {
+		t.Error("EXIT SECTION does not return to the statement after the PERFORM")
+	}
+	if reaches(g, exit, at(g, "MOVE 5 TO WS-A")) {
+		t.Error("EXIT SECTION of a performed section runs on into the next section")
+	}
+}

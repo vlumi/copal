@@ -7,7 +7,8 @@
 // of an EVALUATE are tried in order, so a path through one is also a path
 // past those before it; an EVALUATE without WHEN OTHER has a path for when
 // nothing matches. A path ends at a statement that ends unconditionally,
-// such as GO TO or STOP RUN, or at EXIT PARAGRAPH, so that in the IF ...
+// such as GO TO or STOP RUN, or at EXIT PARAGRAPH or EXIT SECTION, so
+// that in the IF ...
 // GO TO chains of old code the rest of the paragraph runs only on the
 // paths that did not jump.
 // The body of an inline PERFORM is a table of its own, for one pass
@@ -193,10 +194,10 @@ func startingAt(pos cobol.Pos, paths []path) []path {
 }
 
 // endsPath reports whether a path ends at a statement: one that ends
-// unconditionally, EXIT PARAGRAPH, which leaves the paragraph, or a PERFORM
-// of a paragraph that never returns.
+// unconditionally, EXIT PARAGRAPH or EXIT SECTION, which leave the
+// paragraph, or a PERFORM of a paragraph that never returns.
 func (e *extractor) endsPath(s cobol.Statement) bool {
-	return s.Verb == "EXIT PARAGRAPH" || structure.EndsUnconditionally([]cobol.Statement{s}) || performsNeverReturning(s, e.never)
+	return s.Verb == "EXIT PARAGRAPH" || s.Verb == "EXIT SECTION" || structure.EndsUnconditionally([]cobol.Statement{s}) || performsNeverReturning(s, e.never)
 }
 
 // performsNeverReturning reports whether a statement performs, once, a

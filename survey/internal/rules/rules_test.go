@@ -124,6 +124,11 @@ N Y N | ERR = SPACES
 N | STATUS-CLOSED
 1 | SET STATUS-OPEN TO TRUE
 `,
+		`LEAVE-SECTION 
+Y N | DONE = 1
+1   | EXIT SECTION
+  1 | DISPLAY 'STAYED'
+`,
 	}
 	if strings.Join(got, "\n") != strings.Join(want, "\n") {
 		t.Errorf("got\n%s\nwant\n%s", strings.Join(got, "\n"), strings.Join(want, "\n"))

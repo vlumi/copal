@@ -101,3 +101,8 @@
            EXIT.
        REJECT-PARA.
            EXIT.
+       LEAVE-SECTION SECTION.
+           IF DONE = 1
+               EXIT SECTION
+           END-IF
+           DISPLAY 'STAYED'.
