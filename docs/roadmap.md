@@ -163,7 +163,19 @@ Laurasia Card Services, a card processor written in another shop's COBOL, run by
 
 Done when: the survey's blueprints and cases of Laurasia are as right as Pangaea's, with no special case for either.
 
-## 14. Bedrock's COBOL as a library
+## 14. Names and prose by a model
+
+The facts hold on two specimens; now a model writes what they cannot say, on top of them and apart from them. The plan is in [plans/model-prose.md](plans/model-prose.md):
+
+- Annotations kept apart from the facts, each with a hash of the facts it was written from, checked before it is kept, and shown marked as a model's; built first with no model at all.
+- What each paragraph and section is for, and a name that says it.
+- Decision rules in sentences.
+- Programs, entities, fields and states.
+- A reading of the prose against the code.
+
+Done when: every program, paragraph, rule and entity of both specimens has prose that names only what the survey established, `make ci` needs no model, and a change in the facts marks the prose it touches stale.
+
+## 15. Bedrock's COBOL as a library
 
 What reads COBOL, lays out its records and reads them by field, `cobol`, `layout` and `record`, and `jcl` with them, as an open-source library of its own, for anyone else reading COBOL. Running it, `run`, `runner` and `dataset`, is this project's harness and stays here. The parsers evaluated before bedrock was written did not keep positions, lay out records or compute data flow that could be trusted; a library that does is worth having even unfinished.
 
@@ -175,4 +187,4 @@ Done when: it is published, the survey and the specimens import it from there, a
 
 ## Later
 
-From the brief: a model for naming paragraphs and explaining rules in prose, on top of the facts the analysis established and the evidence the oracle recorded.
+The oracle's batch run of Laurasia's scripts, as it runs Pangaea's jobs.
