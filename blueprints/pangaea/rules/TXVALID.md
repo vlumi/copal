@@ -101,26 +101,26 @@ Source: [TXVALID.cbl:203](../../../pangaea/programs/TXVALID.cbl#L203).
 
 ## 3200-VALIDATE-DETAIL
 
-| | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
-| --- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| `TD-AMOUNT IS NUMERIC` | Y | Y | Y | Y | Y | N | N | N | N | N |
-| `TD-ACCT-NO IS NUMERIC` | Y | Y | Y | Y | N | Y | Y | Y | Y | N |
-| `(FROM-BRANCHES AND NOT TD-KNOWN-CODE) OR (FROM-CARDS AND NOT TD-CARD-CODE)` | Y | N | N | N | | Y | N | N | N | |
-| `DETAIL-IS-VALID` | N | N | N | Y | N | N | N | N | Y | N |
-| `TD-AMOUNT IS NOT NUMERIC OR TD-AMOUNT = ZERO` | | Y | N | N | | | Y | N | N | |
-| `TD-TRANSFER AND (TD-COUNTER-ACCT-NO IS NOT NUMERIC OR TD-COUNTER-ACCT-NO = TD-ACCT-NO)` | | | Y | N | | | | Y | N | |
-| → `ADD 1 TO WS-DETAIL-COUNT` | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
-| → `ADD TD-AMOUNT TO WS-AMOUNT-TOTAL` | 2 | 2 | 2 | 2 | 2 | | | | | |
-| → `ADD TD-ACCT-NO TO WS-ACCT-HASH` | 3 | 3 | 3 | 3 | | 2 | 2 | 2 | 2 | |
-| → `SET DETAIL-IS-VALID TO TRUE` | 4 | 4 | 4 | 4 | 3 | 3 | 3 | 3 | 3 | 2 |
-| → `SET RJ-BAD-CODE TO TRUE` | 5 | | | | | 4 | | | | |
-| → `SET DETAIL-IS-REJECTED TO TRUE` | 6 | 6 | 6 | | 5 | 5 | 5 | 5 | | 4 |
-| → `PERFORM 3300-REJECT-RECORD` | 7 | 7 | 7 | | 6 | 6 | 6 | 6 | | 5 |
-| → `SET RJ-BAD-AMOUNT TO TRUE` | | 5 | | | | | 4 | | | |
-| → `SET RJ-BAD-COUNTER TO TRUE` | | | 5 | | | | | 4 | | |
-| → `WRITE TRAN-OUT-RECORD FROM TRAN-RECORD` | | | | 5 | | | | | 4 | |
-| → `ADD 1 TO WS-VALID-COUNT` | | | | 6 | | | | | 5 | |
-| → `SET RJ-BAD-ACCOUNT TO TRUE` | | | | | 4 | | | | | 3 |
+| | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+| --- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| `TD-AMOUNT IS NUMERIC` | Y | Y | Y | Y | Y | N | N | N |
+| `TD-ACCT-NO IS NUMERIC` | Y | Y | Y | Y | N | Y | Y | N |
+| `(FROM-BRANCHES AND NOT TD-KNOWN-CODE) OR (FROM-CARDS AND NOT TD-CARD-CODE)` | Y | N | N | N | | Y | N | |
+| `DETAIL-IS-VALID` | N | N | N | Y | N | N | N | N |
+| `TD-AMOUNT IS NOT NUMERIC OR TD-AMOUNT = ZERO` | | Y | N | N | | | Y | |
+| `TD-TRANSFER AND (TD-COUNTER-ACCT-NO IS NOT NUMERIC OR TD-COUNTER-ACCT-NO = TD-ACCT-NO)` | | | Y | N | | | | |
+| → `ADD 1 TO WS-DETAIL-COUNT` | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+| → `ADD TD-AMOUNT TO WS-AMOUNT-TOTAL` | 2 | 2 | 2 | 2 | 2 | | | |
+| → `ADD TD-ACCT-NO TO WS-ACCT-HASH` | 3 | 3 | 3 | 3 | | 2 | 2 | |
+| → `SET DETAIL-IS-VALID TO TRUE` | 4 | 4 | 4 | 4 | 3 | 3 | 3 | 2 |
+| → `SET RJ-BAD-CODE TO TRUE` | 5 | | | | | 4 | | |
+| → `SET DETAIL-IS-REJECTED TO TRUE` | 6 | 6 | 6 | | 5 | 5 | 5 | 4 |
+| → `PERFORM 3300-REJECT-RECORD` | 7 | 7 | 7 | | 6 | 6 | 6 | 5 |
+| → `SET RJ-BAD-AMOUNT TO TRUE` | | 5 | | | | | 4 | |
+| → `SET RJ-BAD-COUNTER TO TRUE` | | | 5 | | | | | |
+| → `WRITE TRAN-OUT-RECORD FROM TRAN-RECORD` | | | | 5 | | | | |
+| → `ADD 1 TO WS-VALID-COUNT` | | | | 6 | | | | |
+| → `SET RJ-BAD-ACCOUNT TO TRUE` | | | | | 4 | | | 3 |
 
 Source: [TXVALID.cbl:210](../../../pangaea/programs/TXVALID.cbl#L210).
 

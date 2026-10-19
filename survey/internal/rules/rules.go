@@ -363,12 +363,13 @@ func (e *extractor) follow(before, after []event) ([]event, bool) {
 // changed, which has the same outcome. An AND found true, one of whose
 // parts a later test finds false, is no path.
 func (e *extractor) holds(events []event) bool {
-	contradicts := func(c *cobol.Condition, outcome bool) bool {
-		o, known := e.evaluate(events, c)
-		return known && o != outcome
-	}
 	for i, ev := range events {
 		t, later := ev.test, events[i+1:]
+		others := slices.Delete(slices.Clone(events), i, i+1)
+		contradicts := func(c *cobol.Condition, outcome bool) bool {
+			o, known := e.evaluate(others, c)
+			return known && o != outcome
+		}
 		if t == nil || t.cond == nil || t.cond.Op != "AND" && t.cond.Op != "OR" {
 			continue
 		}

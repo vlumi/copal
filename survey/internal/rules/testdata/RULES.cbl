@@ -105,6 +105,13 @@
            IF DONE = 1
                DISPLAY 'DONE'
            END-IF.
+       CLASS-PARA.
+           IF AMT IS NUMERIC
+               DISPLAY 'NUMBER'
+           END-IF
+           IF AMT IS NOT NUMERIC OR AMT = ZERO
+               DISPLAY 'BAD'
+           END-IF.
        OPEN-PARA.
            EXIT.
        REJECT-PARA.

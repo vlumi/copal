@@ -99,10 +99,14 @@ func (e *extractor) valueOfTest(t *test, field string) (string, bool) {
 func isLiteral(op *cobol.Operand) bool { return op != nil && op.Name == "" && len(op.Refs) == 0 }
 
 // evaluate works out a condition's outcome from what a path knows, if it
-// can: a comparison of fields whose values it knows, or with a literal, an
+// can: the outcome a test of the same condition found, with nothing since
+// that may have changed it; a comparison of fields whose values it knows, or with a literal, an
 // equality with a literal the field is known not to be, a condition name on a field whose value it knows, or none of whose values
 // the field can still have, and AND, OR and NOT of those.
 func (e *extractor) evaluate(events []event, c *cobol.Condition) (outcome, ok bool) {
+	if o, tested := e.tested(events, c); tested {
+		return o, true
+	}
 	switch c.Op {
 	case "AND", "OR":
 		decided, all := c.Op == "OR", true
@@ -139,6 +143,21 @@ func (e *extractor) evaluate(events []event, c *cobol.Condition) (outcome, ok bo
 		return compare(c.Op, left, right)
 	case "TRUE":
 		return true, true
+	}
+	return false, false
+}
+
+// tested is the outcome of the path's latest test of a condition, if
+// nothing since may have changed what it refers to.
+func (e *extractor) tested(events []event, c *cobol.Condition) (outcome, ok bool) {
+	condition, refs := c.String(), c.Refs()
+	for _, ev := range slices.Backward(events) {
+		switch {
+		case ev.change != nil && e.knowledge.MayChange(*ev.change, refs):
+			return false, false
+		case ev.test != nil && ev.test.cond != nil && ev.test.condition == condition:
+			return ev.test.outcome, true
+		}
 	}
 	return false, false
 }
