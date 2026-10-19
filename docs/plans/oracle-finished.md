@@ -39,3 +39,9 @@ The table is as the plan began. Part 3 found most of the second row to be the fo
    As built: a rule no case reaches is marked when it finds two totals the program adds up itself to differ: an equality, found false, of two items of the program's working storage that it only ever adds to, from zero. No input field sets either, so the search has nothing to change to reach the rule; it takes the program's own arithmetic disagreeing with itself. The cases' README says so in the rule's cell, and `coverage.json` lists the rules as `ownTotals`. Three are marked: GLSUM's debits and credits, ACCTMNT's balances in and out, and STMTPRT's statements selected and printed. The mark says why the search cannot reach a rule, not that no run can: it is no proof that the totals always agree.
 
 Each part one pull request.
+
+## After the parts
+
+The 48 rules left after part 4 were taken in kinds, a pull request each.
+
+1. **What a path knows when it starts.** A pass through a loop knows the loop's UNTIL condition false, unless the loop tests it after each pass. A paragraph entered by PERFORM alone, and by no GO TO, THRU range or fall-through, knows the outcome of each condition it tests that every path to every PERFORM of it knows the same. The first paragraph of a program entered once a run, one nothing calls with items and that never returns to a caller, knows the values its working storage starts with. And a statement's own change, beside the paths through its AT END or WHENs, no longer counts what those run. TXVALID's tables lose 4 rules that found the file bad where it cannot be, and GLSUM's one that found transfers in transit with no month closed: 443 of 489 rules are reached, and 43 are left.
