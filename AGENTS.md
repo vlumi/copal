@@ -1,17 +1,18 @@
 # Agent instructions
 
-Copal is a project in four parts. Survey, in `survey/`, reads legacy COBOL batch systems and produces design blueprints from them: record layouts, program structure, data flow, business rules and the job network. The analysis is deterministic; no language model is involved until the deterministic core is solid. The First Bank of Pangaea, a small COBOL bank in `pangaea/`, is the specimen the survey is developed and tested against; it knows nothing of the survey. `bedrock/` is the language layer both use, and `console/` the one part built on both. README.md describes the project; docs/brief.md has the plan and the open decisions.
+Copal is a project in four parts, and two specimens. Survey, in `survey/`, reads legacy COBOL batch systems and produces design blueprints from them: record layouts, program structure, data flow, business rules and the job network. The analysis is deterministic; no language model is involved until the deterministic core is solid. The First Bank of Pangaea, a small COBOL bank in `pangaea/`, is the specimen the survey is developed and tested against; Laurasia Card Services, a card processor in `laurasia/`, written in another dialect and run by shell scripts, is the second, which shows where the survey is coupled to the first. Neither knows anything of the survey. `bedrock/` is the language layer survey and Pangaea use, and `console/` the one part built on both. README.md describes the project; docs/brief.md has the plan and the open decisions.
 
 ## Rules
 
 - Never mention where this project came from, any company or product it might be compared to as its origin, or any hiring process, in code, documentation, commit messages or anywhere else in the repository. Technical references to well-known tools and systems (GnuCOBOL, ProLeap, IBM mainframes) are fine where they explain a choice.
 - Survey is deterministic. Every blueprint fact is derived from the source by parsing and analysis, and is reproducible. Models may come later, only for naming and prose, and only on top of facts the analysis already established.
-- Pangaea is fiction written for this project. Never copy real proprietary code, layouts or data into it.
-- Pangaea runs: every program compiles with GnuCOBOL and the daily and month-end batches produce outputs that are checked in as golden files. A change to Pangaea updates its golden outputs in the same commit.
+- The specimens are fiction written for this project. Never copy real proprietary code, layouts or data into them.
+- The specimens run: every program compiles with GnuCOBOL, Pangaea's in IBM dialect and Laurasia's in Micro Focus dialect, and their batches produce outputs that are checked in as golden files. A change to a specimen updates its golden outputs in the same commit.
+- A coupling to one specimen that the other shows is fixed generically, never by special-casing either.
 - Survey's blueprints for Pangaea are golden files too, so a change in the analyzer shows as a diff in the blueprints.
-- The dependencies run one way, and `make ci` checks it: `bedrock` imports nothing else; `survey` and `pangaea` import `bedrock`, never each other; only `console` imports all three. Survey's tests read `pangaea/` as their fixture, which is data, not an import.
+- The dependencies run one way, and `make ci` checks it: `bedrock` imports nothing else; `survey`, `pangaea` and `laurasia` import `bedrock`, never each other; only `console` imports the rest. Survey's tests read the specimens as their fixtures, which is data, not an import.
 - Code is organized by feature, not by layer.
-- All text is English with en-US spelling: code, comments, documentation, commit messages, and Pangaea's programs and data. Comments are minimal.
+- All text is English with en-US spelling: code, comments, documentation, commit messages, and the specimens' programs and data. Comments are minimal.
 - Markdown paragraphs are one line each; the editor wraps. `.markdownlint.jsonc` encodes this.
 - Diagrams are generated as SVG or PNG, not Mermaid: the editor in use does not render Mermaid.
 - Routine operations are make targets with a `##` description, so plain `make` lists them; scripts do the work, the Makefile names it.
