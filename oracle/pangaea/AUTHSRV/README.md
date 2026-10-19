@@ -1,6 +1,6 @@
 # AUTHSRV: cases
 
-32 cases reach 28 of the 35 rules of AUTHSRV's decision tables, and of the programs it calls, 9 of the 9 of AUTHPUR, 6 of the 6 of AUTHREV, 14 of the 15 of ATMWDL, 3 of the 3 of ATMBAL. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's. A rule that finds two totals the program adds up itself to differ, items of its own that it only adds to, says so: no input field sets either, so the search has nothing to change to reach it.
+32 cases reach 28 of the 32 rules of AUTHSRV's decision tables, and of the programs it calls, 9 of the 9 of AUTHPUR, 6 of the 6 of AUTHREV, 14 of the 15 of ATMWDL, 3 of the 3 of ATMBAL. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's. A rule that finds two totals the program adds up itself to differ, items of its own that it only adds to, says so: no input field sets either, so the search has nothing to change to reach it.
 
 ## AUTHSRV
 
@@ -40,18 +40,15 @@
 | --: | --- |
 | 1 | [case 02](02/) |
 | 2 | [case 15](15/) |
-| 3 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` Y, `RS-RESULT = SPACES` N, `RS-APPROVED` Y, `RQ-BALANCE-ENQUIRY` N |
-| 4 | [case 09](09/) |
-| 5 | [case 08](08/) |
-| 6 | [case 01](01/) |
-| 7 | [case 32](32/) |
+| 3 | [case 09](09/) |
+| 4 | [case 08](08/) |
+| 5 | [case 01](01/) |
+| 6 | [case 32](32/) |
+| 7 | [case 09](09/) |
 | 8 | [case 09](09/) |
-| 9 | [case 09](09/) |
-| 10 | [case 23](23/) |
-| 11 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` N, `RS-RESULT = SPACES` N, `RS-APPROVED` Y, `RQ-BALANCE-ENQUIRY` N |
-| 12 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` N, `RS-RESULT = SPACES` N, `RS-APPROVED` Y, `RQ-BALANCE-ENQUIRY` Y |
-| 13 | [case 01](01/) |
-| 14 | [case 03](03/) |
+| 9 | [case 23](23/) |
+| 10 | [case 01](01/) |
+| 11 | [case 03](03/) |
 
 ### [2200-READ-CARD-AND-ACCOUNT](../../../blueprints/pangaea/rules/AUTHSRV.md#2200-read-card-and-account)
 
