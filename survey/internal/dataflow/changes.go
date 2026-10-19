@@ -26,17 +26,33 @@ func (f Flow) WithCalls(writes CallWrites) Flow {
 // items passed to it by reference, and a condition name stands for its
 // field.
 func (f Flow) MayChange(s cobol.Statement, names []string) bool {
-	written := f.written(s, map[string]bool{})
-	return slices.ContainsFunc(names, func(name string) bool {
-		item := f.names.item(name)
-		return slices.ContainsFunc(written, func(w string) bool { return w == item || f.Share(w, item) })
-	})
+	return len(f.Writers(s, names)) > 0
 }
 
-// written lists the items a statement writes, with those nested in it and
-// those of the paragraphs it performs, each paragraph once.
-func (f Flow) written(s cobol.Statement, performed map[string]bool) []string {
-	var items []string
+// Writers lists the statements a statement runs that may change any of
+// the data items named, as MayChange finds them: it, those nested in it,
+// and those of the paragraphs it performs and of the DECLARATIVES its
+// failure on a file runs, at any depth.
+func (f Flow) Writers(s cobol.Statement, names []string) []cobol.Statement {
+	items := make([]string, len(names))
+	for i, name := range names {
+		items[i] = f.names.item(name)
+	}
+	var writers []cobol.Statement
+	f.runs(s, map[string]bool{}, func(n cobol.Statement, writes []string) {
+		if slices.ContainsFunc(writes, func(w string) bool {
+			return slices.ContainsFunc(items, func(item string) bool { return w == item || f.Share(w, item) })
+		}) {
+			writers = append(writers, n)
+		}
+	})
+	return writers
+}
+
+// runs visits the statements a statement runs, with the items each
+// writes: it, those nested in it, and those of the paragraphs it
+// performs, each paragraph once.
+func (f Flow) runs(s cobol.Statement, performed map[string]bool, visit func(n cobol.Statement, writes []string)) {
 	cobol.Walk([]cobol.Statement{s}, func(n cobol.Statement) {
 		_, writes := f.names.uses(n)
 		if n.Verb == "CALL" && f.callWrites != nil {
@@ -44,7 +60,7 @@ func (f Flow) written(s cobol.Statement, performed map[string]bool) []string {
 				writes = called
 			}
 		}
-		items = append(items, writes...)
+		visit(n, writes)
 		if n.Verb == "GO" {
 			return
 		}
@@ -59,12 +75,11 @@ func (f Flow) written(s cobol.Statement, performed map[string]bool) []string {
 				}
 				performed[para.Name] = true
 				for _, st := range para.Statements {
-					items = append(items, f.written(st, performed)...)
+					f.runs(st, performed, visit)
 				}
 			}
 		}
 	})
-	return items
 }
 
 // span lists the paragraphs a procedure reference names: a paragraph, the

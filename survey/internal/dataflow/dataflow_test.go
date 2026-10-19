@@ -300,7 +300,8 @@ func TestEdgesOnce(t *testing.T) {
 }
 
 // A statement may change what it writes, by bytes, and what the
-// paragraphs it performs write; a condition name stands for its field.
+// paragraphs it performs write, by the statements that write it; a
+// condition name stands for its field.
 func TestMayChange(t *testing.T) {
 	p, err := cobol.ReadProgram("testdata/ORDER.cbl", nil)
 	if err != nil {
@@ -336,6 +337,13 @@ func TestMayChange(t *testing.T) {
 		if got := flow.MayChange(statement(c.statement), c.names); got != c.want {
 			t.Errorf("%s may change %v: %v, want %v", c.statement, c.names, got, c.want)
 		}
+	}
+	var writers []string
+	for _, w := range flow.Writers(statement("PERFORM READ-PARA"), []string{"WS-EOF"}) {
+		writers = append(writers, w.Text)
+	}
+	if want := []string{"MOVE 'Y' TO WS-EOF"}; !slices.Equal(writers, want) {
+		t.Errorf("PERFORM READ-PARA writes WS-EOF by %q, want %q", writers, want)
 	}
 }
 
