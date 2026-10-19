@@ -113,26 +113,34 @@ func (r *runner) outputs(dir string) (map[string][]byte, error) {
 		if !writes(f) && !slices.Contains(f.Opened, "I-O") {
 			continue
 		}
-		path := filepath.Join(dir, f.Name)
-		if keyed(f) {
-			unloaded := path + ".unload"
-			outcome, err := run.Step{Programs: r.loaders, Program: unloaderName(f), DDs: map[string]string{"UNLOADIN": path, "UNLOADOUT": unloaded},
-				Stdout: io.Discard, Timeout: timeout}.Run()
-			if err == nil && (outcome.RC != 0 || outcome.Abended) {
-				err = fmt.Errorf("unloading %s: %+v", f.Name, outcome)
-			}
-			if err != nil {
-				return nil, err
-			}
-			path = unloaded
-		}
-		data, err := os.ReadFile(path)
+		data, err := r.read(f, filepath.Join(dir, f.Name), filepath.Join(dir, f.Name+".unload"))
 		if err != nil {
 			return nil, err
 		}
-		outputs[f.Name] = asLines(data, f.Organization == "LINE SEQUENTIAL", r.recordLength(f))
+		outputs[f.Name] = data
 	}
 	return outputs, nil
+}
+
+// read reads a file of the program's at a path, a record a line: an
+// indexed or relative one through its unloader, which writes to another.
+func (r *runner) read(f blueprint.File, path, unloaded string) ([]byte, error) {
+	if keyed(f) {
+		outcome, err := run.Step{Programs: r.loaders, Program: unloaderName(f), DDs: map[string]string{"UNLOADIN": path, "UNLOADOUT": unloaded},
+			Stdout: io.Discard, Timeout: timeout}.Run()
+		if err == nil && (outcome.RC != 0 || outcome.Abended) {
+			err = fmt.Errorf("unloading %s: %+v", f.Name, outcome)
+		}
+		if err != nil {
+			return nil, err
+		}
+		path = unloaded
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	return asLines(data, f.Organization == "LINE SEQUENTIAL", r.recordLength(f)), nil
 }
 
 func (r *runner) recordLength(f blueprint.File) int {
