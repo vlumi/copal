@@ -39,6 +39,7 @@
        01  WS-COUNT                    PIC 9(6)       VALUE 0.
        01  WS-TOTAL                    PIC 9(9)V99    VALUE 0.
        01  WS-REJECTS                  PIC 9(6)       VALUE 0.
+       01  WS-CHECKED                  PIC 9(6)       VALUE 0.
        01  WS-EOF                      PIC X          VALUE 'N'.
            88  END-OF-BATCH            VALUE 'Y'.
        PROCEDURE DIVISION.
@@ -80,6 +81,10 @@
                MOVE 'TOTALS DIFFER' TO REPORT-LINE
                GO TO FINISH-BAD
            END-IF
+           IF WS-CHECKED NOT = WS-COUNT
+               MOVE 'COUNTS DIFFER' TO REPORT-LINE
+               GO TO FINISH-BAD
+           END-IF
            IF WS-REJECTS > 0
                MOVE 4 TO RETURN-CODE
            END-IF
@@ -100,6 +105,7 @@
            END-EVALUATE.
        CHECK-ITEM.
            ADD 1 TO WS-COUNT
+           ADD 1 TO WS-CHECKED
            ADD BI-AMOUNT TO WS-TOTAL
            MOVE BI-ACCT-NO TO AC-ACCT-NO
            READ ACCT-IN
