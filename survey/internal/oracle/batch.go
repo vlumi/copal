@@ -2,6 +2,7 @@ package oracle
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -32,6 +33,8 @@ type Batch struct {
 	sysout  map[string][]byte // by file in the job's output
 	reached map[string]map[rule]bool
 	results map[string]*Result
+	about   string // how the batch was run
+	ended   string // how it ended, if that is more than its steps say
 }
 
 // batchInput is a dataset a job reads from outside it, the program whose
@@ -41,6 +44,24 @@ type batchInput struct {
 	reader  *Result
 	input   input
 	records [][]byte
+}
+
+// RunBatch runs a batch of jobs, or of scripts, as RunJobs or RunScripts
+// runs them.
+func RunBatch(system *blueprint.System, jobs []*blueprint.Job, results map[string]*Result, scratch string) ([]*Batch, error) {
+	scripts := 0
+	for _, job := range jobs {
+		if job.Kind == "script" {
+			scripts++
+		}
+	}
+	switch scripts {
+	case 0:
+		return RunJobs(jobs, results, scratch)
+	case len(jobs):
+		return RunScripts(system, jobs, results, scratch)
+	}
+	return nil, errors.New("a batch of both jobs and scripts")
 }
 
 // RunJobs runs jobs, in the order given, on one catalog of datasets, in a
@@ -72,7 +93,7 @@ func runJob(job *blueprint.Job, results map[string]*Result, store *dataset.Store
 	if err != nil {
 		return nil, err
 	}
-	b := &Batch{Job: job.Name, results: results, reached: map[string]map[rule]bool{}}
+	b := &Batch{Job: job.Name, results: results, reached: map[string]map[rule]bool{}, about: jobAbout}
 	if err := b.provide(parsed, store, dir); err != nil {
 		return nil, err
 	}
@@ -388,11 +409,11 @@ func (b *Batch) Files() map[string][]byte {
 
 func (b *Batch) readme() string {
 	var s strings.Builder
-	fmt.Fprintf(&s, "# %s: a batch\n\n", b.Job)
-	s.WriteString("The job run after the jobs before it in the batch, on what they wrote, and on inputs taken from the cases of " +
-		"its steps' programs for the rest: each dataset it reads that no job before it, and no step of it before, wrote, with the records of the cleanest case of the first program that reads it, the first that ended with " +
-		"the lowest return code, and its in-stream data with the lines its program's cleanest case accepts. The datasets it wrote and its output are recorded beside.\n\n" +
-		"| Step | Program | Outcome | Rules reached |\n| --- | --- | --- | --: |\n")
+	fmt.Fprintf(&s, "# %s: a batch\n\n%s\n\n", b.Job, b.about)
+	if b.ended != "" {
+		s.WriteString(b.ended + "\n\n")
+	}
+	s.WriteString("| Step | Program | Outcome | Rules reached |\n| --- | --- | --- | --: |\n")
 	for _, step := range b.steps {
 		reached := ""
 		if r := b.results[step.Program]; r != nil && !step.Bypassed {
@@ -409,7 +430,19 @@ func (b *Batch) readme() string {
 			}
 			reached = fmt.Sprintf("%d of %d", n, total)
 		}
-		fmt.Fprintf(&s, "| %s | [%s](../../%s/) | %s | %s |\n", step.Step, step.Program, step.Program, step.Outcome(), reached)
+		program := step.Program
+		if b.results[step.Program] != nil {
+			program = fmt.Sprintf("[%s](../../%s/)", step.Program, step.Program)
+		}
+		if reached == "" {
+			fmt.Fprintf(&s, "| %s | %s | %s | |\n", step.Step, program, step.Outcome())
+			continue
+		}
+		fmt.Fprintf(&s, "| %s | %s | %s | %s |\n", step.Step, program, step.Outcome(), reached)
 	}
 	return s.String()
 }
+
+const jobAbout = "The job run after the jobs before it in the batch, on what they wrote, and on inputs taken from the cases of " +
+	"its steps' programs for the rest: each dataset it reads that no job before it, and no step of it before, wrote, with the records of the cleanest case of the first program that reads it, the first that ended with " +
+	"the lowest return code, and its in-stream data with the lines its program's cleanest case accepts. The datasets it wrote and its output are recorded beside."

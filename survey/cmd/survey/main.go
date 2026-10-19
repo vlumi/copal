@@ -104,7 +104,7 @@ func searchCases(args []string) error {
 	rules := flags.String("rules", "", "directory of the blueprints' decision tables, relative to the cases' directory")
 	title := flags.String("title", "the system", "name of the system, for the index")
 	only := flags.String("program", "", "the main program to search for, instead of every one")
-	order := flags.String("jobs", "", "jobs to run as a batch on the cases, in order, separated by commas")
+	order := flags.String("jobs", "", "jobs or scripts to run as a batch on the cases, in order, separated by commas")
 	_ = flags.Parse(args)
 	if *copybooks == "" || flags.NArg() == 0 {
 		fmt.Fprint(os.Stderr, usage)
@@ -158,7 +158,7 @@ func searchCases(args []string) error {
 			jobs = append(jobs, &system.Jobs[i])
 		}
 	}
-	batches, err := oracle.RunJobs(jobs, byName, scratch)
+	batches, err := oracle.RunBatch(system, jobs, byName, scratch)
 	if err != nil {
 		return err
 	}
