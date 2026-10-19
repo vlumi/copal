@@ -19,7 +19,7 @@ import (
 // declines others.
 func TestSimulator(t *testing.T) {
 	programs := t.TempDir()
-	if _, err := (run.Build{Sources: "../programs", Copybooks: "../copybooks", Out: programs}).Programs(); err != nil {
+	if _, err := (run.Build{Dialect: run.IBM, Sources: "../programs", Copybooks: "../copybooks", Out: programs}).Programs(); err != nil {
 		t.Fatal(err)
 	}
 	b := bank.Bank{Dir: t.TempDir(), Programs: programs, Copybooks: "../copybooks", Jobs: "../jobs"}

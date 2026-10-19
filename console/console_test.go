@@ -19,7 +19,7 @@ import (
 // the browser, then reads every page.
 func TestConsole(t *testing.T) {
 	programs := t.TempDir()
-	if _, err := (run.Build{Sources: "../pangaea/programs", Copybooks: "../pangaea/copybooks", Out: programs}).Programs(); err != nil {
+	if _, err := (run.Build{Dialect: run.IBM, Sources: "../pangaea/programs", Copybooks: "../pangaea/copybooks", Out: programs}).Programs(); err != nil {
 		t.Fatal(err)
 	}
 	b := bank.Bank{Dir: t.TempDir(), Programs: programs, Copybooks: "../pangaea/copybooks", Jobs: "../pangaea/jobs"}

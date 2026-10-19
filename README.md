@@ -2,16 +2,17 @@
 
 *Reading the code that still runs the books.*
 
-Copal is a study of one problem: understanding a legacy COBOL batch system well enough to replace it. It has four parts, in four directories.
+Copal is a study of one problem: understanding a legacy COBOL batch system well enough to replace it. It has four parts, in four directories, and a second specimen beside the first.
 
 | Directory | What it is |
 | --- | --- |
 | [survey/](survey/) | **Survey**, the analyzer. Reads a COBOL system and draws its blueprints: the layout of every record, the structure of every program, which fields each step reads and writes, the business rules buried in conditions, and the job network that ties the programs together through fixed-format files. All of it derived deterministically from the source. `survey explore` serves the same analysis in the browser. |
 | [pangaea/](pangaea/) | **The First Bank of Pangaea**, the specimen. A small but working COBOL bank, fiction written for this project: accounts, a daily batch, a month-end run and an online day of card and ATM authorizations, compiled and run with GnuCOBOL. It knows nothing of the survey. |
+| [laurasia/](laurasia/) | **Laurasia Card Services**, the second specimen. A card processor, issuer and acquirer in one, in another shop's COBOL: Micro Focus dialect, free format, sections, run by shell scripts instead of JCL. Clearing, matching, interchange, posting, disputes, settlement and a billing cycle. It is there to show where the survey assumes Pangaea. |
 | [bedrock/](bedrock/) | What both stand on: reading COBOL source and JCL, laying out records from copybooks, and reading and writing records by field. The survey analyzes with it; the bank's machine room runs the bank with it. |
 | [console/](console/) | Built for the modernization: a web window that runs the bank, watches its online day, and shows each run's jobs as the survey draws them, with links to the blueprints. The one part that knows both the bank and the survey. |
 
-The survey of Pangaea is checked in as [blueprints/pangaea/](blueprints/pangaea/README.md), golden files that `make ci` regenerates and compares, so a change in the analyzer shows as a diff in what it says about the bank. The dependencies run one way: `bedrock` imports nothing else, `survey` and `pangaea` import `bedrock`, and only `console` imports all three; `make ci` checks it.
+The survey of Pangaea is checked in as [blueprints/pangaea/](blueprints/pangaea/README.md), golden files that `make ci` regenerates and compares, so a change in the analyzer shows as a diff in what it says about the bank. The dependencies run one way: `bedrock` imports nothing else, `survey`, `pangaea` and `laurasia` import `bedrock`, and only `console` imports the rest; `make ci` checks it.
 
 Survey does not translate COBOL into anything. It produces the understanding a translation needs, and later the tests a rewrite has to pass.
 

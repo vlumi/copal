@@ -74,7 +74,7 @@ func build(args []string) error {
 	copybooks := flags.String("copybooks", "pangaea/copybooks", "directory of the copybooks")
 	out := flags.String("out", "pangaea/build", "directory for the executables")
 	_ = flags.Parse(args)
-	names, err := run.Build{Sources: *src, Copybooks: *copybooks, Out: *out}.Programs()
+	names, err := run.Build{Dialect: run.IBM, Sources: *src, Copybooks: *copybooks, Out: *out}.Programs()
 	if err != nil {
 		return err
 	}

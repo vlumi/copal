@@ -1,7 +1,8 @@
 #!/bin/sh
 # Checks that the dependencies between Copal's parts run one way: bedrock
-# imports nothing else, survey and pangaea import bedrock and never each
-# other, and only console imports all three. Tests count too.
+# imports nothing else, survey and the specimens, pangaea and laurasia,
+# import bedrock and never each other, and only console imports survey,
+# pangaea and bedrock. Tests count too.
 set -eu
 
 module=github.com/vlumi/copal
@@ -21,7 +22,8 @@ forbid() {
     done
 }
 
-forbid bedrock survey pangaea console
-forbid survey pangaea console
-forbid pangaea survey console
+forbid bedrock survey pangaea laurasia console
+forbid survey pangaea laurasia console
+forbid pangaea survey laurasia console
+forbid laurasia survey pangaea console
 exit $status

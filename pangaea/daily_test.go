@@ -28,7 +28,7 @@ import (
 // rewrite the golden files.
 func TestDaily(t *testing.T) {
 	programs := t.TempDir()
-	if _, err := (run.Build{Sources: "programs", Copybooks: "copybooks", Out: programs}).Programs(); err != nil {
+	if _, err := (run.Build{Dialect: run.IBM, Sources: "programs", Copybooks: "copybooks", Out: programs}).Programs(); err != nil {
 		t.Fatal(err)
 	}
 	codec := newCodec(t)
