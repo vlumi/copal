@@ -91,6 +91,10 @@ EXPLORE_ADDR ?= 127.0.0.1:1192
 explore:  ## Explore Pangaea's analysis in the browser (EXPLORE_ADDR)
 	go run ./survey/cmd/survey explore -copybooks pangaea/copybooks -addr $(EXPLORE_ADDR) -title "the First Bank of Pangaea" -cases oracle/pangaea pangaea/programs/*.cbl pangaea/jobs/*.jcl
 
+.PHONY: explore-laurasia
+explore-laurasia:  ## Explore Laurasia's analysis in the browser (EXPLORE_ADDR)
+	go run ./survey/cmd/survey explore -dialect mf -copybooks laurasia/copybooks -addr $(EXPLORE_ADDR) -title "Laurasia Card Services" -cases oracle/laurasia laurasia/programs/*.cbl laurasia/scripts/*.sh
+
 .PHONY: docs-diagrams
 docs-diagrams:  ## Redraw the diagrams of docs/architecture.md
 	go run ./survey/cmd/docsdiagrams -out docs/diagrams

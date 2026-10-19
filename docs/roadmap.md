@@ -151,15 +151,15 @@ Before a model, everything the code says, right and published. The plan is in [p
 
 Done when: every fact the survey derives for its own use is in the blueprints, and the oracle's unreached rules are only rules a run could take.
 
-## 13. A second specimen
+## 13. A second specimen (done)
 
 Laurasia Card Services, a card processor written in another shop's COBOL, run by shell scripts, so that the survey is not coupled to Pangaea. The plan is in [plans/second-specimen.md](plans/second-specimen.md):
 
-- The first slice of Laurasia: clearing, matching, interchange, posting, the billing cycle, disputes and merchant settlement, in Micro Focus free-format COBOL, with golden outputs.
-- The survey run on it as it is, and every break and wrong fact written down.
-- The language: sections, declaratives, several records under an FD, variable-length and relative files, and the rest.
-- The batch read from shell scripts as well as JCL.
-- Lineage, the design views and the oracle on Laurasia.
+- The first slice of Laurasia: clearing, matching, interchange, posting, the billing cycle, disputes and merchant settlement, in Micro Focus free-format COBOL, with golden outputs (done).
+- The survey run on it as it is, and every break and wrong fact written down: 21 findings (done).
+- The language: sections, declaratives, several records under an FD, variable-length and relative files, and the rest (done).
+- The batch read from shell scripts as well as JCL (done).
+- Lineage, the design views and the oracle on Laurasia (done); the oracle's batch run of its scripts is left.
 
 Done when: the survey's blueprints and cases of Laurasia are as right as Pangaea's, with no special case for either.
 

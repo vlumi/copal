@@ -2,6 +2,8 @@
 
 Part 2 of [second-specimen.md](second-specimen.md): the survey run on Laurasia Card Services as it was after part 1, unchanged, and every place it breaks or comes out wrong. Each is a coupling to Pangaea, to be fixed generically in the part named, never by special-casing Laurasia.
 
+Every finding was fixed in parts 3 to 5, in #94 to #101, generically: none special-cases Laurasia, and several were couplings Pangaea hid, which its blueprints show fixed too.
+
 ## How it was found
 
 As is, the survey reads none of Laurasia's 14 programs: each stops at its first error, all of them in the parser or the layouts. To see past the first error, a throwaway copy of the analyzer was patched just enough to go on, one break at a time, and so was a copy of Laurasia's sources for the two constructs it could not get past: the nested program was moved to a file of its own and the declaratives were taken out. With those, all 15 programs, the nested one counted, parse and the blueprints are written; what they say was then read against the code. None of the patches is kept. There are no golden blueprints of Laurasia yet, as there is nothing to write until the parser reads it; the first come with part 3.
