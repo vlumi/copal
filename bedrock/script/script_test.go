@@ -2,6 +2,7 @@ package script
 
 import (
 	"fmt"
+	"maps"
 	"slices"
 	"strings"
 	"testing"
@@ -60,6 +61,20 @@ func TestParse(t *testing.T) {
 	}
 	if in := s.Steps[0].Bindings["IN"]; in != "$DATA/inbound/IN.$DATE.txt" {
 		t.Errorf("DD_IN bound to %q", in)
+	}
+	if !maps.Equal(s.Parameters, map[string]string{"DATE": "1", "DATA": "LCS_DATA"}) {
+		t.Errorf("parameters %v", s.Parameters)
+	}
+	values := map[string]string{"1": "20261019", "LCS_DATA": "/data", "LCS_BIN": "/bin"}
+	value := func(parameter string) string { return values[parameter] }
+	for text, want := range map[string]string{
+		s.Steps[0].Bindings["IN"]: "/data/inbound/IN.20261019.txt",
+		s.Steps[0].Command:        "/bin/load",
+		"${DATA}/x.$UNSET":        "/data/x.",
+	} {
+		if got := s.Expand(text, value); got != want {
+			t.Errorf("%s expands to %q, want %q", text, got, want)
+		}
 	}
 }
 

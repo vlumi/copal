@@ -14,3 +14,11 @@ For each main program, input data that reaches the rules of its decision tables,
 | [MATCH](MATCH/) | 15 of 15 | 4 |
 | [POST](POST/) | 17 of 21 | 9 |
 | [SETTLE](SETTLE/) | 12 of 12 | 2 |
+
+And for each job, a batch: the job run through its steps on inputs from its programs' cleanest cases, with the datasets it wrote and its output.
+
+| Job | Steps |
+| --- | --- |
+| [open](jobs/open/) | ACCTLD RC=0008 |
+| [nightly](jobs/nightly/) | CLRIN RC=0004, PRESSORT RC=0000, AUTHSORT RC=0000, MATCH RC=0000, FEELD RC=0000, IXFEE RC=0000, POST RC=0000, DISPUTES RC=0000, DISPUTES.DSPSORT RC=0000, DISPUTES.DISPUTE RC=0004, DISPUTES.DSPNEW RC=0000, SETLSORT RC=0000, ADJSORT RC=0000, SETTLE RC=0004, ACCTUL RC=0000 |
+| [cycle](jobs/cycle/) | CYCLE RC=0000, ACCTUL RC=0000 |

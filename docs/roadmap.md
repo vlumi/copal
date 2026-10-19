@@ -165,9 +165,9 @@ Done when: the survey's blueprints and cases of Laurasia are as right as Pangaea
 
 ## 14. The oracle, finished
 
-The oracle runs Pangaea's jobs as well as its programs, and on both specimens it leaves 95 rules unreached. Most of them a run could reach, or the survey could show no run can:
+The oracle runs Pangaea's jobs as well as its programs, and on both specimens it leaves 95 rules unreached. Most of them a run could reach, or the survey could show no run can. The plan is in [plans/oracle-finished.md](plans/oracle-finished.md):
 
-- The batch run of Laurasia's scripts, as it runs Pangaea's jobs, so that the oracle's batch is no more coupled to JCL than the survey is.
+- The batch run of Laurasia's scripts, as it runs Pangaea's jobs, so that the oracle's batch is no more coupled to JCL than the survey is (done).
 - I/O errors: the rules that only a file status other than success takes, reached by runs that fail a file on purpose and the same way every time, a missing file or a record of the wrong length.
 - What a called program returns: a field the called program sets is carried back into the caller, so that a combination of conditions no call can return is left out of the caller's rules, as one no path can take is.
 - Totals that agree by construction, such as debits and credits, listed as rules only bad data reaches, apart from the rest.

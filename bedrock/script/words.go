@@ -77,6 +77,28 @@ func (p *parser) expand(text string) string {
 	return b.String()
 }
 
+// Expand expands the variables a step's text is written in, as a run of
+// the script would: a variable that stands for a parameter or a variable
+// of the environment, and each of those, to the value value gives that
+// parameter, named without its $, as 1 or LCS_DATA.
+func (s *Script) Expand(text string, value func(parameter string) string) string {
+	var b strings.Builder
+	for i := 0; i < len(text); i++ {
+		if text[i] != '$' {
+			b.WriteByte(text[i])
+			continue
+		}
+		n := variableEnd(text, i)
+		name := strings.Trim(text[i+1:n], "{}")
+		if parameter, ok := s.Parameters[name]; ok {
+			name = parameter
+		}
+		b.WriteString(value(name))
+		i = n - 1
+	}
+	return b.String()
+}
+
 // variableEnd is the index after the variable reference that starts at i:
 // $NAME, ${NAME}, $1 or $?.
 func variableEnd(text string, i int) int {

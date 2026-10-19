@@ -4,4 +4,4 @@ The run ended with return code 8.
 
 The first case to reach:
 
-- [CLRIN, VALIDATE-PRESENTMENT, rule 4](../../../../blueprints/laurasia/rules/CLRIN.md#validate-presentment)
+- [CLRIN, TAKE-BATCH, rule 4](../../../../blueprints/laurasia/rules/CLRIN.md#take-batch)

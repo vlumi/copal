@@ -17,11 +17,14 @@ import (
 )
 
 // Script is a parsed script: its name, the comment at its head that
-// describes it, and its steps in order.
+// describes it, its steps in order, and the variables that only stand for
+// a parameter of the script or a variable of its environment, as DATE for
+// $1 or DATA for $LCS_DATA, which its steps' paths are written in.
 type Script struct {
-	Name    string
-	Comment []string
-	Steps   []Step
+	Name       string
+	Comment    []string
+	Steps      []Step
+	Parameters map[string]string
 }
 
 // Kind is what a step runs.
@@ -105,7 +108,7 @@ func ParseFile(path string) (*Script, error) {
 
 // Parse reads a script from r.
 func Parse(name string, r io.Reader) (*Script, error) {
-	p := &parser{script: &Script{Name: name}, vars: map[string]string{}, bindings: map[string]string{}, head: true}
+	p := &parser{script: &Script{Name: name, Parameters: map[string]string{}}, vars: map[string]string{}, bindings: map[string]string{}, head: true}
 	scanner := bufio.NewScanner(r)
 	for line := 1; scanner.Scan(); line++ {
 		if err := p.line(line, scanner.Text()); err != nil {
@@ -205,6 +208,9 @@ var (
 // read $DATA/work/$DATE and not $LCS_DATA/work/$1.
 func (p *parser) assign(name, value string) {
 	if parameter.MatchString(value) {
+		if value != "$?" {
+			p.script.Parameters[name] = strings.TrimPrefix(value, "$")
+		}
 		value = "$" + name
 	}
 	p.vars[name] = value
