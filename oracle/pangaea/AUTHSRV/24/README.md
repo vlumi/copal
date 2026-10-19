@@ -4,4 +4,4 @@ The run ended with return code 0.
 
 The first case to reach:
 
-- [ATMWDL, 0000-MAIN, rule 7](../../../../blueprints/pangaea/rules/ATMWDL.md#0000-main)
+- [AUTHPUR, 1000-START-CARD-TOTALS, rule 2](../../../../blueprints/pangaea/rules/AUTHPUR.md#1000-start-card-totals)

@@ -10,8 +10,9 @@ import (
 // The search reaches every rule of the fixture's tables that a run can
 // reach: a missing header and trailer, a header of another date, totals
 // that differ and totals that match, an account that exists, one that does
-// not and one that is closed, and a large debit, from a base case that
-// passes and the levers the program's own conditions give.
+// not and one that is closed, a large debit, and files that cannot be
+// opened or read, from a base case that passes and the levers the
+// program's own conditions and files give.
 func TestSearch(t *testing.T) {
 	system, err := blueprint.Analyze([]string{"testdata/BATCH.cbl"}, "testdata/copybooks", cobol.IBM)
 	if err != nil {

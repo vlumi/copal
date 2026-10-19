@@ -1,12 +1,9 @@
 # ACCTMNT: case 07
 
-The run ended with return code 4.
+The run ended with return code 16.
+
+CONTROL-FILE is missing, so opening it fails.
 
 The first case to reach:
 
-- [ACCTMNT, 2200-APPLY-REQUEST, rule 5](../../../../blueprints/pangaea/rules/ACCTMNT.md#2200-apply-request)
-- [ACCTMNT, 2200-APPLY-REQUEST, rule 6](../../../../blueprints/pangaea/rules/ACCTMNT.md#2200-apply-request)
-- [ACCTMNT, 2200-APPLY-REQUEST, rule 7](../../../../blueprints/pangaea/rules/ACCTMNT.md#2200-apply-request)
-- [ACCTMNT, 2230-FREEZE, rule 2](../../../../blueprints/pangaea/rules/ACCTMNT.md#2230-freeze)
-- [ACCTMNT, 2240-UNFREEZE, rule 2](../../../../blueprints/pangaea/rules/ACCTMNT.md#2240-unfreeze)
-- [ACCTMNT, 2250-LIMIT, rule 1](../../../../blueprints/pangaea/rules/ACCTMNT.md#2250-limit)
+- [ACCTMNT, 1000-INITIALIZE, rule 1](../../../../blueprints/pangaea/rules/ACCTMNT.md#1000-initialize)

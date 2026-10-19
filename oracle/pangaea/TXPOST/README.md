@@ -1,6 +1,6 @@
 # TXPOST: cases
 
-12 cases reach 29 of the 30 rules of TXPOST's decision tables. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's.
+13 cases reach 30 of the 30 rules of TXPOST's decision tables. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's.
 
 ## [0000-MAIN](../../../blueprints/pangaea/rules/TXPOST.md#0000-main)
 
@@ -13,7 +13,7 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | not reached: `WS-CONTROL-STATUS NOT = '00' OR WS-ACCT-IN-STATUS NOT = '00' OR WS-TRAN-IN-STATUS NOT = '00' OR WS-ACCT-OUT-STATUS NOT = '00' OR NOT AUDIT-OPENED OR NOT REJECTS-OPENED OR WS-LEGS-STATUS NOT = '00' OR WS-REPORT-STATUS NOT = '00'` Y |
+| 1 | [case 10](10/) |
 | 2 | [case 08](08/) |
 | 3 | [case 01](01/) |
 
@@ -37,7 +37,7 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 10](10/) |
+| 1 | [case 11](11/) |
 | 2 | [case 02](02/) |
 | 3 | [case 01](01/) |
 
@@ -49,7 +49,7 @@
 | 2 | [case 09](09/) |
 | 3 | [case 04](04/) |
 | 4 | [case 06](06/) |
-| 5 | [case 11](11/) |
+| 5 | [case 12](12/) |
 | 6 | [case 03](03/) |
 | 7 | [case 07](07/) |
 
@@ -57,7 +57,7 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 12](12/) |
+| 1 | [case 13](13/) |
 | 2 | [case 05](05/) |
 | 3 | [case 03](03/) |
 
@@ -66,18 +66,18 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 05](05/) |
-| 2 | [case 10](10/) |
+| 2 | [case 11](11/) |
 
 ## [3900-REJECT-TRAN](../../../blueprints/pangaea/rules/TXPOST.md#3900-reject-tran)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 10](10/) |
+| 1 | [case 11](11/) |
 | 2 | [case 02](02/) |
 
 ## [5000-RECONCILE](../../../blueprints/pangaea/rules/TXPOST.md#5000-reconcile)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 10](10/) |
+| 1 | [case 11](11/) |
 | 2 | [case 02](02/) |

@@ -4,19 +4,19 @@ For each main program, input data that reaches the rules of its decision tables,
 
 | Program | Rules reached | Cases |
 | --- | --: | --: |
-| [ACCTLOAD](ACCTLOAD/) | 8 of 9 | 3 |
-| [ACCTMNT](ACCTMNT/) | 36 of 41 | 12 |
-| [AUTHSRV](AUTHSRV/) | 53 of 79 | 26 |
-| [BANKDATE](BANKDATE/) | 2 of 3 | 2 |
-| [CARDLOAD](CARDLOAD/) | 9 of 10 | 4 |
-| [GLSUM](GLSUM/) | 17 of 26 | 5 |
-| [HOLDEXT](HOLDEXT/) | 10 of 11 | 5 |
-| [INTACCR](INTACCR/) | 25 of 33 | 7 |
-| [MONCHG](MONCHG/) | 17 of 21 | 10 |
-| [STMTPRT](STMTPRT/) | 28 of 34 | 10 |
-| [TXPOST](TXPOST/) | 29 of 30 | 12 |
-| [TXSORT](TXSORT/) | 1 of 2 | 1 |
-| [TXVALID](TXVALID/) | 31 of 39 | 19 |
+| [ACCTLOAD](ACCTLOAD/) | 9 of 9 | 4 |
+| [ACCTMNT](ACCTMNT/) | 37 of 41 | 13 |
+| [AUTHSRV](AUTHSRV/) | 54 of 79 | 27 |
+| [BANKDATE](BANKDATE/) | 3 of 3 | 3 |
+| [CARDLOAD](CARDLOAD/) | 10 of 10 | 5 |
+| [GLSUM](GLSUM/) | 19 of 26 | 7 |
+| [HOLDEXT](HOLDEXT/) | 11 of 11 | 6 |
+| [INTACCR](INTACCR/) | 27 of 33 | 9 |
+| [MONCHG](MONCHG/) | 18 of 21 | 11 |
+| [STMTPRT](STMTPRT/) | 30 of 34 | 12 |
+| [TXPOST](TXPOST/) | 30 of 30 | 13 |
+| [TXSORT](TXSORT/) | 2 of 2 | 2 |
+| [TXVALID](TXVALID/) | 32 of 39 | 20 |
 
 And for each job, a batch: the job run through its steps on inputs from its programs' cleanest cases, with the datasets it wrote and its output.
 
