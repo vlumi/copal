@@ -2,7 +2,8 @@
 // statements: in order within a paragraph, into the branches of IF,
 // EVALUATE, SEARCH and the conditional phrases, round the loops of PERFORM,
 // to the target of a GO TO, out of the paragraph at EXIT PARAGRAPH and
-// out of the section at EXIT SECTION, on
+// out of the section at EXIT SECTION, through the DECLARATIVES for a file
+// from an input or output statement that fails on it, on
 // from one paragraph into the next, and into a performed range and back to
 // the statement after the PERFORM.
 //
@@ -52,11 +53,12 @@ const (
 const maxNodes = 100_000
 
 // New lays out the paths through a program's procedure division, which
-// starts at its first paragraph.
+// starts at its first paragraph after the DECLARATIVES.
 func New(p *cobol.Program) *Graph {
 	b := &builder{program: p, graph: &Graph{Nodes: make([]Node, 2), Covered: true}}
-	if len(p.Paragraphs) > 0 {
-		b.link(Entry, b.performed(0, len(p.Paragraphs)-1, End))
+	first := slices.IndexFunc(p.Paragraphs, func(para cobol.Paragraph) bool { return !para.Declarative })
+	if first >= 0 {
+		b.link(Entry, b.performed(first, len(p.Paragraphs)-1, End))
 	} else {
 		b.link(Entry, End)
 	}
@@ -202,6 +204,9 @@ func (b *builder) statement(r scope, s *cobol.Statement, next int) int {
 		b.sort(n, s, next)
 	default:
 		b.branches(r, n, s, next)
+		for _, section := range b.program.ErrorProcedures(*s) {
+			b.link(n, b.procedure(cobol.ProcedureRef{Name: section}, next))
+		}
 	}
 	return n
 }

@@ -41,6 +41,9 @@ type Program struct {
 	Constants      []Constant       `json:"constants,omitempty"`
 	Records        []Record         `json:"records"`
 	Paragraphs     []Paragraph      `json:"paragraphs"`
+	// Declaratives are the sections the runtime runs when an input or
+	// output statement fails on a file.
+	Declaratives []Declarative `json:"declaratives,omitempty"`
 	// ReadsSysin is set for a program that ACCEPTs from the job's SYSIN.
 	ReadsSysin bool `json:"readsSysin,omitempty"`
 	// Displays are the DISPLAY statements to the job's output.
@@ -343,6 +346,7 @@ func analyzeProgram(path, copybookDir string, dialect cobol.Dialect) (Program, e
 	}
 
 	program.Constants = constants(p)
+	program.Declaratives = declaratives(p)
 	laidOut, err := layout.Program(p, dialect)
 	if err != nil {
 		return Program{}, err
@@ -482,6 +486,24 @@ func newRecord(f *layout.Field, section, file, programPath string, keys map[stri
 		r.Copybook = copybookName(f.Pos.File)
 	}
 	return r
+}
+
+// Declarative is a section of the DECLARATIVES, and what it is for: the
+// files named, or every file opened in the modes named.
+type Declarative struct {
+	Section string   `json:"section"`
+	Files   []string `json:"files,omitempty"`
+	Modes   []string `json:"modes,omitempty"`
+	Source  string   `json:"source"`
+}
+
+// declaratives lists a program's declaratives.
+func declaratives(p *cobol.Program) []Declarative {
+	var list []Declarative
+	for _, d := range p.Declaratives {
+		list = append(list, Declarative{Section: d.Section, Files: d.Files, Modes: d.Modes, Source: d.Pos.String()})
+	}
+	return list
 }
 
 // Constant is a level-78 constant: a name for a value.

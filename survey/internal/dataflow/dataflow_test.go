@@ -338,3 +338,22 @@ func TestMayChange(t *testing.T) {
 		}
 	}
 }
+
+func TestMayChangeThroughDeclaratives(t *testing.T) {
+	p, err := cobol.ReadProgram("../controlflow/testdata/DECLARE.cbl", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	records, err := layout.Program(p, cobol.MicroFocus)
+	if err != nil {
+		t.Fatal(err)
+	}
+	flow := Analyze(p, records)
+	main := p.Paragraphs[len(p.Paragraphs)-1]
+	if open := main.Statements[0]; !flow.MayChange(open, []string{"WS-FAILED"}) {
+		t.Error("an OPEN whose failure runs a declarative that sets WS-FAILED does not change it")
+	}
+	if goback := main.Statements[2]; flow.MayChange(goback, []string{"WS-FAILED"}) {
+		t.Error("GOBACK changes WS-FAILED")
+	}
+}
