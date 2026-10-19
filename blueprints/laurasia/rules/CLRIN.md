@@ -45,23 +45,23 @@ Source: [clrin.cbl:116](../../../laurasia/programs/clrin.cbl#L116).
 
 ## TAKE-BATCH
 
-| | 1 | 2 | 3 | 4 | 5 |
-| --- | :-: | :-: | :-: | :-: | :-: |
-| `IS-BATCH-HEADER` | N | Y | Y | Y | Y |
-| `IS-BATCH-TRAILER AND BT-COUNT = WS-BATCH-COUNT AND BT-AMOUNT = WS-BATCH-AMOUNT` | | Y | Y | N | N |
-| `IS-BATCH-TRAILER` | | Y | N | Y | N |
-| → `MOVE 'ORDR' TO WS-REASON` | 1 | | | | |
-| → `PERFORM REJECT-RECORD` | 2 | | | | |
-| → `PERFORM READ-CLEARING` | 3 | 4, 9 | 4 | 4, 9 | 4 |
-| → `EXIT SECTION` | 4 | | | | |
-| → `MOVE BH-BATCH-NO TO WS-BATCH-NO` | | 1 | 1 | 1 | 1 |
-| → `MOVE ZERO TO WS-BATCH-COUNT WS-BATCH-AMOUNT WS-HELD-COUNT` | | 2 | 2 | 2 | 2 |
-| → `ADD 1 TO WS-BATCHES` | | 3 | 3 | 3 | 3 |
-| → `PERFORM TAKE-PRESENTMENT UNTIL CLEARING-AT-END OR NOT IS-PRESENTMENT` | | 5 | 5 | 5 | 5 |
-| → `MOVE CLR-PRESENTMENT TO WS-RECORD-READ` | | 6 | 6 | 6 | 6 |
-| → `PERFORM RELEASE-BATCH` | | 7 | 7 | | |
-| → `MOVE WS-RECORD-READ TO CLR-PRESENTMENT` | | 8 | 8 | 8 | 8 |
-| → `PERFORM REJECT-BATCH` | | | | 7 | 7 |
+| | 1 | 2 | 3 | 4 |
+| --- | :-: | :-: | :-: | :-: |
+| `IS-BATCH-HEADER` | N | Y | Y | Y |
+| `IS-BATCH-TRAILER AND BT-COUNT = WS-BATCH-COUNT AND BT-AMOUNT = WS-BATCH-AMOUNT` | | Y | N | N |
+| `IS-BATCH-TRAILER` | | Y | Y | N |
+| → `MOVE 'ORDR' TO WS-REASON` | 1 | | | |
+| → `PERFORM REJECT-RECORD` | 2 | | | |
+| → `PERFORM READ-CLEARING` | 3 | 4, 9 | 4, 9 | 4 |
+| → `EXIT SECTION` | 4 | | | |
+| → `MOVE BH-BATCH-NO TO WS-BATCH-NO` | | 1 | 1 | 1 |
+| → `MOVE ZERO TO WS-BATCH-COUNT WS-BATCH-AMOUNT WS-HELD-COUNT` | | 2 | 2 | 2 |
+| → `ADD 1 TO WS-BATCHES` | | 3 | 3 | 3 |
+| → `PERFORM TAKE-PRESENTMENT UNTIL CLEARING-AT-END OR NOT IS-PRESENTMENT` | | 5 | 5 | 5 |
+| → `MOVE CLR-PRESENTMENT TO WS-RECORD-READ` | | 6 | 6 | 6 |
+| → `PERFORM RELEASE-BATCH` | | 7 | | |
+| → `MOVE WS-RECORD-READ TO CLR-PRESENTMENT` | | 8 | 8 | 8 |
+| → `PERFORM REJECT-BATCH` | | | 7 | 7 |
 
 Source: [clrin.cbl:124](../../../laurasia/programs/clrin.cbl#L124).
 

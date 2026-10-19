@@ -6,7 +6,7 @@ For each main program, input data that reaches the rules of its decision tables,
 | --- | --: | --: |
 | [ACCTLD](ACCTLD/) | 5 of 5 | 2 |
 | [ACCTUL](ACCTUL/) | 2 of 2 | 2 |
-| [CLRIN](CLRIN/) | 22 of 24 | 13 |
+| [CLRIN](CLRIN/) | 22 of 23 | 13 |
 | [CYCLE](CYCLE/) | 14 of 17 | 8 |
 | [DISPUTE](DISPUTE/) | 21 of 22 | 4 |
 | [FEELD](FEELD/) | 23 of 23 | 17 |

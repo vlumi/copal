@@ -6,7 +6,7 @@ For each main program, input data that reaches the rules of its decision tables,
 | --- | --: | --: |
 | [ACCTLOAD](ACCTLOAD/) | 9 of 9 | 4 |
 | [ACCTMNT](ACCTMNT/) | 37 of 41 | 13 |
-| [AUTHSRV](AUTHSRV/) | 54 of 79 | 27 |
+| [AUTHSRV](AUTHSRV/) | 54 of 68 | 27 |
 | [BANKDATE](BANKDATE/) | 3 of 3 | 3 |
 | [CARDLOAD](CARDLOAD/) | 10 of 10 | 5 |
 | [GLSUM](GLSUM/) | 19 of 26 | 7 |

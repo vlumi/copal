@@ -99,8 +99,8 @@ func (e *extractor) valueOfTest(t *test, field string) (string, bool) {
 func isLiteral(op *cobol.Operand) bool { return op != nil && op.Name == "" && len(op.Refs) == 0 }
 
 // evaluate works out a condition's outcome from what a path knows, if it
-// can: a comparison of fields whose values it knows, or with a literal, a
-// condition name on a field whose value it knows, or none of whose values
+// can: a comparison of fields whose values it knows, or with a literal, an
+// equality with a literal the field is known not to be, a condition name on a field whose value it knows, or none of whose values
 // the field can still have, and AND, OR and NOT of those.
 func (e *extractor) evaluate(events []event, c *cobol.Condition) (outcome, ok bool) {
 	switch c.Op {
@@ -134,13 +134,23 @@ func (e *extractor) evaluate(events []event, c *cobol.Condition) (outcome, ok bo
 		left, lok := e.operandValue(events, c.Left)
 		right, rok := e.operandValue(events, c.Right)
 		if !lok || !rok {
-			return false, false
+			return false, c.Op == "=" && (e.excludes(events, c.Left, c.Right) || e.excludes(events, c.Right, c.Left))
 		}
 		return compare(c.Op, left, right)
 	case "TRUE":
 		return true, true
 	}
 	return false, false
+}
+
+// excludes reports whether a path knows a field not to have a literal's
+// value.
+func (e *extractor) excludes(events []event, field, lit *cobol.Operand) bool {
+	if !isLiteral(lit) || field == nil || field.Name == "" || field.Text != field.Name {
+		return false
+	}
+	_, _, not := e.known(events, field.Name)
+	return slices.ContainsFunc(not, func(n string) bool { return sameValue(n, lit.Text) })
 }
 
 func (e *extractor) operandValue(events []event, op *cobol.Operand) (string, bool) {

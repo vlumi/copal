@@ -1,6 +1,6 @@
 # AUTHSRV: cases
 
-27 cases reach 27 of the 46 rules of AUTHSRV's decision tables, and of the programs it calls, 9 of the 9 of AUTHPUR, 6 of the 6 of AUTHREV, 9 of the 15 of ATMWDL, 3 of the 3 of ATMBAL. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's.
+27 cases reach 27 of the 35 rules of AUTHSRV's decision tables, and of the programs it calls, 9 of the 9 of AUTHPUR, 6 of the 6 of AUTHREV, 9 of the 15 of ATMWDL, 3 of the 3 of ATMBAL. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's.
 
 ## AUTHSRV
 
@@ -38,31 +38,20 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` Y, `RS-RESULT = SPACES` Y, `RQ-PURCHASE` Y, `RS-APPROVED` Y, `RQ-BALANCE-ENQUIRY` N |
-| 2 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` Y, `RS-RESULT = SPACES` Y, `RQ-PURCHASE` Y, `RS-APPROVED` N |
-| 3 | [case 02](02/) |
-| 4 | [case 15](15/) |
-| 5 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` Y, `RS-RESULT = SPACES` Y, `RQ-PURCHASE` N, `RS-APPROVED` Y, `RQ-BALANCE-ENQUIRY` N, `RQ-REVERSAL` N, `RQ-WITHDRAWAL` Y |
-| 6 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` Y, `RS-RESULT = SPACES` Y, `RQ-PURCHASE` N, `RS-APPROVED` N, `RQ-REVERSAL` N, `RQ-WITHDRAWAL` Y |
-| 7 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` Y, `RS-RESULT = SPACES` Y, `RQ-PURCHASE` N, `RS-APPROVED` Y, `RQ-BALANCE-ENQUIRY` Y, `RQ-REVERSAL` N, `RQ-WITHDRAWAL` N |
-| 8 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` Y, `RS-RESULT = SPACES` Y, `RQ-PURCHASE` N, `RS-APPROVED` N, `RQ-BALANCE-ENQUIRY` Y, `RQ-REVERSAL` N, `RQ-WITHDRAWAL` N |
-| 9 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` Y, `RS-RESULT = SPACES` Y, `RQ-PURCHASE` N, `RS-APPROVED` N, `RQ-BALANCE-ENQUIRY` N, `RQ-REVERSAL` N, `RQ-WITHDRAWAL` N |
-| 10 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` Y, `RS-RESULT = SPACES` N, `RS-APPROVED` Y, `RQ-BALANCE-ENQUIRY` N |
-| 11 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` Y, `RS-RESULT = SPACES` N, `RS-APPROVED` Y, `RQ-BALANCE-ENQUIRY` Y |
-| 12 | [case 09](09/) |
-| 13 | [case 08](08/) |
-| 14 | [case 01](01/) |
-| 15 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` N, `RS-RESULT = SPACES` Y, `RQ-PURCHASE` N, `RS-APPROVED` Y, `RQ-BALANCE-ENQUIRY` N, `RQ-REVERSAL` Y |
-| 16 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` N, `RS-RESULT = SPACES` Y, `RQ-PURCHASE` N, `RS-APPROVED` N, `RQ-REVERSAL` Y |
-| 17 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` N, `RS-RESULT = SPACES` Y, `RQ-PURCHASE` N, `RS-APPROVED` Y, `RQ-BALANCE-ENQUIRY` N, `RQ-REVERSAL` N, `RQ-WITHDRAWAL` Y |
-| 18 | [case 09](09/) |
-| 19 | [case 09](09/) |
-| 20 | [case 22](22/) |
-| 21 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` N, `RS-RESULT = SPACES` Y, `RQ-PURCHASE` N, `RS-APPROVED` N, `RQ-BALANCE-ENQUIRY` N, `RQ-REVERSAL` N, `RQ-WITHDRAWAL` N |
-| 22 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` N, `RS-RESULT = SPACES` N, `RS-APPROVED` Y, `RQ-BALANCE-ENQUIRY` N |
-| 23 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` N, `RS-RESULT = SPACES` N, `RS-APPROVED` Y, `RQ-BALANCE-ENQUIRY` Y |
-| 24 | [case 01](01/) |
-| 25 | [case 03](03/) |
+| 1 | [case 02](02/) |
+| 2 | [case 15](15/) |
+| 3 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` Y, `RS-RESULT = SPACES` N, `RS-APPROVED` Y, `RQ-BALANCE-ENQUIRY` N |
+| 4 | [case 09](09/) |
+| 5 | [case 08](08/) |
+| 6 | [case 01](01/) |
+| 7 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` N, `RS-RESULT = SPACES` Y, `RQ-PURCHASE` N, `RQ-REVERSAL` N, `RS-APPROVED` Y, `RQ-BALANCE-ENQUIRY` N, `RQ-WITHDRAWAL` Y |
+| 8 | [case 09](09/) |
+| 9 | [case 09](09/) |
+| 10 | [case 22](22/) |
+| 11 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` N, `RS-RESULT = SPACES` N, `RS-APPROVED` Y, `RQ-BALANCE-ENQUIRY` N |
+| 12 | not reached: `RQ-PURCHASE OR RQ-REVERSAL OR RQ-WITHDRAWAL OR RQ-BALANCE-ENQUIRY` Y, `RS-RESULT = SPACES AND RQ-REVERSAL` N, `RS-RESULT = SPACES` N, `RS-APPROVED` Y, `RQ-BALANCE-ENQUIRY` Y |
+| 13 | [case 01](01/) |
+| 14 | [case 03](03/) |
 
 ### [2200-READ-CARD-AND-ACCOUNT](../../../blueprints/pangaea/rules/AUTHSRV.md#2200-read-card-and-account)
 

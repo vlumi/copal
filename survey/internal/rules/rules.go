@@ -349,8 +349,51 @@ func (e *extractor) follow(before, after []event) ([]event, bool) {
 			t.instance = 1
 		}
 		events = append(events, event{test: &t})
+		if !e.holds(events) {
+			return nil, false
+		}
 	}
 	return events, true
+}
+
+// holds reports whether the tests of a path that join conditions with AND
+// or OR still have their outcomes, by what the path has learned since: a
+// test whose condition nothing since may have changed, and each part of an
+// AND found true, or of an OR found false, that nothing since may have
+// changed, which has the same outcome. An AND found true, one of whose
+// parts a later test finds false, is no path.
+func (e *extractor) holds(events []event) bool {
+	contradicts := func(c *cobol.Condition, outcome bool) bool {
+		o, known := e.evaluate(events, c)
+		return known && o != outcome
+	}
+	for i, ev := range events {
+		t, later := ev.test, events[i+1:]
+		if t == nil || t.cond == nil || t.cond.Op != "AND" && t.cond.Op != "OR" {
+			continue
+		}
+		if !e.changedSince(later, t.refs) {
+			if contradicts(t.cond, t.outcome) {
+				return false
+			}
+			continue
+		}
+		if (t.cond.Op == "AND") != t.outcome {
+			continue
+		}
+		for _, part := range t.cond.Parts {
+			if !e.changedSince(later, part.Refs()) && contradicts(part, t.outcome) {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+// changedSince reports whether any of the events may change the data
+// items named.
+func (e *extractor) changedSince(events []event, refs []string) bool {
+	return slices.ContainsFunc(events, func(ev event) bool { return ev.change != nil && e.knowledge.MayChange(*ev.change, refs) })
 }
 
 // lastTest finds the latest test of the condition among the events, and
