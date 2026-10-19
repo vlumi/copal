@@ -47,7 +47,7 @@ Program [cycle.cbl](../../../laurasia/programs/cycle.cbl): 0 files, 1 paragraphs
 
 ## Calls
 
-Called with LK-BALANCE, LK-MINIMUM by no program.
+Called with LK-BALANCE, LK-MINIMUM by [CYCLE](CYCLE.md).
 
 ## Data flow
 

@@ -29,7 +29,6 @@ Program [feeld.cbl](../../../laurasia/programs/feeld.cbl): 2 files, 2 paragraphs
   - [Into WS-AT-END](#into-ws-at-end)
   - [Into WS-RESULT](#into-ws-result)
   - [Out of the program](#out-of-the-program)
-  - [Into other data items](#into-other-data-items)
 - [Field origins](#field-origins)
   - [File FEE-TABLE](#file-fee-table)
 - [Records](#records)
@@ -62,14 +61,14 @@ Program [feeld.cbl](../../../laurasia/programs/feeld.cbl): 2 files, 2 paragraphs
 
 | Calls | Passing | Paragraph | Source |
 | --- | --- | --- | --- |
-| feeslot (not analyzed) | FD-PRODUCT, FD-REGION, FD-GROUP, RETURNING, WS-SLOT | LOAD-FEE | [feeld.cbl:56](../../../laurasia/programs/feeld.cbl#L56) |
+| [FEESLOT](FEESLOT.md) | FD-PRODUCT, FD-REGION, FD-GROUP; returning WS-SLOT | LOAD-FEE | [feeld.cbl:56](../../../laurasia/programs/feeld.cbl#L56) |
 
 ## Data flow
 
 | Paragraph | Reads | Writes |
 | --- | --- | --- |
 | MAIN | WS-FEE-STATUS, WS-AT-END, WS-RESULT | RETURN-CODE, FEE-DEFINITION, WS-AT-END |
-| LOAD-FEE | FD-PRODUCT, FD-REGION, FD-GROUP, RETURNING, WS-SLOT, FD-RATE, FD-FIXED | FD-PRODUCT, FD-REGION, FD-GROUP, RETURNING, WS-SLOT, WS-RESULT, FS-RATE, FS-FIXED-CENTS, FEE-SLOT-RECORD |
+| LOAD-FEE | FD-PRODUCT, FD-REGION, FD-GROUP, WS-SLOT, FD-RATE, FD-FIXED | FD-PRODUCT, FD-REGION, FD-GROUP, WS-SLOT, WS-RESULT, FS-RATE, FS-FIXED-CENTS, FEE-SLOT-RECORD |
 
 ## Lineage
 
@@ -81,9 +80,9 @@ Record [FEE-DEFINITION](#fee-definition), from copybook [feedef](../copybooks/fe
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
-| FD-GROUP | call feeslot argument 3 | CALL | LOAD-FEE | [feeld.cbl:56](../../../laurasia/programs/feeld.cbl#L56) |
-| FD-PRODUCT | call feeslot argument 1 | CALL | LOAD-FEE | [feeld.cbl:56](../../../laurasia/programs/feeld.cbl#L56) |
-| FD-REGION | call feeslot argument 2 | CALL | LOAD-FEE | [feeld.cbl:56](../../../laurasia/programs/feeld.cbl#L56) |
+| FD-GROUP | call FEESLOT argument 3 | CALL | LOAD-FEE | [feeld.cbl:56](../../../laurasia/programs/feeld.cbl#L56) |
+| FD-PRODUCT | call FEESLOT argument 1 | CALL | LOAD-FEE | [feeld.cbl:56](../../../laurasia/programs/feeld.cbl#L56) |
+| FD-REGION | call FEESLOT argument 2 | CALL | LOAD-FEE | [feeld.cbl:56](../../../laurasia/programs/feeld.cbl#L56) |
 | FEE-DEFINITION | file FEE-SCHEDULE | READ | MAIN | [feeld.cbl:47](../../../laurasia/programs/feeld.cbl#L47) |
 
 ### Into FEE-SLOT-RECORD
@@ -101,7 +100,7 @@ Record [WS-SLOT](#ws-slot).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
-| WS-SLOT | call feeslot argument 5 | CALL | LOAD-FEE | [feeld.cbl:56](../../../laurasia/programs/feeld.cbl#L56) |
+| WS-SLOT | call FEESLOT, what it returns | CALL | LOAD-FEE | [feeld.cbl:56](../../../laurasia/programs/feeld.cbl#L56) |
 
 ### Into WS-AT-END
 
@@ -127,19 +126,9 @@ Records written to files, items passed to the programs called, and items display
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
 | file FEE-TABLE | [FEE-SLOT-RECORD](#fee-slot-record) | WRITE | LOAD-FEE | [feeld.cbl:63](../../../laurasia/programs/feeld.cbl#L63) |
-| call feeslot argument 1 | [FD-PRODUCT](#fee-definition "in FEE-DEFINITION") | CALL | LOAD-FEE | [feeld.cbl:56](../../../laurasia/programs/feeld.cbl#L56) |
-| call feeslot argument 2 | [FD-REGION](#fee-definition "in FEE-DEFINITION") | CALL | LOAD-FEE | [feeld.cbl:56](../../../laurasia/programs/feeld.cbl#L56) |
-| call feeslot argument 3 | [FD-GROUP](#fee-definition "in FEE-DEFINITION") | CALL | LOAD-FEE | [feeld.cbl:56](../../../laurasia/programs/feeld.cbl#L56) |
-| call feeslot argument 4 | RETURNING | CALL | LOAD-FEE | [feeld.cbl:56](../../../laurasia/programs/feeld.cbl#L56) |
-| call feeslot argument 5 | [WS-SLOT](#ws-slot) | CALL | LOAD-FEE | [feeld.cbl:56](../../../laurasia/programs/feeld.cbl#L56) |
-
-### Into other data items
-
-Data items the program does not declare, such as special registers and index names.
-
-| Into | From | Statement | Paragraph | Source |
-| --- | --- | --- | --- | --- |
-| RETURNING | call feeslot argument 4 | CALL | LOAD-FEE | [feeld.cbl:56](../../../laurasia/programs/feeld.cbl#L56) |
+| call FEESLOT argument 1 | [FD-PRODUCT](#fee-definition "in FEE-DEFINITION") | CALL | LOAD-FEE | [feeld.cbl:56](../../../laurasia/programs/feeld.cbl#L56) |
+| call FEESLOT argument 2 | [FD-REGION](#fee-definition "in FEE-DEFINITION") | CALL | LOAD-FEE | [feeld.cbl:56](../../../laurasia/programs/feeld.cbl#L56) |
+| call FEESLOT argument 3 | [FD-GROUP](#fee-definition "in FEE-DEFINITION") | CALL | LOAD-FEE | [feeld.cbl:56](../../../laurasia/programs/feeld.cbl#L56) |
 
 ## Field origins
 

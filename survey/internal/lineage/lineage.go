@@ -681,7 +681,7 @@ func findSort(p *blueprint.Program, match func(blueprint.Sort) bool) (blueprint.
 // that only reads what it is passed by reference gives nothing back.
 func (t tracer) called(n Node, caller *blueprint.Program, program string, arg int, item string) []Node {
 	itemRecord, field, ok := locate(caller, item)
-	if !ok {
+	if !ok || arg < 1 {
 		return nil
 	}
 	var nodes []Node

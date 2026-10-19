@@ -53,6 +53,8 @@ type Paragraph struct {
 // A CALL moves each item it passes into the program called, To with
 // ToCall, and may move a value back into each item it passes by
 // reference, From with FromCall; Arg is the argument's position, 1-based.
+// It moves what the program returns into its RETURNING item, From with
+// FromCall and Arg 0.
 // An ACCEPT moves a value from the job's SYSIN, From with FromStream, and
 // a DISPLAY one to its SYSOUT, To with ToStream.
 type Edge struct {
@@ -284,7 +286,7 @@ func (n *names) edges(paragraph string, s cobol.Statement) []Edge {
 // which the program may change.
 func (n *names) callEdges(paragraph string, s cobol.Statement) []Edge {
 	var edges []Edge
-	for i, op := range s.Reads {
+	for i, op := range s.Arguments() {
 		if op.Name == "" {
 			continue
 		}
@@ -293,6 +295,9 @@ func (n *names) callEdges(paragraph string, s cobol.Statement) []Edge {
 		if slices.ContainsFunc(s.Writes, func(w cobol.Operand) bool { return w.Text == op.Text }) {
 			edges = append(edges, Edge{From: s.Calls, FromCall: true, Arg: i + 1, To: item, Paragraph: paragraph, Verb: s.Verb, Pos: s.Pos})
 		}
+	}
+	if s.Returning != "" {
+		edges = append(edges, Edge{From: s.Calls, FromCall: true, To: n.item(s.Returning), Paragraph: paragraph, Verb: s.Verb, Pos: s.Pos})
 	}
 	return edges
 }

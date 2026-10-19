@@ -39,7 +39,6 @@ Program [ixfee.cbl](../../../laurasia/programs/ixfee.cbl): 4 files, 4 paragraphs
   - [Into WS-REPORT-AMOUNT](#into-ws-report-amount)
   - [Into WS-REPORT-COUNT](#into-ws-report-count)
   - [Out of the program](#out-of-the-program)
-  - [Into other data items](#into-other-data-items)
 - [Field origins](#field-origins)
   - [File PRES-OUT](#file-pres-out)
   - [File REPORT-OUT](#file-report-out)
@@ -89,14 +88,14 @@ Program [ixfee.cbl](../../../laurasia/programs/ixfee.cbl): 4 files, 4 paragraphs
 
 | Calls | Passing | Paragraph | Source |
 | --- | --- | --- | --- |
-| feeslot (not analyzed) | PS-PRODUCT, PS-REGION, WS-GROUP, RETURNING, WS-SLOT | PRICE-PRESENTMENT | [ixfee.cbl:92](../../../laurasia/programs/ixfee.cbl#L92) |
+| [FEESLOT](FEESLOT.md) | PS-PRODUCT, PS-REGION, WS-GROUP; returning WS-SLOT | PRICE-PRESENTMENT | [ixfee.cbl:92](../../../laurasia/programs/ixfee.cbl#L92) |
 
 ## Data flow
 
 | Paragraph | Reads | Writes |
 | --- | --- | --- |
 | MAIN | WS-FEE-STATUS, WS-AT-END, WS-DEFAULT-COUNT | RETURN-CODE, PRES-RECORD, PRES-IN-RECORD, WS-AT-END |
-| PRICE-PRESENTMENT | PS-MATCH, PS-PRODUCT, PS-REGION, WS-GROUP, RETURNING, WS-SLOT, WS-DEFAULT-COUNT, PS-AMOUNT, DEFAULT-RATE, DEFAULT-FIXED-CENTS, FS-RATE, FS-FIXED-CENTS, PS-FEE, WS-FEES | PS-FEE, PS-PRODUCT, PS-REGION, WS-GROUP, RETURNING, WS-SLOT, FEE-SLOT-RECORD, WS-DEFAULT-COUNT, WS-FEES, PRES-RECORD |
+| PRICE-PRESENTMENT | PS-MATCH, PS-PRODUCT, PS-REGION, WS-GROUP, WS-DEFAULT-COUNT, PS-AMOUNT, DEFAULT-RATE, DEFAULT-FIXED-CENTS, FS-RATE, FS-FIXED-CENTS, PS-FEE, WS-FEES | PS-FEE, PS-PRODUCT, PS-REGION, WS-GROUP, WS-SLOT, FEE-SLOT-RECORD, WS-DEFAULT-COUNT, WS-FEES, PRES-RECORD |
 | FIND-GROUP | PS-MCC | WS-GROUP |
 | WRITE-REPORT | WS-FEES, WS-REPORT-AMOUNT, WS-DEFAULT-COUNT, WS-REPORT-COUNT | REPORT-LINE, RA-LABEL, RA-VALUE, RC-LABEL, RC-VALUE |
 
@@ -134,8 +133,8 @@ Record [PRES-RECORD](#pres-record), from copybook [presrec](../copybooks/presrec
 | PS-FEE | [PS-AMOUNT](#pres-record "in PRES-RECORD") | COMPUTE | PRICE-PRESENTMENT | [ixfee.cbl:98](../../../laurasia/programs/ixfee.cbl#L98) |
 | PS-FEE | [FS-RATE](#fee-slot-record "in FEE-SLOT-RECORD") | COMPUTE | PRICE-PRESENTMENT | [ixfee.cbl:98](../../../laurasia/programs/ixfee.cbl#L98) |
 | PS-FEE | [FS-FIXED-CENTS](#fee-slot-record "in FEE-SLOT-RECORD") | COMPUTE | PRICE-PRESENTMENT | [ixfee.cbl:98](../../../laurasia/programs/ixfee.cbl#L98) |
-| PS-PRODUCT | call feeslot argument 1 | CALL | PRICE-PRESENTMENT | [ixfee.cbl:92](../../../laurasia/programs/ixfee.cbl#L92) |
-| PS-REGION | call feeslot argument 2 | CALL | PRICE-PRESENTMENT | [ixfee.cbl:92](../../../laurasia/programs/ixfee.cbl#L92) |
+| PS-PRODUCT | call FEESLOT argument 1 | CALL | PRICE-PRESENTMENT | [ixfee.cbl:92](../../../laurasia/programs/ixfee.cbl#L92) |
+| PS-REGION | call FEESLOT argument 2 | CALL | PRICE-PRESENTMENT | [ixfee.cbl:92](../../../laurasia/programs/ixfee.cbl#L92) |
 
 ### Into REPORT-LINE
 
@@ -153,7 +152,7 @@ Record [WS-SLOT](#ws-slot).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
-| WS-SLOT | call feeslot argument 5 | CALL | PRICE-PRESENTMENT | [ixfee.cbl:92](../../../laurasia/programs/ixfee.cbl#L92) |
+| WS-SLOT | call FEESLOT, what it returns | CALL | PRICE-PRESENTMENT | [ixfee.cbl:92](../../../laurasia/programs/ixfee.cbl#L92) |
 
 ### Into WS-GROUP
 
@@ -161,7 +160,7 @@ Record [WS-GROUP](#ws-group).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
-| WS-GROUP | call feeslot argument 3 | CALL | PRICE-PRESENTMENT | [ixfee.cbl:92](../../../laurasia/programs/ixfee.cbl#L92) |
+| WS-GROUP | call FEESLOT argument 3 | CALL | PRICE-PRESENTMENT | [ixfee.cbl:92](../../../laurasia/programs/ixfee.cbl#L92) |
 | WS-GROUP | literal condition GROUP-GROCERY | SET | FIND-GROUP | [ixfee.cbl:108](../../../laurasia/programs/ixfee.cbl#L108) |
 | WS-GROUP | literal condition GROUP-RESTAURANTS | SET | FIND-GROUP | [ixfee.cbl:110](../../../laurasia/programs/ixfee.cbl#L110) |
 | WS-GROUP | literal condition GROUP-TRAVEL | SET | FIND-GROUP | [ixfee.cbl:113](../../../laurasia/programs/ixfee.cbl#L113) |
@@ -209,23 +208,13 @@ Records written to files, items passed to the programs called, and items display
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
+| call FEESLOT argument 1 | [PS-PRODUCT](#pres-record "in PRES-RECORD") | CALL | PRICE-PRESENTMENT | [ixfee.cbl:92](../../../laurasia/programs/ixfee.cbl#L92) |
+| call FEESLOT argument 2 | [PS-REGION](#pres-record "in PRES-RECORD") | CALL | PRICE-PRESENTMENT | [ixfee.cbl:92](../../../laurasia/programs/ixfee.cbl#L92) |
+| call FEESLOT argument 3 | [WS-GROUP](#ws-group) | CALL | PRICE-PRESENTMENT | [ixfee.cbl:92](../../../laurasia/programs/ixfee.cbl#L92) |
 | file PRES-OUT | [PRES-RECORD](#pres-record) | WRITE | PRICE-PRESENTMENT | [ixfee.cbl:102](../../../laurasia/programs/ixfee.cbl#L102) |
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | WRITE-REPORT | [ixfee.cbl:124](../../../laurasia/programs/ixfee.cbl#L124) |
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | WRITE-REPORT | [ixfee.cbl:127](../../../laurasia/programs/ixfee.cbl#L127) |
 | file REPORT-OUT | [REPORT-LINE](#report-line) | WRITE | WRITE-REPORT | [ixfee.cbl:130](../../../laurasia/programs/ixfee.cbl#L130) |
-| call feeslot argument 1 | [PS-PRODUCT](#pres-record "in PRES-RECORD") | CALL | PRICE-PRESENTMENT | [ixfee.cbl:92](../../../laurasia/programs/ixfee.cbl#L92) |
-| call feeslot argument 2 | [PS-REGION](#pres-record "in PRES-RECORD") | CALL | PRICE-PRESENTMENT | [ixfee.cbl:92](../../../laurasia/programs/ixfee.cbl#L92) |
-| call feeslot argument 3 | [WS-GROUP](#ws-group) | CALL | PRICE-PRESENTMENT | [ixfee.cbl:92](../../../laurasia/programs/ixfee.cbl#L92) |
-| call feeslot argument 4 | RETURNING | CALL | PRICE-PRESENTMENT | [ixfee.cbl:92](../../../laurasia/programs/ixfee.cbl#L92) |
-| call feeslot argument 5 | [WS-SLOT](#ws-slot) | CALL | PRICE-PRESENTMENT | [ixfee.cbl:92](../../../laurasia/programs/ixfee.cbl#L92) |
-
-### Into other data items
-
-Data items the program does not declare, such as special registers and index names.
-
-| Into | From | Statement | Paragraph | Source |
-| --- | --- | --- | --- | --- |
-| RETURNING | call feeslot argument 4 | CALL | PRICE-PRESENTMENT | [ixfee.cbl:92](../../../laurasia/programs/ixfee.cbl#L92) |
 
 ## Field origins
 
@@ -242,8 +231,8 @@ Written from [PRES-RECORD](#pres-record).
 | PS-AUTH-CODE | 29-34 | file PRES-IN PRES-IN-RECORD |
 | PS-MERCHANT | 35-44 | file PRES-IN PRES-IN-RECORD |
 | PS-MCC | 45-48 | file PRES-IN PRES-IN-RECORD |
-| PS-REGION | 49 | call feeslot argument 2 PS-REGION; file PRES-IN PRES-IN-RECORD |
-| PS-PRODUCT | 50-51 | call feeslot argument 1 PS-PRODUCT; file PRES-IN PRES-IN-RECORD |
+| PS-REGION | 49 | call FEESLOT argument 2 PS-REGION; file PRES-IN PRES-IN-RECORD |
+| PS-PRODUCT | 50-51 | call FEESLOT argument 1 PS-PRODUCT; file PRES-IN PRES-IN-RECORD |
 | PS-TXN-DATE | 52-59 | file PRES-IN PRES-IN-RECORD |
 | PS-BATCH-NO | 60-65 | file PRES-IN PRES-IN-RECORD |
 | PS-MATCH | 66 | file PRES-IN PRES-IN-RECORD |

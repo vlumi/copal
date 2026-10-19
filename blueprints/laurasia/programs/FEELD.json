@@ -259,7 +259,6 @@
         "FD-PRODUCT",
         "FD-REGION",
         "FD-GROUP",
-        "RETURNING",
         "WS-SLOT",
         "FD-RATE",
         "FD-FIXED"
@@ -268,7 +267,6 @@
         "FD-PRODUCT",
         "FD-REGION",
         "FD-GROUP",
-        "RETURNING",
         "WS-SLOT",
         "WS-RESULT",
         "FS-RATE",
@@ -279,15 +277,13 @@
   ],
   "calls": [
     {
-      "program": "feeslot",
+      "program": "FEESLOT",
       "using": [
         "FD-PRODUCT",
         "FD-REGION",
-        "FD-GROUP",
-        "RETURNING",
-        "WS-SLOT"
+        "FD-GROUP"
       ],
-      "external": true,
+      "returning": "WS-SLOT",
       "paragraph": "LOAD-FEE",
       "source": "laurasia/programs/feeld.cbl:56"
     }
@@ -311,7 +307,7 @@
     },
     {
       "from": "FD-PRODUCT",
-      "to": "feeslot",
+      "to": "FEESLOT",
       "toCall": true,
       "arg": 1,
       "paragraph": "LOAD-FEE",
@@ -319,7 +315,7 @@
       "source": "laurasia/programs/feeld.cbl:56"
     },
     {
-      "from": "feeslot",
+      "from": "FEESLOT",
       "to": "FD-PRODUCT",
       "fromCall": true,
       "arg": 1,
@@ -329,7 +325,7 @@
     },
     {
       "from": "FD-REGION",
-      "to": "feeslot",
+      "to": "FEESLOT",
       "toCall": true,
       "arg": 2,
       "paragraph": "LOAD-FEE",
@@ -337,7 +333,7 @@
       "source": "laurasia/programs/feeld.cbl:56"
     },
     {
-      "from": "feeslot",
+      "from": "FEESLOT",
       "to": "FD-REGION",
       "fromCall": true,
       "arg": 2,
@@ -347,7 +343,7 @@
     },
     {
       "from": "FD-GROUP",
-      "to": "feeslot",
+      "to": "FEESLOT",
       "toCall": true,
       "arg": 3,
       "paragraph": "LOAD-FEE",
@@ -355,7 +351,7 @@
       "source": "laurasia/programs/feeld.cbl:56"
     },
     {
-      "from": "feeslot",
+      "from": "FEESLOT",
       "to": "FD-GROUP",
       "fromCall": true,
       "arg": 3,
@@ -364,37 +360,9 @@
       "source": "laurasia/programs/feeld.cbl:56"
     },
     {
-      "from": "RETURNING",
-      "to": "feeslot",
-      "toCall": true,
-      "arg": 4,
-      "paragraph": "LOAD-FEE",
-      "verb": "CALL",
-      "source": "laurasia/programs/feeld.cbl:56"
-    },
-    {
-      "from": "feeslot",
-      "to": "RETURNING",
-      "fromCall": true,
-      "arg": 4,
-      "paragraph": "LOAD-FEE",
-      "verb": "CALL",
-      "source": "laurasia/programs/feeld.cbl:56"
-    },
-    {
-      "from": "WS-SLOT",
-      "to": "feeslot",
-      "toCall": true,
-      "arg": 5,
-      "paragraph": "LOAD-FEE",
-      "verb": "CALL",
-      "source": "laurasia/programs/feeld.cbl:56"
-    },
-    {
-      "from": "feeslot",
+      "from": "FEESLOT",
       "to": "WS-SLOT",
       "fromCall": true,
-      "arg": 5,
       "paragraph": "LOAD-FEE",
       "verb": "CALL",
       "source": "laurasia/programs/feeld.cbl:56"

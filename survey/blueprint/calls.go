@@ -9,34 +9,68 @@ import (
 	"github.com/vlumi/copal/survey/internal/dataflow"
 )
 
-// Call is a CALL statement naming the program it calls, with the items it
-// passes. External is set when the program called is not one of those
-// analyzed.
+// Call is a CALL of a program, with the items it passes and the item its
+// RETURNING phrase gives what the program returns. A CALL through a data
+// item is a Call of each program the item may name, by the literals moved
+// into it or its initial value, with Through the item. External is set
+// when the program called is not one of those analyzed.
 type Call struct {
 	Program   string   `json:"program"`
+	Through   string   `json:"through,omitempty"`
 	Using     []string `json:"using,omitempty"`
+	Returning string   `json:"returning,omitempty"`
 	External  bool     `json:"external,omitempty"`
 	Paragraph string   `json:"paragraph"`
 	Source    string   `json:"source"`
 }
 
-// programCalls lists a program's CALL statements that name the program
-// they call.
-func programCalls(p *cobol.Program) []Call {
+// programCalls lists a program's calls: one for a CALL that names the
+// program it calls, and one for each program a CALL through a data item
+// may call.
+func programCalls(p *cobol.Program, program Program, flow dataflow.Flow) []Call {
 	var calls []Call
 	for _, para := range p.Paragraphs {
 		cobol.Walk(para.Statements, func(s cobol.Statement) {
-			if s.Calls == "" {
+			if s.Verb != "CALL" {
 				return
 			}
-			call := Call{Program: s.Calls, Paragraph: para.Name, Source: s.Pos.String()}
-			for _, op := range s.Reads {
+			call := Call{Through: s.CallsThrough, Returning: s.Returning, Paragraph: para.Name, Source: s.Pos.String()}
+			for _, op := range s.Arguments() {
 				call.Using = append(call.Using, op.Text)
 			}
-			calls = append(calls, call)
+			names := []string{s.Calls}
+			if s.CallsThrough != "" {
+				names = programNames(program, flow, s.CallsThrough)
+			}
+			for _, name := range names {
+				call.Program = name
+				calls = append(calls, call)
+			}
 		})
 	}
 	return calls
+}
+
+// programNames lists the programs a data item may name: the literals
+// moved into it, and its initial value, upper-cased as program names are.
+func programNames(program Program, flow dataflow.Flow, item string) []string {
+	var names []string
+	add := func(value string) {
+		if name := strings.ToUpper(strings.TrimRight(strings.Trim(value, `'"`), " ")); name != "" {
+			addOnce(&names, name)
+		}
+	}
+	if f, ok := recordField(program, item); ok {
+		for _, v := range f.Values {
+			add(v)
+		}
+	}
+	for _, e := range flow.Lineage {
+		if e.To == item && e.FromLiteral && strings.ContainsAny(e.From[:1], `'"`) {
+			add(e.From)
+		}
+	}
+	return names
 }
 
 // linkCalls marks the calls of programs not analyzed as external, and
@@ -86,52 +120,79 @@ func writeCalls(b *strings.Builder, dir string, p Program) {
 		if c.External {
 			called = c.Program + " (not analyzed)"
 		}
-		b.WriteString(row(called, strings.Join(c.Using, ", "), c.Paragraph, sourceLink(dir, c.Source, true)))
+		if c.Through != "" {
+			called += ", named by " + c.Through
+		}
+		passing := strings.Join(c.Using, ", ")
+		if c.Returning != "" {
+			passing = strings.TrimPrefix(passing+"; returning "+c.Returning, "; ")
+		}
+		b.WriteString(row(called, passing, c.Paragraph, sourceLink(dir, c.Source, true)))
 	}
 }
 
-// callWrites tells, for a program's CALLs, which of the items passed by
-// reference the program called writes: those of the caller's fields over
-// the bytes of the called program's USING items it writes, at the same
-// offset in the argument passed; the whole argument where no field of the
-// caller's is over them. A program outside the system may write anything
-// it is passed by reference.
+// callWrites tells, for a program's CALLs, which items a CALL writes: its
+// RETURNING item, and of the items passed by reference, those the program
+// called writes, of each program a CALL through a data item may call. A
+// program outside the system may write anything it is passed by
+// reference, and so may a program a data item names that is not known.
 func callWrites(caller Program, programs []Program) dataflow.CallWrites {
 	return func(call cobol.Statement) ([]string, bool) {
-		i := slices.IndexFunc(programs, func(p Program) bool { return p.Name == call.Calls })
-		if i < 0 {
-			return nil, false
-		}
-		called := programs[i]
-		written := map[string]bool{}
-		for _, para := range called.Paragraphs {
-			for _, w := range para.Writes {
-				written[w] = true
-			}
-		}
 		var items []string
-		for n, arg := range call.Reads {
-			if n >= len(called.Using) || !slices.ContainsFunc(call.Writes, func(w cobol.Operand) bool { return w.Text == arg.Text }) {
-				continue
-			}
-			param, ok := recordField(called, called.Using[n])
-			argField, found := recordField(caller, arg.Name)
-			if !ok || !found {
-				continue
-			}
-			walk(param, func(f Field) {
-				if !written[f.Name] {
-					return
-				}
-				name, ok := fieldOver(argField, argField.Start+f.Start-param.Start, f.Length)
-				if !ok {
-					name = arg.Name
-				}
-				addOnce(&items, name)
-			})
+		if call.Returning != "" {
+			items = append(items, call.Returning)
 		}
-		return items, true
+		called := 0
+		for _, c := range caller.Calls {
+			if c.Source != call.Pos.String() {
+				continue
+			}
+			i := slices.IndexFunc(programs, func(p Program) bool { return p.Name == c.Program })
+			if i < 0 {
+				return nil, false
+			}
+			for _, item := range argumentWrites(caller, programs[i], call) {
+				addOnce(&items, item)
+			}
+			called++
+		}
+		return items, called > 0
 	}
+}
+
+// argumentWrites lists the items passed by reference that a program
+// called writes: those of the caller's fields over the bytes of the called
+// program's USING items it writes, at the same offset in the argument
+// passed; the whole argument where no field of the caller's is over them.
+func argumentWrites(caller, called Program, call cobol.Statement) []string {
+	written := map[string]bool{}
+	for _, para := range called.Paragraphs {
+		for _, w := range para.Writes {
+			written[w] = true
+		}
+	}
+	var items []string
+	for n, arg := range call.Arguments() {
+		if n >= len(called.Using) || !slices.ContainsFunc(call.Writes, func(w cobol.Operand) bool { return w.Text == arg.Text }) {
+			continue
+		}
+		param, ok := recordField(called, called.Using[n])
+		argField, found := recordField(caller, arg.Name)
+		if !ok || !found {
+			continue
+		}
+		walk(param, func(f Field) {
+			if !written[f.Name] {
+				return
+			}
+			name, ok := fieldOver(argField, argField.Start+f.Start-param.Start, f.Length)
+			if !ok {
+				name = arg.Name
+			}
+			addOnce(&items, name)
+		})
+	}
+	return items
 }
 
 // recordField finds a field of a program's records by name.

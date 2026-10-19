@@ -25,6 +25,7 @@ Program [post.cbl](../../../laurasia/programs/post.cbl): 5 files, 6 paragraphs. 
 - [Files](#files)
 - [Flow](#flow)
 - [Paragraphs](#paragraphs)
+- [Calls](#calls)
 - [Data flow](#data-flow)
 - [Lineage](#lineage)
   - [Into PRES-RECORD](#into-pres-record)
@@ -87,6 +88,13 @@ Program [post.cbl](../../../laurasia/programs/post.cbl): 5 files, 6 paragraphs. 
 | WRITE-POSTING | | [post.cbl:147](../../../laurasia/programs/post.cbl#L147) | | | POST-PRESENTMENT, CHARGE-OVER-LIMIT | |
 | REJECT-PRESENTMENT | | [post.cbl:155](../../../laurasia/programs/post.cbl#L155) | | | POST-PRESENTMENT | |
 | WRITE-REPORT | | [post.cbl:163](../../../laurasia/programs/post.cbl#L163) | | | MAIN | |
+
+## Calls
+
+| Calls | Passing | Paragraph | Source |
+| --- | --- | --- | --- |
+| [OVLBIZ](OVLBIZ.md), named by WS-FEE-PROGRAM | CA-PRODUCT, WS-OVER-AMOUNT, WS-FEE | CHARGE-OVER-LIMIT | [post.cbl:139](../../../laurasia/programs/post.cbl#L139) |
+| [OVLFEE](OVLFEE.md), named by WS-FEE-PROGRAM | CA-PRODUCT, WS-OVER-AMOUNT, WS-FEE | CHARGE-OVER-LIMIT | [post.cbl:139](../../../laurasia/programs/post.cbl#L139) |
 
 ## Data flow
 
