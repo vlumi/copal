@@ -40,7 +40,7 @@ func (s *System) Render(dir, title string) (map[string][]byte, error) {
 		files["entities.json"] = append(data, '\n')
 	}
 	for _, p := range s.Programs {
-		if err := renderBoth(files, dir, "programs", p.Name, p, programMarkdown); err != nil {
+		if err := renderBoth(files, dir, "programs", p.Name, p, s.programMarkdown); err != nil {
 			return nil, err
 		}
 		if len(p.Rules.Tables) > 0 {
@@ -134,7 +134,7 @@ func (s *System) indexMarkdown(dir, title string) string {
 	return b.String()
 }
 
-func programMarkdown(dir string, p Program) string {
+func (s *System) programMarkdown(dir string, p Program) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "# %s\n\n", p.Name)
 	writeDescription(&b, p.Description)
@@ -188,6 +188,7 @@ func programMarkdown(dir string, p Program) string {
 			strings.Join(para.PerformedBy, ", "), strings.Join(para.ReachedBy, ", ")))
 	}
 
+	writeAnnotations(&b, s, p)
 	writeDeclaratives(&b, dir, p)
 	writeCalls(&b, dir, p)
 	writeDataFlow(&b, dir, p)

@@ -2,8 +2,8 @@
 // its explorer, or searches for cases that reach the rules of its
 // programs.
 //
-//	survey blueprints -copybooks dir -out dir [-dialect ibm|mf] [-title name] program.cbl... [job.jcl...]
-//	survey explore -copybooks dir [-dialect ibm|mf] [-addr host:port] [-title name] [-cases dir] program.cbl... [job.jcl...]
+//	survey blueprints -copybooks dir -out dir [-dialect ibm|mf] [-annotations dir] [-title name] program.cbl... [job.jcl...]
+//	survey explore -copybooks dir [-dialect ibm|mf] [-annotations dir] [-addr host:port] [-title name] [-cases dir] program.cbl... [job.jcl...]
 //	survey oracle -copybooks dir [-dialect ibm|mf] [-out dir -rules dir] [-title name] [-program name] [-jobs JOB,...] program.cbl... [job.jcl...]
 package main
 
@@ -24,8 +24,8 @@ import (
 )
 
 const usage = `usage:
-  survey blueprints -copybooks dir -out dir [-dialect ibm|mf] [-title name] program.cbl... [job.jcl...]
-  survey explore -copybooks dir [-dialect ibm|mf] [-addr host:port] [-title name] [-cases dir] program.cbl... [job.jcl...]
+  survey blueprints -copybooks dir -out dir [-dialect ibm|mf] [-annotations dir] [-title name] program.cbl... [job.jcl...]
+  survey explore -copybooks dir [-dialect ibm|mf] [-annotations dir] [-addr host:port] [-title name] [-cases dir] program.cbl... [job.jcl...]
   survey oracle -copybooks dir [-dialect ibm|mf] [-out dir -rules dir] [-title name] [-program name] [-jobs JOB,...] program.cbl... [job.jcl...]
 `
 
@@ -46,6 +46,7 @@ func writeBlueprints(args []string) error {
 	copybooks := flags.String("copybooks", "", "directory of the copybooks")
 	dialect := flags.String("dialect", cobol.IBM.Name, "the dialect the system is written in, ibm or mf")
 	out := flags.String("out", "", "directory to write the blueprints to")
+	annotations := flags.String("annotations", "", "directory of the prose a model wrote, to show beside the facts")
 	title := flags.String("title", "", "name of the system, for the index")
 	_ = flags.Parse(args)
 	if *copybooks == "" || *out == "" || flags.NArg() == 0 {
@@ -54,6 +55,9 @@ func writeBlueprints(args []string) error {
 	}
 	system, err := analyzeSystem(flags.Args(), *copybooks, *dialect)
 	if err != nil {
+		return err
+	}
+	if system.Annotations, err = blueprint.ReadAnnotations(*annotations); err != nil {
 		return err
 	}
 	return system.Write(*out, *title)
@@ -66,6 +70,7 @@ func serveExplorer(args []string) error {
 	addr := flags.String("addr", "127.0.0.1:1192", "address to serve on")
 	title := flags.String("title", "the system", "name of the system")
 	cases := flags.String("cases", "", "directory of the cases the oracle wrote")
+	annotations := flags.String("annotations", "", "directory of the prose a model wrote, to show beside the facts")
 	_ = flags.Parse(args)
 	if *copybooks == "" || flags.NArg() == 0 {
 		fmt.Fprint(os.Stderr, usage)
@@ -73,6 +78,9 @@ func serveExplorer(args []string) error {
 	}
 	system, err := analyzeSystem(flags.Args(), *copybooks, *dialect)
 	if err != nil {
+		return err
+	}
+	if system.Annotations, err = blueprint.ReadAnnotations(*annotations); err != nil {
 		return err
 	}
 	x, err := explore.New(system, *title, *cases)

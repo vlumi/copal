@@ -25,6 +25,9 @@ func TestPangaea(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if system.Annotations, err = ReadAnnotations("annotations/pangaea"); err != nil {
+		t.Fatal(err)
+	}
 	files, err := system.Render("blueprints/pangaea", "pangaea")
 	if err != nil {
 		t.Fatal(err)

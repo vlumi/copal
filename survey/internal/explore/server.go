@@ -261,11 +261,14 @@ func (s *Server) lookupProgram(r *http.Request) (*blueprint.Program, error) {
 	return p, nil
 }
 
-// ParagraphView is a paragraph of a program, the values its statements
-// move, and its decision tables, with the cases that reach each rule.
+// ParagraphView is a paragraph of a program, what a model wrote about it,
+// if one did, and whether that is stale, the values its statements move,
+// and its decision tables, with the cases that reach each rule.
 type ParagraphView struct {
 	Program   *blueprint.Program
 	Paragraph blueprint.Paragraph
+	Prose     *blueprint.Annotation
+	Stale     bool
 	Lineage   []blueprint.Lineage
 	Fields    map[string]bool
 	Tables    []TableView
@@ -299,6 +302,9 @@ func (s *Server) paragraph(r *http.Request) (any, error) {
 		return nil, fmt.Errorf("paragraph %s of %s: %w", r.PathValue("paragraph"), p.Name, errNotFound)
 	}
 	v := ParagraphView{Program: p, Paragraph: p.Paragraphs[i], Fields: fieldNames(p)}
+	if a, ok := s.index.system.Annotation(p.Name, v.Paragraph.Name); ok {
+		v.Prose, v.Stale = &a, s.index.system.Stale(a)
+	}
 	for _, e := range p.Lineage {
 		if e.Paragraph == v.Paragraph.Name {
 			v.Lineage = append(v.Lineage, e)

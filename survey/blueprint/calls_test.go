@@ -30,11 +30,11 @@ func TestCalls(t *testing.T) {
 	if callee.Records[0].Section != "linkage" || !reflect.DeepEqual(callee.Using, []string{"LK-REQUEST", "LK-DATE"}) {
 		t.Errorf("CALLEE records %+v, using %q", callee.Records, callee.Using)
 	}
-	md := programMarkdown("blueprints", callee)
+	md := s.programMarkdown("blueprints", callee)
 	if want := "Called with LK-REQUEST, LK-DATE by [CALLER](CALLER.md)."; !strings.Contains(md, want) {
 		t.Errorf("CALLEE blueprint has no %q:\n%s", want, md)
 	}
-	if want := "| MISSING (not analyzed) | | MAIN-PARA |"; !strings.Contains(programMarkdown("blueprints", caller), want) {
+	if want := "| MISSING (not analyzed) | | MAIN-PARA |"; !strings.Contains(s.programMarkdown("blueprints", caller), want) {
 		t.Errorf("CALLER blueprint has no %q", want)
 	}
 }

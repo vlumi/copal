@@ -82,18 +82,18 @@ oracle:  ## Search both specimens' programs again for cases that reach their rul
 .PHONY: blueprints
 blueprints:  ## Regenerate Pangaea's and Laurasia's blueprints with Survey
 	rm -rf blueprints/pangaea blueprints/laurasia
-	go run ./survey/cmd/survey blueprints -copybooks pangaea/copybooks -out blueprints/pangaea -title pangaea pangaea/programs/*.cbl pangaea/jobs/*.jcl
-	go run ./survey/cmd/survey blueprints -dialect mf -copybooks laurasia/copybooks -out blueprints/laurasia -title laurasia laurasia/programs/*.cbl laurasia/scripts/*.sh
+	go run ./survey/cmd/survey blueprints -copybooks pangaea/copybooks -out blueprints/pangaea -annotations annotations/pangaea -title pangaea pangaea/programs/*.cbl pangaea/jobs/*.jcl
+	go run ./survey/cmd/survey blueprints -dialect mf -copybooks laurasia/copybooks -out blueprints/laurasia -annotations annotations/laurasia -title laurasia laurasia/programs/*.cbl laurasia/scripts/*.sh
 
 EXPLORE_ADDR ?= 127.0.0.1:1192
 
 .PHONY: explore
 explore:  ## Explore Pangaea's analysis in the browser (EXPLORE_ADDR)
-	go run ./survey/cmd/survey explore -copybooks pangaea/copybooks -addr $(EXPLORE_ADDR) -title "the First Bank of Pangaea" -cases oracle/pangaea pangaea/programs/*.cbl pangaea/jobs/*.jcl
+	go run ./survey/cmd/survey explore -copybooks pangaea/copybooks -addr $(EXPLORE_ADDR) -title "the First Bank of Pangaea" -annotations annotations/pangaea -cases oracle/pangaea pangaea/programs/*.cbl pangaea/jobs/*.jcl
 
 .PHONY: explore-laurasia
 explore-laurasia:  ## Explore Laurasia's analysis in the browser (EXPLORE_ADDR)
-	go run ./survey/cmd/survey explore -dialect mf -copybooks laurasia/copybooks -addr $(EXPLORE_ADDR) -title "Laurasia Card Services" -cases oracle/laurasia laurasia/programs/*.cbl laurasia/scripts/*.sh
+	go run ./survey/cmd/survey explore -dialect mf -copybooks laurasia/copybooks -addr $(EXPLORE_ADDR) -title "Laurasia Card Services" -annotations annotations/laurasia -cases oracle/laurasia laurasia/programs/*.cbl laurasia/scripts/*.sh
 
 .PHONY: docs-diagrams
 docs-diagrams:  ## Redraw the diagrams of docs/architecture.md
