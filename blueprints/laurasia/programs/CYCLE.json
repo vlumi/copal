@@ -1,0 +1,1418 @@
+{
+  "program": "CYCLE",
+  "kind": "main",
+  "source": "laurasia/programs/cycle.cbl",
+  "description": [
+    "cycle: close the billing cycle of the cards whose cycle day it is",
+    "",
+    "for each open or blocked card whose cycle day is the run's day of the",
+    "month: interest on the last statement's balance, unless it was paid in",
+    "full, as the grace period allows; the minimum payment; and the",
+    "statement, with the balance it closes on, which the next cycle charges",
+    "interest on.",
+    "",
+    "return codes: 0 done, 16 cannot update the accounts.",
+    "",
+    "history",
+    "2013-06-03 rk  lcs-0219 original version.",
+    "2021-03-01 mt  lcs-0481 interest by the card's product."
+  ],
+  "files": [
+    {
+      "name": "ACCOUNTS",
+      "kind": "FD",
+      "assign": "ACCOUNTS",
+      "organization": "INDEXED",
+      "recordKey": "CA-CARD-NO",
+      "status": "WS-ACCOUNTS-STATUS",
+      "opened": [
+        "I-O"
+      ],
+      "records": [
+        "CARD-ACCOUNT"
+      ],
+      "source": "laurasia/programs/cycle.cbl:21"
+    },
+    {
+      "name": "POSTINGS-OUT",
+      "kind": "FD",
+      "assign": "POSTOUT",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "POSTING"
+      ],
+      "source": "laurasia/programs/cycle.cbl:26"
+    },
+    {
+      "name": "STATEMENTS-OUT",
+      "kind": "FD",
+      "assign": "STMTOUT",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "STATEMENT-LINE"
+      ],
+      "source": "laurasia/programs/cycle.cbl:28"
+    }
+  ],
+  "records": [
+    {
+      "section": "file",
+      "file": "ACCOUNTS",
+      "copybook": "cardacct",
+      "level": 1,
+      "name": "CARD-ACCOUNT",
+      "start": 1,
+      "length": 61,
+      "category": "group",
+      "kind": "group",
+      "description": "cardacct: a card's account, indexed by card number: its credit limit, its balance, and the balance its last statement showed. history 2011-04-04 rk  lcs-0102 original version. 2013-06-03 rk  lcs-0219 billing cycle day and paid in full flag.",
+      "source": "laurasia/copybooks/cardacct.cpy:8",
+      "fields": [
+        {
+          "level": 5,
+          "name": "CA-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "picture": "X(16)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "key",
+          "source": "laurasia/copybooks/cardacct.cpy:9"
+        },
+        {
+          "level": 5,
+          "name": "CA-ACCOUNT-NO",
+          "start": 17,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/cardacct.cpy:10"
+        },
+        {
+          "level": 5,
+          "name": "CA-PRODUCT",
+          "start": 27,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "CA-CLASSIC",
+              "values": [
+                "'CL'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:12"
+            },
+            {
+              "name": "CA-GOLD",
+              "values": [
+                "'GD'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:13"
+            },
+            {
+              "name": "CA-BUSINESS",
+              "values": [
+                "'BZ'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:14"
+            }
+          ],
+          "source": "laurasia/copybooks/cardacct.cpy:11"
+        },
+        {
+          "level": 5,
+          "name": "CA-STATUS",
+          "start": 29,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "CA-ACTIVE",
+              "values": [
+                "'A'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:16"
+            },
+            {
+              "name": "CA-BLOCKED",
+              "values": [
+                "'B'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:17"
+            },
+            {
+              "name": "CA-CLOSED",
+              "values": [
+                "'C'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:18"
+            }
+          ],
+          "source": "laurasia/copybooks/cardacct.cpy:15"
+        },
+        {
+          "level": 5,
+          "name": "CA-LIMIT",
+          "start": 30,
+          "length": 9,
+          "picture": "9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "scale": 2,
+          "source": "laurasia/copybooks/cardacct.cpy:19"
+        },
+        {
+          "level": 5,
+          "name": "CA-BALANCE",
+          "start": 39,
+          "length": 10,
+          "picture": "S9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/cardacct.cpy:20"
+        },
+        {
+          "level": 5,
+          "name": "CA-STATEMENT-BALANCE",
+          "start": 49,
+          "length": 10,
+          "picture": "S9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/cardacct.cpy:21"
+        },
+        {
+          "level": 5,
+          "name": "CA-CYCLE-DAY",
+          "start": 59,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 2,
+          "source": "laurasia/copybooks/cardacct.cpy:22"
+        },
+        {
+          "level": 5,
+          "name": "CA-PAID-IN-FULL",
+          "start": 61,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "CA-WAS-PAID-IN-FULL",
+              "values": [
+                "'Y'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:24"
+            }
+          ],
+          "source": "laurasia/copybooks/cardacct.cpy:23"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "POSTINGS-OUT",
+      "copybook": "postrec",
+      "level": 1,
+      "name": "POSTING",
+      "start": 1,
+      "length": 51,
+      "category": "group",
+      "kind": "group",
+      "description": "postrec: a posting to a card's account, a record a line. history 2011-04-04 rk  lcs-0102 original version.",
+      "source": "laurasia/copybooks/postrec.cpy:6",
+      "fields": [
+        {
+          "level": 5,
+          "name": "PO-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "picture": "X(16)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/postrec.cpy:7"
+        },
+        {
+          "level": 5,
+          "name": "PO-ACCOUNT-NO",
+          "start": 17,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/postrec.cpy:8"
+        },
+        {
+          "level": 5,
+          "name": "PO-KIND",
+          "start": 27,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PO-PURCHASE",
+              "values": [
+                "'P'"
+              ],
+              "source": "laurasia/copybooks/postrec.cpy:10"
+            },
+            {
+              "name": "PO-OVER-LIMIT-FEE",
+              "values": [
+                "'F'"
+              ],
+              "source": "laurasia/copybooks/postrec.cpy:11"
+            },
+            {
+              "name": "PO-INTEREST",
+              "values": [
+                "'I'"
+              ],
+              "source": "laurasia/copybooks/postrec.cpy:12"
+            }
+          ],
+          "source": "laurasia/copybooks/postrec.cpy:9"
+        },
+        {
+          "level": 5,
+          "name": "PO-AMOUNT",
+          "start": 28,
+          "length": 10,
+          "picture": "S9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/postrec.cpy:13"
+        },
+        {
+          "level": 5,
+          "name": "PO-REFERENCE",
+          "start": 38,
+          "length": 6,
+          "picture": "X(6)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/postrec.cpy:14"
+        },
+        {
+          "level": 5,
+          "name": "PO-DATE",
+          "start": 44,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "date",
+          "digits": 8,
+          "source": "laurasia/copybooks/postrec.cpy:15"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "STATEMENTS-OUT",
+      "level": 1,
+      "name": "STATEMENT-LINE",
+      "start": 1,
+      "length": 70,
+      "picture": "X(70)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/cycle.cbl:38"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-RUN-DATE",
+      "start": 1,
+      "length": 8,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/cycle.cbl:41",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-RUN-YEAR-MONTH",
+          "start": 1,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "date",
+          "digits": 6,
+          "source": "laurasia/programs/cycle.cbl:42"
+        },
+        {
+          "level": 5,
+          "name": "WS-RUN-DAY",
+          "start": 7,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 2,
+          "source": "laurasia/programs/cycle.cbl:43"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ACCOUNTS-STATUS",
+      "start": 1,
+      "length": 2,
+      "picture": "XX",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "code",
+      "conditions": [
+        {
+          "name": "ACCOUNTS-AT-END",
+          "values": [
+            "'10'"
+          ],
+          "source": "laurasia/programs/cycle.cbl:45"
+        }
+      ],
+      "source": "laurasia/programs/cycle.cbl:44"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-INTEREST-CENTS",
+      "start": 1,
+      "length": 4,
+      "picture": "S9(9)",
+      "usage": "COMP-5",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 9,
+      "signed": true,
+      "source": "laurasia/programs/cycle.cbl:46"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-INTEREST",
+      "start": 1,
+      "length": 9,
+      "picture": "S9(7)V99",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "amount",
+      "digits": 9,
+      "scale": 2,
+      "signed": true,
+      "source": "laurasia/programs/cycle.cbl:47"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-MINIMUM",
+      "start": 1,
+      "length": 9,
+      "picture": "S9(7)V99",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "amount",
+      "digits": 9,
+      "scale": 2,
+      "signed": true,
+      "source": "laurasia/programs/cycle.cbl:48"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-CLOSED-COUNT",
+      "start": 1,
+      "length": 6,
+      "picture": "9(6)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 6,
+      "values": [
+        "ZERO"
+      ],
+      "source": "laurasia/programs/cycle.cbl:49"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-STATEMENT-HEAD",
+      "start": 1,
+      "length": 39,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/cycle.cbl:50",
+      "fields": [
+        {
+          "level": 5,
+          "name": "SH-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "picture": "X(16)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/cycle.cbl:51"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 17,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "filler",
+          "values": [
+            "SPACE"
+          ],
+          "source": "laurasia/programs/cycle.cbl:52"
+        },
+        {
+          "level": 5,
+          "name": "SH-ACCOUNT-NO",
+          "start": 18,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/cycle.cbl:53"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 28,
+          "length": 4,
+          "picture": "X(4)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "filler",
+          "values": [
+            "' ON '"
+          ],
+          "source": "laurasia/programs/cycle.cbl:54"
+        },
+        {
+          "level": 5,
+          "name": "SH-DATE",
+          "start": 32,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "date",
+          "digits": 8,
+          "source": "laurasia/programs/cycle.cbl:55"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-STATEMENT-AMOUNT",
+      "start": 1,
+      "length": 45,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/cycle.cbl:56",
+      "fields": [
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 1,
+          "length": 4,
+          "picture": "X(4)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "filler",
+          "values": [
+            "SPACES"
+          ],
+          "source": "laurasia/programs/cycle.cbl:57"
+        },
+        {
+          "level": 5,
+          "name": "SA-LABEL",
+          "start": 5,
+          "length": 30,
+          "picture": "X(30)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/cycle.cbl:58"
+        },
+        {
+          "level": 5,
+          "name": "SA-VALUE",
+          "start": 35,
+          "length": 11,
+          "picture": "-(7)9.99",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "kind": "edited",
+          "source": "laurasia/programs/cycle.cbl:59"
+        }
+      ]
+    }
+  ],
+  "paragraphs": [
+    {
+      "name": "MAIN",
+      "section": "MAIN",
+      "source": "laurasia/programs/cycle.cbl:62",
+      "performs": [
+        {
+          "target": "CLOSE-CYCLE",
+          "source": "laurasia/programs/cycle.cbl:72"
+        }
+      ],
+      "reads": [
+        "WS-ACCOUNTS-STATUS",
+        "CA-CYCLE-DAY",
+        "WS-RUN-DAY",
+        "CA-STATUS"
+      ],
+      "writes": [
+        "WS-RUN-DATE",
+        "RETURN-CODE",
+        "CARD-ACCOUNT"
+      ]
+    },
+    {
+      "name": "CLOSE-CYCLE",
+      "section": "CLOSE-CYCLE",
+      "source": "laurasia/programs/cycle.cbl:79",
+      "performs": [
+        {
+          "target": "POST-INTEREST",
+          "source": "laurasia/programs/cycle.cbl:87"
+        },
+        {
+          "target": "WRITE-STATEMENT",
+          "source": "laurasia/programs/cycle.cbl:90"
+        }
+      ],
+      "performedBy": [
+        "MAIN"
+      ],
+      "reads": [
+        "CA-PAID-IN-FULL",
+        "CA-STATEMENT-BALANCE",
+        "CA-PRODUCT",
+        "RETURNING",
+        "WS-INTEREST-CENTS",
+        "WS-INTEREST",
+        "CA-BALANCE",
+        "WS-MINIMUM",
+        "WS-CLOSED-COUNT"
+      ],
+      "writes": [
+        "WS-INTEREST",
+        "CA-PRODUCT",
+        "CA-STATEMENT-BALANCE",
+        "RETURNING",
+        "WS-INTEREST-CENTS",
+        "CA-BALANCE",
+        "WS-MINIMUM",
+        "CARD-ACCOUNT",
+        "RETURN-CODE",
+        "WS-CLOSED-COUNT"
+      ]
+    },
+    {
+      "name": "POST-INTEREST",
+      "section": "POST-INTEREST",
+      "source": "laurasia/programs/cycle.cbl:97",
+      "performedBy": [
+        "CLOSE-CYCLE"
+      ],
+      "reads": [
+        "CA-CARD-NO",
+        "CA-ACCOUNT-NO",
+        "WS-INTEREST",
+        "WS-RUN-DATE"
+      ],
+      "writes": [
+        "PO-CARD-NO",
+        "PO-ACCOUNT-NO",
+        "PO-KIND",
+        "PO-AMOUNT",
+        "PO-REFERENCE",
+        "PO-DATE",
+        "POSTING"
+      ]
+    },
+    {
+      "name": "WRITE-STATEMENT",
+      "section": "WRITE-STATEMENT",
+      "source": "laurasia/programs/cycle.cbl:106",
+      "performedBy": [
+        "CLOSE-CYCLE"
+      ],
+      "reads": [
+        "CA-CARD-NO",
+        "CA-ACCOUNT-NO",
+        "WS-RUN-DATE",
+        "WS-STATEMENT-HEAD",
+        "CA-STATEMENT-BALANCE",
+        "WS-STATEMENT-AMOUNT",
+        "WS-INTEREST",
+        "CA-BALANCE",
+        "WS-MINIMUM"
+      ],
+      "writes": [
+        "SH-CARD-NO",
+        "SH-ACCOUNT-NO",
+        "SH-DATE",
+        "STATEMENT-LINE",
+        "SA-LABEL",
+        "SA-VALUE"
+      ]
+    }
+  ],
+  "calls": [
+    {
+      "program": "intcalc",
+      "using": [
+        "CA-PRODUCT",
+        "CA-STATEMENT-BALANCE",
+        "RETURNING",
+        "WS-INTEREST-CENTS"
+      ],
+      "external": true,
+      "paragraph": "CLOSE-CYCLE",
+      "source": "laurasia/programs/cycle.cbl:82"
+    },
+    {
+      "program": "minpay",
+      "using": [
+        "CA-BALANCE",
+        "WS-MINIMUM"
+      ],
+      "external": true,
+      "paragraph": "CLOSE-CYCLE",
+      "source": "laurasia/programs/cycle.cbl:89"
+    }
+  ],
+  "lineage": [
+    {
+      "from": "ACCOUNTS",
+      "to": "CARD-ACCOUNT",
+      "fromFile": true,
+      "paragraph": "MAIN",
+      "verb": "READ",
+      "source": "laurasia/programs/cycle.cbl:69"
+    },
+    {
+      "from": "ACCOUNTS",
+      "to": "CARD-ACCOUNT",
+      "fromFile": true,
+      "paragraph": "MAIN",
+      "verb": "READ",
+      "source": "laurasia/programs/cycle.cbl:74"
+    },
+    {
+      "from": "ZERO",
+      "to": "WS-INTEREST",
+      "fromLiteral": true,
+      "paragraph": "CLOSE-CYCLE",
+      "verb": "MOVE",
+      "source": "laurasia/programs/cycle.cbl:80"
+    },
+    {
+      "from": "CA-PRODUCT",
+      "to": "intcalc",
+      "toCall": true,
+      "arg": 1,
+      "paragraph": "CLOSE-CYCLE",
+      "verb": "CALL",
+      "source": "laurasia/programs/cycle.cbl:82"
+    },
+    {
+      "from": "intcalc",
+      "to": "CA-PRODUCT",
+      "fromCall": true,
+      "arg": 1,
+      "paragraph": "CLOSE-CYCLE",
+      "verb": "CALL",
+      "source": "laurasia/programs/cycle.cbl:82"
+    },
+    {
+      "from": "CA-STATEMENT-BALANCE",
+      "to": "intcalc",
+      "toCall": true,
+      "arg": 2,
+      "paragraph": "CLOSE-CYCLE",
+      "verb": "CALL",
+      "source": "laurasia/programs/cycle.cbl:82"
+    },
+    {
+      "from": "intcalc",
+      "to": "CA-STATEMENT-BALANCE",
+      "fromCall": true,
+      "arg": 2,
+      "paragraph": "CLOSE-CYCLE",
+      "verb": "CALL",
+      "source": "laurasia/programs/cycle.cbl:82"
+    },
+    {
+      "from": "RETURNING",
+      "to": "intcalc",
+      "toCall": true,
+      "arg": 3,
+      "paragraph": "CLOSE-CYCLE",
+      "verb": "CALL",
+      "source": "laurasia/programs/cycle.cbl:82"
+    },
+    {
+      "from": "intcalc",
+      "to": "RETURNING",
+      "fromCall": true,
+      "arg": 3,
+      "paragraph": "CLOSE-CYCLE",
+      "verb": "CALL",
+      "source": "laurasia/programs/cycle.cbl:82"
+    },
+    {
+      "from": "WS-INTEREST-CENTS",
+      "to": "intcalc",
+      "toCall": true,
+      "arg": 4,
+      "paragraph": "CLOSE-CYCLE",
+      "verb": "CALL",
+      "source": "laurasia/programs/cycle.cbl:82"
+    },
+    {
+      "from": "intcalc",
+      "to": "WS-INTEREST-CENTS",
+      "fromCall": true,
+      "arg": 4,
+      "paragraph": "CLOSE-CYCLE",
+      "verb": "CALL",
+      "source": "laurasia/programs/cycle.cbl:82"
+    },
+    {
+      "from": "WS-INTEREST-CENTS",
+      "to": "WS-INTEREST",
+      "paragraph": "CLOSE-CYCLE",
+      "verb": "COMPUTE",
+      "source": "laurasia/programs/cycle.cbl:83"
+    },
+    {
+      "from": "WS-INTEREST",
+      "to": "CA-BALANCE",
+      "paragraph": "CLOSE-CYCLE",
+      "verb": "ADD",
+      "source": "laurasia/programs/cycle.cbl:86"
+    },
+    {
+      "from": "CA-BALANCE",
+      "to": "minpay",
+      "toCall": true,
+      "arg": 1,
+      "paragraph": "CLOSE-CYCLE",
+      "verb": "CALL",
+      "source": "laurasia/programs/cycle.cbl:89"
+    },
+    {
+      "from": "minpay",
+      "to": "CA-BALANCE",
+      "fromCall": true,
+      "arg": 1,
+      "paragraph": "CLOSE-CYCLE",
+      "verb": "CALL",
+      "source": "laurasia/programs/cycle.cbl:89"
+    },
+    {
+      "from": "WS-MINIMUM",
+      "to": "minpay",
+      "toCall": true,
+      "arg": 2,
+      "paragraph": "CLOSE-CYCLE",
+      "verb": "CALL",
+      "source": "laurasia/programs/cycle.cbl:89"
+    },
+    {
+      "from": "minpay",
+      "to": "WS-MINIMUM",
+      "fromCall": true,
+      "arg": 2,
+      "paragraph": "CLOSE-CYCLE",
+      "verb": "CALL",
+      "source": "laurasia/programs/cycle.cbl:89"
+    },
+    {
+      "from": "CA-BALANCE",
+      "to": "CA-STATEMENT-BALANCE",
+      "paragraph": "CLOSE-CYCLE",
+      "verb": "MOVE",
+      "source": "laurasia/programs/cycle.cbl:91"
+    },
+    {
+      "from": "CARD-ACCOUNT",
+      "to": "ACCOUNTS",
+      "toFile": true,
+      "paragraph": "CLOSE-CYCLE",
+      "verb": "REWRITE",
+      "source": "laurasia/programs/cycle.cbl:92"
+    },
+    {
+      "from": "1",
+      "to": "WS-CLOSED-COUNT",
+      "fromLiteral": true,
+      "paragraph": "CLOSE-CYCLE",
+      "verb": "ADD",
+      "source": "laurasia/programs/cycle.cbl:95"
+    },
+    {
+      "from": "CA-CARD-NO",
+      "to": "PO-CARD-NO",
+      "paragraph": "POST-INTEREST",
+      "verb": "MOVE",
+      "source": "laurasia/programs/cycle.cbl:98"
+    },
+    {
+      "from": "CA-ACCOUNT-NO",
+      "to": "PO-ACCOUNT-NO",
+      "paragraph": "POST-INTEREST",
+      "verb": "MOVE",
+      "source": "laurasia/programs/cycle.cbl:99"
+    },
+    {
+      "from": "condition PO-INTEREST",
+      "to": "PO-KIND",
+      "fromLiteral": true,
+      "paragraph": "POST-INTEREST",
+      "verb": "SET",
+      "source": "laurasia/programs/cycle.cbl:100"
+    },
+    {
+      "from": "WS-INTEREST",
+      "to": "PO-AMOUNT",
+      "paragraph": "POST-INTEREST",
+      "verb": "MOVE",
+      "source": "laurasia/programs/cycle.cbl:101"
+    },
+    {
+      "from": "SPACES",
+      "to": "PO-REFERENCE",
+      "fromLiteral": true,
+      "paragraph": "POST-INTEREST",
+      "verb": "MOVE",
+      "source": "laurasia/programs/cycle.cbl:102"
+    },
+    {
+      "from": "WS-RUN-DATE",
+      "to": "PO-DATE",
+      "paragraph": "POST-INTEREST",
+      "verb": "MOVE",
+      "source": "laurasia/programs/cycle.cbl:103"
+    },
+    {
+      "from": "POSTING",
+      "to": "POSTINGS-OUT",
+      "toFile": true,
+      "paragraph": "POST-INTEREST",
+      "verb": "WRITE",
+      "source": "laurasia/programs/cycle.cbl:104"
+    },
+    {
+      "from": "CA-CARD-NO",
+      "to": "SH-CARD-NO",
+      "paragraph": "WRITE-STATEMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/cycle.cbl:107"
+    },
+    {
+      "from": "CA-ACCOUNT-NO",
+      "to": "SH-ACCOUNT-NO",
+      "paragraph": "WRITE-STATEMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/cycle.cbl:108"
+    },
+    {
+      "from": "WS-RUN-DATE",
+      "to": "SH-DATE",
+      "paragraph": "WRITE-STATEMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/cycle.cbl:109"
+    },
+    {
+      "from": "WS-STATEMENT-HEAD",
+      "to": "STATEMENT-LINE",
+      "paragraph": "WRITE-STATEMENT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/cycle.cbl:110"
+    },
+    {
+      "from": "STATEMENT-LINE",
+      "to": "STATEMENTS-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-STATEMENT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/cycle.cbl:110"
+    },
+    {
+      "from": "'PREVIOUS BALANCE'",
+      "to": "SA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "WRITE-STATEMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/cycle.cbl:111"
+    },
+    {
+      "from": "CA-STATEMENT-BALANCE",
+      "to": "SA-VALUE",
+      "paragraph": "WRITE-STATEMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/cycle.cbl:112"
+    },
+    {
+      "from": "WS-STATEMENT-AMOUNT",
+      "to": "STATEMENT-LINE",
+      "paragraph": "WRITE-STATEMENT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/cycle.cbl:113"
+    },
+    {
+      "from": "STATEMENT-LINE",
+      "to": "STATEMENTS-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-STATEMENT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/cycle.cbl:113"
+    },
+    {
+      "from": "'INTEREST'",
+      "to": "SA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "WRITE-STATEMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/cycle.cbl:114"
+    },
+    {
+      "from": "WS-INTEREST",
+      "to": "SA-VALUE",
+      "paragraph": "WRITE-STATEMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/cycle.cbl:115"
+    },
+    {
+      "from": "WS-STATEMENT-AMOUNT",
+      "to": "STATEMENT-LINE",
+      "paragraph": "WRITE-STATEMENT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/cycle.cbl:116"
+    },
+    {
+      "from": "STATEMENT-LINE",
+      "to": "STATEMENTS-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-STATEMENT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/cycle.cbl:116"
+    },
+    {
+      "from": "'NEW BALANCE'",
+      "to": "SA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "WRITE-STATEMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/cycle.cbl:117"
+    },
+    {
+      "from": "CA-BALANCE",
+      "to": "SA-VALUE",
+      "paragraph": "WRITE-STATEMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/cycle.cbl:118"
+    },
+    {
+      "from": "WS-STATEMENT-AMOUNT",
+      "to": "STATEMENT-LINE",
+      "paragraph": "WRITE-STATEMENT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/cycle.cbl:119"
+    },
+    {
+      "from": "STATEMENT-LINE",
+      "to": "STATEMENTS-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-STATEMENT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/cycle.cbl:119"
+    },
+    {
+      "from": "'MINIMUM PAYMENT'",
+      "to": "SA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "WRITE-STATEMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/cycle.cbl:120"
+    },
+    {
+      "from": "WS-MINIMUM",
+      "to": "SA-VALUE",
+      "paragraph": "WRITE-STATEMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/cycle.cbl:121"
+    },
+    {
+      "from": "WS-STATEMENT-AMOUNT",
+      "to": "STATEMENT-LINE",
+      "paragraph": "WRITE-STATEMENT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/cycle.cbl:122"
+    },
+    {
+      "from": "STATEMENT-LINE",
+      "to": "STATEMENTS-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-STATEMENT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/cycle.cbl:122"
+    }
+  ],
+  "outputs": [
+    {
+      "file": "ACCOUNTS",
+      "record": "CARD-ACCOUNT",
+      "fields": [
+        {
+          "name": "CA-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "origins": [
+            "file ACCOUNTS CA-CARD-NO"
+          ]
+        },
+        {
+          "name": "CA-ACCOUNT-NO",
+          "start": 17,
+          "length": 10,
+          "origins": [
+            "file ACCOUNTS CA-ACCOUNT-NO"
+          ]
+        },
+        {
+          "name": "CA-PRODUCT",
+          "start": 27,
+          "length": 2,
+          "origins": [
+            "call intcalc argument 1 CA-PRODUCT",
+            "file ACCOUNTS CA-PRODUCT"
+          ]
+        },
+        {
+          "name": "CA-STATUS",
+          "start": 29,
+          "length": 1,
+          "origins": [
+            "file ACCOUNTS CA-STATUS"
+          ]
+        },
+        {
+          "name": "CA-LIMIT",
+          "start": 30,
+          "length": 9,
+          "origins": [
+            "file ACCOUNTS CA-LIMIT"
+          ]
+        },
+        {
+          "name": "CA-BALANCE",
+          "start": 39,
+          "length": 10,
+          "origins": [
+            "call intcalc argument 4 WS-INTEREST-CENTS",
+            "call minpay argument 1 CA-BALANCE",
+            "file ACCOUNTS CA-BALANCE",
+            "literal ZERO"
+          ]
+        },
+        {
+          "name": "CA-STATEMENT-BALANCE",
+          "start": 49,
+          "length": 10,
+          "origins": [
+            "call intcalc argument 4 WS-INTEREST-CENTS",
+            "call minpay argument 1 CA-BALANCE",
+            "file ACCOUNTS CA-BALANCE",
+            "literal ZERO"
+          ]
+        },
+        {
+          "name": "CA-CYCLE-DAY",
+          "start": 59,
+          "length": 2,
+          "origins": [
+            "file ACCOUNTS CA-CYCLE-DAY"
+          ]
+        },
+        {
+          "name": "CA-PAID-IN-FULL",
+          "start": 61,
+          "length": 1,
+          "origins": [
+            "file ACCOUNTS CA-PAID-IN-FULL"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "POSTINGS-OUT",
+      "record": "POSTING",
+      "fields": [
+        {
+          "name": "PO-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "origins": [
+            "file ACCOUNTS CA-CARD-NO"
+          ]
+        },
+        {
+          "name": "PO-ACCOUNT-NO",
+          "start": 17,
+          "length": 10,
+          "origins": [
+            "file ACCOUNTS CA-ACCOUNT-NO"
+          ]
+        },
+        {
+          "name": "PO-KIND",
+          "start": 27,
+          "length": 1,
+          "origins": [
+            "literal condition PO-INTEREST"
+          ]
+        },
+        {
+          "name": "PO-AMOUNT",
+          "start": 28,
+          "length": 10,
+          "origins": [
+            "call intcalc argument 4 WS-INTEREST-CENTS",
+            "literal ZERO"
+          ]
+        },
+        {
+          "name": "PO-REFERENCE",
+          "start": 38,
+          "length": 6,
+          "origins": [
+            "literal SPACES"
+          ]
+        },
+        {
+          "name": "PO-DATE",
+          "start": 44,
+          "length": 8
+        }
+      ]
+    },
+    {
+      "file": "STATEMENTS-OUT",
+      "record": "WS-STATEMENT-HEAD",
+      "fields": [
+        {
+          "name": "SH-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "origins": [
+            "file ACCOUNTS CA-CARD-NO"
+          ]
+        },
+        {
+          "name": "SH-ACCOUNT-NO",
+          "start": 18,
+          "length": 10,
+          "origins": [
+            "file ACCOUNTS CA-ACCOUNT-NO"
+          ]
+        },
+        {
+          "name": "SH-DATE",
+          "start": 32,
+          "length": 8
+        }
+      ]
+    },
+    {
+      "file": "STATEMENTS-OUT",
+      "record": "WS-STATEMENT-AMOUNT",
+      "fields": [
+        {
+          "name": "SA-LABEL",
+          "start": 5,
+          "length": 30,
+          "origins": [
+            "literal 'INTEREST'",
+            "literal 'MINIMUM PAYMENT'",
+            "literal 'NEW BALANCE'",
+            "literal 'PREVIOUS BALANCE'"
+          ]
+        },
+        {
+          "name": "SA-VALUE",
+          "start": 35,
+          "length": 11,
+          "origins": [
+            "call intcalc argument 2 CA-STATEMENT-BALANCE",
+            "call intcalc argument 4 WS-INTEREST-CENTS",
+            "call minpay argument 1 CA-BALANCE",
+            "call minpay argument 2 WS-MINIMUM",
+            "file ACCOUNTS CA-BALANCE",
+            "file ACCOUNTS CA-STATEMENT-BALANCE",
+            "literal ZERO"
+          ]
+        }
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "file": "ACCOUNTS",
+      "record": "CARD-ACCOUNT",
+      "fields": [
+        {
+          "name": "CA-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "reaches": [
+            "PO-CARD-NO",
+            "SH-CARD-NO",
+            "STATEMENT-LINE",
+            "file STATEMENTS-OUT",
+            "file POSTINGS-OUT",
+            "file ACCOUNTS"
+          ]
+        },
+        {
+          "name": "CA-ACCOUNT-NO",
+          "start": 17,
+          "length": 10,
+          "reaches": [
+            "PO-ACCOUNT-NO",
+            "SH-ACCOUNT-NO",
+            "STATEMENT-LINE",
+            "file STATEMENTS-OUT",
+            "file POSTINGS-OUT",
+            "file ACCOUNTS"
+          ]
+        },
+        {
+          "name": "CA-PRODUCT",
+          "start": 27,
+          "length": 2,
+          "reaches": [
+            "file ACCOUNTS"
+          ]
+        },
+        {
+          "name": "CA-STATUS",
+          "start": 29,
+          "length": 1,
+          "reaches": [
+            "file ACCOUNTS"
+          ]
+        },
+        {
+          "name": "CA-LIMIT",
+          "start": 30,
+          "length": 9,
+          "reaches": [
+            "file ACCOUNTS"
+          ]
+        },
+        {
+          "name": "CA-BALANCE",
+          "start": 39,
+          "length": 10,
+          "reaches": [
+            "SA-VALUE",
+            "STATEMENT-LINE",
+            "CA-STATEMENT-BALANCE",
+            "file STATEMENTS-OUT",
+            "file ACCOUNTS"
+          ]
+        },
+        {
+          "name": "CA-STATEMENT-BALANCE",
+          "start": 49,
+          "length": 10,
+          "reaches": [
+            "SA-VALUE",
+            "STATEMENT-LINE",
+            "file ACCOUNTS",
+            "file STATEMENTS-OUT"
+          ]
+        },
+        {
+          "name": "CA-CYCLE-DAY",
+          "start": 59,
+          "length": 2,
+          "reaches": [
+            "file ACCOUNTS"
+          ]
+        },
+        {
+          "name": "CA-PAID-IN-FULL",
+          "start": 61,
+          "length": 1,
+          "reaches": [
+            "file ACCOUNTS"
+          ]
+        }
+      ]
+    }
+  ]
+}

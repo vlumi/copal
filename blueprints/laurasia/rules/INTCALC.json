@@ -1,0 +1,67 @@
+{
+  "program": "INTCALC",
+  "tables": [
+    {
+      "paragraph": "MAIN",
+      "source": "laurasia/programs/intcalc.cbl:23",
+      "conditions": [
+        "LK-GOLD",
+        "LK-BUSINESS"
+      ],
+      "conditionRefs": [
+        [
+          "LK-PRODUCT"
+        ],
+        [
+          "LK-PRODUCT"
+        ]
+      ],
+      "actions": [
+        "MOVE 0.1690 TO WS-YEARLY-RATE",
+        "COMPUTE WS-CENTS ROUNDED = LK-BALANCE * WS-YEARLY-RATE / 12 * 100",
+        "MOVE WS-CENTS TO RETURN-CODE",
+        "GOBACK",
+        "MOVE 0.1490 TO WS-YEARLY-RATE",
+        "MOVE 0.1990 TO WS-YEARLY-RATE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            4,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            5,
+            1,
+            2,
+            3
+          ]
+        }
+      ]
+    }
+  ]
+}

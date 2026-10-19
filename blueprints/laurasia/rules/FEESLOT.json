@@ -1,0 +1,313 @@
+{
+  "program": "FEESLOT",
+  "tables": [
+    {
+      "paragraph": "MAIN",
+      "source": "laurasia/programs/feeslot.cbl:23",
+      "conditions": [
+        "LK-PRODUCT = 'CL'",
+        "LK-REGION = 'D'",
+        "LK-GROUP \u003c 1 OR LK-GROUP \u003e 5",
+        "LK-REGION = 'I'",
+        "LK-PRODUCT = 'GD'",
+        "LK-PRODUCT = 'BZ'"
+      ],
+      "conditionRefs": [
+        [
+          "LK-PRODUCT"
+        ],
+        [
+          "LK-REGION"
+        ],
+        [
+          "LK-GROUP"
+        ],
+        [
+          "LK-REGION"
+        ],
+        [
+          "LK-PRODUCT"
+        ],
+        [
+          "LK-PRODUCT"
+        ]
+      ],
+      "actions": [
+        "MOVE ZERO TO RETURN-CODE",
+        "MOVE 1 TO WS-PRODUCT-INDEX",
+        "MOVE 1 TO WS-REGION-INDEX",
+        "GOBACK",
+        "COMPUTE WS-SLOT = ((WS-PRODUCT-INDEX - 1) * 2 + WS-REGION-INDEX - 1) * 5 + LK-GROUP",
+        "MOVE WS-SLOT TO RETURN-CODE",
+        "MOVE 2 TO WS-REGION-INDEX",
+        "MOVE 2 TO WS-PRODUCT-INDEX",
+        "MOVE 3 TO WS-PRODUCT-INDEX"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            4,
+            5,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            6,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            6,
+            4,
+            5,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            7,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N",
+            "",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            7,
+            2,
+            4,
+            5,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "Y",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            7,
+            6,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "Y",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            7,
+            6,
+            4,
+            5,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "",
+            "N",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            7,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            8,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N",
+            "",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            8,
+            2,
+            4,
+            5,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            8,
+            6,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "Y",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            8,
+            6,
+            4,
+            5,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "",
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            8,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "",
+            "",
+            "",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            3
+          ]
+        }
+      ]
+    }
+  ]
+}

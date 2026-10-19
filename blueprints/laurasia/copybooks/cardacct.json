@@ -1,0 +1,196 @@
+{
+  "copybook": "cardacct",
+  "source": "laurasia/copybooks/cardacct.cpy",
+  "description": [
+    "cardacct: a card's account, indexed by card number: its credit limit,",
+    "its balance, and the balance its last statement showed.",
+    "",
+    "history",
+    "2011-04-04 rk  lcs-0102 original version.",
+    "2013-06-03 rk  lcs-0219 billing cycle day and paid in full flag."
+  ],
+  "records": [
+    {
+      "level": 1,
+      "name": "CARD-ACCOUNT",
+      "start": 1,
+      "length": 61,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/copybooks/cardacct.cpy:8",
+      "fields": [
+        {
+          "level": 5,
+          "name": "CA-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "picture": "X(16)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "key",
+          "source": "laurasia/copybooks/cardacct.cpy:9"
+        },
+        {
+          "level": 5,
+          "name": "CA-ACCOUNT-NO",
+          "start": 17,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/cardacct.cpy:10"
+        },
+        {
+          "level": 5,
+          "name": "CA-PRODUCT",
+          "start": 27,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "CA-CLASSIC",
+              "values": [
+                "'CL'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:12"
+            },
+            {
+              "name": "CA-GOLD",
+              "values": [
+                "'GD'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:13"
+            },
+            {
+              "name": "CA-BUSINESS",
+              "values": [
+                "'BZ'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:14"
+            }
+          ],
+          "source": "laurasia/copybooks/cardacct.cpy:11"
+        },
+        {
+          "level": 5,
+          "name": "CA-STATUS",
+          "start": 29,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "CA-ACTIVE",
+              "values": [
+                "'A'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:16"
+            },
+            {
+              "name": "CA-BLOCKED",
+              "values": [
+                "'B'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:17"
+            },
+            {
+              "name": "CA-CLOSED",
+              "values": [
+                "'C'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:18"
+            }
+          ],
+          "source": "laurasia/copybooks/cardacct.cpy:15"
+        },
+        {
+          "level": 5,
+          "name": "CA-LIMIT",
+          "start": 30,
+          "length": 9,
+          "picture": "9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "scale": 2,
+          "source": "laurasia/copybooks/cardacct.cpy:19"
+        },
+        {
+          "level": 5,
+          "name": "CA-BALANCE",
+          "start": 39,
+          "length": 10,
+          "picture": "S9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/cardacct.cpy:20"
+        },
+        {
+          "level": 5,
+          "name": "CA-STATEMENT-BALANCE",
+          "start": 49,
+          "length": 10,
+          "picture": "S9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/cardacct.cpy:21"
+        },
+        {
+          "level": 5,
+          "name": "CA-CYCLE-DAY",
+          "start": 59,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 2,
+          "source": "laurasia/copybooks/cardacct.cpy:22"
+        },
+        {
+          "level": 5,
+          "name": "CA-PAID-IN-FULL",
+          "start": 61,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "CA-WAS-PAID-IN-FULL",
+              "values": [
+                "'Y'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:24"
+            }
+          ],
+          "source": "laurasia/copybooks/cardacct.cpy:23"
+        }
+      ]
+    }
+  ],
+  "usedBy": [
+    "ACCTLD",
+    "ACCTUL",
+    "CYCLE",
+    "POST"
+  ]
+}

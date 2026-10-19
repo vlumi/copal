@@ -1,0 +1,298 @@
+{
+  "program": "MATCH",
+  "tables": [
+    {
+      "paragraph": "MAIN",
+      "source": "laurasia/programs/match.cbl:57",
+      "conditions": [
+        "WS-NOT-MATCHED \u003e ZERO"
+      ],
+      "conditionRefs": [
+        [
+          "WS-NOT-MATCHED"
+        ]
+      ],
+      "actions": [
+        "OPEN INPUT PRES-IN AUTH-IN OUTPUT PRES-OUT REPORT-OUT",
+        "PERFORM READ-PRESENTMENT",
+        "PERFORM READ-AUTHORIZATION",
+        "PERFORM MATCH-NEXT UNTIL WS-PRES-KEY = HIGH-VALUES AND WS-AUTH-KEY = HIGH-VALUES",
+        "PERFORM WRITE-REPORT",
+        "CLOSE PRES-IN AUTH-IN PRES-OUT REPORT-OUT",
+        "STOP RUN RETURNING 4",
+        "STOP RUN RETURNING 0"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "READ-PRESENTMENT",
+      "source": "laurasia/programs/match.cbl:70",
+      "conditions": [
+        "READ PRES-IN INTO PRES-RECORD AT END"
+      ],
+      "conditionRefs": [
+        null
+      ],
+      "actions": [
+        "READ PRES-IN INTO PRES-RECORD",
+        "MOVE HIGH-VALUES TO WS-PRES-KEY",
+        "MOVE PS-AUTH-CODE TO WS-PRES-KEY"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "READ-AUTHORIZATION",
+      "source": "laurasia/programs/match.cbl:76",
+      "conditions": [
+        "READ AUTH-IN AT END"
+      ],
+      "conditionRefs": [
+        null
+      ],
+      "actions": [
+        "READ AUTH-IN",
+        "MOVE HIGH-VALUES TO WS-AUTH-KEY",
+        "MOVE 'N' TO WS-AUTH-CLAIMED",
+        "MOVE AL-AUTH-CODE TO WS-AUTH-KEY"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            3,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "MATCH-NEXT",
+      "source": "laurasia/programs/match.cbl:86",
+      "conditions": [
+        "WS-PRES-KEY \u003c WS-AUTH-KEY",
+        "WS-PRES-KEY \u003e WS-AUTH-KEY",
+        "AUTH-CLAIMED"
+      ],
+      "conditionRefs": [
+        [
+          "WS-PRES-KEY",
+          "WS-AUTH-KEY"
+        ],
+        [
+          "WS-PRES-KEY",
+          "WS-AUTH-KEY"
+        ],
+        [
+          "WS-AUTH-CLAIMED"
+        ]
+      ],
+      "actions": [
+        "SET PS-NO-AUTH TO TRUE",
+        "PERFORM WRITE-PRESENTMENT",
+        "PERFORM READ-PRESENTMENT",
+        "ADD 1 TO WS-LAPSED",
+        "PERFORM READ-AUTHORIZATION",
+        "PERFORM MARK-PRESENTMENT",
+        "SET AUTH-CLAIMED TO TRUE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            3,
+            4
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            4
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            ""
+          ],
+          "actions": [
+            5,
+            6,
+            1,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "MARK-PRESENTMENT",
+      "source": "laurasia/programs/match.cbl:104",
+      "conditions": [
+        "AL-DECLINED",
+        "PS-AMOUNT \u003e AL-AMOUNT * TOLERANCE"
+      ],
+      "conditionRefs": [
+        [
+          "AL-DECISION"
+        ],
+        [
+          "PS-AMOUNT",
+          "AL-AMOUNT",
+          "TOLERANCE"
+        ]
+      ],
+      "actions": [
+        "SET PS-DECLINED TO TRUE",
+        "SET PS-OVER-AUTH TO TRUE",
+        "SET PS-MATCHED TO TRUE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "WRITE-PRESENTMENT",
+      "source": "laurasia/programs/match.cbl:114",
+      "conditions": [
+        "PS-MATCHED"
+      ],
+      "conditionRefs": [
+        [
+          "PS-MATCH"
+        ]
+      ],
+      "actions": [
+        "WRITE PRES-RECORD",
+        "ADD 1 TO WS-MATCHED",
+        "ADD 1 TO WS-NOT-MATCHED"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            2
+          ]
+        }
+      ]
+    }
+  ]
+}

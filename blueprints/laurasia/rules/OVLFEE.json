@@ -1,0 +1,84 @@
+{
+  "program": "OVLFEE",
+  "tables": [
+    {
+      "paragraph": "MAIN",
+      "source": "laurasia/programs/ovlfee.cbl:23",
+      "conditions": [
+        "LK-GOLD AND LK-OVER-AMOUNT NOT \u003e GOLD-ALLOWANCE",
+        "LK-FEE \u003c LEAST-FEE",
+        "LK-FEE \u003e MOST-FEE"
+      ],
+      "conditionRefs": [
+        [
+          "LK-PRODUCT",
+          "LK-OVER-AMOUNT",
+          "GOLD-ALLOWANCE"
+        ],
+        [
+          "LK-FEE",
+          "LEAST-FEE"
+        ],
+        [
+          "LK-FEE",
+          "MOST-FEE"
+        ]
+      ],
+      "actions": [
+        "MOVE ZERO TO LK-FEE",
+        "GOBACK",
+        "COMPUTE LK-FEE ROUNDED = LK-OVER-AMOUNT / 10",
+        "MOVE LEAST-FEE TO LK-FEE",
+        "MOVE MOST-FEE TO LK-FEE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            ""
+          ],
+          "actions": [
+            2,
+            3,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            2,
+            4,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            2,
+            1
+          ]
+        }
+      ]
+    }
+  ]
+}

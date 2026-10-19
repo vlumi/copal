@@ -1,0 +1,98 @@
+{
+  "program": "ACCTLD",
+  "tables": [
+    {
+      "paragraph": "MAIN",
+      "source": "laurasia/programs/acctld.cbl:36",
+      "conditions": [
+        "WS-ACCOUNTS-STATUS = '00'"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ACCOUNTS-STATUS"
+        ]
+      ],
+      "actions": [
+        "OPEN INPUT ACCOUNTS-IN OUTPUT ACCOUNTS",
+        "STOP RUN RETURNING 16",
+        "PERFORM UNTIL ACCOUNTS-AT-END",
+        "CLOSE ACCOUNTS-IN ACCOUNTS",
+        "STOP RUN RETURNING WS-RESULT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "MAIN",
+      "loop": "PERFORM UNTIL ACCOUNTS-AT-END",
+      "source": "laurasia/programs/acctld.cbl:41",
+      "conditions": [
+        "READ ACCOUNTS-IN AT END",
+        "WRITE CARD-ACCOUNT FROM ACCOUNT-LINE INVALID KEY"
+      ],
+      "conditionRefs": [
+        null,
+        null
+      ],
+      "actions": [
+        "READ ACCOUNTS-IN",
+        "SET ACCOUNTS-AT-END TO TRUE",
+        "WRITE CARD-ACCOUNT FROM ACCOUNT-LINE",
+        "MOVE 8 TO WS-RESULT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            2
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,226 @@
+{
+  "program": "FEESLOT",
+  "kind": "called",
+  "source": "laurasia/programs/feeslot.cbl",
+  "description": [
+    "feeslot: the fee table's slot for a card product, a region and a",
+    "merchant group, or zero for none: three products, two regions and five",
+    "groups, thirty slots. the slot is the return code, which a caller",
+    "receives with call ... returning.",
+    "",
+    "history",
+    "2012-01-09 ah  lcs-0140 original version."
+  ],
+  "files": null,
+  "records": [
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-PRODUCT-INDEX",
+      "start": 1,
+      "length": 1,
+      "picture": "9",
+      "usage": "COMP-5",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 1,
+      "source": "laurasia/programs/feeslot.cbl:14"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REGION-INDEX",
+      "start": 1,
+      "length": 1,
+      "picture": "9",
+      "usage": "COMP-5",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 1,
+      "source": "laurasia/programs/feeslot.cbl:15"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-SLOT",
+      "start": 1,
+      "length": 2,
+      "picture": "9(4)",
+      "usage": "COMP-5",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 4,
+      "source": "laurasia/programs/feeslot.cbl:16"
+    },
+    {
+      "section": "linkage",
+      "level": 1,
+      "name": "LK-PRODUCT",
+      "start": 1,
+      "length": 2,
+      "picture": "X(2)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/feeslot.cbl:18"
+    },
+    {
+      "section": "linkage",
+      "level": 1,
+      "name": "LK-REGION",
+      "start": 1,
+      "length": 1,
+      "picture": "X",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/feeslot.cbl:19"
+    },
+    {
+      "section": "linkage",
+      "level": 1,
+      "name": "LK-GROUP",
+      "start": 1,
+      "length": 1,
+      "picture": "9",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 1,
+      "source": "laurasia/programs/feeslot.cbl:20"
+    }
+  ],
+  "paragraphs": [
+    {
+      "name": "MAIN",
+      "section": "MAIN",
+      "source": "laurasia/programs/feeslot.cbl:23",
+      "reads": [
+        "LK-PRODUCT",
+        "LK-REGION",
+        "LK-GROUP",
+        "WS-PRODUCT-INDEX",
+        "WS-REGION-INDEX",
+        "WS-SLOT"
+      ],
+      "writes": [
+        "RETURN-CODE",
+        "WS-PRODUCT-INDEX",
+        "WS-REGION-INDEX",
+        "WS-SLOT"
+      ]
+    }
+  ],
+  "using": [
+    "LK-PRODUCT",
+    "LK-REGION",
+    "LK-GROUP"
+  ],
+  "lineage": [
+    {
+      "from": "ZERO",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "MAIN",
+      "verb": "MOVE",
+      "source": "laurasia/programs/feeslot.cbl:24"
+    },
+    {
+      "from": "1",
+      "to": "WS-PRODUCT-INDEX",
+      "fromLiteral": true,
+      "paragraph": "MAIN",
+      "verb": "MOVE",
+      "source": "laurasia/programs/feeslot.cbl:26"
+    },
+    {
+      "from": "2",
+      "to": "WS-PRODUCT-INDEX",
+      "fromLiteral": true,
+      "paragraph": "MAIN",
+      "verb": "MOVE",
+      "source": "laurasia/programs/feeslot.cbl:27"
+    },
+    {
+      "from": "3",
+      "to": "WS-PRODUCT-INDEX",
+      "fromLiteral": true,
+      "paragraph": "MAIN",
+      "verb": "MOVE",
+      "source": "laurasia/programs/feeslot.cbl:28"
+    },
+    {
+      "from": "1",
+      "to": "WS-REGION-INDEX",
+      "fromLiteral": true,
+      "paragraph": "MAIN",
+      "verb": "MOVE",
+      "source": "laurasia/programs/feeslot.cbl:32"
+    },
+    {
+      "from": "2",
+      "to": "WS-REGION-INDEX",
+      "fromLiteral": true,
+      "paragraph": "MAIN",
+      "verb": "MOVE",
+      "source": "laurasia/programs/feeslot.cbl:33"
+    },
+    {
+      "from": "WS-PRODUCT-INDEX",
+      "to": "WS-SLOT",
+      "paragraph": "MAIN",
+      "verb": "COMPUTE",
+      "source": "laurasia/programs/feeslot.cbl:39"
+    },
+    {
+      "from": "WS-REGION-INDEX",
+      "to": "WS-SLOT",
+      "paragraph": "MAIN",
+      "verb": "COMPUTE",
+      "source": "laurasia/programs/feeslot.cbl:39"
+    },
+    {
+      "from": "LK-GROUP",
+      "to": "WS-SLOT",
+      "paragraph": "MAIN",
+      "verb": "COMPUTE",
+      "source": "laurasia/programs/feeslot.cbl:39"
+    },
+    {
+      "from": "WS-SLOT",
+      "to": "RETURN-CODE",
+      "paragraph": "MAIN",
+      "verb": "MOVE",
+      "source": "laurasia/programs/feeslot.cbl:40"
+    }
+  ],
+  "parameters": [
+    {
+      "item": "LK-PRODUCT",
+      "fields": [
+        {
+          "name": "LK-PRODUCT",
+          "reads": true
+        }
+      ]
+    },
+    {
+      "item": "LK-REGION",
+      "fields": [
+        {
+          "name": "LK-REGION",
+          "reads": true
+        }
+      ]
+    },
+    {
+      "item": "LK-GROUP",
+      "fields": [
+        {
+          "name": "LK-GROUP",
+          "reads": true
+        }
+      ]
+    }
+  ]
+}

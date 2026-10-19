@@ -1,0 +1,528 @@
+{
+  "program": "CLRIN",
+  "tables": [
+    {
+      "paragraph": "MAIN",
+      "source": "laurasia/programs/clrin.cbl:94",
+      "conditions": [
+        "IO-FAILED",
+        "CLEARING-AT-END OR NOT IS-FILE-HEADER OR FH-FILE-DATE NOT = WS-RUN-DATE",
+        "IO-FAILED, again"
+      ],
+      "conditionRefs": [
+        [
+          "WS-IO-FAILED"
+        ],
+        [
+          "WS-CLEARING-STATUS",
+          "CLR-RECORD-TYPE",
+          "FH-FILE-DATE",
+          "WS-RUN-DATE"
+        ],
+        [
+          "WS-IO-FAILED"
+        ]
+      ],
+      "actions": [
+        "ACCEPT WS-RUN-DATE FROM COMMAND-LINE",
+        "OPEN INPUT CLEARING-IN OUTPUT PRES-OUT REJECT-OUT REPORT-OUT",
+        "STOP RUN RETURNING 16",
+        "PERFORM READ-CLEARING",
+        "MOVE 12 TO WS-RESULT",
+        "PERFORM WRITE-REPORT",
+        "CLOSE CLEARING-IN PRES-OUT REJECT-OUT REPORT-OUT",
+        "MOVE 16 TO WS-RESULT",
+        "STOP RUN RETURNING WS-RESULT",
+        "PERFORM TAKE-BATCH UNTIL CLEARING-AT-END OR IS-FILE-TRAILER OR IO-FAILED",
+        "PERFORM CHECK-FILE-TRAILER"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            3,
+            4,
+            5,
+            6,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            3,
+            3,
+            9,
+            10,
+            5,
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            3,
+            3,
+            9,
+            10,
+            5,
+            6,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "READ-CLEARING",
+      "source": "laurasia/programs/clrin.cbl:116",
+      "conditions": [
+        "READ CLEARING-IN AT END"
+      ],
+      "conditionRefs": [
+        null
+      ],
+      "actions": [
+        "READ CLEARING-IN",
+        "SET CLEARING-AT-END TO TRUE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "TAKE-BATCH",
+      "source": "laurasia/programs/clrin.cbl:124",
+      "conditions": [
+        "IS-BATCH-HEADER",
+        "IS-BATCH-TRAILER AND BT-COUNT = WS-BATCH-COUNT AND BT-AMOUNT = WS-BATCH-AMOUNT",
+        "IS-BATCH-TRAILER"
+      ],
+      "conditionRefs": [
+        [
+          "CLR-RECORD-TYPE"
+        ],
+        [
+          "CLR-RECORD-TYPE",
+          "BT-COUNT",
+          "WS-BATCH-COUNT",
+          "BT-AMOUNT",
+          "WS-BATCH-AMOUNT"
+        ],
+        [
+          "CLR-RECORD-TYPE"
+        ]
+      ],
+      "actions": [
+        "MOVE 'ORDR' TO WS-REASON",
+        "PERFORM REJECT-RECORD",
+        "PERFORM READ-CLEARING",
+        "EXIT SECTION",
+        "MOVE BH-BATCH-NO TO WS-BATCH-NO",
+        "MOVE ZERO TO WS-BATCH-COUNT WS-BATCH-AMOUNT WS-HELD-COUNT",
+        "ADD 1 TO WS-BATCHES",
+        "PERFORM TAKE-PRESENTMENT UNTIL CLEARING-AT-END OR NOT IS-PRESENTMENT",
+        "MOVE CLR-PRESENTMENT TO WS-RECORD-READ",
+        "PERFORM RELEASE-BATCH",
+        "MOVE WS-RECORD-READ TO CLR-PRESENTMENT",
+        "PERFORM REJECT-BATCH"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            4,
+            5,
+            6,
+            2,
+            7,
+            8,
+            9,
+            10,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            4,
+            5,
+            6,
+            2,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            4,
+            5,
+            6,
+            2,
+            7,
+            8,
+            11,
+            10,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N"
+          ],
+          "actions": [
+            4,
+            5,
+            6,
+            2,
+            7,
+            8,
+            11,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "TAKE-PRESENTMENT",
+      "source": "laurasia/programs/clrin.cbl:147",
+      "conditions": [
+        "PRESENTMENT-IS-GOOD AND WS-HELD-COUNT \u003c MAX-BATCH"
+      ],
+      "conditionRefs": [
+        [
+          "WS-REASON",
+          "WS-HELD-COUNT",
+          "MAX-BATCH"
+        ]
+      ],
+      "actions": [
+        "ADD 1 TO WS-BATCH-COUNT WS-RECORDS",
+        "ADD PR-AMOUNT TO WS-BATCH-AMOUNT WS-AMOUNT",
+        "PERFORM VALIDATE-PRESENTMENT",
+        "ADD 1 TO WS-HELD-COUNT",
+        "MOVE CLR-PRESENTMENT TO WS-HELD-PRESENTMENT(WS-HELD-COUNT)",
+        "PERFORM READ-CLEARING",
+        "PERFORM REJECT-RECORD"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            6,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "VALIDATE-PRESENTMENT",
+      "source": "laurasia/programs/clrin.cbl:159",
+      "conditions": [
+        "PR-CARD-NO IS NUMERIC",
+        "PR-AMOUNT \u003e ZERO",
+        "PR-MCC IS NUMERIC",
+        "PR-REGION NOT = 'D' AND PR-REGION NOT = 'I'",
+        "PR-PRODUCT NOT = 'CL' AND PR-PRODUCT NOT = 'GD' AND PR-PRODUCT NOT = 'BZ'"
+      ],
+      "conditionRefs": [
+        [
+          "PR-CARD-NO"
+        ],
+        [
+          "PR-AMOUNT"
+        ],
+        [
+          "PR-MCC"
+        ],
+        [
+          "PR-REGION"
+        ],
+        [
+          "PR-PRODUCT"
+        ]
+      ],
+      "actions": [
+        "MOVE 'CARD' TO WS-REASON",
+        "MOVE 'AMNT' TO WS-REASON",
+        "MOVE 'MCC ' TO WS-REASON",
+        "MOVE 'REGN' TO WS-REASON",
+        "MOVE 'PROD' TO WS-REASON",
+        "MOVE SPACES TO WS-REASON"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            1
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            2
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            ""
+          ],
+          "actions": [
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            4
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "N"
+          ],
+          "actions": [
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "REJECT-RECORD",
+      "source": "laurasia/programs/clrin.cbl:200",
+      "conditions": [
+        "WS-RESULT \u003c 4"
+      ],
+      "conditionRefs": [
+        [
+          "WS-RESULT"
+        ]
+      ],
+      "actions": [
+        "MOVE SPACES TO REJECT-LINE",
+        "MOVE WS-REASON TO RJ-REASON",
+        "MOVE WS-BATCH-NO TO RJ-BATCH-NO",
+        "MOVE CLR-PRESENTMENT TO RJ-RECORD",
+        "WRITE REJECT-LINE",
+        "ADD 1 TO WS-REJECTED",
+        "MOVE 4 TO WS-RESULT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "CHECK-FILE-TRAILER",
+      "source": "laurasia/programs/clrin.cbl:211",
+      "conditions": [
+        "NOT IS-FILE-TRAILER OR FT-BATCH-COUNT NOT = WS-BATCHES OR FT-RECORD-COUNT NOT = WS-RECORDS OR FT-AMOUNT NOT = WS-AMOUNT"
+      ],
+      "conditionRefs": [
+        [
+          "CLR-RECORD-TYPE",
+          "FT-BATCH-COUNT",
+          "WS-BATCHES",
+          "FT-RECORD-COUNT",
+          "WS-RECORDS",
+          "FT-AMOUNT",
+          "WS-AMOUNT"
+        ]
+      ],
+      "actions": [
+        "MOVE 8 TO WS-RESULT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": null
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "program": "OVLBIZ",
+  "kind": "called",
+  "source": "laurasia/programs/ovlbiz.cbl",
+  "description": [
+    "ovlbiz: the over-limit fee of a business card: none; the company is",
+    "billed for the excess at the cycle.",
+    "",
+    "history",
+    "2020-02-10 mt  lcs-0466 original version."
+  ],
+  "files": null,
+  "records": [
+    {
+      "section": "linkage",
+      "level": 1,
+      "name": "LK-PRODUCT",
+      "start": 1,
+      "length": 2,
+      "picture": "X(2)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/ovlbiz.cbl:12"
+    },
+    {
+      "section": "linkage",
+      "level": 1,
+      "name": "LK-OVER-AMOUNT",
+      "start": 1,
+      "length": 9,
+      "picture": "S9(7)V99",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "amount",
+      "digits": 9,
+      "scale": 2,
+      "signed": true,
+      "source": "laurasia/programs/ovlbiz.cbl:13"
+    },
+    {
+      "section": "linkage",
+      "level": 1,
+      "name": "LK-FEE",
+      "start": 1,
+      "length": 9,
+      "picture": "S9(7)V99",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "amount",
+      "digits": 9,
+      "scale": 2,
+      "signed": true,
+      "source": "laurasia/programs/ovlbiz.cbl:14"
+    }
+  ],
+  "paragraphs": [
+    {
+      "name": "MAIN",
+      "section": "MAIN",
+      "source": "laurasia/programs/ovlbiz.cbl:17",
+      "writes": [
+        "LK-FEE"
+      ]
+    }
+  ],
+  "using": [
+    "LK-PRODUCT",
+    "LK-OVER-AMOUNT",
+    "LK-FEE"
+  ],
+  "lineage": [
+    {
+      "from": "ZERO",
+      "to": "LK-FEE",
+      "fromLiteral": true,
+      "paragraph": "MAIN",
+      "verb": "MOVE",
+      "source": "laurasia/programs/ovlbiz.cbl:18"
+    }
+  ],
+  "parameters": [
+    {
+      "item": "LK-PRODUCT",
+      "fields": [
+        {
+          "name": "LK-PRODUCT"
+        }
+      ]
+    },
+    {
+      "item": "LK-OVER-AMOUNT",
+      "fields": [
+        {
+          "name": "LK-OVER-AMOUNT"
+        }
+      ]
+    },
+    {
+      "item": "LK-FEE",
+      "fields": [
+        {
+          "name": "LK-FEE",
+          "writes": true
+        }
+      ]
+    }
+  ]
+}

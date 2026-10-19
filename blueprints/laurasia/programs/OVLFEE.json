@@ -1,0 +1,168 @@
+{
+  "program": "OVLFEE",
+  "kind": "called",
+  "source": "laurasia/programs/ovlfee.cbl",
+  "description": [
+    "ovlfee: the over-limit fee of a consumer card: a tenth of what the",
+    "balance is over the limit, at least 5.00 and at most 35.00; a gold",
+    "card's first 50.00 over is free.",
+    "",
+    "history",
+    "2013-06-03 rk  lcs-0219 original version."
+  ],
+  "files": null,
+  "constants": [
+    {
+      "name": "LEAST-FEE",
+      "value": "5.00",
+      "source": "laurasia/programs/ovlfee.cbl:13"
+    },
+    {
+      "name": "MOST-FEE",
+      "value": "35.00",
+      "source": "laurasia/programs/ovlfee.cbl:14"
+    },
+    {
+      "name": "GOLD-ALLOWANCE",
+      "value": "50.00",
+      "source": "laurasia/programs/ovlfee.cbl:15"
+    }
+  ],
+  "records": [
+    {
+      "section": "linkage",
+      "level": 1,
+      "name": "LK-PRODUCT",
+      "start": 1,
+      "length": 2,
+      "picture": "X(2)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "code",
+      "conditions": [
+        {
+          "name": "LK-GOLD",
+          "values": [
+            "'GD'"
+          ],
+          "source": "laurasia/programs/ovlfee.cbl:18"
+        }
+      ],
+      "source": "laurasia/programs/ovlfee.cbl:17"
+    },
+    {
+      "section": "linkage",
+      "level": 1,
+      "name": "LK-OVER-AMOUNT",
+      "start": 1,
+      "length": 9,
+      "picture": "S9(7)V99",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "amount",
+      "digits": 9,
+      "scale": 2,
+      "signed": true,
+      "source": "laurasia/programs/ovlfee.cbl:19"
+    },
+    {
+      "section": "linkage",
+      "level": 1,
+      "name": "LK-FEE",
+      "start": 1,
+      "length": 9,
+      "picture": "S9(7)V99",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "amount",
+      "digits": 9,
+      "scale": 2,
+      "signed": true,
+      "source": "laurasia/programs/ovlfee.cbl:20"
+    }
+  ],
+  "paragraphs": [
+    {
+      "name": "MAIN",
+      "section": "MAIN",
+      "source": "laurasia/programs/ovlfee.cbl:23",
+      "reads": [
+        "LK-PRODUCT",
+        "LK-OVER-AMOUNT",
+        "GOLD-ALLOWANCE",
+        "LK-FEE",
+        "LEAST-FEE",
+        "MOST-FEE"
+      ],
+      "writes": [
+        "LK-FEE"
+      ]
+    }
+  ],
+  "using": [
+    "LK-PRODUCT",
+    "LK-OVER-AMOUNT",
+    "LK-FEE"
+  ],
+  "lineage": [
+    {
+      "from": "ZERO",
+      "to": "LK-FEE",
+      "fromLiteral": true,
+      "paragraph": "MAIN",
+      "verb": "MOVE",
+      "source": "laurasia/programs/ovlfee.cbl:25"
+    },
+    {
+      "from": "LK-OVER-AMOUNT",
+      "to": "LK-FEE",
+      "paragraph": "MAIN",
+      "verb": "COMPUTE",
+      "source": "laurasia/programs/ovlfee.cbl:28"
+    },
+    {
+      "from": "LEAST-FEE",
+      "to": "LK-FEE",
+      "paragraph": "MAIN",
+      "verb": "MOVE",
+      "source": "laurasia/programs/ovlfee.cbl:31"
+    },
+    {
+      "from": "MOST-FEE",
+      "to": "LK-FEE",
+      "paragraph": "MAIN",
+      "verb": "MOVE",
+      "source": "laurasia/programs/ovlfee.cbl:33"
+    }
+  ],
+  "parameters": [
+    {
+      "item": "LK-PRODUCT",
+      "fields": [
+        {
+          "name": "LK-PRODUCT",
+          "reads": true
+        }
+      ]
+    },
+    {
+      "item": "LK-OVER-AMOUNT",
+      "fields": [
+        {
+          "name": "LK-OVER-AMOUNT",
+          "reads": true
+        }
+      ]
+    },
+    {
+      "item": "LK-FEE",
+      "fields": [
+        {
+          "name": "LK-FEE",
+          "reads": true,
+          "writes": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,487 @@
+{
+  "program": "DISPUTE",
+  "tables": [
+    {
+      "paragraph": "READ-MASTER",
+      "source": "laurasia/programs/dispute.cbl:74",
+      "conditions": [
+        "READ MASTER-IN AT END"
+      ],
+      "conditionRefs": [
+        null
+      ],
+      "actions": [
+        "READ MASTER-IN",
+        "MOVE ALL '9' TO WS-MASTER-KEY",
+        "MOVE MASTER-IN-RECORD TO DISPUTE-CASE",
+        "MOVE DC-CASE-NO TO WS-MASTER-KEY"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            2,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "READ-EVENT",
+      "source": "laurasia/programs/dispute.cbl:82",
+      "conditions": [
+        "READ EVENTS-IN AT END"
+      ],
+      "conditionRefs": [
+        null
+      ],
+      "actions": [
+        "READ EVENTS-IN",
+        "MOVE ALL '9' TO WS-EVENT-KEY",
+        "MOVE DE-CASE-NO TO WS-EVENT-KEY"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "APPLY-NEXT",
+      "source": "laurasia/programs/dispute.cbl:91",
+      "conditions": [
+        "WS-MASTER-KEY \u003c WS-EVENT-KEY",
+        "WS-MASTER-KEY = WS-EVENT-KEY"
+      ],
+      "conditionRefs": [
+        [
+          "WS-MASTER-KEY",
+          "WS-EVENT-KEY"
+        ],
+        [
+          "WS-MASTER-KEY",
+          "WS-EVENT-KEY"
+        ]
+      ],
+      "actions": [
+        "MOVE MASTER-IN-RECORD TO DISPUTE-CASE",
+        "WRITE DISPUTE-CASE",
+        "PERFORM READ-MASTER",
+        "MOVE MASTER-IN-RECORD TO WS-HELD-CASE",
+        "SET HOLDING-CASE TO TRUE",
+        "PERFORM APPLY-EVENTS",
+        "SET HOLDING-NOTHING TO TRUE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            3,
+            4,
+            2,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            6,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "APPLY-EVENTS",
+      "source": "laurasia/programs/dispute.cbl:107",
+      "conditions": [
+        "HOLDING-CASE"
+      ],
+      "conditionRefs": [
+        [
+          "WS-HOLDING"
+        ]
+      ],
+      "actions": [
+        "MOVE WS-EVENT-KEY TO DC-CASE-NO",
+        "PERFORM UNTIL WS-EVENT-KEY NOT = DC-CASE-NO",
+        "MOVE WS-HELD-CASE TO DISPUTE-CASE",
+        "WRITE DISPUTE-CASE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "APPLY-EVENTS",
+      "loop": "PERFORM UNTIL WS-EVENT-KEY NOT = DC-CASE-NO",
+      "source": "laurasia/programs/dispute.cbl:109",
+      "conditions": [
+        "HOLDING-CASE",
+        "HOLDING-CASE, again"
+      ],
+      "conditionRefs": [
+        [
+          "WS-HOLDING"
+        ],
+        [
+          "WS-HOLDING"
+        ]
+      ],
+      "actions": [
+        "MOVE WS-HELD-CASE TO DISPUTE-CASE",
+        "PERFORM APPLY-EVENT",
+        "MOVE DISPUTE-CASE TO WS-HELD-CASE",
+        "PERFORM READ-EVENT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            1,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "APPLY-EVENT",
+      "source": "laurasia/programs/dispute.cbl:125",
+      "conditions": [
+        "HOLDING-NOTHING AND DE-OPENED",
+        "HOLDING-CASE AND DC-OPEN AND DE-CHARGEBACK",
+        "HOLDING-CASE AND DC-CHARGED-BACK AND DE-MERCHANT-ACCEPTS",
+        "HOLDING-CASE AND DC-CHARGED-BACK AND DE-REPRESENTMENT",
+        "HOLDING-CASE AND DC-REPRESENTED AND DE-ISSUER-DROPS",
+        "HOLDING-CASE AND DC-REPRESENTED AND DE-PRE-ARBITRATION",
+        "HOLDING-CASE AND DC-PRE-ARBITRATION AND DE-RULED-FOR-ISSUER",
+        "HOLDING-CASE AND DC-PRE-ARBITRATION AND DE-RULED-FOR-MERCHANT"
+      ],
+      "conditionRefs": [
+        [
+          "WS-HOLDING",
+          "DE-EVENT"
+        ],
+        [
+          "WS-HOLDING",
+          "DC-STATUS",
+          "DE-EVENT"
+        ],
+        [
+          "WS-HOLDING",
+          "DC-STATUS",
+          "DE-EVENT"
+        ],
+        [
+          "WS-HOLDING",
+          "DC-STATUS",
+          "DE-EVENT"
+        ],
+        [
+          "WS-HOLDING",
+          "DC-STATUS",
+          "DE-EVENT"
+        ],
+        [
+          "WS-HOLDING",
+          "DC-STATUS",
+          "DE-EVENT"
+        ],
+        [
+          "WS-HOLDING",
+          "DC-STATUS",
+          "DE-EVENT"
+        ],
+        [
+          "WS-HOLDING",
+          "DC-STATUS",
+          "DE-EVENT"
+        ]
+      ],
+      "actions": [
+        "MOVE DE-CASE-NO TO DC-CASE-NO",
+        "MOVE DE-MERCHANT TO DC-MERCHANT",
+        "MOVE DE-AMOUNT TO DC-AMOUNT",
+        "MOVE DE-DATE TO DC-OPENED",
+        "SET DC-OPEN TO TRUE",
+        "SET HOLDING-CASE TO TRUE",
+        "MOVE DE-DATE TO DC-UPDATED",
+        "SET DC-CHARGED-BACK TO TRUE",
+        "COMPUTE AD-AMOUNT = 0 - DC-AMOUNT",
+        "PERFORM WRITE-ADJUSTMENT",
+        "SET DC-WON TO TRUE",
+        "SET DC-REPRESENTED TO TRUE",
+        "MOVE DC-AMOUNT TO AD-AMOUNT",
+        "SET DC-LOST TO TRUE",
+        "SET DC-PRE-ARBITRATION TO TRUE",
+        "MOVE SPACES TO REJECT-LINE",
+        "MOVE 'STAT' TO RJ-REASON",
+        "MOVE DISPUTE-EVENT TO RJ-EVENT",
+        "WRITE REJECT-LINE",
+        "MOVE 4 TO WS-RESULT",
+        "EXIT SECTION"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            7,
+            8,
+            9,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            10,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "Y",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            11,
+            12,
+            9,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "N",
+            "Y",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            13,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            14,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "Y",
+            ""
+          ],
+          "actions": [
+            10,
+            8,
+            9,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            13,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            15,
+            16,
+            17,
+            18,
+            19,
+            20
+          ]
+        }
+      ]
+    }
+  ]
+}

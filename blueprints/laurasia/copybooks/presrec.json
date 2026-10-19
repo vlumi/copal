@@ -1,0 +1,241 @@
+{
+  "copybook": "presrec",
+  "source": "laurasia/copybooks/presrec.cpy",
+  "description": [
+    "presrec: a presentment on its way through the night, a record a line.",
+    "clrin fills in where it came from, match its authorization's outcome,",
+    "ixfee the interchange fee.",
+    "",
+    "history",
+    "2011-04-04 rk  lcs-0102 original version.",
+    "2014-02-17 rk  lcs-0251 match status and interchange fee."
+  ],
+  "records": [
+    {
+      "level": 1,
+      "name": "PRES-RECORD",
+      "start": 1,
+      "length": 76,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/copybooks/presrec.cpy:9",
+      "fields": [
+        {
+          "level": 5,
+          "name": "PS-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "picture": "X(16)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/presrec.cpy:10"
+        },
+        {
+          "level": 5,
+          "name": "PS-AMOUNT",
+          "start": 17,
+          "length": 12,
+          "picture": "S9(9)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 11,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/presrec.cpy:11"
+        },
+        {
+          "level": 5,
+          "name": "PS-AUTH-CODE",
+          "start": 29,
+          "length": 6,
+          "picture": "X(6)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/presrec.cpy:12"
+        },
+        {
+          "level": 5,
+          "name": "PS-MERCHANT",
+          "start": 35,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/presrec.cpy:13"
+        },
+        {
+          "level": 5,
+          "name": "PS-MCC",
+          "start": 45,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 4,
+          "source": "laurasia/copybooks/presrec.cpy:14"
+        },
+        {
+          "level": 5,
+          "name": "PS-REGION",
+          "start": 49,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PS-DOMESTIC",
+              "values": [
+                "'D'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:16"
+            },
+            {
+              "name": "PS-INTERNATIONAL",
+              "values": [
+                "'I'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:17"
+            }
+          ],
+          "source": "laurasia/copybooks/presrec.cpy:15"
+        },
+        {
+          "level": 5,
+          "name": "PS-PRODUCT",
+          "start": 50,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PS-CLASSIC",
+              "values": [
+                "'CL'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:19"
+            },
+            {
+              "name": "PS-GOLD",
+              "values": [
+                "'GD'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:20"
+            },
+            {
+              "name": "PS-BUSINESS",
+              "values": [
+                "'BZ'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:21"
+            }
+          ],
+          "source": "laurasia/copybooks/presrec.cpy:18"
+        },
+        {
+          "level": 5,
+          "name": "PS-TXN-DATE",
+          "start": 52,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "date",
+          "digits": 8,
+          "source": "laurasia/copybooks/presrec.cpy:22"
+        },
+        {
+          "level": 5,
+          "name": "PS-BATCH-NO",
+          "start": 60,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 6,
+          "source": "laurasia/copybooks/presrec.cpy:23"
+        },
+        {
+          "level": 5,
+          "name": "PS-MATCH",
+          "start": 66,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PS-UNMATCHED",
+              "values": [
+                "' '"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:25"
+            },
+            {
+              "name": "PS-MATCHED",
+              "values": [
+                "'M'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:26"
+            },
+            {
+              "name": "PS-DECLINED",
+              "values": [
+                "'D'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:27"
+            },
+            {
+              "name": "PS-NO-AUTH",
+              "values": [
+                "'U'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:28"
+            },
+            {
+              "name": "PS-OVER-AUTH",
+              "values": [
+                "'X'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:29"
+            }
+          ],
+          "source": "laurasia/copybooks/presrec.cpy:24"
+        },
+        {
+          "level": 5,
+          "name": "PS-FEE",
+          "start": 67,
+          "length": 10,
+          "picture": "S9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/presrec.cpy:30"
+        }
+      ]
+    }
+  ],
+  "usedBy": [
+    "CLRIN",
+    "IXFEE",
+    "MATCH",
+    "POST",
+    "SETTLE"
+  ]
+}

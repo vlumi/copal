@@ -1,0 +1,2258 @@
+{
+  "program": "CLRIN",
+  "kind": "main",
+  "source": "laurasia/programs/clrin.cbl",
+  "description": [
+    "clrin: take in the networks' clearing file",
+    "",
+    "reads the night's clearing file, checks it is for the business date the",
+    "run is given, and checks each acquirer's batch against its trailer: the",
+    "presentments of a batch whose count and amount agree go on to matching,",
+    "those of a batch that does not are rejected whole. a presentment that",
+    "does not validate is rejected alone, but counts towards its batch. the",
+    "file trailer's totals are checked last.",
+    "",
+    "return codes: 0 all taken, 4 some rejected, 8 file totals differ,",
+    "12 not the night's file, 16 cannot read or write.",
+    "",
+    "history",
+    "2011-04-04 rk  lcs-0102 original version.",
+    "2014-02-17 rk  lcs-0251 presentments held until their batch checks.",
+    "2016-09-12 ah  lcs-0377 card product validated."
+  ],
+  "files": [
+    {
+      "name": "CLEARING-IN",
+      "kind": "FD",
+      "assign": "CLRIN",
+      "organization": "LINE SEQUENTIAL",
+      "status": "WS-CLEARING-STATUS",
+      "minLength": 14,
+      "maxLength": 61,
+      "lengthIn": "WS-LINE-LENGTH",
+      "opened": [
+        "INPUT"
+      ],
+      "records": [
+        "CLR-FILE-HEADER",
+        "CLR-BATCH-HEADER",
+        "CLR-PRESENTMENT",
+        "CLR-BATCH-TRAILER",
+        "CLR-FILE-TRAILER"
+      ],
+      "source": "laurasia/programs/clrin.cbl:24"
+    },
+    {
+      "name": "PRES-OUT",
+      "kind": "FD",
+      "assign": "PRESOUT",
+      "organization": "LINE SEQUENTIAL",
+      "status": "WS-PRES-STATUS",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "PRES-RECORD"
+      ],
+      "source": "laurasia/programs/clrin.cbl:27"
+    },
+    {
+      "name": "REJECT-OUT",
+      "kind": "FD",
+      "assign": "CLRREJ",
+      "organization": "LINE SEQUENTIAL",
+      "status": "WS-REJECT-STATUS",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "REJECT-LINE"
+      ],
+      "source": "laurasia/programs/clrin.cbl:30"
+    },
+    {
+      "name": "REPORT-OUT",
+      "kind": "FD",
+      "assign": "CLRRPT",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "REPORT-LINE"
+      ],
+      "source": "laurasia/programs/clrin.cbl:33"
+    }
+  ],
+  "constants": [
+    {
+      "name": "MAX-BATCH",
+      "value": "500",
+      "source": "laurasia/programs/clrin.cbl:54"
+    }
+  ],
+  "records": [
+    {
+      "section": "file",
+      "file": "CLEARING-IN",
+      "copybook": "clrrec",
+      "level": 1,
+      "name": "CLR-FILE-HEADER",
+      "start": 1,
+      "length": 18,
+      "category": "group",
+      "kind": "group",
+      "description": "clrrec: the networks' clearing file, a record a line, of five layouts told apart by their first two characters. A file header, then for each acquirer's batch a batch header, its presentments and a batch trailer with their count and amount, then a file trailer with the batches', the presentments' and the amounts' totals. history 2011-04-04 rk  lcs-0102 original version. 2016-09-12 ah  lcs-0377 card product on the presentment.",
+      "source": "laurasia/copybooks/clrrec.cpy:11",
+      "fields": [
+        {
+          "level": 5,
+          "name": "CLR-RECORD-TYPE",
+          "start": 1,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "IS-FILE-HEADER",
+              "values": [
+                "'FH'"
+              ],
+              "source": "laurasia/copybooks/clrrec.cpy:13"
+            },
+            {
+              "name": "IS-BATCH-HEADER",
+              "values": [
+                "'BH'"
+              ],
+              "source": "laurasia/copybooks/clrrec.cpy:14"
+            },
+            {
+              "name": "IS-PRESENTMENT",
+              "values": [
+                "'PR'"
+              ],
+              "source": "laurasia/copybooks/clrrec.cpy:15"
+            },
+            {
+              "name": "IS-BATCH-TRAILER",
+              "values": [
+                "'BT'"
+              ],
+              "source": "laurasia/copybooks/clrrec.cpy:16"
+            },
+            {
+              "name": "IS-FILE-TRAILER",
+              "values": [
+                "'FT'"
+              ],
+              "source": "laurasia/copybooks/clrrec.cpy:17"
+            }
+          ],
+          "source": "laurasia/copybooks/clrrec.cpy:12"
+        },
+        {
+          "level": 5,
+          "name": "FH-NETWORK",
+          "start": 3,
+          "length": 4,
+          "picture": "X(4)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/clrrec.cpy:18"
+        },
+        {
+          "level": 5,
+          "name": "FH-FILE-DATE",
+          "start": 7,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "date",
+          "digits": 8,
+          "source": "laurasia/copybooks/clrrec.cpy:19"
+        },
+        {
+          "level": 5,
+          "name": "FH-FILE-SEQ",
+          "start": 15,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 4,
+          "source": "laurasia/copybooks/clrrec.cpy:20"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "CLEARING-IN",
+      "copybook": "clrrec",
+      "level": 1,
+      "name": "CLR-BATCH-HEADER",
+      "start": 1,
+      "length": 14,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/copybooks/clrrec.cpy:21",
+      "fields": [
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 1,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "filler",
+          "source": "laurasia/copybooks/clrrec.cpy:22"
+        },
+        {
+          "level": 5,
+          "name": "BH-BATCH-NO",
+          "start": 3,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 6,
+          "source": "laurasia/copybooks/clrrec.cpy:23"
+        },
+        {
+          "level": 5,
+          "name": "BH-ACQUIRER",
+          "start": 9,
+          "length": 6,
+          "picture": "X(6)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/clrrec.cpy:24"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "CLEARING-IN",
+      "copybook": "clrrec",
+      "level": 1,
+      "name": "CLR-PRESENTMENT",
+      "start": 1,
+      "length": 61,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/copybooks/clrrec.cpy:25",
+      "fields": [
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 1,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "filler",
+          "source": "laurasia/copybooks/clrrec.cpy:26"
+        },
+        {
+          "level": 5,
+          "name": "PR-CARD-NO",
+          "start": 3,
+          "length": 16,
+          "picture": "X(16)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/clrrec.cpy:27"
+        },
+        {
+          "level": 5,
+          "name": "PR-AMOUNT",
+          "start": 19,
+          "length": 12,
+          "picture": "S9(9)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 11,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/clrrec.cpy:28"
+        },
+        {
+          "level": 5,
+          "name": "PR-AUTH-CODE",
+          "start": 31,
+          "length": 6,
+          "picture": "X(6)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/clrrec.cpy:29"
+        },
+        {
+          "level": 5,
+          "name": "PR-MERCHANT",
+          "start": 37,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/clrrec.cpy:30"
+        },
+        {
+          "level": 5,
+          "name": "PR-MCC",
+          "start": 47,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 4,
+          "source": "laurasia/copybooks/clrrec.cpy:31"
+        },
+        {
+          "level": 5,
+          "name": "PR-REGION",
+          "start": 51,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/clrrec.cpy:32"
+        },
+        {
+          "level": 5,
+          "name": "PR-PRODUCT",
+          "start": 52,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/clrrec.cpy:33"
+        },
+        {
+          "level": 5,
+          "name": "PR-TXN-DATE",
+          "start": 54,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "date",
+          "digits": 8,
+          "source": "laurasia/copybooks/clrrec.cpy:34"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "CLEARING-IN",
+      "copybook": "clrrec",
+      "level": 1,
+      "name": "CLR-BATCH-TRAILER",
+      "start": 1,
+      "length": 24,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/copybooks/clrrec.cpy:35",
+      "fields": [
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 1,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "filler",
+          "source": "laurasia/copybooks/clrrec.cpy:36"
+        },
+        {
+          "level": 5,
+          "name": "BT-COUNT",
+          "start": 3,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 6,
+          "source": "laurasia/copybooks/clrrec.cpy:37"
+        },
+        {
+          "level": 5,
+          "name": "BT-AMOUNT",
+          "start": 9,
+          "length": 16,
+          "picture": "S9(13)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 15,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/clrrec.cpy:38"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "CLEARING-IN",
+      "copybook": "clrrec",
+      "level": 1,
+      "name": "CLR-FILE-TRAILER",
+      "start": 1,
+      "length": 32,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/copybooks/clrrec.cpy:39",
+      "fields": [
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 1,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "filler",
+          "source": "laurasia/copybooks/clrrec.cpy:40"
+        },
+        {
+          "level": 5,
+          "name": "FT-BATCH-COUNT",
+          "start": 3,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 4,
+          "source": "laurasia/copybooks/clrrec.cpy:41"
+        },
+        {
+          "level": 5,
+          "name": "FT-RECORD-COUNT",
+          "start": 7,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 8,
+          "source": "laurasia/copybooks/clrrec.cpy:42"
+        },
+        {
+          "level": 5,
+          "name": "FT-AMOUNT",
+          "start": 15,
+          "length": 18,
+          "picture": "S9(15)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 17,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/clrrec.cpy:43"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "PRES-OUT",
+      "copybook": "presrec",
+      "level": 1,
+      "name": "PRES-RECORD",
+      "start": 1,
+      "length": 76,
+      "category": "group",
+      "kind": "group",
+      "description": "presrec: a presentment on its way through the night, a record a line. clrin fills in where it came from, match its authorization's outcome, ixfee the interchange fee. history 2011-04-04 rk  lcs-0102 original version. 2014-02-17 rk  lcs-0251 match status and interchange fee.",
+      "source": "laurasia/copybooks/presrec.cpy:9",
+      "fields": [
+        {
+          "level": 5,
+          "name": "PS-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "picture": "X(16)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/presrec.cpy:10"
+        },
+        {
+          "level": 5,
+          "name": "PS-AMOUNT",
+          "start": 17,
+          "length": 12,
+          "picture": "S9(9)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 11,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/presrec.cpy:11"
+        },
+        {
+          "level": 5,
+          "name": "PS-AUTH-CODE",
+          "start": 29,
+          "length": 6,
+          "picture": "X(6)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/presrec.cpy:12"
+        },
+        {
+          "level": 5,
+          "name": "PS-MERCHANT",
+          "start": 35,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/presrec.cpy:13"
+        },
+        {
+          "level": 5,
+          "name": "PS-MCC",
+          "start": 45,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 4,
+          "source": "laurasia/copybooks/presrec.cpy:14"
+        },
+        {
+          "level": 5,
+          "name": "PS-REGION",
+          "start": 49,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PS-DOMESTIC",
+              "values": [
+                "'D'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:16"
+            },
+            {
+              "name": "PS-INTERNATIONAL",
+              "values": [
+                "'I'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:17"
+            }
+          ],
+          "source": "laurasia/copybooks/presrec.cpy:15"
+        },
+        {
+          "level": 5,
+          "name": "PS-PRODUCT",
+          "start": 50,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PS-CLASSIC",
+              "values": [
+                "'CL'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:19"
+            },
+            {
+              "name": "PS-GOLD",
+              "values": [
+                "'GD'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:20"
+            },
+            {
+              "name": "PS-BUSINESS",
+              "values": [
+                "'BZ'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:21"
+            }
+          ],
+          "source": "laurasia/copybooks/presrec.cpy:18"
+        },
+        {
+          "level": 5,
+          "name": "PS-TXN-DATE",
+          "start": 52,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "date",
+          "digits": 8,
+          "source": "laurasia/copybooks/presrec.cpy:22"
+        },
+        {
+          "level": 5,
+          "name": "PS-BATCH-NO",
+          "start": 60,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 6,
+          "source": "laurasia/copybooks/presrec.cpy:23"
+        },
+        {
+          "level": 5,
+          "name": "PS-MATCH",
+          "start": 66,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PS-UNMATCHED",
+              "values": [
+                "' '"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:25"
+            },
+            {
+              "name": "PS-MATCHED",
+              "values": [
+                "'M'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:26"
+            },
+            {
+              "name": "PS-DECLINED",
+              "values": [
+                "'D'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:27"
+            },
+            {
+              "name": "PS-NO-AUTH",
+              "values": [
+                "'U'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:28"
+            },
+            {
+              "name": "PS-OVER-AUTH",
+              "values": [
+                "'X'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:29"
+            }
+          ],
+          "source": "laurasia/copybooks/presrec.cpy:24"
+        },
+        {
+          "level": 5,
+          "name": "PS-FEE",
+          "start": 67,
+          "length": 10,
+          "picture": "S9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/presrec.cpy:30"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "REJECT-OUT",
+      "level": 1,
+      "name": "REJECT-LINE",
+      "start": 1,
+      "length": 73,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/clrin.cbl:44",
+      "fields": [
+        {
+          "level": 5,
+          "name": "RJ-REASON",
+          "start": 1,
+          "length": 4,
+          "picture": "X(4)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/clrin.cbl:45"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 5,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "filler",
+          "source": "laurasia/programs/clrin.cbl:46"
+        },
+        {
+          "level": 5,
+          "name": "RJ-BATCH-NO",
+          "start": 6,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 6,
+          "source": "laurasia/programs/clrin.cbl:47"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 12,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "filler",
+          "source": "laurasia/programs/clrin.cbl:48"
+        },
+        {
+          "level": 5,
+          "name": "RJ-RECORD",
+          "start": 13,
+          "length": 61,
+          "picture": "X(61)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/clrin.cbl:49"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "REPORT-OUT",
+      "level": 1,
+      "name": "REPORT-LINE",
+      "start": 1,
+      "length": 60,
+      "picture": "X(60)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/clrin.cbl:51"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-RUN-DATE",
+      "start": 1,
+      "length": 8,
+      "picture": "9(8)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "date",
+      "digits": 8,
+      "source": "laurasia/programs/clrin.cbl:55"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-LINE-LENGTH",
+      "start": 1,
+      "length": 2,
+      "picture": "9(4)",
+      "usage": "COMP-5",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 4,
+      "source": "laurasia/programs/clrin.cbl:56"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-STATUSES",
+      "start": 1,
+      "length": 6,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/clrin.cbl:57",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-CLEARING-STATUS",
+          "start": 1,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "CLEARING-AT-END",
+              "values": [
+                "'10'"
+              ],
+              "source": "laurasia/programs/clrin.cbl:59"
+            }
+          ],
+          "source": "laurasia/programs/clrin.cbl:58"
+        },
+        {
+          "level": 5,
+          "name": "WS-PRES-STATUS",
+          "start": 3,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/clrin.cbl:60"
+        },
+        {
+          "level": 5,
+          "name": "WS-REJECT-STATUS",
+          "start": 5,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/clrin.cbl:61"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-IO-FAILED",
+      "start": 1,
+      "length": 1,
+      "picture": "X",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "code",
+      "values": [
+        "'N'"
+      ],
+      "conditions": [
+        {
+          "name": "IO-FAILED",
+          "values": [
+            "'Y'"
+          ],
+          "source": "laurasia/programs/clrin.cbl:63"
+        }
+      ],
+      "source": "laurasia/programs/clrin.cbl:62"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-BATCH",
+      "start": 1,
+      "length": 30519,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/clrin.cbl:64",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-BATCH-NO",
+          "start": 1,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 6,
+          "source": "laurasia/programs/clrin.cbl:65"
+        },
+        {
+          "level": 5,
+          "name": "WS-BATCH-COUNT",
+          "start": 7,
+          "length": 3,
+          "picture": "9(6)",
+          "usage": "COMP-5",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 6,
+          "source": "laurasia/programs/clrin.cbl:66"
+        },
+        {
+          "level": 5,
+          "name": "WS-BATCH-AMOUNT",
+          "start": 10,
+          "length": 8,
+          "picture": "S9(13)V99",
+          "usage": "COMP-3",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 15,
+          "scale": 2,
+          "signed": true,
+          "source": "laurasia/programs/clrin.cbl:67"
+        },
+        {
+          "level": 5,
+          "name": "WS-HELD-COUNT",
+          "start": 18,
+          "length": 2,
+          "picture": "9(4)",
+          "usage": "COMP-5",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 4,
+          "source": "laurasia/programs/clrin.cbl:68"
+        },
+        {
+          "level": 5,
+          "name": "WS-HELD",
+          "start": 20,
+          "length": 61,
+          "category": "group",
+          "kind": "group",
+          "occurs": 500,
+          "dependingOn": "WS-HELD-COUNT",
+          "source": "laurasia/programs/clrin.cbl:69",
+          "fields": [
+            {
+              "level": 10,
+              "name": "WS-HELD-PRESENTMENT",
+              "start": 20,
+              "length": 61,
+              "picture": "X(61)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "text",
+              "source": "laurasia/programs/clrin.cbl:70"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-FILE-TOTALS",
+      "start": 1,
+      "length": 15,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/clrin.cbl:71",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-BATCHES",
+          "start": 1,
+          "length": 2,
+          "picture": "9(4)",
+          "usage": "COMP-5",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 4,
+          "values": [
+            "ZERO"
+          ],
+          "source": "laurasia/programs/clrin.cbl:72"
+        },
+        {
+          "level": 5,
+          "name": "WS-RECORDS",
+          "start": 3,
+          "length": 4,
+          "picture": "9(8)",
+          "usage": "COMP-5",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 8,
+          "values": [
+            "ZERO"
+          ],
+          "source": "laurasia/programs/clrin.cbl:73"
+        },
+        {
+          "level": 5,
+          "name": "WS-AMOUNT",
+          "start": 7,
+          "length": 9,
+          "picture": "S9(15)V99",
+          "usage": "COMP-3",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 17,
+          "scale": 2,
+          "signed": true,
+          "values": [
+            "ZERO"
+          ],
+          "source": "laurasia/programs/clrin.cbl:74"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-COUNTS",
+      "start": 1,
+      "length": 16,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/clrin.cbl:75",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-TAKEN",
+          "start": 1,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 8,
+          "values": [
+            "ZERO"
+          ],
+          "source": "laurasia/programs/clrin.cbl:76"
+        },
+        {
+          "level": 5,
+          "name": "WS-REJECTED",
+          "start": 9,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 8,
+          "values": [
+            "ZERO"
+          ],
+          "source": "laurasia/programs/clrin.cbl:77"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-RECORD-READ",
+      "start": 1,
+      "length": 61,
+      "picture": "X(61)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/clrin.cbl:78"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REASON",
+      "start": 1,
+      "length": 4,
+      "picture": "X(4)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "code",
+      "conditions": [
+        {
+          "name": "PRESENTMENT-IS-GOOD",
+          "values": [
+            "SPACES"
+          ],
+          "source": "laurasia/programs/clrin.cbl:80"
+        }
+      ],
+      "source": "laurasia/programs/clrin.cbl:79"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-RESULT",
+      "start": 1,
+      "length": 2,
+      "picture": "99",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 2,
+      "values": [
+        "ZERO"
+      ],
+      "source": "laurasia/programs/clrin.cbl:81"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REPORT-COUNT",
+      "start": 1,
+      "length": 38,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/clrin.cbl:82",
+      "fields": [
+        {
+          "level": 5,
+          "name": "RC-LABEL",
+          "start": 1,
+          "length": 30,
+          "picture": "X(30)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/clrin.cbl:83"
+        },
+        {
+          "level": 5,
+          "name": "RC-VALUE",
+          "start": 31,
+          "length": 8,
+          "picture": "Z(7)9",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "kind": "edited",
+          "source": "laurasia/programs/clrin.cbl:84"
+        }
+      ]
+    }
+  ],
+  "paragraphs": [
+    {
+      "name": "NOTE-FAILURE",
+      "section": "FILE-ERRORS",
+      "source": "laurasia/programs/clrin.cbl:90",
+      "writes": [
+        "WS-IO-FAILED"
+      ]
+    },
+    {
+      "name": "MAIN",
+      "section": "MAIN",
+      "source": "laurasia/programs/clrin.cbl:94",
+      "performs": [
+        {
+          "target": "READ-CLEARING",
+          "source": "laurasia/programs/clrin.cbl:101"
+        },
+        {
+          "target": "READ-CLEARING",
+          "source": "laurasia/programs/clrin.cbl:105"
+        },
+        {
+          "target": "TAKE-BATCH",
+          "source": "laurasia/programs/clrin.cbl:106"
+        },
+        {
+          "target": "CHECK-FILE-TRAILER",
+          "source": "laurasia/programs/clrin.cbl:107"
+        },
+        {
+          "target": "WRITE-REPORT",
+          "source": "laurasia/programs/clrin.cbl:109"
+        }
+      ],
+      "reads": [
+        "WS-IO-FAILED",
+        "WS-CLEARING-STATUS",
+        "CLR-RECORD-TYPE",
+        "FH-FILE-DATE",
+        "WS-RUN-DATE",
+        "WS-RESULT"
+      ],
+      "writes": [
+        "WS-RUN-DATE",
+        "RETURN-CODE",
+        "WS-RESULT"
+      ]
+    },
+    {
+      "name": "READ-CLEARING",
+      "section": "READ-CLEARING",
+      "source": "laurasia/programs/clrin.cbl:116",
+      "performedBy": [
+        "MAIN",
+        "TAKE-BATCH",
+        "TAKE-PRESENTMENT"
+      ],
+      "writes": [
+        "CLR-FILE-HEADER",
+        "CLR-BATCH-HEADER",
+        "CLR-PRESENTMENT",
+        "CLR-BATCH-TRAILER",
+        "CLR-FILE-TRAILER",
+        "WS-CLEARING-STATUS"
+      ]
+    },
+    {
+      "name": "TAKE-BATCH",
+      "section": "TAKE-BATCH",
+      "description": "a batch: its header, its presentments held until its trailer, which lets them go on or rejects them all. the held presentments pass through the file's record, so the trailer read is set aside meanwhile.",
+      "source": "laurasia/programs/clrin.cbl:124",
+      "performs": [
+        {
+          "target": "REJECT-RECORD",
+          "source": "laurasia/programs/clrin.cbl:127"
+        },
+        {
+          "target": "READ-CLEARING",
+          "source": "laurasia/programs/clrin.cbl:128"
+        },
+        {
+          "target": "READ-CLEARING",
+          "source": "laurasia/programs/clrin.cbl:134"
+        },
+        {
+          "target": "TAKE-PRESENTMENT",
+          "source": "laurasia/programs/clrin.cbl:135"
+        },
+        {
+          "target": "RELEASE-BATCH",
+          "source": "laurasia/programs/clrin.cbl:138"
+        },
+        {
+          "target": "REJECT-BATCH",
+          "source": "laurasia/programs/clrin.cbl:140"
+        },
+        {
+          "target": "READ-CLEARING",
+          "source": "laurasia/programs/clrin.cbl:144"
+        }
+      ],
+      "performedBy": [
+        "MAIN"
+      ],
+      "reads": [
+        "CLR-RECORD-TYPE",
+        "BH-BATCH-NO",
+        "WS-BATCHES",
+        "WS-CLEARING-STATUS",
+        "CLR-PRESENTMENT",
+        "BT-COUNT",
+        "WS-BATCH-COUNT",
+        "BT-AMOUNT",
+        "WS-BATCH-AMOUNT",
+        "WS-RECORD-READ"
+      ],
+      "writes": [
+        "WS-REASON",
+        "WS-BATCH-NO",
+        "WS-BATCH-COUNT",
+        "WS-BATCH-AMOUNT",
+        "WS-HELD-COUNT",
+        "WS-BATCHES",
+        "WS-RECORD-READ",
+        "CLR-PRESENTMENT"
+      ]
+    },
+    {
+      "name": "TAKE-PRESENTMENT",
+      "section": "TAKE-PRESENTMENT",
+      "source": "laurasia/programs/clrin.cbl:147",
+      "performs": [
+        {
+          "target": "VALIDATE-PRESENTMENT",
+          "source": "laurasia/programs/clrin.cbl:150"
+        },
+        {
+          "target": "REJECT-RECORD",
+          "source": "laurasia/programs/clrin.cbl:155"
+        },
+        {
+          "target": "READ-CLEARING",
+          "source": "laurasia/programs/clrin.cbl:157"
+        }
+      ],
+      "performedBy": [
+        "TAKE-BATCH"
+      ],
+      "reads": [
+        "WS-BATCH-COUNT",
+        "WS-RECORDS",
+        "PR-AMOUNT",
+        "WS-BATCH-AMOUNT",
+        "WS-AMOUNT",
+        "WS-REASON",
+        "WS-HELD-COUNT",
+        "MAX-BATCH",
+        "CLR-PRESENTMENT"
+      ],
+      "writes": [
+        "WS-BATCH-COUNT",
+        "WS-RECORDS",
+        "WS-BATCH-AMOUNT",
+        "WS-AMOUNT",
+        "WS-HELD-COUNT",
+        "WS-HELD-PRESENTMENT"
+      ]
+    },
+    {
+      "name": "VALIDATE-PRESENTMENT",
+      "section": "VALIDATE-PRESENTMENT",
+      "source": "laurasia/programs/clrin.cbl:159",
+      "performedBy": [
+        "TAKE-PRESENTMENT"
+      ],
+      "reads": [
+        "PR-CARD-NO",
+        "PR-AMOUNT",
+        "PR-MCC",
+        "PR-REGION",
+        "PR-PRODUCT"
+      ],
+      "writes": [
+        "WS-REASON"
+      ]
+    },
+    {
+      "name": "RELEASE-BATCH",
+      "section": "RELEASE-BATCH",
+      "source": "laurasia/programs/clrin.cbl:175",
+      "performedBy": [
+        "TAKE-BATCH"
+      ],
+      "reads": [
+        "WS-LINE-LENGTH",
+        "WS-HELD-COUNT",
+        "WS-HELD-PRESENTMENT",
+        "PR-CARD-NO",
+        "PR-AMOUNT",
+        "PR-AUTH-CODE",
+        "PR-MERCHANT",
+        "PR-MCC",
+        "PR-REGION",
+        "PR-PRODUCT",
+        "PR-TXN-DATE",
+        "WS-BATCH-NO",
+        "WS-TAKEN"
+      ],
+      "writes": [
+        "WS-LINE-LENGTH",
+        "CLR-PRESENTMENT",
+        "PRES-RECORD",
+        "PS-CARD-NO",
+        "PS-AMOUNT",
+        "PS-AUTH-CODE",
+        "PS-MERCHANT",
+        "PS-MCC",
+        "PS-REGION",
+        "PS-PRODUCT",
+        "PS-TXN-DATE",
+        "PS-BATCH-NO",
+        "PS-FEE",
+        "WS-TAKEN"
+      ]
+    },
+    {
+      "name": "REJECT-BATCH",
+      "section": "REJECT-BATCH",
+      "source": "laurasia/programs/clrin.cbl:193",
+      "performs": [
+        {
+          "target": "REJECT-RECORD",
+          "source": "laurasia/programs/clrin.cbl:197"
+        }
+      ],
+      "performedBy": [
+        "TAKE-BATCH"
+      ],
+      "reads": [
+        "WS-LINE-LENGTH",
+        "WS-HELD-COUNT",
+        "WS-HELD-PRESENTMENT"
+      ],
+      "writes": [
+        "WS-REASON",
+        "WS-LINE-LENGTH",
+        "CLR-PRESENTMENT"
+      ]
+    },
+    {
+      "name": "REJECT-RECORD",
+      "section": "REJECT-RECORD",
+      "source": "laurasia/programs/clrin.cbl:200",
+      "performedBy": [
+        "TAKE-BATCH",
+        "TAKE-PRESENTMENT",
+        "REJECT-BATCH"
+      ],
+      "reads": [
+        "WS-REASON",
+        "WS-BATCH-NO",
+        "CLR-PRESENTMENT",
+        "WS-REJECTED",
+        "WS-RESULT"
+      ],
+      "writes": [
+        "REJECT-LINE",
+        "RJ-REASON",
+        "RJ-BATCH-NO",
+        "RJ-RECORD",
+        "WS-REJECTED",
+        "WS-RESULT"
+      ]
+    },
+    {
+      "name": "CHECK-FILE-TRAILER",
+      "section": "CHECK-FILE-TRAILER",
+      "source": "laurasia/programs/clrin.cbl:211",
+      "performedBy": [
+        "MAIN"
+      ],
+      "reads": [
+        "CLR-RECORD-TYPE",
+        "FT-BATCH-COUNT",
+        "WS-BATCHES",
+        "FT-RECORD-COUNT",
+        "WS-RECORDS",
+        "FT-AMOUNT",
+        "WS-AMOUNT"
+      ],
+      "writes": [
+        "WS-RESULT"
+      ]
+    },
+    {
+      "name": "WRITE-REPORT",
+      "section": "WRITE-REPORT",
+      "source": "laurasia/programs/clrin.cbl:219",
+      "performedBy": [
+        "MAIN"
+      ],
+      "reads": [
+        "WS-RUN-DATE",
+        "WS-TAKEN",
+        "WS-REPORT-COUNT",
+        "WS-REJECTED",
+        "WS-BATCHES"
+      ],
+      "writes": [
+        "REPORT-LINE",
+        "RC-LABEL",
+        "RC-VALUE"
+      ]
+    }
+  ],
+  "declaratives": [
+    {
+      "section": "FILE-ERRORS",
+      "files": [
+        "CLEARING-IN",
+        "PRES-OUT",
+        "REJECT-OUT"
+      ],
+      "source": "laurasia/programs/clrin.cbl:89"
+    }
+  ],
+  "lineage": [
+    {
+      "from": "condition IO-FAILED",
+      "to": "WS-IO-FAILED",
+      "fromLiteral": true,
+      "paragraph": "NOTE-FAILURE",
+      "verb": "SET",
+      "source": "laurasia/programs/clrin.cbl:91"
+    },
+    {
+      "from": "12",
+      "to": "WS-RESULT",
+      "fromLiteral": true,
+      "paragraph": "MAIN",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:103"
+    },
+    {
+      "from": "16",
+      "to": "WS-RESULT",
+      "fromLiteral": true,
+      "paragraph": "MAIN",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:112"
+    },
+    {
+      "from": "CLEARING-IN",
+      "to": "CLR-FILE-HEADER",
+      "fromFile": true,
+      "paragraph": "READ-CLEARING",
+      "verb": "READ",
+      "source": "laurasia/programs/clrin.cbl:117"
+    },
+    {
+      "from": "CLEARING-IN",
+      "to": "CLR-BATCH-HEADER",
+      "fromFile": true,
+      "paragraph": "READ-CLEARING",
+      "verb": "READ",
+      "source": "laurasia/programs/clrin.cbl:117"
+    },
+    {
+      "from": "CLEARING-IN",
+      "to": "CLR-PRESENTMENT",
+      "fromFile": true,
+      "paragraph": "READ-CLEARING",
+      "verb": "READ",
+      "source": "laurasia/programs/clrin.cbl:117"
+    },
+    {
+      "from": "CLEARING-IN",
+      "to": "CLR-BATCH-TRAILER",
+      "fromFile": true,
+      "paragraph": "READ-CLEARING",
+      "verb": "READ",
+      "source": "laurasia/programs/clrin.cbl:117"
+    },
+    {
+      "from": "CLEARING-IN",
+      "to": "CLR-FILE-TRAILER",
+      "fromFile": true,
+      "paragraph": "READ-CLEARING",
+      "verb": "READ",
+      "source": "laurasia/programs/clrin.cbl:117"
+    },
+    {
+      "from": "condition CLEARING-AT-END",
+      "to": "WS-CLEARING-STATUS",
+      "fromLiteral": true,
+      "paragraph": "READ-CLEARING",
+      "verb": "SET",
+      "source": "laurasia/programs/clrin.cbl:118"
+    },
+    {
+      "from": "'ORDR'",
+      "to": "WS-REASON",
+      "fromLiteral": true,
+      "paragraph": "TAKE-BATCH",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:126"
+    },
+    {
+      "from": "BH-BATCH-NO",
+      "to": "WS-BATCH-NO",
+      "paragraph": "TAKE-BATCH",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:131"
+    },
+    {
+      "from": "ZERO",
+      "to": "WS-BATCH-COUNT",
+      "fromLiteral": true,
+      "paragraph": "TAKE-BATCH",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:132"
+    },
+    {
+      "from": "ZERO",
+      "to": "WS-BATCH-AMOUNT",
+      "fromLiteral": true,
+      "paragraph": "TAKE-BATCH",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:132"
+    },
+    {
+      "from": "ZERO",
+      "to": "WS-HELD-COUNT",
+      "fromLiteral": true,
+      "paragraph": "TAKE-BATCH",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:132"
+    },
+    {
+      "from": "1",
+      "to": "WS-BATCHES",
+      "fromLiteral": true,
+      "paragraph": "TAKE-BATCH",
+      "verb": "ADD",
+      "source": "laurasia/programs/clrin.cbl:133"
+    },
+    {
+      "from": "CLR-PRESENTMENT",
+      "to": "WS-RECORD-READ",
+      "paragraph": "TAKE-BATCH",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:136"
+    },
+    {
+      "from": "WS-RECORD-READ",
+      "to": "CLR-PRESENTMENT",
+      "paragraph": "TAKE-BATCH",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:142"
+    },
+    {
+      "from": "1",
+      "to": "WS-BATCH-COUNT",
+      "fromLiteral": true,
+      "paragraph": "TAKE-PRESENTMENT",
+      "verb": "ADD",
+      "source": "laurasia/programs/clrin.cbl:148"
+    },
+    {
+      "from": "WS-RECORDS",
+      "to": "WS-BATCH-COUNT",
+      "paragraph": "TAKE-PRESENTMENT",
+      "verb": "ADD",
+      "source": "laurasia/programs/clrin.cbl:148"
+    },
+    {
+      "from": "1",
+      "to": "WS-RECORDS",
+      "fromLiteral": true,
+      "paragraph": "TAKE-PRESENTMENT",
+      "verb": "ADD",
+      "source": "laurasia/programs/clrin.cbl:148"
+    },
+    {
+      "from": "WS-BATCH-COUNT",
+      "to": "WS-RECORDS",
+      "paragraph": "TAKE-PRESENTMENT",
+      "verb": "ADD",
+      "source": "laurasia/programs/clrin.cbl:148"
+    },
+    {
+      "from": "PR-AMOUNT",
+      "to": "WS-BATCH-AMOUNT",
+      "paragraph": "TAKE-PRESENTMENT",
+      "verb": "ADD",
+      "source": "laurasia/programs/clrin.cbl:149"
+    },
+    {
+      "from": "WS-AMOUNT",
+      "to": "WS-BATCH-AMOUNT",
+      "paragraph": "TAKE-PRESENTMENT",
+      "verb": "ADD",
+      "source": "laurasia/programs/clrin.cbl:149"
+    },
+    {
+      "from": "PR-AMOUNT",
+      "to": "WS-AMOUNT",
+      "paragraph": "TAKE-PRESENTMENT",
+      "verb": "ADD",
+      "source": "laurasia/programs/clrin.cbl:149"
+    },
+    {
+      "from": "WS-BATCH-AMOUNT",
+      "to": "WS-AMOUNT",
+      "paragraph": "TAKE-PRESENTMENT",
+      "verb": "ADD",
+      "source": "laurasia/programs/clrin.cbl:149"
+    },
+    {
+      "from": "1",
+      "to": "WS-HELD-COUNT",
+      "fromLiteral": true,
+      "paragraph": "TAKE-PRESENTMENT",
+      "verb": "ADD",
+      "source": "laurasia/programs/clrin.cbl:152"
+    },
+    {
+      "from": "CLR-PRESENTMENT",
+      "to": "WS-HELD-PRESENTMENT",
+      "paragraph": "TAKE-PRESENTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:153"
+    },
+    {
+      "from": "'CARD'",
+      "to": "WS-REASON",
+      "fromLiteral": true,
+      "paragraph": "VALIDATE-PRESENTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:162"
+    },
+    {
+      "from": "'AMNT'",
+      "to": "WS-REASON",
+      "fromLiteral": true,
+      "paragraph": "VALIDATE-PRESENTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:164"
+    },
+    {
+      "from": "'MCC '",
+      "to": "WS-REASON",
+      "fromLiteral": true,
+      "paragraph": "VALIDATE-PRESENTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:166"
+    },
+    {
+      "from": "'REGN'",
+      "to": "WS-REASON",
+      "fromLiteral": true,
+      "paragraph": "VALIDATE-PRESENTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:168"
+    },
+    {
+      "from": "'PROD'",
+      "to": "WS-REASON",
+      "fromLiteral": true,
+      "paragraph": "VALIDATE-PRESENTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:170"
+    },
+    {
+      "from": "SPACES",
+      "to": "WS-REASON",
+      "fromLiteral": true,
+      "paragraph": "VALIDATE-PRESENTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:172"
+    },
+    {
+      "from": "WS-HELD-PRESENTMENT",
+      "to": "CLR-PRESENTMENT",
+      "paragraph": "RELEASE-BATCH",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:177"
+    },
+    {
+      "from": "SPACES",
+      "to": "PRES-RECORD",
+      "fromLiteral": true,
+      "paragraph": "RELEASE-BATCH",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:178"
+    },
+    {
+      "from": "PR-CARD-NO",
+      "to": "PS-CARD-NO",
+      "paragraph": "RELEASE-BATCH",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:179"
+    },
+    {
+      "from": "PR-AMOUNT",
+      "to": "PS-AMOUNT",
+      "paragraph": "RELEASE-BATCH",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:180"
+    },
+    {
+      "from": "PR-AUTH-CODE",
+      "to": "PS-AUTH-CODE",
+      "paragraph": "RELEASE-BATCH",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:181"
+    },
+    {
+      "from": "PR-MERCHANT",
+      "to": "PS-MERCHANT",
+      "paragraph": "RELEASE-BATCH",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:182"
+    },
+    {
+      "from": "PR-MCC",
+      "to": "PS-MCC",
+      "paragraph": "RELEASE-BATCH",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:183"
+    },
+    {
+      "from": "PR-REGION",
+      "to": "PS-REGION",
+      "paragraph": "RELEASE-BATCH",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:184"
+    },
+    {
+      "from": "PR-PRODUCT",
+      "to": "PS-PRODUCT",
+      "paragraph": "RELEASE-BATCH",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:185"
+    },
+    {
+      "from": "PR-TXN-DATE",
+      "to": "PS-TXN-DATE",
+      "paragraph": "RELEASE-BATCH",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:186"
+    },
+    {
+      "from": "WS-BATCH-NO",
+      "to": "PS-BATCH-NO",
+      "paragraph": "RELEASE-BATCH",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:187"
+    },
+    {
+      "from": "ZERO",
+      "to": "PS-FEE",
+      "fromLiteral": true,
+      "paragraph": "RELEASE-BATCH",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:188"
+    },
+    {
+      "from": "PRES-RECORD",
+      "to": "PRES-OUT",
+      "toFile": true,
+      "paragraph": "RELEASE-BATCH",
+      "verb": "WRITE",
+      "source": "laurasia/programs/clrin.cbl:189"
+    },
+    {
+      "from": "1",
+      "to": "WS-TAKEN",
+      "fromLiteral": true,
+      "paragraph": "RELEASE-BATCH",
+      "verb": "ADD",
+      "source": "laurasia/programs/clrin.cbl:190"
+    },
+    {
+      "from": "'BTOT'",
+      "to": "WS-REASON",
+      "fromLiteral": true,
+      "paragraph": "REJECT-BATCH",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:194"
+    },
+    {
+      "from": "WS-HELD-PRESENTMENT",
+      "to": "CLR-PRESENTMENT",
+      "paragraph": "REJECT-BATCH",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:196"
+    },
+    {
+      "from": "SPACES",
+      "to": "REJECT-LINE",
+      "fromLiteral": true,
+      "paragraph": "REJECT-RECORD",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:201"
+    },
+    {
+      "from": "WS-REASON",
+      "to": "RJ-REASON",
+      "paragraph": "REJECT-RECORD",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:202"
+    },
+    {
+      "from": "WS-BATCH-NO",
+      "to": "RJ-BATCH-NO",
+      "paragraph": "REJECT-RECORD",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:203"
+    },
+    {
+      "from": "CLR-PRESENTMENT",
+      "to": "RJ-RECORD",
+      "paragraph": "REJECT-RECORD",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:204"
+    },
+    {
+      "from": "REJECT-LINE",
+      "to": "REJECT-OUT",
+      "toFile": true,
+      "paragraph": "REJECT-RECORD",
+      "verb": "WRITE",
+      "source": "laurasia/programs/clrin.cbl:205"
+    },
+    {
+      "from": "1",
+      "to": "WS-REJECTED",
+      "fromLiteral": true,
+      "paragraph": "REJECT-RECORD",
+      "verb": "ADD",
+      "source": "laurasia/programs/clrin.cbl:206"
+    },
+    {
+      "from": "4",
+      "to": "WS-RESULT",
+      "fromLiteral": true,
+      "paragraph": "REJECT-RECORD",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:208"
+    },
+    {
+      "from": "8",
+      "to": "WS-RESULT",
+      "fromLiteral": true,
+      "paragraph": "CHECK-FILE-TRAILER",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:216"
+    },
+    {
+      "from": "SPACES",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:220"
+    },
+    {
+      "from": "'CLRIN    CLEARING FILE OF '",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "STRING",
+      "source": "laurasia/programs/clrin.cbl:221"
+    },
+    {
+      "from": "WS-RUN-DATE",
+      "to": "REPORT-LINE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "STRING",
+      "source": "laurasia/programs/clrin.cbl:221"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/clrin.cbl:222"
+    },
+    {
+      "from": "'PRESENTMENTS TAKEN'",
+      "to": "RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:223"
+    },
+    {
+      "from": "WS-TAKEN",
+      "to": "RC-VALUE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:224"
+    },
+    {
+      "from": "WS-REPORT-COUNT",
+      "to": "REPORT-LINE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/clrin.cbl:225"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/clrin.cbl:225"
+    },
+    {
+      "from": "'RECORDS REJECTED'",
+      "to": "RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:226"
+    },
+    {
+      "from": "WS-REJECTED",
+      "to": "RC-VALUE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:227"
+    },
+    {
+      "from": "WS-REPORT-COUNT",
+      "to": "REPORT-LINE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/clrin.cbl:228"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/clrin.cbl:228"
+    },
+    {
+      "from": "'BATCHES'",
+      "to": "RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:229"
+    },
+    {
+      "from": "WS-BATCHES",
+      "to": "RC-VALUE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/clrin.cbl:230"
+    },
+    {
+      "from": "WS-REPORT-COUNT",
+      "to": "REPORT-LINE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/clrin.cbl:231"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/clrin.cbl:231"
+    }
+  ],
+  "outputs": [
+    {
+      "file": "PRES-OUT",
+      "record": "PRES-RECORD",
+      "fields": [
+        {
+          "name": "PS-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "origins": [
+            "file CLEARING-IN PR-CARD-NO"
+          ]
+        },
+        {
+          "name": "PS-AMOUNT",
+          "start": 17,
+          "length": 12,
+          "origins": [
+            "file CLEARING-IN PR-AMOUNT"
+          ]
+        },
+        {
+          "name": "PS-AUTH-CODE",
+          "start": 29,
+          "length": 6,
+          "origins": [
+            "file CLEARING-IN PR-AUTH-CODE"
+          ]
+        },
+        {
+          "name": "PS-MERCHANT",
+          "start": 35,
+          "length": 10,
+          "origins": [
+            "file CLEARING-IN PR-MERCHANT"
+          ]
+        },
+        {
+          "name": "PS-MCC",
+          "start": 45,
+          "length": 4,
+          "origins": [
+            "file CLEARING-IN PR-MCC"
+          ]
+        },
+        {
+          "name": "PS-REGION",
+          "start": 49,
+          "length": 1,
+          "origins": [
+            "file CLEARING-IN PR-REGION"
+          ]
+        },
+        {
+          "name": "PS-PRODUCT",
+          "start": 50,
+          "length": 2,
+          "origins": [
+            "file CLEARING-IN PR-PRODUCT"
+          ]
+        },
+        {
+          "name": "PS-TXN-DATE",
+          "start": 52,
+          "length": 8,
+          "origins": [
+            "file CLEARING-IN PR-TXN-DATE"
+          ]
+        },
+        {
+          "name": "PS-BATCH-NO",
+          "start": 60,
+          "length": 6,
+          "origins": [
+            "file CLEARING-IN BH-BATCH-NO"
+          ]
+        },
+        {
+          "name": "PS-MATCH",
+          "start": 66,
+          "length": 1,
+          "origins": [
+            "literal SPACES"
+          ]
+        },
+        {
+          "name": "PS-FEE",
+          "start": 67,
+          "length": 10,
+          "origins": [
+            "literal ZERO"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "REJECT-OUT",
+      "record": "REJECT-LINE",
+      "fields": [
+        {
+          "name": "RJ-REASON",
+          "start": 1,
+          "length": 4,
+          "origins": [
+            "literal 'AMNT'",
+            "literal 'BTOT'",
+            "literal 'CARD'",
+            "literal 'MCC '",
+            "literal 'ORDR'",
+            "literal 'PROD'",
+            "literal 'REGN'",
+            "literal SPACES"
+          ]
+        },
+        {
+          "name": "RJ-BATCH-NO",
+          "start": 6,
+          "length": 6,
+          "origins": [
+            "file CLEARING-IN BH-BATCH-NO"
+          ]
+        },
+        {
+          "name": "RJ-RECORD",
+          "start": 13,
+          "length": 61,
+          "origins": [
+            "file CLEARING-IN CLR-PRESENTMENT"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "REPORT-OUT",
+      "record": "REPORT-LINE",
+      "fields": [
+        {
+          "name": "REPORT-LINE",
+          "start": 1,
+          "length": 60,
+          "origins": [
+            "literal 'CLRIN    CLEARING FILE OF '",
+            "literal SPACES"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "REPORT-OUT",
+      "record": "WS-REPORT-COUNT",
+      "fields": [
+        {
+          "name": "RC-LABEL",
+          "start": 1,
+          "length": 30,
+          "origins": [
+            "literal 'BATCHES'",
+            "literal 'PRESENTMENTS TAKEN'",
+            "literal 'RECORDS REJECTED'"
+          ]
+        },
+        {
+          "name": "RC-VALUE",
+          "start": 31,
+          "length": 8,
+          "origins": [
+            "initial value of WS-BATCHES",
+            "initial value of WS-REJECTED",
+            "initial value of WS-TAKEN",
+            "literal 1"
+          ]
+        }
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "file": "CLEARING-IN",
+      "record": "CLR-FILE-HEADER",
+      "fields": [
+        {
+          "name": "CLR-RECORD-TYPE",
+          "start": 1,
+          "length": 2
+        },
+        {
+          "name": "FH-NETWORK",
+          "start": 3,
+          "length": 4
+        },
+        {
+          "name": "FH-FILE-DATE",
+          "start": 7,
+          "length": 8
+        },
+        {
+          "name": "FH-FILE-SEQ",
+          "start": 15,
+          "length": 4
+        }
+      ]
+    }
+  ],
+  "totals": [
+    {
+      "file": "CLEARING-IN",
+      "field": "BT-COUNT",
+      "source": "laurasia/programs/clrin.cbl:137"
+    },
+    {
+      "file": "CLEARING-IN",
+      "field": "FT-BATCH-COUNT",
+      "source": "laurasia/programs/clrin.cbl:212"
+    },
+    {
+      "file": "CLEARING-IN",
+      "field": "FT-RECORD-COUNT",
+      "source": "laurasia/programs/clrin.cbl:212"
+    }
+  ]
+}

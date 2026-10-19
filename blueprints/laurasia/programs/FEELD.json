@@ -1,0 +1,506 @@
+{
+  "program": "FEELD",
+  "kind": "main",
+  "source": "laurasia/programs/feeld.cbl",
+  "description": [
+    "feeld: load the interchange fee schedule into the fee table",
+    "",
+    "reads the fee schedule, a line for each card product, region and",
+    "merchant group, and writes each fee into the fee table's slot for it,",
+    "where ixfee finds it without a search.",
+    "",
+    "return codes: 0 loaded, 8 a fee for no slot, 16 cannot write.",
+    "",
+    "history",
+    "2012-01-09 ah  lcs-0140 original version."
+  ],
+  "files": [
+    {
+      "name": "FEE-SCHEDULE",
+      "kind": "FD",
+      "assign": "FEESCHED",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "INPUT"
+      ],
+      "records": [
+        "FEE-DEFINITION"
+      ],
+      "source": "laurasia/programs/feeld.cbl:18"
+    },
+    {
+      "name": "FEE-TABLE",
+      "kind": "FD",
+      "assign": "FEETAB",
+      "organization": "RELATIVE",
+      "access": "RANDOM",
+      "relativeKey": "WS-SLOT",
+      "status": "WS-FEE-STATUS",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "FEE-SLOT-RECORD"
+      ],
+      "source": "laurasia/programs/feeld.cbl:20"
+    }
+  ],
+  "records": [
+    {
+      "section": "file",
+      "file": "FEE-SCHEDULE",
+      "copybook": "feedef",
+      "level": 1,
+      "name": "FEE-DEFINITION",
+      "start": 1,
+      "length": 14,
+      "category": "group",
+      "kind": "group",
+      "description": "feedef: an interchange fee as the fee schedule gives it, a line each: for a card product, a region and a merchant group, a rate on the amount and a fixed fee in cents. history 2012-01-09 ah  lcs-0140 original version.",
+      "source": "laurasia/copybooks/feedef.cpy:8",
+      "fields": [
+        {
+          "level": 5,
+          "name": "FD-PRODUCT",
+          "start": 1,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/feedef.cpy:9"
+        },
+        {
+          "level": 5,
+          "name": "FD-REGION",
+          "start": 3,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/feedef.cpy:10"
+        },
+        {
+          "level": 5,
+          "name": "FD-GROUP",
+          "start": 4,
+          "length": 1,
+          "picture": "9",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 1,
+          "source": "laurasia/copybooks/feedef.cpy:11"
+        },
+        {
+          "level": 5,
+          "name": "FD-RATE",
+          "start": 5,
+          "length": 5,
+          "picture": "9V9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 5,
+          "scale": 4,
+          "source": "laurasia/copybooks/feedef.cpy:12"
+        },
+        {
+          "level": 5,
+          "name": "FD-FIXED",
+          "start": 10,
+          "length": 5,
+          "picture": "9(5)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 5,
+          "source": "laurasia/copybooks/feedef.cpy:13"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "FEE-TABLE",
+      "copybook": "feerec",
+      "level": 1,
+      "name": "FEE-SLOT-RECORD",
+      "start": 1,
+      "length": 8,
+      "category": "group",
+      "kind": "group",
+      "description": "feerec: an interchange fee in the fee table, a relative file whose slot is worked out from the card product, the region and the merchant group. history 2012-01-09 ah  lcs-0140 original version.",
+      "source": "laurasia/copybooks/feerec.cpy:7",
+      "fields": [
+        {
+          "level": 5,
+          "name": "FS-RATE",
+          "start": 1,
+          "length": 5,
+          "picture": "9V9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 5,
+          "scale": 4,
+          "source": "laurasia/copybooks/feerec.cpy:8"
+        },
+        {
+          "level": 5,
+          "name": "FS-FIXED-CENTS",
+          "start": 6,
+          "length": 3,
+          "picture": "9(5)",
+          "usage": "COMP-5",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 5,
+          "source": "laurasia/copybooks/feerec.cpy:9"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-SLOT",
+      "start": 1,
+      "length": 2,
+      "picture": "9(4)",
+      "usage": "COMP-5",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 4,
+      "source": "laurasia/programs/feeld.cbl:34"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-FEE-STATUS",
+      "start": 1,
+      "length": 2,
+      "picture": "XX",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/feeld.cbl:35"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-AT-END",
+      "start": 1,
+      "length": 1,
+      "picture": "X",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "code",
+      "values": [
+        "'N'"
+      ],
+      "conditions": [
+        {
+          "name": "SCHEDULE-AT-END",
+          "values": [
+            "'Y'"
+          ],
+          "source": "laurasia/programs/feeld.cbl:37"
+        }
+      ],
+      "source": "laurasia/programs/feeld.cbl:36"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-RESULT",
+      "start": 1,
+      "length": 2,
+      "picture": "99",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 2,
+      "values": [
+        "ZERO"
+      ],
+      "source": "laurasia/programs/feeld.cbl:38"
+    }
+  ],
+  "paragraphs": [
+    {
+      "name": "MAIN",
+      "section": "MAIN",
+      "source": "laurasia/programs/feeld.cbl:41",
+      "performs": [
+        {
+          "target": "LOAD-FEE",
+          "source": "laurasia/programs/feeld.cbl:49"
+        }
+      ],
+      "reads": [
+        "WS-FEE-STATUS",
+        "WS-AT-END",
+        "WS-RESULT"
+      ],
+      "writes": [
+        "RETURN-CODE",
+        "FEE-DEFINITION",
+        "WS-AT-END"
+      ]
+    },
+    {
+      "name": "LOAD-FEE",
+      "section": "LOAD-FEE",
+      "source": "laurasia/programs/feeld.cbl:55",
+      "performedBy": [
+        "MAIN"
+      ],
+      "reads": [
+        "FD-PRODUCT",
+        "FD-REGION",
+        "FD-GROUP",
+        "RETURNING",
+        "WS-SLOT",
+        "FD-RATE",
+        "FD-FIXED"
+      ],
+      "writes": [
+        "FD-PRODUCT",
+        "FD-REGION",
+        "FD-GROUP",
+        "RETURNING",
+        "WS-SLOT",
+        "WS-RESULT",
+        "FS-RATE",
+        "FS-FIXED-CENTS",
+        "FEE-SLOT-RECORD"
+      ]
+    }
+  ],
+  "calls": [
+    {
+      "program": "feeslot",
+      "using": [
+        "FD-PRODUCT",
+        "FD-REGION",
+        "FD-GROUP",
+        "RETURNING",
+        "WS-SLOT"
+      ],
+      "external": true,
+      "paragraph": "LOAD-FEE",
+      "source": "laurasia/programs/feeld.cbl:56"
+    }
+  ],
+  "lineage": [
+    {
+      "from": "FEE-SCHEDULE",
+      "to": "FEE-DEFINITION",
+      "fromFile": true,
+      "paragraph": "MAIN",
+      "verb": "READ",
+      "source": "laurasia/programs/feeld.cbl:47"
+    },
+    {
+      "from": "condition SCHEDULE-AT-END",
+      "to": "WS-AT-END",
+      "fromLiteral": true,
+      "paragraph": "MAIN",
+      "verb": "SET",
+      "source": "laurasia/programs/feeld.cbl:48"
+    },
+    {
+      "from": "FD-PRODUCT",
+      "to": "feeslot",
+      "toCall": true,
+      "arg": 1,
+      "paragraph": "LOAD-FEE",
+      "verb": "CALL",
+      "source": "laurasia/programs/feeld.cbl:56"
+    },
+    {
+      "from": "feeslot",
+      "to": "FD-PRODUCT",
+      "fromCall": true,
+      "arg": 1,
+      "paragraph": "LOAD-FEE",
+      "verb": "CALL",
+      "source": "laurasia/programs/feeld.cbl:56"
+    },
+    {
+      "from": "FD-REGION",
+      "to": "feeslot",
+      "toCall": true,
+      "arg": 2,
+      "paragraph": "LOAD-FEE",
+      "verb": "CALL",
+      "source": "laurasia/programs/feeld.cbl:56"
+    },
+    {
+      "from": "feeslot",
+      "to": "FD-REGION",
+      "fromCall": true,
+      "arg": 2,
+      "paragraph": "LOAD-FEE",
+      "verb": "CALL",
+      "source": "laurasia/programs/feeld.cbl:56"
+    },
+    {
+      "from": "FD-GROUP",
+      "to": "feeslot",
+      "toCall": true,
+      "arg": 3,
+      "paragraph": "LOAD-FEE",
+      "verb": "CALL",
+      "source": "laurasia/programs/feeld.cbl:56"
+    },
+    {
+      "from": "feeslot",
+      "to": "FD-GROUP",
+      "fromCall": true,
+      "arg": 3,
+      "paragraph": "LOAD-FEE",
+      "verb": "CALL",
+      "source": "laurasia/programs/feeld.cbl:56"
+    },
+    {
+      "from": "RETURNING",
+      "to": "feeslot",
+      "toCall": true,
+      "arg": 4,
+      "paragraph": "LOAD-FEE",
+      "verb": "CALL",
+      "source": "laurasia/programs/feeld.cbl:56"
+    },
+    {
+      "from": "feeslot",
+      "to": "RETURNING",
+      "fromCall": true,
+      "arg": 4,
+      "paragraph": "LOAD-FEE",
+      "verb": "CALL",
+      "source": "laurasia/programs/feeld.cbl:56"
+    },
+    {
+      "from": "WS-SLOT",
+      "to": "feeslot",
+      "toCall": true,
+      "arg": 5,
+      "paragraph": "LOAD-FEE",
+      "verb": "CALL",
+      "source": "laurasia/programs/feeld.cbl:56"
+    },
+    {
+      "from": "feeslot",
+      "to": "WS-SLOT",
+      "fromCall": true,
+      "arg": 5,
+      "paragraph": "LOAD-FEE",
+      "verb": "CALL",
+      "source": "laurasia/programs/feeld.cbl:56"
+    },
+    {
+      "from": "8",
+      "to": "WS-RESULT",
+      "fromLiteral": true,
+      "paragraph": "LOAD-FEE",
+      "verb": "MOVE",
+      "source": "laurasia/programs/feeld.cbl:58"
+    },
+    {
+      "from": "FD-RATE",
+      "to": "FS-RATE",
+      "paragraph": "LOAD-FEE",
+      "verb": "MOVE",
+      "source": "laurasia/programs/feeld.cbl:61"
+    },
+    {
+      "from": "FD-FIXED",
+      "to": "FS-FIXED-CENTS",
+      "paragraph": "LOAD-FEE",
+      "verb": "MOVE",
+      "source": "laurasia/programs/feeld.cbl:62"
+    },
+    {
+      "from": "FEE-SLOT-RECORD",
+      "to": "FEE-TABLE",
+      "toFile": true,
+      "paragraph": "LOAD-FEE",
+      "verb": "WRITE",
+      "source": "laurasia/programs/feeld.cbl:63"
+    },
+    {
+      "from": "8",
+      "to": "WS-RESULT",
+      "fromLiteral": true,
+      "paragraph": "LOAD-FEE",
+      "verb": "MOVE",
+      "source": "laurasia/programs/feeld.cbl:64"
+    }
+  ],
+  "outputs": [
+    {
+      "file": "FEE-TABLE",
+      "record": "FEE-SLOT-RECORD",
+      "fields": [
+        {
+          "name": "FS-RATE",
+          "start": 1,
+          "length": 5,
+          "origins": [
+            "file FEE-SCHEDULE FD-RATE"
+          ]
+        },
+        {
+          "name": "FS-FIXED-CENTS",
+          "start": 6,
+          "length": 3,
+          "origins": [
+            "file FEE-SCHEDULE FD-FIXED"
+          ]
+        }
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "file": "FEE-SCHEDULE",
+      "record": "FEE-DEFINITION",
+      "fields": [
+        {
+          "name": "FD-PRODUCT",
+          "start": 1,
+          "length": 2
+        },
+        {
+          "name": "FD-REGION",
+          "start": 3,
+          "length": 1
+        },
+        {
+          "name": "FD-GROUP",
+          "start": 4,
+          "length": 1
+        },
+        {
+          "name": "FD-RATE",
+          "start": 5,
+          "length": 5,
+          "reaches": [
+            "FS-RATE",
+            "file FEE-TABLE"
+          ]
+        },
+        {
+          "name": "FD-FIXED",
+          "start": 10,
+          "length": 5,
+          "reaches": [
+            "FS-FIXED-CENTS",
+            "file FEE-TABLE"
+          ]
+        }
+      ]
+    }
+  ]
+}

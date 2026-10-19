@@ -1,0 +1,1429 @@
+{
+  "program": "SETTLE",
+  "kind": "main",
+  "source": "laurasia/programs/settle.cbl",
+  "description": [
+    "settle: work out what each merchant is paid",
+    "",
+    "reads the priced presentments and the dispute adjustments, both in",
+    "merchant order, and for each merchant pays the matched presentments,",
+    "less their interchange, plus or minus the adjustments. a merchant that",
+    "ends up owing is not paid, and is listed for collection.",
+    "",
+    "return codes: 0 all paid, 4 some owe.",
+    "",
+    "history",
+    "2011-04-04 rk  lcs-0102 original version.",
+    "2015-03-23 mt  lcs-0302 dispute adjustments."
+  ],
+  "files": [
+    {
+      "name": "PRES-IN",
+      "kind": "FD",
+      "assign": "PRESIN",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "INPUT"
+      ],
+      "records": [
+        "PRES-RECORD"
+      ],
+      "source": "laurasia/programs/settle.cbl:20"
+    },
+    {
+      "name": "ADJUST-IN",
+      "kind": "FD",
+      "assign": "ADJIN",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "INPUT"
+      ],
+      "records": [
+        "ADJUSTMENT"
+      ],
+      "source": "laurasia/programs/settle.cbl:22"
+    },
+    {
+      "name": "PAYOUT-OUT",
+      "kind": "FD",
+      "assign": "PAYOUT",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "PAYOUT"
+      ],
+      "source": "laurasia/programs/settle.cbl:24"
+    },
+    {
+      "name": "REPORT-OUT",
+      "kind": "FD",
+      "assign": "SETLRPT",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "REPORT-LINE"
+      ],
+      "source": "laurasia/programs/settle.cbl:26"
+    }
+  ],
+  "records": [
+    {
+      "section": "file",
+      "file": "PRES-IN",
+      "copybook": "presrec",
+      "level": 1,
+      "name": "PRES-RECORD",
+      "start": 1,
+      "length": 76,
+      "category": "group",
+      "kind": "group",
+      "description": "presrec: a presentment on its way through the night, a record a line. clrin fills in where it came from, match its authorization's outcome, ixfee the interchange fee. history 2011-04-04 rk  lcs-0102 original version. 2014-02-17 rk  lcs-0251 match status and interchange fee.",
+      "source": "laurasia/copybooks/presrec.cpy:9",
+      "fields": [
+        {
+          "level": 5,
+          "name": "PS-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "picture": "X(16)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/presrec.cpy:10"
+        },
+        {
+          "level": 5,
+          "name": "PS-AMOUNT",
+          "start": 17,
+          "length": 12,
+          "picture": "S9(9)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 11,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/presrec.cpy:11"
+        },
+        {
+          "level": 5,
+          "name": "PS-AUTH-CODE",
+          "start": 29,
+          "length": 6,
+          "picture": "X(6)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/presrec.cpy:12"
+        },
+        {
+          "level": 5,
+          "name": "PS-MERCHANT",
+          "start": 35,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/presrec.cpy:13"
+        },
+        {
+          "level": 5,
+          "name": "PS-MCC",
+          "start": 45,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 4,
+          "source": "laurasia/copybooks/presrec.cpy:14"
+        },
+        {
+          "level": 5,
+          "name": "PS-REGION",
+          "start": 49,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PS-DOMESTIC",
+              "values": [
+                "'D'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:16"
+            },
+            {
+              "name": "PS-INTERNATIONAL",
+              "values": [
+                "'I'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:17"
+            }
+          ],
+          "source": "laurasia/copybooks/presrec.cpy:15"
+        },
+        {
+          "level": 5,
+          "name": "PS-PRODUCT",
+          "start": 50,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PS-CLASSIC",
+              "values": [
+                "'CL'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:19"
+            },
+            {
+              "name": "PS-GOLD",
+              "values": [
+                "'GD'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:20"
+            },
+            {
+              "name": "PS-BUSINESS",
+              "values": [
+                "'BZ'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:21"
+            }
+          ],
+          "source": "laurasia/copybooks/presrec.cpy:18"
+        },
+        {
+          "level": 5,
+          "name": "PS-TXN-DATE",
+          "start": 52,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "date",
+          "digits": 8,
+          "source": "laurasia/copybooks/presrec.cpy:22"
+        },
+        {
+          "level": 5,
+          "name": "PS-BATCH-NO",
+          "start": 60,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 6,
+          "source": "laurasia/copybooks/presrec.cpy:23"
+        },
+        {
+          "level": 5,
+          "name": "PS-MATCH",
+          "start": 66,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PS-UNMATCHED",
+              "values": [
+                "' '"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:25"
+            },
+            {
+              "name": "PS-MATCHED",
+              "values": [
+                "'M'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:26"
+            },
+            {
+              "name": "PS-DECLINED",
+              "values": [
+                "'D'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:27"
+            },
+            {
+              "name": "PS-NO-AUTH",
+              "values": [
+                "'U'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:28"
+            },
+            {
+              "name": "PS-OVER-AUTH",
+              "values": [
+                "'X'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:29"
+            }
+          ],
+          "source": "laurasia/copybooks/presrec.cpy:24"
+        },
+        {
+          "level": 5,
+          "name": "PS-FEE",
+          "start": 67,
+          "length": 10,
+          "picture": "S9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/presrec.cpy:30"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "ADJUST-IN",
+      "level": 1,
+      "name": "ADJUSTMENT",
+      "start": 1,
+      "length": 32,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/settle.cbl:34",
+      "fields": [
+        {
+          "level": 5,
+          "name": "AD-MERCHANT",
+          "start": 1,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/settle.cbl:35"
+        },
+        {
+          "level": 5,
+          "name": "AD-AMOUNT",
+          "start": 11,
+          "length": 12,
+          "picture": "S9(9)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 11,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/programs/settle.cbl:36"
+        },
+        {
+          "level": 5,
+          "name": "AD-CASE-NO",
+          "start": 23,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 8,
+          "source": "laurasia/programs/settle.cbl:37"
+        },
+        {
+          "level": 5,
+          "name": "AD-EVENT",
+          "start": 31,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/settle.cbl:38"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "PAYOUT-OUT",
+      "level": 1,
+      "name": "PAYOUT",
+      "start": 1,
+      "length": 65,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/settle.cbl:40",
+      "fields": [
+        {
+          "level": 5,
+          "name": "PA-MERCHANT",
+          "start": 1,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/settle.cbl:41"
+        },
+        {
+          "level": 5,
+          "name": "PA-GROSS",
+          "start": 11,
+          "length": 14,
+          "picture": "S9(11)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 13,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/programs/settle.cbl:42"
+        },
+        {
+          "level": 5,
+          "name": "PA-INTERCHANGE",
+          "start": 25,
+          "length": 12,
+          "picture": "S9(9)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 11,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/programs/settle.cbl:43"
+        },
+        {
+          "level": 5,
+          "name": "PA-ADJUSTMENTS",
+          "start": 37,
+          "length": 14,
+          "picture": "S9(11)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 13,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/programs/settle.cbl:44"
+        },
+        {
+          "level": 5,
+          "name": "PA-NET",
+          "start": 51,
+          "length": 14,
+          "picture": "S9(11)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 13,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/programs/settle.cbl:45"
+        },
+        {
+          "level": 5,
+          "name": "PA-STATUS",
+          "start": 65,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PA-PAID",
+              "values": [
+                "'P'"
+              ],
+              "source": "laurasia/programs/settle.cbl:47"
+            },
+            {
+              "name": "PA-OWES",
+              "values": [
+                "'C'"
+              ],
+              "source": "laurasia/programs/settle.cbl:48"
+            }
+          ],
+          "source": "laurasia/programs/settle.cbl:46"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "REPORT-OUT",
+      "level": 1,
+      "name": "REPORT-LINE",
+      "start": 1,
+      "length": 60,
+      "picture": "X(60)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/settle.cbl:50"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-PRES-KEY",
+      "start": 1,
+      "length": 10,
+      "picture": "X(10)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/settle.cbl:53"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ADJUST-KEY",
+      "start": 1,
+      "length": 10,
+      "picture": "X(10)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/settle.cbl:54"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-MERCHANT",
+      "start": 1,
+      "length": 10,
+      "picture": "X(10)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/settle.cbl:55"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-MERCHANT-TOTALS",
+      "start": 1,
+      "length": 37,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/settle.cbl:56",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-GROSS",
+          "start": 1,
+          "length": 13,
+          "picture": "S9(11)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 13,
+          "scale": 2,
+          "signed": true,
+          "source": "laurasia/programs/settle.cbl:57"
+        },
+        {
+          "level": 5,
+          "name": "WS-INTERCHANGE",
+          "start": 14,
+          "length": 11,
+          "picture": "S9(9)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 11,
+          "scale": 2,
+          "signed": true,
+          "source": "laurasia/programs/settle.cbl:58"
+        },
+        {
+          "level": 5,
+          "name": "WS-ADJUSTMENTS",
+          "start": 25,
+          "length": 13,
+          "picture": "S9(11)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 13,
+          "scale": 2,
+          "signed": true,
+          "source": "laurasia/programs/settle.cbl:59"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-TOTALS",
+      "start": 1,
+      "length": 27,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/settle.cbl:60",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-PAID-COUNT",
+          "start": 1,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 6,
+          "values": [
+            "ZERO"
+          ],
+          "source": "laurasia/programs/settle.cbl:61"
+        },
+        {
+          "level": 5,
+          "name": "WS-OWING-COUNT",
+          "start": 7,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 6,
+          "values": [
+            "ZERO"
+          ],
+          "source": "laurasia/programs/settle.cbl:62"
+        },
+        {
+          "level": 5,
+          "name": "WS-PAID-TOTAL",
+          "start": 13,
+          "length": 15,
+          "picture": "S9(13)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 15,
+          "scale": 2,
+          "signed": true,
+          "values": [
+            "ZERO"
+          ],
+          "source": "laurasia/programs/settle.cbl:63"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REPORT-AMOUNT",
+      "start": 1,
+      "length": 45,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/settle.cbl:64",
+      "fields": [
+        {
+          "level": 5,
+          "name": "RA-LABEL",
+          "start": 1,
+          "length": 30,
+          "picture": "X(30)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/settle.cbl:65"
+        },
+        {
+          "level": 5,
+          "name": "RA-VALUE",
+          "start": 31,
+          "length": 15,
+          "picture": "-(11)9.99",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "kind": "edited",
+          "source": "laurasia/programs/settle.cbl:66"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REPORT-COUNT",
+      "start": 1,
+      "length": 36,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/settle.cbl:67",
+      "fields": [
+        {
+          "level": 5,
+          "name": "RC-LABEL",
+          "start": 1,
+          "length": 30,
+          "picture": "X(30)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/settle.cbl:68"
+        },
+        {
+          "level": 5,
+          "name": "RC-VALUE",
+          "start": 31,
+          "length": 6,
+          "picture": "Z(5)9",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "kind": "edited",
+          "source": "laurasia/programs/settle.cbl:69"
+        }
+      ]
+    }
+  ],
+  "paragraphs": [
+    {
+      "name": "MAIN",
+      "section": "MAIN",
+      "source": "laurasia/programs/settle.cbl:72",
+      "performs": [
+        {
+          "target": "READ-PRESENTMENT",
+          "source": "laurasia/programs/settle.cbl:75"
+        },
+        {
+          "target": "READ-ADJUSTMENT",
+          "source": "laurasia/programs/settle.cbl:76"
+        },
+        {
+          "target": "SETTLE-MERCHANT",
+          "source": "laurasia/programs/settle.cbl:77"
+        },
+        {
+          "target": "WRITE-REPORT",
+          "source": "laurasia/programs/settle.cbl:78"
+        }
+      ],
+      "reads": [
+        "WS-PRES-KEY",
+        "WS-ADJUST-KEY",
+        "WS-OWING-COUNT"
+      ],
+      "writes": [
+        "RETURN-CODE"
+      ]
+    },
+    {
+      "name": "READ-PRESENTMENT",
+      "section": "READ-PRESENTMENT",
+      "source": "laurasia/programs/settle.cbl:85",
+      "performedBy": [
+        "MAIN",
+        "SETTLE-MERCHANT"
+      ],
+      "reads": [
+        "PS-MERCHANT"
+      ],
+      "writes": [
+        "PRES-RECORD",
+        "WS-PRES-KEY"
+      ]
+    },
+    {
+      "name": "READ-ADJUSTMENT",
+      "section": "READ-ADJUSTMENT",
+      "source": "laurasia/programs/settle.cbl:91",
+      "performedBy": [
+        "MAIN",
+        "SETTLE-MERCHANT"
+      ],
+      "reads": [
+        "AD-MERCHANT"
+      ],
+      "writes": [
+        "ADJUSTMENT",
+        "WS-ADJUST-KEY"
+      ]
+    },
+    {
+      "name": "SETTLE-MERCHANT",
+      "section": "SETTLE-MERCHANT",
+      "description": "the next merchant: the lower of the two keys, and everything of both files for it.",
+      "source": "laurasia/programs/settle.cbl:99",
+      "performs": [
+        {
+          "target": "READ-PRESENTMENT",
+          "source": "laurasia/programs/settle.cbl:111"
+        },
+        {
+          "target": "READ-ADJUSTMENT",
+          "source": "laurasia/programs/settle.cbl:115"
+        },
+        {
+          "target": "WRITE-PAYOUT",
+          "source": "laurasia/programs/settle.cbl:117"
+        }
+      ],
+      "performedBy": [
+        "MAIN"
+      ],
+      "reads": [
+        "WS-PRES-KEY",
+        "WS-ADJUST-KEY",
+        "WS-MERCHANT",
+        "PS-MATCH",
+        "PS-AMOUNT",
+        "WS-GROSS",
+        "PS-FEE",
+        "WS-INTERCHANGE",
+        "AD-AMOUNT",
+        "WS-ADJUSTMENTS"
+      ],
+      "writes": [
+        "WS-MERCHANT",
+        "WS-GROSS",
+        "WS-INTERCHANGE",
+        "WS-ADJUSTMENTS"
+      ]
+    },
+    {
+      "name": "WRITE-PAYOUT",
+      "section": "WRITE-PAYOUT",
+      "source": "laurasia/programs/settle.cbl:119",
+      "performedBy": [
+        "SETTLE-MERCHANT"
+      ],
+      "reads": [
+        "WS-MERCHANT",
+        "WS-GROSS",
+        "WS-INTERCHANGE",
+        "WS-ADJUSTMENTS",
+        "PA-NET",
+        "WS-OWING-COUNT",
+        "WS-PAID-COUNT",
+        "WS-PAID-TOTAL"
+      ],
+      "writes": [
+        "PA-MERCHANT",
+        "PA-GROSS",
+        "PA-INTERCHANGE",
+        "PA-ADJUSTMENTS",
+        "PA-NET",
+        "PA-STATUS",
+        "WS-OWING-COUNT",
+        "WS-PAID-COUNT",
+        "WS-PAID-TOTAL",
+        "PAYOUT"
+      ]
+    },
+    {
+      "name": "WRITE-REPORT",
+      "section": "WRITE-REPORT",
+      "source": "laurasia/programs/settle.cbl:135",
+      "performedBy": [
+        "MAIN"
+      ],
+      "reads": [
+        "WS-PAID-COUNT",
+        "WS-REPORT-COUNT",
+        "WS-OWING-COUNT",
+        "WS-PAID-TOTAL",
+        "WS-REPORT-AMOUNT"
+      ],
+      "writes": [
+        "REPORT-LINE",
+        "RC-LABEL",
+        "RC-VALUE",
+        "RA-LABEL",
+        "RA-VALUE"
+      ]
+    }
+  ],
+  "lineage": [
+    {
+      "from": "PRES-IN",
+      "to": "PRES-RECORD",
+      "fromFile": true,
+      "paragraph": "READ-PRESENTMENT",
+      "verb": "READ",
+      "source": "laurasia/programs/settle.cbl:86"
+    },
+    {
+      "from": "HIGH-VALUES",
+      "to": "WS-PRES-KEY",
+      "fromLiteral": true,
+      "paragraph": "READ-PRESENTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:87"
+    },
+    {
+      "from": "PS-MERCHANT",
+      "to": "WS-PRES-KEY",
+      "paragraph": "READ-PRESENTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:88"
+    },
+    {
+      "from": "ADJUST-IN",
+      "to": "ADJUSTMENT",
+      "fromFile": true,
+      "paragraph": "READ-ADJUSTMENT",
+      "verb": "READ",
+      "source": "laurasia/programs/settle.cbl:92"
+    },
+    {
+      "from": "HIGH-VALUES",
+      "to": "WS-ADJUST-KEY",
+      "fromLiteral": true,
+      "paragraph": "READ-ADJUSTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:93"
+    },
+    {
+      "from": "AD-MERCHANT",
+      "to": "WS-ADJUST-KEY",
+      "paragraph": "READ-ADJUSTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:94"
+    },
+    {
+      "from": "WS-PRES-KEY",
+      "to": "WS-MERCHANT",
+      "paragraph": "SETTLE-MERCHANT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:101"
+    },
+    {
+      "from": "WS-ADJUST-KEY",
+      "to": "WS-MERCHANT",
+      "paragraph": "SETTLE-MERCHANT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:103"
+    },
+    {
+      "from": "ZERO",
+      "to": "WS-GROSS",
+      "fromLiteral": true,
+      "paragraph": "SETTLE-MERCHANT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:105"
+    },
+    {
+      "from": "ZERO",
+      "to": "WS-INTERCHANGE",
+      "fromLiteral": true,
+      "paragraph": "SETTLE-MERCHANT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:105"
+    },
+    {
+      "from": "ZERO",
+      "to": "WS-ADJUSTMENTS",
+      "fromLiteral": true,
+      "paragraph": "SETTLE-MERCHANT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:105"
+    },
+    {
+      "from": "PS-AMOUNT",
+      "to": "WS-GROSS",
+      "paragraph": "SETTLE-MERCHANT",
+      "verb": "ADD",
+      "source": "laurasia/programs/settle.cbl:108"
+    },
+    {
+      "from": "PS-FEE",
+      "to": "WS-INTERCHANGE",
+      "paragraph": "SETTLE-MERCHANT",
+      "verb": "ADD",
+      "source": "laurasia/programs/settle.cbl:109"
+    },
+    {
+      "from": "AD-AMOUNT",
+      "to": "WS-ADJUSTMENTS",
+      "paragraph": "SETTLE-MERCHANT",
+      "verb": "ADD",
+      "source": "laurasia/programs/settle.cbl:114"
+    },
+    {
+      "from": "WS-MERCHANT",
+      "to": "PA-MERCHANT",
+      "paragraph": "WRITE-PAYOUT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:120"
+    },
+    {
+      "from": "WS-GROSS",
+      "to": "PA-GROSS",
+      "paragraph": "WRITE-PAYOUT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:121"
+    },
+    {
+      "from": "WS-INTERCHANGE",
+      "to": "PA-INTERCHANGE",
+      "paragraph": "WRITE-PAYOUT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:122"
+    },
+    {
+      "from": "WS-ADJUSTMENTS",
+      "to": "PA-ADJUSTMENTS",
+      "paragraph": "WRITE-PAYOUT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:123"
+    },
+    {
+      "from": "WS-GROSS",
+      "to": "PA-NET",
+      "paragraph": "WRITE-PAYOUT",
+      "verb": "COMPUTE",
+      "source": "laurasia/programs/settle.cbl:124"
+    },
+    {
+      "from": "WS-INTERCHANGE",
+      "to": "PA-NET",
+      "paragraph": "WRITE-PAYOUT",
+      "verb": "COMPUTE",
+      "source": "laurasia/programs/settle.cbl:124"
+    },
+    {
+      "from": "WS-ADJUSTMENTS",
+      "to": "PA-NET",
+      "paragraph": "WRITE-PAYOUT",
+      "verb": "COMPUTE",
+      "source": "laurasia/programs/settle.cbl:124"
+    },
+    {
+      "from": "condition PA-OWES",
+      "to": "PA-STATUS",
+      "fromLiteral": true,
+      "paragraph": "WRITE-PAYOUT",
+      "verb": "SET",
+      "source": "laurasia/programs/settle.cbl:126"
+    },
+    {
+      "from": "1",
+      "to": "WS-OWING-COUNT",
+      "fromLiteral": true,
+      "paragraph": "WRITE-PAYOUT",
+      "verb": "ADD",
+      "source": "laurasia/programs/settle.cbl:127"
+    },
+    {
+      "from": "condition PA-PAID",
+      "to": "PA-STATUS",
+      "fromLiteral": true,
+      "paragraph": "WRITE-PAYOUT",
+      "verb": "SET",
+      "source": "laurasia/programs/settle.cbl:129"
+    },
+    {
+      "from": "1",
+      "to": "WS-PAID-COUNT",
+      "fromLiteral": true,
+      "paragraph": "WRITE-PAYOUT",
+      "verb": "ADD",
+      "source": "laurasia/programs/settle.cbl:130"
+    },
+    {
+      "from": "PA-NET",
+      "to": "WS-PAID-TOTAL",
+      "paragraph": "WRITE-PAYOUT",
+      "verb": "ADD",
+      "source": "laurasia/programs/settle.cbl:131"
+    },
+    {
+      "from": "PAYOUT",
+      "to": "PAYOUT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-PAYOUT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/settle.cbl:133"
+    },
+    {
+      "from": "'SETTLE   MERCHANT SETTLEMENT'",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:136"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/settle.cbl:137"
+    },
+    {
+      "from": "'MERCHANTS PAID'",
+      "to": "RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:138"
+    },
+    {
+      "from": "WS-PAID-COUNT",
+      "to": "RC-VALUE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:139"
+    },
+    {
+      "from": "WS-REPORT-COUNT",
+      "to": "REPORT-LINE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/settle.cbl:140"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/settle.cbl:140"
+    },
+    {
+      "from": "'MERCHANTS OWING'",
+      "to": "RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:141"
+    },
+    {
+      "from": "WS-OWING-COUNT",
+      "to": "RC-VALUE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:142"
+    },
+    {
+      "from": "WS-REPORT-COUNT",
+      "to": "REPORT-LINE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/settle.cbl:143"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/settle.cbl:143"
+    },
+    {
+      "from": "'PAID'",
+      "to": "RA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:144"
+    },
+    {
+      "from": "WS-PAID-TOTAL",
+      "to": "RA-VALUE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:145"
+    },
+    {
+      "from": "WS-REPORT-AMOUNT",
+      "to": "REPORT-LINE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/settle.cbl:146"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/settle.cbl:146"
+    }
+  ],
+  "outputs": [
+    {
+      "file": "PAYOUT-OUT",
+      "record": "PAYOUT",
+      "fields": [
+        {
+          "name": "PA-MERCHANT",
+          "start": 1,
+          "length": 10,
+          "origins": [
+            "file ADJUST-IN AD-MERCHANT",
+            "file PRES-IN PS-MERCHANT",
+            "literal HIGH-VALUES"
+          ]
+        },
+        {
+          "name": "PA-GROSS",
+          "start": 11,
+          "length": 14,
+          "origins": [
+            "file PRES-IN PS-AMOUNT",
+            "literal ZERO"
+          ]
+        },
+        {
+          "name": "PA-INTERCHANGE",
+          "start": 25,
+          "length": 12,
+          "origins": [
+            "file PRES-IN PS-FEE",
+            "literal ZERO"
+          ]
+        },
+        {
+          "name": "PA-ADJUSTMENTS",
+          "start": 37,
+          "length": 14,
+          "origins": [
+            "file ADJUST-IN AD-AMOUNT",
+            "literal ZERO"
+          ]
+        },
+        {
+          "name": "PA-NET",
+          "start": 51,
+          "length": 14,
+          "origins": [
+            "file ADJUST-IN AD-AMOUNT",
+            "file PRES-IN PS-AMOUNT",
+            "file PRES-IN PS-FEE",
+            "literal ZERO"
+          ]
+        },
+        {
+          "name": "PA-STATUS",
+          "start": 65,
+          "length": 1,
+          "origins": [
+            "literal condition PA-OWES",
+            "literal condition PA-PAID"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "REPORT-OUT",
+      "record": "REPORT-LINE",
+      "fields": [
+        {
+          "name": "REPORT-LINE",
+          "start": 1,
+          "length": 60,
+          "origins": [
+            "literal 'SETTLE   MERCHANT SETTLEMENT'"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "REPORT-OUT",
+      "record": "WS-REPORT-COUNT",
+      "fields": [
+        {
+          "name": "RC-LABEL",
+          "start": 1,
+          "length": 30,
+          "origins": [
+            "literal 'MERCHANTS OWING'",
+            "literal 'MERCHANTS PAID'"
+          ]
+        },
+        {
+          "name": "RC-VALUE",
+          "start": 31,
+          "length": 6,
+          "origins": [
+            "initial value of WS-OWING-COUNT",
+            "initial value of WS-PAID-COUNT",
+            "literal 1"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "REPORT-OUT",
+      "record": "WS-REPORT-AMOUNT",
+      "fields": [
+        {
+          "name": "RA-LABEL",
+          "start": 1,
+          "length": 30,
+          "origins": [
+            "literal 'PAID'"
+          ]
+        },
+        {
+          "name": "RA-VALUE",
+          "start": 31,
+          "length": 15,
+          "origins": [
+            "file ADJUST-IN AD-AMOUNT",
+            "file PRES-IN PS-AMOUNT",
+            "file PRES-IN PS-FEE",
+            "initial value of WS-PAID-TOTAL",
+            "literal ZERO"
+          ]
+        }
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "file": "PRES-IN",
+      "record": "PRES-RECORD",
+      "fields": [
+        {
+          "name": "PS-CARD-NO",
+          "start": 1,
+          "length": 16
+        },
+        {
+          "name": "PS-AMOUNT",
+          "start": 17,
+          "length": 12,
+          "reaches": [
+            "WS-GROSS",
+            "PA-GROSS",
+            "PA-NET",
+            "WS-PAID-TOTAL",
+            "RA-VALUE",
+            "REPORT-LINE",
+            "file PAYOUT-OUT",
+            "file REPORT-OUT"
+          ]
+        },
+        {
+          "name": "PS-AUTH-CODE",
+          "start": 29,
+          "length": 6
+        },
+        {
+          "name": "PS-MERCHANT",
+          "start": 35,
+          "length": 10,
+          "reaches": [
+            "WS-PRES-KEY",
+            "WS-MERCHANT",
+            "PA-MERCHANT",
+            "file PAYOUT-OUT"
+          ]
+        },
+        {
+          "name": "PS-MCC",
+          "start": 45,
+          "length": 4
+        },
+        {
+          "name": "PS-REGION",
+          "start": 49,
+          "length": 1
+        },
+        {
+          "name": "PS-PRODUCT",
+          "start": 50,
+          "length": 2
+        },
+        {
+          "name": "PS-TXN-DATE",
+          "start": 52,
+          "length": 8
+        },
+        {
+          "name": "PS-BATCH-NO",
+          "start": 60,
+          "length": 6
+        },
+        {
+          "name": "PS-MATCH",
+          "start": 66,
+          "length": 1
+        },
+        {
+          "name": "PS-FEE",
+          "start": 67,
+          "length": 10,
+          "reaches": [
+            "WS-INTERCHANGE",
+            "PA-INTERCHANGE",
+            "PA-NET",
+            "WS-PAID-TOTAL",
+            "RA-VALUE",
+            "REPORT-LINE",
+            "file PAYOUT-OUT",
+            "file REPORT-OUT"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "ADJUST-IN",
+      "record": "ADJUSTMENT",
+      "fields": [
+        {
+          "name": "AD-MERCHANT",
+          "start": 1,
+          "length": 10,
+          "reaches": [
+            "WS-ADJUST-KEY",
+            "WS-MERCHANT",
+            "PA-MERCHANT",
+            "file PAYOUT-OUT"
+          ]
+        },
+        {
+          "name": "AD-AMOUNT",
+          "start": 11,
+          "length": 12,
+          "reaches": [
+            "WS-ADJUSTMENTS",
+            "PA-ADJUSTMENTS",
+            "PA-NET",
+            "WS-PAID-TOTAL",
+            "RA-VALUE",
+            "REPORT-LINE",
+            "file PAYOUT-OUT",
+            "file REPORT-OUT"
+          ]
+        },
+        {
+          "name": "AD-CASE-NO",
+          "start": 23,
+          "length": 8
+        },
+        {
+          "name": "AD-EVENT",
+          "start": 31,
+          "length": 2
+        }
+      ]
+    }
+  ]
+}

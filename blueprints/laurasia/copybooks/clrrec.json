@@ -1,0 +1,385 @@
+{
+  "copybook": "clrrec",
+  "source": "laurasia/copybooks/clrrec.cpy",
+  "description": [
+    "clrrec: the networks' clearing file, a record a line, of five layouts",
+    "told apart by their first two characters. A file header, then for each",
+    "acquirer's batch a batch header, its presentments and a batch trailer",
+    "with their count and amount, then a file trailer with the batches',",
+    "the presentments' and the amounts' totals.",
+    "",
+    "history",
+    "2011-04-04 rk  lcs-0102 original version.",
+    "2016-09-12 ah  lcs-0377 card product on the presentment."
+  ],
+  "records": [
+    {
+      "level": 1,
+      "name": "CLR-FILE-HEADER",
+      "start": 1,
+      "length": 18,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/copybooks/clrrec.cpy:11",
+      "fields": [
+        {
+          "level": 5,
+          "name": "CLR-RECORD-TYPE",
+          "start": 1,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "IS-FILE-HEADER",
+              "values": [
+                "'FH'"
+              ],
+              "source": "laurasia/copybooks/clrrec.cpy:13"
+            },
+            {
+              "name": "IS-BATCH-HEADER",
+              "values": [
+                "'BH'"
+              ],
+              "source": "laurasia/copybooks/clrrec.cpy:14"
+            },
+            {
+              "name": "IS-PRESENTMENT",
+              "values": [
+                "'PR'"
+              ],
+              "source": "laurasia/copybooks/clrrec.cpy:15"
+            },
+            {
+              "name": "IS-BATCH-TRAILER",
+              "values": [
+                "'BT'"
+              ],
+              "source": "laurasia/copybooks/clrrec.cpy:16"
+            },
+            {
+              "name": "IS-FILE-TRAILER",
+              "values": [
+                "'FT'"
+              ],
+              "source": "laurasia/copybooks/clrrec.cpy:17"
+            }
+          ],
+          "source": "laurasia/copybooks/clrrec.cpy:12"
+        },
+        {
+          "level": 5,
+          "name": "FH-NETWORK",
+          "start": 3,
+          "length": 4,
+          "picture": "X(4)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/clrrec.cpy:18"
+        },
+        {
+          "level": 5,
+          "name": "FH-FILE-DATE",
+          "start": 7,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "date",
+          "digits": 8,
+          "source": "laurasia/copybooks/clrrec.cpy:19"
+        },
+        {
+          "level": 5,
+          "name": "FH-FILE-SEQ",
+          "start": 15,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 4,
+          "source": "laurasia/copybooks/clrrec.cpy:20"
+        }
+      ]
+    },
+    {
+      "level": 1,
+      "name": "CLR-BATCH-HEADER",
+      "start": 1,
+      "length": 14,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/copybooks/clrrec.cpy:21",
+      "fields": [
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 1,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "filler",
+          "source": "laurasia/copybooks/clrrec.cpy:22"
+        },
+        {
+          "level": 5,
+          "name": "BH-BATCH-NO",
+          "start": 3,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 6,
+          "source": "laurasia/copybooks/clrrec.cpy:23"
+        },
+        {
+          "level": 5,
+          "name": "BH-ACQUIRER",
+          "start": 9,
+          "length": 6,
+          "picture": "X(6)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/clrrec.cpy:24"
+        }
+      ]
+    },
+    {
+      "level": 1,
+      "name": "CLR-PRESENTMENT",
+      "start": 1,
+      "length": 61,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/copybooks/clrrec.cpy:25",
+      "fields": [
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 1,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "filler",
+          "source": "laurasia/copybooks/clrrec.cpy:26"
+        },
+        {
+          "level": 5,
+          "name": "PR-CARD-NO",
+          "start": 3,
+          "length": 16,
+          "picture": "X(16)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/clrrec.cpy:27"
+        },
+        {
+          "level": 5,
+          "name": "PR-AMOUNT",
+          "start": 19,
+          "length": 12,
+          "picture": "S9(9)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 11,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/clrrec.cpy:28"
+        },
+        {
+          "level": 5,
+          "name": "PR-AUTH-CODE",
+          "start": 31,
+          "length": 6,
+          "picture": "X(6)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/clrrec.cpy:29"
+        },
+        {
+          "level": 5,
+          "name": "PR-MERCHANT",
+          "start": 37,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/clrrec.cpy:30"
+        },
+        {
+          "level": 5,
+          "name": "PR-MCC",
+          "start": 47,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 4,
+          "source": "laurasia/copybooks/clrrec.cpy:31"
+        },
+        {
+          "level": 5,
+          "name": "PR-REGION",
+          "start": 51,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/clrrec.cpy:32"
+        },
+        {
+          "level": 5,
+          "name": "PR-PRODUCT",
+          "start": 52,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/clrrec.cpy:33"
+        },
+        {
+          "level": 5,
+          "name": "PR-TXN-DATE",
+          "start": 54,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "date",
+          "digits": 8,
+          "source": "laurasia/copybooks/clrrec.cpy:34"
+        }
+      ]
+    },
+    {
+      "level": 1,
+      "name": "CLR-BATCH-TRAILER",
+      "start": 1,
+      "length": 24,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/copybooks/clrrec.cpy:35",
+      "fields": [
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 1,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "filler",
+          "source": "laurasia/copybooks/clrrec.cpy:36"
+        },
+        {
+          "level": 5,
+          "name": "BT-COUNT",
+          "start": 3,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 6,
+          "source": "laurasia/copybooks/clrrec.cpy:37"
+        },
+        {
+          "level": 5,
+          "name": "BT-AMOUNT",
+          "start": 9,
+          "length": 16,
+          "picture": "S9(13)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 15,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/clrrec.cpy:38"
+        }
+      ]
+    },
+    {
+      "level": 1,
+      "name": "CLR-FILE-TRAILER",
+      "start": 1,
+      "length": 32,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/copybooks/clrrec.cpy:39",
+      "fields": [
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 1,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "filler",
+          "source": "laurasia/copybooks/clrrec.cpy:40"
+        },
+        {
+          "level": 5,
+          "name": "FT-BATCH-COUNT",
+          "start": 3,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 4,
+          "source": "laurasia/copybooks/clrrec.cpy:41"
+        },
+        {
+          "level": 5,
+          "name": "FT-RECORD-COUNT",
+          "start": 7,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 8,
+          "source": "laurasia/copybooks/clrrec.cpy:42"
+        },
+        {
+          "level": 5,
+          "name": "FT-AMOUNT",
+          "start": 15,
+          "length": 18,
+          "picture": "S9(15)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 17,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/clrrec.cpy:43"
+        }
+      ]
+    }
+  ],
+  "usedBy": [
+    "CLRIN"
+  ]
+}

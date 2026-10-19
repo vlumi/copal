@@ -1,0 +1,2551 @@
+[
+  {
+    "record": "AUTH-ENTRY",
+    "copybook": "authlog",
+    "programs": [
+      "MATCH"
+    ],
+    "fields": [
+      {
+        "name": "AL-AUTH-CODE",
+        "kind": "text",
+        "layout": "X(6)",
+        "uses": [
+          {
+            "program": "MATCH",
+            "field": "AL-AUTH-CODE",
+            "readBy": [
+              "READ-AUTHORIZATION"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AL-CARD-NO",
+        "kind": "text",
+        "layout": "X(16)",
+        "uses": [
+          {
+            "program": "MATCH",
+            "field": "AL-CARD-NO"
+          }
+        ]
+      },
+      {
+        "name": "AL-AMOUNT",
+        "kind": "amount",
+        "layout": "S9(9)V99",
+        "uses": [
+          {
+            "program": "MATCH",
+            "field": "AL-AMOUNT",
+            "readBy": [
+              "MARK-PRESENTMENT"
+            ],
+            "decisions": [
+              {
+                "paragraph": "MARK-PRESENTMENT",
+                "source": "laurasia/programs/match.cbl:104",
+                "conditions": [
+                  "PS-AMOUNT \u003e AL-AMOUNT * TOLERANCE"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AL-DECISION",
+        "kind": "code",
+        "layout": "X",
+        "uses": [
+          {
+            "program": "MATCH",
+            "field": "AL-DECISION",
+            "readBy": [
+              "MARK-PRESENTMENT"
+            ],
+            "decisions": [
+              {
+                "paragraph": "MARK-PRESENTMENT",
+                "source": "laurasia/programs/match.cbl:104",
+                "conditions": [
+                  "AL-DECLINED"
+                ]
+              }
+            ]
+          }
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "AL-APPROVED",
+              "values": [
+                "'A'"
+              ]
+            },
+            {
+              "name": "AL-DECLINED",
+              "values": [
+                "'D'"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "name": "AL-STAND-IN",
+        "kind": "code",
+        "layout": "X",
+        "uses": [
+          {
+            "program": "MATCH",
+            "field": "AL-STAND-IN"
+          }
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "AL-IN-STAND-IN",
+              "values": [
+                "'Y'"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "name": "AL-DATE",
+        "kind": "date",
+        "layout": "9(8)",
+        "uses": [
+          {
+            "program": "MATCH",
+            "field": "AL-DATE"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "record": "CARD-ACCOUNT",
+    "copybook": "cardacct",
+    "programs": [
+      "ACCTLD",
+      "ACCTUL",
+      "CYCLE",
+      "POST"
+    ],
+    "fields": [
+      {
+        "name": "CA-CARD-NO",
+        "kind": "key",
+        "layout": "X(16)",
+        "uses": [
+          {
+            "program": "ACCTLD",
+            "field": "CA-CARD-NO"
+          },
+          {
+            "program": "ACCTUL",
+            "field": "CA-CARD-NO"
+          },
+          {
+            "program": "CYCLE",
+            "field": "CA-CARD-NO",
+            "readBy": [
+              "POST-INTEREST",
+              "WRITE-STATEMENT"
+            ]
+          },
+          {
+            "program": "POST",
+            "field": "CA-CARD-NO",
+            "readBy": [
+              "WRITE-POSTING"
+            ],
+            "writtenBy": [
+              "POST-PRESENTMENT"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "CA-ACCOUNT-NO",
+        "kind": "text",
+        "layout": "X(10)",
+        "uses": [
+          {
+            "program": "ACCTLD",
+            "field": "CA-ACCOUNT-NO"
+          },
+          {
+            "program": "ACCTUL",
+            "field": "CA-ACCOUNT-NO"
+          },
+          {
+            "program": "CYCLE",
+            "field": "CA-ACCOUNT-NO",
+            "readBy": [
+              "POST-INTEREST",
+              "WRITE-STATEMENT"
+            ]
+          },
+          {
+            "program": "POST",
+            "field": "CA-ACCOUNT-NO",
+            "readBy": [
+              "WRITE-POSTING"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "CA-PRODUCT",
+        "kind": "code",
+        "layout": "X(2)",
+        "uses": [
+          {
+            "program": "ACCTLD",
+            "field": "CA-PRODUCT"
+          },
+          {
+            "program": "ACCTUL",
+            "field": "CA-PRODUCT"
+          },
+          {
+            "program": "CYCLE",
+            "field": "CA-PRODUCT",
+            "readBy": [
+              "CLOSE-CYCLE"
+            ],
+            "writtenBy": [
+              "CLOSE-CYCLE"
+            ]
+          },
+          {
+            "program": "POST",
+            "field": "CA-PRODUCT",
+            "readBy": [
+              "CHARGE-OVER-LIMIT"
+            ],
+            "writtenBy": [
+              "CHARGE-OVER-LIMIT"
+            ],
+            "decisions": [
+              {
+                "paragraph": "CHARGE-OVER-LIMIT",
+                "source": "laurasia/programs/post.cbl:131",
+                "conditions": [
+                  "CA-BUSINESS"
+                ]
+              }
+            ]
+          }
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "CA-CLASSIC",
+              "values": [
+                "'CL'"
+              ]
+            },
+            {
+              "name": "CA-GOLD",
+              "values": [
+                "'GD'"
+              ]
+            },
+            {
+              "name": "CA-BUSINESS",
+              "values": [
+                "'BZ'"
+              ]
+            }
+          ],
+          "copies": [
+            {
+              "program": "CYCLE",
+              "from": "intcalc",
+              "paragraph": "CLOSE-CYCLE",
+              "source": "laurasia/programs/cycle.cbl:82"
+            }
+          ]
+        }
+      },
+      {
+        "name": "CA-STATUS",
+        "kind": "code",
+        "layout": "X",
+        "uses": [
+          {
+            "program": "ACCTLD",
+            "field": "CA-STATUS"
+          },
+          {
+            "program": "ACCTUL",
+            "field": "CA-STATUS"
+          },
+          {
+            "program": "CYCLE",
+            "field": "CA-STATUS",
+            "readBy": [
+              "MAIN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "MAIN",
+                "loop": "PERFORM UNTIL ACCOUNTS-AT-END",
+                "source": "laurasia/programs/cycle.cbl:70",
+                "conditions": [
+                  "CA-CYCLE-DAY = WS-RUN-DAY AND NOT CA-CLOSED"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "POST",
+            "field": "CA-STATUS",
+            "readBy": [
+              "POST-PRESENTMENT"
+            ],
+            "decisions": [
+              {
+                "paragraph": "POST-PRESENTMENT",
+                "source": "laurasia/programs/post.cbl:99",
+                "conditions": [
+                  "CA-BLOCKED",
+                  "CA-CLOSED"
+                ]
+              }
+            ]
+          }
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "CA-ACTIVE",
+              "values": [
+                "'A'"
+              ]
+            },
+            {
+              "name": "CA-BLOCKED",
+              "values": [
+                "'B'"
+              ]
+            },
+            {
+              "name": "CA-CLOSED",
+              "values": [
+                "'C'"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "name": "CA-LIMIT",
+        "kind": "amount",
+        "layout": "9(7)V99",
+        "uses": [
+          {
+            "program": "ACCTLD",
+            "field": "CA-LIMIT"
+          },
+          {
+            "program": "ACCTUL",
+            "field": "CA-LIMIT"
+          },
+          {
+            "program": "CYCLE",
+            "field": "CA-LIMIT"
+          },
+          {
+            "program": "POST",
+            "field": "CA-LIMIT",
+            "readBy": [
+              "POST-PRESENTMENT",
+              "CHARGE-OVER-LIMIT"
+            ],
+            "decisions": [
+              {
+                "paragraph": "POST-PRESENTMENT",
+                "source": "laurasia/programs/post.cbl:99",
+                "conditions": [
+                  "CA-BALANCE \u003e CA-LIMIT"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "CA-BALANCE",
+        "kind": "amount",
+        "layout": "S9(7)V99",
+        "uses": [
+          {
+            "program": "ACCTLD",
+            "field": "CA-BALANCE"
+          },
+          {
+            "program": "ACCTUL",
+            "field": "CA-BALANCE"
+          },
+          {
+            "program": "CYCLE",
+            "field": "CA-BALANCE",
+            "readBy": [
+              "CLOSE-CYCLE",
+              "WRITE-STATEMENT"
+            ],
+            "writtenBy": [
+              "CLOSE-CYCLE"
+            ]
+          },
+          {
+            "program": "POST",
+            "field": "CA-BALANCE",
+            "readBy": [
+              "POST-PRESENTMENT",
+              "CHARGE-OVER-LIMIT"
+            ],
+            "writtenBy": [
+              "POST-PRESENTMENT",
+              "CHARGE-OVER-LIMIT"
+            ],
+            "decisions": [
+              {
+                "paragraph": "POST-PRESENTMENT",
+                "source": "laurasia/programs/post.cbl:99",
+                "conditions": [
+                  "CA-BALANCE \u003e CA-LIMIT"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "CA-STATEMENT-BALANCE",
+        "kind": "amount",
+        "layout": "S9(7)V99",
+        "uses": [
+          {
+            "program": "ACCTLD",
+            "field": "CA-STATEMENT-BALANCE"
+          },
+          {
+            "program": "ACCTUL",
+            "field": "CA-STATEMENT-BALANCE"
+          },
+          {
+            "program": "CYCLE",
+            "field": "CA-STATEMENT-BALANCE",
+            "readBy": [
+              "CLOSE-CYCLE",
+              "WRITE-STATEMENT"
+            ],
+            "writtenBy": [
+              "CLOSE-CYCLE"
+            ],
+            "decisions": [
+              {
+                "paragraph": "CLOSE-CYCLE",
+                "source": "laurasia/programs/cycle.cbl:79",
+                "conditions": [
+                  "NOT CA-WAS-PAID-IN-FULL AND CA-STATEMENT-BALANCE \u003e ZERO"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "POST",
+            "field": "CA-STATEMENT-BALANCE"
+          }
+        ]
+      },
+      {
+        "name": "CA-CYCLE-DAY",
+        "kind": "number",
+        "layout": "99",
+        "uses": [
+          {
+            "program": "ACCTLD",
+            "field": "CA-CYCLE-DAY"
+          },
+          {
+            "program": "ACCTUL",
+            "field": "CA-CYCLE-DAY"
+          },
+          {
+            "program": "CYCLE",
+            "field": "CA-CYCLE-DAY",
+            "readBy": [
+              "MAIN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "MAIN",
+                "loop": "PERFORM UNTIL ACCOUNTS-AT-END",
+                "source": "laurasia/programs/cycle.cbl:70",
+                "conditions": [
+                  "CA-CYCLE-DAY = WS-RUN-DAY AND NOT CA-CLOSED"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "POST",
+            "field": "CA-CYCLE-DAY"
+          }
+        ]
+      },
+      {
+        "name": "CA-PAID-IN-FULL",
+        "kind": "code",
+        "layout": "X",
+        "uses": [
+          {
+            "program": "ACCTLD",
+            "field": "CA-PAID-IN-FULL"
+          },
+          {
+            "program": "ACCTUL",
+            "field": "CA-PAID-IN-FULL"
+          },
+          {
+            "program": "CYCLE",
+            "field": "CA-PAID-IN-FULL",
+            "readBy": [
+              "CLOSE-CYCLE"
+            ],
+            "decisions": [
+              {
+                "paragraph": "CLOSE-CYCLE",
+                "source": "laurasia/programs/cycle.cbl:79",
+                "conditions": [
+                  "NOT CA-WAS-PAID-IN-FULL AND CA-STATEMENT-BALANCE \u003e ZERO"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "POST",
+            "field": "CA-PAID-IN-FULL"
+          }
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "CA-WAS-PAID-IN-FULL",
+              "values": [
+                "'Y'"
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "links": [
+      {
+        "kind": "key",
+        "from": {
+          "record": "PRES-RECORD",
+          "field": "PS-CARD-NO"
+        },
+        "to": {
+          "record": "CARD-ACCOUNT",
+          "field": "CA-CARD-NO"
+        },
+        "programs": [
+          "POST"
+        ]
+      }
+    ]
+  },
+  {
+    "record": "CLR-FILE-HEADER",
+    "copybook": "clrrec",
+    "programs": [
+      "CLRIN"
+    ],
+    "fields": [
+      {
+        "name": "CLR-RECORD-TYPE",
+        "kind": "code",
+        "layout": "X(2)",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "CLR-RECORD-TYPE",
+            "readBy": [
+              "MAIN",
+              "TAKE-BATCH",
+              "CHECK-FILE-TRAILER"
+            ],
+            "decisions": [
+              {
+                "paragraph": "MAIN",
+                "source": "laurasia/programs/clrin.cbl:94",
+                "conditions": [
+                  "CLEARING-AT-END OR NOT IS-FILE-HEADER OR FH-FILE-DATE NOT = WS-RUN-DATE"
+                ]
+              },
+              {
+                "paragraph": "TAKE-BATCH",
+                "source": "laurasia/programs/clrin.cbl:124",
+                "conditions": [
+                  "IS-BATCH-HEADER",
+                  "IS-BATCH-TRAILER AND BT-COUNT = WS-BATCH-COUNT AND BT-AMOUNT = WS-BATCH-AMOUNT",
+                  "IS-BATCH-TRAILER"
+                ]
+              },
+              {
+                "paragraph": "CHECK-FILE-TRAILER",
+                "source": "laurasia/programs/clrin.cbl:211",
+                "conditions": [
+                  "NOT IS-FILE-TRAILER OR FT-BATCH-COUNT NOT = WS-BATCHES OR FT-RECORD-COUNT NOT = WS-RECORDS OR FT-AMOUNT NOT = WS-AMOUNT"
+                ]
+              }
+            ]
+          }
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "IS-FILE-HEADER",
+              "values": [
+                "'FH'"
+              ]
+            },
+            {
+              "name": "IS-BATCH-HEADER",
+              "values": [
+                "'BH'"
+              ]
+            },
+            {
+              "name": "IS-PRESENTMENT",
+              "values": [
+                "'PR'"
+              ]
+            },
+            {
+              "name": "IS-BATCH-TRAILER",
+              "values": [
+                "'BT'"
+              ]
+            },
+            {
+              "name": "IS-FILE-TRAILER",
+              "values": [
+                "'FT'"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "name": "FH-NETWORK",
+        "kind": "text",
+        "layout": "X(4)",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "FH-NETWORK"
+          }
+        ]
+      },
+      {
+        "name": "FH-FILE-DATE",
+        "kind": "date",
+        "layout": "9(8)",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "FH-FILE-DATE",
+            "readBy": [
+              "MAIN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "MAIN",
+                "source": "laurasia/programs/clrin.cbl:94",
+                "conditions": [
+                  "CLEARING-AT-END OR NOT IS-FILE-HEADER OR FH-FILE-DATE NOT = WS-RUN-DATE"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "FH-FILE-SEQ",
+        "kind": "number",
+        "layout": "9(4)",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "FH-FILE-SEQ"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "record": "CLR-BATCH-HEADER",
+    "copybook": "clrrec",
+    "programs": [
+      "CLRIN"
+    ],
+    "fields": [
+      {
+        "name": "BH-BATCH-NO",
+        "kind": "number",
+        "layout": "9(6)",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "BH-BATCH-NO",
+            "readBy": [
+              "TAKE-BATCH"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "BH-ACQUIRER",
+        "kind": "text",
+        "layout": "X(6)",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "BH-ACQUIRER"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "record": "CLR-PRESENTMENT",
+    "copybook": "clrrec",
+    "programs": [
+      "CLRIN"
+    ],
+    "fields": [
+      {
+        "name": "PR-CARD-NO",
+        "kind": "text",
+        "layout": "X(16)",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "PR-CARD-NO",
+            "readBy": [
+              "VALIDATE-PRESENTMENT",
+              "RELEASE-BATCH"
+            ],
+            "decisions": [
+              {
+                "paragraph": "VALIDATE-PRESENTMENT",
+                "source": "laurasia/programs/clrin.cbl:159",
+                "conditions": [
+                  "PR-CARD-NO IS NUMERIC"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "PR-AMOUNT",
+        "kind": "amount",
+        "layout": "S9(9)V99",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "PR-AMOUNT",
+            "readBy": [
+              "TAKE-PRESENTMENT",
+              "VALIDATE-PRESENTMENT",
+              "RELEASE-BATCH"
+            ],
+            "decisions": [
+              {
+                "paragraph": "VALIDATE-PRESENTMENT",
+                "source": "laurasia/programs/clrin.cbl:159",
+                "conditions": [
+                  "PR-AMOUNT \u003e ZERO"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "PR-AUTH-CODE",
+        "kind": "text",
+        "layout": "X(6)",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "PR-AUTH-CODE",
+            "readBy": [
+              "RELEASE-BATCH"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "PR-MERCHANT",
+        "kind": "text",
+        "layout": "X(10)",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "PR-MERCHANT",
+            "readBy": [
+              "RELEASE-BATCH"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "PR-MCC",
+        "kind": "number",
+        "layout": "9(4)",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "PR-MCC",
+            "readBy": [
+              "VALIDATE-PRESENTMENT",
+              "RELEASE-BATCH"
+            ],
+            "decisions": [
+              {
+                "paragraph": "VALIDATE-PRESENTMENT",
+                "source": "laurasia/programs/clrin.cbl:159",
+                "conditions": [
+                  "PR-MCC IS NUMERIC"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "PR-REGION",
+        "kind": "text",
+        "layout": "X",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "PR-REGION",
+            "readBy": [
+              "VALIDATE-PRESENTMENT",
+              "RELEASE-BATCH"
+            ],
+            "decisions": [
+              {
+                "paragraph": "VALIDATE-PRESENTMENT",
+                "source": "laurasia/programs/clrin.cbl:159",
+                "conditions": [
+                  "PR-REGION NOT = 'D' AND PR-REGION NOT = 'I'"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "PR-PRODUCT",
+        "kind": "text",
+        "layout": "X(2)",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "PR-PRODUCT",
+            "readBy": [
+              "VALIDATE-PRESENTMENT",
+              "RELEASE-BATCH"
+            ],
+            "decisions": [
+              {
+                "paragraph": "VALIDATE-PRESENTMENT",
+                "source": "laurasia/programs/clrin.cbl:159",
+                "conditions": [
+                  "PR-PRODUCT NOT = 'CL' AND PR-PRODUCT NOT = 'GD' AND PR-PRODUCT NOT = 'BZ'"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "PR-TXN-DATE",
+        "kind": "date",
+        "layout": "9(8)",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "PR-TXN-DATE",
+            "readBy": [
+              "RELEASE-BATCH"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "record": "CLR-BATCH-TRAILER",
+    "copybook": "clrrec",
+    "programs": [
+      "CLRIN"
+    ],
+    "fields": [
+      {
+        "name": "BT-COUNT",
+        "kind": "number",
+        "layout": "9(6)",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "BT-COUNT",
+            "readBy": [
+              "TAKE-BATCH"
+            ],
+            "decisions": [
+              {
+                "paragraph": "TAKE-BATCH",
+                "source": "laurasia/programs/clrin.cbl:124",
+                "conditions": [
+                  "IS-BATCH-TRAILER AND BT-COUNT = WS-BATCH-COUNT AND BT-AMOUNT = WS-BATCH-AMOUNT"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "BT-AMOUNT",
+        "kind": "amount",
+        "layout": "S9(13)V99",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "BT-AMOUNT",
+            "readBy": [
+              "TAKE-BATCH"
+            ],
+            "decisions": [
+              {
+                "paragraph": "TAKE-BATCH",
+                "source": "laurasia/programs/clrin.cbl:124",
+                "conditions": [
+                  "IS-BATCH-TRAILER AND BT-COUNT = WS-BATCH-COUNT AND BT-AMOUNT = WS-BATCH-AMOUNT"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "totals": [
+      {
+        "field": "BT-COUNT",
+        "programs": [
+          "CLRIN"
+        ]
+      }
+    ]
+  },
+  {
+    "record": "CLR-FILE-TRAILER",
+    "copybook": "clrrec",
+    "programs": [
+      "CLRIN"
+    ],
+    "fields": [
+      {
+        "name": "FT-BATCH-COUNT",
+        "kind": "number",
+        "layout": "9(4)",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "FT-BATCH-COUNT",
+            "readBy": [
+              "CHECK-FILE-TRAILER"
+            ],
+            "decisions": [
+              {
+                "paragraph": "CHECK-FILE-TRAILER",
+                "source": "laurasia/programs/clrin.cbl:211",
+                "conditions": [
+                  "NOT IS-FILE-TRAILER OR FT-BATCH-COUNT NOT = WS-BATCHES OR FT-RECORD-COUNT NOT = WS-RECORDS OR FT-AMOUNT NOT = WS-AMOUNT"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "FT-RECORD-COUNT",
+        "kind": "number",
+        "layout": "9(8)",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "FT-RECORD-COUNT",
+            "readBy": [
+              "CHECK-FILE-TRAILER"
+            ],
+            "decisions": [
+              {
+                "paragraph": "CHECK-FILE-TRAILER",
+                "source": "laurasia/programs/clrin.cbl:211",
+                "conditions": [
+                  "NOT IS-FILE-TRAILER OR FT-BATCH-COUNT NOT = WS-BATCHES OR FT-RECORD-COUNT NOT = WS-RECORDS OR FT-AMOUNT NOT = WS-AMOUNT"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "FT-AMOUNT",
+        "kind": "amount",
+        "layout": "S9(15)V99",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "FT-AMOUNT",
+            "readBy": [
+              "CHECK-FILE-TRAILER"
+            ],
+            "decisions": [
+              {
+                "paragraph": "CHECK-FILE-TRAILER",
+                "source": "laurasia/programs/clrin.cbl:211",
+                "conditions": [
+                  "NOT IS-FILE-TRAILER OR FT-BATCH-COUNT NOT = WS-BATCHES OR FT-RECORD-COUNT NOT = WS-RECORDS OR FT-AMOUNT NOT = WS-AMOUNT"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "totals": [
+      {
+        "field": "FT-BATCH-COUNT",
+        "programs": [
+          "CLRIN"
+        ]
+      },
+      {
+        "field": "FT-RECORD-COUNT",
+        "programs": [
+          "CLRIN"
+        ]
+      }
+    ]
+  },
+  {
+    "record": "DISPUTE-CASE",
+    "copybook": "dispcase",
+    "programs": [
+      "DISPUTE"
+    ],
+    "fields": [
+      {
+        "name": "DC-CASE-NO",
+        "kind": "number",
+        "layout": "9(8)",
+        "uses": [
+          {
+            "program": "DISPUTE",
+            "field": "DC-CASE-NO",
+            "readBy": [
+              "READ-MASTER",
+              "APPLY-EVENTS",
+              "WRITE-ADJUSTMENT"
+            ],
+            "writtenBy": [
+              "APPLY-EVENTS",
+              "APPLY-EVENT"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "DC-STATUS",
+        "kind": "code",
+        "layout": "X(2)",
+        "uses": [
+          {
+            "program": "DISPUTE",
+            "field": "DC-STATUS",
+            "readBy": [
+              "APPLY-EVENT"
+            ],
+            "writtenBy": [
+              "APPLY-EVENT"
+            ],
+            "decisions": [
+              {
+                "paragraph": "APPLY-EVENT",
+                "source": "laurasia/programs/dispute.cbl:125",
+                "conditions": [
+                  "HOLDING-CASE AND DC-OPEN AND DE-CHARGEBACK",
+                  "HOLDING-CASE AND DC-CHARGED-BACK AND DE-MERCHANT-ACCEPTS",
+                  "HOLDING-CASE AND DC-CHARGED-BACK AND DE-REPRESENTMENT",
+                  "HOLDING-CASE AND DC-REPRESENTED AND DE-ISSUER-DROPS",
+                  "HOLDING-CASE AND DC-REPRESENTED AND DE-PRE-ARBITRATION",
+                  "HOLDING-CASE AND DC-PRE-ARBITRATION AND DE-RULED-FOR-ISSUER",
+                  "HOLDING-CASE AND DC-PRE-ARBITRATION AND DE-RULED-FOR-MERCHANT"
+                ]
+              }
+            ]
+          }
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "DC-OPEN",
+              "values": [
+                "'OP'"
+              ]
+            },
+            {
+              "name": "DC-CHARGED-BACK",
+              "values": [
+                "'CB'"
+              ]
+            },
+            {
+              "name": "DC-REPRESENTED",
+              "values": [
+                "'RP'"
+              ]
+            },
+            {
+              "name": "DC-PRE-ARBITRATION",
+              "values": [
+                "'PA'"
+              ]
+            },
+            {
+              "name": "DC-WON",
+              "values": [
+                "'WN'"
+              ]
+            },
+            {
+              "name": "DC-LOST",
+              "values": [
+                "'LS'"
+              ]
+            }
+          ],
+          "transitions": [
+            {
+              "from": "any",
+              "to": "DC-OPEN",
+              "program": "DISPUTE",
+              "paragraph": "APPLY-EVENT",
+              "source": "laurasia/programs/dispute.cbl:132",
+              "when": [
+                {
+                  "condition": "HOLDING-NOTHING AND DE-OPENED",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "DC-CHARGED-BACK",
+              "program": "DISPUTE",
+              "paragraph": "APPLY-EVENT",
+              "source": "laurasia/programs/dispute.cbl:135",
+              "when": [
+                {
+                  "condition": "HOLDING-NOTHING AND DE-OPENED",
+                  "holds": false
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "DC-WON",
+              "program": "DISPUTE",
+              "paragraph": "APPLY-EVENT",
+              "source": "laurasia/programs/dispute.cbl:139",
+              "when": [
+                {
+                  "condition": "HOLDING-NOTHING AND DE-OPENED",
+                  "holds": false
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "DC-REPRESENTED",
+              "program": "DISPUTE",
+              "paragraph": "APPLY-EVENT",
+              "source": "laurasia/programs/dispute.cbl:141",
+              "when": [
+                {
+                  "condition": "HOLDING-NOTHING AND DE-OPENED",
+                  "holds": false
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "DC-LOST",
+              "program": "DISPUTE",
+              "paragraph": "APPLY-EVENT",
+              "source": "laurasia/programs/dispute.cbl:145",
+              "when": [
+                {
+                  "condition": "HOLDING-NOTHING AND DE-OPENED",
+                  "holds": false
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "DC-PRE-ARBITRATION",
+              "program": "DISPUTE",
+              "paragraph": "APPLY-EVENT",
+              "source": "laurasia/programs/dispute.cbl:147",
+              "when": [
+                {
+                  "condition": "HOLDING-NOTHING AND DE-OPENED",
+                  "holds": false
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "name": "DC-MERCHANT",
+        "kind": "text",
+        "layout": "X(10)",
+        "uses": [
+          {
+            "program": "DISPUTE",
+            "field": "DC-MERCHANT",
+            "readBy": [
+              "WRITE-ADJUSTMENT"
+            ],
+            "writtenBy": [
+              "APPLY-EVENT"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "DC-AMOUNT",
+        "kind": "amount",
+        "layout": "S9(9)V99",
+        "uses": [
+          {
+            "program": "DISPUTE",
+            "field": "DC-AMOUNT",
+            "readBy": [
+              "APPLY-EVENT"
+            ],
+            "writtenBy": [
+              "APPLY-EVENT"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "DC-OPENED",
+        "kind": "number",
+        "layout": "9(8)",
+        "uses": [
+          {
+            "program": "DISPUTE",
+            "field": "DC-OPENED",
+            "writtenBy": [
+              "APPLY-EVENT"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "DC-UPDATED",
+        "kind": "date",
+        "layout": "9(8)",
+        "uses": [
+          {
+            "program": "DISPUTE",
+            "field": "DC-UPDATED",
+            "writtenBy": [
+              "APPLY-EVENT"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "record": "DISPUTE-EVENT",
+    "copybook": "dispevt",
+    "programs": [
+      "DISPUTE"
+    ],
+    "fields": [
+      {
+        "name": "DE-CASE-NO",
+        "kind": "number",
+        "layout": "9(8)",
+        "uses": [
+          {
+            "program": "DISPUTE",
+            "field": "DE-CASE-NO",
+            "readBy": [
+              "READ-EVENT",
+              "APPLY-EVENT"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "DE-EVENT",
+        "kind": "code",
+        "layout": "X(2)",
+        "uses": [
+          {
+            "program": "DISPUTE",
+            "field": "DE-EVENT",
+            "readBy": [
+              "APPLY-EVENT",
+              "WRITE-ADJUSTMENT"
+            ],
+            "decisions": [
+              {
+                "paragraph": "APPLY-EVENT",
+                "source": "laurasia/programs/dispute.cbl:125",
+                "conditions": [
+                  "HOLDING-NOTHING AND DE-OPENED",
+                  "HOLDING-CASE AND DC-OPEN AND DE-CHARGEBACK",
+                  "HOLDING-CASE AND DC-CHARGED-BACK AND DE-MERCHANT-ACCEPTS",
+                  "HOLDING-CASE AND DC-CHARGED-BACK AND DE-REPRESENTMENT",
+                  "HOLDING-CASE AND DC-REPRESENTED AND DE-ISSUER-DROPS",
+                  "HOLDING-CASE AND DC-REPRESENTED AND DE-PRE-ARBITRATION",
+                  "HOLDING-CASE AND DC-PRE-ARBITRATION AND DE-RULED-FOR-ISSUER",
+                  "HOLDING-CASE AND DC-PRE-ARBITRATION AND DE-RULED-FOR-MERCHANT"
+                ]
+              }
+            ]
+          }
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "DE-OPENED",
+              "values": [
+                "'OP'"
+              ]
+            },
+            {
+              "name": "DE-CHARGEBACK",
+              "values": [
+                "'CB'"
+              ]
+            },
+            {
+              "name": "DE-REPRESENTMENT",
+              "values": [
+                "'RP'"
+              ]
+            },
+            {
+              "name": "DE-PRE-ARBITRATION",
+              "values": [
+                "'PA'"
+              ]
+            },
+            {
+              "name": "DE-MERCHANT-ACCEPTS",
+              "values": [
+                "'AC'"
+              ]
+            },
+            {
+              "name": "DE-ISSUER-DROPS",
+              "values": [
+                "'DR'"
+              ]
+            },
+            {
+              "name": "DE-RULED-FOR-ISSUER",
+              "values": [
+                "'RI'"
+              ]
+            },
+            {
+              "name": "DE-RULED-FOR-MERCHANT",
+              "values": [
+                "'RM'"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "name": "DE-MERCHANT",
+        "kind": "text",
+        "layout": "X(10)",
+        "uses": [
+          {
+            "program": "DISPUTE",
+            "field": "DE-MERCHANT",
+            "readBy": [
+              "APPLY-EVENT"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "DE-AMOUNT",
+        "kind": "amount",
+        "layout": "S9(9)V99",
+        "uses": [
+          {
+            "program": "DISPUTE",
+            "field": "DE-AMOUNT",
+            "readBy": [
+              "APPLY-EVENT"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "DE-DATE",
+        "kind": "date",
+        "layout": "9(8)",
+        "uses": [
+          {
+            "program": "DISPUTE",
+            "field": "DE-DATE",
+            "readBy": [
+              "APPLY-EVENT"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "record": "FEE-DEFINITION",
+    "copybook": "feedef",
+    "programs": [
+      "FEELD"
+    ],
+    "fields": [
+      {
+        "name": "FD-PRODUCT",
+        "kind": "text",
+        "layout": "X(2)",
+        "uses": [
+          {
+            "program": "FEELD",
+            "field": "FD-PRODUCT",
+            "readBy": [
+              "LOAD-FEE"
+            ],
+            "writtenBy": [
+              "LOAD-FEE"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "FD-REGION",
+        "kind": "text",
+        "layout": "X",
+        "uses": [
+          {
+            "program": "FEELD",
+            "field": "FD-REGION",
+            "readBy": [
+              "LOAD-FEE"
+            ],
+            "writtenBy": [
+              "LOAD-FEE"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "FD-GROUP",
+        "kind": "number",
+        "layout": "9",
+        "uses": [
+          {
+            "program": "FEELD",
+            "field": "FD-GROUP",
+            "readBy": [
+              "LOAD-FEE"
+            ],
+            "writtenBy": [
+              "LOAD-FEE"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "FD-RATE",
+        "kind": "amount",
+        "layout": "9V9(4)",
+        "uses": [
+          {
+            "program": "FEELD",
+            "field": "FD-RATE",
+            "readBy": [
+              "LOAD-FEE"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "FD-FIXED",
+        "kind": "number",
+        "layout": "9(5)",
+        "uses": [
+          {
+            "program": "FEELD",
+            "field": "FD-FIXED",
+            "readBy": [
+              "LOAD-FEE"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "record": "FEE-SLOT-RECORD",
+    "copybook": "feerec",
+    "programs": [
+      "FEELD",
+      "IXFEE"
+    ],
+    "fields": [
+      {
+        "name": "FS-RATE",
+        "kind": "amount",
+        "layout": "9V9(4)",
+        "uses": [
+          {
+            "program": "FEELD",
+            "field": "FS-RATE",
+            "writtenBy": [
+              "LOAD-FEE"
+            ]
+          },
+          {
+            "program": "IXFEE",
+            "field": "FS-RATE",
+            "readBy": [
+              "PRICE-PRESENTMENT"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "FS-FIXED-CENTS",
+        "kind": "number",
+        "layout": "9(5) COMP-5",
+        "uses": [
+          {
+            "program": "FEELD",
+            "field": "FS-FIXED-CENTS",
+            "writtenBy": [
+              "LOAD-FEE"
+            ]
+          },
+          {
+            "program": "IXFEE",
+            "field": "FS-FIXED-CENTS",
+            "readBy": [
+              "PRICE-PRESENTMENT"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "record": "POSTING",
+    "copybook": "postrec",
+    "programs": [
+      "CYCLE",
+      "POST"
+    ],
+    "fields": [
+      {
+        "name": "PO-CARD-NO",
+        "kind": "text",
+        "layout": "X(16)",
+        "uses": [
+          {
+            "program": "CYCLE",
+            "field": "PO-CARD-NO",
+            "writtenBy": [
+              "POST-INTEREST"
+            ]
+          },
+          {
+            "program": "POST",
+            "field": "PO-CARD-NO",
+            "writtenBy": [
+              "WRITE-POSTING"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "PO-ACCOUNT-NO",
+        "kind": "text",
+        "layout": "X(10)",
+        "uses": [
+          {
+            "program": "CYCLE",
+            "field": "PO-ACCOUNT-NO",
+            "writtenBy": [
+              "POST-INTEREST"
+            ]
+          },
+          {
+            "program": "POST",
+            "field": "PO-ACCOUNT-NO",
+            "writtenBy": [
+              "WRITE-POSTING"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "PO-KIND",
+        "kind": "code",
+        "layout": "X",
+        "uses": [
+          {
+            "program": "CYCLE",
+            "field": "PO-KIND",
+            "writtenBy": [
+              "POST-INTEREST"
+            ]
+          },
+          {
+            "program": "POST",
+            "field": "PO-KIND",
+            "writtenBy": [
+              "POST-PRESENTMENT",
+              "CHARGE-OVER-LIMIT"
+            ]
+          }
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "PO-PURCHASE",
+              "values": [
+                "'P'"
+              ]
+            },
+            {
+              "name": "PO-OVER-LIMIT-FEE",
+              "values": [
+                "'F'"
+              ]
+            },
+            {
+              "name": "PO-INTEREST",
+              "values": [
+                "'I'"
+              ]
+            }
+          ],
+          "transitions": [
+            {
+              "from": "any",
+              "to": "PO-INTEREST",
+              "program": "CYCLE",
+              "paragraph": "POST-INTEREST",
+              "source": "laurasia/programs/cycle.cbl:100"
+            },
+            {
+              "from": "any",
+              "to": "PO-PURCHASE",
+              "program": "POST",
+              "paragraph": "POST-PRESENTMENT",
+              "source": "laurasia/programs/post.cbl:118",
+              "when": [
+                {
+                  "condition": "READ ACCOUNTS INVALID KEY",
+                  "holds": false
+                },
+                {
+                  "condition": "CA-BLOCKED",
+                  "holds": false
+                },
+                {
+                  "condition": "CA-CLOSED",
+                  "holds": false
+                },
+                {
+                  "condition": "CA-BALANCE \u003e CA-LIMIT",
+                  "holds": true
+                },
+                {
+                  "condition": "REWRITE CARD-ACCOUNT INVALID KEY",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "PO-PURCHASE",
+              "program": "POST",
+              "paragraph": "POST-PRESENTMENT",
+              "source": "laurasia/programs/post.cbl:118",
+              "when": [
+                {
+                  "condition": "READ ACCOUNTS INVALID KEY",
+                  "holds": false
+                },
+                {
+                  "condition": "CA-BLOCKED",
+                  "holds": false
+                },
+                {
+                  "condition": "CA-CLOSED",
+                  "holds": false
+                },
+                {
+                  "condition": "CA-BALANCE \u003e CA-LIMIT",
+                  "holds": true
+                },
+                {
+                  "condition": "REWRITE CARD-ACCOUNT INVALID KEY",
+                  "holds": false
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "PO-PURCHASE",
+              "program": "POST",
+              "paragraph": "POST-PRESENTMENT",
+              "source": "laurasia/programs/post.cbl:118",
+              "when": [
+                {
+                  "condition": "READ ACCOUNTS INVALID KEY",
+                  "holds": false
+                },
+                {
+                  "condition": "CA-BLOCKED",
+                  "holds": false
+                },
+                {
+                  "condition": "CA-CLOSED",
+                  "holds": false
+                },
+                {
+                  "condition": "CA-BALANCE \u003e CA-LIMIT",
+                  "holds": false
+                },
+                {
+                  "condition": "REWRITE CARD-ACCOUNT INVALID KEY",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "PO-PURCHASE",
+              "program": "POST",
+              "paragraph": "POST-PRESENTMENT",
+              "source": "laurasia/programs/post.cbl:118",
+              "when": [
+                {
+                  "condition": "READ ACCOUNTS INVALID KEY",
+                  "holds": false
+                },
+                {
+                  "condition": "CA-BLOCKED",
+                  "holds": false
+                },
+                {
+                  "condition": "CA-CLOSED",
+                  "holds": false
+                },
+                {
+                  "condition": "CA-BALANCE \u003e CA-LIMIT",
+                  "holds": false
+                },
+                {
+                  "condition": "REWRITE CARD-ACCOUNT INVALID KEY",
+                  "holds": false
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "PO-OVER-LIMIT-FEE",
+              "program": "POST",
+              "paragraph": "CHARGE-OVER-LIMIT",
+              "source": "laurasia/programs/post.cbl:142",
+              "when": [
+                {
+                  "condition": "CA-BUSINESS",
+                  "holds": true
+                },
+                {
+                  "condition": "WS-FEE \u003e ZERO",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "PO-OVER-LIMIT-FEE",
+              "program": "POST",
+              "paragraph": "CHARGE-OVER-LIMIT",
+              "source": "laurasia/programs/post.cbl:142",
+              "when": [
+                {
+                  "condition": "CA-BUSINESS",
+                  "holds": false
+                },
+                {
+                  "condition": "WS-FEE \u003e ZERO",
+                  "holds": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "name": "PO-AMOUNT",
+        "kind": "amount",
+        "layout": "S9(7)V99",
+        "uses": [
+          {
+            "program": "CYCLE",
+            "field": "PO-AMOUNT",
+            "writtenBy": [
+              "POST-INTEREST"
+            ]
+          },
+          {
+            "program": "POST",
+            "field": "PO-AMOUNT",
+            "writtenBy": [
+              "POST-PRESENTMENT",
+              "CHARGE-OVER-LIMIT"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "PO-REFERENCE",
+        "kind": "text",
+        "layout": "X(6)",
+        "uses": [
+          {
+            "program": "CYCLE",
+            "field": "PO-REFERENCE",
+            "writtenBy": [
+              "POST-INTEREST"
+            ]
+          },
+          {
+            "program": "POST",
+            "field": "PO-REFERENCE",
+            "writtenBy": [
+              "WRITE-POSTING"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "PO-DATE",
+        "kind": "date",
+        "layout": "9(8)",
+        "uses": [
+          {
+            "program": "CYCLE",
+            "field": "PO-DATE",
+            "writtenBy": [
+              "POST-INTEREST"
+            ]
+          },
+          {
+            "program": "POST",
+            "field": "PO-DATE",
+            "writtenBy": [
+              "WRITE-POSTING"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "record": "PRES-RECORD",
+    "copybook": "presrec",
+    "programs": [
+      "CLRIN",
+      "IXFEE",
+      "MATCH",
+      "POST",
+      "SETTLE"
+    ],
+    "fields": [
+      {
+        "name": "PS-CARD-NO",
+        "kind": "text",
+        "layout": "X(16)",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "PS-CARD-NO",
+            "writtenBy": [
+              "RELEASE-BATCH"
+            ]
+          },
+          {
+            "program": "IXFEE",
+            "field": "PS-CARD-NO"
+          },
+          {
+            "program": "MATCH",
+            "field": "PS-CARD-NO"
+          },
+          {
+            "program": "POST",
+            "field": "PS-CARD-NO",
+            "readBy": [
+              "POST-PRESENTMENT"
+            ]
+          },
+          {
+            "program": "SETTLE",
+            "field": "PS-CARD-NO"
+          }
+        ]
+      },
+      {
+        "name": "PS-AMOUNT",
+        "kind": "amount",
+        "layout": "S9(9)V99",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "PS-AMOUNT",
+            "writtenBy": [
+              "RELEASE-BATCH"
+            ]
+          },
+          {
+            "program": "IXFEE",
+            "field": "PS-AMOUNT",
+            "readBy": [
+              "PRICE-PRESENTMENT"
+            ]
+          },
+          {
+            "program": "MATCH",
+            "field": "PS-AMOUNT",
+            "readBy": [
+              "MARK-PRESENTMENT"
+            ],
+            "decisions": [
+              {
+                "paragraph": "MARK-PRESENTMENT",
+                "source": "laurasia/programs/match.cbl:104",
+                "conditions": [
+                  "PS-AMOUNT \u003e AL-AMOUNT * TOLERANCE"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "POST",
+            "field": "PS-AMOUNT",
+            "readBy": [
+              "POST-PRESENTMENT"
+            ]
+          },
+          {
+            "program": "SETTLE",
+            "field": "PS-AMOUNT",
+            "readBy": [
+              "SETTLE-MERCHANT"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "PS-AUTH-CODE",
+        "kind": "text",
+        "layout": "X(6)",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "PS-AUTH-CODE",
+            "writtenBy": [
+              "RELEASE-BATCH"
+            ]
+          },
+          {
+            "program": "IXFEE",
+            "field": "PS-AUTH-CODE"
+          },
+          {
+            "program": "MATCH",
+            "field": "PS-AUTH-CODE",
+            "readBy": [
+              "READ-PRESENTMENT"
+            ]
+          },
+          {
+            "program": "POST",
+            "field": "PS-AUTH-CODE",
+            "readBy": [
+              "WRITE-POSTING"
+            ]
+          },
+          {
+            "program": "SETTLE",
+            "field": "PS-AUTH-CODE"
+          }
+        ]
+      },
+      {
+        "name": "PS-MERCHANT",
+        "kind": "text",
+        "layout": "X(10)",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "PS-MERCHANT",
+            "writtenBy": [
+              "RELEASE-BATCH"
+            ]
+          },
+          {
+            "program": "IXFEE",
+            "field": "PS-MERCHANT"
+          },
+          {
+            "program": "MATCH",
+            "field": "PS-MERCHANT"
+          },
+          {
+            "program": "POST",
+            "field": "PS-MERCHANT"
+          },
+          {
+            "program": "SETTLE",
+            "field": "PS-MERCHANT",
+            "readBy": [
+              "READ-PRESENTMENT"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "PS-MCC",
+        "kind": "number",
+        "layout": "9(4)",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "PS-MCC",
+            "writtenBy": [
+              "RELEASE-BATCH"
+            ]
+          },
+          {
+            "program": "IXFEE",
+            "field": "PS-MCC",
+            "readBy": [
+              "FIND-GROUP"
+            ],
+            "decisions": [
+              {
+                "paragraph": "FIND-GROUP",
+                "source": "laurasia/programs/ixfee.cbl:105",
+                "conditions": [
+                  "PS-MCC \u003e= 5411 AND PS-MCC \u003c= 5499",
+                  "PS-MCC \u003e= 5811 AND PS-MCC \u003c= 5814",
+                  "(PS-MCC \u003e= 3000 AND PS-MCC \u003c= 3999) OR (PS-MCC \u003e= 4111 AND PS-MCC \u003c= 4789)",
+                  "PS-MCC = 5541 OR PS-MCC = 5542 OR PS-MCC = 5983"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "MATCH",
+            "field": "PS-MCC"
+          },
+          {
+            "program": "POST",
+            "field": "PS-MCC"
+          },
+          {
+            "program": "SETTLE",
+            "field": "PS-MCC"
+          }
+        ]
+      },
+      {
+        "name": "PS-REGION",
+        "kind": "code",
+        "layout": "X",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "PS-REGION",
+            "writtenBy": [
+              "RELEASE-BATCH"
+            ]
+          },
+          {
+            "program": "IXFEE",
+            "field": "PS-REGION",
+            "readBy": [
+              "PRICE-PRESENTMENT"
+            ],
+            "writtenBy": [
+              "PRICE-PRESENTMENT"
+            ]
+          },
+          {
+            "program": "MATCH",
+            "field": "PS-REGION"
+          },
+          {
+            "program": "POST",
+            "field": "PS-REGION"
+          },
+          {
+            "program": "SETTLE",
+            "field": "PS-REGION"
+          }
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "PS-DOMESTIC",
+              "values": [
+                "'D'"
+              ]
+            },
+            {
+              "name": "PS-INTERNATIONAL",
+              "values": [
+                "'I'"
+              ]
+            }
+          ],
+          "copies": [
+            {
+              "program": "CLRIN",
+              "from": "PR-REGION",
+              "paragraph": "RELEASE-BATCH",
+              "source": "laurasia/programs/clrin.cbl:184"
+            },
+            {
+              "program": "IXFEE",
+              "from": "feeslot",
+              "paragraph": "PRICE-PRESENTMENT",
+              "source": "laurasia/programs/ixfee.cbl:92"
+            }
+          ]
+        }
+      },
+      {
+        "name": "PS-PRODUCT",
+        "kind": "code",
+        "layout": "X(2)",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "PS-PRODUCT",
+            "writtenBy": [
+              "RELEASE-BATCH"
+            ]
+          },
+          {
+            "program": "IXFEE",
+            "field": "PS-PRODUCT",
+            "readBy": [
+              "PRICE-PRESENTMENT"
+            ],
+            "writtenBy": [
+              "PRICE-PRESENTMENT"
+            ]
+          },
+          {
+            "program": "MATCH",
+            "field": "PS-PRODUCT"
+          },
+          {
+            "program": "POST",
+            "field": "PS-PRODUCT"
+          },
+          {
+            "program": "SETTLE",
+            "field": "PS-PRODUCT"
+          }
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "PS-CLASSIC",
+              "values": [
+                "'CL'"
+              ]
+            },
+            {
+              "name": "PS-GOLD",
+              "values": [
+                "'GD'"
+              ]
+            },
+            {
+              "name": "PS-BUSINESS",
+              "values": [
+                "'BZ'"
+              ]
+            }
+          ],
+          "copies": [
+            {
+              "program": "CLRIN",
+              "from": "PR-PRODUCT",
+              "paragraph": "RELEASE-BATCH",
+              "source": "laurasia/programs/clrin.cbl:185"
+            },
+            {
+              "program": "IXFEE",
+              "from": "feeslot",
+              "paragraph": "PRICE-PRESENTMENT",
+              "source": "laurasia/programs/ixfee.cbl:92"
+            }
+          ]
+        }
+      },
+      {
+        "name": "PS-TXN-DATE",
+        "kind": "date",
+        "layout": "9(8)",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "PS-TXN-DATE",
+            "writtenBy": [
+              "RELEASE-BATCH"
+            ]
+          },
+          {
+            "program": "IXFEE",
+            "field": "PS-TXN-DATE"
+          },
+          {
+            "program": "MATCH",
+            "field": "PS-TXN-DATE"
+          },
+          {
+            "program": "POST",
+            "field": "PS-TXN-DATE"
+          },
+          {
+            "program": "SETTLE",
+            "field": "PS-TXN-DATE"
+          }
+        ]
+      },
+      {
+        "name": "PS-BATCH-NO",
+        "kind": "number",
+        "layout": "9(6)",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "PS-BATCH-NO",
+            "writtenBy": [
+              "RELEASE-BATCH"
+            ]
+          },
+          {
+            "program": "IXFEE",
+            "field": "PS-BATCH-NO"
+          },
+          {
+            "program": "MATCH",
+            "field": "PS-BATCH-NO"
+          },
+          {
+            "program": "POST",
+            "field": "PS-BATCH-NO"
+          },
+          {
+            "program": "SETTLE",
+            "field": "PS-BATCH-NO"
+          }
+        ]
+      },
+      {
+        "name": "PS-MATCH",
+        "kind": "code",
+        "layout": "X",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "PS-MATCH"
+          },
+          {
+            "program": "IXFEE",
+            "field": "PS-MATCH",
+            "readBy": [
+              "PRICE-PRESENTMENT"
+            ],
+            "decisions": [
+              {
+                "paragraph": "PRICE-PRESENTMENT",
+                "source": "laurasia/programs/ixfee.cbl:88",
+                "conditions": [
+                  "PS-MATCHED"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "MATCH",
+            "field": "PS-MATCH",
+            "readBy": [
+              "WRITE-PRESENTMENT"
+            ],
+            "writtenBy": [
+              "MATCH-NEXT",
+              "MARK-PRESENTMENT"
+            ],
+            "decisions": [
+              {
+                "paragraph": "WRITE-PRESENTMENT",
+                "source": "laurasia/programs/match.cbl:114",
+                "conditions": [
+                  "PS-MATCHED"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "POST",
+            "field": "PS-MATCH",
+            "readBy": [
+              "MAIN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "MAIN",
+                "loop": "PERFORM UNTIL PRESENTMENTS-AT-END",
+                "source": "laurasia/programs/post.cbl:83",
+                "conditions": [
+                  "PS-MATCHED"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "SETTLE",
+            "field": "PS-MATCH",
+            "readBy": [
+              "SETTLE-MERCHANT"
+            ],
+            "decisions": [
+              {
+                "paragraph": "SETTLE-MERCHANT",
+                "loop": "PERFORM UNTIL WS-PRES-KEY NOT = WS-MERCHANT",
+                "source": "laurasia/programs/settle.cbl:106",
+                "conditions": [
+                  "PS-MATCHED"
+                ]
+              }
+            ]
+          }
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "PS-UNMATCHED",
+              "values": [
+                "' '"
+              ]
+            },
+            {
+              "name": "PS-MATCHED",
+              "values": [
+                "'M'"
+              ]
+            },
+            {
+              "name": "PS-DECLINED",
+              "values": [
+                "'D'"
+              ]
+            },
+            {
+              "name": "PS-NO-AUTH",
+              "values": [
+                "'U'"
+              ]
+            },
+            {
+              "name": "PS-OVER-AUTH",
+              "values": [
+                "'X'"
+              ]
+            }
+          ],
+          "transitions": [
+            {
+              "from": "any",
+              "to": "PS-NO-AUTH",
+              "program": "MATCH",
+              "paragraph": "MATCH-NEXT",
+              "source": "laurasia/programs/match.cbl:89",
+              "when": [
+                {
+                  "condition": "WS-PRES-KEY \u003c WS-AUTH-KEY",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "PS-DECLINED",
+              "program": "MATCH",
+              "paragraph": "MARK-PRESENTMENT",
+              "source": "laurasia/programs/match.cbl:107",
+              "when": [
+                {
+                  "condition": "AL-DECLINED",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "PS-OVER-AUTH",
+              "program": "MATCH",
+              "paragraph": "MARK-PRESENTMENT",
+              "source": "laurasia/programs/match.cbl:109",
+              "when": [
+                {
+                  "condition": "AL-DECLINED",
+                  "holds": false
+                },
+                {
+                  "condition": "PS-AMOUNT \u003e AL-AMOUNT * TOLERANCE",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "PS-MATCHED",
+              "program": "MATCH",
+              "paragraph": "MARK-PRESENTMENT",
+              "source": "laurasia/programs/match.cbl:111",
+              "when": [
+                {
+                  "condition": "AL-DECLINED",
+                  "holds": false
+                },
+                {
+                  "condition": "PS-AMOUNT \u003e AL-AMOUNT * TOLERANCE",
+                  "holds": false
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "name": "PS-FEE",
+        "kind": "amount",
+        "layout": "S9(7)V99",
+        "uses": [
+          {
+            "program": "CLRIN",
+            "field": "PS-FEE",
+            "writtenBy": [
+              "RELEASE-BATCH"
+            ]
+          },
+          {
+            "program": "IXFEE",
+            "field": "PS-FEE",
+            "readBy": [
+              "PRICE-PRESENTMENT"
+            ],
+            "writtenBy": [
+              "PRICE-PRESENTMENT"
+            ]
+          },
+          {
+            "program": "MATCH",
+            "field": "PS-FEE"
+          },
+          {
+            "program": "POST",
+            "field": "PS-FEE"
+          },
+          {
+            "program": "SETTLE",
+            "field": "PS-FEE",
+            "readBy": [
+              "SETTLE-MERCHANT"
+            ]
+          }
+        ]
+      }
+    ],
+    "links": [
+      {
+        "kind": "key",
+        "from": {
+          "record": "PRES-RECORD",
+          "field": "PS-CARD-NO"
+        },
+        "to": {
+          "record": "CARD-ACCOUNT",
+          "field": "CA-CARD-NO"
+        },
+        "programs": [
+          "POST"
+        ]
+      }
+    ]
+  }
+]

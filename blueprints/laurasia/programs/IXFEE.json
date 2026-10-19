@@ -1,0 +1,1325 @@
+{
+  "program": "IXFEE",
+  "kind": "main",
+  "source": "laurasia/programs/ixfee.cbl",
+  "description": [
+    "ixfee: work out each presentment's interchange fee",
+    "",
+    "for each matched presentment, finds the merchant group by the",
+    "merchant's category code, and the fee for the card product, the region",
+    "and the group in the fee table: a rate on the amount and a fixed fee.",
+    "a combination the schedule has no fee for gets the default fee. a",
+    "presentment not matched to an approval pays no fee here; it is not",
+    "settled.",
+    "",
+    "return codes: 0 done, 4 some default fees, 16 no fee table.",
+    "",
+    "history",
+    "2012-01-09 ah  lcs-0140 original version.",
+    "2017-08-28 ah  lcs-0398 travel and fuel as merchant groups of their own."
+  ],
+  "files": [
+    {
+      "name": "PRES-IN",
+      "kind": "FD",
+      "assign": "PRESIN",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "INPUT"
+      ],
+      "records": [
+        "PRES-IN-RECORD"
+      ],
+      "source": "laurasia/programs/ixfee.cbl:22"
+    },
+    {
+      "name": "FEE-TABLE",
+      "kind": "FD",
+      "assign": "FEETAB",
+      "organization": "RELATIVE",
+      "access": "RANDOM",
+      "relativeKey": "WS-SLOT",
+      "status": "WS-FEE-STATUS",
+      "opened": [
+        "INPUT"
+      ],
+      "records": [
+        "FEE-SLOT-RECORD"
+      ],
+      "source": "laurasia/programs/ixfee.cbl:24"
+    },
+    {
+      "name": "PRES-OUT",
+      "kind": "FD",
+      "assign": "PRESOUT",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "PRES-RECORD"
+      ],
+      "source": "laurasia/programs/ixfee.cbl:29"
+    },
+    {
+      "name": "REPORT-OUT",
+      "kind": "FD",
+      "assign": "FEERPT",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "REPORT-LINE"
+      ],
+      "source": "laurasia/programs/ixfee.cbl:31"
+    }
+  ],
+  "constants": [
+    {
+      "name": "DEFAULT-RATE",
+      "value": "0.0200",
+      "source": "laurasia/programs/ixfee.cbl:46"
+    },
+    {
+      "name": "DEFAULT-FIXED-CENTS",
+      "value": "25",
+      "source": "laurasia/programs/ixfee.cbl:47"
+    }
+  ],
+  "records": [
+    {
+      "section": "file",
+      "file": "PRES-IN",
+      "level": 1,
+      "name": "PRES-IN-RECORD",
+      "start": 1,
+      "length": 76,
+      "picture": "X(76)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/ixfee.cbl:37"
+    },
+    {
+      "section": "file",
+      "file": "FEE-TABLE",
+      "copybook": "feerec",
+      "level": 1,
+      "name": "FEE-SLOT-RECORD",
+      "start": 1,
+      "length": 8,
+      "category": "group",
+      "kind": "group",
+      "description": "feerec: an interchange fee in the fee table, a relative file whose slot is worked out from the card product, the region and the merchant group. history 2012-01-09 ah  lcs-0140 original version.",
+      "source": "laurasia/copybooks/feerec.cpy:7",
+      "fields": [
+        {
+          "level": 5,
+          "name": "FS-RATE",
+          "start": 1,
+          "length": 5,
+          "picture": "9V9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 5,
+          "scale": 4,
+          "source": "laurasia/copybooks/feerec.cpy:8"
+        },
+        {
+          "level": 5,
+          "name": "FS-FIXED-CENTS",
+          "start": 6,
+          "length": 3,
+          "picture": "9(5)",
+          "usage": "COMP-5",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 5,
+          "source": "laurasia/copybooks/feerec.cpy:9"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "PRES-OUT",
+      "copybook": "presrec",
+      "level": 1,
+      "name": "PRES-RECORD",
+      "start": 1,
+      "length": 76,
+      "category": "group",
+      "kind": "group",
+      "description": "presrec: a presentment on its way through the night, a record a line. clrin fills in where it came from, match its authorization's outcome, ixfee the interchange fee. history 2011-04-04 rk  lcs-0102 original version. 2014-02-17 rk  lcs-0251 match status and interchange fee.",
+      "source": "laurasia/copybooks/presrec.cpy:9",
+      "fields": [
+        {
+          "level": 5,
+          "name": "PS-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "picture": "X(16)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/presrec.cpy:10"
+        },
+        {
+          "level": 5,
+          "name": "PS-AMOUNT",
+          "start": 17,
+          "length": 12,
+          "picture": "S9(9)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 11,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/presrec.cpy:11"
+        },
+        {
+          "level": 5,
+          "name": "PS-AUTH-CODE",
+          "start": 29,
+          "length": 6,
+          "picture": "X(6)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/presrec.cpy:12"
+        },
+        {
+          "level": 5,
+          "name": "PS-MERCHANT",
+          "start": 35,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/presrec.cpy:13"
+        },
+        {
+          "level": 5,
+          "name": "PS-MCC",
+          "start": 45,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 4,
+          "source": "laurasia/copybooks/presrec.cpy:14"
+        },
+        {
+          "level": 5,
+          "name": "PS-REGION",
+          "start": 49,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PS-DOMESTIC",
+              "values": [
+                "'D'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:16"
+            },
+            {
+              "name": "PS-INTERNATIONAL",
+              "values": [
+                "'I'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:17"
+            }
+          ],
+          "source": "laurasia/copybooks/presrec.cpy:15"
+        },
+        {
+          "level": 5,
+          "name": "PS-PRODUCT",
+          "start": 50,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PS-CLASSIC",
+              "values": [
+                "'CL'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:19"
+            },
+            {
+              "name": "PS-GOLD",
+              "values": [
+                "'GD'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:20"
+            },
+            {
+              "name": "PS-BUSINESS",
+              "values": [
+                "'BZ'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:21"
+            }
+          ],
+          "source": "laurasia/copybooks/presrec.cpy:18"
+        },
+        {
+          "level": 5,
+          "name": "PS-TXN-DATE",
+          "start": 52,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "date",
+          "digits": 8,
+          "source": "laurasia/copybooks/presrec.cpy:22"
+        },
+        {
+          "level": 5,
+          "name": "PS-BATCH-NO",
+          "start": 60,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 6,
+          "source": "laurasia/copybooks/presrec.cpy:23"
+        },
+        {
+          "level": 5,
+          "name": "PS-MATCH",
+          "start": 66,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PS-UNMATCHED",
+              "values": [
+                "' '"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:25"
+            },
+            {
+              "name": "PS-MATCHED",
+              "values": [
+                "'M'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:26"
+            },
+            {
+              "name": "PS-DECLINED",
+              "values": [
+                "'D'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:27"
+            },
+            {
+              "name": "PS-NO-AUTH",
+              "values": [
+                "'U'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:28"
+            },
+            {
+              "name": "PS-OVER-AUTH",
+              "values": [
+                "'X'"
+              ],
+              "source": "laurasia/copybooks/presrec.cpy:29"
+            }
+          ],
+          "source": "laurasia/copybooks/presrec.cpy:24"
+        },
+        {
+          "level": 5,
+          "name": "PS-FEE",
+          "start": 67,
+          "length": 10,
+          "picture": "S9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/presrec.cpy:30"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "REPORT-OUT",
+      "level": 1,
+      "name": "REPORT-LINE",
+      "start": 1,
+      "length": 60,
+      "picture": "X(60)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/ixfee.cbl:43"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-SLOT",
+      "start": 1,
+      "length": 2,
+      "picture": "9(4)",
+      "usage": "COMP-5",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 4,
+      "source": "laurasia/programs/ixfee.cbl:48"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-FEE-STATUS",
+      "start": 1,
+      "length": 2,
+      "picture": "XX",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/ixfee.cbl:49"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-GROUP",
+      "start": 1,
+      "length": 1,
+      "picture": "9",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "code",
+      "digits": 1,
+      "conditions": [
+        {
+          "name": "GROUP-GROCERY",
+          "values": [
+            "1"
+          ],
+          "source": "laurasia/programs/ixfee.cbl:51"
+        },
+        {
+          "name": "GROUP-RESTAURANTS",
+          "values": [
+            "2"
+          ],
+          "source": "laurasia/programs/ixfee.cbl:52"
+        },
+        {
+          "name": "GROUP-TRAVEL",
+          "values": [
+            "3"
+          ],
+          "source": "laurasia/programs/ixfee.cbl:53"
+        },
+        {
+          "name": "GROUP-FUEL",
+          "values": [
+            "4"
+          ],
+          "source": "laurasia/programs/ixfee.cbl:54"
+        },
+        {
+          "name": "GROUP-OTHER",
+          "values": [
+            "5"
+          ],
+          "source": "laurasia/programs/ixfee.cbl:55"
+        }
+      ],
+      "source": "laurasia/programs/ixfee.cbl:50"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-AT-END",
+      "start": 1,
+      "length": 1,
+      "picture": "X",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "code",
+      "values": [
+        "'N'"
+      ],
+      "conditions": [
+        {
+          "name": "PRESENTMENTS-AT-END",
+          "values": [
+            "'Y'"
+          ],
+          "source": "laurasia/programs/ixfee.cbl:57"
+        }
+      ],
+      "source": "laurasia/programs/ixfee.cbl:56"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-TOTALS",
+      "start": 1,
+      "length": 19,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/ixfee.cbl:58",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-FEES",
+          "start": 1,
+          "length": 11,
+          "picture": "S9(9)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 11,
+          "scale": 2,
+          "signed": true,
+          "values": [
+            "ZERO"
+          ],
+          "source": "laurasia/programs/ixfee.cbl:59"
+        },
+        {
+          "level": 5,
+          "name": "WS-DEFAULT-COUNT",
+          "start": 12,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 8,
+          "values": [
+            "ZERO"
+          ],
+          "source": "laurasia/programs/ixfee.cbl:60"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REPORT-AMOUNT",
+      "start": 1,
+      "length": 43,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/ixfee.cbl:61",
+      "fields": [
+        {
+          "level": 5,
+          "name": "RA-LABEL",
+          "start": 1,
+          "length": 30,
+          "picture": "X(30)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/ixfee.cbl:62"
+        },
+        {
+          "level": 5,
+          "name": "RA-VALUE",
+          "start": 31,
+          "length": 13,
+          "picture": "-(9)9.99",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "kind": "edited",
+          "source": "laurasia/programs/ixfee.cbl:63"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REPORT-COUNT",
+      "start": 1,
+      "length": 38,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/ixfee.cbl:64",
+      "fields": [
+        {
+          "level": 5,
+          "name": "RC-LABEL",
+          "start": 1,
+          "length": 30,
+          "picture": "X(30)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/ixfee.cbl:65"
+        },
+        {
+          "level": 5,
+          "name": "RC-VALUE",
+          "start": 31,
+          "length": 8,
+          "picture": "Z(7)9",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "kind": "edited",
+          "source": "laurasia/programs/ixfee.cbl:66"
+        }
+      ]
+    }
+  ],
+  "paragraphs": [
+    {
+      "name": "MAIN",
+      "section": "MAIN",
+      "source": "laurasia/programs/ixfee.cbl:69",
+      "performs": [
+        {
+          "target": "PRICE-PRESENTMENT",
+          "source": "laurasia/programs/ixfee.cbl:78"
+        },
+        {
+          "target": "WRITE-REPORT",
+          "source": "laurasia/programs/ixfee.cbl:81"
+        }
+      ],
+      "reads": [
+        "WS-FEE-STATUS",
+        "WS-AT-END",
+        "WS-DEFAULT-COUNT"
+      ],
+      "writes": [
+        "RETURN-CODE",
+        "PRES-RECORD",
+        "PRES-IN-RECORD",
+        "WS-AT-END"
+      ]
+    },
+    {
+      "name": "PRICE-PRESENTMENT",
+      "section": "PRICE-PRESENTMENT",
+      "source": "laurasia/programs/ixfee.cbl:88",
+      "performs": [
+        {
+          "target": "FIND-GROUP",
+          "source": "laurasia/programs/ixfee.cbl:91"
+        }
+      ],
+      "performedBy": [
+        "MAIN"
+      ],
+      "reads": [
+        "PS-MATCH",
+        "PS-PRODUCT",
+        "PS-REGION",
+        "WS-GROUP",
+        "RETURNING",
+        "WS-SLOT",
+        "WS-DEFAULT-COUNT",
+        "PS-AMOUNT",
+        "DEFAULT-RATE",
+        "DEFAULT-FIXED-CENTS",
+        "FS-RATE",
+        "FS-FIXED-CENTS",
+        "PS-FEE",
+        "WS-FEES"
+      ],
+      "writes": [
+        "PS-FEE",
+        "PS-PRODUCT",
+        "PS-REGION",
+        "WS-GROUP",
+        "RETURNING",
+        "WS-SLOT",
+        "FEE-SLOT-RECORD",
+        "WS-DEFAULT-COUNT",
+        "WS-FEES",
+        "PRES-RECORD"
+      ]
+    },
+    {
+      "name": "FIND-GROUP",
+      "section": "FIND-GROUP",
+      "description": "the merchant group by the merchant category code.",
+      "source": "laurasia/programs/ixfee.cbl:105",
+      "performedBy": [
+        "PRICE-PRESENTMENT"
+      ],
+      "reads": [
+        "PS-MCC"
+      ],
+      "writes": [
+        "WS-GROUP"
+      ]
+    },
+    {
+      "name": "WRITE-REPORT",
+      "section": "WRITE-REPORT",
+      "source": "laurasia/programs/ixfee.cbl:122",
+      "performedBy": [
+        "MAIN"
+      ],
+      "reads": [
+        "WS-FEES",
+        "WS-REPORT-AMOUNT",
+        "WS-DEFAULT-COUNT",
+        "WS-REPORT-COUNT"
+      ],
+      "writes": [
+        "REPORT-LINE",
+        "RA-LABEL",
+        "RA-VALUE",
+        "RC-LABEL",
+        "RC-VALUE"
+      ]
+    }
+  ],
+  "calls": [
+    {
+      "program": "feeslot",
+      "using": [
+        "PS-PRODUCT",
+        "PS-REGION",
+        "WS-GROUP",
+        "RETURNING",
+        "WS-SLOT"
+      ],
+      "external": true,
+      "paragraph": "PRICE-PRESENTMENT",
+      "source": "laurasia/programs/ixfee.cbl:92"
+    }
+  ],
+  "lineage": [
+    {
+      "from": "PRES-IN",
+      "to": "PRES-IN-RECORD",
+      "fromFile": true,
+      "paragraph": "MAIN",
+      "verb": "READ",
+      "source": "laurasia/programs/ixfee.cbl:76"
+    },
+    {
+      "from": "PRES-IN-RECORD",
+      "to": "PRES-RECORD",
+      "paragraph": "MAIN",
+      "verb": "READ",
+      "source": "laurasia/programs/ixfee.cbl:76"
+    },
+    {
+      "from": "condition PRESENTMENTS-AT-END",
+      "to": "WS-AT-END",
+      "fromLiteral": true,
+      "paragraph": "MAIN",
+      "verb": "SET",
+      "source": "laurasia/programs/ixfee.cbl:77"
+    },
+    {
+      "from": "ZERO",
+      "to": "PS-FEE",
+      "fromLiteral": true,
+      "paragraph": "PRICE-PRESENTMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/ixfee.cbl:89"
+    },
+    {
+      "from": "PS-PRODUCT",
+      "to": "feeslot",
+      "toCall": true,
+      "arg": 1,
+      "paragraph": "PRICE-PRESENTMENT",
+      "verb": "CALL",
+      "source": "laurasia/programs/ixfee.cbl:92"
+    },
+    {
+      "from": "feeslot",
+      "to": "PS-PRODUCT",
+      "fromCall": true,
+      "arg": 1,
+      "paragraph": "PRICE-PRESENTMENT",
+      "verb": "CALL",
+      "source": "laurasia/programs/ixfee.cbl:92"
+    },
+    {
+      "from": "PS-REGION",
+      "to": "feeslot",
+      "toCall": true,
+      "arg": 2,
+      "paragraph": "PRICE-PRESENTMENT",
+      "verb": "CALL",
+      "source": "laurasia/programs/ixfee.cbl:92"
+    },
+    {
+      "from": "feeslot",
+      "to": "PS-REGION",
+      "fromCall": true,
+      "arg": 2,
+      "paragraph": "PRICE-PRESENTMENT",
+      "verb": "CALL",
+      "source": "laurasia/programs/ixfee.cbl:92"
+    },
+    {
+      "from": "WS-GROUP",
+      "to": "feeslot",
+      "toCall": true,
+      "arg": 3,
+      "paragraph": "PRICE-PRESENTMENT",
+      "verb": "CALL",
+      "source": "laurasia/programs/ixfee.cbl:92"
+    },
+    {
+      "from": "feeslot",
+      "to": "WS-GROUP",
+      "fromCall": true,
+      "arg": 3,
+      "paragraph": "PRICE-PRESENTMENT",
+      "verb": "CALL",
+      "source": "laurasia/programs/ixfee.cbl:92"
+    },
+    {
+      "from": "RETURNING",
+      "to": "feeslot",
+      "toCall": true,
+      "arg": 4,
+      "paragraph": "PRICE-PRESENTMENT",
+      "verb": "CALL",
+      "source": "laurasia/programs/ixfee.cbl:92"
+    },
+    {
+      "from": "feeslot",
+      "to": "RETURNING",
+      "fromCall": true,
+      "arg": 4,
+      "paragraph": "PRICE-PRESENTMENT",
+      "verb": "CALL",
+      "source": "laurasia/programs/ixfee.cbl:92"
+    },
+    {
+      "from": "WS-SLOT",
+      "to": "feeslot",
+      "toCall": true,
+      "arg": 5,
+      "paragraph": "PRICE-PRESENTMENT",
+      "verb": "CALL",
+      "source": "laurasia/programs/ixfee.cbl:92"
+    },
+    {
+      "from": "feeslot",
+      "to": "WS-SLOT",
+      "fromCall": true,
+      "arg": 5,
+      "paragraph": "PRICE-PRESENTMENT",
+      "verb": "CALL",
+      "source": "laurasia/programs/ixfee.cbl:92"
+    },
+    {
+      "from": "FEE-TABLE",
+      "to": "FEE-SLOT-RECORD",
+      "fromFile": true,
+      "paragraph": "PRICE-PRESENTMENT",
+      "verb": "READ",
+      "source": "laurasia/programs/ixfee.cbl:93"
+    },
+    {
+      "from": "1",
+      "to": "WS-DEFAULT-COUNT",
+      "fromLiteral": true,
+      "paragraph": "PRICE-PRESENTMENT",
+      "verb": "ADD",
+      "source": "laurasia/programs/ixfee.cbl:95"
+    },
+    {
+      "from": "PS-AMOUNT",
+      "to": "PS-FEE",
+      "paragraph": "PRICE-PRESENTMENT",
+      "verb": "COMPUTE",
+      "source": "laurasia/programs/ixfee.cbl:96"
+    },
+    {
+      "from": "DEFAULT-RATE",
+      "to": "PS-FEE",
+      "paragraph": "PRICE-PRESENTMENT",
+      "verb": "COMPUTE",
+      "source": "laurasia/programs/ixfee.cbl:96"
+    },
+    {
+      "from": "DEFAULT-FIXED-CENTS",
+      "to": "PS-FEE",
+      "paragraph": "PRICE-PRESENTMENT",
+      "verb": "COMPUTE",
+      "source": "laurasia/programs/ixfee.cbl:96"
+    },
+    {
+      "from": "PS-AMOUNT",
+      "to": "PS-FEE",
+      "paragraph": "PRICE-PRESENTMENT",
+      "verb": "COMPUTE",
+      "source": "laurasia/programs/ixfee.cbl:98"
+    },
+    {
+      "from": "FS-RATE",
+      "to": "PS-FEE",
+      "paragraph": "PRICE-PRESENTMENT",
+      "verb": "COMPUTE",
+      "source": "laurasia/programs/ixfee.cbl:98"
+    },
+    {
+      "from": "FS-FIXED-CENTS",
+      "to": "PS-FEE",
+      "paragraph": "PRICE-PRESENTMENT",
+      "verb": "COMPUTE",
+      "source": "laurasia/programs/ixfee.cbl:98"
+    },
+    {
+      "from": "PS-FEE",
+      "to": "WS-FEES",
+      "paragraph": "PRICE-PRESENTMENT",
+      "verb": "ADD",
+      "source": "laurasia/programs/ixfee.cbl:100"
+    },
+    {
+      "from": "PRES-RECORD",
+      "to": "PRES-OUT",
+      "toFile": true,
+      "paragraph": "PRICE-PRESENTMENT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/ixfee.cbl:102"
+    },
+    {
+      "from": "condition GROUP-GROCERY",
+      "to": "WS-GROUP",
+      "fromLiteral": true,
+      "paragraph": "FIND-GROUP",
+      "verb": "SET",
+      "source": "laurasia/programs/ixfee.cbl:108"
+    },
+    {
+      "from": "condition GROUP-RESTAURANTS",
+      "to": "WS-GROUP",
+      "fromLiteral": true,
+      "paragraph": "FIND-GROUP",
+      "verb": "SET",
+      "source": "laurasia/programs/ixfee.cbl:110"
+    },
+    {
+      "from": "condition GROUP-TRAVEL",
+      "to": "WS-GROUP",
+      "fromLiteral": true,
+      "paragraph": "FIND-GROUP",
+      "verb": "SET",
+      "source": "laurasia/programs/ixfee.cbl:113"
+    },
+    {
+      "from": "condition GROUP-FUEL",
+      "to": "WS-GROUP",
+      "fromLiteral": true,
+      "paragraph": "FIND-GROUP",
+      "verb": "SET",
+      "source": "laurasia/programs/ixfee.cbl:117"
+    },
+    {
+      "from": "condition GROUP-OTHER",
+      "to": "WS-GROUP",
+      "fromLiteral": true,
+      "paragraph": "FIND-GROUP",
+      "verb": "SET",
+      "source": "laurasia/programs/ixfee.cbl:119"
+    },
+    {
+      "from": "'IXFEE    INTERCHANGE'",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/ixfee.cbl:123"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/ixfee.cbl:124"
+    },
+    {
+      "from": "'INTERCHANGE FEES'",
+      "to": "RA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/ixfee.cbl:125"
+    },
+    {
+      "from": "WS-FEES",
+      "to": "RA-VALUE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/ixfee.cbl:126"
+    },
+    {
+      "from": "WS-REPORT-AMOUNT",
+      "to": "REPORT-LINE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/ixfee.cbl:127"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/ixfee.cbl:127"
+    },
+    {
+      "from": "'DEFAULT FEES'",
+      "to": "RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/ixfee.cbl:128"
+    },
+    {
+      "from": "WS-DEFAULT-COUNT",
+      "to": "RC-VALUE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/ixfee.cbl:129"
+    },
+    {
+      "from": "WS-REPORT-COUNT",
+      "to": "REPORT-LINE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/ixfee.cbl:130"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/ixfee.cbl:130"
+    }
+  ],
+  "outputs": [
+    {
+      "file": "PRES-OUT",
+      "record": "PRES-RECORD",
+      "fields": [
+        {
+          "name": "PS-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "origins": [
+            "file PRES-IN PRES-IN-RECORD"
+          ]
+        },
+        {
+          "name": "PS-AMOUNT",
+          "start": 17,
+          "length": 12,
+          "origins": [
+            "file PRES-IN PRES-IN-RECORD"
+          ]
+        },
+        {
+          "name": "PS-AUTH-CODE",
+          "start": 29,
+          "length": 6,
+          "origins": [
+            "file PRES-IN PRES-IN-RECORD"
+          ]
+        },
+        {
+          "name": "PS-MERCHANT",
+          "start": 35,
+          "length": 10,
+          "origins": [
+            "file PRES-IN PRES-IN-RECORD"
+          ]
+        },
+        {
+          "name": "PS-MCC",
+          "start": 45,
+          "length": 4,
+          "origins": [
+            "file PRES-IN PRES-IN-RECORD"
+          ]
+        },
+        {
+          "name": "PS-REGION",
+          "start": 49,
+          "length": 1,
+          "origins": [
+            "call feeslot argument 2 PS-REGION",
+            "file PRES-IN PRES-IN-RECORD"
+          ]
+        },
+        {
+          "name": "PS-PRODUCT",
+          "start": 50,
+          "length": 2,
+          "origins": [
+            "call feeslot argument 1 PS-PRODUCT",
+            "file PRES-IN PRES-IN-RECORD"
+          ]
+        },
+        {
+          "name": "PS-TXN-DATE",
+          "start": 52,
+          "length": 8,
+          "origins": [
+            "file PRES-IN PRES-IN-RECORD"
+          ]
+        },
+        {
+          "name": "PS-BATCH-NO",
+          "start": 60,
+          "length": 6,
+          "origins": [
+            "file PRES-IN PRES-IN-RECORD"
+          ]
+        },
+        {
+          "name": "PS-MATCH",
+          "start": 66,
+          "length": 1,
+          "origins": [
+            "file PRES-IN PRES-IN-RECORD"
+          ]
+        },
+        {
+          "name": "PS-FEE",
+          "start": 67,
+          "length": 10,
+          "origins": [
+            "file FEE-TABLE FS-FIXED-CENTS",
+            "file FEE-TABLE FS-RATE",
+            "file PRES-IN PRES-IN-RECORD",
+            "literal ZERO"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "REPORT-OUT",
+      "record": "REPORT-LINE",
+      "fields": [
+        {
+          "name": "REPORT-LINE",
+          "start": 1,
+          "length": 60,
+          "origins": [
+            "literal 'IXFEE    INTERCHANGE'"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "REPORT-OUT",
+      "record": "WS-REPORT-AMOUNT",
+      "fields": [
+        {
+          "name": "RA-LABEL",
+          "start": 1,
+          "length": 30,
+          "origins": [
+            "literal 'INTERCHANGE FEES'"
+          ]
+        },
+        {
+          "name": "RA-VALUE",
+          "start": 31,
+          "length": 13,
+          "origins": [
+            "file FEE-TABLE FS-FIXED-CENTS",
+            "file FEE-TABLE FS-RATE",
+            "file PRES-IN PRES-IN-RECORD",
+            "initial value of WS-FEES"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "REPORT-OUT",
+      "record": "WS-REPORT-COUNT",
+      "fields": [
+        {
+          "name": "RC-LABEL",
+          "start": 1,
+          "length": 30,
+          "origins": [
+            "literal 'DEFAULT FEES'"
+          ]
+        },
+        {
+          "name": "RC-VALUE",
+          "start": 31,
+          "length": 8,
+          "origins": [
+            "initial value of WS-DEFAULT-COUNT",
+            "literal 1"
+          ]
+        }
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "file": "PRES-IN",
+      "record": "PRES-RECORD",
+      "fields": [
+        {
+          "name": "PS-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "reaches": [
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "PS-AMOUNT",
+          "start": 17,
+          "length": 12,
+          "reaches": [
+            "PS-FEE",
+            "WS-FEES",
+            "RA-VALUE",
+            "REPORT-LINE",
+            "file PRES-OUT",
+            "file REPORT-OUT"
+          ]
+        },
+        {
+          "name": "PS-AUTH-CODE",
+          "start": 29,
+          "length": 6,
+          "reaches": [
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "PS-MERCHANT",
+          "start": 35,
+          "length": 10,
+          "reaches": [
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "PS-MCC",
+          "start": 45,
+          "length": 4,
+          "reaches": [
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "PS-REGION",
+          "start": 49,
+          "length": 1,
+          "reaches": [
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "PS-PRODUCT",
+          "start": 50,
+          "length": 2,
+          "reaches": [
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "PS-TXN-DATE",
+          "start": 52,
+          "length": 8,
+          "reaches": [
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "PS-BATCH-NO",
+          "start": 60,
+          "length": 6,
+          "reaches": [
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "PS-MATCH",
+          "start": 66,
+          "length": 1,
+          "reaches": [
+            "file PRES-OUT"
+          ]
+        },
+        {
+          "name": "PS-FEE",
+          "start": 67,
+          "length": 10,
+          "reaches": [
+            "WS-FEES",
+            "RA-VALUE",
+            "REPORT-LINE",
+            "file PRES-OUT",
+            "file REPORT-OUT"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "FEE-TABLE",
+      "record": "FEE-SLOT-RECORD",
+      "fields": [
+        {
+          "name": "FS-RATE",
+          "start": 1,
+          "length": 5,
+          "reaches": [
+            "PS-FEE",
+            "WS-FEES",
+            "RA-VALUE",
+            "REPORT-LINE",
+            "file PRES-OUT",
+            "file REPORT-OUT"
+          ]
+        },
+        {
+          "name": "FS-FIXED-CENTS",
+          "start": 6,
+          "length": 3,
+          "reaches": [
+            "PS-FEE",
+            "WS-FEES",
+            "RA-VALUE",
+            "REPORT-LINE",
+            "file PRES-OUT",
+            "file REPORT-OUT"
+          ]
+        }
+      ]
+    }
+  ]
+}
