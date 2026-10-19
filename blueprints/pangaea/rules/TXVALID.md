@@ -54,21 +54,21 @@ Source: [TXVALID.cbl:136](../../../pangaea/programs/TXVALID.cbl#L136).
 
 ## 2000-READ-HEADER
 
-| | 1 | 2 | 3 | 4 | 5 | 6 |
-| --- | :-: | :-: | :-: | :-: | :-: | :-: |
-| `READ TRAN-IN AT END` | Y | N | N | N | N | N |
-| `FILE-IS-GOOD` | N | N | Y | Y | Y | Y |
-| `TR-HEADER` | | | N | Y | Y | Y |
-| `FILE-IS-GOOD, again` | | | N | N | N | |
-| `TH-BUSINESS-DATE = WS-BUSINESS-DATE` | | | | N | Y | Y |
-| `NOT TH-FROM-BRANCHES AND NOT TH-FROM-CARDS` | | | | | Y | N |
-| → `READ TRAN-IN` | 1 | 1 | 1 | 1 | 1 | 1 |
-| → `MOVE 'EMPTY FILE' TO WS-FILE-ERROR` | 2 | | | | | |
-| → `CONTINUE` | 3 | 2 | | | | |
-| → `MOVE 'FIRST RECORD IS NOT A HEADER' TO WS-FILE-ERROR` | | | 2 | | | |
-| → `MOVE 'HEADER IS NOT FOR THE BUSINESS DATE' TO WS-FILE-ERROR` | | | | 2 | | |
-| → `MOVE 'HEADER IS FROM AN UNKNOWN SOURCE' TO WS-FILE-ERROR` | | | | | 2 | |
-| → `MOVE TH-SOURCE TO WS-SOURCE` | | | | | | 2 |
+| | 1 | 2 | 3 | 4 | 5 |
+| --- | :-: | :-: | :-: | :-: | :-: |
+| `READ TRAN-IN AT END` | Y | N | N | N | N |
+| `FILE-IS-GOOD` | N | Y | Y | Y | Y |
+| `TR-HEADER` | | N | Y | Y | Y |
+| `FILE-IS-GOOD, again` | | N | N | N | |
+| `TH-BUSINESS-DATE = WS-BUSINESS-DATE` | | | N | Y | Y |
+| `NOT TH-FROM-BRANCHES AND NOT TH-FROM-CARDS` | | | | Y | N |
+| → `READ TRAN-IN` | 1 | 1 | 1 | 1 | 1 |
+| → `MOVE 'EMPTY FILE' TO WS-FILE-ERROR` | 2 | | | | |
+| → `CONTINUE` | 3 | | | | |
+| → `MOVE 'FIRST RECORD IS NOT A HEADER' TO WS-FILE-ERROR` | | 2 | | | |
+| → `MOVE 'HEADER IS NOT FOR THE BUSINESS DATE' TO WS-FILE-ERROR` | | | 2 | | |
+| → `MOVE 'HEADER IS FROM AN UNKNOWN SOURCE' TO WS-FILE-ERROR` | | | | 2 | |
+| → `MOVE TH-SOURCE TO WS-SOURCE` | | | | | 2 |
 
 Source: [TXVALID.cbl:163](../../../pangaea/programs/TXVALID.cbl#L163).
 

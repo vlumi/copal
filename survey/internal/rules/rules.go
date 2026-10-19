@@ -170,7 +170,7 @@ func (e *extractor) pathsKnowing(given []event, statements []cobol.Statement) []
 		case s.Verb == "EVALUATE":
 			alternatives = e.cases(s)
 		case s.Verb == "SEARCH":
-			alternatives = e.cross([]path{{actions: []string{s.Text}, events: changes(s)}}, e.cases(s))
+			alternatives = e.cross([]path{{actions: []string{s.Text}, events: changes(head(s))}}, e.cases(s))
 		case s.Verb == "PERFORM" && len(s.Branches) > 0:
 			outer := e.collapsed
 			e.collapsed = nil
@@ -328,7 +328,14 @@ func (e *extractor) phrases(s cobol.Statement) []path {
 // phraseEvents is a statement running and its phrase's condition, such
 // as AT END, being raised or not, then what the statement changes.
 func phraseEvents(s cobol.Statement, kind string, outcome bool) []event {
-	return append([]event{{test: &test{condition: s.Text + " " + kind, outcome: outcome}}}, changes(s)...)
+	return append([]event{{test: &test{condition: s.Text + " " + kind, outcome: outcome}}}, changes(head(s))...)
+}
+
+// head is a statement without the statements nested in it, whose paths
+// meet those as changes of their own.
+func head(s cobol.Statement) cobol.Statement {
+	s.Branches = nil
+	return s
 }
 
 // cross follows each path with each of the next, leaving out those that

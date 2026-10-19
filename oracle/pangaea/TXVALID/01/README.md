@@ -6,7 +6,7 @@ The first case to reach:
 
 - [TXVALID, 0000-MAIN, rule 3](../../../../blueprints/pangaea/rules/TXVALID.md#0000-main)
 - [TXVALID, 1000-OPEN-FILES, rule 3](../../../../blueprints/pangaea/rules/TXVALID.md#1000-open-files)
-- [TXVALID, 2000-READ-HEADER, rule 6](../../../../blueprints/pangaea/rules/TXVALID.md#2000-read-header)
+- [TXVALID, 2000-READ-HEADER, rule 5](../../../../blueprints/pangaea/rules/TXVALID.md#2000-read-header)
 - [TXVALID, 3000-READ-DETAILS, in its loop, rule 1](../../../../blueprints/pangaea/rules/TXVALID.md#3000-read-details-in-its-loop)
 - [TXVALID, 3100-READ-NEXT, rule 2](../../../../blueprints/pangaea/rules/TXVALID.md#3100-read-next)
 - [TXVALID, 3200-VALIDATE-DETAIL, rule 4](../../../../blueprints/pangaea/rules/TXVALID.md#3200-validate-detail)
