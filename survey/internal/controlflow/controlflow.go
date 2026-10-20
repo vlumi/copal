@@ -212,6 +212,9 @@ func (b *builder) statement(r scope, s *cobol.Statement, next int) int {
 }
 
 func (b *builder) goTo(r scope, n int, s *cobol.Statement, next int) {
+	if len(s.Procedures) == 0 {
+		b.graph.Covered = false // GO TO with no target: where an ALTER sends it
+	}
 	for _, ref := range s.Procedures {
 		i, _, ok := b.program.Span(cobol.ProcedureRef{Name: ref.Name})
 		if !ok || i < r.first || i > r.last {
