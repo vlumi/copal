@@ -235,3 +235,73 @@ func textFields(records []Record) func(group string) []string {
 	}
 	return func(group string) []string { return fields[group] }
 }
+
+// copies reports whether a MOVE from one field of a program's records to
+// another keeps its value whole: two elementary fields, by names no other
+// field has, laid out alike.
+func copies(records []Record) func(from, to string) bool {
+	count := map[string]int{}
+	fields := map[string]Field{}
+	for _, r := range records {
+		walk(r.Field, func(f Field) {
+			count[f.Name]++
+			fields[f.Name] = f
+		})
+	}
+	return func(from, to string) bool {
+		a, b := fields[from], fields[to]
+		return count[from] == 1 && count[to] == 1 && len(a.Fields) == 0 && len(b.Fields) == 0 &&
+			a.Length == b.Length && a.Category == b.Category && a.Usage == b.Usage &&
+			a.Digits == b.Digits && a.Scale == b.Scale && a.Signed == b.Signed && a.Occurs == 0 && b.Occurs == 0
+	}
+}
+
+// digitFields finds, for a field of a program's records of unsigned
+// digits in display, its digits and the other fields of digits over its
+// bytes: those of a group it is in, of one it redefines, or of one that
+// redefines either, record and all, in no table and by names no other
+// field has.
+func digitFields(records []Record) func(field string) (int, []rules.DigitField) {
+	type place struct {
+		record string
+		start  int
+		field  Field
+	}
+	count := map[string]int{}
+	var places []place
+	base := map[string]string{}
+	var visit func(record string, f Field, offset int, inTable bool)
+	visit = func(record string, f Field, offset int, inTable bool) {
+		count[f.Name]++
+		inTable = inTable || f.Occurs > 0
+		if !inTable && len(f.Fields) == 0 && f.Category == "numeric" && f.Usage == "DISPLAY" && !f.Signed && f.Scale == 0 && f.Digits == f.Length {
+			places = append(places, place{record, f.Start + offset, f})
+		}
+		for _, child := range f.Fields {
+			visit(record, child, offset, inTable)
+		}
+	}
+	for _, r := range records {
+		record := r.Name
+		if b, ok := base[r.Redefines]; ok {
+			record = b
+		}
+		base[r.Name] = record
+		visit(record, r.Field, 0, false)
+	}
+	return func(field string) (int, []rules.DigitField) {
+		i := slices.IndexFunc(places, func(p place) bool { return p.field.Name == field })
+		if i < 0 || count[field] != 1 {
+			return 0, nil
+		}
+		at := places[i]
+		var over []rules.DigitField
+		for _, p := range places {
+			if p.record == at.record && p.field.Name != field && count[p.field.Name] == 1 &&
+				p.start >= at.start && p.start+p.field.Length <= at.start+at.field.Length {
+				over = append(over, rules.DigitField{Name: p.field.Name, Offset: p.start - at.start, Length: p.field.Length})
+			}
+		}
+		return at.field.Length, over
+	}
+}

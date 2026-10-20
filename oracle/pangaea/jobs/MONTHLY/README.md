@@ -4,5 +4,5 @@ The job run after the jobs before it in the batch, on what they wrote, and on in
 
 | Step | Program | Outcome | Rules reached |
 | --- | --- | --- | --: |
-| STMT | [STMTPRT](../../STMTPRT/) | RC=0000 | 3 of 34 |
-| LEDGER | [GLSUM](../../GLSUM/) | RC=0000 | 3 of 25 |
+| STMT | [STMTPRT](../../STMTPRT/) | RC=0000 | 3 of 33 |
+| LEDGER | [GLSUM](../../GLSUM/) | RC=0000 | 3 of 24 |

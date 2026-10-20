@@ -311,6 +311,8 @@ func Analyze(paths []string, copybookDir string, dialect cobol.Dialect) (*System
 			ConditionNames: conditionNames(p.Records),
 			InitialValues:  initialValues(p.Records),
 			TextFields:     textFields(p.Records),
+			DigitFields:    digitFields(p.Records),
+			Copies:         copies(p.Records),
 		})
 		p.Rules = newRules(p.Name, p.tables, p.Records)
 	}
