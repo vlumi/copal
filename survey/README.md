@@ -12,22 +12,24 @@ survey explore -copybooks dir [-addr host:port] [-title name] [-cases dir] progr
 survey oracle -copybooks dir [-out dir -rules dir] [-title name] [-program name] [-jobs JOB,...] program.cbl... [job.jcl... | script.sh...]
 ```
 
-Point it at the programs and the jobs, and tell it where the copybooks are. `blueprints` writes a directory of Markdown for people and JSON for tools, with SVG diagrams, and an index; [docs/blueprints.md](../docs/blueprints.md) explains how to read them. `explore` serves the same analysis as a web app, at `127.0.0.1:1192` by default, where every job, step, dataset, program, paragraph, field and copybook is a page and a link, each with a badge for its kind, a search finds any of them, and a field's values can be followed back across programs and job steps to the input they came from, or forward to everything they reach, highlighted on the diagrams. Its design views show the system as the business sees it: the entities, with who reads, writes and decides on each field across the programs, the links between them and the control totals of their records, the state machines of their codes, and the layouts they hold dates in; who owns each entity, drawn as a first draft of a service decomposition; the boundary, the system's inputs, outputs, reports and streams; and the order of the jobs, derived from the generations they write and read.
+Point it at the programs and the jobs or scripts, and tell it where the copybooks are and which dialect they are in, `ibm` or `mf`.
 
-`oracle` compiles the programs with GnuCOBOL and searches, for each main program, for input data that reaches every rule of its decision tables and of the programs it calls, and writes the cases it found, as few as reach the same rules, with what the program wrote and returned and which rules each case reaches, and with `-jobs`, runs the jobs or scripts named, in that order, as a batch on the cases; `explore -cases` shows them on each program's page. [docs/blueprints.md](../docs/blueprints.md) explains how to read them.
+| Command | Writes or serves |
+| --- | --- |
+| `blueprints` | A directory of Markdown for people and JSON for tools, with SVG diagrams and an index. [docs/blueprints.md](../docs/blueprints.md) explains how to read it. |
+| `explore` | The same analysis as a web app, at `127.0.0.1:1192` by default. Every job, step, dataset, program, paragraph, field and copybook is a page and a link; a search finds any of them; a field's values are followed back to the inputs they come from, or forward to everything they reach, highlighted on the diagrams. Its design views show the system as the business sees it: the entities, with who reads, writes, decides on and owns each; their links, control totals and state machines; the boundary; and the order of the jobs. |
+| `oracle` | For each main program, the cases that reach the rules of its decision tables, found by compiling the program with GnuCOBOL and running it on data made from its own conditions: as few cases as reach the same rules, each with what the program wrote and returned. With `-jobs`, the jobs or scripts named run as a batch on those cases. `explore -cases` shows the cases on each program's page. |
 
-For the First Bank of Pangaea, `make blueprints` regenerates [blueprints/pangaea/](../blueprints/pangaea/README.md) and `make explore` serves the explorer.
-
-What it reads: fixed-format COBOL in the subset Pangaea uses, with `COPY` and `COPY ... REPLACING`, and job files in a small subset of JCL. Which parts of COBOL that is, and what each analysis does and does not attempt, is below.
+`make blueprints`, `make explore` and `make oracle` run them on both specimens. What the survey reads is what [cobolith](https://github.com/vlumi/cobolith) reads: IBM and Micro Focus COBOL, fixed and free format, with `COPY ... REPLACING`, and a subset of JCL; its README says what that covers and what it does not yet.
 
 ## How it works
 
 ![The survey's pipeline, from the source through the analyses to the blueprints and the explorer](../docs/diagrams/pipeline.svg)
 
-The analyses run in order, each on the output of the ones before it, and each is a package with its own tests. The first three are in [bedrock](../bedrock/), because the bank's machine room needs them too.
+The analyses run in order, each on the output of the ones before it, and each is a package with its own tests. The first three are [cobolith](https://github.com/vlumi/cobolith), the library, because the specimens' machine rooms need them too.
 
-1. **Lexing and parsing**, `cobolith/cobol`. Fixed-format source: sequence area, indicator column, areas A and B. `COPY` statements are expanded, with `REPLACING`, and every token remembers the file and line it came from, copybook or program, so that everything downstream can point at the source. The parser knows the divisions, the file control entries, the data description entries, and the statements of the subset: `MOVE`, the arithmetic verbs, `COMPUTE`, `STRING`, `SET`, `IF`, `EVALUATE`, `PERFORM` in its forms, `GO TO`, `SEARCH`, `SORT` with procedures or files, the file verbs including indexed access, `CALL ... USING`, `ACCEPT` and `DISPLAY`. A verb outside the subset is an error, not a guess.
-2. **Record layouts**, `cobolith/layout`. From the data divisions and copybooks: every field's position, length, picture and usage, `OCCURS` and `OCCURS DEPENDING ON`, `REDEFINES`, and the level-88 condition names on it. Packed decimal and signed display fields get their true sizes.
+1. **Lexing and parsing**, `cobolith/cobol`. Fixed-format source, or free format after `>>SOURCE FORMAT IS FREE`. `COPY` statements are expanded, with `REPLACING`, and every token remembers the file and line it came from, copybook or program, so that everything downstream can point at the source. The parser knows the divisions, the file control entries, the data description entries, and the statements of the procedure division. A verb it does not know is an error, not a guess.
+2. **Record layouts**, `cobolith/layout`. From the data divisions and copybooks: every field's position, length, picture and usage, `OCCURS` and `OCCURS DEPENDING ON`, `REDEFINES`, `SIGN` and `SYNCHRONIZED`, and the level-88 condition names on it, laid out as the dialect's compiler lays them out.
 3. **Jobs**, `cobolith/jcl`. Steps, the programs they run, their `COND` tests, and the DD statements: datasets with generations, temporary datasets, concatenations, SYSOUT, DUMMY, in-stream data, indexed datasets.
 4. **Structure**, `structure`. Paragraphs and sections, which performs which, `THRU` ranges, where `GO TO` goes, and where control falls from one paragraph into the next. A sort's input and output procedures count as performed.
 5. **Control flow**, `controlflow`. The paths control can take through the statements: in order, into the branches of `IF`, `EVALUATE`, `SEARCH` and the conditional phrases, round `PERFORM` loops, to a `GO TO`'s target, on into the next paragraph, and into a performed range and back to the statement after the `PERFORM` that entered it, the range laid out anew for each `PERFORM`. A `GO TO` out of a performed range leaves the paths unknown, and says so.
@@ -49,7 +51,7 @@ The analyses run in order, each on the output of the ones before it, and each is
 - Ownership is by dataset: a program owns an entity when its job step writes a dataset the entity's copybook describes. Records passed in working storage or through a call own nothing, and a copybook of two records gives both the same datasets.
 - The boundary is the files and streams: what sends the input and reads the output, such as the branches' systems or the server around a program that ACCEPTs, is outside the survey.
 - The order of the jobs comes from the generations alone: when a job runs, how often, or that it runs only once, is in the operations guide, not in the files. A job that reads a generation another job writes counts as running after it even when, as with a job that opens a system, it runs only once, before everything else.
-- It reads Pangaea's subset of COBOL and JCL. Breadth is not a goal until the project needs it.
+- It reads what cobolith reads. The library's conformance report says how much of NIST's COBOL-85 suite that is, and what stops the rest.
 - No language model is involved. One may come later, for naming and prose, on top of facts the analysis has established.
 
 ## Layout
@@ -58,4 +60,4 @@ The analyses run in order, each on the output of the ones before it, and each is
 - [blueprint/](blueprint/): the model of a system and its writers, the only exported package.
 - [internal/](internal/): the analyses, one package each, and the explorer.
 
-Tests: every analysis has unit tests on small programs under its `testdata/`, and the whole pipeline is tested against the First Bank of Pangaea, whose blueprints in `blueprints/pangaea/` are golden files that `make ci` regenerates and compares.
+Tests: every analysis has unit tests on small programs under its `testdata/`, and the whole pipeline is tested against both specimens, whose blueprints in `blueprints/` and cases in `oracle/` are golden files that `make ci` regenerates and compares.

@@ -2,91 +2,88 @@
 
 *Reading the code that still runs the books.*
 
-Copal is a study of one problem: understanding a legacy COBOL batch system well enough to replace it. It has four parts, in four directories, and a second specimen beside the first; what reads COBOL is a library of its own, [cobolith](https://github.com/vlumi/cobolith).
+Copal is a study of one problem: understanding a legacy COBOL batch system well enough to replace it. The hard part of such a move is rarely the translation; it is knowing what the system does, when nobody can draw the job network or say which rules are in the code. Copal derives that understanding from the source, deterministically, and tests it on two COBOL systems written for the purpose. It does not translate COBOL into anything.
 
-| Directory | What it is |
-| --- | --- |
-| [survey/](survey/) | **Survey**, the analyzer. Reads a COBOL system and draws its blueprints: the layout of every record, the structure of every program, which fields each step reads and writes, the business rules buried in conditions, and the job network that ties the programs together through fixed-format files. All of it derived deterministically from the source. `survey explore` serves the same analysis in the browser. |
-| [pangaea/](pangaea/) | **The First Bank of Pangaea**, the specimen. A small but working COBOL bank, fiction written for this project: accounts, a daily batch, a month-end run and an online day of card and ATM authorizations, compiled and run with GnuCOBOL. It knows nothing of the survey. |
-| [laurasia/](laurasia/) | **Laurasia Card Services**, the second specimen. A card processor, issuer and acquirer in one, in another shop's COBOL: Micro Focus dialect, free format, sections, run by shell scripts instead of JCL. Clearing, matching, interchange, posting, disputes, settlement and a billing cycle. It is there to show where the survey assumes Pangaea. |
-| [bedrock/](bedrock/) | What runs the specimens: compiling and running COBOL programs, jobs and scripts, and keeping datasets and their catalog. The survey's oracle runs the programs with it; the bank's machine room runs the bank with it. |
-| [console/](console/) | Built for the modernization: a web window that runs the bank, watches its online day, and shows each run's jobs as the survey draws them, with links to the blueprints. The one part that knows both the bank and the survey. |
+## The parts
 
-The survey of Pangaea is checked in as [blueprints/pangaea/](blueprints/pangaea/README.md), and of Laurasia as [blueprints/laurasia/](blueprints/laurasia/README.md), golden files that `make ci` regenerates and compares, so a change in the analyzer shows as a diff in what it says about either. The dependencies run one way: `bedrock` imports nothing else, `survey`, `pangaea` and `laurasia` import `bedrock`, and only `console` imports the rest; `make ci` checks it.
+| Directory | Part | What it is |
+| --- | --- | --- |
+| [survey/](survey/) | **Survey** | The analyzer. Reads a COBOL system and writes its blueprints: record layouts, program structure, data flow, business rules as decision tables, and the job network. Serves the same analysis in the browser, and finds test cases that reach the rules. |
+| [pangaea/](pangaea/) | **The First Bank of Pangaea** | The first specimen: a small working bank in IBM COBOL and JCL. A daily batch, a month-end, and an online day of card and ATM authorizations. |
+| [laurasia/](laurasia/) | **Laurasia Card Services** | The second specimen: a card processor in Micro Focus COBOL, free format, run by shell scripts. It shows where the survey assumed Pangaea. |
+| [bedrock/](bedrock/) | **Bedrock** | What runs the specimens: compiling and running COBOL programs, jobs and scripts, and keeping datasets and their catalog. |
+| [console/](console/) | **The console** | A web window that runs the bank, watches its online day, and shows each run's jobs as the survey draws them. The one part that knows both the bank and the survey. |
+| [cobolith](https://github.com/vlumi/cobolith) | **Cobolith** | The library everything reads COBOL with: source, copybooks, record layouts and fields, and JCL. Written here, now a repository of its own. |
 
-Survey does not translate COBOL into anything. It produces the understanding a translation needs, and later the tests a rewrite has to pass.
+![The parts of Copal and what imports what](docs/diagrams/architecture.svg)
 
-**Status:** Pangaea runs as a bank: about three thousand generated accounts, a daily batch of validation, interest accrual, sorting and posting in three passes for transfers, month-end interest, fees, statements and a general-ledger summary, and a business calendar, day after day (`make bank-reset bank-days N=20`); and an online day of card purchases and ATM withdrawals, authorized by COBOL programs called from a long-running dispatcher, against indexed files the night's batch loads, and posted by that batch. `make console` opens the console in the browser: accounts, each day's jobs as they ran with their networks, files and reports, what the days changed in the master, and the online channel with its authorizations live; `make simulate` sends it card traffic. Small fixtures check the batch against golden outputs. Survey reads the bank and writes blueprints of every program and copybook: each program's own description, record layouts with positions and lengths, files, its paragraphs with a diagram of how control moves between them, what each paragraph reads and writes, where every data item's values come from, and its business rules as decision tables; and of every job, the network of its steps and the datasets they read and write, with findings where a job and its programs disagree. `make blueprints` regenerates them, and `make explore` serves the explorer, where every job, step, dataset, program, paragraph, field and copybook is a link, and any field's values can be followed back across programs and job steps to the input they came from, on the diagrams. `make oracle` runs each program, compiled with GnuCOBOL's trace code, on input data made from its own conditions until the cases reach as many rules of its decision tables as they can; the cases, with what the programs wrote, are checked in and replayed by the tests. Laurasia Card Services, the second specimen, in Micro Focus COBOL and run by shell scripts, is surveyed the same way, with nothing special-cased for either: [blueprints/laurasia/](blueprints/laurasia/README.md), [oracle/laurasia/](oracle/laurasia/README.md), and `make explore-laurasia`. [docs/architecture.md](docs/architecture.md) describes how the parts fit, [docs/blueprints.md](docs/blueprints.md) how to read what the survey writes, [docs/brief.md](docs/brief.md) has the plan and [docs/roadmap.md](docs/roadmap.md) the order of work.
+The dependencies run one way, and `make ci` checks it: the specimens know nothing of the survey, and only the console knows both. Both specimens compile and run with GnuCOBOL, and their outputs are golden files. So are the survey's blueprints of them: a change to the analyzer shows as a diff in what it says about a real system.
 
-## A quick tour
+## What you can run
 
 Everything is a make target, and plain `make` lists them. You need GnuCOBOL 3.2 (`brew install gnucobol`), Go, Node for the Markdown linter, and `golangci-lint` for `make ci`.
 
-1. Check that the tools are there.
+| Target | What it does | Where to look |
+| --- | --- | --- |
+| `make pangaea-daily` | Runs the daily batch on a small fixture: the job log and every step's report | the terminal |
+| `make bank-reset`, `make bank-days N=5` | Opens a bank of about 3,000 generated accounts and runs business days, one line each | `pangaea/run/bank/` |
+| `make console` | The bank in the browser: accounts, each day's jobs drawn as networks with return codes and record counts, what the days changed | <http://127.0.0.1:4510/> |
+| `make simulate` | Sends card and ATM traffic to the console's online channel | the console's **Online** page |
+| `make blueprints` | Regenerates the survey of both specimens | [blueprints/pangaea/](blueprints/pangaea/README.md), [blueprints/laurasia/](blueprints/laurasia/README.md) |
+| `make explore`, `make explore-laurasia` | The same analysis as a web app: every job, step, dataset, program, paragraph and field a page, and a field's values followed across programs on the diagrams | <http://127.0.0.1:1192/> |
+| `make oracle` | Finds, for each program, input data that reaches the rules of its decision tables, by running it; replays the batches on those cases | [oracle/pangaea/](oracle/pangaea/README.md), [oracle/laurasia/](oracle/laurasia/README.md) |
+| `make ci` | What the hosted build runs: linters, the dependency check, every test and golden file, the oracle's cases replayed | |
 
-   ```sh
-   make toolchain
-   ```
+## What the survey writes
 
-2. Run the daily batch on the small fixture. It prints the job log and every step's report: the bank in one screen.
+| For each | The blueprint has |
+| --- | --- |
+| Program | Its own header comment; files; the flow of its paragraphs, drawn; what each paragraph reads and writes; where every value comes from; its records field by field |
+| Copybook | Its records, with each field's kind, and the programs that use it |
+| Job | Its steps and the datasets between them, drawn; each step's DD statements bound to the program's files; findings where the job and its programs disagree |
+| Paragraph | A decision table: each path through its conditions, and the actions it takes |
+| Entity | Who reads, writes and decides on each field across the programs; the state machine of each code field; who owns it |
+| Field | Its trail back to the inputs its values come from, and forward to everything they reach, through programs and job steps |
+| Rule | A recorded case: input data that reaches it, and what the program wrote and returned |
 
-   ```sh
-   make pangaea-daily
-   ```
+[docs/blueprints.md](docs/blueprints.md) explains how to read them. Every fact links to the source line it came from, and no language model is involved.
 
-3. Open a bank of about three thousand generated accounts on 2026-09-01, and run five business days, one line each: transactions, rejects, the worst return code, and the month-end job when a month closes. Everything it made is under `pangaea/run/bank/`.
+## By the numbers
 
-   ```sh
-   make bank-reset
-   make bank-days N=5
-   ```
+| | |
+| --- | --- |
+| Specimens | 2, in two dialects: 31 programs, about 5,400 lines of COBOL, 23 copybooks, 4 jobs in JCL and 4 shell scripts |
+| Blueprints | 96 pages and 40 diagrams, regenerated and compared by `make ci` |
+| Decision rules | 481, of which 218 recorded cases reach 453; 12 are marked with the reason the search cannot reach them, 16 are left |
+| Cobolith | reads 399 of the 459 programs of NIST's COBOL-85 test suite |
 
-4. Serve the console and open <http://127.0.0.1:4510/>: the bank today, with buttons to run days and reset. Open a day to see its jobs drawn as networks with each step's return code and each dataset's records, and the reports; open an account for its master record field by field and its postings; **Compare** shows what the days changed, reconciled against the postings.
+## A quick tour
 
-   ```sh
-   make console
-   ```
+1. `make toolchain`: check that the tools are there.
+2. `make pangaea-daily`: the bank in one screen.
+3. `make bank-reset` and `make bank-days N=5`: five business days of the generated bank.
+4. `make console`, then open an account, a day's jobs, and **Compare**.
+5. `make simulate` from another terminal: the **Online** page fills with authorizations. Run a day from the console: the channel closes for the batch, and the next morning the purchases and withdrawals are in the master.
+6. Read a blueprint: [TXPOST](blueprints/pangaea/programs/TXPOST.md), its [decision tables](blueprints/pangaea/rules/TXPOST.md), and the [DAILY job](blueprints/pangaea/jobs/DAILY.md).
+7. `make explore`: search for `AM-BALANCE`, open it in TXPOST, and follow its values back to the files that come from outside.
+8. Read an oracle case: [TXPOST's](oracle/pangaea/TXPOST/README.md), rule by rule.
+9. `make ci`.
 
-5. With the console running, send it card and ATM traffic from another terminal. The console's **Online** page shows each authorization as it is answered, approvals and declines, and balances moving. Then run a day from the console: the channel answers that the bank is closed for the batch, and the next morning the card purchases and withdrawals are in the master, under the codes CP, AW and AF.
+## Reading more
 
-   ```sh
-   make simulate
-   ```
-
-6. Read the survey of the bank, which is checked in: start at [blueprints/pangaea/README.md](blueprints/pangaea/README.md), then a program such as [TXPOST](blueprints/pangaea/programs/TXPOST.md), its [decision tables](blueprints/pangaea/rules/TXPOST.md), and the [DAILY job](blueprints/pangaea/jobs/DAILY.md). Regenerating them shows a change to the bank or the analyzer as a diff.
-
-   ```sh
-   make blueprints
-   ```
-
-7. Serve the explorer and open <http://127.0.0.1:1192/>: the same analysis as a web app. Search for `AM-BALANCE`, open it in TXPOST, and follow its values back: the trail runs through every program and job step to the files that come from outside, highlighted on the diagrams.
-
-   ```sh
-   make explore
-   ```
-
-8. Look at the oracle's cases, also checked in: input data for each program that reaches the rules of its decision tables, with what the program wrote and returned, the evidence a rewrite has to match. Start at [oracle/pangaea/README.md](oracle/pangaea/README.md), then [TXPOST's](oracle/pangaea/TXPOST/README.md), rule by rule; the explorer shows them on each program's page. Searching for them again takes a couple of minutes.
-
-   ```sh
-   make oracle
-   ```
-
-9. Read the rest: the bank's own operations guide in [pangaea/docs/](pangaea/docs/README.md), in its operators' voice; [docs/architecture.md](docs/architecture.md) on how the four parts fit; [docs/blueprints.md](docs/blueprints.md) on how to read what the survey writes.
-
-10. Run what the hosted build runs: linters, the dependency check, every test and the golden files, the oracle's cases replayed among them.
-
-   ```sh
-   make ci
-   ```
+| Document | What it covers |
+| --- | --- |
+| [docs/architecture.md](docs/architecture.md) | How the parts fit, the dependency rule, and the golden files |
+| [docs/blueprints.md](docs/blueprints.md) | How to read what the survey writes |
+| [survey/README.md](survey/README.md) | The survey's pipeline, analysis by analysis, and what it does not do |
+| [pangaea/README.md](pangaea/README.md), [pangaea/docs/](pangaea/docs/README.md) | The bank, and its own operations guide in its operators' voice |
+| [laurasia/README.md](laurasia/README.md), [laurasia/docs/](laurasia/docs/operations.md) | The card processor and its night |
+| [docs/roadmap.md](docs/roadmap.md), [docs/brief.md](docs/brief.md) | The order the work was done in, and the plan and decisions it started from |
 
 ## The names
 
-Copal is young amber: resin that has hardened but not quite fossilized, and the traditional base of varnish for old wood. Said aloud, it is not far from COBOL.
-
-Pangaea is the single supercontinent of the age of the dinosaurs, before it broke into the continents of today. A monolith, waiting to be split.
-
-A survey walks the ground and maps it before anyone builds; bedrock is what everything stands on.
+Copal is young amber: resin that has hardened but not quite fossilized, and the traditional base of varnish for old wood. Said aloud, it is not far from COBOL. Pangaea is the single supercontinent before it broke into the continents of today: a monolith, waiting to be split; Laurasia is one of the two it split into. A survey walks the ground and maps it before anyone builds; bedrock is what everything stands on; a cobolith is the stone it is cut from.
 
 ## License
 
-MIT, see [LICENSE](LICENSE). The First Bank of Pangaea, its programs, data and documents included, is fiction written for this project and is covered by the same license.
+MIT, see [LICENSE](LICENSE). Both specimens, their programs, data and documents included, are fiction written for this project and covered by the same license.

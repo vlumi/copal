@@ -15,7 +15,7 @@ Copal is one Go module in four parts, each a directory at the top of the reposit
 
 ## The rule
 
-Dependencies run one way, and `make lint-deps` checks it in CI with `go list`, tests included: `bedrock` imports nothing of Copal, and of cobolith, the library; `survey`, `pangaea` and `laurasia` import `bedrock` and `cobolith` and never each other; only `console` imports the rest. The survey's tests read `pangaea/` as their fixture and compare with `blueprints/pangaea/`, which is data, not an import.
+Dependencies run one way, and `make lint-deps` checks it in CI with `go list`, tests included: `bedrock` imports nothing of Copal; `survey`, `pangaea` and `laurasia` import `bedrock` and never each other; only `console` imports the rest. Any of them may import cobolith, the library. The survey's tests read `pangaea/` as their fixture and compare with `blueprints/pangaea/`, which is data, not an import.
 
 The rule exists because a bank must not depend on the tool that studies it. Everything the bank's Go needed from the analyzer turned out to be either language (now cobolith and bedrock) or presentation (now the console), and once those were moved the import went away.
 
@@ -29,9 +29,9 @@ Two things are checked in that a build regenerates and compares:
 
 Both depend on everything being deterministic: the analysis, the diagram layout, and the bank itself, whose days follow from a seed and never read the clock.
 
-## One module
+## One module, and one library
 
-Two modules with a Go workspace would make the sibling relation formal, but add toolchain friction for nothing a reader gains, and the survey's tests reading `pangaea/` across a module boundary would be awkward. One module, four trees, one rule.
+Copal is one Go module: separate modules for its parts would make the sibling relation formal, but add toolchain friction for nothing a reader gains, and the survey's tests read `pangaea/` as their fixture across that boundary. The exception is what reads COBOL, which is of use to anyone reading COBOL: it became [cobolith](https://github.com/vlumi/cobolith), a module and repository of its own, which Copal requires by version. A change to it reaches Copal as a version bump, and the commit that bumps it carries the golden files it changes.
 
 ## Commands and make
 

@@ -206,7 +206,7 @@ func TestForwardAcrossCalls(t *testing.T) {
 			t.Errorf("the request's amount does not reach %+v", n)
 		}
 	}
-	if !slices.ContainsFunc(hops[online("AUTHSRV", "RS-AMOUNT")].Displays, func(d blueprint.Display) bool { return true }) {
+	if len(hops[online("AUTHSRV", "RS-AMOUNT")].Displays) == 0 {
 		t.Error("the response that shows the amount is not displayed")
 	}
 }
