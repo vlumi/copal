@@ -273,7 +273,7 @@ func (run *jobRun) allocateDD(step jcl.Step, dd jcl.DD) (string, error) {
 	switch {
 	case dd.Disp == jcl.New && cataloged:
 		return "", fmt.Errorf("%s already exists", dsn)
-	case dd.Disp == jcl.Mod && !cataloged && dd.LRECL == 0:
+	case (dd.Disp == jcl.New || dd.Disp == jcl.Mod && !cataloged) && dd.LRECL == 0:
 		return "", fmt.Errorf("%s does not exist yet and has no DCB to create it with", dsn)
 	}
 	return run.Datasets.Path(dsn), nil
