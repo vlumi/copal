@@ -32,6 +32,12 @@ Everything is a make target, and plain `make` lists them. You need GnuCOBOL 3.2 
 | `make console` | The bank in the browser: accounts, each day's jobs drawn as networks with return codes and record counts, what the days changed | <http://127.0.0.1:4510/> |
 | `make simulate` | Sends card and ATM traffic to the console's online channel | the console's **Online** page |
 
+### The card processor
+
+| Target | What it does | Where to look |
+| --- | --- | --- |
+| `make laurasia-night` | Runs Laurasia's night on its fixture: the clearing file in, matching, pricing, posting, disputes, settlement and the billing cycle, with each step's log and every program's report | the terminal, and `laurasia/run/night/data/` |
+
 ### The survey
 
 | Target | What it does | Where to look |
@@ -73,7 +79,7 @@ Everything is a make target, and plain `make` lists them. You need GnuCOBOL 3.2 
 ## A quick tour
 
 1. `make toolchain`: check that the tools are there.
-2. `make pangaea-daily`: the bank in one screen.
+2. `make pangaea-daily`: the bank in one screen; `make laurasia-night`: the card processor's night in one.
 3. `make bank-reset` and `make bank-days N=5`: five business days of the generated bank.
 4. `make console`, then open an account, a day's jobs, and **Compare**.
 5. `make simulate` from another terminal: the **Online** page fills with authorizations. Run a day from the console: the channel closes for the batch, and the next morning the purchases and withdrawals are in the master.
