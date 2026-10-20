@@ -45,6 +45,12 @@ simulate:  ## Send card traffic to the console's online channel until interrupte
 pangaea-build:
 	go run ./pangaea/cmd/pangaea build
 
+##@ The card processor
+
+.PHONY: laurasia-night
+laurasia-night:  ## Run Laurasia's night on the fixture and show its logs and reports
+	@scripts/laurasia-night.sh
+
 ##@ The survey
 
 .PHONY: blueprints

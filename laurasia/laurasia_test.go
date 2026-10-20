@@ -1,21 +1,18 @@
 // Package laurasia is Laurasia Card Services: a card processor's COBOL, in
-// Micro Focus free format, run by shell scripts. Its Go is only this test,
-// which runs its fixtures and compares what they leave with their golden
-// files.
+// Micro Focus free format, run by shell scripts. This test runs its
+// fixtures and compares what they leave with their golden files.
 package laurasia
 
 import (
 	"bytes"
 	"io/fs"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
 
-	"github.com/vlumi/cobolith/cobol"
-	"github.com/vlumi/copal/bedrock/run"
 	"github.com/vlumi/copal/internal/golden"
+	"github.com/vlumi/copal/laurasia/night"
 )
 
 // TestNights runs each fixture in testdata: its input copied to a data
@@ -24,11 +21,8 @@ import (
 // files, which only programs read, compared with its golden files. Run
 // with -update to rewrite them.
 func TestNights(t *testing.T) {
-	bin, err := filepath.Abs(t.TempDir())
-	if err != nil {
-		t.Fatal(err)
-	}
-	if _, err := (run.Build{Dialect: cobol.MicroFocus, Sources: "programs", Copybooks: "copybooks", Out: bin}).Programs(); err != nil {
+	bin := t.TempDir()
+	if err := night.Build(".", bin); err != nil {
 		t.Fatal(err)
 	}
 	fixtures, err := filepath.Glob("testdata/*/RUN")
@@ -42,32 +36,11 @@ func TestNights(t *testing.T) {
 }
 
 func runFixture(t *testing.T, bin, dir string) {
-	data, err := filepath.Abs(t.TempDir())
-	if err != nil {
+	data := t.TempDir()
+	if err := night.Run(".", dir, bin, data); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.CopyFS(data, os.DirFS(filepath.Join(dir, "input"))); err != nil {
-		t.Fatal(err)
-	}
-	inputs := files(t, data)
-	scripts, err := filepath.Abs("scripts")
-	if err != nil {
-		t.Fatal(err)
-	}
-	steps, err := os.ReadFile(filepath.Join(dir, "RUN"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	for _, step := range strings.Split(strings.TrimSpace(string(steps)), "\n") {
-		args := strings.Fields(step)
-		cmd := exec.Command("sh", append([]string{filepath.Join(scripts, args[0])}, args[1:]...)...)
-		cmd.Env = append(os.Environ(), "LCS_BIN="+bin, "LCS_SCRIPTS="+scripts, "LCS_DATA="+data, "COB_LIBRARY_PATH="+bin)
-		var out bytes.Buffer
-		cmd.Stdout, cmd.Stderr = &out, &out
-		if err := cmd.Run(); err != nil {
-			t.Fatalf("%s: %v\n%s", step, err, out.String())
-		}
-	}
+	inputs := files(t, filepath.Join(dir, "input"))
 	got := map[string][]byte{}
 	for name, content := range files(t, data) {
 		if _, in := inputs[name]; in && bytes.Equal(inputs[name], content) || isBinary(name) {

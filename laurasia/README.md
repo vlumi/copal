@@ -11,4 +11,4 @@ A small COBOL card processor, issuer and acquirer in one, the survey's second sp
 - [scripts/](scripts/): the batch, as POSIX shell scripts: each step binds its files with `export DD_...`, runs a program or Unix `sort`, and checks the return code with `if`. Files are named by date.
 - [testdata/](testdata/): fixtures, each an `input` directory of files to start from, a `RUN` file of the scripts to run on them, in order, and a `golden` directory of what the run leaves behind.
 
-The only Go is [laurasia_test.go](laurasia_test.go), which compiles the programs with [bedrock](../bedrock/run/), runs each fixture's scripts and compares the result with its golden files. `make laurasia-golden` records them again.
+The Go is small: [night/](night/) compiles the programs with [bedrock](../bedrock/run/) and runs a fixture's scripts on a copy of its input; [laurasia_test.go](laurasia_test.go) runs every fixture that way and compares the result with its golden files, and `make laurasia-night` runs the one fixture and shows its logs and reports. `make laurasia-golden` records the golden files again.
