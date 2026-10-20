@@ -23,16 +23,29 @@ The dependencies run one way, and `make ci` checks it: the specimens know nothin
 
 Everything is a make target, and plain `make` lists them. You need GnuCOBOL 3.2 (`brew install gnucobol`), Go, Node for the Markdown linter, and `golangci-lint` for `make ci`.
 
+### The bank
+
 | Target | What it does | Where to look |
 | --- | --- | --- |
 | `make pangaea-daily` | Runs the daily batch on a small fixture: the job log and every step's report | the terminal |
 | `make bank-reset`, `make bank-days N=5` | Opens a bank of about 3,000 generated accounts and runs business days, one line each | `pangaea/run/bank/` |
 | `make console` | The bank in the browser: accounts, each day's jobs drawn as networks with return codes and record counts, what the days changed | <http://127.0.0.1:4510/> |
 | `make simulate` | Sends card and ATM traffic to the console's online channel | the console's **Online** page |
+
+### The survey
+
+| Target | What it does | Where to look |
+| --- | --- | --- |
 | `make blueprints` | Regenerates the survey of both specimens | [blueprints/pangaea/](blueprints/pangaea/README.md), [blueprints/laurasia/](blueprints/laurasia/README.md) |
-| `make explore`, `make explore-laurasia` | The same analysis as a web app: every job, step, dataset, program, paragraph and field a page, and a field's values followed across programs on the diagrams | <http://127.0.0.1:1192/> |
+| `make explore-pangaea`, `make explore-laurasia` | The same analysis as a web app: every job, step, dataset, program, paragraph and field a page, and a field's values followed across programs on the diagrams | <http://127.0.0.1:1192/> |
 | `make oracle` | Finds, for each program, input data that reaches the rules of its decision tables, by running it; replays the batches on those cases | [oracle/pangaea/](oracle/pangaea/README.md), [oracle/laurasia/](oracle/laurasia/README.md) |
-| `make ci` | What the hosted build runs: linters, the dependency check, every test and golden file, the oracle's cases replayed | |
+
+### Checks
+
+| Target | What it does |
+| --- | --- |
+| `make ci` | What the hosted build runs: linters, the dependency check, every test and golden file, the oracle's cases replayed |
+| `make pangaea-golden`, `make laurasia-golden` | Rewrite a specimen's golden outputs after a deliberate change to it |
 
 ## What the survey writes
 
@@ -65,7 +78,7 @@ Everything is a make target, and plain `make` lists them. You need GnuCOBOL 3.2 
 4. `make console`, then open an account, a day's jobs, and **Compare**.
 5. `make simulate` from another terminal: the **Online** page fills with authorizations. Run a day from the console: the channel closes for the batch, and the next morning the purchases and withdrawals are in the master.
 6. Read a blueprint: [TXPOST](blueprints/pangaea/programs/TXPOST.md), its [decision tables](blueprints/pangaea/rules/TXPOST.md), and the [DAILY job](blueprints/pangaea/jobs/DAILY.md).
-7. `make explore`: search for `AM-BALANCE`, open it in TXPOST, and follow its values back to the files that come from outside.
+7. `make explore-pangaea`: search for `AM-BALANCE`, open it in TXPOST, and follow its values back to the files that come from outside.
 8. Read an oracle case: [TXPOST's](oracle/pangaea/TXPOST/README.md), rule by rule.
 9. `make ci`.
 
