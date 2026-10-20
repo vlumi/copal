@@ -30,6 +30,7 @@ type Script struct {
 // Kind is what a step runs.
 type Kind string
 
+// The kinds of step.
 const (
 	Program Kind = "program" // a COBOL program
 	Sort    Kind = "sort"    // Unix sort, of Input into Output

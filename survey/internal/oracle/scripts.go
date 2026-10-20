@@ -428,7 +428,7 @@ func (b *Batch) provideFile(r *Result, dd, path string, sr *scriptRun, dir strin
 			return err
 		}
 		staged := filepath.Join(loaded, filepath.Base(path))
-		if err := r.runner.load(f, records, staged, loaded); err != nil {
+		if err := r.runner.load(f, records, staged); err != nil {
 			return err
 		}
 		if err := os.Rename(staged, path); err != nil {
@@ -461,26 +461,26 @@ func (sr *scriptRun) standIns(steps []scriptStep, traces, dir string) error {
 		return err
 	}
 	for _, step := range steps {
-		var stood, real string
+		var stood, command string
 		switch step.Kind {
 		case script.Program:
-			stood, real = string(script.Program), strconv.Quote(filepath.Join(sr.programs, step.command()))
+			stood, command = string(script.Program), strconv.Quote(filepath.Join(sr.programs, step.command()))
 		case script.Run:
 			i := slices.IndexFunc(sr.system.Jobs, func(j blueprint.Job) bool { return j.Kind == "script" && j.Name == step.Program })
 			source, err := filepath.Abs(sr.system.Jobs[i].Source)
 			if err != nil {
 				return err
 			}
-			stood, real = string(script.Run), "sh "+strconv.Quote(source)
+			stood, command = string(script.Run), "sh "+strconv.Quote(source)
 		default:
 			path, err := exec.LookPath(step.Command)
 			if err != nil {
 				return err
 			}
-			stood, real = "path", strconv.Quote(path)
+			stood, command = "path", strconv.Quote(path)
 		}
 		standIn := fmt.Sprintf("#!/bin/sh\nCOB_SET_TRACE=Y COB_TRACE_FILE=%q %s \"$@\"\nrc=$?\necho \"$$ %s $rc\" >> %q\nexit $rc\n",
-			traces+"/$$.trace", real, step.command(), filepath.Join(traces, "steps"))
+			traces+"/$$.trace", command, step.command(), filepath.Join(traces, "steps"))
 		path := filepath.Join(dir, stood, step.command())
 		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 			return err

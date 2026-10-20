@@ -59,7 +59,7 @@ func (r *runner) run(c Case, dir string, record bool) (result, error) {
 		case fails:
 			dds[f.Assign], err = prepareFailure(how, path)
 		case reads(f) && keyed(f):
-			err = r.load(f, c[f.Name], path, dir)
+			err = r.load(f, c[f.Name], path)
 		case reads(f):
 			err = os.WriteFile(path, sequential(f, c[f.Name]), 0o644)
 		case writes(f) && !keyed(f):
@@ -221,7 +221,7 @@ func keyed(f blueprint.File) bool {
 
 // load writes an indexed or relative file through its loader, which reads
 // the records from a sequential file.
-func (r *runner) load(f blueprint.File, records [][]byte, path, dir string) error {
+func (r *runner) load(f blueprint.File, records [][]byte, path string) error {
 	in := path + ".load"
 	if err := os.WriteFile(in, bytes.Join(records, nil), 0o644); err != nil {
 		return err

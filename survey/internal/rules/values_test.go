@@ -72,7 +72,7 @@ func TestCopiesAndDigits(t *testing.T) {
 	knowledge := Knowledge{
 		MayChange: func(s cobol.Statement, names []string) bool { return len(writers(s, names)) > 0 },
 		Writers:   writers,
-		Copies:    func(from, to string) bool { return true },
+		Copies:    func(_, _ string) bool { return true },
 		DigitFields: func(field string) (int, []DigitField) {
 			if field != "MONTH-NUMBER" {
 				return 0, nil

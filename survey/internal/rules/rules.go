@@ -8,10 +8,8 @@
 // past those before it; an EVALUATE without WHEN OTHER has a path for when
 // nothing matches. A path ends at a statement that ends unconditionally,
 // such as GO TO or STOP RUN, or at EXIT PARAGRAPH or EXIT SECTION, so
-// that in the IF ...
-// GO TO chains of old code the rest of the paragraph runs only on the
-// paths that did not jump.
-// The body of an inline PERFORM is a table of its own, for one pass
+// that in the IF ... GO TO chains of old code the rest of the paragraph
+// runs only on the paths that did not jump. The body of an inline PERFORM is a table of its own, for one pass
 // through the loop, which starts knowing the loop's UNTIL condition false
 // unless the loop tests it after each pass.
 package rules

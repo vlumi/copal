@@ -207,7 +207,7 @@ func (b *Batch) provideDataset(readers []reading, store *dataset.Store, dir stri
 	for _, dsn := range names {
 		var err error
 		if f.Organization == "INDEXED" {
-			if err = result.runner.load(f, records, store.Path(dsn), dir); err == nil {
+			if err = result.runner.load(f, records, store.Path(dsn)); err == nil {
 				err = store.CatalogIndexed(dsn, in.root.Size())
 			}
 		} else {

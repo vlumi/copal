@@ -55,9 +55,10 @@ type Edge struct {
 	Label     string
 }
 
-// Style is how an edge's line is drawn.
+// Style is how an edge's line is drawn: solid, dashed or dotted.
 type Style string
 
+// The styles, Solid the default.
 const (
 	Solid  Style = ""
 	Dashed Style = "dashed"

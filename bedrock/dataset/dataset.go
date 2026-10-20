@@ -127,13 +127,14 @@ func (s *Store) Catalog(dsn string, lrecl int) error {
 		return fmt.Errorf("%s: a record length of %d", dsn, lrecl)
 	}
 	info, err := os.Stat(s.Path(dsn))
-	if errors.Is(err, os.ErrNotExist) {
+	switch {
+	case errors.Is(err, os.ErrNotExist):
 		if err := os.WriteFile(s.Path(dsn), nil, 0o644); err != nil {
 			return err
 		}
-	} else if err != nil {
+	case err != nil:
 		return err
-	} else if info.Size()%int64(lrecl) != 0 {
+	case info.Size()%int64(lrecl) != 0:
 		return fmt.Errorf("%s: %d bytes is not a whole number of %d-byte records", dsn, info.Size(), lrecl)
 	}
 	s.catalog[dsn] = entry{lrecl: lrecl}

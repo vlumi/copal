@@ -656,10 +656,10 @@ func over(at Node, r record, start, length int) []Node {
 // over does, each once: those of the records with a field over exactly the
 // bytes, if any has one, as a record of the same type does.
 func overEach(at Node, records []record, start, length int) []Node {
-	var exact, any []Node
+	var exact, loose []Node
 	for _, r := range records {
 		nodes := over(at, r, start, length)
-		target := &any
+		target := &loose
 		if slices.ContainsFunc(r.fields, func(s span) bool { return s.start == start && s.length == length }) {
 			target = &exact
 		}
@@ -672,7 +672,7 @@ func overEach(at Node, records []record, start, length int) []Node {
 	if len(exact) > 0 {
 		return exact
 	}
-	return any
+	return loose
 }
 
 // bytesOf is where a field is in the record of a file it belongs to.
