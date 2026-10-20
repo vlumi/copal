@@ -3,7 +3,7 @@ package blueprint
 import (
 	"testing"
 
-	"github.com/vlumi/copal/bedrock/layout"
+	"github.com/vlumi/cobolith/layout"
 )
 
 // Each rule of fieldKind, and the order they are tried in.

@@ -11,9 +11,9 @@ import (
 	"fmt"
 	"slices"
 
-	"github.com/vlumi/copal/bedrock/cobol"
-	"github.com/vlumi/copal/bedrock/layout"
-	"github.com/vlumi/copal/bedrock/record"
+	"github.com/vlumi/cobolith/cobol"
+	"github.com/vlumi/cobolith/layout"
+	"github.com/vlumi/cobolith/record"
 	"github.com/vlumi/copal/survey/blueprint"
 	"github.com/vlumi/copal/survey/internal/dataflow"
 	"github.com/vlumi/copal/survey/internal/rules"

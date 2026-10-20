@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/vlumi/copal/bedrock/cobol"
+	"github.com/vlumi/cobolith/cobol"
 )
 
 // layout writes a table as text: a line per condition and per action,

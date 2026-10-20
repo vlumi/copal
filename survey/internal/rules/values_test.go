@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/vlumi/copal/bedrock/cobol"
+	"github.com/vlumi/cobolith/cobol"
 )
 
 // TestGivenValues checks that a PERFORM of a paragraph that only gives a

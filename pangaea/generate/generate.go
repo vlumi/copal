@@ -9,7 +9,7 @@ import (
 	"math/rand/v2"
 	"slices"
 
-	"github.com/vlumi/copal/bedrock/record"
+	"github.com/vlumi/cobolith/record"
 	"github.com/vlumi/copal/pangaea/records"
 )
 

@@ -14,7 +14,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/vlumi/copal/bedrock/cobol"
+	"github.com/vlumi/cobolith/cobol"
 	"github.com/vlumi/copal/console"
 	"github.com/vlumi/copal/pangaea/bank"
 	"github.com/vlumi/copal/survey/blueprint"

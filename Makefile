@@ -17,6 +17,7 @@ lint-md:  ## Lint the Markdown files
 .PHONY: lint-go
 lint-go:  ## Lint the Go code and check its formatting
 	golangci-lint run ./...
+	cd cobolith && golangci-lint run ./...
 
 .PHONY: lint-deps
 lint-deps:  ## Check that the dependencies between the parts run one way
@@ -25,6 +26,7 @@ lint-deps:  ## Check that the dependencies between the parts run one way
 .PHONY: test
 test:  ## Run the tests
 	go test ./...
+	cd cobolith && go test ./...
 
 .PHONY: pangaea-build
 pangaea-build:  ## Compile Pangaea's COBOL programs

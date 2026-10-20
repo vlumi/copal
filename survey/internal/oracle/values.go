@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/vlumi/copal/bedrock/layout"
-	"github.com/vlumi/copal/bedrock/record"
+	"github.com/vlumi/cobolith/layout"
+	"github.com/vlumi/cobolith/record"
 )
 
 // value is what goes into a field: a number, in units of the field's

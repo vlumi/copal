@@ -7,8 +7,8 @@ package records
 import (
 	"path/filepath"
 
-	"github.com/vlumi/copal/bedrock/cobol"
-	"github.com/vlumi/copal/bedrock/record"
+	"github.com/vlumi/cobolith/cobol"
+	"github.com/vlumi/cobolith/record"
 )
 
 // Layouts are the bank's record layouts.

@@ -6,7 +6,7 @@ package fileio
 import (
 	"slices"
 
-	"github.com/vlumi/copal/bedrock/cobol"
+	"github.com/vlumi/cobolith/cobol"
 )
 
 // Modes of use. A SORT's USING files are read as input, its GIVING files

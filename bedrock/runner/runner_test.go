@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/vlumi/cobolith/jcl"
 	"github.com/vlumi/copal/bedrock/dataset"
-	"github.com/vlumi/copal/bedrock/jcl"
 )
 
 // newRunner sets up a runner whose programs are shell scripts.

@@ -1,8 +1,9 @@
 #!/bin/sh
-# Checks that the dependencies between Copal's parts run one way: bedrock
-# imports nothing else, survey and the specimens, pangaea and laurasia,
-# import bedrock and never each other, and only console imports survey,
-# pangaea and bedrock. Tests count too.
+# Checks that the dependencies between Copal's parts run one way: cobolith,
+# a module of its own, imports nothing of Copal; bedrock imports nothing
+# else; survey and the specimens, pangaea and laurasia, import bedrock and
+# cobolith and never each other; and only console imports survey, pangaea
+# and bedrock. Tests count too.
 set -eu
 
 module=github.com/vlumi/copal
@@ -26,4 +27,10 @@ forbid bedrock survey pangaea laurasia console
 forbid survey pangaea laurasia console
 forbid pangaea survey laurasia console
 forbid laurasia survey pangaea console
+offenders=$(cd cobolith && go list -deps -test ./... | grep "^$module" || true)
+if [ -n "$offenders" ]; then
+    echo "cobolith must not import $module:"
+    echo "$offenders" | sed 's/^/  /'
+    status=1
+fi
 exit $status

@@ -14,8 +14,8 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/vlumi/cobolith/jcl"
 	"github.com/vlumi/copal/bedrock/dataset"
-	"github.com/vlumi/copal/bedrock/jcl"
 	cobolrun "github.com/vlumi/copal/bedrock/run"
 )
 

@@ -3,7 +3,7 @@ package dataflow
 import (
 	"slices"
 
-	"github.com/vlumi/copal/bedrock/cobol"
+	"github.com/vlumi/cobolith/cobol"
 )
 
 // CallWrites tells which of the items a CALL passes the program called may

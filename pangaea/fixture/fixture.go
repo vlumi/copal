@@ -17,9 +17,9 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/vlumi/cobolith/layout"
+	"github.com/vlumi/cobolith/record"
 	"github.com/vlumi/copal/bedrock/dataset"
-	"github.com/vlumi/copal/bedrock/layout"
-	"github.com/vlumi/copal/bedrock/record"
 	"github.com/vlumi/copal/pangaea/records"
 )
 

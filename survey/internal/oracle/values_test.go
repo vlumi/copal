@@ -4,8 +4,8 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/vlumi/copal/bedrock/cobol"
-	"github.com/vlumi/copal/bedrock/layout"
+	"github.com/vlumi/cobolith/cobol"
+	"github.com/vlumi/cobolith/layout"
 )
 
 // A literal becomes a value for its field: a number in units of the

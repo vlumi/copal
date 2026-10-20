@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/vlumi/copal/bedrock/cobol"
+	"github.com/vlumi/cobolith/cobol"
 	"github.com/vlumi/copal/survey/blueprint"
 )
 

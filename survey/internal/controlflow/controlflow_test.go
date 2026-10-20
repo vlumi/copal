@@ -4,7 +4,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/vlumi/copal/bedrock/cobol"
+	"github.com/vlumi/cobolith/cobol"
 )
 
 func graph(t *testing.T, path string) *Graph {

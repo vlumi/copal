@@ -5,7 +5,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/vlumi/copal/bedrock/layout"
+	"github.com/vlumi/cobolith/layout"
 )
 
 // A record that leaves bytes FILLER, moved whole into a record as long,

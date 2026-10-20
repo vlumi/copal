@@ -17,7 +17,7 @@ package controlflow
 import (
 	"slices"
 
-	"github.com/vlumi/copal/bedrock/cobol"
+	"github.com/vlumi/cobolith/cobol"
 )
 
 // Graph is a program's statements and the paths between them. Node 0 is
