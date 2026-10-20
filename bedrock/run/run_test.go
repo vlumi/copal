@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/vlumi/copal/bedrock/cobol"
+	"github.com/vlumi/cobolith/cobol"
 )
 
 // A run binds the program's files by DD name, gives it its standard

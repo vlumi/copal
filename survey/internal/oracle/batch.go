@@ -10,8 +10,8 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/vlumi/cobolith/jcl"
 	"github.com/vlumi/copal/bedrock/dataset"
-	"github.com/vlumi/copal/bedrock/jcl"
 	"github.com/vlumi/copal/bedrock/run"
 	jobs "github.com/vlumi/copal/bedrock/runner"
 	"github.com/vlumi/copal/survey/blueprint"

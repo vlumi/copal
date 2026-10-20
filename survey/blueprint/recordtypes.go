@@ -5,7 +5,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/vlumi/copal/bedrock/cobol"
+	"github.com/vlumi/cobolith/cobol"
 )
 
 // RecordType is a type of record a program tells apart: the condition name

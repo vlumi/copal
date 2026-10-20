@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/vlumi/copal/bedrock/cobol"
-	"github.com/vlumi/copal/bedrock/layout"
+	"github.com/vlumi/cobolith/cobol"
+	"github.com/vlumi/cobolith/layout"
 	"github.com/vlumi/copal/survey/blueprint"
 )
 

@@ -21,9 +21,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/vlumi/copal/bedrock/cobol"
+	"github.com/vlumi/cobolith/cobol"
+	"github.com/vlumi/cobolith/jcl"
 	"github.com/vlumi/copal/bedrock/dataset"
-	"github.com/vlumi/copal/bedrock/jcl"
 	"github.com/vlumi/copal/bedrock/run"
 	"github.com/vlumi/copal/bedrock/runner"
 	"github.com/vlumi/copal/pangaea/bank"

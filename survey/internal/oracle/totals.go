@@ -3,8 +3,8 @@ package oracle
 import (
 	"slices"
 
-	"github.com/vlumi/copal/bedrock/cobol"
-	"github.com/vlumi/copal/bedrock/layout"
+	"github.com/vlumi/cobolith/cobol"
+	"github.com/vlumi/cobolith/layout"
 )
 
 // total is a field of an input that the program checks against an item it

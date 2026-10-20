@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/vlumi/copal/bedrock/layout"
+	"github.com/vlumi/cobolith/layout"
 	"github.com/vlumi/copal/bedrock/runner"
 	"github.com/vlumi/copal/pangaea/bank"
 	"github.com/vlumi/copal/pangaea/generate"

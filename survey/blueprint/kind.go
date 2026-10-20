@@ -4,7 +4,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/vlumi/copal/bedrock/layout"
+	"github.com/vlumi/cobolith/layout"
 )
 
 // What a field holds, as its layout and the program's files and sorts say.

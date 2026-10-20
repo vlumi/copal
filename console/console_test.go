@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/vlumi/copal/bedrock/cobol"
+	"github.com/vlumi/cobolith/cobol"
 	"github.com/vlumi/copal/bedrock/run"
 	"github.com/vlumi/copal/pangaea/bank"
 	"github.com/vlumi/copal/survey/blueprint"

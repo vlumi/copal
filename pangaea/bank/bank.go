@@ -12,9 +12,9 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/vlumi/cobolith/jcl"
+	"github.com/vlumi/cobolith/record"
 	"github.com/vlumi/copal/bedrock/dataset"
-	"github.com/vlumi/copal/bedrock/jcl"
-	"github.com/vlumi/copal/bedrock/record"
 	"github.com/vlumi/copal/bedrock/runner"
 	"github.com/vlumi/copal/pangaea/generate"
 	"github.com/vlumi/copal/pangaea/records"

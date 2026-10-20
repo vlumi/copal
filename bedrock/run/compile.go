@@ -12,7 +12,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/vlumi/copal/bedrock/cobol"
+	"github.com/vlumi/cobolith/cobol"
 )
 
 // dialectFlags are the flags that make GnuCOBOL compile each dialect like
