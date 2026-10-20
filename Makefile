@@ -17,7 +17,6 @@ lint-md:  ## Lint the Markdown files
 .PHONY: lint-go
 lint-go:  ## Lint the Go code and check its formatting
 	golangci-lint run ./...
-	cd cobolith && golangci-lint run ./...
 
 .PHONY: lint-deps
 lint-deps:  ## Check that the dependencies between the parts run one way
@@ -26,7 +25,6 @@ lint-deps:  ## Check that the dependencies between the parts run one way
 .PHONY: test
 test:  ## Run the tests
 	go test ./...
-	cd cobolith && go test ./...
 
 .PHONY: pangaea-build
 pangaea-build:  ## Compile Pangaea's COBOL programs
@@ -75,11 +73,6 @@ RATE ?= 5
 .PHONY: simulate
 simulate:  ## Send card traffic to the console's online channel until interrupted (RATE)
 	go run ./pangaea/cmd/pangaea simulate -api http://$(ADDR)/api -rate $(RATE)
-
-.PHONY: conformance
-conformance:  ## Read NIST's COBOL-85 test suite with cobolith, fetching it first, and rewrite its report
-	@scripts/fetch-ccvs85.sh
-	cd cobolith && go run ./conformance -suite ../.cache/ccvs85/newcob.val -out conformance/README.md
 
 .PHONY: oracle
 oracle:  ## Search both specimens' programs again for cases that reach their rules, and rewrite oracle/

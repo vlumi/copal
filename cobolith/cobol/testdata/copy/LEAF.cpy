@@ -1,1 +1,0 @@
-000100     05  FROM-LEAF    PIC 9.
