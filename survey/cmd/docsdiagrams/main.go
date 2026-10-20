@@ -60,7 +60,7 @@ func architecture() diagram.Graph {
 			{ID: "laurasia", Label: "laurasia\nthe card processor"},
 			{ID: "blueprints", Label: "blueprints/pangaea\nthe survey of the bank", Data: true},
 			{ID: "bedrock", Label: "bedrock\nrunning programs, jobs, scripts"},
-			{ID: "cobolith", Label: "cobolith\nCOBOL, JCL, layouts, records"},
+			{ID: "cobolith", Label: "cobolith, a library\nCOBOL, JCL, layouts, records"},
 		},
 		Edges: []diagram.Edge{
 			{From: "console", To: "survey"},

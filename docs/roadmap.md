@@ -176,12 +176,12 @@ Where it stands: 453 of the 481 rules are reached, 12 are marked with the reason
 
 Done when: every rule of both specimens is reached by a recorded case, left out as one no run can take, or listed as reached only by an I/O error or bad data that no case records, with the reason.
 
-## 15. Bedrock's COBOL as a library
+## 15. Bedrock's COBOL as a library (done)
 
 What reads COBOL, lays out its records and reads them by field, `cobol`, `layout` and `record`, and `jcl` with them, as an open-source library of its own, cobolith, for anyone else reading COBOL. The plan is in [plans/library.md](plans/library.md). Running it, `run`, `runner` and `dataset`, is this project's harness and stays here. The parsers evaluated before bedrock was written did not keep positions, lay out records or compute data flow that could be trusted; a library that does is worth having even unfinished.
 
 - First a module of its own within this repository, with the public API it would have, so that the survey and both specimens use it only through that. The module is done: `cobolith/`, which Copal requires through a `replace`. It has its public API, tests of its own, a report against NIST's COBOL-85 suite, 383 of its 459 programs read, and a README that says what it covers.
-- Then its own repository, versioned below 1.0 and published as pre-production: a comprehensive starting point that is honest about what it has been run against, two specimens written for it, and what it has not.
+- Then its own repository, versioned below 1.0 and published as pre-production: a comprehensive starting point that is honest about what it has been run against, two specimens written for it, and what it has not. Done: [cobolith](https://github.com/vlumi/cobolith), public, tagged `v0.1.0` with a changelog, and required by Copal at that version.
 - Stability comes only from real code. Its API and coverage settle as code it was not written for is run through it, by this project or by others; in a vacuum it stays pre-production.
 
 Done when: it is published, the survey and the specimens import it from there, and its README says what it covers, what it has been tested against, and what it does not yet read.
