@@ -198,10 +198,13 @@ func TestRunGenerationsTemporaryAndAppend(t *testing.T) {
 	assertFile(t, r.Datasets.Path("LOG.G0002V00"), "LL")
 }
 
-func TestRunRejectsAppendWithoutRecordLength(t *testing.T) {
+func TestRunRejectsNewWithoutRecordLength(t *testing.T) {
 	r := newRunner(t, map[string]string{"OK": "exit 0"})
 	if _, err := r.Run(parse(t, "//J JOB\n//S EXEC PGM=OK\n//LOG DD DSN=LOG,DISP=MOD\n")); err == nil {
 		t.Error("appended to a dataset that does not exist without a DCB")
+	}
+	if _, err := r.Run(parse(t, "//J JOB\n//S EXEC PGM=OK\n//OUT DD DSN=OUT,DISP=NEW\n")); err == nil {
+		t.Error("created a dataset without a DCB")
 	}
 }
 
