@@ -3,6 +3,7 @@ package oracle
 import (
 	"fmt"
 	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/vlumi/copal/bedrock/cobol"
@@ -13,7 +14,8 @@ import (
 // lever is one change to a case: a value put into a field of an input, in
 // each record that has the field, or the value of another input field,
 // give or take one, or a change to an input's records: none at all, one
-// of each type more, or none of one type; or the input file failed.
+// of each type more, none of one type, or as many as a count; or the input
+// file failed.
 type lever struct {
 	input  string
 	field  *layout.Field
@@ -23,6 +25,7 @@ type lever struct {
 	delta  int64
 	change recordChange
 	kind   int
+	count  int
 	// failure is how the input fails, for a lever that fails it.
 	failure failure
 	// also is a second field change made with this one, for a condition
@@ -38,8 +41,12 @@ const (
 	emptyInput
 	doubled
 	withoutType
+	repeated
 	failFile
 )
+
+// maxCount is the most records a lever repeats an input's to.
+const maxCount = 100
 
 // levers lists the changes worth trying, in a fixed order: for each
 // condition of the program, the values it compares with and their
@@ -98,11 +105,48 @@ func (p *program) levers() []lever {
 		for k := range p.shapes[in.name()].types {
 			add(lever{input: in.name(), change: withoutType, kind: k})
 		}
+		for _, n := range p.counts() {
+			add(lever{input: in.name(), change: repeated, count: n})
+		}
 	}
 	for _, l := range p.failures() {
 		add(l)
 	}
 	return levers
+}
+
+// counts are the numbers of records worth trying an input with: one more
+// than each number, up to maxCount, that a condition compares an item the
+// program only adds to with, such as a count of the records read.
+func (p *program) counts() []int {
+	var counts []int
+	for _, u := range p.units {
+		for _, c := range conditionsOf(u.source) {
+			for _, cmp := range comparisons(c) {
+				n, err := strconv.Atoi(cmp.Right.Text)
+				if err == nil && n > 0 && n < maxCount && u.onlyAddedTo(cmp.Left.Name) && !slices.Contains(counts, n+1) {
+					counts = append(counts, n+1)
+				}
+			}
+		}
+	}
+	return counts
+}
+
+// comparisons lists the comparisons within a condition of an item with a
+// number, the item on the left.
+func comparisons(c *cobol.Condition) []*cobol.Condition {
+	var list []*cobol.Condition
+	for _, part := range c.Parts {
+		list = append(list, comparisons(part)...)
+	}
+	switch c.Op {
+	case "=", ">", ">=":
+		if c.Left.Name != "" && c.Right.Name == "" && len(c.Right.Refs) == 0 {
+			list = append(list, c)
+		}
+	}
+	return list
 }
 
 // fieldLevers lists the values worth putting into the input fields a
@@ -313,7 +357,8 @@ func leaves(f *layout.Field) []*layout.Field {
 // number one above and below; the values of the condition names
 // it tests, and a value of none of them; for a class test, a value of the
 // class and one not; and for a number that reaches the item through other
-// statements, zero, one, minus one and its largest.
+// statements, zero, one, minus one and its largest, and with decimals, one
+// and minus one whole, which survive rounding to fewer.
 func valuesFor(records *layout.ProgramRecords, constants map[string]string, c *cobol.Condition, item string, f *layout.Field) []value {
 	var values []value
 	addLiteral := func(lit string) {
@@ -365,6 +410,9 @@ func valuesFor(records *layout.ProgramRecords, constants map[string]string, c *c
 	visit(c)
 	if numeric(f) {
 		values = append(values, number(0), number(1), number(-1), number(largest(f)))
+		if f.Scale > 0 {
+			values = append(values, number(pow10(f.Scale)), number(-pow10(f.Scale)))
+		}
 	} else {
 		values = append(values, text(""))
 	}
@@ -548,6 +596,14 @@ func (l lever) apply(p *program, c Case) (Case, bool) {
 			return nil, false
 		}
 		next[l.input] = append(records, cloneRecords(records)...)
+	case repeated:
+		if len(records) == 0 || len(records) >= l.count {
+			return nil, false
+		}
+		for i := len(records); i < l.count; i++ {
+			records = append(records, slices.Clone(records[i%len(c[l.input])]))
+		}
+		next[l.input] = records
 	case withoutType:
 		kept := slices.DeleteFunc(records, func(r []byte) bool { return s.typeOfRecord(p.input(l.input), r) == l.kind })
 		if len(kept) == len(c[l.input]) {

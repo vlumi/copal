@@ -11,7 +11,7 @@ For each main program, input data that reaches the rules of its decision tables,
 | [CARDLOAD](CARDLOAD/) | 10 of 10 | 5 |
 | [GLSUM](GLSUM/) | 20 of 25 | 7 |
 | [HOLDEXT](HOLDEXT/) | 11 of 11 | 6 |
-| [INTACCR](INTACCR/) | 31 of 33 | 11 |
+| [INTACCR](INTACCR/) | 33 of 33 | 13 |
 | [MONCHG](MONCHG/) | 18 of 21 | 11 |
 | [STMTPRT](STMTPRT/) | 31 of 34 | 12 |
 | [TXPOST](TXPOST/) | 30 of 30 | 13 |

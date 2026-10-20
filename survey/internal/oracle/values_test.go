@@ -88,3 +88,14 @@ func TestPart(t *testing.T) {
 		t.Errorf("month 100 set: %q", r)
 	}
 }
+
+// A comparison of an item with a number, within a condition, is a count
+// worth repeating records to; one with another item is not.
+func TestComparisons(t *testing.T) {
+	count := &cobol.Condition{Op: "=", Left: &cobol.Operand{Text: "WS-COUNT", Name: "WS-COUNT", Refs: []string{"WS-COUNT"}}, Right: &cobol.Operand{Text: "20"}}
+	other := &cobol.Condition{Op: ">", Left: &cobol.Operand{Text: "WS-A", Name: "WS-A", Refs: []string{"WS-A"}}, Right: &cobol.Operand{Text: "WS-B", Name: "WS-B", Refs: []string{"WS-B"}}}
+	got := comparisons(&cobol.Condition{Op: "OR", Parts: []*cobol.Condition{count, other}})
+	if len(got) != 1 || got[0] != count {
+		t.Errorf("comparisons %v, want the count's alone", got)
+	}
+}
