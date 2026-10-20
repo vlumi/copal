@@ -1,6 +1,7 @@
 package rules
 
 import (
+	"fmt"
 	"slices"
 	"strconv"
 	"strings"
@@ -15,13 +16,25 @@ type ConditionNames func(name string) (field string, values []string, ok bool)
 // Knowledge is what the rules know of the program's data: what a statement
 // may change, and by which of the statements it runs; what a condition
 // name stands for; the values fields of the working storage start with,
-// by name; and the fields of text a group holds.
+// by name; the fields of text a group holds; how many digits a field of
+// digits has, and the other fields of digits over its bytes, through a
+// redefinition too; and whether
+// a MOVE from one field to another keeps its value whole.
 type Knowledge struct {
 	MayChange      MayChange
 	Writers        func(s cobol.Statement, names []string) []cobol.Statement
 	ConditionNames ConditionNames
 	InitialValues  map[string]string
 	TextFields     func(group string) []string
+	DigitFields    func(field string) (digits int, over []DigitField)
+	Copies         func(from, to string) bool
+}
+
+// DigitField is a field of digits over some of the digits of another:
+// from offset, 0-based, for length.
+type DigitField struct {
+	Name           string
+	Offset, Length int
 }
 
 // assignment is a value a statement gives a field: a literal moved into
@@ -29,15 +42,23 @@ type Knowledge struct {
 type assignment struct {
 	field string
 	value string
+	from  string // the field whose value a MOVE copies, instead of a value
 }
 
 // assignments lists the values a statement gives fields, as events after
 // the statement's change: MOVE of a literal into fields by their plain
-// names, and of SPACES into the fields of text of a group, and SET of
-// condition names to true.
+// names, of SPACES into the fields of text of a group, and of a whole
+// number into the fields of digits over a field of digits, a MOVE of a
+// field that keeps its value whole, and SET of condition names to true.
 func (e *extractor) assignments(s cobol.Statement) []event {
 	var events []event
 	switch {
+	case s.Verb == "MOVE" && len(s.Reads) == 1 && s.Reads[0].Name != "" && s.Reads[0].Text == s.Reads[0].Name:
+		for _, w := range s.Writes {
+			if w.Name != "" && w.Text == w.Name && e.knowledge.Copies != nil && e.knowledge.Copies(s.Reads[0].Name, w.Name) {
+				events = append(events, event{assign: &assignment{field: w.Name, from: s.Reads[0].Name}})
+			}
+		}
 	case s.Verb == "MOVE" && len(s.Reads) == 1 && s.Reads[0].Name == "" && len(s.Reads[0].Refs) == 0:
 		for _, w := range s.Writes {
 			if w.Name == "" || w.Text != w.Name {
@@ -49,6 +70,7 @@ func (e *extractor) assignments(s cobol.Statement) []event {
 					events = append(events, event{assign: &assignment{field: f, value: s.Reads[0].Text}})
 				}
 			}
+			events = append(events, e.digitsOf(w.Name, s.Reads[0].Text)...)
 		}
 	case s.Verb == "SET" && len(s.Reads) == 0:
 		for _, w := range s.Writes {
@@ -56,6 +78,29 @@ func (e *extractor) assignments(s cobol.Statement) []event {
 				events = append(events, event{assign: &assignment{field: field, value: values[0]}})
 			}
 		}
+	}
+	return events
+}
+
+// digitsOf are the values a whole number moved into a field of digits
+// gives the other fields of digits over its bytes: their digits of it.
+func (e *extractor) digitsOf(field, literal string) []event {
+	n, ok := number(literal)
+	if !ok || n < 0 || n != float64(int64(n)) || e.knowledge.DigitFields == nil {
+		return nil
+	}
+	width, over := e.knowledge.DigitFields(field)
+	digits := fmt.Sprintf("%0*d", width, int64(n))
+	if width == 0 || len(digits) != width {
+		return nil
+	}
+	var events []event
+	for _, d := range over {
+		value := strings.TrimLeft(digits[d.Offset:d.Offset+d.Length], "0")
+		if value == "" {
+			value = "0"
+		}
+		events = append(events, event{assign: &assignment{field: d.Name, value: value}})
 	}
 	return events
 }
@@ -75,6 +120,9 @@ func (e *extractor) names(name string) (string, []string, bool) {
 func (e *extractor) known(events []event, field string) (values []string, ok bool, not []string) {
 	for i, ev := range slices.Backward(events) {
 		switch {
+		case ev.assign != nil && ev.assign.field == field && ev.assign.from != "":
+			values, ok, _ := e.known(events[:i], ev.assign.from)
+			return values, ok, not
 		case ev.assign != nil && ev.assign.field == field:
 			return []string{ev.assign.value}, true, not
 		case ev.change != nil && e.knowledge.MayChange(*ev.change, []string{field}):
@@ -104,7 +152,7 @@ func (e *extractor) gives(s cobol.Statement, field string) ([]string, bool) {
 	var values []string
 	for _, w := range e.knowledge.Writers(s, []string{field}) {
 		i := slices.IndexFunc(e.assignments(w), func(ev event) bool { return ev.assign.field == field })
-		if i < 0 {
+		if i < 0 || e.assignments(w)[i].assign.from != "" {
 			return nil, false
 		}
 		values = union(values, []string{e.assignments(w)[i].assign.value})
@@ -189,6 +237,9 @@ func (e *extractor) evaluate(events []event, c *cobol.Condition) (outcome, ok bo
 		}
 		return false, len(possible(values, not)) == 0
 	case "=", "<", ">", "<=", ">=":
+		if o, same := e.sameItems(events, c); same {
+			return o, true
+		}
 		left, lok := e.operandValues(events, c.Left)
 		right, rok := e.operandValues(events, c.Right)
 		if !lok || !rok {
@@ -200,6 +251,60 @@ func (e *extractor) evaluate(events []event, c *cobol.Condition) (outcome, ok bo
 	}
 	return false, false
 }
+
+// sameItems decides a comparison of two fields by what the path knows
+// they hold: the same value, when one was copied from the other, or from
+// the same field, with neither changed since; or, for an equality, two
+// values a test found one less than the other, with neither changed since.
+func (e *extractor) sameItems(events []event, c *cobol.Condition) (outcome, ok bool) {
+	if !isField(c.Left) || !isField(c.Right) {
+		return false, false
+	}
+	a, b := e.alias(events, c.Left.Name), e.alias(events, c.Right.Name)
+	switch {
+	case a == b:
+		return c.Op == "=" || c.Op == "<=" || c.Op == ">=", true
+	case c.Op == "=" && e.ordered(events, a, b):
+		return false, true
+	}
+	return false, false
+}
+
+// alias is the field whose value a field holds, as far as the path knows:
+// the field it was last copied from, if neither has changed since, and so
+// on; or itself.
+func (e *extractor) alias(events []event, field string) string {
+	for i, ev := range slices.Backward(events) {
+		switch {
+		case ev.assign != nil && ev.assign.field == field:
+			if ev.assign.from != "" && !e.changedSince(events[i+1:], []string{ev.assign.from}) {
+				return e.alias(events[:i], ev.assign.from)
+			}
+			return field
+		case ev.change != nil && e.knowledge.MayChange(*ev.change, []string{field}):
+			return field
+		}
+	}
+	return field
+}
+
+// ordered reports whether a test of the path found one of two fields less
+// than the other, with neither changed since.
+func (e *extractor) ordered(events []event, a, b string) bool {
+	for i, ev := range slices.Backward(events) {
+		t := ev.test
+		if t == nil || t.cond == nil || !t.outcome || t.cond.Op != "<" && t.cond.Op != ">" || !isField(t.cond.Left) || !isField(t.cond.Right) {
+			continue
+		}
+		pair := []string{t.cond.Left.Name, t.cond.Right.Name}
+		if slices.Contains(pair, a) && slices.Contains(pair, b) && !e.changedSince(events[i+1:], []string{a, b}) {
+			return true
+		}
+	}
+	return false
+}
+
+func isField(op *cobol.Operand) bool { return op != nil && op.Name != "" && op.Text == op.Name }
 
 // tested is the outcome of the path's latest test of a condition, if
 // nothing since may have changed what it refers to.

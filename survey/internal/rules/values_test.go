@@ -59,3 +59,42 @@ func writersIn(p *cobol.Program) func(cobol.Statement, []string) []cobol.Stateme
 		return writers
 	}
 }
+
+// TestCopiesAndDigits checks that a field copied from another holds its
+// value, and that a number moved into a field of digits gives the fields
+// of digits over its bytes their digits.
+func TestCopiesAndDigits(t *testing.T) {
+	p, err := cobol.ReadProgram("testdata/COPIES.cbl", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	writers := writersIn(p)
+	knowledge := Knowledge{
+		MayChange: func(s cobol.Statement, names []string) bool { return len(writers(s, names)) > 0 },
+		Writers:   writers,
+		Copies:    func(from, to string) bool { return true },
+		DigitFields: func(field string) (int, []DigitField) {
+			if field != "MONTH-NUMBER" {
+				return 0, nil
+			}
+			return 6, []DigitField{{Name: "CM-MONTH", Offset: 4, Length: 2}}
+		},
+	}
+	want := []string{`COPY-PARA 
+Y N | REQUEST-KEY < MASTER-KEY
+N Y | MASTER-KEY = ACTIVE-KEY
+1 1 | MOVE MASTER-KEY TO ACTIVE-KEY
+2   | MOVE REQUEST-KEY TO ACTIVE-KEY
+  2 | DISPLAY 'MASTER'
+`, `DIGITS-PARA 
+N | CM-MONTH = 12
+1 | MOVE 0 TO MONTH-NUMBER
+`}
+	var got []string
+	for _, table := range Tables(p, knowledge) {
+		got = append(got, layout(table))
+	}
+	if !slices.Equal(got, want) {
+		t.Errorf("got\n%s\nwant\n%s", strings.Join(got, "\n"), strings.Join(want, "\n"))
+	}
+}

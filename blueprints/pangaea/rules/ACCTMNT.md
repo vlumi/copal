@@ -94,17 +94,17 @@ Source: [ACCTMNT.cbl:190](../../../pangaea/programs/ACCTMNT.cbl#L190).
 
 ## 2000-NEXT-ACCOUNT
 
-| | 1 | 2 | 3 | 4 |
-| --- | :-: | :-: | :-: | :-: |
-| `WS-REQUEST-KEY < WS-MASTER-KEY` | Y | Y | N | N |
-| `WS-MASTER-KEY = WS-ACTIVE-KEY` | Y | N | Y | N |
-| → `MOVE WS-MASTER-KEY TO WS-ACTIVE-KEY` | 1 | 1 | 1 | 1 |
-| → `MOVE WS-REQUEST-KEY TO WS-ACTIVE-KEY` | 2 | 2 | | |
-| → `SET NOTHING-HELD TO TRUE` | 3 | 3 | 2 | 2 |
-| → `MOVE ACCT-IN-RECORD TO ACCT-MASTER-RECORD` | 4 | | 3 | |
-| → `ADD AM-BALANCE TO WS-BALANCES-IN` | 5 | | 4 | |
-| → `SET ACCOUNT-HELD TO TRUE` | 6 | | 5 | |
-| → `PERFORM 1200-READ-MASTER THRU 1200-EXIT` | 7 | | 6 | |
+| | 1 | 2 |
+| --- | :-: | :-: |
+| `WS-REQUEST-KEY < WS-MASTER-KEY` | Y | N |
+| `WS-MASTER-KEY = WS-ACTIVE-KEY` | N | Y |
+| → `MOVE WS-MASTER-KEY TO WS-ACTIVE-KEY` | 1 | 1 |
+| → `MOVE WS-REQUEST-KEY TO WS-ACTIVE-KEY` | 2 | |
+| → `SET NOTHING-HELD TO TRUE` | 3 | 2 |
+| → `MOVE ACCT-IN-RECORD TO ACCT-MASTER-RECORD` | | 3 |
+| → `ADD AM-BALANCE TO WS-BALANCES-IN` | | 4 |
+| → `SET ACCOUNT-HELD TO TRUE` | | 5 |
+| → `PERFORM 1200-READ-MASTER THRU 1200-EXIT` | | 6 |
 
 Source: [ACCTMNT.cbl:208](../../../pangaea/programs/ACCTMNT.cbl#L208).
 

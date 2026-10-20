@@ -36,22 +36,22 @@ Source: [STMTPRT.cbl:208](../../../pangaea/programs/STMTPRT.cbl#L208).
 
 ## 1000-INITIALIZE
 
-| | 1 | 2 | 3 | 4 | 5 |
-| --- | :-: | :-: | :-: | :-: | :-: |
-| `WS-FILE-STATUSES = ALL '0'` | N | Y | Y | Y | Y |
-| `READ ACCR-IN AT END` | | N | N | Y | Y |
-| `WS-CM-MONTH = 12` | | Y | N | Y | N |
-| → `OPEN INPUT ACCR-IN ACCT-IN AUDIT-IN OUTPUT STMT-OUT REPORT-OUT` | 1 | 1 | 1 | 1 | 1 |
-| → `DISPLAY 'STMTPRT: CANNOT OPEN FILES ' WS-FILE-STATUSES` | 2 | | | | |
-| → `MOVE 16 TO RETURN-CODE` | 3 | | | | |
-| → `STOP RUN` | 4 | | | | |
-| → `MOVE 0 TO WS-CLOSED-MONTH-NUMBER` | | 2 | 2 | 2 | 2 |
-| → `READ ACCR-IN` | | 3 | 3 | 3 | 3 |
-| → `MOVE AC-DUE-MONTH TO WS-CLOSED-MONTH-NUMBER` | | 4 | 4 | | |
-| → `MOVE WS-CM-YEAR TO WS-NM-YEAR` | | 5 | 5 | 4 | 4 |
-| → `ADD 1 TO WS-NM-YEAR` | | 6 | | 5 | |
-| → `MOVE 1 TO WS-NM-MONTH` | | 7 | | 6 | |
-| → `COMPUTE WS-NM-MONTH = WS-CM-MONTH + 1` | | | 6 | | 5 |
+| | 1 | 2 | 3 | 4 |
+| --- | :-: | :-: | :-: | :-: |
+| `WS-FILE-STATUSES = ALL '0'` | N | Y | Y | Y |
+| `READ ACCR-IN AT END` | | N | N | Y |
+| `WS-CM-MONTH = 12` | | Y | N | N |
+| → `OPEN INPUT ACCR-IN ACCT-IN AUDIT-IN OUTPUT STMT-OUT REPORT-OUT` | 1 | 1 | 1 | 1 |
+| → `DISPLAY 'STMTPRT: CANNOT OPEN FILES ' WS-FILE-STATUSES` | 2 | | | |
+| → `MOVE 16 TO RETURN-CODE` | 3 | | | |
+| → `STOP RUN` | 4 | | | |
+| → `MOVE 0 TO WS-CLOSED-MONTH-NUMBER` | | 2 | 2 | 2 |
+| → `READ ACCR-IN` | | 3 | 3 | 3 |
+| → `MOVE AC-DUE-MONTH TO WS-CLOSED-MONTH-NUMBER` | | 4 | 4 | |
+| → `MOVE WS-CM-YEAR TO WS-NM-YEAR` | | 5 | 5 | 4 |
+| → `ADD 1 TO WS-NM-YEAR` | | 6 | | |
+| → `MOVE 1 TO WS-NM-MONTH` | | 7 | | |
+| → `COMPUTE WS-NM-MONTH = WS-CM-MONTH + 1` | | | 6 | 5 |
 
 Source: [STMTPRT.cbl:226](../../../pangaea/programs/STMTPRT.cbl#L226).
 
