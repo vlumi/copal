@@ -4,47 +4,13 @@ MARKDOWNLINT := npx --yes markdownlint-cli2@0.23.3
 
 .PHONY: help
 help:  ## List the available commands
-	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z0-9_-]+:.*## / {printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+	@awk 'BEGIN {FS = ":.*## "} /^##@ / {printf "\n\033[1m%s\033[0m\n", substr($$0, 5)} /^[a-zA-Z0-9_-]+:.*## / {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-.PHONY: toolchain
-toolchain:  ## Check that the build tools are installed
-	@scripts/check-toolchain.sh
-
-.PHONY: lint-md
-lint-md:  ## Lint the Markdown files
-	@$(MARKDOWNLINT) "**/*.md" "!CLAUDE.md"
-
-.PHONY: lint-go
-lint-go:  ## Lint the Go code and check its formatting
-	golangci-lint run ./...
-
-.PHONY: lint-deps
-lint-deps:  ## Check that the dependencies between the parts run one way
-	@scripts/check-deps.sh
-
-.PHONY: test
-test:  ## Run the tests
-	go test ./...
-
-.PHONY: pangaea-build
-pangaea-build:  ## Compile Pangaea's COBOL programs
-	go run ./pangaea/cmd/pangaea build
+##@ The bank
 
 .PHONY: pangaea-daily
 pangaea-daily:  ## Run the daily batch on the fixture and show its reports
 	@scripts/pangaea-daily.sh
-
-.PHONY: pangaea-golden
-pangaea-golden:  ## Rewrite Pangaea's golden outputs from a run on the fixture
-	go test ./pangaea -run TestDaily -update
-
-.PHONY: laurasia-golden
-laurasia-golden:  ## Rewrite Laurasia's golden outputs from a run of its fixtures
-	go test ./laurasia -update
-
-SEED ?= 1
-ACCOUNTS ?= 3000
-N ?= 1
 
 .PHONY: bank-reset
 bank-reset:  ## Reset the running bank to a generated start (SEED, ACCOUNTS)
@@ -74,10 +40,12 @@ RATE ?= 5
 simulate:  ## Send card traffic to the console's online channel until interrupted (RATE)
 	go run ./pangaea/cmd/pangaea simulate -api http://$(ADDR)/api -rate $(RATE)
 
-.PHONY: oracle
-oracle:  ## Search both specimens' programs again for cases that reach their rules, and rewrite oracle/
-	go run ./survey/cmd/survey oracle -copybooks pangaea/copybooks -out oracle/pangaea -rules ../../blueprints/pangaea/rules -title pangaea -jobs START,ONLINE,DAILY,MONTHLY pangaea/programs/*.cbl pangaea/jobs/*.jcl
-	go run ./survey/cmd/survey oracle -dialect mf -copybooks laurasia/copybooks -out oracle/laurasia -rules ../../blueprints/laurasia/rules -title laurasia -jobs open,nightly,cycle laurasia/programs/*.cbl laurasia/scripts/*.sh
+# Compiles Pangaea's programs for the targets that run the bank; not listed.
+.PHONY: pangaea-build
+pangaea-build:
+	go run ./pangaea/cmd/pangaea build
+
+##@ The survey
 
 .PHONY: blueprints
 blueprints:  ## Regenerate Pangaea's and Laurasia's blueprints with Survey
@@ -87,17 +55,60 @@ blueprints:  ## Regenerate Pangaea's and Laurasia's blueprints with Survey
 
 EXPLORE_ADDR ?= 127.0.0.1:1192
 
-.PHONY: explore
-explore:  ## Explore Pangaea's analysis in the browser (EXPLORE_ADDR)
+.PHONY: explore-pangaea
+explore-pangaea:  ## Explore Pangaea's analysis in the browser (EXPLORE_ADDR)
 	go run ./survey/cmd/survey explore -copybooks pangaea/copybooks -addr $(EXPLORE_ADDR) -title "the First Bank of Pangaea" -annotations annotations/pangaea -cases oracle/pangaea pangaea/programs/*.cbl pangaea/jobs/*.jcl
 
 .PHONY: explore-laurasia
 explore-laurasia:  ## Explore Laurasia's analysis in the browser (EXPLORE_ADDR)
 	go run ./survey/cmd/survey explore -dialect mf -copybooks laurasia/copybooks -addr $(EXPLORE_ADDR) -title "Laurasia Card Services" -annotations annotations/laurasia -cases oracle/laurasia laurasia/programs/*.cbl laurasia/scripts/*.sh
 
-.PHONY: docs-diagrams
-docs-diagrams:  ## Redraw the diagrams of docs/architecture.md
-	go run ./survey/cmd/docsdiagrams -out docs/diagrams
+.PHONY: oracle
+oracle:  ## Search both specimens' programs again for cases that reach their rules, and rewrite oracle/
+	go run ./survey/cmd/survey oracle -copybooks pangaea/copybooks -out oracle/pangaea -rules ../../blueprints/pangaea/rules -title pangaea -jobs START,ONLINE,DAILY,MONTHLY pangaea/programs/*.cbl pangaea/jobs/*.jcl
+	go run ./survey/cmd/survey oracle -dialect mf -copybooks laurasia/copybooks -out oracle/laurasia -rules ../../blueprints/laurasia/rules -title laurasia -jobs open,nightly,cycle laurasia/programs/*.cbl laurasia/scripts/*.sh
+
+##@ Golden files
+
+.PHONY: pangaea-golden
+pangaea-golden:  ## Rewrite Pangaea's golden outputs from a run on the fixture
+	go test ./pangaea -run TestDaily -update
+
+.PHONY: laurasia-golden
+laurasia-golden:  ## Rewrite Laurasia's golden outputs from a run of its fixtures
+	go test ./laurasia -update
+
+SEED ?= 1
+ACCOUNTS ?= 3000
+N ?= 1
+
+##@ Checks
+
+.PHONY: toolchain
+toolchain:  ## Check that the build tools are installed
+	@scripts/check-toolchain.sh
+
+.PHONY: lint-md
+lint-md:  ## Lint the Markdown files
+	@$(MARKDOWNLINT) "**/*.md" "!CLAUDE.md"
+
+.PHONY: lint-go
+lint-go:  ## Lint the Go code and check its formatting
+	golangci-lint run ./...
+
+.PHONY: lint-deps
+lint-deps:  ## Check that the dependencies between the parts run one way
+	@scripts/check-deps.sh
+
+.PHONY: test
+test:  ## Run the tests
+	go test ./...
 
 .PHONY: ci
 ci: toolchain lint-md lint-go lint-deps test  ## Full local CI
+
+##@ Docs
+
+.PHONY: docs-diagrams
+docs-diagrams:  ## Redraw the diagrams of docs/architecture.md
+	go run ./survey/cmd/docsdiagrams -out docs/diagrams

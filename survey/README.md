@@ -20,7 +20,7 @@ Point it at the programs and the jobs or scripts, and tell it where the copybook
 | `explore` | The same analysis as a web app, at `127.0.0.1:1192` by default. Every job, step, dataset, program, paragraph, field and copybook is a page and a link; a search finds any of them; a field's values are followed back to the inputs they come from, or forward to everything they reach, highlighted on the diagrams. Its design views show the system as the business sees it: the entities, with who reads, writes, decides on and owns each; their links, control totals and state machines; the boundary; and the order of the jobs. |
 | `oracle` | For each main program, the cases that reach the rules of its decision tables, found by compiling the program with GnuCOBOL and running it on data made from its own conditions: as few cases as reach the same rules, each with what the program wrote and returned. With `-jobs`, the jobs or scripts named run as a batch on those cases. `explore -cases` shows the cases on each program's page. |
 
-`make blueprints`, `make explore` and `make oracle` run them on both specimens. What the survey reads is what [cobolith](https://github.com/vlumi/cobolith) reads: IBM and Micro Focus COBOL, fixed and free format, with `COPY ... REPLACING`, and a subset of JCL; its README says what that covers and what it does not yet.
+`make blueprints` and `make oracle` run them on both specimens, and `make explore-pangaea` and `make explore-laurasia` serve each. What the survey reads is what [cobolith](https://github.com/vlumi/cobolith) reads: IBM and Micro Focus COBOL, fixed and free format, with `COPY ... REPLACING`, and a subset of JCL; its README says what that covers and what it does not yet.
 
 ## How it works
 
