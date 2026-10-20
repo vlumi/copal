@@ -1,22 +1,23 @@
 # Architecture
 
-Copal is one Go module in four parts, each a directory at the top of the repository, and the files where two of them meet.
+Copal is in five parts, each a directory at the top of the repository, and the files where two of them meet: one Go module, and cobolith, a module of its own.
 
-![The parts of Copal: the console imports the survey, the bank and bedrock; the survey and the bank import bedrock; the survey writes the blueprints and reads the bank](diagrams/architecture.svg)
+![The parts of Copal: the console imports the survey, the bank, bedrock and cobolith; the survey, the bank and Laurasia import bedrock and cobolith, and bedrock imports cobolith; the survey writes the blueprints and reads the bank](diagrams/architecture.svg)
 
 ## The parts
 
 - **Survey**, `survey/`, is the analyzer: it reads a COBOL system and writes its blueprints, and serves the explorer. Only `blueprint`, its model of a system, is exported; every analysis is under `survey/internal/`. [survey/README.md](../survey/README.md) describes the pipeline.
 - **Pangaea**, `pangaea/`, is the specimen: a legacy COBOL bank with the machine room that runs it in Go. It is written as a legacy system would be, documented as one in [pangaea/docs/](../pangaea/docs/README.md), and it knows nothing of the survey.
 - **Laurasia**, `laurasia/`, is the second specimen: a card processor in another shop's COBOL, Micro Focus dialect and free format, run by shell scripts instead of JCL, with no machine room beyond its test. It is there to show where the survey assumes Pangaea. Its operations guide is in [laurasia/docs/](../laurasia/docs/operations.md).
-- **Bedrock**, `bedrock/`, is the language layer both stand on: reading COBOL source and JCL, laying out records from copybooks, reading and writing records by field, keeping datasets and their catalog, and compiling COBOL programs with GnuCOBOL and running them and the jobs that run them. The survey analyzes with it, the bank's machine room runs the bank with it. None of it is analysis.
+- **Cobolith**, `cobolith/`, is the language layer everything stands on: reading COBOL source and copybooks in the IBM and Micro Focus dialects, laying out records, reading and writing them by field, and reading JCL. It is a Go module of its own, imports nothing of Copal and tests on fixtures of its own, so that it can become a library in a repository of its own; the plan is in [plans/library.md](plans/library.md).
+- **Bedrock**, `bedrock/`, is the harness built on it: keeping datasets and their catalog, reading batch scripts, and compiling COBOL programs with GnuCOBOL and running them and the jobs that run them. The survey's oracle runs programs with it, the bank's machine room runs the bank with it. None of it is analysis.
 - **The console**, `console/`, is the one part built for the modernization rather than inherited from the past: it runs the bank, watches its online day, and shows each run's jobs as the survey draws them, with links into the blueprints. It is the only part that knows both the bank and the survey.
 
 ## The rule
 
-Dependencies run one way, and `make lint-deps` checks it in CI with `go list`, tests included: `bedrock` imports nothing else; `survey`, `pangaea` and `laurasia` import `bedrock` and never each other; only `console` imports the rest. The survey's tests read `pangaea/` as their fixture and compare with `blueprints/pangaea/`, which is data, not an import.
+Dependencies run one way, and `make lint-deps` checks it in CI with `go list`, tests included: `cobolith` imports nothing of Copal; `bedrock` imports nothing but cobolith; `survey`, `pangaea` and `laurasia` import `bedrock` and `cobolith` and never each other; only `console` imports the rest. The survey's tests read `pangaea/` as their fixture and compare with `blueprints/pangaea/`, which is data, not an import.
 
-The rule exists because a bank must not depend on the tool that studies it. Everything the bank's Go needed from the analyzer turned out to be either language (now bedrock) or presentation (now the console), and once those were moved the import went away.
+The rule exists because a bank must not depend on the tool that studies it. Everything the bank's Go needed from the analyzer turned out to be either language (now cobolith and bedrock) or presentation (now the console), and once those were moved the import went away.
 
 ## Golden files, twice
 

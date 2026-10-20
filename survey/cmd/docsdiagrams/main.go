@@ -59,7 +59,8 @@ func architecture() diagram.Graph {
 			{ID: "pangaea", Label: "pangaea\nthe legacy bank"},
 			{ID: "laurasia", Label: "laurasia\nthe card processor"},
 			{ID: "blueprints", Label: "blueprints/pangaea\nthe survey of the bank", Data: true},
-			{ID: "bedrock", Label: "bedrock\nCOBOL, JCL, layouts, records"},
+			{ID: "bedrock", Label: "bedrock\nrunning programs, jobs, scripts"},
+			{ID: "cobolith", Label: "cobolith\nCOBOL, JCL, layouts, records"},
 		},
 		Edges: []diagram.Edge{
 			{From: "console", To: "survey"},
@@ -71,6 +72,11 @@ func architecture() diagram.Graph {
 			{From: "survey", To: "blueprints", Style: diagram.Dashed},
 			{From: "pangaea", To: "bedrock"},
 			{From: "laurasia", To: "bedrock"},
+			{From: "bedrock", To: "cobolith"},
+			{From: "console", To: "cobolith", Span: 4},
+			{From: "survey", To: "cobolith", Span: 3},
+			{From: "pangaea", To: "cobolith", Span: 2},
+			{From: "laurasia", To: "cobolith", Span: 2},
 		},
 	}
 }
@@ -86,9 +92,9 @@ func pipeline() diagram.Graph {
 		},
 		Nodes: []diagram.Node{
 			{ID: "source", Label: "programs, copybooks, jobs\nthe system's source", Data: true},
-			{ID: "cobol", Label: "bedrock/cobol\nlexing, COPY, parsing"},
-			{ID: "jcl", Label: "bedrock/jcl\njobs, steps, DDs"},
-			{ID: "layout", Label: "bedrock/layout\nrecord layouts"},
+			{ID: "cobol", Label: "cobolith/cobol\nlexing, COPY, parsing"},
+			{ID: "jcl", Label: "cobolith/jcl\njobs, steps, DDs"},
+			{ID: "layout", Label: "cobolith/layout\nrecord layouts"},
 			{ID: "structure", Label: "structure\nparagraphs, PERFORM, GO TO"},
 			{ID: "controlflow", Label: "controlflow\npaths through the statements"},
 			{ID: "fileio", Label: "fileio\nOPEN modes, sorts"},
