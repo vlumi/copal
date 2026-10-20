@@ -16,7 +16,7 @@ For each main program, input data that reaches the rules of its decision tables,
 | [STMTPRT](STMTPRT/) | 31 of 34 | 12 |
 | [TXPOST](TXPOST/) | 30 of 30 | 13 |
 | [TXSORT](TXSORT/) | 2 of 2 | 2 |
-| [TXVALID](TXVALID/) | 32 of 33 | 20 |
+| [TXVALID](TXVALID/) | 33 of 33 | 20 |
 
 And for each job, a batch: the job run through its steps on inputs from its programs' cleanest cases, with the datasets it wrote and its output.
 

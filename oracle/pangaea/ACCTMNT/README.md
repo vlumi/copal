@@ -22,7 +22,7 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 08](08/) |
+| 1 | [case 09](09/) |
 | 2 | [case 01](01/) |
 | 3 | [case 01](01/) |
 
@@ -61,13 +61,13 @@
 | 5 | [case 08](08/) |
 | 6 | [case 08](08/) |
 | 7 | [case 08](08/) |
-| 8 | [case 10](10/) |
+| 8 | [case 08](08/) |
 
 ## [2210-OPEN](../../../blueprints/pangaea/rules/ACCTMNT.md#2210-open)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 08](08/) |
+| 1 | [case 09](09/) |
 | 2 | [case 07](07/) |
 | 3 | [case 01](01/) |
 | 4 | [case 11](11/) |
@@ -77,7 +77,7 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 08](08/) |
+| 1 | [case 09](09/) |
 | 2 | [case 01](01/) |
 
 ## [2230-FREEZE](../../../blueprints/pangaea/rules/ACCTMNT.md#2230-freeze)
@@ -91,7 +91,7 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 09](09/) |
+| 1 | [case 10](10/) |
 | 2 | [case 08](08/) |
 
 ## [2250-LIMIT](../../../blueprints/pangaea/rules/ACCTMNT.md#2250-limit)

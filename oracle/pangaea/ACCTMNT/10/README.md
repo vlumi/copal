@@ -4,4 +4,4 @@ The run ended with return code 4.
 
 The first case to reach:
 
-- [ACCTMNT, 2200-APPLY-REQUEST, rule 8](../../../../blueprints/pangaea/rules/ACCTMNT.md#2200-apply-request)
+- [ACCTMNT, 2240-UNFREEZE, rule 1](../../../../blueprints/pangaea/rules/ACCTMNT.md#2240-unfreeze)

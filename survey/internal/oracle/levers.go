@@ -14,8 +14,8 @@ import (
 // lever is one change to a case: a value put into a field of an input, in
 // each record that has the field, or the value of another input field,
 // give or take one, or a change to an input's records: none at all, one
-// of each type more, none of one type, or as many as a count; or the input
-// file failed.
+// of each type more, none of one type, those of one type of none, or as
+// many as a count; or the input file failed.
 type lever struct {
 	input  string
 	field  *layout.Field
@@ -41,6 +41,7 @@ const (
 	emptyInput
 	doubled
 	withoutType
+	untyped
 	repeated
 	failFile
 )
@@ -104,6 +105,9 @@ func (p *program) levers() []lever {
 		add(lever{input: in.name(), change: doubled})
 		for k := range p.shapes[in.name()].types {
 			add(lever{input: in.name(), change: withoutType, kind: k})
+			if !numeric(p.shapes[in.name()].discriminator) {
+				add(lever{input: in.name(), change: untyped, kind: k})
+			}
 		}
 		for _, n := range p.counts() {
 			add(lever{input: in.name(), change: repeated, count: n})
@@ -604,6 +608,18 @@ func (l lever) apply(p *program, c Case) (Case, bool) {
 			records = append(records, slices.Clone(records[i%len(c[l.input])]))
 		}
 		next[l.input] = records
+	case untyped:
+		in := p.input(l.input)
+		changed := false
+		for i, r := range records {
+			if s.typeOfRecord(in, r) == l.kind {
+				set(r, in.root, s.discriminator, in.layout, text("?"))
+				records[i], changed = r, true
+			}
+		}
+		if !changed {
+			return nil, false
+		}
 	case withoutType:
 		kept := slices.DeleteFunc(records, func(r []byte) bool { return s.typeOfRecord(p.input(l.input), r) == l.kind })
 		if len(kept) == len(c[l.input]) {
