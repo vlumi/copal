@@ -61,6 +61,7 @@ func Paragraphs(p *cobol.Program) ([]Paragraph, error) {
 					err = fmt.Errorf("%s: %s: no such paragraph", s.Pos, ref.Name)
 				case s.Verb == "GO":
 					paragraphs[i].GoTos = append(paragraphs[i].GoTos, GoTo{Target: ref.Name, Pos: s.Pos})
+				case s.Verb == "ALTER":
 				default:
 					paragraphs[i].Performs = append(paragraphs[i].Performs,
 						Perform{Target: ref.Name, Thru: ref.Thru, Sort: s.Verb == "SORT", Pos: s.Pos})

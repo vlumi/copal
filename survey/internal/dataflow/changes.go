@@ -61,7 +61,7 @@ func (f Flow) runs(s cobol.Statement, performed map[string]bool, visit func(n co
 			}
 		}
 		visit(n, writes)
-		if n.Verb == "GO" {
+		if n.Verb == "GO" || n.Verb == "ALTER" {
 			return
 		}
 		refs := slices.Clone(n.Procedures)
