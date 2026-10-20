@@ -2,4 +2,4 @@ module github.com/vlumi/copal
 
 go 1.27
 
-require github.com/vlumi/cobolith v0.5.0
+require github.com/vlumi/cobolith v0.6.0
