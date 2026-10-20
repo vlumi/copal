@@ -14,7 +14,7 @@ A small COBOL bank, the specimen the survey is developed against: a nightly batc
 - [testdata/](testdata/): fixtures, each an `input` directory of datasets to start from and a `golden` directory of the datasets, job log and reports a run produces.
 - [brand/](brand/): the bank's seal and its mascot, which the console shows.
 
-The Go packages around the COBOL are the bank's machine room, not the bank: [records/](records/) loads the record layouts computed from the copybooks and says which describes each dataset, [generate/](generate/) makes up customers and their business, [bank/](bank/) runs the bank day after day, [online/](online/) serves the online day over HTTP and [simulate/](simulate/) sends it card traffic. [cmd/pangaea](cmd/pangaea/) puts them on the command line. Reading JCL, laying out records, keeping the datasets and their catalog, compiling the programs and running the jobs come from [bedrock](../bedrock/), the layer the survey uses too.
+The Go packages around the COBOL are the bank's machine room, not the bank: [records/](records/) loads the record layouts computed from the copybooks and says which describes each dataset, [generate/](generate/) makes up customers and their business, [bank/](bank/) runs the bank day after day, [online/](online/) serves the online day over HTTP and [simulate/](simulate/) sends it card traffic. [cmd/pangaea](cmd/pangaea/) puts them on the command line. Reading JCL and laying out records come from [cobolith](https://github.com/vlumi/cobolith), the library the survey reads COBOL with; keeping the datasets and their catalog, compiling the programs and running the jobs from [bedrock](../bedrock/), the harness the survey's oracle uses too.
 
 ## The daily batch
 
