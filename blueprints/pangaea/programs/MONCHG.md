@@ -328,7 +328,7 @@ Written from [TRAN-RECORD](#tran-record).
 | Field | Position | Origins |
 | --- | --: | --- |
 | TR-REC-TYPE | 1 | literal condition TR-DETAIL |
-| TD-TRAN-ID | 2-11 | initial value of WS-TI-SEQ; literal 1 |
+| TD-TRAN-ID | 2-11 | file ACCR-IN AC-DUE-MONTH 33-36; initial value of WS-TI-SEQ; literal 1 |
 | TD-ACCT-NO | 12-21 | file ACCT-IN AM-ACCT-NO |
 | TD-TRAN-CODE | 22-23 | literal condition TD-INTEREST; literal condition TD-MAINTENANCE-FEE; literal condition TD-OVERDRAFT-INTEREST |
 | TD-AMOUNT | 24-34 | file ACCR-IN AC-DUE; initial value of WS-MAINTENANCE-FEE |

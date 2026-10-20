@@ -3098,11 +3098,13 @@
           "start": 1,
           "length": 80,
           "origins": [
+            "file ACCR-IN AC-DUE-MONTH",
             "literal 'GLSUM    GENERAL LEDGER SUMMARY'",
             "literal 'LEDGER IN BALANCE'",
             "literal 'MONTH CLOSED                  '",
             "literal 'NO MONTH CLOSED'",
             "literal 'TRANSFERS IN TRANSIT DO NOT NET TO ZERO'",
+            "literal 0",
             "literal SPACES"
           ]
         }
@@ -3235,8 +3237,12 @@
           "start": 31,
           "length": 6,
           "reaches": [
-            "WS-CLOSED-MONTH-NUMBER",
+            "WS-CLOSED-MONTH",
+            "WS-NM-YEAR",
+            "WS-NM-MONTH",
+            "REPORT-LINE",
             "GL-MONTH",
+            "file REPORT-OUT",
             "file GL-OUT"
           ]
         }
@@ -3305,6 +3311,20 @@
           "length": 13
         }
       ]
+    }
+  ],
+  "links": [
+    {
+      "kind": "equal",
+      "from": {
+        "file": "AUDIT-IN",
+        "field": "AU-BUSINESS-DATE"
+      },
+      "to": {
+        "file": "ACCR-IN",
+        "field": "AC-DUE-MONTH"
+      },
+      "source": "pangaea/programs/GLSUM.cbl:210"
     }
   ]
 }

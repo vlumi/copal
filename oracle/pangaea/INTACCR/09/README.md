@@ -4,4 +4,4 @@ The run ended with return code 16.
 
 The first case to reach:
 
-- [INTACCR, 2100-FIND-RATE, in its loop, rule 2](../../../../blueprints/pangaea/rules/INTACCR.md#2100-find-rate-in-its-loop)
+- [INTACCR, 1100-LOAD-RATES, in its loop, rule 1](../../../../blueprints/pangaea/rules/INTACCR.md#1100-load-rates-in-its-loop)

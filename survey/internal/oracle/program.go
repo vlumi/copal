@@ -187,23 +187,86 @@ func fileRecord(records *layout.ProgramRecords, file string) *layout.Field {
 	return nil
 }
 
-// readInto is the layout of a file's record: the record itself, or, for one
-// of no fields, read whole into a record of fields as long, that one.
+// readInto is the layout of a file's record: the record itself; for one
+// of no fields, read whole into a record of fields as long, that one; and
+// for one that leaves bytes FILLER, moved whole into a record as long, the
+// record with the fields of the other over those bytes.
 func readInto(flow dataflow.Flow, records *layout.ProgramRecords, r *layout.Field) *layout.Field {
-	if len(r.Children) > 0 {
-		return r
-	}
 	for _, e := range flow.Lineage {
 		if e.Verb != "READ" && e.Verb != "MOVE" || e.FromFile || e.From != r.Name {
 			continue
 		}
 		for _, into := range records.All() {
-			if into.Name == e.To && len(into.Children) > 0 && into.Size() == r.Size() {
+			if into.Name != e.To || len(into.Children) == 0 || into.Size() != r.Size() {
+				continue
+			}
+			if len(r.Children) == 0 {
 				return into
+			}
+			if filled := overFiller(r, into); filled != nil {
+				return filled
 			}
 		}
 	}
 	return r
+}
+
+// overFiller is a record with the fields of another as long over the bytes
+// it leaves FILLER, those of the other's that are within them, at its own
+// positions; nil when there are none.
+func overFiller(r, other *layout.Field) *layout.Field {
+	out := *r
+	out.Children = nil
+	added := false
+	for _, child := range r.Children {
+		if child.Name != "FILLER" || len(child.Children) > 0 {
+			out.Children = append(out.Children, child)
+			continue
+		}
+		var within []*layout.Field
+		for _, o := range other.Children {
+			start := o.Start - other.Start + r.Start
+			if start >= child.Start && start+o.Size() <= child.Start+child.Size() && o.Name != "FILLER" {
+				within = append(within, moved(o, r.Start-other.Start))
+			}
+		}
+		if len(within) == 0 {
+			out.Children = append(out.Children, child)
+			continue
+		}
+		added = true
+		at := child.Start
+		for _, f := range within {
+			if f.Start > at {
+				out.Children = append(out.Children, filler(at, f.Start-at))
+			}
+			out.Children = append(out.Children, f)
+			at = f.Start + f.Size()
+		}
+		if end := child.Start + child.Size(); end > at {
+			out.Children = append(out.Children, filler(at, end-at))
+		}
+	}
+	if !added {
+		return nil
+	}
+	return &out
+}
+
+// moved is a copy of a field, and of its fields, by an offset.
+func moved(f *layout.Field, offset int) *layout.Field {
+	out := *f
+	out.Start += offset
+	out.Children = nil
+	for _, child := range f.Children {
+		out.Children = append(out.Children, moved(child, offset))
+	}
+	return &out
+}
+
+// filler is a FILLER of text over bytes.
+func filler(start, length int) *layout.Field {
+	return &layout.Field{Level: 5, Name: "FILLER", Start: start, Length: length, Picture: fmt.Sprintf("X(%d)", length), Category: layout.Alphanumeric}
 }
 
 // find finds a field by name among a record's fields, at any level.

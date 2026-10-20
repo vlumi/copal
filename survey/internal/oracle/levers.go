@@ -1,7 +1,9 @@
 package oracle
 
 import (
+	"fmt"
 	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/vlumi/copal/bedrock/cobol"
@@ -12,15 +14,18 @@ import (
 // lever is one change to a case: a value put into a field of an input, in
 // each record that has the field, or the value of another input field,
 // give or take one, or a change to an input's records: none at all, one
-// of each type more, or none of one type; or the input file failed.
+// of each type more, none of one type, those of one type of none, or as
+// many as a count; or the input file failed.
 type lever struct {
 	input  string
 	field  *layout.Field
+	part   part
 	value  value
 	from   target
 	delta  int64
 	change recordChange
 	kind   int
+	count  int
 	// failure is how the input fails, for a lever that fails it.
 	failure failure
 	// also is a second field change made with this one, for a condition
@@ -36,8 +41,13 @@ const (
 	emptyInput
 	doubled
 	withoutType
+	untyped
+	repeated
 	failFile
 )
+
+// maxCount is the most records a lever repeats an input's to.
+const maxCount = 100
 
 // levers lists the changes worth trying, in a fixed order: for each
 // condition of the program, the values it compares with and their
@@ -75,7 +85,7 @@ func (p *program) levers() []lever {
 		for _, pair := range relations(c) {
 			for _, to := range p.origins(pair[0]) {
 				for _, from := range p.origins(pair[1]) {
-					if to.field == from.field {
+					if to.field == from.field || to.part != (part{}) || from.part != (part{}) {
 						continue
 					}
 					for _, delta := range []int64{0, 1, -1} {
@@ -95,6 +105,12 @@ func (p *program) levers() []lever {
 		add(lever{input: in.name(), change: doubled})
 		for k := range p.shapes[in.name()].types {
 			add(lever{input: in.name(), change: withoutType, kind: k})
+			if !numeric(p.shapes[in.name()].discriminator) {
+				add(lever{input: in.name(), change: untyped, kind: k})
+			}
+		}
+		for _, n := range p.counts() {
+			add(lever{input: in.name(), change: repeated, count: n})
 		}
 	}
 	for _, l := range p.failures() {
@@ -103,14 +119,48 @@ func (p *program) levers() []lever {
 	return levers
 }
 
+// counts are the numbers of records worth trying an input with: one more
+// than each number, up to maxCount, that a condition compares an item the
+// program only adds to with, such as a count of the records read.
+func (p *program) counts() []int {
+	var counts []int
+	for _, u := range p.units {
+		for _, c := range conditionsOf(u.source) {
+			for _, cmp := range comparisons(c) {
+				n, err := strconv.Atoi(cmp.Right.Text)
+				if err == nil && n > 0 && n < maxCount && u.onlyAddedTo(cmp.Left.Name) && !slices.Contains(counts, n+1) {
+					counts = append(counts, n+1)
+				}
+			}
+		}
+	}
+	return counts
+}
+
+// comparisons lists the comparisons within a condition of an item with a
+// number, the item on the left.
+func comparisons(c *cobol.Condition) []*cobol.Condition {
+	var list []*cobol.Condition
+	for _, part := range c.Parts {
+		list = append(list, comparisons(part)...)
+	}
+	switch c.Op {
+	case "=", ">", ">=":
+		if c.Left.Name != "" && c.Right.Name == "" && len(c.Right.Refs) == 0 {
+			list = append(list, c)
+		}
+	}
+	return list
+}
+
 // fieldLevers lists the values worth putting into the input fields a
 // condition of a unit depends on.
 func (p *program) fieldLevers(u Unit, c *cobol.Condition) []lever {
 	var levers []lever
 	for _, item := range c.Refs() {
 		for _, target := range p.callerOrigins(u, item) {
-			for _, v := range valuesFor(u.records, constantsOf(u.blueprint), c, item, target.field) {
-				l := lever{input: target.input, field: target.field, value: v}
+			for _, v := range valuesFor(u.records, constantsOf(u.blueprint), c, item, target.part.of(target.field)) {
+				l := lever{input: target.input, field: target.field, part: target.part, value: v}
 				if !slices.Contains(levers, l) {
 					levers = append(levers, l)
 				}
@@ -195,10 +245,35 @@ func (p *program) inputField(f blueprint.FileField) (target, bool) {
 	return target{}, false
 }
 
-// target is a field of an input.
+// target is a field of an input, or a part of one.
 type target struct {
 	input string
 	field *layout.Field
+	part  part
+}
+
+// part is digits of a field of digits, from offset, 0-based, for length,
+// which a lever sets alone: the month of a date, say. The zero part is
+// the whole field.
+type part struct{ offset, length int }
+
+// of is a field as its part: a number of the part's digits.
+func (pt part) of(f *layout.Field) *layout.Field {
+	if pt.length == 0 {
+		return f
+	}
+	return &layout.Field{Name: fmt.Sprintf("%s(%d:%d)", f.Name, pt.offset+1, pt.length), Start: f.Start + pt.offset,
+		Length: pt.length, Category: layout.Numeric, Digits: pt.length, Picture: fmt.Sprintf("9(%d)", pt.length)}
+}
+
+// set writes a number into a part of a field of a record, if it fits.
+func (pt part) set(r []byte, root, f *layout.Field, v value) bool {
+	if v.kind != numberValue || v.number < 0 || v.number > largest(pt.of(f)) {
+		return false
+	}
+	start := f.Start - root.Start + pt.offset
+	copy(r[start:start+pt.length], fmt.Sprintf("%0*d", pt.length, v.number))
+	return true
 }
 
 // origins lists the input fields an item's values come from: the fields
@@ -221,6 +296,9 @@ func (p *program) origins(item string) []target {
 		f := find(p.inputs[i].root, o.Item)
 		if over := fieldOverBytes(p.inputs[i].root, o.Start, o.Length); o.Length > 0 && over != nil {
 			f = over
+		} else if digits := digitsOver(p.inputs[i].root, o.Start, o.Length); o.Length > 0 && digits != nil {
+			targets = append(targets, target{input: name, field: digits, part: part{offset: o.Start - digits.Start, length: o.Length}})
+			continue
 		}
 		if f != nil {
 			for _, leaf := range leaves(f) {
@@ -239,6 +317,24 @@ func fieldOverBytes(f *layout.Field, start, length int) *layout.Field {
 	}
 	for _, child := range f.Children {
 		if found := fieldOverBytes(child, start, length); found != nil {
+			return found
+		}
+	}
+	return nil
+}
+
+// digitsOver is the elementary field of unsigned digits whose bytes the
+// bytes from start, 1-based, for length, are within, if one is.
+func digitsOver(f *layout.Field, start, length int) *layout.Field {
+	if len(f.Children) == 0 {
+		within := f.Start <= start && start+length <= f.Start+f.Size()
+		if within && numeric(f) && !f.Signed && f.Size() == f.Digits {
+			return f
+		}
+		return nil
+	}
+	for _, child := range f.Children {
+		if found := digitsOver(child, start, length); found != nil {
 			return found
 		}
 	}
@@ -265,7 +361,8 @@ func leaves(f *layout.Field) []*layout.Field {
 // number one above and below; the values of the condition names
 // it tests, and a value of none of them; for a class test, a value of the
 // class and one not; and for a number that reaches the item through other
-// statements, zero, one, minus one and its largest.
+// statements, zero, one, minus one and its largest, and with decimals, one
+// and minus one whole, which survive rounding to fewer.
 func valuesFor(records *layout.ProgramRecords, constants map[string]string, c *cobol.Condition, item string, f *layout.Field) []value {
 	var values []value
 	addLiteral := func(lit string) {
@@ -299,7 +396,7 @@ func valuesFor(records *layout.ProgramRecords, constants map[string]string, c *c
 				}
 			}
 		case "NAME":
-			if field := conditionField(records, c.Left.Text); field != nil {
+			if field := conditionField(records, c.Left.Name); field != nil && (c.Left.Name == item || field.Name == item) {
 				for _, cond := range field.Conditions {
 					for _, v := range cond.Values {
 						addLiteral(v)
@@ -317,6 +414,9 @@ func valuesFor(records *layout.ProgramRecords, constants map[string]string, c *c
 	visit(c)
 	if numeric(f) {
 		values = append(values, number(0), number(1), number(-1), number(largest(f)))
+		if f.Scale > 0 {
+			values = append(values, number(pow10(f.Scale)), number(-pow10(f.Scale)))
+		}
 	} else {
 		values = append(values, text(""))
 	}
@@ -500,6 +600,26 @@ func (l lever) apply(p *program, c Case) (Case, bool) {
 			return nil, false
 		}
 		next[l.input] = append(records, cloneRecords(records)...)
+	case repeated:
+		if len(records) == 0 || len(records) >= l.count {
+			return nil, false
+		}
+		for i := len(records); i < l.count; i++ {
+			records = append(records, slices.Clone(records[i%len(c[l.input])]))
+		}
+		next[l.input] = records
+	case untyped:
+		in := p.input(l.input)
+		changed := false
+		for i, r := range records {
+			if s.typeOfRecord(in, r) == l.kind {
+				set(r, in.root, s.discriminator, in.layout, text("?"))
+				records[i], changed = r, true
+			}
+		}
+		if !changed {
+			return nil, false
+		}
 	case withoutType:
 		kept := slices.DeleteFunc(records, func(r []byte) bool { return s.typeOfRecord(p.input(l.input), r) == l.kind })
 		if len(kept) == len(c[l.input]) {
@@ -521,7 +641,13 @@ func (l lever) apply(p *program, c Case) (Case, bool) {
 				continue
 			}
 			before := slices.Clone(r)
-			if set(r, in.root, l.field, in.layout, v) && !slices.Equal(before, r) {
+			written := false
+			if l.part != (part{}) {
+				written = l.part.set(r, in.root, l.field, v)
+			} else {
+				written = set(r, in.root, l.field, in.layout, v)
+			}
+			if written && !slices.Equal(before, r) {
 				changed = true
 			}
 			records[i] = r

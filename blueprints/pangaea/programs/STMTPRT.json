@@ -4171,8 +4171,10 @@
           "start": 49,
           "length": 32,
           "origins": [
+            "file ACCR-IN AC-DUE-MONTH 31-34",
             "literal ' '",
             "literal 'STATEMENT FOR '",
+            "literal 0",
             "literal SPACE",
             "literal SPACES"
           ]
@@ -4265,17 +4267,29 @@
         {
           "name": "WS-PL-YEAR",
           "start": 1,
-          "length": 4
+          "length": 4,
+          "origins": [
+            "file AUDIT-IN AU-BUSINESS-DATE 1-4",
+            "file STMT-SORT SR-DATE 11-14"
+          ]
         },
         {
           "name": "WS-PL-MONTH",
           "start": 6,
-          "length": 2
+          "length": 2,
+          "origins": [
+            "file AUDIT-IN AU-BUSINESS-DATE 5-6",
+            "file STMT-SORT SR-DATE 15-16"
+          ]
         },
         {
           "name": "WS-PL-DAY",
           "start": 9,
-          "length": 2
+          "length": 2,
+          "origins": [
+            "file AUDIT-IN AU-BUSINESS-DATE 7-8",
+            "file STMT-SORT SR-DATE 17-18"
+          ]
         },
         {
           "name": "WS-PL-TRAN-ID",
@@ -4350,9 +4364,11 @@
           "start": 1,
           "length": 80,
           "origins": [
+            "file ACCR-IN AC-DUE-MONTH",
             "literal 'MONTH CLOSED                  '",
             "literal 'NO MONTH CLOSED'",
             "literal 'STMTPRT  MONTHLY STATEMENTS'",
+            "literal 0",
             "literal SPACES"
           ]
         }
@@ -4445,7 +4461,14 @@
           "start": 31,
           "length": 6,
           "reaches": [
-            "WS-CLOSED-MONTH-NUMBER"
+            "WS-CLOSED-MONTH",
+            "WS-NM-YEAR",
+            "WS-NM-MONTH",
+            "REPORT-LINE",
+            "WS-TL-PERIOD",
+            "STMT-LINE",
+            "file REPORT-OUT",
+            "file STMT-OUT"
           ]
         }
       ]
@@ -4462,7 +4485,12 @@
             "WS-POSTING-MONTH",
             "SR-DATE",
             "WS-DATE",
-            "file STMT-SORT"
+            "WS-PL-YEAR",
+            "WS-PL-MONTH",
+            "WS-PL-DAY",
+            "STMT-LINE",
+            "file STMT-SORT",
+            "file STMT-OUT"
           ]
         },
         {
@@ -4570,7 +4598,12 @@
           "length": 8,
           "reaches": [
             "WS-DATE",
-            "file STMT-SORT"
+            "WS-PL-YEAR",
+            "WS-PL-MONTH",
+            "WS-PL-DAY",
+            "STMT-LINE",
+            "file STMT-SORT",
+            "file STMT-OUT"
           ]
         },
         {
@@ -4718,6 +4751,20 @@
           "length": 9
         }
       ]
+    }
+  ],
+  "links": [
+    {
+      "kind": "equal",
+      "from": {
+        "file": "AUDIT-IN",
+        "field": "AU-BUSINESS-DATE"
+      },
+      "to": {
+        "file": "ACCR-IN",
+        "field": "AC-DUE-MONTH"
+      },
+      "source": "pangaea/programs/STMTPRT.cbl:255"
     }
   ]
 }

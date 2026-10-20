@@ -365,3 +365,16 @@ func TestMayChangeThroughDeclaratives(t *testing.T) {
 		t.Error("GOBACK changes WS-FAILED")
 	}
 }
+
+// A record that redefines another shares its bytes: a month moved into the
+// number that redefines a date comes out of the date's month.
+func TestRedefinedRecord(t *testing.T) {
+	flow := analyze(t, "testdata/REDEF.cbl")
+	var got []string
+	for _, o := range flow.Origins("WS-MM") {
+		got = append(got, o.String())
+	}
+	if want := []string{"file IN-FILE IN-RECORD 5-6"}; !slices.Equal(got, want) {
+		t.Errorf("WS-MM comes from %q, want %q", got, want)
+	}
+}
