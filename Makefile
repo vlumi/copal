@@ -76,6 +76,11 @@ RATE ?= 5
 simulate:  ## Send card traffic to the console's online channel until interrupted (RATE)
 	go run ./pangaea/cmd/pangaea simulate -api http://$(ADDR)/api -rate $(RATE)
 
+.PHONY: conformance
+conformance:  ## Read NIST's COBOL-85 test suite with cobolith, fetching it first, and rewrite its report
+	@scripts/fetch-ccvs85.sh
+	cd cobolith && go run ./conformance -suite ../.cache/ccvs85/newcob.val -out conformance/README.md
+
 .PHONY: oracle
 oracle:  ## Search both specimens' programs again for cases that reach their rules, and rewrite oracle/
 	go run ./survey/cmd/survey oracle -copybooks pangaea/copybooks -out oracle/pangaea -rules ../../blueprints/pangaea/rules -title pangaea -jobs START,ONLINE,DAILY,MONTHLY pangaea/programs/*.cbl pangaea/jobs/*.jcl
