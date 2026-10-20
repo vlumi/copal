@@ -178,7 +178,7 @@ Done when: every rule of both specimens is reached by a recorded case, left out 
 
 ## 15. Bedrock's COBOL as a library
 
-What reads COBOL, lays out its records and reads them by field, `cobol`, `layout` and `record`, and `jcl` with them, as an open-source library of its own, for anyone else reading COBOL. Running it, `run`, `runner` and `dataset`, is this project's harness and stays here. The parsers evaluated before bedrock was written did not keep positions, lay out records or compute data flow that could be trusted; a library that does is worth having even unfinished.
+What reads COBOL, lays out its records and reads them by field, `cobol`, `layout` and `record`, and `jcl` with them, as an open-source library of its own, cobolith, for anyone else reading COBOL. The plan is in [plans/library.md](plans/library.md). Running it, `run`, `runner` and `dataset`, is this project's harness and stays here. The parsers evaluated before bedrock was written did not keep positions, lay out records or compute data flow that could be trusted; a library that does is worth having even unfinished.
 
 - First a module of its own within this repository, with the public API it would have, so that the survey and both specimens use it only through that.
 - Then its own repository, versioned below 1.0 and published as pre-production: a comprehensive starting point that is honest about what it has been run against, two specimens written for it, and what it has not.
