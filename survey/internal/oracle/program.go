@@ -88,12 +88,12 @@ func prepare(system *blueprint.System, bp *blueprint.Program, copybookDir string
 		}
 		if r := fileRecord(records, f.Name); r != nil {
 			r = readInto(flow, records, r)
-			p.inputs = append(p.inputs, input{file: f, root: r, layout: record.New(r)})
+			p.inputs = append(p.inputs, input{file: f, root: r, layout: record.New(r, system.Dialect)})
 		}
 	}
 	for _, stream := range []string{sysin, commandLine} {
 		if r := accepted(source, records, stream); r != nil {
-			p.inputs = append(p.inputs, input{stream: stream, root: r, layout: record.New(r)})
+			p.inputs = append(p.inputs, input{stream: stream, root: r, layout: record.New(r, system.Dialect)})
 		}
 	}
 	for _, in := range p.inputs {
