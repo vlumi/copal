@@ -13,7 +13,7 @@ Copal is a study of one problem: understanding a legacy COBOL batch system well 
 | [laurasia/](laurasia/) | **Laurasia Card Services** | The second specimen: a card processor in Micro Focus COBOL, free format, run by shell scripts. It shows where the survey assumed Pangaea. |
 | [bedrock/](bedrock/) | **Bedrock** | What runs the specimens: compiling and running COBOL programs, jobs and scripts, and keeping datasets and their catalog. |
 | [console/](console/) | **The console** | A web window that runs the bank, watches its online day, and shows each run's jobs as the survey draws them. The one part that knows both the bank and the survey. |
-| [cobolith](https://github.com/vlumi/cobolith) | **Cobolith** | The library everything reads COBOL with: source, copybooks, record layouts and fields, and JCL. Written here, now a repository of its own. |
+| [cobolith](https://github.com/vlumi/cobolith) | **Cobolith** | The library everything reads COBOL with: source, copybooks, record layouts and fields, and JCL, in the IBM, Micro Focus, Hitachi and Fujitsu dialects. Written here, now a repository of its own. |
 
 ![The parts of Copal and what imports what](docs/diagrams/architecture.svg)
 
@@ -74,7 +74,7 @@ Everything is a make target, and plain `make` lists them. You need GnuCOBOL 3.2 
 | Specimens | 2, in two dialects: 31 programs, about 5,400 lines of COBOL, 23 copybooks, 4 jobs in JCL and 4 shell scripts |
 | Blueprints | 96 pages and 40 diagrams, regenerated and compared by `make ci` |
 | Decision rules | 481, of which 218 recorded cases reach 453; 12 are marked with the reason the search cannot reach them, 16 are left |
-| Cobolith | reads 399 of the 459 programs of NIST's COBOL-85 test suite |
+| Cobolith | 0.7.0: four dialects, and 433 of the 459 programs of NIST's COBOL-85 test suite read |
 
 ## A quick tour
 

@@ -46,6 +46,8 @@ Bedrock keeps what runs programs, and imports cobolith as survey, Pangaea and La
 
 The dialects most COBOL is written in, each a pull request with its own tests: GnuCOBOL's own, ACUCOBOL-GT, the 2002 and 2014 standards' additions, `REPLACE` beside `COPY REPLACING`, and `EXEC SQL` and `EXEC CICS` blocks kept whole as opaque statements, rather than failing the parse. Each one the survey can use as it lands.
 
+So far, releases 0.2.0 to 0.7.0, each with its changelog entry and a GitHub release: binary and floating-point fields read and written in `record`; a paragraph named in more than one section, referred to with its section; `SYNCHRONIZED` with IBM's slack bytes, in tables too; `REPLACE`, `RENAMES`, `DECIMAL-POINT IS COMMA` and `CURRENCY SIGN`, the debugging declaratives and the remaining condition forms, which took NIST's suite from 383 to 433 of 459; and two Japanese dialects, Hitachi COBOL2002 and Fujitsu NetCOBOL, from their own manuals: source and data in Shift_JIS, read two bytes at a time, national items and literals, and NetCOBOL's binary, floating-point and synchronized items. The survey reads source as ASCII still, so the Japanese dialects wait on it reading in the dialect's encoding.
+
 ## Decided
 
 - The name, cobolith: no project, package or repository found by that name.

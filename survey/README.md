@@ -12,7 +12,7 @@ survey explore -copybooks dir [-addr host:port] [-title name] [-cases dir] progr
 survey oracle -copybooks dir [-out dir -rules dir] [-title name] [-program name] [-jobs JOB,...] program.cbl... [job.jcl... | script.sh...]
 ```
 
-Point it at the programs and the jobs or scripts, and tell it where the copybooks are and which dialect they are in, `ibm` or `mf`.
+Point it at the programs and the jobs or scripts, and tell it where the copybooks are and which dialect they are in, by the name cobolith gives it: `ibm` or `mf` for the specimens.
 
 | Command | Writes or serves |
 | --- | --- |
@@ -20,7 +20,7 @@ Point it at the programs and the jobs or scripts, and tell it where the copybook
 | `explore` | The same analysis as a web app, at `127.0.0.1:1192` by default. Every job, step, dataset, program, paragraph, field and copybook is a page and a link; a search finds any of them; a field's values are followed back to the inputs they come from, or forward to everything they reach, highlighted on the diagrams. Its design views show the system as the business sees it: the entities, with who reads, writes, decides on and owns each; their links, control totals and state machines; the boundary; and the order of the jobs. |
 | `oracle` | For each main program, the cases that reach the rules of its decision tables, found by compiling the program with GnuCOBOL and running it on data made from its own conditions: as few cases as reach the same rules, each with what the program wrote and returned. With `-jobs`, the jobs or scripts named run as a batch on those cases. `explore -cases` shows the cases on each program's page. |
 
-`make blueprints` and `make oracle` run them on both specimens, and `make explore-pangaea` and `make explore-laurasia` serve each. What the survey reads is what [cobolith](https://github.com/vlumi/cobolith) reads: IBM and Micro Focus COBOL, fixed and free format, with `COPY ... REPLACING`, and a subset of JCL; its README says what that covers and what it does not yet.
+`make blueprints` and `make oracle` run them on both specimens, and `make explore-pangaea` and `make explore-laurasia` serve each. What the survey reads is what [cobolith](https://github.com/vlumi/cobolith) reads: IBM and Micro Focus COBOL, fixed and free format, with `COPY ... REPLACING` and `REPLACE`, and a subset of JCL; its README says what that covers and what it does not yet. Cobolith also reads the Hitachi and Fujitsu dialects, whose source is in Shift_JIS; the survey does not yet read source in an encoding other than ASCII, so those wait.
 
 ## How it works
 
@@ -29,7 +29,7 @@ Point it at the programs and the jobs or scripts, and tell it where the copybook
 The analyses run in order, each on the output of the ones before it, and each is a package with its own tests. The first three are [cobolith](https://github.com/vlumi/cobolith), the library, because the specimens' machine rooms need them too.
 
 1. **Lexing and parsing**, `cobolith/cobol`. Fixed-format source, or free format after `>>SOURCE FORMAT IS FREE`. `COPY` statements are expanded, with `REPLACING`, and every token remembers the file and line it came from, copybook or program, so that everything downstream can point at the source. The parser knows the divisions, the file control entries, the data description entries, and the statements of the procedure division. A verb it does not know is an error, not a guess.
-2. **Record layouts**, `cobolith/layout`. From the data divisions and copybooks: every field's position, length, picture and usage, `OCCURS` and `OCCURS DEPENDING ON`, `REDEFINES`, `SIGN` and `SYNCHRONIZED`, and the level-88 condition names on it, laid out as the dialect's compiler lays them out.
+2. **Record layouts**, `cobolith/layout`. From the data divisions and copybooks: every field's position, length, picture and usage, `OCCURS` and `OCCURS DEPENDING ON`, `REDEFINES`, `RENAMES`, `SIGN` and `SYNCHRONIZED`, and the level-88 condition names on it, laid out as the dialect's compiler lays them out.
 3. **Jobs**, `cobolith/jcl`. Steps, the programs they run, their `COND` tests, and the DD statements: datasets with generations, temporary datasets, concatenations, SYSOUT, DUMMY, in-stream data, indexed datasets.
 4. **Structure**, `structure`. Paragraphs and sections, which performs which, `THRU` ranges, where `GO TO` goes, and where control falls from one paragraph into the next. A sort's input and output procedures count as performed.
 5. **Control flow**, `controlflow`. The paths control can take through the statements: in order, into the branches of `IF`, `EVALUATE`, `SEARCH` and the conditional phrases, round `PERFORM` loops, to a `GO TO`'s target, on into the next paragraph, and into a performed range and back to the statement after the `PERFORM` that entered it, the range laid out anew for each `PERFORM`. A `GO TO` out of a performed range leaves the paths unknown, and says so.

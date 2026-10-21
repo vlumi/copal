@@ -29,7 +29,7 @@ The hard part of moving a COBOL core system to anything newer is rarely the tran
 6. **File I/O and the job network.** Which program opens which file in which mode, joined with the job network file into one graph of steps and datasets: the batch network, drawn.
 7. **Blueprints.** Markdown documents per program and per job network, with diagrams generated as SVG (Graphviz or hand-laid). Checked in as golden files for Pangaea.
 
-**Bedrock**, the language layer both stand on: reading COBOL source and JCL, laying out records from copybooks, reading and writing records by field. Neither of that is analysis, and the bank's machine room needs it as much as the survey does.
+**Bedrock**, the layer both stand on: reading COBOL source and JCL, laying out records from copybooks, reading and writing records by field, and compiling and running programs and jobs. None of that is analysis, and the bank's machine room needs it as much as the survey does. What reads COBOL has since become cobolith, a library of its own (see Decisions); bedrock keeps the running.
 
 **The console**, built for the modernization: a web window that runs the bank and shows each run as the survey draws it. The one part that knows both the bank and the survey.
 
@@ -42,7 +42,7 @@ The hard part of moving a COBOL core system to anything newer is rarely the tran
 ## Not the goal
 
 - Translating COBOL into Java or anything else.
-- Supporting every dialect. What the specimens use first; real-world breadth only if the project ever needs it. Bedrock's COBOL may become an open-source library ([roadmap.md](roadmap.md), milestone 15), but it starts pre-production, a comprehensive starting point, and grows toward stable only as real code is run through it.
+- Supporting every dialect. What the specimens use first; real-world breadth only if the project ever needs it. Bedrock's COBOL became an open-source library, cobolith ([roadmap.md](roadmap.md), milestone 15), pre-production: a comprehensive starting point that grows toward stable only as real code is run through it, and gains a dialect when there is a manual to read it from.
 
 ## Decisions
 
@@ -60,7 +60,7 @@ The hard part of moving a COBOL core system to anything newer is rarely the tran
 
 ## Debt
 
-None recorded.
+- The survey, the oracle and bedrock's compiler read source with `cobol.ReadProgram` and `cobol.Read`, as ASCII. Cobolith's Japanese dialects need `ReadProgramIn` and `ReadIn` with the dialect, and `ReadDataEntries` an encoding-aware form, before a system in them can be surveyed.
 
 ## Toolchain
 

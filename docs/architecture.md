@@ -21,11 +21,11 @@ The rule exists because a bank must not depend on the tool that studies it. Ever
 
 ## Golden files, twice
 
-Two things are checked in that a build regenerates and compares:
+Two kinds of thing are checked in that a build regenerates and compares, the specimens' outputs and the survey's blueprints of them:
 
 - **Pangaea's outputs.** Each fixture under `pangaea/testdata/` runs its jobs through GnuCOBOL, and the datasets, job logs and reports they produce are golden. A change to the bank updates them in the same commit, so the history of the bank's behavior is in the history of its goldens.
 - **Laurasia's outputs.** Each fixture under `laurasia/testdata/` runs its scripts on its input files, and what they leave behind is golden, the same way.
-- **The survey of Pangaea.** `blueprints/pangaea/` is what the survey says about the bank. A change in the analyzer shows as a diff there, which is how its behavior is reviewed: not by reading the code change alone, but by reading what it changed in the blueprints of a real system.
+- **The survey of both.** `blueprints/pangaea/` and `blueprints/laurasia/` are what the survey says about the bank and the card processor, and `oracle/` the cases it found and what the programs did on them. A change in the analyzer shows as a diff there, which is how its behavior is reviewed: not by reading the code change alone, but by reading what it changed in the blueprints of a real system.
 
 Both depend on everything being deterministic: the analysis, the diagram layout, and the bank itself, whose days follow from a seed and never read the clock.
 
