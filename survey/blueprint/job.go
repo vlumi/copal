@@ -301,7 +301,8 @@ func bind(dd *DD, step string, p Program) []string {
 }
 
 // fileCopybook is the copybook of a file's record: the record declared
-// for the file, or else the one the program writes it from or reads it into.
+// for the file, or else the one the program writes it from or reads it
+// into, or the one it moves the file's record into whole, or from.
 func fileCopybook(p Program, f File) string {
 	copybooks := map[string]string{}
 	for _, r := range p.Records {
@@ -319,6 +320,10 @@ func fileCopybook(p Program, f File) string {
 			return copybooks[e.From]
 		case (e.Verb == "READ" || e.Verb == "RETURN") && slices.Contains(f.Records, e.From) && copybooks[e.To] != "":
 			return copybooks[e.To]
+		case e.Verb == "MOVE" && slices.Contains(f.Records, e.From) && copybooks[e.To] != "":
+			return copybooks[e.To]
+		case e.Verb == "MOVE" && slices.Contains(f.Records, e.To) && copybooks[e.From] != "":
+			return copybooks[e.From]
 		}
 	}
 	return ""
