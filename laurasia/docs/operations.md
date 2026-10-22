@@ -1,6 +1,6 @@
 # Operations guide
 
-Laurasia Card Services, Night Operations. Revision of 2021-03.
+Laurasia Card Services, Night Operations. Revision of 2022-09. Supersedes the 2021 edition; the card system's feed is new.
 
 ## The night
 
