@@ -47,7 +47,7 @@ Program [acctul.cbl](../../../laurasia/programs/acctul.cbl): 2 files, 1 paragrap
 
 | Paragraph | Reads | Writes |
 | --- | --- | --- |
-| MAIN | WS-ACCOUNTS-STATUS, CARD-ACCOUNT | RETURN-CODE, CARD-ACCOUNT, ACCOUNT-LINE |
+| MAIN | WS-ACCOUNTS-STATUS, CARD-ACCOUNT | WS-ACCOUNTS-STATUS, RETURN-CODE, CARD-ACCOUNT, ACCOUNT-LINE |
 
 ## Lineage
 
