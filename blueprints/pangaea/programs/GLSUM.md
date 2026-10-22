@@ -488,7 +488,7 @@ Working storage. 6 bytes.
 
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-POSTING-MONTH | text | 1 | 6 | X(6) | | | [GLSUM.cbl:77](../../../pangaea/programs/GLSUM.cbl#L77) |
+| 01 | WS-POSTING-MONTH | date | 1 | 6 | X(6) | | | [GLSUM.cbl:77](../../../pangaea/programs/GLSUM.cbl#L77) |
 
 ### WS-POSTING-CODE
 

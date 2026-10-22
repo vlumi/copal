@@ -111,7 +111,7 @@ Working storage. 4 bytes.
 
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-YEARLY-RATE | amount | 1 | 4 | V9(4) | | | [intcalc.cbl:13](../../../laurasia/programs/intcalc.cbl#L13) |
+| 01 | WS-YEARLY-RATE | rate | 1 | 4 | V9(4) | | | [intcalc.cbl:13](../../../laurasia/programs/intcalc.cbl#L13) |
 
 ### WS-CENTS
 
@@ -119,7 +119,7 @@ Working storage. 4 bytes.
 
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-CENTS | number | 1 | 4 | S9(9) | COMP-5 | | [intcalc.cbl:14](../../../laurasia/programs/intcalc.cbl#L14) |
+| 01 | WS-CENTS | amount | 1 | 4 | S9(9) | COMP-5 | | [intcalc.cbl:14](../../../laurasia/programs/intcalc.cbl#L14) |
 
 ### LK-PRODUCT
 

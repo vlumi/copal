@@ -21,5 +21,5 @@ Copybook [feedef.cpy](../../../laurasia/copybooks/feedef.cpy), used by [FEELD](.
 | 05 | ├ FD-PRODUCT | text | 1 | 2 | X(2) | | | [feedef.cpy:9](../../../laurasia/copybooks/feedef.cpy#L9) |
 | 05 | ├ FD-REGION | text | 3 | 1 | X | | | [feedef.cpy:10](../../../laurasia/copybooks/feedef.cpy#L10) |
 | 05 | ├ FD-GROUP | number | 4 | 1 | 9 | | | [feedef.cpy:11](../../../laurasia/copybooks/feedef.cpy#L11) |
-| 05 | ├ FD-RATE | amount | 5 | 5 | 9V9(4) | | | [feedef.cpy:12](../../../laurasia/copybooks/feedef.cpy#L12) |
+| 05 | ├ FD-RATE | rate | 5 | 5 | 9V9(4) | | | [feedef.cpy:12](../../../laurasia/copybooks/feedef.cpy#L12) |
 | 05 | └ FD-FIXED | number | 10 | 5 | 9(5) | | | [feedef.cpy:13](../../../laurasia/copybooks/feedef.cpy#L13) |

@@ -28,7 +28,7 @@ Copybook [CLMREQ.cpy](../../../gondwana/copybooks/CLMREQ.cpy), used by [GLD030](
 | 88 | │ ├ CR-ｼﾎﾞｳ | | | | | | VALUE 'D' | [CLMREQ.cpy:17](../../../gondwana/copybooks/CLMREQ.cpy#L17) |
 | 88 | │ ├ CR-ﾆｭｳｲﾝ | | | | | | VALUE 'H' | [CLMREQ.cpy:18](../../../gondwana/copybooks/CLMREQ.cpy#L18) |
 | 88 | │ └ CR-ｶｲﾔｸ | | | | | | VALUE 'S' | [CLMREQ.cpy:19](../../../gondwana/copybooks/CLMREQ.cpy#L19) |
-| 05 | ├ CR-ｼﾞﾕｳﾊｯｾｲﾋﾞ | text | 20 | 7 | X(7) | | | [CLMREQ.cpy:20](../../../gondwana/copybooks/CLMREQ.cpy#L20) |
+| 05 | ├ CR-ｼﾞﾕｳﾊｯｾｲﾋﾞ | date | 20 | 7 | X(7) | | | [CLMREQ.cpy:20](../../../gondwana/copybooks/CLMREQ.cpy#L20) |
 | 05 | ├ CR-ﾆｯｽｳ | number | 27 | 3 | 9(3) | | | [CLMREQ.cpy:21](../../../gondwana/copybooks/CLMREQ.cpy#L21) |
 | 05 | ├ CR-ｳｹﾄﾘﾆﾝｶﾅ | text | 30 | 30 | X(30) | | | [CLMREQ.cpy:22](../../../gondwana/copybooks/CLMREQ.cpy#L22) |
 | 05 | ├ CR-ｼﾃﾝ | text | 60 | 4 | X(4) | | | [CLMREQ.cpy:23](../../../gondwana/copybooks/CLMREQ.cpy#L23) |

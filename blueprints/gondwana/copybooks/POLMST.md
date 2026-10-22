@@ -45,24 +45,24 @@ Copybook [POLMST.cpy](../../../gondwana/copybooks/POLMST.cpy), used by [GLD010](
 | 88 | │ ├ PM-ﾃｲｷ | | | | | | VALUE 'TM' | [POLMST.cpy:34](../../../gondwana/copybooks/POLMST.cpy#L34) |
 | 88 | │ ├ PM-ﾖｳﾛｳ | | | | | | VALUE 'EN' | [POLMST.cpy:35](../../../gondwana/copybooks/POLMST.cpy#L35) |
 | 88 | │ └ PM-ｲﾘｮｳ | | | | | | VALUE 'MD' | [POLMST.cpy:36](../../../gondwana/copybooks/POLMST.cpy#L36) |
-| 05 | ├ PM-ﾎｹﾝｷﾝｶﾞｸ | number | 14 | 9 | 9(9) | | | [POLMST.cpy:37](../../../gondwana/copybooks/POLMST.cpy#L37) |
-| 05 | ├ PM-ﾎｹﾝﾘｮｳ | number | 23 | 7 | 9(7) | | | [POLMST.cpy:38](../../../gondwana/copybooks/POLMST.cpy#L38) |
+| 05 | ├ PM-ﾎｹﾝｷﾝｶﾞｸ | amount | 14 | 9 | 9(9) | | | [POLMST.cpy:37](../../../gondwana/copybooks/POLMST.cpy#L37) |
+| 05 | ├ PM-ﾎｹﾝﾘｮｳ | amount | 23 | 7 | 9(7) | | | [POLMST.cpy:38](../../../gondwana/copybooks/POLMST.cpy#L38) |
 | 05 | ├ PM-ﾊﾗｲｺﾐﾎｳﾎｳ | code | 30 | 1 | X | | | [POLMST.cpy:39](../../../gondwana/copybooks/POLMST.cpy#L39) |
 | 88 | │ ├ PM-ﾂｷﾊﾞﾗｲ | | | | | | VALUE '1' | [POLMST.cpy:40](../../../gondwana/copybooks/POLMST.cpy#L40) |
 | 88 | │ └ PM-ﾈﾝﾊﾞﾗｲ | | | | | | VALUE '2' | [POLMST.cpy:41](../../../gondwana/copybooks/POLMST.cpy#L41) |
-| 05 | ├ PM-ｹｲﾔｸﾋﾞ | text | 31 | 7 | X(7) | | | [POLMST.cpy:42](../../../gondwana/copybooks/POLMST.cpy#L42) |
+| 05 | ├ PM-ｹｲﾔｸﾋﾞ | date | 31 | 7 | X(7) | | | [POLMST.cpy:42](../../../gondwana/copybooks/POLMST.cpy#L42) |
 | 05 | ├ PM-ﾎｹﾝｷｶﾝ | number | 38 | 2 | 99 | | | [POLMST.cpy:43](../../../gondwana/copybooks/POLMST.cpy#L43) |
-| 05 | ├ PM-ﾏﾝｷﾋﾞ | text | 40 | 7 | X(7) | | | [POLMST.cpy:44](../../../gondwana/copybooks/POLMST.cpy#L44) |
+| 05 | ├ PM-ﾏﾝｷﾋﾞ | date | 40 | 7 | X(7) | | | [POLMST.cpy:44](../../../gondwana/copybooks/POLMST.cpy#L44) |
 | 05 | ├ PM-ｹｲｶﾈﾝｽｳ | number | 47 | 2 | 99 | | | [POLMST.cpy:45](../../../gondwana/copybooks/POLMST.cpy#L45) |
-| 05 | ├ PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ | number | 49 | 6 | 9(6) | | | [POLMST.cpy:46](../../../gondwana/copybooks/POLMST.cpy#L46) |
+| 05 | ├ PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ | date | 49 | 6 | 9(6) | | | [POLMST.cpy:46](../../../gondwana/copybooks/POLMST.cpy#L46) |
 | 05 | ├ PM-ﾐﾉｳｶｲｽｳ | number | 55 | 2 | 99 | | | [POLMST.cpy:47](../../../gondwana/copybooks/POLMST.cpy#L47) |
-| 05 | ├ PM-ﾕｳﾖｶｲｼﾋﾞ | text | 57 | 7 | X(7) | | | [POLMST.cpy:48](../../../gondwana/copybooks/POLMST.cpy#L48) |
-| 05 | ├ PM-ｼｯｺｳﾋﾞ | text | 64 | 7 | X(7) | | | [POLMST.cpy:49](../../../gondwana/copybooks/POLMST.cpy#L49) |
-| 05 | ├ PM-ｼﾞｮｳﾀｲﾋﾂﾞｹ | text | 71 | 7 | X(7) | | | [POLMST.cpy:50](../../../gondwana/copybooks/POLMST.cpy#L50) |
+| 05 | ├ PM-ﾕｳﾖｶｲｼﾋﾞ | date | 57 | 7 | X(7) | | | [POLMST.cpy:48](../../../gondwana/copybooks/POLMST.cpy#L48) |
+| 05 | ├ PM-ｼｯｺｳﾋﾞ | date | 64 | 7 | X(7) | | | [POLMST.cpy:49](../../../gondwana/copybooks/POLMST.cpy#L49) |
+| 05 | ├ PM-ｼﾞｮｳﾀｲﾋﾂﾞｹ | date | 71 | 7 | X(7) | | | [POLMST.cpy:50](../../../gondwana/copybooks/POLMST.cpy#L50) |
 | 05 | ├ PM-ﾋﾎｹﾝｼｬ | group | 78 | 50 | | | | [POLMST.cpy:51](../../../gondwana/copybooks/POLMST.cpy#L51) |
 | 10 | │ ├ PM-ｼﾒｲ | text | 78 | 20 | X(20) | | | [POLMST.cpy:52](../../../gondwana/copybooks/POLMST.cpy#L52) |
 | 10 | │ ├ PM-ｼﾒｲｶﾅ | text | 98 | 20 | X(20) | | | [POLMST.cpy:53](../../../gondwana/copybooks/POLMST.cpy#L53) |
-| 10 | │ ├ PM-ｾｲﾈﾝｶﾞｯﾋﾟ | text | 118 | 7 | X(7) | | | [POLMST.cpy:54](../../../gondwana/copybooks/POLMST.cpy#L54) |
+| 10 | │ ├ PM-ｾｲﾈﾝｶﾞｯﾋﾟ | date | 118 | 7 | X(7) | | | [POLMST.cpy:54](../../../gondwana/copybooks/POLMST.cpy#L54) |
 | 10 | │ ├ PM-ｾｲﾍﾞﾂ | code | 125 | 1 | 9 | | | [POLMST.cpy:55](../../../gondwana/copybooks/POLMST.cpy#L55) |
 | 88 | │ │ ├ PM-ｵﾄｺ | | | | | | VALUE 1 | [POLMST.cpy:56](../../../gondwana/copybooks/POLMST.cpy#L56) |
 | 88 | │ │ └ PM-ｵﾝﾅ | | | | | | VALUE 2 | [POLMST.cpy:57](../../../gondwana/copybooks/POLMST.cpy#L57) |
@@ -77,9 +77,9 @@ Copybook [POLMST.cpy](../../../gondwana/copybooks/POLMST.cpy), used by [GLD010](
 | 10 | │ ├ PM-ｺｳｻﾞﾊﾞﾝｺﾞｳ | number | 196 | 7 | 9(7) | | | [POLMST.cpy:66](../../../gondwana/copybooks/POLMST.cpy#L66) |
 | 10 | │ └ PM-ｺｳｻﾞﾒｲｷﾞ | text | 203 | 30 | X(30) | | | [POLMST.cpy:67](../../../gondwana/copybooks/POLMST.cpy#L67) |
 | 05 | ├ PM-ﾀﾞｲﾘﾃﾝｺｰﾄﾞ | text | 233 | 6 | X(6) | | | [POLMST.cpy:68](../../../gondwana/copybooks/POLMST.cpy#L68) |
-| 05 | ├ PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ | number | 239 | 9 | 9(9) | | | [POLMST.cpy:69](../../../gondwana/copybooks/POLMST.cpy#L69) |
-| 05 | ├ PM-ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ | number | 248 | 9 | 9(9) | | | [POLMST.cpy:70](../../../gondwana/copybooks/POLMST.cpy#L70) |
-| 05 | ├ PM-ﾊｲﾄｳﾙｲｹｲ | number | 257 | 9 | 9(9) | | | [POLMST.cpy:71](../../../gondwana/copybooks/POLMST.cpy#L71) |
-| 05 | ├ PM-ｻｲｼｭｳﾆｭｳｷﾝﾈﾝｹﾞﾂ | number | 266 | 6 | 9(6) | | | [POLMST.cpy:72](../../../gondwana/copybooks/POLMST.cpy#L72) |
-| 05 | ├ PM-ｻｲｼｭｳﾆｭｳｷﾝｶﾞｸ | number | 272 | 7 | 9(7) | | | [POLMST.cpy:73](../../../gondwana/copybooks/POLMST.cpy#L73) |
+| 05 | ├ PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ | amount | 239 | 9 | 9(9) | | | [POLMST.cpy:69](../../../gondwana/copybooks/POLMST.cpy#L69) |
+| 05 | ├ PM-ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ | amount | 248 | 9 | 9(9) | | | [POLMST.cpy:70](../../../gondwana/copybooks/POLMST.cpy#L70) |
+| 05 | ├ PM-ﾊｲﾄｳﾙｲｹｲ | amount | 257 | 9 | 9(9) | | | [POLMST.cpy:71](../../../gondwana/copybooks/POLMST.cpy#L71) |
+| 05 | ├ PM-ｻｲｼｭｳﾆｭｳｷﾝﾈﾝｹﾞﾂ | date | 266 | 6 | 9(6) | | | [POLMST.cpy:72](../../../gondwana/copybooks/POLMST.cpy#L72) |
+| 05 | ├ PM-ｻｲｼｭｳﾆｭｳｷﾝｶﾞｸ | amount | 272 | 7 | 9(7) | | | [POLMST.cpy:73](../../../gondwana/copybooks/POLMST.cpy#L73) |
 | 05 | └ FILLER | filler | 279 | 22 | X(22) | | | [POLMST.cpy:74](../../../gondwana/copybooks/POLMST.cpy#L74) |

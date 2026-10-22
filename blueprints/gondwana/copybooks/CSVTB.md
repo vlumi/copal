@@ -25,4 +25,4 @@ Copybook [CSVTB.cpy](../../../gondwana/copybooks/CSVTB.cpy), used by [GLD030](..
 | 05 | ├ CV-ｼｮｳﾋﾝ | text | 1 | 2 | X(2) | | | [CSVTB.cpy:14](../../../gondwana/copybooks/CSVTB.cpy#L14) |
 | 05 | ├ CV-ﾈﾝﾚｲｸﾌﾞﾝ | number | 3 | 1 | 9 | | | [CSVTB.cpy:15](../../../gondwana/copybooks/CSVTB.cpy#L15) |
 | 05 | ├ CV-ｹｲｶﾈﾝｽｳ | number | 4 | 2 | 99 | | | [CSVTB.cpy:16](../../../gondwana/copybooks/CSVTB.cpy#L16) |
-| 05 | └ CV-ｹｲｽｳ | amount | 6 | 7 | 9(4)V9(3) | | | [CSVTB.cpy:17](../../../gondwana/copybooks/CSVTB.cpy#L17) |
+| 05 | └ CV-ｹｲｽｳ | rate | 6 | 7 | 9(4)V9(3) | | | [CSVTB.cpy:17](../../../gondwana/copybooks/CSVTB.cpy#L17) |

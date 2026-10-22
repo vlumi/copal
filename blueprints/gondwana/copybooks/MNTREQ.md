@@ -42,5 +42,5 @@ Copybook [MNTREQ.cpy](../../../gondwana/copybooks/MNTREQ.cpy), used by [GLD040](
 | 05 | ├ MR-ｼﾒｲ | text | 105 | 20 | X(20) | | | [MNTREQ.cpy:31](../../../gondwana/copybooks/MNTREQ.cpy#L31) |
 | 05 | ├ MR-ｼﾒｲｶﾅ | text | 125 | 20 | X(20) | | | [MNTREQ.cpy:32](../../../gondwana/copybooks/MNTREQ.cpy#L32) |
 | 05 | ├ MR-ｳｹﾄﾘﾆﾝ | text | 145 | 20 | X(20) | | | [MNTREQ.cpy:33](../../../gondwana/copybooks/MNTREQ.cpy#L33) |
-| 05 | ├ MR-ﾆｭｳｷﾝｶﾞｸ | number | 165 | 7 | 9(7) | | | [MNTREQ.cpy:34](../../../gondwana/copybooks/MNTREQ.cpy#L34) |
+| 05 | ├ MR-ﾆｭｳｷﾝｶﾞｸ | amount | 165 | 7 | 9(7) | | | [MNTREQ.cpy:34](../../../gondwana/copybooks/MNTREQ.cpy#L34) |
 | 05 | └ FILLER | filler | 172 | 9 | X(9) | | | [MNTREQ.cpy:35](../../../gondwana/copybooks/MNTREQ.cpy#L35) |

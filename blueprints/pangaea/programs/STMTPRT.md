@@ -702,7 +702,7 @@ Working storage. 6 bytes.
 
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-POSTING-MONTH | text | 1 | 6 | X(6) | | | [STMTPRT.cbl:100](../../../pangaea/programs/STMTPRT.cbl#L100) |
+| 01 | WS-POSTING-MONTH | date | 1 | 6 | X(6) | | | [STMTPRT.cbl:100](../../../pangaea/programs/STMTPRT.cbl#L100) |
 
 ### WS-POSTING-CODE
 

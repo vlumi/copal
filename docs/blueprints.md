@@ -28,10 +28,13 @@ Every field of a layout, in a program or a copybook, has a kind, the first of th
 3. **key**: it is the `RECORD KEY` of one of the program's files, or a key one of its sorts sorts on. A copybook's field is a key where a program that uses the copybook says so. A key is only what the code says is one: the account master's account number is read in sequence, so it is a number.
 4. **code**: it has condition names, level 88.
 5. **edited**: its picture is numeric-edited, for printing.
-6. **amount**: numeric with decimals.
-7. **date**: numeric without decimals, of 6, 8 or 14 digits, with `DATE`, `MONTH`, `TIMESTAMP` or `YYMM` in its name. This is the one rule that reads a name, and the only heuristic among the kinds.
-8. **number**: any other numeric field.
-9. **text**: anything else.
+6. **rate**: numeric, named for a rate: `RATE`, `FACTOR` or `PERCENT` in its name, or `ｹｲｽｳ`, or ending in `ﾘﾂ`.
+7. **amount**: numeric with decimals; or without, named for an amount, `AMOUNT`, `AMT` or `BALANCE`, or `ｷﾝｶﾞｸ` or `ｻﾞﾝﾀﾞｶ`, or ending in `ｶﾞｸ`, `ﾘｮｳ` or `ｷﾝ`, as a currency without a minor unit leaves it.
+8. **date**: numeric without decimals, of 4, 6, 8 or 14 digits, or text of 4 to 8 bytes, named for a date: `DATE`, `MONTH`, `TIMESTAMP` or `YYMM` in its name, or `ﾋﾂﾞｹ`, `ﾈﾝｹﾞﾂ`, `ｶﾞｯﾋﾟ`, `ﾜﾚｷ` or `ｾｲﾚｷ`, or ending in `ﾋﾞ`.
+9. **number**: any other numeric field.
+10. **text**: anything else.
+
+Telling a rate, an amount or a date by its name is the one rule that reads a name, and the only heuristic among the kinds. What the code does with a field then carries the kind along: a numeric field an amount is moved or computed into is an amount; a field a date is moved into, of a size a date takes, is a date, as is an argument of `INTEGER-OF-DATE`; and a field of an entity is of the kind any program's record of it shows. A date's arithmetic is not followed: the days between two dates are a number.
 
 ## A program, `programs/NAME.md`
 

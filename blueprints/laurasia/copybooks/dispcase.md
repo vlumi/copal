@@ -28,5 +28,5 @@ Copybook [dispcase.cpy](../../../laurasia/copybooks/dispcase.cpy), used by [DISP
 | 88 | │ └ DC-LOST | | | | | | VALUE 'LS' | [dispcase.cpy:16](../../../laurasia/copybooks/dispcase.cpy#L16) |
 | 05 | ├ DC-MERCHANT | text | 11 | 10 | X(10) | | | [dispcase.cpy:17](../../../laurasia/copybooks/dispcase.cpy#L17) |
 | 05 | ├ DC-AMOUNT | amount | 21 | 12 | S9(9)V99 | | SIGN LEADING SEPARATE | [dispcase.cpy:18](../../../laurasia/copybooks/dispcase.cpy#L18) |
-| 05 | ├ DC-OPENED | number | 33 | 8 | 9(8) | | | [dispcase.cpy:19](../../../laurasia/copybooks/dispcase.cpy#L19) |
+| 05 | ├ DC-OPENED | date | 33 | 8 | 9(8) | | | [dispcase.cpy:19](../../../laurasia/copybooks/dispcase.cpy#L19) |
 | 05 | └ DC-UPDATED | date | 41 | 8 | 9(8) | | | [dispcase.cpy:20](../../../laurasia/copybooks/dispcase.cpy#L20) |

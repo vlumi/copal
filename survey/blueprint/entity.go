@@ -79,6 +79,7 @@ func entities(copybooks []Copybook, programs []Program) []Entity {
 			list = append(list, e)
 		}
 	}
+	kindsByUse(list, copybooks, programs, held)
 	datesFrom(list, programs, held)
 	datesInText(list, copybooks, programs, held)
 	relate(list, programs, held)

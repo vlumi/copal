@@ -17,5 +17,5 @@ Copybook [feerec.cpy](../../../laurasia/copybooks/feerec.cpy), used by [FEELD](.
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | FEE-SLOT-RECORD | group | 1 | 8 | | | | [feerec.cpy:7](../../../laurasia/copybooks/feerec.cpy#L7) |
-| 05 | ├ FS-RATE | amount | 1 | 5 | 9V9(4) | | | [feerec.cpy:8](../../../laurasia/copybooks/feerec.cpy#L8) |
+| 05 | ├ FS-RATE | rate | 1 | 5 | 9V9(4) | | | [feerec.cpy:8](../../../laurasia/copybooks/feerec.cpy#L8) |
 | 05 | └ FS-FIXED-CENTS | number | 6 | 3 | 9(5) | COMP-5 | | [feerec.cpy:9](../../../laurasia/copybooks/feerec.cpy#L9) |

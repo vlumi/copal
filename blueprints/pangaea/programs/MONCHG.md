@@ -470,7 +470,7 @@ Working storage. 6 bytes.
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-CLOSED-MONTH-PARTS | group | 1 | 6 | | | REDEFINES WS-CLOSED-MONTH | [MONCHG.cbl:81](../../../pangaea/programs/MONCHG.cbl#L81) |
 | 05 | ├ WS-CM-CENTURY | number | 1 | 2 | 99 | | | [MONCHG.cbl:82](../../../pangaea/programs/MONCHG.cbl#L82) |
-| 05 | └ WS-CM-YYMM | number | 3 | 4 | 9(4) | | | [MONCHG.cbl:83](../../../pangaea/programs/MONCHG.cbl#L83) |
+| 05 | └ WS-CM-YYMM | date | 3 | 4 | 9(4) | | | [MONCHG.cbl:83](../../../pangaea/programs/MONCHG.cbl#L83) |
 
 ### WS-TRAN-ID
 
@@ -480,7 +480,7 @@ Working storage. 10 bytes.
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | WS-TRAN-ID | group | 1 | 10 | | | | [MONCHG.cbl:84](../../../pangaea/programs/MONCHG.cbl#L84) |
 | 05 | ├ FILLER | filler | 1 | 2 | 99 | | VALUE 0 | [MONCHG.cbl:85](../../../pangaea/programs/MONCHG.cbl#L85) |
-| 05 | ├ WS-TI-YYMM | number | 3 | 4 | 9(4) | | | [MONCHG.cbl:86](../../../pangaea/programs/MONCHG.cbl#L86) |
+| 05 | ├ WS-TI-YYMM | date | 3 | 4 | 9(4) | | | [MONCHG.cbl:86](../../../pangaea/programs/MONCHG.cbl#L86) |
 | 05 | └ WS-TI-SEQ | number | 7 | 4 | 9(4) | | VALUE 0 | [MONCHG.cbl:87](../../../pangaea/programs/MONCHG.cbl#L87) |
 
 ### TRAN-RECORD

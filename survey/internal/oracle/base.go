@@ -359,7 +359,7 @@ func typicalValue(f *layout.Field, kind string, index int) (value, bool) {
 		return literal(f, f.Conditions[0].Values[0])
 	case kind == blueprint.KindDate:
 		return dateValue(f), true
-	case kind == blueprint.KindAmount:
+	case kind == blueprint.KindAmount, kind == blueprint.KindRate:
 		return number(10 * pow10(f.Scale)), true
 	case kind == blueprint.KindKey, kind == blueprint.KindNumber:
 		return number(int64(index + 1)), true

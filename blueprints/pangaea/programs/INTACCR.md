@@ -651,7 +651,7 @@ Working storage. 260 bytes.
 | 88 |   │ ├ WS-RT-CREDIT | | | | | | VALUE 'C' | [INTACCR.cbl:99](../../../pangaea/programs/INTACCR.cbl#L99) |
 | 88 |   │ └ WS-RT-DEBIT | | | | | | VALUE 'D' | [INTACCR.cbl:100](../../../pangaea/programs/INTACCR.cbl#L100) |
 | 10 |   ├ WS-RT-FLOOR | amount | 3 | 7 | S9(11)V99 | COMP-3 | | [INTACCR.cbl:101](../../../pangaea/programs/INTACCR.cbl#L101) |
-| 10 |   └ WS-RT-ANNUAL-RATE | amount | 10 | 4 | 9V9(6) | COMP-3 | | [INTACCR.cbl:102](../../../pangaea/programs/INTACCR.cbl#L102) |
+| 10 |   └ WS-RT-ANNUAL-RATE | rate | 10 | 4 | 9V9(6) | COMP-3 | | [INTACCR.cbl:102](../../../pangaea/programs/INTACCR.cbl#L102) |
 
 ### WS-RX
 
@@ -667,7 +667,7 @@ Working storage. 4 bytes. THE RATE FOR THE ACCOUNT IN HAND, AND THE TIER IT CAME
 
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-ACCOUNT-RATE | amount | 1 | 4 | 9V9(6) | COMP-3 | | [INTACCR.cbl:106](../../../pangaea/programs/INTACCR.cbl#L106) |
+| 01 | WS-ACCOUNT-RATE | rate | 1 | 4 | 9V9(6) | COMP-3 | | [INTACCR.cbl:106](../../../pangaea/programs/INTACCR.cbl#L106) |
 
 ### WS-RATE-FOUND-SW
 
