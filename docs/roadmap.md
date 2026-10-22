@@ -208,6 +208,18 @@ Laurasia ran one hand-written night. To show that the second specimen is a syste
 
 Done when: the processor runs for months from a seed with its cards paying, declining and disputing at steady rates, and the blueprints show the payments feed as they show the rest.
 
+## 18. A third specimen
+
+Gondwana Life Insurance, a life insurer on Fujitsu NetCOBOL, run from Windows batch files: Shift_JIS source and data, whole yen, dates in the Japanese eras, the Report Writer, and a third job control. Insurance is the third home of COBOL after banking and government, and Japan the biggest COBOL world the survey has not seen. The plan is in [plans/third-specimen.md](plans/third-specimen.md):
+
+- Gondwana runs: the programs, batch files, a fixture and goldens, bedrock compiling the dialect and running the batch files.
+- The survey on it as it is, and every break and wrong fact written down.
+- The language: the Report Writer in cobolith, and every reader of source in the dialect's encoding.
+- The facts: yen, era dates, deep tables, the batch files as jobs; lineage, the design views and the oracle on it.
+- A living Gondwana: a generated portfolio and a year of days.
+
+Done when: the survey's blueprints and cases of Gondwana are as right as the other two's, with no special case for any of the three, and a year of the generated insurer runs from a seed.
+
 ## Later
 
 Decision rules in sentences written from their conditions and the level-88 names in the code, with no model: reproducible, golden, and what a model's prose would later stand beside.

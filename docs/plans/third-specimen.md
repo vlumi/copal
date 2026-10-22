@@ -1,0 +1,58 @@
+# Plan: a third specimen
+
+The survey holds on two systems: a bank in IBM COBOL run by JCL, and a card processor in Micro Focus COBOL run by shell scripts. Both are written in ASCII, in cents, by shops that date their records in the Western calendar, and neither prints a report with the Report Writer. The third big home of COBOL, after banking and government, is insurance, and the biggest COBOL world the survey has not seen is Japan's: Fujitsu, Hitachi and NEC compilers, source and data in Shift_JIS. Gondwana Life Insurance is a life insurer on Fujitsu NetCOBOL, run from Windows batch files, in yen, with dates in the Japanese eras. Pangaea split into Laurasia and Gondwana; the family is complete.
+
+As with Laurasia, the deliverable is not the specimen but what it shows: every place the survey, the oracle or bedrock breaks on it or comes out wrong is a coupling to the first two, fixed generically, never by special-casing Gondwana. Read [second-specimen.md](second-specimen.md) first; its ground rules apply, and this plan says only what is new.
+
+## What it varies, on purpose
+
+| The first two | Gondwana |
+| --- | --- |
+| ASCII source and data | Shift_JIS source and data, `cobol.Fujitsu`: Japanese in comments, literals, messages and data, and the characters whose second byte is a backslash or a quote among them |
+| English names throughout | English names, as the shop's convention, but one copybook whose data names are Japanese, which the compiler and cobolith both take |
+| Amounts in cents, `V99` | Amounts in whole yen, `PIC 9(9)` with no decimals; rates and factors in `V9(5)`; a kind the survey must tell from a count |
+| Dates `YYYYMMDD` | Era dates: an era letter and two digits of year, `S60`, `H07`, `R08`, with Showa, Heisei and Reiwa all in force in one master; Western dates in the files exchanged with the banks; and one table dated by a two-digit year with no era, from the 1980s |
+| Overpunched signs | No overpunched signs: unsigned amounts, and `SIGN LEADING SEPARATE` where a sign is needed, as the interchange files of the trade have it |
+| Print files written with `WRITE ... AFTER ADVANCING` | The Report Writer: `REPORT SECTION`, `RD` with controls and page limits, report groups with `SOURCE` and `SUM`, `INITIATE`, `GENERATE` and `TERMINATE`, which cobolith does not read yet |
+| Binary items as IBM or Micro Focus lay them out | Fujitsu's: `COMP-5` little-endian, `SYNCHRONIZED` as IBM, in a binary control file the survey has to lay out right to read |
+| Two-dimensional tables at most | Rate tables by product, sex, entry age and policy year, `OCCURS` three deep, read with subscripts the lineage must follow |
+| JCL or POSIX sh | Windows batch files: `set DD_...=`, `call`, `if errorlevel`, `move`, `%1` and `%~dp0`, run by bedrock's own interpreter, as bedrock's runner stands in for JES; sorting by `SORT` statements in the programs, since the platform's sort has no keys |
+| Fixed format, or free | Fixed format, columns 8 to 72, with two-byte characters that must not straddle the margin |
+
+## The domain
+
+A life insurer's administration system holds policies for decades and runs by the month:
+
+- **New business:** policies from the sales system, checked for the product's limits on age, term and sum insured, with the insurance age, which rounds at six months, computed from the birth date, and the first premium.
+- **Premium collection:** the premiums due each month by payment mode, written as a bank transfer request file to the collection agent, with the payer's name in half-width katakana; the results back a few days later, paid or unpaid with a reason, which start the grace period.
+- **Lapse and reinstatement:** a grace period that ends in lapse, and a reinstatement within a year with the arrears paid: a state machine, in force, in grace, lapsed, reinstated, surrendered, matured, paid, the survey should find.
+- **Claims:** death and hospitalization claims checked against the policy's state on the event date, waiting periods and exclusions, the benefit from the product table, and the payment file.
+- **Surrender:** the cash value from a table by product, entry age and policy year, less any policy loan.
+- **Anniversaries:** daily, the policies whose anniversary it is: the age moved on, renewal premiums for renewable term, and maturity benefits.
+- **Month-end:** policy reserves by the actuarial tables and the general-ledger summary; the agents' commissions by product and policy year; both printed by the Report Writer.
+- **Annual:** the policyholders' notices, and dividends.
+- **Maintenance:** changes of address, beneficiary and bank account, and name changes, which touch both the kanji name and the katakana one.
+
+About fifteen programs: loading and unloading the policy master, new business, billing, results, lapse, reinstatement, claims, surrender, anniversaries, reserves, commissions, notices, maintenance, and called modules for the insurance age, the era conversion with the 2019 change inside it, and the cash value lookup. Batch files for opening the system, the daily run, the monthly billing, the monthly close and the annual run; a scheduler starts them, which is in the operations guide, not in the files.
+
+## What was checked first
+
+GnuCOBOL 3.2 compiles Shift_JIS source under bedrock's `-Wall -Werror`: comments, `PIC X` values and `DISPLAY` literals in Japanese come out whole, the characters with a backslash second byte among them, and it accepts a Japanese data name. Its Report Writer works. Its national items do not: `PIC N(4)` holds four of its own code units, each a source byte widened, so a national literal of four characters is truncated and garbled. Gondwana therefore keeps its Japanese text in `PIC X` fields of Shift_JIS bytes, as the code of that age does, and has no `PIC N`; cobolith's national layout stays tested by its own tables alone until a compiler that lays it out is in the toolchain. GnuCOBOL has no Fujitsu configuration; bedrock compiles the dialect with `-std=default`, and the specimen stays within what both compilers accept, as Laurasia stays within Micro Focus and GnuCOBOL.
+
+## Decisions
+
+- **Japanese in the specimen.** The data, the literals, the messages and the printed reports are Japanese, which is what the dialect is for; the names, the comments and the documentation are English, so the showcase stays readable, with the one Japanese copybook as a deliberate nasty. The repository's rule that all text is English gains this exception, in the same change that adds the specimen. Blueprints and goldens are UTF-8: what the survey writes about Shift_JIS source is transcoded, and a golden data file in Shift_JIS is written as text the way a packed-decimal one is written by field.
+- **Batch files, not a third shell.** The point of the third job control is a reader and a runner that owe nothing to sh: bedrock's `script` gains a batch-file parser into the same model, and a runner that executes the model step by step, since no `cmd.exe` runs on the build machines. The scripts stay the specimen's own, in its own syntax, as the ground rules want.
+- **Era dates are a date kind.** The survey tells a date by its name and by what writes it; an era date is three fields that together are a date, and a two-digit year with no era is a date the survey can only mark as one whose century is nowhere in the code.
+
+## Parts
+
+1. **Gondwana runs.** The programs, copybooks and batch files, a hand-written fixture of a few dozen policies across the three eras with one month of days, golden outputs, its README and operations guide. Bedrock compiles the Fujitsu dialect, reads a program's header in its encoding, and parses and runs the batch files. The dependency check and the repository's rules take the third specimen. Nothing in the survey changes yet.
+2. **The survey on it, as it is.** Run it, and write down what breaks and what comes out wrong, program by program, in `gondwana-findings.md`, each finding marked with the part that fixes it. Expected before running: the survey reads source as ASCII, cobolith stops at the `REPORT SECTION`, the Japanese names and literals come out as bytes, amounts in whole yen read as counts, era dates read as text.
+3. **The language.** In cobolith, released and bumped: the Report Writer, as data description and as statements, with what a report group reads for its `SOURCE` and `SUM` items counting as data flow. In Copal: every reader of source takes the dialect's encoding, the blueprints transcode what they quote, the oracle traces and fills records in Shift_JIS, and whatever else part 2 found in the parsing and the layouts. Pangaea's and Laurasia's blueprints stay unchanged where nothing about them changed.
+4. **The facts.** The couplings in the analyses: kinds of yen amounts, era dates and their lineage into Western ones, three-deep subscripts, the Report Writer's output as the program's output in the job network, the batch files as jobs with their datasets and schedule, and the rest of part 2's list. Lineage, the design views and the oracle on Gondwana, with its own golden cases and its batch run through the batch files.
+5. **A living Gondwana.** As the bank and the card processor have: a portfolio generated from a seed across the three eras and the products, the days chaining through the month, billing day, results day and the close, a year run to show the anniversaries and the annual run, and a failed day backed out whole. `make life-open` and `make life-days N=31`.
+
+Each part one pull request or more; part 3 is several, the cobolith releases among them.
+
+Done when: the survey's blueprints and cases of Gondwana are as right as the other two's, with no special case for any of the three; a year of the generated insurer runs from a seed; and a reader of the blueprints can find the policy's state machine, the era dates and the Report Writer's reports without opening a program.

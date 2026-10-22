@@ -60,7 +60,7 @@ The hard part of moving a COBOL core system to anything newer is rarely the tran
 
 ## Debt
 
-- The survey, the oracle and bedrock's compiler read source with `cobol.ReadProgram` and `cobol.Read`, as ASCII. Cobolith's Japanese dialects need `ReadProgramIn` and `ReadIn` with the dialect, and `ReadDataEntries` an encoding-aware form, before a system in them can be surveyed.
+- The survey, the oracle and bedrock's compiler read source with `cobol.ReadProgram` and `cobol.Read`, as ASCII. Cobolith's Japanese dialects need `ReadProgramIn` and `ReadIn` with the dialect, and `ReadDataEntries` an encoding-aware form, before a system in them can be surveyed: part 3 of [plans/third-specimen.md](plans/third-specimen.md).
 
 ## Toolchain
 
