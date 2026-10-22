@@ -127,7 +127,11 @@ func (r *runner) outputs(c Case, dir string) (map[string][]byte, error) {
 
 // read reads a file of the program's at a path, a record a line: an
 // indexed or relative one through its unloader, which writes to another.
+// A file the run never made, stopping before it opened it, has no records.
 func (r *runner) read(f blueprint.File, path, unloaded string) ([]byte, error) {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return nil, nil
+	}
 	if keyed(f) {
 		outcome, err := run.Step{Programs: r.loaders, Program: unloaderName(f), DDs: map[string]string{"UNLOADIN": path, "UNLOADOUT": unloaded},
 			Stdout: io.Discard, Timeout: timeout}.Run()
