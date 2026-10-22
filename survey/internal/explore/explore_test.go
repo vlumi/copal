@@ -4,6 +4,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -39,12 +40,65 @@ func newPangaea(t *testing.T) *httptest.Server {
 	return server
 }
 
+// newGondwana serves the explorer of Gondwana Life Insurance, whose source
+// is Shift_JIS and whose jobs are batch files, with its cases.
+func newGondwana(t *testing.T) *httptest.Server {
+	t.Helper()
+	t.Chdir("../../..")
+	paths, err := filepath.Glob("gondwana/programs/*.cbl")
+	if err != nil {
+		t.Fatal(err)
+	}
+	jobs, err := filepath.Glob("gondwana/scripts/*.BAT")
+	if err != nil {
+		t.Fatal(err)
+	}
+	system, err := blueprint.Analyze(append(paths, jobs...), "gondwana/copybooks", cobol.Fujitsu)
+	if err != nil {
+		t.Fatal(err)
+	}
+	x, err := New(system, "Gondwana", "oracle/gondwana")
+	if err != nil {
+		t.Fatal(err)
+	}
+	server := httptest.NewServer(x.Handler())
+	t.Cleanup(server.Close)
+	return server
+}
+
 var href = regexp.MustCompile(`href="(/[^"#]*)`)
 
 // Every page the explorer links to, from the overview on, is there.
 func TestEveryLinkResolves(t *testing.T) {
-	server := newPangaea(t)
+	seen := crawl(t, newPangaea(t))
+	for _, want := range []string{"/jobs/DAILY", "/jobs/DAILY/steps/POST", "/datasets/ACCT.MASTER", "/programs/TXPOST",
+		"/programs/TXPOST/paragraphs/3200-POST-DEBIT", "/programs/TXPOST/fields/AM-BALANCE", "/copybooks/ACCTMAST",
+		"/source/pangaea/programs/TXPOST.cbl"} {
+		if !seen[want] {
+			t.Errorf("no link to %s among the %d pages", want, len(seen))
+		}
+	}
+}
+
+// Every page of Gondwana's explorer is there too, its names in Japanese
+// in the paths, its batch files as jobs, and its cases.
+func TestEveryLinkResolvesInGondwana(t *testing.T) {
+	seen := crawl(t, newGondwana(t))
+	for _, want := range []string{"/jobs/DAILY", "/jobs/DAILY/steps/UNLOAD", "/programs/GLD060",
+		"/programs/GLD060/paragraphs/" + url.PathEscape("ｼｯｺｳ-RTN"), "/programs/GLD010/fields/" + url.PathEscape("PM-ｼﾞｮｳﾀｲ"),
+		"/copybooks/POLMST", "/source/gondwana/programs/GLD060.cbl"} {
+		if !seen[want] {
+			t.Errorf("no link to %s among the %d pages", want, len(seen))
+		}
+	}
+}
+
+// crawl follows every link from the overview on and returns the pages
+// seen, failing on one that is not there.
+func crawl(t *testing.T, server *httptest.Server) map[string]bool {
+	t.Helper()
 	seen := map[string]bool{"/": true}
+	from := map[string]string{}
 	queue := []string{"/"}
 	for len(queue) > 0 {
 		link := queue[0]
@@ -59,24 +113,18 @@ func TestEveryLinkResolves(t *testing.T) {
 			t.Fatal(err)
 		}
 		if resp.StatusCode != http.StatusOK {
-			t.Errorf("%s: %s", link, resp.Status)
+			t.Errorf("%s, linked from %s: %s", link, from[link], resp.Status)
 			continue
 		}
 		for _, m := range href.FindAllStringSubmatch(string(body), -1) {
 			next := strings.ReplaceAll(m[1], "&amp;", "&")
 			if !seen[next] && !strings.HasPrefix(next, "/static/") {
-				seen[next] = true
+				seen[next], from[next] = true, link
 				queue = append(queue, next)
 			}
 		}
 	}
-	for _, want := range []string{"/jobs/DAILY", "/jobs/DAILY/steps/POST", "/datasets/ACCT.MASTER", "/programs/TXPOST",
-		"/programs/TXPOST/paragraphs/3200-POST-DEBIT", "/programs/TXPOST/fields/AM-BALANCE", "/copybooks/ACCTMAST",
-		"/source/pangaea/programs/TXPOST.cbl"} {
-		if !seen[want] {
-			t.Errorf("no link to %s among the %d pages", want, len(seen))
-		}
-	}
+	return seen
 }
 
 func TestPages(t *testing.T) {

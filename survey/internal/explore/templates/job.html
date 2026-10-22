@@ -11,7 +11,7 @@
 <table>
   <thead><tr><th>Step</th><th>Program</th><th>Bypassed by</th><th>Description</th><th>Source</th></tr></thead>
   <tbody>
-  {{range .Steps}}<tr><td><a href="{{step (stepRef $.View.Job.Name .Name)}}">{{.Name}}</a></td><td><a href="{{program .Program}}">{{.Program}}</a></td><td>{{.Cond}}</td><td>{{join .Description " "}}</td><td>{{template "src" .Source}}</td></tr>
+  {{range .Steps}}<tr><td><a href="{{step (stepRef $.View.Job.Name .Name)}}">{{.Name}}</a></td><td>{{if .Program}}<a href="{{program .Program}}">{{.Program}}</a>{{else if .Runs}}<a href="{{job .Runs}}">{{.Runs}}</a>{{end}}</td><td>{{.Cond}}</td><td>{{join .Description " "}}</td><td>{{template "src" .Source}}</td></tr>
   {{end}}
   </tbody>
 </table>
