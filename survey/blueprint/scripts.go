@@ -75,6 +75,9 @@ func bindScriptStep(step *Step, s script.Step, programs []Program) []string {
 	p := programs[i]
 	var findings []string
 	for _, f := range p.Files {
+		if f.Kind == "SD" {
+			continue
+		}
 		path, ok := s.Bindings[f.Assign]
 		if !ok {
 			findings = append(findings, fmt.Sprintf("Step %s exports no DD_%s for %s's file %s.", step.Name, f.Assign, p.Name, f.Name))

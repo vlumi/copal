@@ -35,7 +35,7 @@ Script [OPEN.BAT](../../../gondwana/scripts/OPEN.BAT): 1 steps.
 
 | Name | File | File in the program | Copybook | Use |
 | --- | --- | --- | --- | --- |
-| EXTRACT | $DATA/IN/EXTRACT.TXT | EXTRACT-F | | read |
+| EXTRACT | $DATA/IN/EXTRACT.TXT | EXTRACT-F | [POLMST](../copybooks/POLMST.md) | read |
 | POLMST | $DATA/MASTER/POLMST.IDX (indexed) | POLMST-F | [POLMST](../copybooks/POLMST.md) | write |
 | GLSCTL | $DATA/MASTER/GLSCTL.BIN | GLSCTL-F | [CTLREC](../copybooks/CTLREC.md) | write |
 | GLO010R | $DATA/RPT/GLO010.$DATE.RPT | REPORT-F | | write |
@@ -47,7 +47,7 @@ Each dataset the job names, the copybook that describes its records, from the pr
 
 | Dataset | Copybook | Written by | Read by |
 | --- | --- | --- | --- |
-| $DATA/IN/EXTRACT.TXT | | | GLO010 |
+| $DATA/IN/EXTRACT.TXT | [POLMST](../copybooks/POLMST.md) | | GLO010 |
 | $DATA/MASTER/POLMST.IDX | [POLMST](../copybooks/POLMST.md) | GLO010 | |
 | $DATA/MASTER/GLSCTL.BIN | [CTLREC](../copybooks/CTLREC.md) | GLO010 | |
 | $DATA/RPT/GLO010.$DATE.RPT | | GLO010 | |
