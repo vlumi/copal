@@ -6,6 +6,8 @@ Laurasia Card Services, Night Operations. Revision of 2021-03.
 
 The card networks send one clearing file a business day, with the presentments of the cards we issue and of the merchants we acquire for; the authorization switch leaves the day's log of what it approved and declined. The night turns these into postings, merchant payouts and dispute adjustments. The date the night works on is the date it is given, as `YYYYMMDD`; no program reads the clock.
 
+The switch is the network's and runs around the clock; nothing we run closes it. When it cannot reach us it stands in, and the log marks those approvals. The log we are given on a business day holds everything since the last night, a weekend's authorizations included.
+
 The scripts are in `scripts/`, and each takes its programs from `$LCS_BIN`, the other scripts from `$LCS_SCRIPTS` and the files from `$LCS_DATA`.
 
 - `open.sh`, once, when the processor opens: loads the card accounts from the card system's extract into the indexed account file.

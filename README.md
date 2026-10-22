@@ -37,6 +37,7 @@ Everything is a make target, and plain `make` lists them. You need GnuCOBOL 3.2 
 | Target | What it does | Where to look |
 | --- | --- | --- |
 | `make laurasia-night` | Runs Laurasia's night on its fixture: the clearing file in, matching, pricing, posting, disputes, settlement and the billing cycle, with each step's log and every program's report | the terminal, and `laurasia/run/night/data/` |
+| `make cards-open`, `make cards-days N=30` | Opens a card processor of about 1,000 generated cards and runs days, one line each: the night on business days, the billing cycle every day | `laurasia/run/processor/data/` |
 
 ### The survey
 
@@ -80,7 +81,7 @@ Everything is a make target, and plain `make` lists them. You need GnuCOBOL 3.2 
 
 1. `make toolchain`: check that the tools are there.
 2. `make pangaea-daily`: the bank in one screen; `make laurasia-night`: the card processor's night in one.
-3. `make bank-reset` and `make bank-days N=5`: five business days of the generated bank.
+3. `make bank-reset` and `make bank-days N=5`: five business days of the generated bank. `make cards-open` and `make cards-days N=30`: a month of the card processor, weekends included.
 4. `make console`, then open an account, a day's jobs, and **Compare**.
 5. `make simulate` from another terminal: the **Online** page fills with authorizations. Run a day from the console: the channel closes for the batch, and the next morning the purchases and withdrawals are in the master.
 6. Read a blueprint: [TXPOST](blueprints/pangaea/programs/TXPOST.md), its [decision tables](blueprints/pangaea/rules/TXPOST.md), and the [DAILY job](blueprints/pangaea/jobs/DAILY.md).
