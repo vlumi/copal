@@ -683,6 +683,22 @@
               "source": "laurasia/programs/payin.cbl:132",
               "when": [
                 {
+                  "condition": "READ FEED-IN AT END",
+                  "holds": false
+                },
+                {
+                  "condition": "RECORD-IS-GOOD",
+                  "holds": true
+                },
+                {
+                  "condition": "READ ACCOUNTS INVALID KEY",
+                  "holds": false
+                },
+                {
+                  "condition": "PF-PAYMENT",
+                  "holds": true
+                },
+                {
                   "condition": "CA-BALANCE NOT \u003e ZERO OR PF-AMOUNT NOT \u003c CA-STATEMENT-BALANCE",
                   "holds": true
                 }
@@ -1375,6 +1391,10 @@
               "source": "laurasia/programs/dispute.cbl:132",
               "when": [
                 {
+                  "condition": "WS-MASTER-KEY \u003c WS-EVENT-KEY",
+                  "holds": false
+                },
+                {
                   "condition": "HOLDING-NOTHING AND DE-OPENED",
                   "holds": true
                 }
@@ -1423,6 +1443,27 @@
               ]
             },
             {
+              "from": "DC-PRE-ARBITRATION",
+              "to": "DC-WON",
+              "program": "DISPUTE",
+              "paragraph": "APPLY-EVENT",
+              "source": "laurasia/programs/dispute.cbl:139",
+              "when": [
+                {
+                  "condition": "HOLDING-NOTHING AND DE-OPENED",
+                  "holds": false
+                },
+                {
+                  "condition": "HOLDING-CASE",
+                  "holds": true
+                },
+                {
+                  "condition": "DE-RULED-FOR-ISSUER",
+                  "holds": true
+                }
+              ]
+            },
+            {
               "from": "DC-CHARGED-BACK",
               "to": "DC-REPRESENTED",
               "program": "DISPUTE",
@@ -1465,48 +1506,6 @@
               ]
             },
             {
-              "from": "DC-REPRESENTED",
-              "to": "DC-PRE-ARBITRATION",
-              "program": "DISPUTE",
-              "paragraph": "APPLY-EVENT",
-              "source": "laurasia/programs/dispute.cbl:147",
-              "when": [
-                {
-                  "condition": "HOLDING-NOTHING AND DE-OPENED",
-                  "holds": false
-                },
-                {
-                  "condition": "HOLDING-CASE",
-                  "holds": true
-                },
-                {
-                  "condition": "DE-PRE-ARBITRATION",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "DC-PRE-ARBITRATION",
-              "to": "DC-WON",
-              "program": "DISPUTE",
-              "paragraph": "APPLY-EVENT",
-              "source": "laurasia/programs/dispute.cbl:139",
-              "when": [
-                {
-                  "condition": "HOLDING-NOTHING AND DE-OPENED",
-                  "holds": false
-                },
-                {
-                  "condition": "HOLDING-CASE",
-                  "holds": true
-                },
-                {
-                  "condition": "DE-RULED-FOR-ISSUER",
-                  "holds": true
-                }
-              ]
-            },
-            {
               "from": "DC-PRE-ARBITRATION",
               "to": "DC-LOST",
               "program": "DISPUTE",
@@ -1523,6 +1522,27 @@
                 },
                 {
                   "condition": "DE-RULED-FOR-MERCHANT",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "DC-REPRESENTED",
+              "to": "DC-PRE-ARBITRATION",
+              "program": "DISPUTE",
+              "paragraph": "APPLY-EVENT",
+              "source": "laurasia/programs/dispute.cbl:147",
+              "when": [
+                {
+                  "condition": "HOLDING-NOTHING AND DE-OPENED",
+                  "holds": false
+                },
+                {
+                  "condition": "HOLDING-CASE",
+                  "holds": true
+                },
+                {
+                  "condition": "DE-PRE-ARBITRATION",
                   "holds": true
                 }
               ]
@@ -2250,17 +2270,18 @@
               "to": "PO-INTEREST",
               "program": "CYCLE",
               "paragraph": "POST-INTEREST",
-              "source": "laurasia/programs/cycle.cbl:102"
-            },
-            {
-              "from": "any",
-              "to": "PO-PAYMENT",
-              "program": "PAYIN",
-              "paragraph": "APPLY-PAYMENT",
-              "source": "laurasia/programs/payin.cbl:136",
+              "source": "laurasia/programs/cycle.cbl:102",
               "when": [
                 {
-                  "condition": "CA-BALANCE NOT \u003e ZERO OR PF-AMOUNT NOT \u003c CA-STATEMENT-BALANCE",
+                  "condition": "CA-CYCLE-DAY = WS-RUN-DAY AND NOT CA-CLOSED",
+                  "holds": true
+                },
+                {
+                  "condition": "NOT CA-WAS-PAID-IN-FULL AND CA-STATEMENT-BALANCE \u003e ZERO",
+                  "holds": true
+                },
+                {
+                  "condition": "WS-INTEREST \u003e ZERO",
                   "holds": true
                 }
               ]
@@ -2273,36 +2294,19 @@
               "source": "laurasia/programs/payin.cbl:136",
               "when": [
                 {
-                  "condition": "CA-BALANCE NOT \u003e ZERO OR PF-AMOUNT NOT \u003c CA-STATEMENT-BALANCE",
+                  "condition": "READ FEED-IN AT END",
                   "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PO-PURCHASE",
-              "program": "POST",
-              "paragraph": "POST-PRESENTMENT",
-              "source": "laurasia/programs/post.cbl:118",
-              "when": [
+                },
+                {
+                  "condition": "RECORD-IS-GOOD",
+                  "holds": true
+                },
                 {
                   "condition": "READ ACCOUNTS INVALID KEY",
                   "holds": false
                 },
                 {
-                  "condition": "CA-BLOCKED",
-                  "holds": false
-                },
-                {
-                  "condition": "CA-CLOSED",
-                  "holds": false
-                },
-                {
-                  "condition": "CA-BALANCE \u003e CA-LIMIT",
-                  "holds": true
-                },
-                {
-                  "condition": "REWRITE CARD-ACCOUNT INVALID KEY",
+                  "condition": "PF-PAYMENT",
                   "holds": true
                 }
               ]
@@ -2315,35 +2319,14 @@
               "source": "laurasia/programs/post.cbl:118",
               "when": [
                 {
-                  "condition": "READ ACCOUNTS INVALID KEY",
+                  "condition": "READ PRES-IN AT END",
                   "holds": false
                 },
                 {
-                  "condition": "CA-BLOCKED",
-                  "holds": false
-                },
-                {
-                  "condition": "CA-CLOSED",
-                  "holds": false
-                },
-                {
-                  "condition": "CA-BALANCE \u003e CA-LIMIT",
+                  "condition": "PS-MATCHED",
                   "holds": true
                 },
                 {
-                  "condition": "REWRITE CARD-ACCOUNT INVALID KEY",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PO-PURCHASE",
-              "program": "POST",
-              "paragraph": "POST-PRESENTMENT",
-              "source": "laurasia/programs/post.cbl:118",
-              "when": [
-                {
                   "condition": "READ ACCOUNTS INVALID KEY",
                   "holds": false
                 },
@@ -2353,43 +2336,6 @@
                 },
                 {
                   "condition": "CA-CLOSED",
-                  "holds": false
-                },
-                {
-                  "condition": "CA-BALANCE \u003e CA-LIMIT",
-                  "holds": false
-                },
-                {
-                  "condition": "REWRITE CARD-ACCOUNT INVALID KEY",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PO-PURCHASE",
-              "program": "POST",
-              "paragraph": "POST-PRESENTMENT",
-              "source": "laurasia/programs/post.cbl:118",
-              "when": [
-                {
-                  "condition": "READ ACCOUNTS INVALID KEY",
-                  "holds": false
-                },
-                {
-                  "condition": "CA-BLOCKED",
-                  "holds": false
-                },
-                {
-                  "condition": "CA-CLOSED",
-                  "holds": false
-                },
-                {
-                  "condition": "CA-BALANCE \u003e CA-LIMIT",
-                  "holds": false
-                },
-                {
-                  "condition": "REWRITE CARD-ACCOUNT INVALID KEY",
                   "holds": false
                 }
               ]
@@ -2402,25 +2348,28 @@
               "source": "laurasia/programs/post.cbl:142",
               "when": [
                 {
-                  "condition": "CA-BUSINESS",
+                  "condition": "READ PRES-IN AT END",
+                  "holds": false
+                },
+                {
+                  "condition": "PS-MATCHED",
                   "holds": true
                 },
                 {
-                  "condition": "WS-FEE \u003e ZERO",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PO-OVER-LIMIT-FEE",
-              "program": "POST",
-              "paragraph": "CHARGE-OVER-LIMIT",
-              "source": "laurasia/programs/post.cbl:142",
-              "when": [
-                {
-                  "condition": "CA-BUSINESS",
+                  "condition": "READ ACCOUNTS INVALID KEY",
                   "holds": false
+                },
+                {
+                  "condition": "CA-BLOCKED",
+                  "holds": false
+                },
+                {
+                  "condition": "CA-CLOSED",
+                  "holds": false
+                },
+                {
+                  "condition": "CA-BALANCE \u003e CA-LIMIT",
+                  "holds": true
                 },
                 {
                   "condition": "WS-FEE \u003e ZERO",
@@ -3077,6 +3026,14 @@
               "source": "laurasia/programs/match.cbl:107",
               "when": [
                 {
+                  "condition": "WS-PRES-KEY \u003c WS-AUTH-KEY",
+                  "holds": false
+                },
+                {
+                  "condition": "WS-PRES-KEY \u003e WS-AUTH-KEY",
+                  "holds": false
+                },
+                {
                   "condition": "AL-DECLINED",
                   "holds": true
                 }
@@ -3089,6 +3046,14 @@
               "paragraph": "MARK-PRESENTMENT",
               "source": "laurasia/programs/match.cbl:109",
               "when": [
+                {
+                  "condition": "WS-PRES-KEY \u003c WS-AUTH-KEY",
+                  "holds": false
+                },
+                {
+                  "condition": "WS-PRES-KEY \u003e WS-AUTH-KEY",
+                  "holds": false
+                },
                 {
                   "condition": "AL-DECLINED",
                   "holds": false
@@ -3106,6 +3071,14 @@
               "paragraph": "MARK-PRESENTMENT",
               "source": "laurasia/programs/match.cbl:111",
               "when": [
+                {
+                  "condition": "WS-PRES-KEY \u003c WS-AUTH-KEY",
+                  "holds": false
+                },
+                {
+                  "condition": "WS-PRES-KEY \u003e WS-AUTH-KEY",
+                  "holds": false
+                },
                 {
                   "condition": "AL-DECLINED",
                   "holds": false

@@ -94,24 +94,30 @@ func newStateMachine(copybook Field) *StateMachine {
 // A decision table's rule holds the field in state A where it tests A's
 // condition name, or FIELD = 'value' with A's value, and finds it true. Each
 // of its actions that sets the field, by SET B TO TRUE or MOVE 'value' TO
-// FIELD with B's value, is a transition from A to B, or from any state if
-// the rule holds the field in none. A paragraph without a decision table
-// sets states from any state, as its statements in the lineage say.
+// FIELD with B's value, is a transition from A to B. A rule that holds the
+// field in no state starts from the states known where its paragraph
+// starts: those the rules that perform the paragraph hold the field in,
+// and theirs in turn, or any state where some way in knows none. A
+// paragraph without a decision table sets states the same way, as its
+// statements in the lineage say.
 func (m *StateMachine) add(c codeField) {
 	p := c.program
+	entries := c.entries()
 	decided := map[string]bool{}
 	for _, t := range p.Rules.Tables {
 		decided[t.Paragraph] = true
-		for _, r := range t.Rules {
-			from := c.heldIn(t, r)
-			for _, a := range r.Actions {
-				to, ok := c.set(t.Actions[a])
-				if !ok {
-					continue
-				}
-				for _, f := range from {
-					m.addTransition(Transition{From: f, To: to, Program: p.Name, Paragraph: t.Paragraph,
-						Source: c.statementSource(t.Paragraph, to), When: c.reasons(t, r)})
+		for a, action := range t.Actions {
+			to, ok := c.set(action)
+			if !ok {
+				continue
+			}
+			source := c.statementSource(t.Paragraph, to)
+			for _, r := range taking(t, a) {
+				when := c.reasons(t, r, a)
+				for _, e := range c.startingFrom(t, r, entries[t.Paragraph]) {
+					for _, f := range e.states {
+						m.addTransition(Transition{From: f, To: to, Program: p.Name, Paragraph: t.Paragraph, Source: source, When: outcomes(e.when, when)})
+					}
 				}
 			}
 		}
@@ -125,9 +131,127 @@ func (m *StateMachine) add(c codeField) {
 			continue
 		}
 		if to, ok := c.literalState(e.From); ok && !decided[e.Paragraph] {
-			m.addTransition(Transition{From: AnyState, To: to, Program: p.Name, Paragraph: e.Paragraph, Source: e.Source})
+			for _, in := range startingFrom([]string{AnyState}, nil, entries[e.Paragraph]) {
+				for _, f := range in.states {
+					m.addTransition(Transition{From: f, To: to, Program: p.Name, Paragraph: e.Paragraph, Source: e.Source, When: in.when})
+				}
+			}
 		}
 	}
+}
+
+// entry is one way into a paragraph: the states a rule that performs it
+// holds the field in, or those known where the rule's own paragraph
+// starts, and the outcomes that decide the PERFORM.
+type entry struct {
+	states []string
+	when   []Outcome
+}
+
+// startingFrom gives the states a rule starts from: those it holds the
+// field in, or, where it holds none, each way into its paragraph, less
+// the states the rule finds the field not in.
+func (c codeField) startingFrom(t DecisionTable, r DecisionRule, entries []entry) []entry {
+	return startingFrom(c.heldIn(t, r), c.excludedIn(t, r), entries)
+}
+
+func startingFrom(held, excluded []string, entries []entry) []entry {
+	if len(held) != 1 || held[0] != AnyState || len(entries) == 0 {
+		return []entry{{states: held}}
+	}
+	var from []entry
+	for _, e := range entries {
+		states := slices.DeleteFunc(slices.Clone(e.states), func(state string) bool { return slices.Contains(excluded, state) })
+		if len(states) > 0 {
+			from = append(from, entry{states: states, when: e.when})
+		}
+	}
+	return from
+}
+
+// outcomes joins the outcomes a way into a paragraph is decided by and
+// those a rule in it is, each condition once.
+func outcomes(entry, own []Outcome) []Outcome {
+	joined := slices.Clone(entry)
+	for _, o := range own {
+		if !slices.Contains(joined, o) {
+			joined = append(joined, o)
+		}
+	}
+	return joined
+}
+
+// entries lists the ways into each paragraph the program's rules perform,
+// from the performing rules, and through them from the rules that perform
+// their paragraphs, until the states known no longer change. A paragraph
+// reached by other than a PERFORM, by GO TO or fall-through, is entered
+// from any state.
+func (c codeField) entries() map[string][]entry {
+	p := c.program
+	reached := map[string]bool{}
+	for _, para := range p.Paragraphs {
+		if len(para.ReachedBy) > 0 {
+			reached[para.Name] = true
+		}
+	}
+	entries := map[string][]entry{}
+	for range 8 {
+		next := map[string][]entry{}
+		for _, t := range p.Rules.Tables {
+			for a, action := range t.Actions {
+				target, ok := performed(action)
+				if !ok {
+					continue
+				}
+				for _, r := range taking(t, a) {
+					var ways []entry
+					if reached[target] {
+						ways = []entry{{states: []string{AnyState}}}
+					} else {
+						ways = c.startingFrom(t, r, entries[t.Paragraph])
+					}
+					when := c.reasons(t, r, a)
+					for _, in := range ways {
+						e := entry{states: in.states, when: outcomes(in.when, when)}
+						if !slices.ContainsFunc(next[target], func(have entry) bool { return reflect.DeepEqual(have, e) }) {
+							next[target] = append(next[target], e)
+						}
+					}
+				}
+			}
+		}
+		if reflect.DeepEqual(next, entries) {
+			break
+		}
+		entries = next
+	}
+	return entries
+}
+
+// taking are the rules of a table that take an action.
+func taking(t DecisionTable, action int) []DecisionRule {
+	var rules []DecisionRule
+	for _, r := range t.Rules {
+		if slices.Contains(r.Actions, action) {
+			rules = append(rules, r)
+		}
+	}
+	return rules
+}
+
+// performed is the paragraph an action performs, if it is a PERFORM of
+// one: the first after PERFORM, of a THRU range too.
+func performed(action string) (string, bool) {
+	rest, ok := strings.CutPrefix(action, "PERFORM ")
+	if !ok {
+		return "", false
+	}
+	name, _, _ := strings.Cut(rest, " ")
+	switch name {
+	case "", "UNTIL", "VARYING", "WITH", "TEST":
+		return "", false
+	}
+	return name, true
 }
 
 func (m *StateMachine) addTransition(t Transition) {
@@ -136,15 +260,21 @@ func (m *StateMachine) addTransition(t Transition) {
 	}
 }
 
-// reasons are the outcomes of the conditions a rule tests other than those
-// on the field itself: why the rule sets the state it sets. Of a
-// conjunction the rule finds true, with the field in it, the other parts
-// are reasons, each true.
-func (c codeField) reasons(t DecisionTable, r DecisionRule) []Outcome {
+// reasons are the outcomes of the conditions that decide an action of a
+// rule, other than those on the field itself: why the rule takes it. A
+// condition decides the action where the rules part on it, one that
+// found the conditions before it alike finding it otherwise and not
+// taking the action; one every rule finds the same way, one some rule
+// finds otherwise and takes the action all the same, or one tested after
+// the rules have parted, says nothing. Of a conjunction the rule finds
+// true, with the field in it, the other parts are reasons, each true.
+func (c codeField) reasons(t DecisionTable, r DecisionRule, action int) []Outcome {
 	var when []Outcome
 	for i, condition := range t.Conditions {
+		if r.Entries[i] == "" || !decides(t, r, i, action) {
+			continue
+		}
 		switch {
-		case r.Entries[i] == "":
 		case !slices.Contains(t.ConditionRefs[i], c.name):
 			when = append(when, Outcome{Condition: condition, Holds: r.Entries[i] == "Y"})
 		case r.Entries[i] == "Y":
@@ -156,6 +286,35 @@ func (c codeField) reasons(t DecisionTable, r DecisionRule) []Outcome {
 		}
 	}
 	return when
+}
+
+// decides reports whether a condition decides an action for a rule. The
+// rules that part from it there, finding the conditions before alike, or
+// not testing them, and this one otherwise, include one that does not
+// take the action, and none that takes it and goes on as the rule does.
+func decides(t DecisionTable, r DecisionRule, condition, action int) bool {
+	parted := false
+	for _, other := range t.Rules {
+		if other.Entries[condition] == "" || other.Entries[condition] == r.Entries[condition] || !agree(r.Entries[:condition], other.Entries[:condition]) {
+			continue
+		}
+		if slices.Contains(other.Actions, action) && slices.Equal(r.Entries[condition+1:], other.Entries[condition+1:]) {
+			return false
+		}
+		parted = parted || !slices.Contains(other.Actions, action)
+	}
+	return parted
+}
+
+// agree reports whether two rules find the conditions they both test the
+// same way.
+func agree(a, b []string) bool {
+	for i := range a {
+		if a[i] != "" && b[i] != "" && a[i] != b[i] {
+			return false
+		}
+	}
+	return true
 }
 
 // heldIn lists the states a rule holds the field in, or any state: those
@@ -175,6 +334,21 @@ func (c codeField) heldIn(t DecisionTable, r DecisionRule) []string {
 	}
 	if len(states) == 0 {
 		return []string{AnyState}
+	}
+	return states
+}
+
+// excludedIn are the states a rule finds the field not in: those of the
+// conditions it finds false that are one state's.
+func (c codeField) excludedIn(t DecisionTable, r DecisionRule) []string {
+	var states []string
+	for i, condition := range t.Conditions {
+		if r.Entries[i] != "N" || !slices.Contains(t.ConditionRefs[i], c.name) {
+			continue
+		}
+		if state, ok := c.state(condition); ok {
+			states = append(states, state)
+		}
 	}
 	return states
 }
