@@ -24,11 +24,14 @@ var warnings = []string{"-Wall", "-Werror"}
 // one. GnuCOBOL has no configuration for Fujitsu NetCOBOL; its default
 // one compiles what the two share, with the source's Shift_JIS passed
 // through as it is, and the identification paragraphs NetCOBOL still
-// takes, AUTHOR and DATE-WRITTEN, allowed.
+// takes, AUTHOR and DATE-WRITTEN, allowed; and with the runtime checks
+// NetCOBOL's CHECK option turns on, a subscript out of its table among
+// them, which end a run the same way on every machine where unchecked
+// code reads what happens to lie beyond.
 var dialectFlags = map[string][]string{
 	cobol.IBM.Name:        {"-std=ibm", "-fsign=EBCDIC"},
 	cobol.MicroFocus.Name: {"-std=mf"},
-	cobol.Fujitsu.Name:    {"-std=default", "-Wno-obsolete"},
+	cobol.Fujitsu.Name:    {"-std=default", "-Wno-obsolete", "-debug"},
 }
 
 // Build is the compiling of a directory of programs: where their sources

@@ -1,9 +1,7 @@
 # GLD030: case 16
 
-The run ended with return code 16.
-
-REJECT-F's directory is missing, so creating it fails.
+The run ended with return code 0.
 
 The first case to reach:
 
-- [GLD030, ｵｰﾌﾟﾝ-ｹﾝｻ-RTN, rule 8](../../../../blueprints/gondwana/rules/GLD030.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)
+- [GLD030, CLMREQ-ﾖﾐｺﾐ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLD030.md#clmreq-ﾖﾐｺﾐ-rtn)

@@ -657,7 +657,7 @@ func (b *Batch) writtenFiles(steps []scriptStep, sr *scriptRun, before map[strin
 				return nil, err
 			}
 		}
-		outputs[sr.fileName(path)] = read
+		outputs[sr.fileName(path)] = withoutDir(read, sr.programs)
 	}
 	return outputs, nil
 }

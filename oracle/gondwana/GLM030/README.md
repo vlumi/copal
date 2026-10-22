@@ -8,36 +8,36 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 02](02/) |
-| 2 | [case 04](04/) |
-| 3 | [case 05](05/) |
-| 4 | [case 06](06/) |
-| 5 | [case 07](07/) |
-| 6 | [case 08](08/) |
-| 7 | [case 09](09/) |
-| 8 | [case 03](03/) |
-| 9 | [case 01](01/) |
+| 1 | [case 01](01/) |
+| 2 | [case 03](03/) |
+| 3 | [case 04](04/) |
+| 4 | [case 05](05/) |
+| 5 | [case 06](06/) |
+| 6 | [case 07](07/) |
+| 7 | [case 08](08/) |
+| 8 | [case 09](09/) |
+| 9 | [case 02](02/) |
 
 ### [ﾀﾞｲﾘﾃﾝ-ﾖﾐｺﾐ-RTN](../../../blueprints/gondwana/rules/GLM030.md#ﾀﾞｲﾘﾃﾝ-ﾖﾐｺﾐ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
 | 1 | not reached: `WS-AGTMST-ｵﾜﾘ` N |
-| 2 | [case 01](01/) |
+| 2 | [case 02](02/) |
 
 ### [ｾﾝﾀｸ-RTN](../../../blueprints/gondwana/rules/GLM030.md#ｾﾝﾀｸ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
 | 1 | not reached: `WS-POLMST-ｵﾜﾘ` N |
-| 2 | [case 01](01/) |
+| 2 | [case 02](02/) |
 
 ### [ｾﾝﾀｸ-RTN, in its loop](../../../blueprints/gondwana/rules/GLM030.md#ｾﾝﾀｸ-rtn-in-its-loop)
 
 | Rule | Reached by |
 | --: | --- |
 | 1 | not reached: `PM-ｻｲｼｭｳﾆｭｳｷﾝﾈﾝｹﾞﾂ = WS-ｷﾞｮｳﾑ-YYYYMM AND PM-ｻｲｼｭｳﾆｭｳｷﾝｶﾞｸ > 0` Y |
-| 2 | [case 01](01/) |
+| 2 | [case 02](02/) |
 
 ### [ﾃｽｳﾘｮｳ-RTN](../../../blueprints/gondwana/rules/GLM030.md#ﾃｽｳﾘｮｳ-rtn)
 
@@ -52,7 +52,7 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 01](01/) |
+| 1 | [case 02](02/) |
 | 2 | not reached: `RETURN SORT-F AT END` N, `WS-ｿｳﾀﾞｲﾘﾃﾝ = SPACES` N |
 | 3 | not reached: `RETURN SORT-F AT END` N, `WS-ｿｳﾀﾞｲﾘﾃﾝ = SPACES` Y |
 
@@ -92,7 +92,7 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | not reached: `WS-GLSCTL-OK` N |
-| 2 | [case 01](01/) |
+| 2 | [case 02](02/) |
 
 ## GLC020
 
@@ -108,15 +108,15 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 02](02/) |
-| 2 | [case 01](01/) |
+| 1 | [case 01](01/) |
+| 2 | [case 02](02/) |
 
 ### [ﾜﾚｷ-ﾍﾝｶﾝ-RTN, in its loop](../../../blueprints/gondwana/rules/GLC020.md#ﾜﾚｷ-ﾍﾝｶﾝ-rtn-in-its-loop)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 01](01/) |
-| 2 | [case 02](02/) |
+| 1 | [case 02](02/) |
+| 2 | [case 01](01/) |
 
 ### [ｾｲﾚｷ-ﾍﾝｶﾝ-RTN](../../../blueprints/gondwana/rules/GLC020.md#ｾｲﾚｷ-ﾍﾝｶﾝ-rtn)
 
