@@ -51,6 +51,19 @@ pangaea-build:
 laurasia-night:  ## Run Laurasia's night on the fixture and show its logs and reports
 	@scripts/laurasia-night.sh
 
+.PHONY: cards-open
+cards-open: laurasia-build  ## Open the running card processor on a generated portfolio (SEED, CARDS)
+	go run ./laurasia/cmd/laurasia open -seed $(SEED) -cards $(CARDS)
+
+.PHONY: cards-days
+cards-days: laurasia-build  ## Run the card processor's next N days
+	go run ./laurasia/cmd/laurasia days -n $(N)
+
+# Compiles Laurasia's programs for the targets that run the processor; not listed.
+.PHONY: laurasia-build
+laurasia-build:
+	go run ./laurasia/cmd/laurasia build
+
 ##@ The survey
 
 .PHONY: blueprints
@@ -86,6 +99,7 @@ laurasia-golden:  ## Rewrite Laurasia's golden outputs from a run of its fixture
 
 SEED ?= 1
 ACCOUNTS ?= 3000
+CARDS ?= 1000
 N ?= 1
 
 ##@ Checks

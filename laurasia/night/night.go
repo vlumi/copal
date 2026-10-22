@@ -1,7 +1,8 @@
-// Package night runs Laurasia's scripts on a fixture: its input copied to a
-// data directory, and the scripts its RUN file names run in order, each
-// taking the programs, the other scripts and the data from the environment
-// the scripts expect.
+// Package night builds Laurasia's programs and runs its scripts: a
+// fixture's, its input copied to a data directory and the scripts its RUN
+// file names run in order, or one script at a time; each takes the
+// programs, the other scripts and the data from the environment the
+// scripts expect.
 package night
 
 import (
@@ -24,18 +25,41 @@ func Build(root, bin string) error {
 	return err
 }
 
+// Runner runs the scripts with the programs, the scripts and the data they
+// expect from the environment.
+type Runner struct {
+	Programs string
+	Scripts  string
+	Data     string
+}
+
+// Run runs a script by name, with its arguments, through sh. A script
+// that fails returns what it printed with the error.
+func (r Runner) Run(script string, args ...string) error {
+	dirs := []string{r.Programs, r.Scripts, r.Data}
+	for i, dir := range dirs {
+		abs, err := filepath.Abs(dir)
+		if err != nil {
+			return err
+		}
+		dirs[i] = abs
+	}
+	programs, scripts, data := dirs[0], dirs[1], dirs[2]
+	cmd := exec.Command("sh", append([]string{filepath.Join(scripts, script)}, args...)...)
+	cmd.Env = append(os.Environ(), "LCS_BIN="+programs, "LCS_SCRIPTS="+scripts, "LCS_DATA="+data, "COB_LIBRARY_PATH="+programs)
+	var out bytes.Buffer
+	cmd.Stdout, cmd.Stderr = &out, &out
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("%s: %w\n%s", strings.Join(append([]string{script}, args...), " "), err, out.String())
+	}
+	return nil
+}
+
 // Run copies a fixture's input into the data directory and runs the steps
 // of its RUN file on it, a script and its arguments a line, with the
 // programs from bin and the scripts from root/scripts. A step that fails
 // stops the run, with what it printed.
 func Run(root, fixture, bin, data string) error {
-	for _, dir := range []*string{&root, &bin, &data} {
-		abs, err := filepath.Abs(*dir)
-		if err != nil {
-			return err
-		}
-		*dir = abs
-	}
 	if err := os.CopyFS(data, os.DirFS(filepath.Join(fixture, "input"))); err != nil {
 		return err
 	}
@@ -43,15 +67,11 @@ func Run(root, fixture, bin, data string) error {
 	if err != nil {
 		return err
 	}
-	scripts := filepath.Join(root, "scripts")
+	r := Runner{Programs: bin, Scripts: filepath.Join(root, "scripts"), Data: data}
 	for _, step := range strings.Split(strings.TrimSpace(string(steps)), "\n") {
 		args := strings.Fields(step)
-		cmd := exec.Command("sh", append([]string{filepath.Join(scripts, args[0])}, args[1:]...)...)
-		cmd.Env = append(os.Environ(), "LCS_BIN="+bin, "LCS_SCRIPTS="+scripts, "LCS_DATA="+data, "COB_LIBRARY_PATH="+bin)
-		var out bytes.Buffer
-		cmd.Stdout, cmd.Stderr = &out, &out
-		if err := cmd.Run(); err != nil {
-			return fmt.Errorf("%s: %w\n%s", step, err, out.String())
+		if err := r.Run(args[0], args[1:]...); err != nil {
+			return err
 		}
 	}
 	return nil
