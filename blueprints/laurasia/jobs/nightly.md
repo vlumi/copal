@@ -13,9 +13,10 @@ history
 2011-04-04 rk  lcs-0102 original version.
 2012-01-09 ah  lcs-0140 interchange.
 2015-03-23 mt  lcs-0302 disputes before settlement.
+2022-09-05 ah  lcs-0497 the card system's feed after posting.
 ```
 
-Script [nightly.sh](../../../laurasia/scripts/nightly.sh): 12 steps.
+Script [nightly.sh](../../../laurasia/scripts/nightly.sh): 13 steps.
 
 ## Contents
 
@@ -43,18 +44,19 @@ Script [nightly.sh](../../../laurasia/scripts/nightly.sh): 12 steps.
 
 | Step | Program | Reads | Writes | Stops the script if | Description | Source |
 | --- | --- | --- | --- | --- | --- | --- |
-| CLRIN | [CLRIN](../programs/CLRIN.md), with $DATE | $DATA/inbound/CLR.$DATE.txt | $DATA/work/$DATE/pres.txt, $DATA/outbound/CLRREJ.$DATE.txt, $DATA/reports/clrin.$DATE.txt, $DATA/reports/clrin.$DATE.out | RC >= 8 | the clearing file, checked batch by batch | [nightly.sh:28](../../../laurasia/scripts/nightly.sh#L28) |
-| PRESSORT | sort by columns 29-34 | $DATA/work/$DATE/pres.txt | $DATA/work/$DATE/pres.byauth | RC != 0 | the presentments in authorization code order | [nightly.sh:34](../../../laurasia/scripts/nightly.sh#L34) |
-| AUTHSORT | sort by columns 1-6 | $DATA/inbound/AUTH.$DATE.txt | $DATA/work/$DATE/auth.byauth | RC != 0 | the day's authorizations in authorization code order | [nightly.sh:40](../../../laurasia/scripts/nightly.sh#L40) |
-| MATCH | [MATCH](../programs/MATCH.md), with $DATE | $DATA/work/$DATE/pres.byauth, $DATA/work/$DATE/auth.byauth | $DATA/work/$DATE/pres.matched, $DATA/reports/match.$DATE.txt, $DATA/reports/match.$DATE.out | RC >= 8 | each presentment marked by its authorization | [nightly.sh:50](../../../laurasia/scripts/nightly.sh#L50) |
-| FEELD | [FEELD](../programs/FEELD.md), with $DATE | $DATA/inbound/FEES.txt | $DATA/work/$DATE/fees.rel, $DATA/reports/feeld.$DATE.out | RC >= 8 | the fee schedule into the fee table | [nightly.sh:58](../../../laurasia/scripts/nightly.sh#L58) |
-| IXFEE | [IXFEE](../programs/IXFEE.md), with $DATE | $DATA/work/$DATE/pres.matched, $DATA/work/$DATE/fees.rel | $DATA/work/$DATE/pres.priced, $DATA/reports/ixfee.$DATE.txt, $DATA/reports/ixfee.$DATE.out | RC >= 8 | the interchange of each matched presentment | [nightly.sh:68](../../../laurasia/scripts/nightly.sh#L68) |
-| POST | [POST](../programs/POST.md), with $DATE | $DATA/work/$DATE/pres.priced, $DATA/master/accounts.idx | $DATA/master/accounts.idx, $DATA/outbound/POSTINGS.$DATE.txt, $DATA/outbound/POSTREJ.$DATE.txt, $DATA/reports/post.$DATE.txt, $DATA/reports/post.$DATE.out | RC >= 8 | the purchases on the cards' accounts | [nightly.sh:79](../../../laurasia/scripts/nightly.sh#L79) |
-| DISPUTES | script [disputes](disputes.md), with $DATE | | | RC >= 8 | the disputes moved on, the merchants' adjustments | [nightly.sh:85](../../../laurasia/scripts/nightly.sh#L85) |
-| SETLSORT | sort by columns 35-44 | $DATA/work/$DATE/pres.priced | $DATA/work/$DATE/pres.bymerchant | RC != 0 | the priced presentments in merchant order | [nightly.sh:90](../../../laurasia/scripts/nightly.sh#L90) |
-| ADJSORT | sort by columns 1-10 | $DATA/work/$DATE/adjustments.txt | $DATA/work/$DATE/adjustments.bymerchant | RC != 0 | the adjustments in merchant order | [nightly.sh:96](../../../laurasia/scripts/nightly.sh#L96) |
-| SETTLE | [SETTLE](../programs/SETTLE.md), with $DATE | $DATA/work/$DATE/pres.bymerchant, $DATA/work/$DATE/adjustments.bymerchant | $DATA/outbound/PAYOUT.$DATE.txt, $DATA/reports/settle.$DATE.txt, $DATA/reports/settle.$DATE.out | RC >= 8 | what each merchant is paid | [nightly.sh:106](../../../laurasia/scripts/nightly.sh#L106) |
-| ACCTUL | [ACCTUL](../programs/ACCTUL.md) | $DATA/master/accounts.idx | $DATA/outbound/ACCOUNTS.$DATE.txt, $DATA/reports/acctul.$DATE.out | | the accounts as they stand, for the card system | [nightly.sh:114](../../../laurasia/scripts/nightly.sh#L114) |
+| CLRIN | [CLRIN](../programs/CLRIN.md), with $DATE | $DATA/inbound/CLR.$DATE.txt | $DATA/work/$DATE/pres.txt, $DATA/outbound/CLRREJ.$DATE.txt, $DATA/reports/clrin.$DATE.txt, $DATA/reports/clrin.$DATE.out | RC >= 8 | the clearing file, checked batch by batch | [nightly.sh:29](../../../laurasia/scripts/nightly.sh#L29) |
+| PRESSORT | sort by columns 29-34 | $DATA/work/$DATE/pres.txt | $DATA/work/$DATE/pres.byauth | RC != 0 | the presentments in authorization code order | [nightly.sh:35](../../../laurasia/scripts/nightly.sh#L35) |
+| AUTHSORT | sort by columns 1-6 | $DATA/inbound/AUTH.$DATE.txt | $DATA/work/$DATE/auth.byauth | RC != 0 | the day's authorizations in authorization code order | [nightly.sh:41](../../../laurasia/scripts/nightly.sh#L41) |
+| MATCH | [MATCH](../programs/MATCH.md), with $DATE | $DATA/work/$DATE/pres.byauth, $DATA/work/$DATE/auth.byauth | $DATA/work/$DATE/pres.matched, $DATA/reports/match.$DATE.txt, $DATA/reports/match.$DATE.out | RC >= 8 | each presentment marked by its authorization | [nightly.sh:51](../../../laurasia/scripts/nightly.sh#L51) |
+| FEELD | [FEELD](../programs/FEELD.md), with $DATE | $DATA/inbound/FEES.txt | $DATA/work/$DATE/fees.rel, $DATA/reports/feeld.$DATE.out | RC >= 8 | the fee schedule into the fee table | [nightly.sh:59](../../../laurasia/scripts/nightly.sh#L59) |
+| IXFEE | [IXFEE](../programs/IXFEE.md), with $DATE | $DATA/work/$DATE/pres.matched, $DATA/work/$DATE/fees.rel | $DATA/work/$DATE/pres.priced, $DATA/reports/ixfee.$DATE.txt, $DATA/reports/ixfee.$DATE.out | RC >= 8 | the interchange of each matched presentment | [nightly.sh:69](../../../laurasia/scripts/nightly.sh#L69) |
+| POST | [POST](../programs/POST.md), with $DATE | $DATA/work/$DATE/pres.priced, $DATA/master/accounts.idx | $DATA/master/accounts.idx, $DATA/outbound/POSTINGS.$DATE.txt, $DATA/outbound/POSTREJ.$DATE.txt, $DATA/reports/post.$DATE.txt, $DATA/reports/post.$DATE.out | RC >= 8 | the purchases on the cards' accounts | [nightly.sh:80](../../../laurasia/scripts/nightly.sh#L80) |
+| PAYMENTS | script [payments](payments.md), with $DATE | | | RC >= 8 | the card system's feed: payments and status changes | [nightly.sh:86](../../../laurasia/scripts/nightly.sh#L86) |
+| DISPUTES | script [disputes](disputes.md), with $DATE | | | RC >= 8 | the disputes moved on, the merchants' adjustments | [nightly.sh:91](../../../laurasia/scripts/nightly.sh#L91) |
+| SETLSORT | sort by columns 35-44 | $DATA/work/$DATE/pres.priced | $DATA/work/$DATE/pres.bymerchant | RC != 0 | the priced presentments in merchant order | [nightly.sh:96](../../../laurasia/scripts/nightly.sh#L96) |
+| ADJSORT | sort by columns 1-10 | $DATA/work/$DATE/adjustments.txt | $DATA/work/$DATE/adjustments.bymerchant | RC != 0 | the adjustments in merchant order | [nightly.sh:102](../../../laurasia/scripts/nightly.sh#L102) |
+| SETTLE | [SETTLE](../programs/SETTLE.md), with $DATE | $DATA/work/$DATE/pres.bymerchant, $DATA/work/$DATE/adjustments.bymerchant | $DATA/outbound/PAYOUT.$DATE.txt, $DATA/reports/settle.$DATE.txt, $DATA/reports/settle.$DATE.out | RC >= 8 | what each merchant is paid | [nightly.sh:112](../../../laurasia/scripts/nightly.sh#L112) |
+| ACCTUL | [ACCTUL](../programs/ACCTUL.md) | $DATA/master/accounts.idx | $DATA/outbound/ACCOUNTS.$DATE.txt, $DATA/reports/acctul.$DATE.out | | the accounts as they stand, for the card system | [nightly.sh:120](../../../laurasia/scripts/nightly.sh#L120) |
 
 ### CLRIN
 

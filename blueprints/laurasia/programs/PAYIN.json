@@ -1,0 +1,1700 @@
+{
+  "program": "PAYIN",
+  "kind": "main",
+  "source": "laurasia/programs/payin.cbl",
+  "description": [
+    "payin: take in the card system's feed",
+    "",
+    "applies the day's feed from the card system to the cards' accounts: a",
+    "payment comes off the card's balance, and marks the last statement",
+    "paid in full when it covers it or clears the balance, which spares the",
+    "card interest at the cycle; a status change sets the card active,",
+    "blocked or closed. a record for a card with no account, a payment of",
+    "nothing, a status that is none of the three, or a record of no known",
+    "kind is rejected for the card system.",
+    "",
+    "return codes: 0 all applied, 4 some rejected, 16 cannot update.",
+    "",
+    "history",
+    "2022-09-05 ah  lcs-0497 original version."
+  ],
+  "files": [
+    {
+      "name": "FEED-IN",
+      "kind": "FD",
+      "assign": "FEEDIN",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "INPUT"
+      ],
+      "records": [
+        "FEED-RECORD"
+      ],
+      "source": "laurasia/programs/payin.cbl:22"
+    },
+    {
+      "name": "ACCOUNTS",
+      "kind": "FD",
+      "assign": "ACCOUNTS",
+      "organization": "INDEXED",
+      "access": "RANDOM",
+      "recordKey": "CA-CARD-NO",
+      "status": "WS-ACCOUNTS-STATUS",
+      "opened": [
+        "I-O"
+      ],
+      "records": [
+        "CARD-ACCOUNT"
+      ],
+      "source": "laurasia/programs/payin.cbl:24"
+    },
+    {
+      "name": "POSTINGS-OUT",
+      "kind": "FD",
+      "assign": "POSTOUT",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "POSTING"
+      ],
+      "source": "laurasia/programs/payin.cbl:29"
+    },
+    {
+      "name": "REJECT-OUT",
+      "kind": "FD",
+      "assign": "PAYREJ",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "REJECT-LINE"
+      ],
+      "source": "laurasia/programs/payin.cbl:31"
+    },
+    {
+      "name": "REPORT-OUT",
+      "kind": "FD",
+      "assign": "PAYRPT",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "REPORT-LINE"
+      ],
+      "source": "laurasia/programs/payin.cbl:33"
+    }
+  ],
+  "records": [
+    {
+      "section": "file",
+      "file": "FEED-IN",
+      "copybook": "payfeed",
+      "level": 1,
+      "name": "FEED-RECORD",
+      "start": 1,
+      "length": 42,
+      "category": "group",
+      "kind": "group",
+      "description": "payfeed: the card system's daily feed, a record a line: a cardholder's payment, with the bank's reference, or a change of a card's status. history 2022-09-05 ah  lcs-0497 original version.",
+      "source": "laurasia/copybooks/payfeed.cpy:7",
+      "fields": [
+        {
+          "level": 5,
+          "name": "PF-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "picture": "X(16)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/payfeed.cpy:8"
+        },
+        {
+          "level": 5,
+          "name": "PF-KIND",
+          "start": 17,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PF-PAYMENT",
+              "values": [
+                "'P'"
+              ],
+              "source": "laurasia/copybooks/payfeed.cpy:10"
+            },
+            {
+              "name": "PF-STATUS-CHANGE",
+              "values": [
+                "'S'"
+              ],
+              "source": "laurasia/copybooks/payfeed.cpy:11"
+            }
+          ],
+          "source": "laurasia/copybooks/payfeed.cpy:9"
+        },
+        {
+          "level": 5,
+          "name": "PF-AMOUNT",
+          "start": 18,
+          "length": 10,
+          "picture": "S9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/payfeed.cpy:12"
+        },
+        {
+          "level": 5,
+          "name": "PF-STATUS",
+          "start": 28,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/payfeed.cpy:13"
+        },
+        {
+          "level": 5,
+          "name": "PF-REFERENCE",
+          "start": 29,
+          "length": 6,
+          "picture": "X(6)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/payfeed.cpy:14"
+        },
+        {
+          "level": 5,
+          "name": "PF-DATE",
+          "start": 35,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "date",
+          "digits": 8,
+          "source": "laurasia/copybooks/payfeed.cpy:15"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "ACCOUNTS",
+      "copybook": "cardacct",
+      "level": 1,
+      "name": "CARD-ACCOUNT",
+      "start": 1,
+      "length": 61,
+      "category": "group",
+      "kind": "group",
+      "description": "cardacct: a card's account, indexed by card number: its credit limit, its balance, and the balance its last statement showed. history 2011-04-04 rk  lcs-0102 original version. 2013-06-03 rk  lcs-0219 billing cycle day and paid in full flag.",
+      "source": "laurasia/copybooks/cardacct.cpy:8",
+      "fields": [
+        {
+          "level": 5,
+          "name": "CA-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "picture": "X(16)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "key",
+          "source": "laurasia/copybooks/cardacct.cpy:9"
+        },
+        {
+          "level": 5,
+          "name": "CA-ACCOUNT-NO",
+          "start": 17,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/cardacct.cpy:10"
+        },
+        {
+          "level": 5,
+          "name": "CA-PRODUCT",
+          "start": 27,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "CA-CLASSIC",
+              "values": [
+                "'CL'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:12"
+            },
+            {
+              "name": "CA-GOLD",
+              "values": [
+                "'GD'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:13"
+            },
+            {
+              "name": "CA-BUSINESS",
+              "values": [
+                "'BZ'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:14"
+            }
+          ],
+          "source": "laurasia/copybooks/cardacct.cpy:11"
+        },
+        {
+          "level": 5,
+          "name": "CA-STATUS",
+          "start": 29,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "CA-ACTIVE",
+              "values": [
+                "'A'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:16"
+            },
+            {
+              "name": "CA-BLOCKED",
+              "values": [
+                "'B'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:17"
+            },
+            {
+              "name": "CA-CLOSED",
+              "values": [
+                "'C'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:18"
+            }
+          ],
+          "source": "laurasia/copybooks/cardacct.cpy:15"
+        },
+        {
+          "level": 5,
+          "name": "CA-LIMIT",
+          "start": 30,
+          "length": 9,
+          "picture": "9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "scale": 2,
+          "source": "laurasia/copybooks/cardacct.cpy:19"
+        },
+        {
+          "level": 5,
+          "name": "CA-BALANCE",
+          "start": 39,
+          "length": 10,
+          "picture": "S9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/cardacct.cpy:20"
+        },
+        {
+          "level": 5,
+          "name": "CA-STATEMENT-BALANCE",
+          "start": 49,
+          "length": 10,
+          "picture": "S9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/cardacct.cpy:21"
+        },
+        {
+          "level": 5,
+          "name": "CA-CYCLE-DAY",
+          "start": 59,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 2,
+          "source": "laurasia/copybooks/cardacct.cpy:22"
+        },
+        {
+          "level": 5,
+          "name": "CA-PAID-IN-FULL",
+          "start": 61,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "CA-WAS-PAID-IN-FULL",
+              "values": [
+                "'Y'"
+              ],
+              "source": "laurasia/copybooks/cardacct.cpy:24"
+            }
+          ],
+          "source": "laurasia/copybooks/cardacct.cpy:23"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "POSTINGS-OUT",
+      "copybook": "postrec",
+      "level": 1,
+      "name": "POSTING",
+      "start": 1,
+      "length": 51,
+      "category": "group",
+      "kind": "group",
+      "description": "postrec: a posting to a card's account, a record a line. history 2011-04-04 rk  lcs-0102 original version. 2022-09-05 ah  lcs-0497 payments, as credits.",
+      "source": "laurasia/copybooks/postrec.cpy:7",
+      "fields": [
+        {
+          "level": 5,
+          "name": "PO-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "picture": "X(16)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/postrec.cpy:8"
+        },
+        {
+          "level": 5,
+          "name": "PO-ACCOUNT-NO",
+          "start": 17,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/postrec.cpy:9"
+        },
+        {
+          "level": 5,
+          "name": "PO-KIND",
+          "start": 27,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PO-PURCHASE",
+              "values": [
+                "'P'"
+              ],
+              "source": "laurasia/copybooks/postrec.cpy:11"
+            },
+            {
+              "name": "PO-OVER-LIMIT-FEE",
+              "values": [
+                "'F'"
+              ],
+              "source": "laurasia/copybooks/postrec.cpy:12"
+            },
+            {
+              "name": "PO-INTEREST",
+              "values": [
+                "'I'"
+              ],
+              "source": "laurasia/copybooks/postrec.cpy:13"
+            },
+            {
+              "name": "PO-PAYMENT",
+              "values": [
+                "'C'"
+              ],
+              "source": "laurasia/copybooks/postrec.cpy:14"
+            }
+          ],
+          "source": "laurasia/copybooks/postrec.cpy:10"
+        },
+        {
+          "level": 5,
+          "name": "PO-AMOUNT",
+          "start": 28,
+          "length": 10,
+          "picture": "S9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/postrec.cpy:15"
+        },
+        {
+          "level": 5,
+          "name": "PO-REFERENCE",
+          "start": 38,
+          "length": 6,
+          "picture": "X(6)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/postrec.cpy:16"
+        },
+        {
+          "level": 5,
+          "name": "PO-DATE",
+          "start": 44,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "date",
+          "digits": 8,
+          "source": "laurasia/copybooks/postrec.cpy:17"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "REJECT-OUT",
+      "level": 1,
+      "name": "REJECT-LINE",
+      "start": 1,
+      "length": 47,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/payin.cbl:45",
+      "fields": [
+        {
+          "level": 5,
+          "name": "RJ-REASON",
+          "start": 1,
+          "length": 4,
+          "picture": "X(4)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/payin.cbl:46"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 5,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "filler",
+          "source": "laurasia/programs/payin.cbl:47"
+        },
+        {
+          "level": 5,
+          "name": "RJ-RECORD",
+          "start": 6,
+          "length": 42,
+          "picture": "X(42)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/payin.cbl:48"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "REPORT-OUT",
+      "level": 1,
+      "name": "REPORT-LINE",
+      "start": 1,
+      "length": 60,
+      "picture": "X(60)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/payin.cbl:50"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-RUN-DATE",
+      "start": 1,
+      "length": 8,
+      "picture": "9(8)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "date",
+      "digits": 8,
+      "source": "laurasia/programs/payin.cbl:53"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ACCOUNTS-STATUS",
+      "start": 1,
+      "length": 2,
+      "picture": "XX",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "laurasia/programs/payin.cbl:54"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-AT-END",
+      "start": 1,
+      "length": 1,
+      "picture": "X",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "code",
+      "values": [
+        "'N'"
+      ],
+      "conditions": [
+        {
+          "name": "FEED-AT-END",
+          "values": [
+            "'Y'"
+          ],
+          "source": "laurasia/programs/payin.cbl:56"
+        }
+      ],
+      "source": "laurasia/programs/payin.cbl:55"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REASON",
+      "start": 1,
+      "length": 4,
+      "picture": "X(4)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "code",
+      "conditions": [
+        {
+          "name": "RECORD-IS-GOOD",
+          "values": [
+            "SPACES"
+          ],
+          "source": "laurasia/programs/payin.cbl:58"
+        }
+      ],
+      "source": "laurasia/programs/payin.cbl:57"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-TOTALS",
+      "start": 1,
+      "length": 35,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/payin.cbl:59",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-PAYMENTS",
+          "start": 1,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 8,
+          "values": [
+            "ZERO"
+          ],
+          "source": "laurasia/programs/payin.cbl:60"
+        },
+        {
+          "level": 5,
+          "name": "WS-STATUS-CHANGES",
+          "start": 9,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 8,
+          "values": [
+            "ZERO"
+          ],
+          "source": "laurasia/programs/payin.cbl:61"
+        },
+        {
+          "level": 5,
+          "name": "WS-REJECTED",
+          "start": 17,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 8,
+          "values": [
+            "ZERO"
+          ],
+          "source": "laurasia/programs/payin.cbl:62"
+        },
+        {
+          "level": 5,
+          "name": "WS-PAID",
+          "start": 25,
+          "length": 11,
+          "picture": "S9(9)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 11,
+          "scale": 2,
+          "signed": true,
+          "values": [
+            "ZERO"
+          ],
+          "source": "laurasia/programs/payin.cbl:63"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REPORT-COUNT",
+      "start": 1,
+      "length": 38,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/payin.cbl:64",
+      "fields": [
+        {
+          "level": 5,
+          "name": "RC-LABEL",
+          "start": 1,
+          "length": 30,
+          "picture": "X(30)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/payin.cbl:65"
+        },
+        {
+          "level": 5,
+          "name": "RC-VALUE",
+          "start": 31,
+          "length": 8,
+          "picture": "Z(7)9",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "kind": "edited",
+          "source": "laurasia/programs/payin.cbl:66"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-REPORT-AMOUNT",
+      "start": 1,
+      "length": 43,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/payin.cbl:67",
+      "fields": [
+        {
+          "level": 5,
+          "name": "RA-LABEL",
+          "start": 1,
+          "length": 30,
+          "picture": "X(30)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/programs/payin.cbl:68"
+        },
+        {
+          "level": 5,
+          "name": "RA-VALUE",
+          "start": 31,
+          "length": 13,
+          "picture": "-(9)9.99",
+          "usage": "DISPLAY",
+          "category": "numeric-edited",
+          "kind": "edited",
+          "source": "laurasia/programs/payin.cbl:69"
+        }
+      ]
+    }
+  ],
+  "paragraphs": [
+    {
+      "name": "MAIN",
+      "section": "MAIN",
+      "source": "laurasia/programs/payin.cbl:72",
+      "performs": [
+        {
+          "target": "APPLY-RECORD",
+          "source": "laurasia/programs/payin.cbl:83"
+        },
+        {
+          "target": "WRITE-REPORT",
+          "source": "laurasia/programs/payin.cbl:86"
+        }
+      ],
+      "reads": [
+        "WS-ACCOUNTS-STATUS",
+        "WS-AT-END",
+        "WS-REJECTED"
+      ],
+      "writes": [
+        "WS-RUN-DATE",
+        "RETURN-CODE",
+        "FEED-RECORD",
+        "WS-AT-END"
+      ]
+    },
+    {
+      "name": "APPLY-RECORD",
+      "section": "APPLY-RECORD",
+      "source": "laurasia/programs/payin.cbl:93",
+      "performs": [
+        {
+          "target": "VALIDATE-RECORD",
+          "source": "laurasia/programs/payin.cbl:94"
+        },
+        {
+          "target": "REJECT-RECORD",
+          "source": "laurasia/programs/payin.cbl:96"
+        },
+        {
+          "target": "REJECT-RECORD",
+          "source": "laurasia/programs/payin.cbl:103"
+        },
+        {
+          "target": "APPLY-PAYMENT",
+          "source": "laurasia/programs/payin.cbl:107"
+        },
+        {
+          "target": "APPLY-STATUS",
+          "source": "laurasia/programs/payin.cbl:109"
+        }
+      ],
+      "performedBy": [
+        "MAIN"
+      ],
+      "reads": [
+        "WS-REASON",
+        "PF-CARD-NO",
+        "PF-KIND"
+      ],
+      "writes": [
+        "CA-CARD-NO",
+        "CARD-ACCOUNT",
+        "WS-REASON",
+        "RETURN-CODE"
+      ]
+    },
+    {
+      "name": "VALIDATE-RECORD",
+      "section": "VALIDATE-RECORD",
+      "source": "laurasia/programs/payin.cbl:115",
+      "performedBy": [
+        "APPLY-RECORD"
+      ],
+      "reads": [
+        "PF-KIND",
+        "PF-AMOUNT",
+        "PF-STATUS"
+      ],
+      "writes": [
+        "WS-REASON"
+      ]
+    },
+    {
+      "name": "APPLY-PAYMENT",
+      "section": "APPLY-PAYMENT",
+      "description": "the payment off the balance; one that covers the last statement, or clears the balance, pays the statement in full.",
+      "source": "laurasia/programs/payin.cbl:129",
+      "performedBy": [
+        "APPLY-RECORD"
+      ],
+      "reads": [
+        "PF-AMOUNT",
+        "CA-BALANCE",
+        "CA-STATEMENT-BALANCE",
+        "CA-CARD-NO",
+        "CA-ACCOUNT-NO",
+        "PF-REFERENCE",
+        "WS-RUN-DATE",
+        "WS-PAYMENTS",
+        "WS-PAID"
+      ],
+      "writes": [
+        "CA-BALANCE",
+        "CA-PAID-IN-FULL",
+        "PO-CARD-NO",
+        "PO-ACCOUNT-NO",
+        "PO-KIND",
+        "PO-AMOUNT",
+        "PO-REFERENCE",
+        "PO-DATE",
+        "POSTING",
+        "WS-PAYMENTS",
+        "WS-PAID"
+      ]
+    },
+    {
+      "name": "APPLY-STATUS",
+      "section": "APPLY-STATUS",
+      "source": "laurasia/programs/payin.cbl:144",
+      "performedBy": [
+        "APPLY-RECORD"
+      ],
+      "reads": [
+        "PF-STATUS",
+        "WS-STATUS-CHANGES"
+      ],
+      "writes": [
+        "CA-STATUS",
+        "WS-STATUS-CHANGES"
+      ]
+    },
+    {
+      "name": "REJECT-RECORD",
+      "section": "REJECT-RECORD",
+      "source": "laurasia/programs/payin.cbl:148",
+      "performedBy": [
+        "APPLY-RECORD"
+      ],
+      "reads": [
+        "WS-REASON",
+        "FEED-RECORD",
+        "WS-REJECTED"
+      ],
+      "writes": [
+        "REJECT-LINE",
+        "RJ-REASON",
+        "RJ-RECORD",
+        "WS-REJECTED"
+      ]
+    },
+    {
+      "name": "WRITE-REPORT",
+      "section": "WRITE-REPORT",
+      "source": "laurasia/programs/payin.cbl:155",
+      "performedBy": [
+        "MAIN"
+      ],
+      "reads": [
+        "WS-PAYMENTS",
+        "WS-REPORT-COUNT",
+        "WS-STATUS-CHANGES",
+        "WS-REJECTED",
+        "WS-PAID",
+        "WS-REPORT-AMOUNT"
+      ],
+      "writes": [
+        "REPORT-LINE",
+        "RC-LABEL",
+        "RC-VALUE",
+        "RA-LABEL",
+        "RA-VALUE"
+      ]
+    }
+  ],
+  "lineage": [
+    {
+      "from": "COMMAND-LINE",
+      "to": "WS-RUN-DATE",
+      "fromStream": true,
+      "paragraph": "MAIN",
+      "verb": "ACCEPT",
+      "source": "laurasia/programs/payin.cbl:73"
+    },
+    {
+      "from": "FEED-IN",
+      "to": "FEED-RECORD",
+      "fromFile": true,
+      "paragraph": "MAIN",
+      "verb": "READ",
+      "source": "laurasia/programs/payin.cbl:81"
+    },
+    {
+      "from": "condition FEED-AT-END",
+      "to": "WS-AT-END",
+      "fromLiteral": true,
+      "paragraph": "MAIN",
+      "verb": "SET",
+      "source": "laurasia/programs/payin.cbl:82"
+    },
+    {
+      "from": "PF-CARD-NO",
+      "to": "CA-CARD-NO",
+      "paragraph": "APPLY-RECORD",
+      "verb": "MOVE",
+      "source": "laurasia/programs/payin.cbl:99"
+    },
+    {
+      "from": "ACCOUNTS",
+      "to": "CARD-ACCOUNT",
+      "fromFile": true,
+      "paragraph": "APPLY-RECORD",
+      "verb": "READ",
+      "source": "laurasia/programs/payin.cbl:100"
+    },
+    {
+      "from": "'CARD'",
+      "to": "WS-REASON",
+      "fromLiteral": true,
+      "paragraph": "APPLY-RECORD",
+      "verb": "MOVE",
+      "source": "laurasia/programs/payin.cbl:102"
+    },
+    {
+      "from": "CARD-ACCOUNT",
+      "to": "ACCOUNTS",
+      "toFile": true,
+      "paragraph": "APPLY-RECORD",
+      "verb": "REWRITE",
+      "source": "laurasia/programs/payin.cbl:111"
+    },
+    {
+      "from": "'KIND'",
+      "to": "WS-REASON",
+      "fromLiteral": true,
+      "paragraph": "VALIDATE-RECORD",
+      "verb": "MOVE",
+      "source": "laurasia/programs/payin.cbl:118"
+    },
+    {
+      "from": "'AMNT'",
+      "to": "WS-REASON",
+      "fromLiteral": true,
+      "paragraph": "VALIDATE-RECORD",
+      "verb": "MOVE",
+      "source": "laurasia/programs/payin.cbl:120"
+    },
+    {
+      "from": "'STAT'",
+      "to": "WS-REASON",
+      "fromLiteral": true,
+      "paragraph": "VALIDATE-RECORD",
+      "verb": "MOVE",
+      "source": "laurasia/programs/payin.cbl:122"
+    },
+    {
+      "from": "SPACES",
+      "to": "WS-REASON",
+      "fromLiteral": true,
+      "paragraph": "VALIDATE-RECORD",
+      "verb": "MOVE",
+      "source": "laurasia/programs/payin.cbl:124"
+    },
+    {
+      "from": "PF-AMOUNT",
+      "to": "CA-BALANCE",
+      "paragraph": "APPLY-PAYMENT",
+      "verb": "SUBTRACT",
+      "source": "laurasia/programs/payin.cbl:130"
+    },
+    {
+      "from": "condition CA-WAS-PAID-IN-FULL",
+      "to": "CA-PAID-IN-FULL",
+      "fromLiteral": true,
+      "paragraph": "APPLY-PAYMENT",
+      "verb": "SET",
+      "source": "laurasia/programs/payin.cbl:132"
+    },
+    {
+      "from": "CA-CARD-NO",
+      "to": "PO-CARD-NO",
+      "paragraph": "APPLY-PAYMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/payin.cbl:134"
+    },
+    {
+      "from": "CA-ACCOUNT-NO",
+      "to": "PO-ACCOUNT-NO",
+      "paragraph": "APPLY-PAYMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/payin.cbl:135"
+    },
+    {
+      "from": "condition PO-PAYMENT",
+      "to": "PO-KIND",
+      "fromLiteral": true,
+      "paragraph": "APPLY-PAYMENT",
+      "verb": "SET",
+      "source": "laurasia/programs/payin.cbl:136"
+    },
+    {
+      "from": "PF-AMOUNT",
+      "to": "PO-AMOUNT",
+      "paragraph": "APPLY-PAYMENT",
+      "verb": "COMPUTE",
+      "source": "laurasia/programs/payin.cbl:137"
+    },
+    {
+      "from": "PF-REFERENCE",
+      "to": "PO-REFERENCE",
+      "paragraph": "APPLY-PAYMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/payin.cbl:138"
+    },
+    {
+      "from": "WS-RUN-DATE",
+      "to": "PO-DATE",
+      "paragraph": "APPLY-PAYMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/payin.cbl:139"
+    },
+    {
+      "from": "POSTING",
+      "to": "POSTINGS-OUT",
+      "toFile": true,
+      "paragraph": "APPLY-PAYMENT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/payin.cbl:140"
+    },
+    {
+      "from": "1",
+      "to": "WS-PAYMENTS",
+      "fromLiteral": true,
+      "paragraph": "APPLY-PAYMENT",
+      "verb": "ADD",
+      "source": "laurasia/programs/payin.cbl:141"
+    },
+    {
+      "from": "PF-AMOUNT",
+      "to": "WS-PAID",
+      "paragraph": "APPLY-PAYMENT",
+      "verb": "ADD",
+      "source": "laurasia/programs/payin.cbl:142"
+    },
+    {
+      "from": "PF-STATUS",
+      "to": "CA-STATUS",
+      "paragraph": "APPLY-STATUS",
+      "verb": "MOVE",
+      "source": "laurasia/programs/payin.cbl:145"
+    },
+    {
+      "from": "1",
+      "to": "WS-STATUS-CHANGES",
+      "fromLiteral": true,
+      "paragraph": "APPLY-STATUS",
+      "verb": "ADD",
+      "source": "laurasia/programs/payin.cbl:146"
+    },
+    {
+      "from": "SPACES",
+      "to": "REJECT-LINE",
+      "fromLiteral": true,
+      "paragraph": "REJECT-RECORD",
+      "verb": "MOVE",
+      "source": "laurasia/programs/payin.cbl:149"
+    },
+    {
+      "from": "WS-REASON",
+      "to": "RJ-REASON",
+      "paragraph": "REJECT-RECORD",
+      "verb": "MOVE",
+      "source": "laurasia/programs/payin.cbl:150"
+    },
+    {
+      "from": "FEED-RECORD",
+      "to": "RJ-RECORD",
+      "paragraph": "REJECT-RECORD",
+      "verb": "MOVE",
+      "source": "laurasia/programs/payin.cbl:151"
+    },
+    {
+      "from": "REJECT-LINE",
+      "to": "REJECT-OUT",
+      "toFile": true,
+      "paragraph": "REJECT-RECORD",
+      "verb": "WRITE",
+      "source": "laurasia/programs/payin.cbl:152"
+    },
+    {
+      "from": "1",
+      "to": "WS-REJECTED",
+      "fromLiteral": true,
+      "paragraph": "REJECT-RECORD",
+      "verb": "ADD",
+      "source": "laurasia/programs/payin.cbl:153"
+    },
+    {
+      "from": "'PAYIN    CARD SYSTEM FEED'",
+      "to": "REPORT-LINE",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/payin.cbl:156"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/payin.cbl:157"
+    },
+    {
+      "from": "'PAYMENTS'",
+      "to": "RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/payin.cbl:158"
+    },
+    {
+      "from": "WS-PAYMENTS",
+      "to": "RC-VALUE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/payin.cbl:159"
+    },
+    {
+      "from": "WS-REPORT-COUNT",
+      "to": "REPORT-LINE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/payin.cbl:160"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/payin.cbl:160"
+    },
+    {
+      "from": "'STATUS CHANGES'",
+      "to": "RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/payin.cbl:161"
+    },
+    {
+      "from": "WS-STATUS-CHANGES",
+      "to": "RC-VALUE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/payin.cbl:162"
+    },
+    {
+      "from": "WS-REPORT-COUNT",
+      "to": "REPORT-LINE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/payin.cbl:163"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/payin.cbl:163"
+    },
+    {
+      "from": "'RECORDS REJECTED'",
+      "to": "RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/payin.cbl:164"
+    },
+    {
+      "from": "WS-REJECTED",
+      "to": "RC-VALUE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/payin.cbl:165"
+    },
+    {
+      "from": "WS-REPORT-COUNT",
+      "to": "REPORT-LINE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/payin.cbl:166"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/payin.cbl:166"
+    },
+    {
+      "from": "'PAID'",
+      "to": "RA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/payin.cbl:167"
+    },
+    {
+      "from": "WS-PAID",
+      "to": "RA-VALUE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/payin.cbl:168"
+    },
+    {
+      "from": "WS-REPORT-AMOUNT",
+      "to": "REPORT-LINE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/payin.cbl:169"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/payin.cbl:169"
+    }
+  ],
+  "outputs": [
+    {
+      "file": "ACCOUNTS",
+      "record": "CARD-ACCOUNT",
+      "fields": [
+        {
+          "name": "CA-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "origins": [
+            "file ACCOUNTS CA-CARD-NO",
+            "file FEED-IN PF-CARD-NO"
+          ]
+        },
+        {
+          "name": "CA-ACCOUNT-NO",
+          "start": 17,
+          "length": 10,
+          "origins": [
+            "file ACCOUNTS CA-ACCOUNT-NO"
+          ]
+        },
+        {
+          "name": "CA-PRODUCT",
+          "start": 27,
+          "length": 2,
+          "origins": [
+            "file ACCOUNTS CA-PRODUCT"
+          ]
+        },
+        {
+          "name": "CA-STATUS",
+          "start": 29,
+          "length": 1,
+          "origins": [
+            "file ACCOUNTS CA-STATUS",
+            "file FEED-IN PF-STATUS"
+          ]
+        },
+        {
+          "name": "CA-LIMIT",
+          "start": 30,
+          "length": 9,
+          "origins": [
+            "file ACCOUNTS CA-LIMIT"
+          ]
+        },
+        {
+          "name": "CA-BALANCE",
+          "start": 39,
+          "length": 10,
+          "origins": [
+            "file ACCOUNTS CA-BALANCE",
+            "file FEED-IN PF-AMOUNT"
+          ]
+        },
+        {
+          "name": "CA-STATEMENT-BALANCE",
+          "start": 49,
+          "length": 10,
+          "origins": [
+            "file ACCOUNTS CA-STATEMENT-BALANCE"
+          ]
+        },
+        {
+          "name": "CA-CYCLE-DAY",
+          "start": 59,
+          "length": 2,
+          "origins": [
+            "file ACCOUNTS CA-CYCLE-DAY"
+          ]
+        },
+        {
+          "name": "CA-PAID-IN-FULL",
+          "start": 61,
+          "length": 1,
+          "origins": [
+            "file ACCOUNTS CA-PAID-IN-FULL",
+            "literal condition CA-WAS-PAID-IN-FULL"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "POSTINGS-OUT",
+      "record": "POSTING",
+      "fields": [
+        {
+          "name": "PO-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "origins": [
+            "file ACCOUNTS CA-CARD-NO",
+            "file FEED-IN PF-CARD-NO"
+          ]
+        },
+        {
+          "name": "PO-ACCOUNT-NO",
+          "start": 17,
+          "length": 10,
+          "origins": [
+            "file ACCOUNTS CA-ACCOUNT-NO"
+          ]
+        },
+        {
+          "name": "PO-KIND",
+          "start": 27,
+          "length": 1,
+          "origins": [
+            "literal condition PO-PAYMENT"
+          ]
+        },
+        {
+          "name": "PO-AMOUNT",
+          "start": 28,
+          "length": 10,
+          "origins": [
+            "file FEED-IN PF-AMOUNT"
+          ]
+        },
+        {
+          "name": "PO-REFERENCE",
+          "start": 38,
+          "length": 6,
+          "origins": [
+            "file FEED-IN PF-REFERENCE"
+          ]
+        },
+        {
+          "name": "PO-DATE",
+          "start": 44,
+          "length": 8,
+          "origins": [
+            "stream COMMAND-LINE WS-RUN-DATE"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "REJECT-OUT",
+      "record": "REJECT-LINE",
+      "fields": [
+        {
+          "name": "RJ-REASON",
+          "start": 1,
+          "length": 4,
+          "origins": [
+            "literal 'AMNT'",
+            "literal 'CARD'",
+            "literal 'KIND'",
+            "literal 'STAT'",
+            "literal SPACES"
+          ]
+        },
+        {
+          "name": "RJ-RECORD",
+          "start": 6,
+          "length": 42,
+          "origins": [
+            "file FEED-IN FEED-RECORD"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "REPORT-OUT",
+      "record": "REPORT-LINE",
+      "fields": [
+        {
+          "name": "REPORT-LINE",
+          "start": 1,
+          "length": 60,
+          "origins": [
+            "literal 'PAYIN    CARD SYSTEM FEED'"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "REPORT-OUT",
+      "record": "WS-REPORT-COUNT",
+      "fields": [
+        {
+          "name": "RC-LABEL",
+          "start": 1,
+          "length": 30,
+          "origins": [
+            "literal 'PAYMENTS'",
+            "literal 'RECORDS REJECTED'",
+            "literal 'STATUS CHANGES'"
+          ]
+        },
+        {
+          "name": "RC-VALUE",
+          "start": 31,
+          "length": 8,
+          "origins": [
+            "initial value of WS-PAYMENTS",
+            "initial value of WS-REJECTED",
+            "initial value of WS-STATUS-CHANGES",
+            "literal 1"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "REPORT-OUT",
+      "record": "WS-REPORT-AMOUNT",
+      "fields": [
+        {
+          "name": "RA-LABEL",
+          "start": 1,
+          "length": 30,
+          "origins": [
+            "literal 'PAID'"
+          ]
+        },
+        {
+          "name": "RA-VALUE",
+          "start": 31,
+          "length": 13,
+          "origins": [
+            "file FEED-IN PF-AMOUNT",
+            "initial value of WS-PAID"
+          ]
+        }
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "file": "FEED-IN",
+      "record": "FEED-RECORD",
+      "fields": [
+        {
+          "name": "PF-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "reaches": [
+            "CA-CARD-NO",
+            "RJ-RECORD",
+            "PO-CARD-NO",
+            "file REJECT-OUT",
+            "file ACCOUNTS",
+            "file POSTINGS-OUT"
+          ]
+        },
+        {
+          "name": "PF-KIND",
+          "start": 17,
+          "length": 1,
+          "reaches": [
+            "RJ-RECORD",
+            "file REJECT-OUT"
+          ]
+        },
+        {
+          "name": "PF-AMOUNT",
+          "start": 18,
+          "length": 10,
+          "reaches": [
+            "RJ-RECORD",
+            "CA-BALANCE",
+            "PO-AMOUNT",
+            "WS-PAID",
+            "RA-VALUE",
+            "REPORT-LINE",
+            "file REJECT-OUT",
+            "file POSTINGS-OUT",
+            "file ACCOUNTS",
+            "file REPORT-OUT"
+          ]
+        },
+        {
+          "name": "PF-STATUS",
+          "start": 28,
+          "length": 1,
+          "reaches": [
+            "RJ-RECORD",
+            "CA-STATUS",
+            "file REJECT-OUT",
+            "file ACCOUNTS"
+          ]
+        },
+        {
+          "name": "PF-REFERENCE",
+          "start": 29,
+          "length": 6,
+          "reaches": [
+            "RJ-RECORD",
+            "PO-REFERENCE",
+            "file REJECT-OUT",
+            "file POSTINGS-OUT"
+          ]
+        },
+        {
+          "name": "PF-DATE",
+          "start": 35,
+          "length": 8,
+          "reaches": [
+            "RJ-RECORD",
+            "file REJECT-OUT"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "ACCOUNTS",
+      "record": "CARD-ACCOUNT",
+      "fields": [
+        {
+          "name": "CA-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "reaches": [
+            "PO-CARD-NO",
+            "file ACCOUNTS",
+            "file POSTINGS-OUT"
+          ]
+        },
+        {
+          "name": "CA-ACCOUNT-NO",
+          "start": 17,
+          "length": 10,
+          "reaches": [
+            "PO-ACCOUNT-NO",
+            "file ACCOUNTS",
+            "file POSTINGS-OUT"
+          ]
+        },
+        {
+          "name": "CA-PRODUCT",
+          "start": 27,
+          "length": 2,
+          "reaches": [
+            "file ACCOUNTS"
+          ]
+        },
+        {
+          "name": "CA-STATUS",
+          "start": 29,
+          "length": 1,
+          "reaches": [
+            "file ACCOUNTS"
+          ]
+        },
+        {
+          "name": "CA-LIMIT",
+          "start": 30,
+          "length": 9,
+          "reaches": [
+            "file ACCOUNTS"
+          ]
+        },
+        {
+          "name": "CA-BALANCE",
+          "start": 39,
+          "length": 10,
+          "reaches": [
+            "file ACCOUNTS"
+          ]
+        },
+        {
+          "name": "CA-STATEMENT-BALANCE",
+          "start": 49,
+          "length": 10,
+          "reaches": [
+            "file ACCOUNTS"
+          ]
+        },
+        {
+          "name": "CA-CYCLE-DAY",
+          "start": 59,
+          "length": 2,
+          "reaches": [
+            "file ACCOUNTS"
+          ]
+        },
+        {
+          "name": "CA-PAID-IN-FULL",
+          "start": 61,
+          "length": 1,
+          "reaches": [
+            "file ACCOUNTS"
+          ]
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "kind": "key",
+      "from": {
+        "file": "FEED-IN",
+        "field": "PF-CARD-NO"
+      },
+      "to": {
+        "file": "ACCOUNTS",
+        "field": "CA-CARD-NO"
+      },
+      "source": "laurasia/programs/payin.cbl:99"
+    }
+  ]
+}

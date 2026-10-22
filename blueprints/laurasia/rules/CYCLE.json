@@ -3,7 +3,7 @@
   "tables": [
     {
       "paragraph": "MAIN",
-      "source": "laurasia/programs/cycle.cbl:62",
+      "source": "laurasia/programs/cycle.cbl:63",
       "conditions": [
         "WS-ACCOUNTS-STATUS = '00'"
       ],
@@ -50,7 +50,7 @@
     {
       "paragraph": "MAIN",
       "loop": "PERFORM UNTIL ACCOUNTS-AT-END",
-      "source": "laurasia/programs/cycle.cbl:70",
+      "source": "laurasia/programs/cycle.cbl:71",
       "conditions": [
         "CA-CYCLE-DAY = WS-RUN-DAY AND NOT CA-CLOSED"
       ],
@@ -87,7 +87,7 @@
     },
     {
       "paragraph": "CLOSE-CYCLE",
-      "source": "laurasia/programs/cycle.cbl:79",
+      "source": "laurasia/programs/cycle.cbl:80",
       "conditions": [
         "NOT CA-WAS-PAID-IN-FULL AND CA-STATEMENT-BALANCE \u003e ZERO",
         "WS-INTEREST \u003e ZERO",
@@ -112,6 +112,7 @@
         "CALL 'minpay' USING CA-BALANCE WS-MINIMUM",
         "PERFORM WRITE-STATEMENT",
         "MOVE CA-BALANCE TO CA-STATEMENT-BALANCE",
+        "MOVE 'N' TO CA-PAID-IN-FULL",
         "REWRITE CARD-ACCOUNT",
         "STOP RUN RETURNING 16",
         "ADD 1 TO WS-CLOSED-COUNT"
@@ -133,7 +134,8 @@
             6,
             7,
             8,
-            9
+            9,
+            10
           ]
         },
         {
@@ -152,7 +154,8 @@
             6,
             7,
             8,
-            10
+            9,
+            11
           ]
         },
         {
@@ -169,7 +172,8 @@
             6,
             7,
             8,
-            9
+            9,
+            10
           ]
         },
         {
@@ -186,7 +190,8 @@
             6,
             7,
             8,
-            10
+            9,
+            11
           ]
         },
         {
@@ -201,7 +206,8 @@
             6,
             7,
             8,
-            9
+            9,
+            10
           ]
         },
         {
@@ -216,7 +222,8 @@
             6,
             7,
             8,
-            10
+            9,
+            11
           ]
         }
       ]

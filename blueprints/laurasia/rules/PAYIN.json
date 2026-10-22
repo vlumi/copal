@@ -1,0 +1,367 @@
+{
+  "program": "PAYIN",
+  "tables": [
+    {
+      "paragraph": "MAIN",
+      "source": "laurasia/programs/payin.cbl:72",
+      "conditions": [
+        "WS-ACCOUNTS-STATUS = '00'",
+        "WS-REJECTED \u003e ZERO"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ACCOUNTS-STATUS"
+        ],
+        [
+          "WS-REJECTED"
+        ]
+      ],
+      "actions": [
+        "ACCEPT WS-RUN-DATE FROM COMMAND-LINE",
+        "OPEN INPUT FEED-IN I-O ACCOUNTS OUTPUT POSTINGS-OUT REJECT-OUT REPORT-OUT",
+        "STOP RUN RETURNING 16",
+        "PERFORM UNTIL FEED-AT-END",
+        "PERFORM WRITE-REPORT",
+        "CLOSE FEED-IN ACCOUNTS POSTINGS-OUT REJECT-OUT REPORT-OUT",
+        "STOP RUN RETURNING 4",
+        "STOP RUN RETURNING 0"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            3,
+            4,
+            5,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "MAIN",
+      "loop": "PERFORM UNTIL FEED-AT-END",
+      "source": "laurasia/programs/payin.cbl:80",
+      "conditions": [
+        "READ FEED-IN AT END"
+      ],
+      "conditionRefs": [
+        null
+      ],
+      "actions": [
+        "READ FEED-IN",
+        "SET FEED-AT-END TO TRUE",
+        "PERFORM APPLY-RECORD"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "APPLY-RECORD",
+      "source": "laurasia/programs/payin.cbl:93",
+      "conditions": [
+        "RECORD-IS-GOOD",
+        "READ ACCOUNTS INVALID KEY",
+        "PF-PAYMENT",
+        "REWRITE CARD-ACCOUNT INVALID KEY"
+      ],
+      "conditionRefs": [
+        [
+          "WS-REASON"
+        ],
+        null,
+        [
+          "PF-KIND"
+        ],
+        null
+      ],
+      "actions": [
+        "PERFORM VALIDATE-RECORD",
+        "PERFORM REJECT-RECORD",
+        "EXIT SECTION",
+        "MOVE PF-CARD-NO TO CA-CARD-NO",
+        "READ ACCOUNTS",
+        "MOVE 'CARD' TO WS-REASON",
+        "PERFORM APPLY-PAYMENT",
+        "REWRITE CARD-ACCOUNT",
+        "STOP RUN RETURNING 16",
+        "PERFORM APPLY-STATUS"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            3,
+            4,
+            5,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            3,
+            4,
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            3,
+            4,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            3,
+            4,
+            9,
+            7,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            3,
+            4,
+            9,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "VALIDATE-RECORD",
+      "source": "laurasia/programs/payin.cbl:115",
+      "conditions": [
+        "NOT PF-PAYMENT AND NOT PF-STATUS-CHANGE",
+        "PF-PAYMENT AND PF-AMOUNT NOT \u003e ZERO",
+        "PF-STATUS-CHANGE AND PF-STATUS NOT = 'A' AND PF-STATUS NOT = 'B' AND PF-STATUS NOT = 'C'"
+      ],
+      "conditionRefs": [
+        [
+          "PF-KIND"
+        ],
+        [
+          "PF-KIND",
+          "PF-AMOUNT"
+        ],
+        [
+          "PF-KIND",
+          "PF-STATUS"
+        ]
+      ],
+      "actions": [
+        "MOVE 'KIND' TO WS-REASON",
+        "MOVE 'AMNT' TO WS-REASON",
+        "MOVE 'STAT' TO WS-REASON",
+        "MOVE SPACES TO WS-REASON"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            ""
+          ],
+          "actions": [
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "APPLY-PAYMENT",
+      "source": "laurasia/programs/payin.cbl:129",
+      "conditions": [
+        "CA-BALANCE NOT \u003e ZERO OR PF-AMOUNT NOT \u003c CA-STATEMENT-BALANCE"
+      ],
+      "conditionRefs": [
+        [
+          "CA-BALANCE",
+          "PF-AMOUNT",
+          "CA-STATEMENT-BALANCE"
+        ]
+      ],
+      "actions": [
+        "SUBTRACT PF-AMOUNT FROM CA-BALANCE",
+        "SET CA-WAS-PAID-IN-FULL TO TRUE",
+        "MOVE CA-CARD-NO TO PO-CARD-NO",
+        "MOVE CA-ACCOUNT-NO TO PO-ACCOUNT-NO",
+        "SET PO-PAYMENT TO TRUE",
+        "COMPUTE PO-AMOUNT = 0 - PF-AMOUNT",
+        "MOVE PF-REFERENCE TO PO-REFERENCE",
+        "MOVE WS-RUN-DATE TO PO-DATE",
+        "WRITE POSTING",
+        "ADD 1 TO WS-PAYMENTS",
+        "ADD PF-AMOUNT TO WS-PAID"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "job": "payments",
+  "kind": "script",
+  "source": "laurasia/scripts/payments.sh",
+  "description": [
+    "payments.sh: take in the card system's feed: the cardholders' payments",
+    "off their balances, and the cards' status changes.",
+    "",
+    "usage: payments.sh DATE, the business date as YYYYMMDD.",
+    "environment: LCS_BIN, the programs; LCS_DATA, the data.",
+    "",
+    "history",
+    "2022-09-05 ah  lcs-0497 original version."
+  ],
+  "steps": [
+    {
+      "step": "PAYIN",
+      "program": "PAYIN",
+      "arguments": [
+        "$DATE"
+      ],
+      "stopsIf": "RC \u003e= 8",
+      "description": [
+        "the payments and status changes on the cards' accounts"
+      ],
+      "source": "laurasia/scripts/payments.sh:22",
+      "dds": [
+        {
+          "dd": "FEEDIN",
+          "datasets": [
+            "$DATA/inbound/PAYMENTS.$DATE.txt"
+          ],
+          "file": "FEED-IN",
+          "uses": [
+            "read"
+          ],
+          "copybook": "payfeed",
+          "source": "laurasia/scripts/payments.sh:22"
+        },
+        {
+          "dd": "ACCOUNTS",
+          "datasets": [
+            "$DATA/master/accounts.idx"
+          ],
+          "indexed": true,
+          "file": "ACCOUNTS",
+          "uses": [
+            "update"
+          ],
+          "copybook": "cardacct",
+          "source": "laurasia/scripts/payments.sh:22"
+        },
+        {
+          "dd": "POSTOUT",
+          "datasets": [
+            "$DATA/outbound/CREDITS.$DATE.txt"
+          ],
+          "file": "POSTINGS-OUT",
+          "uses": [
+            "write"
+          ],
+          "copybook": "postrec",
+          "source": "laurasia/scripts/payments.sh:22"
+        },
+        {
+          "dd": "PAYREJ",
+          "datasets": [
+            "$DATA/outbound/PAYREJ.$DATE.txt"
+          ],
+          "file": "REJECT-OUT",
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/payments.sh:22"
+        },
+        {
+          "dd": "PAYRPT",
+          "datasets": [
+            "$DATA/reports/payin.$DATE.txt"
+          ],
+          "file": "REPORT-OUT",
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/payments.sh:22"
+        },
+        {
+          "dd": "stdout",
+          "datasets": [
+            "$DATA/reports/payin.$DATE.out"
+          ],
+          "uses": [
+            "write"
+          ],
+          "source": "laurasia/scripts/payments.sh:22"
+        }
+      ]
+    }
+  ],
+  "datasets": [
+    {
+      "dataset": "$DATA/inbound/PAYMENTS.$DATE.txt",
+      "copybook": "payfeed",
+      "kind": "external",
+      "readBy": [
+        "PAYIN"
+      ]
+    },
+    {
+      "dataset": "$DATA/master/accounts.idx",
+      "copybook": "cardacct",
+      "kind": "internal",
+      "indexed": true,
+      "writtenBy": [
+        "PAYIN"
+      ],
+      "readBy": [
+        "PAYIN"
+      ]
+    },
+    {
+      "dataset": "$DATA/outbound/CREDITS.$DATE.txt",
+      "copybook": "postrec",
+      "kind": "output",
+      "writtenBy": [
+        "PAYIN"
+      ]
+    },
+    {
+      "dataset": "$DATA/outbound/PAYREJ.$DATE.txt",
+      "kind": "output",
+      "writtenBy": [
+        "PAYIN"
+      ]
+    },
+    {
+      "dataset": "$DATA/reports/payin.$DATE.txt",
+      "kind": "output",
+      "writtenBy": [
+        "PAYIN"
+      ]
+    },
+    {
+      "dataset": "$DATA/reports/payin.$DATE.out",
+      "kind": "output",
+      "writtenBy": [
+        "PAYIN"
+      ]
+    }
+  ]
+}

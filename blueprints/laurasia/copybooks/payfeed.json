@@ -1,0 +1,114 @@
+{
+  "copybook": "payfeed",
+  "source": "laurasia/copybooks/payfeed.cpy",
+  "description": [
+    "payfeed: the card system's daily feed, a record a line: a cardholder's",
+    "payment, with the bank's reference, or a change of a card's status.",
+    "",
+    "history",
+    "2022-09-05 ah  lcs-0497 original version."
+  ],
+  "records": [
+    {
+      "level": 1,
+      "name": "FEED-RECORD",
+      "start": 1,
+      "length": 42,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/copybooks/payfeed.cpy:7",
+      "fields": [
+        {
+          "level": 5,
+          "name": "PF-CARD-NO",
+          "start": 1,
+          "length": 16,
+          "picture": "X(16)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/payfeed.cpy:8"
+        },
+        {
+          "level": 5,
+          "name": "PF-KIND",
+          "start": 17,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PF-PAYMENT",
+              "values": [
+                "'P'"
+              ],
+              "source": "laurasia/copybooks/payfeed.cpy:10"
+            },
+            {
+              "name": "PF-STATUS-CHANGE",
+              "values": [
+                "'S'"
+              ],
+              "source": "laurasia/copybooks/payfeed.cpy:11"
+            }
+          ],
+          "source": "laurasia/copybooks/payfeed.cpy:9"
+        },
+        {
+          "level": 5,
+          "name": "PF-AMOUNT",
+          "start": 18,
+          "length": 10,
+          "picture": "S9(7)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/copybooks/payfeed.cpy:12"
+        },
+        {
+          "level": 5,
+          "name": "PF-STATUS",
+          "start": 28,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/payfeed.cpy:13"
+        },
+        {
+          "level": 5,
+          "name": "PF-REFERENCE",
+          "start": 29,
+          "length": 6,
+          "picture": "X(6)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "laurasia/copybooks/payfeed.cpy:14"
+        },
+        {
+          "level": 5,
+          "name": "PF-DATE",
+          "start": 35,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "date",
+          "digits": 8,
+          "source": "laurasia/copybooks/payfeed.cpy:15"
+        }
+      ]
+    }
+  ],
+  "usedBy": [
+    "PAYIN"
+  ]
+}

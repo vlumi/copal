@@ -14,7 +14,8 @@
     "history",
     "2011-04-04 rk  lcs-0102 original version.",
     "2012-01-09 ah  lcs-0140 interchange.",
-    "2015-03-23 mt  lcs-0302 disputes before settlement."
+    "2015-03-23 mt  lcs-0302 disputes before settlement.",
+    "2022-09-05 ah  lcs-0497 the card system's feed after posting."
   ],
   "steps": [
     {
@@ -27,7 +28,7 @@
       "description": [
         "the clearing file, checked batch by batch"
       ],
-      "source": "laurasia/scripts/nightly.sh:28",
+      "source": "laurasia/scripts/nightly.sh:29",
       "dds": [
         {
           "dd": "CLRIN",
@@ -39,7 +40,7 @@
             "read"
           ],
           "copybook": "clrrec",
-          "source": "laurasia/scripts/nightly.sh:28"
+          "source": "laurasia/scripts/nightly.sh:29"
         },
         {
           "dd": "PRESOUT",
@@ -51,7 +52,7 @@
             "write"
           ],
           "copybook": "presrec",
-          "source": "laurasia/scripts/nightly.sh:28"
+          "source": "laurasia/scripts/nightly.sh:29"
         },
         {
           "dd": "CLRREJ",
@@ -62,7 +63,7 @@
           "uses": [
             "write"
           ],
-          "source": "laurasia/scripts/nightly.sh:28"
+          "source": "laurasia/scripts/nightly.sh:29"
         },
         {
           "dd": "CLRRPT",
@@ -73,7 +74,7 @@
           "uses": [
             "write"
           ],
-          "source": "laurasia/scripts/nightly.sh:28"
+          "source": "laurasia/scripts/nightly.sh:29"
         },
         {
           "dd": "stdout",
@@ -83,7 +84,7 @@
           "uses": [
             "write"
           ],
-          "source": "laurasia/scripts/nightly.sh:28"
+          "source": "laurasia/scripts/nightly.sh:29"
         }
       ]
     },
@@ -98,7 +99,7 @@
       "description": [
         "the presentments in authorization code order"
       ],
-      "source": "laurasia/scripts/nightly.sh:34",
+      "source": "laurasia/scripts/nightly.sh:35",
       "dds": [
         {
           "dd": "input",
@@ -108,7 +109,7 @@
           "uses": [
             "read"
           ],
-          "source": "laurasia/scripts/nightly.sh:34"
+          "source": "laurasia/scripts/nightly.sh:35"
         },
         {
           "dd": "output",
@@ -118,7 +119,7 @@
           "uses": [
             "write"
           ],
-          "source": "laurasia/scripts/nightly.sh:34"
+          "source": "laurasia/scripts/nightly.sh:35"
         }
       ]
     },
@@ -133,7 +134,7 @@
       "description": [
         "the day's authorizations in authorization code order"
       ],
-      "source": "laurasia/scripts/nightly.sh:40",
+      "source": "laurasia/scripts/nightly.sh:41",
       "dds": [
         {
           "dd": "input",
@@ -143,7 +144,7 @@
           "uses": [
             "read"
           ],
-          "source": "laurasia/scripts/nightly.sh:40"
+          "source": "laurasia/scripts/nightly.sh:41"
         },
         {
           "dd": "output",
@@ -153,7 +154,7 @@
           "uses": [
             "write"
           ],
-          "source": "laurasia/scripts/nightly.sh:40"
+          "source": "laurasia/scripts/nightly.sh:41"
         }
       ]
     },
@@ -167,7 +168,7 @@
       "description": [
         "each presentment marked by its authorization"
       ],
-      "source": "laurasia/scripts/nightly.sh:50",
+      "source": "laurasia/scripts/nightly.sh:51",
       "dds": [
         {
           "dd": "PRESIN",
@@ -179,7 +180,7 @@
             "read"
           ],
           "copybook": "presrec",
-          "source": "laurasia/scripts/nightly.sh:50"
+          "source": "laurasia/scripts/nightly.sh:51"
         },
         {
           "dd": "AUTHIN",
@@ -191,7 +192,7 @@
             "read"
           ],
           "copybook": "authlog",
-          "source": "laurasia/scripts/nightly.sh:50"
+          "source": "laurasia/scripts/nightly.sh:51"
         },
         {
           "dd": "PRESOUT",
@@ -203,7 +204,7 @@
             "write"
           ],
           "copybook": "presrec",
-          "source": "laurasia/scripts/nightly.sh:50"
+          "source": "laurasia/scripts/nightly.sh:51"
         },
         {
           "dd": "MATCHRPT",
@@ -214,7 +215,7 @@
           "uses": [
             "write"
           ],
-          "source": "laurasia/scripts/nightly.sh:50"
+          "source": "laurasia/scripts/nightly.sh:51"
         },
         {
           "dd": "stdout",
@@ -224,7 +225,7 @@
           "uses": [
             "write"
           ],
-          "source": "laurasia/scripts/nightly.sh:50"
+          "source": "laurasia/scripts/nightly.sh:51"
         }
       ]
     },
@@ -238,7 +239,7 @@
       "description": [
         "the fee schedule into the fee table"
       ],
-      "source": "laurasia/scripts/nightly.sh:58",
+      "source": "laurasia/scripts/nightly.sh:59",
       "dds": [
         {
           "dd": "FEESCHED",
@@ -250,7 +251,7 @@
             "read"
           ],
           "copybook": "feedef",
-          "source": "laurasia/scripts/nightly.sh:58"
+          "source": "laurasia/scripts/nightly.sh:59"
         },
         {
           "dd": "FEETAB",
@@ -262,7 +263,7 @@
             "write"
           ],
           "copybook": "feerec",
-          "source": "laurasia/scripts/nightly.sh:58"
+          "source": "laurasia/scripts/nightly.sh:59"
         },
         {
           "dd": "stdout",
@@ -272,7 +273,7 @@
           "uses": [
             "write"
           ],
-          "source": "laurasia/scripts/nightly.sh:58"
+          "source": "laurasia/scripts/nightly.sh:59"
         }
       ]
     },
@@ -286,7 +287,7 @@
       "description": [
         "the interchange of each matched presentment"
       ],
-      "source": "laurasia/scripts/nightly.sh:68",
+      "source": "laurasia/scripts/nightly.sh:69",
       "dds": [
         {
           "dd": "PRESIN",
@@ -298,7 +299,7 @@
             "read"
           ],
           "copybook": "presrec",
-          "source": "laurasia/scripts/nightly.sh:68"
+          "source": "laurasia/scripts/nightly.sh:69"
         },
         {
           "dd": "FEETAB",
@@ -310,7 +311,7 @@
             "read"
           ],
           "copybook": "feerec",
-          "source": "laurasia/scripts/nightly.sh:68"
+          "source": "laurasia/scripts/nightly.sh:69"
         },
         {
           "dd": "PRESOUT",
@@ -322,7 +323,7 @@
             "write"
           ],
           "copybook": "presrec",
-          "source": "laurasia/scripts/nightly.sh:68"
+          "source": "laurasia/scripts/nightly.sh:69"
         },
         {
           "dd": "FEERPT",
@@ -333,7 +334,7 @@
           "uses": [
             "write"
           ],
-          "source": "laurasia/scripts/nightly.sh:68"
+          "source": "laurasia/scripts/nightly.sh:69"
         },
         {
           "dd": "stdout",
@@ -343,7 +344,7 @@
           "uses": [
             "write"
           ],
-          "source": "laurasia/scripts/nightly.sh:68"
+          "source": "laurasia/scripts/nightly.sh:69"
         }
       ]
     },
@@ -357,7 +358,7 @@
       "description": [
         "the purchases on the cards' accounts"
       ],
-      "source": "laurasia/scripts/nightly.sh:79",
+      "source": "laurasia/scripts/nightly.sh:80",
       "dds": [
         {
           "dd": "PRESIN",
@@ -369,7 +370,7 @@
             "read"
           ],
           "copybook": "presrec",
-          "source": "laurasia/scripts/nightly.sh:79"
+          "source": "laurasia/scripts/nightly.sh:80"
         },
         {
           "dd": "ACCOUNTS",
@@ -382,7 +383,7 @@
             "update"
           ],
           "copybook": "cardacct",
-          "source": "laurasia/scripts/nightly.sh:79"
+          "source": "laurasia/scripts/nightly.sh:80"
         },
         {
           "dd": "POSTOUT",
@@ -394,7 +395,7 @@
             "write"
           ],
           "copybook": "postrec",
-          "source": "laurasia/scripts/nightly.sh:79"
+          "source": "laurasia/scripts/nightly.sh:80"
         },
         {
           "dd": "POSTREJ",
@@ -405,7 +406,7 @@
           "uses": [
             "write"
           ],
-          "source": "laurasia/scripts/nightly.sh:79"
+          "source": "laurasia/scripts/nightly.sh:80"
         },
         {
           "dd": "POSTRPT",
@@ -416,7 +417,7 @@
           "uses": [
             "write"
           ],
-          "source": "laurasia/scripts/nightly.sh:79"
+          "source": "laurasia/scripts/nightly.sh:80"
         },
         {
           "dd": "stdout",
@@ -426,9 +427,23 @@
           "uses": [
             "write"
           ],
-          "source": "laurasia/scripts/nightly.sh:79"
+          "source": "laurasia/scripts/nightly.sh:80"
         }
       ]
+    },
+    {
+      "step": "PAYMENTS",
+      "kind": "script",
+      "runs": "payments",
+      "arguments": [
+        "$DATE"
+      ],
+      "stopsIf": "RC \u003e= 8",
+      "description": [
+        "the card system's feed: payments and status changes"
+      ],
+      "source": "laurasia/scripts/nightly.sh:86",
+      "dds": null
     },
     {
       "step": "DISPUTES",
@@ -441,7 +456,7 @@
       "description": [
         "the disputes moved on, the merchants' adjustments"
       ],
-      "source": "laurasia/scripts/nightly.sh:85",
+      "source": "laurasia/scripts/nightly.sh:91",
       "dds": null
     },
     {
@@ -455,7 +470,7 @@
       "description": [
         "the priced presentments in merchant order"
       ],
-      "source": "laurasia/scripts/nightly.sh:90",
+      "source": "laurasia/scripts/nightly.sh:96",
       "dds": [
         {
           "dd": "input",
@@ -465,7 +480,7 @@
           "uses": [
             "read"
           ],
-          "source": "laurasia/scripts/nightly.sh:90"
+          "source": "laurasia/scripts/nightly.sh:96"
         },
         {
           "dd": "output",
@@ -475,7 +490,7 @@
           "uses": [
             "write"
           ],
-          "source": "laurasia/scripts/nightly.sh:90"
+          "source": "laurasia/scripts/nightly.sh:96"
         }
       ]
     },
@@ -490,7 +505,7 @@
       "description": [
         "the adjustments in merchant order"
       ],
-      "source": "laurasia/scripts/nightly.sh:96",
+      "source": "laurasia/scripts/nightly.sh:102",
       "dds": [
         {
           "dd": "input",
@@ -500,7 +515,7 @@
           "uses": [
             "read"
           ],
-          "source": "laurasia/scripts/nightly.sh:96"
+          "source": "laurasia/scripts/nightly.sh:102"
         },
         {
           "dd": "output",
@@ -510,7 +525,7 @@
           "uses": [
             "write"
           ],
-          "source": "laurasia/scripts/nightly.sh:96"
+          "source": "laurasia/scripts/nightly.sh:102"
         }
       ]
     },
@@ -524,7 +539,7 @@
       "description": [
         "what each merchant is paid"
       ],
-      "source": "laurasia/scripts/nightly.sh:106",
+      "source": "laurasia/scripts/nightly.sh:112",
       "dds": [
         {
           "dd": "PRESIN",
@@ -536,7 +551,7 @@
             "read"
           ],
           "copybook": "presrec",
-          "source": "laurasia/scripts/nightly.sh:106"
+          "source": "laurasia/scripts/nightly.sh:112"
         },
         {
           "dd": "ADJIN",
@@ -547,7 +562,7 @@
           "uses": [
             "read"
           ],
-          "source": "laurasia/scripts/nightly.sh:106"
+          "source": "laurasia/scripts/nightly.sh:112"
         },
         {
           "dd": "PAYOUT",
@@ -558,7 +573,7 @@
           "uses": [
             "write"
           ],
-          "source": "laurasia/scripts/nightly.sh:106"
+          "source": "laurasia/scripts/nightly.sh:112"
         },
         {
           "dd": "SETLRPT",
@@ -569,7 +584,7 @@
           "uses": [
             "write"
           ],
-          "source": "laurasia/scripts/nightly.sh:106"
+          "source": "laurasia/scripts/nightly.sh:112"
         },
         {
           "dd": "stdout",
@@ -579,7 +594,7 @@
           "uses": [
             "write"
           ],
-          "source": "laurasia/scripts/nightly.sh:106"
+          "source": "laurasia/scripts/nightly.sh:112"
         }
       ]
     },
@@ -589,7 +604,7 @@
       "description": [
         "the accounts as they stand, for the card system"
       ],
-      "source": "laurasia/scripts/nightly.sh:114",
+      "source": "laurasia/scripts/nightly.sh:120",
       "dds": [
         {
           "dd": "ACCOUNTS",
@@ -602,7 +617,7 @@
             "read"
           ],
           "copybook": "cardacct",
-          "source": "laurasia/scripts/nightly.sh:114"
+          "source": "laurasia/scripts/nightly.sh:120"
         },
         {
           "dd": "ACCTOUT",
@@ -614,7 +629,7 @@
             "write"
           ],
           "copybook": "cardacct",
-          "source": "laurasia/scripts/nightly.sh:114"
+          "source": "laurasia/scripts/nightly.sh:120"
         },
         {
           "dd": "stdout",
@@ -624,7 +639,7 @@
           "uses": [
             "write"
           ],
-          "source": "laurasia/scripts/nightly.sh:114"
+          "source": "laurasia/scripts/nightly.sh:120"
         }
       ]
     }
