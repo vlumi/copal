@@ -470,7 +470,7 @@ Written from [REJECT-RECORD](#reject-record).
 | RJ-PROGRAM | 1-8 | literal 'ACCTMNT' |
 | RJ-REASON | 9-12 | literal condition RJ-BAD-STATUS; literal condition RJ-BAD-TYPE; literal condition RJ-CLOSED; literal condition RJ-EXISTS; literal condition RJ-HAS-BALANCE; literal condition RJ-NO-ACCOUNT |
 | RJ-TRAN | 13-92 | file MAINT-IN MAINT-REQUEST |
-| RJ-REJECT-DATE | 101-110 | file CONTROL-FILE BC-BUSINESS-DATE; literal '-' |
+| RJ-REJECT-DATE | 101-110 | file CONTROL-FILE BC-BUSINESS-DATE 1-4; file CONTROL-FILE BC-BUSINESS-DATE 5-6; file CONTROL-FILE BC-BUSINESS-DATE 7-8; literal '-' |
 
 ### File ACCT-OUT
 

@@ -10,7 +10,9 @@
 package dataflow
 
 import (
+	"regexp"
 	"slices"
+	"strconv"
 
 	"github.com/vlumi/cobolith/cobol"
 	"github.com/vlumi/cobolith/layout"
@@ -58,15 +60,20 @@ type Paragraph struct {
 // An ACCEPT moves a value from the job's SYSIN, From with FromStream, and
 // a DISPLAY one to its SYSOUT, To with ToStream.
 type Edge struct {
-	From, To             string
-	FromFile, ToFile     bool
-	FromLiteral          bool
-	FromCall, ToCall     bool
-	FromStream, ToStream bool
-	Arg                  int
-	Paragraph            string
-	Verb                 string
-	Pos                  cobol.Pos
+	From, To string
+	// FromStart and FromLength are the bytes of From the statement moves,
+	// 1-based within it, when it names them by reference modification,
+	// X(1:8); ToStart and ToLength the same of To. Zero for the whole.
+	FromStart, FromLength int
+	ToStart, ToLength     int
+	FromFile, ToFile      bool
+	FromLiteral           bool
+	FromCall, ToCall      bool
+	FromStream, ToStream  bool
+	Arg                   int
+	Paragraph             string
+	Verb                  string
+	Pos                   cobol.Pos
 }
 
 // Analyze finds the program's data flow, given its records laid out.
@@ -223,6 +230,23 @@ func (n *names) filesOf(s cobol.Statement) []string {
 	return files
 }
 
+// referenceModified matches an operand's reference modification by
+// literal position and length, X(1:8).
+var referenceModified = regexp.MustCompile(`\((\d+):(\d+)\)$`)
+
+// referenceModification gives the bytes an operand names of its item by
+// reference modification, 1-based, and 0 for the whole item or for bytes
+// named by data items.
+func referenceModification(op cobol.Operand) (start, length int) {
+	m := referenceModified.FindStringSubmatch(op.Text)
+	if m == nil {
+		return 0, 0
+	}
+	start, _ = strconv.Atoi(m[1])
+	length, _ = strconv.Atoi(m[2])
+	return start, length
+}
+
 // uses lists the items a statement reads and writes: its operands and
 // condition, a written operand's subscripts read, and the records of the
 // files it reads.
@@ -344,7 +368,8 @@ func (n *names) edges(paragraph string, s cobol.Statement) []Edge {
 	for _, op := range s.Reads {
 		switch {
 		case op.Name != "":
-			sources = append(sources, Edge{From: n.item(op.Name)})
+			start, length := referenceModification(op)
+			sources = append(sources, Edge{From: n.item(op.Name), FromStart: start, FromLength: length})
 		case len(op.Refs) == 0:
 			sources = append(sources, Edge{From: op.Text, FromLiteral: true})
 		}
@@ -363,6 +388,7 @@ func (n *names) edges(paragraph string, s cobol.Statement) []Edge {
 		}
 		for _, source := range sources {
 			source.To = n.item(target.Name)
+			source.ToStart, source.ToLength = referenceModification(target)
 			add(source)
 		}
 	}

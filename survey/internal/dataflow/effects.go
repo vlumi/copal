@@ -119,7 +119,7 @@ func (a *affecting) pass(p Passed, to *[]Passed) {
 // into, which it returns.
 func (a *affecting) edge(i int, here place) (to place, ok bool) {
 	e := a.flow.Lineage[i]
-	from, ok := a.flow.storage.places[e.From]
+	from, ok := a.flow.storage.bytesOf(e.From, e.FromStart, e.FromLength)
 	if e.FromFile || e.FromLiteral || e.FromCall || e.FromStream || e.ToStream || !ok || !from.overlaps(here) {
 		return place{}, false
 	}
@@ -133,7 +133,7 @@ func (a *affecting) edge(i int, here place) (to place, ok bool) {
 			a.effect.Files = append(a.effect.Files, w)
 		}
 	default:
-		target, ok := a.flow.storage.places[e.To]
+		target, ok := a.flow.storage.bytesOf(e.To, e.ToStart, e.ToLength)
 		if !ok {
 			return place{}, false
 		}

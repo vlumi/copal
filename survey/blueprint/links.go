@@ -187,11 +187,13 @@ func inputOrigins(p Program, flow dataflow.Flow, item string) []FileField {
 // file's record is read into, or moved into whole.
 func fieldReadInto(p Program, flow dataflow.Flow, o dataflow.Origin) (string, bool) {
 	for _, e := range flow.Lineage {
-		if e.Verb != "READ" && e.Verb != "MOVE" || e.FromFile || e.From != o.Item {
+		if e.Verb != "READ" && e.Verb != "MOVE" || e.FromFile || e.From != o.Item || e.FromLength > 0 || e.ToLength > 0 {
 			continue
 		}
 		if into, ok := recordField(p, e.To); ok {
-			return fieldOver(into, into.Start+o.Start-1, o.Length)
+			if name, ok := fieldOver(into, into.Start+o.Start-1, o.Length); ok && name != into.Name {
+				return name, true
+			}
 		}
 	}
 	return "", false
