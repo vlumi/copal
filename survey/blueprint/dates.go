@@ -94,10 +94,10 @@ func entityFieldIndex(p Program, record, field string) (int, Field, bool) {
 }
 
 // holdsDate reports whether a field can hold a date: it is one, or it is
-// text that neither redefines another field nor is redefined, so that its
-// bytes are not those of another record type.
+// text whose bytes are not those of another record type, neither
+// redefining another field nor redefined, nor within a group that is.
 func holdsDate(f Field) bool {
-	return f.Kind == KindDate || f.Kind == KindText && f.Redefines == "" && len(f.RedefinedBy) == 0
+	return f.Kind == KindDate || f.Kind == KindText && !f.sharesBytes
 }
 
 // DateLayouts groups the date fields of the entities by layout, with the

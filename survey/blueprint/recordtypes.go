@@ -30,14 +30,17 @@ func recordTypes(p *cobol.Program, records []Record) {
 	tested := testedConditions(p)
 	for i := range records {
 		r := &records[i]
-		var redefinitions []string
+		var redefinitions, parts []string
 		for _, f := range r.Fields {
 			if f.Redefines != "" {
 				redefinitions = append(redefinitions, f.Name)
 			}
+			if f.Redefines != "" || len(f.RedefinedBy) > 0 {
+				parts = append(parts, f.Name)
+			}
 		}
 		if len(redefinitions) > 0 {
-			setTypes(r, tested, r.Fields, redefinitions)
+			setTypes(r, tested, r.Fields, parts)
 		}
 	}
 	for _, file := range filesOfSeveralRecords(records) {
@@ -86,7 +89,9 @@ func testedConditions(p *cobol.Program) map[string]bool {
 
 // setTypes gives a record the types the first of the fields with a tested
 // condition name tells apart, each paired with the part that holds its
-// fields when there are as many parts as types.
+// fields: the part named after the type's condition name, ZG-ﾍｯﾀﾞﾌﾞ for
+// ZG-ﾍｯﾀﾞ, or, when there are as many parts as types, the part in the
+// same place.
 func setTypes(r *Record, tested map[string]bool, fields []Field, parts []string) {
 	i := slices.IndexFunc(fields, func(f Field) bool {
 		return slices.ContainsFunc(f.Conditions, func(c Condition) bool { return tested[c.Name] })
@@ -100,9 +105,27 @@ func setTypes(r *Record, tested map[string]bool, fields []Field, parts []string)
 			r.Types = append(r.Types, RecordType{Name: c.Name, Value: c.Values[0]})
 		}
 	}
-	if len(parts) == len(r.Types) {
+	var pairedTypes, pairedParts []int
+	for k, t := range r.Types {
+		for i, part := range parts {
+			if !slices.Contains(pairedParts, i) && (strings.HasPrefix(part, t.Name) || strings.HasPrefix(t.Name, part)) {
+				r.Types[k].Fields = part
+				pairedTypes, pairedParts = append(pairedTypes, k), append(pairedParts, i)
+				break
+			}
+		}
+	}
+	if len(parts)-len(pairedParts) == len(r.Types)-len(pairedTypes) {
+		i := 0
 		for k := range r.Types {
-			r.Types[k].Fields = parts[k]
+			if slices.Contains(pairedTypes, k) {
+				continue
+			}
+			for slices.Contains(pairedParts, i) {
+				i++
+			}
+			r.Types[k].Fields = parts[i]
+			i++
 		}
 	}
 }
@@ -124,7 +147,8 @@ func filesOfSeveralRecords(records []Record) []string {
 
 // typeLeaves lists the elementary fields a record of a type has: of a
 // record laid out in redefinitions, those outside them, and those of the
-// type's own, or, for a type with none, of the field the others redefine;
+// type's own part, the field the others redefine or one of them, or, for
+// a type with none, of the field the others redefine;
 // of a file of several records, the type field and the fields of the
 // type's record.
 func typeLeaves(records []Record, r Record, t RecordType) []Field {
@@ -146,7 +170,7 @@ func typeLeaves(records []Record, r Record, t RecordType) []Field {
 		switch {
 		case child.Redefines != "" && child.Name != t.Fields:
 			continue
-		case redefined && t.Fields != "":
+		case redefined && t.Fields != "" && t.Fields != child.Name:
 			continue
 		}
 		out = append(out, leaves(Field{Fields: []Field{child}})...)

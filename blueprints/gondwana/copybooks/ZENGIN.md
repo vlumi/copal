@@ -33,12 +33,12 @@ Copybook [ZENGIN.cpy](../../../gondwana/copybooks/ZENGIN.cpy), used by [GLD050](
 | 10 | │ ├ ZG-H-ｼｭﾍﾞﾂｺｰﾄﾞ | number | 2 | 2 | 99 | | | [ZENGIN.cpy:22](../../../gondwana/copybooks/ZENGIN.cpy#L22) |
 | 10 | │ ├ ZG-H-ｺｰﾄﾞｸﾌﾞﾝ | number | 4 | 1 | 9 | | | [ZENGIN.cpy:23](../../../gondwana/copybooks/ZENGIN.cpy#L23) |
 | 10 | │ ├ ZG-H-ｲﾀｸｼｬｺｰﾄﾞ | number | 5 | 10 | 9(10) | | | [ZENGIN.cpy:24](../../../gondwana/copybooks/ZENGIN.cpy#L24) |
-| 10 | │ ├ ZG-H-ｲﾀｸｼｬﾒｲ | date | 15 | 40 | X(40) | | | [ZENGIN.cpy:25](../../../gondwana/copybooks/ZENGIN.cpy#L25) |
+| 10 | │ ├ ZG-H-ｲﾀｸｼｬﾒｲ | text | 15 | 40 | X(40) | | | [ZENGIN.cpy:25](../../../gondwana/copybooks/ZENGIN.cpy#L25) |
 | 10 | │ ├ ZG-H-ﾋｷｵﾄｼﾋﾞ | date | 55 | 4 | 9(4) | | | [ZENGIN.cpy:26](../../../gondwana/copybooks/ZENGIN.cpy#L26) |
 | 10 | │ ├ ZG-H-ｷﾞﾝｺｳｺｰﾄﾞ | number | 59 | 4 | 9(4) | | | [ZENGIN.cpy:27](../../../gondwana/copybooks/ZENGIN.cpy#L27) |
 | 10 | │ ├ ZG-H-ｷﾞﾝｺｳﾒｲ | text | 63 | 15 | X(15) | | | [ZENGIN.cpy:28](../../../gondwana/copybooks/ZENGIN.cpy#L28) |
 | 10 | │ ├ ZG-H-ｼﾃﾝｺｰﾄﾞ | number | 78 | 3 | 9(3) | | | [ZENGIN.cpy:29](../../../gondwana/copybooks/ZENGIN.cpy#L29) |
-| 10 | │ ├ ZG-H-ｼﾃﾝﾒｲ | date | 81 | 15 | X(15) | | | [ZENGIN.cpy:30](../../../gondwana/copybooks/ZENGIN.cpy#L30) |
+| 10 | │ ├ ZG-H-ｼﾃﾝﾒｲ | text | 81 | 15 | X(15) | | | [ZENGIN.cpy:30](../../../gondwana/copybooks/ZENGIN.cpy#L30) |
 | 10 | │ ├ ZG-H-ﾖｷﾝｼｭﾓｸ | number | 96 | 1 | 9 | | | [ZENGIN.cpy:31](../../../gondwana/copybooks/ZENGIN.cpy#L31) |
 | 10 | │ ├ ZG-H-ｺｳｻﾞﾊﾞﾝｺﾞｳ | number | 97 | 7 | 9(7) | | | [ZENGIN.cpy:32](../../../gondwana/copybooks/ZENGIN.cpy#L32) |
 | 10 | │ └ FILLER | filler | 104 | 17 | X(17) | | | [ZENGIN.cpy:33](../../../gondwana/copybooks/ZENGIN.cpy#L33) |

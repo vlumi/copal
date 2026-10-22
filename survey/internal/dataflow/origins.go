@@ -180,6 +180,41 @@ func (f Flow) TraceAt(item string, positions []cobol.Pos) Trace {
 	return f.traceFrom(start, positions)
 }
 
+// Site is one place a statement runs. A statement in a paragraph
+// performed from several places runs at each, and what the path knows
+// there differs: the record type set before the PERFORM, say.
+type Site struct{ node int }
+
+// SitesOf lists the sites of the statements at the positions, where the
+// paths through the program are known; none where they are not.
+func (f Flow) SitesOf(positions []cobol.Pos) []Site {
+	if f.order == nil {
+		return nil
+	}
+	var sites []Site
+	for _, n := range f.order.at(positions) {
+		sites = append(sites, Site{n})
+	}
+	return sites
+}
+
+// TraceAtSites traces where a data item's values come from, as Trace
+// does, as the statements at the sites use them.
+func (f Flow) TraceAtSites(item string, sites []Site) Trace {
+	start, ok := f.storage.places[item]
+	if !ok {
+		return Trace{}
+	}
+	if f.order == nil || len(sites) == 0 {
+		return f.traceAll(start)
+	}
+	nodes := make([]int, len(sites))
+	for i, site := range sites {
+		nodes[i] = site.node
+	}
+	return f.traceOrdered(start, nodes)
+}
+
 func (f Flow) traceFrom(start place, positions []cobol.Pos) Trace {
 	if f.order == nil {
 		return f.traceAll(start)
