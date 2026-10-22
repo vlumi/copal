@@ -1452,18 +1452,15 @@
               "to": "JR-ｶｼｶﾀ",
               "program": "GLD010",
               "paragraph": "ｼﾜｹ-RTN",
-              "source": "gondwana/programs/GLD010.cbl:440"
-            },
-            {
-              "from": "any",
-              "to": "JR-ｶﾘｶﾀ",
-              "program": "GLD020",
-              "paragraph": "ｼﾜｹ-RTN",
-              "source": "gondwana/programs/GLD020.cbl:340",
+              "source": "gondwana/programs/GLD010.cbl:440",
               "when": [
                 {
-                  "condition": "WS-GLJRNL-OK",
-                  "holds": false
+                  "condition": "WS-ﾘﾕｳ-ﾅｼ",
+                  "holds": true
+                },
+                {
+                  "condition": "WS-POLMST-OK",
+                  "holds": true
                 }
               ]
             },
@@ -1475,7 +1472,11 @@
               "source": "gondwana/programs/GLD020.cbl:340",
               "when": [
                 {
-                  "condition": "WS-GLJRNL-OK",
+                  "condition": "PM-ﾎｼｮｳﾁｭｳ AND PM-ｹｲﾔｸﾋﾞ(4:4) = WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ(4:4) AND PM-ｹｲﾔｸﾋﾞ NOT = WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ",
+                  "holds": true
+                },
+                {
+                  "condition": "PM-ﾖｳﾛｳ AND PM-ﾏﾝｷﾋﾞ = WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ",
                   "holds": true
                 }
               ]
@@ -1488,21 +1489,16 @@
               "source": "gondwana/programs/GLD030.cbl:452",
               "when": [
                 {
-                  "condition": "CR-ﾆｯｽｳ \u003e 120",
+                  "condition": "WS-ﾘﾕｳ-ﾅｼ",
                   "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "JR-ｶﾘｶﾀ",
-              "program": "GLD030",
-              "paragraph": "ﾆｭｳｲﾝ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:452",
-              "when": [
+                },
                 {
-                  "condition": "CR-ﾆｯｽｳ \u003e 120",
+                  "condition": "CR-ｼﾎﾞｳ",
                   "holds": false
+                },
+                {
+                  "condition": "CR-ﾆｭｳｲﾝ",
+                  "holds": true
                 }
               ]
             },
@@ -1514,15 +1510,23 @@
               "source": "gondwana/programs/GLD030.cbl:486",
               "when": [
                 {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
+                  "condition": "WS-ﾘﾕｳ-ﾅｼ",
+                  "holds": true
+                },
+                {
+                  "condition": "CR-ｼﾎﾞｳ",
+                  "holds": false
+                },
+                {
+                  "condition": "CR-ﾆｭｳｲﾝ",
+                  "holds": false
+                },
+                {
+                  "condition": "CR-ｶｲﾔｸ",
                   "holds": true
                 },
                 {
                   "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
                   "holds": true
                 },
                 {
@@ -1539,32 +1543,19 @@
               "source": "gondwana/programs/GLD030.cbl:486",
               "when": [
                 {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
+                  "condition": "WS-ﾘﾕｳ-ﾅｼ",
                   "holds": true
                 },
                 {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
+                  "condition": "CR-ｼﾎﾞｳ",
                   "holds": false
                 },
                 {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "JR-ｶﾘｶﾀ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:486",
-              "when": [
+                  "condition": "CR-ﾆｭｳｲﾝ",
+                  "holds": false
+                },
                 {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
+                  "condition": "CR-ｶｲﾔｸ",
                   "holds": true
                 },
                 {
@@ -1572,269 +1563,8 @@
                   "holds": false
                 },
                 {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
                   "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
                   "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "JR-ｶﾘｶﾀ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:486",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "JR-ｶﾘｶﾀ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:486",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "JR-ｶﾘｶﾀ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:486",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "JR-ｶﾘｶﾀ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:486",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "JR-ｶﾘｶﾀ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:486",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "JR-ｶﾘｶﾀ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:486",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "JR-ｶﾘｶﾀ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:486",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "JR-ｶﾘｶﾀ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:486",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "JR-ｶﾘｶﾀ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:486",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": false
                 }
               ]
             },
@@ -1846,7 +1576,101 @@
               "source": "gondwana/programs/GLD030.cbl:504",
               "when": [
                 {
+                  "condition": "WS-ﾘﾕｳ-ﾅｼ",
+                  "holds": true
+                },
+                {
+                  "condition": "CR-ｼﾎﾞｳ",
+                  "holds": false
+                },
+                {
+                  "condition": "CR-ﾆｭｳｲﾝ",
+                  "holds": false
+                },
+                {
+                  "condition": "CR-ｶｲﾔｸ",
+                  "holds": true
+                },
+                {
+                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
+                  "holds": true
+                },
+                {
+                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
+                  "holds": true
+                },
+                {
                   "condition": "CR-ｼﾎﾞｳ AND PM-ﾊｲﾄｳﾙｲｹｲ \u003e 0",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "JR-ｶﾘｶﾀ",
+              "program": "GLD030",
+              "paragraph": "ﾊｲﾄｳ-ｶｼﾂｹ-ｼﾜｹ-RTN",
+              "source": "gondwana/programs/GLD030.cbl:504",
+              "when": [
+                {
+                  "condition": "WS-ﾘﾕｳ-ﾅｼ",
+                  "holds": true
+                },
+                {
+                  "condition": "CR-ｼﾎﾞｳ",
+                  "holds": false
+                },
+                {
+                  "condition": "CR-ﾆｭｳｲﾝ",
+                  "holds": false
+                },
+                {
+                  "condition": "CR-ｶｲﾔｸ",
+                  "holds": true
+                },
+                {
+                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
+                  "holds": false
+                },
+                {
+                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
+                  "holds": true
+                },
+                {
+                  "condition": "CR-ｼﾎﾞｳ AND PM-ﾊｲﾄｳﾙｲｹｲ \u003e 0",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "JR-ｶｼｶﾀ",
+              "program": "GLD030",
+              "paragraph": "ﾊｲﾄｳ-ｶｼﾂｹ-ｼﾜｹ-RTN",
+              "source": "gondwana/programs/GLD030.cbl:511",
+              "when": [
+                {
+                  "condition": "WS-ﾘﾕｳ-ﾅｼ",
+                  "holds": true
+                },
+                {
+                  "condition": "CR-ｼﾎﾞｳ",
+                  "holds": false
+                },
+                {
+                  "condition": "CR-ﾆｭｳｲﾝ",
+                  "holds": false
+                },
+                {
+                  "condition": "CR-ｶｲﾔｸ",
+                  "holds": true
+                },
+                {
+                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
+                  "holds": true
+                },
+                {
+                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
                   "holds": true
                 },
                 {
@@ -1863,42 +1687,28 @@
               "source": "gondwana/programs/GLD030.cbl:511",
               "when": [
                 {
-                  "condition": "CR-ｼﾎﾞｳ AND PM-ﾊｲﾄｳﾙｲｹｲ \u003e 0",
+                  "condition": "WS-ﾘﾕｳ-ﾅｼ",
                   "holds": true
                 },
                 {
-                  "condition": "PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ \u003e 0",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "JR-ｶﾘｶﾀ",
-              "program": "GLD030",
-              "paragraph": "ﾊｲﾄｳ-ｶｼﾂｹ-ｼﾜｹ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:504",
-              "when": [
+                  "condition": "CR-ｼﾎﾞｳ",
+                  "holds": false
+                },
                 {
-                  "condition": "CR-ｼﾎﾞｳ AND PM-ﾊｲﾄｳﾙｲｹｲ \u003e 0",
+                  "condition": "CR-ﾆｭｳｲﾝ",
+                  "holds": false
+                },
+                {
+                  "condition": "CR-ｶｲﾔｸ",
                   "holds": true
                 },
                 {
-                  "condition": "PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ \u003e 0",
+                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
                   "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "JR-ｶｼｶﾀ",
-              "program": "GLD030",
-              "paragraph": "ﾊｲﾄｳ-ｶｼﾂｹ-ｼﾜｹ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:511",
-              "when": [
+                },
                 {
-                  "condition": "CR-ｼﾎﾞｳ AND PM-ﾊｲﾄｳﾙｲｹｲ \u003e 0",
-                  "holds": false
+                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
+                  "holds": true
                 },
                 {
                   "condition": "PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ \u003e 0",
@@ -1911,108 +1721,63 @@
               "to": "JR-ｶﾘｶﾀ",
               "program": "GLD030",
               "paragraph": "ｼﾎﾞｳ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:430"
+              "source": "gondwana/programs/GLD030.cbl:430",
+              "when": [
+                {
+                  "condition": "WS-ﾘﾕｳ-ﾅｼ",
+                  "holds": true
+                },
+                {
+                  "condition": "CR-ｼﾎﾞｳ",
+                  "holds": true
+                }
+              ]
             },
             {
               "from": "any",
               "to": "JR-ｶｼｶﾀ",
               "program": "GLD040",
               "paragraph": "ﾌｯｶﾂ-ﾊﾝｴｲ-RTN",
-              "source": "gondwana/programs/GLD040.cbl:376"
-            },
-            {
-              "from": "any",
-              "to": "JR-ｶｼｶﾀ",
-              "program": "GLD050",
-              "paragraph": "ﾌﾘｶｴｽﾞﾐ-RTN",
-              "source": "gondwana/programs/GLD050.cbl:388",
+              "source": "gondwana/programs/GLD040.cbl:376",
               "when": [
                 {
-                  "condition": "PM-ﾈﾝﾊﾞﾗｲ",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ﾕｳﾖﾁｭｳ",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "JR-ｶｼｶﾀ",
-              "program": "GLD050",
-              "paragraph": "ﾌﾘｶｴｽﾞﾐ-RTN",
-              "source": "gondwana/programs/GLD050.cbl:388",
-              "when": [
-                {
-                  "condition": "PM-ﾈﾝﾊﾞﾗｲ",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ﾕｳﾖﾁｭｳ",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "JR-ｶｼｶﾀ",
-              "program": "GLD050",
-              "paragraph": "ﾌﾘｶｴｽﾞﾐ-RTN",
-              "source": "gondwana/programs/GLD050.cbl:388",
-              "when": [
-                {
-                  "condition": "PM-ﾈﾝﾊﾞﾗｲ",
+                  "condition": "WS-POLMST-ﾅｼ",
                   "holds": false
                 },
                 {
-                  "condition": "PM-ﾕｳﾖﾁｭｳ",
+                  "condition": "WS-POLMST-OK",
                   "holds": true
                 },
                 {
-                  "condition": "WS-ﾊﾗｲｺﾐ-MM \u003e 12",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "JR-ｶｼｶﾀ",
-              "program": "GLD050",
-              "paragraph": "ﾌﾘｶｴｽﾞﾐ-RTN",
-              "source": "gondwana/programs/GLD050.cbl:388",
-              "when": [
-                {
-                  "condition": "PM-ﾈﾝﾊﾞﾗｲ",
+                  "condition": "MR-ｼﾞｭｳｼｮﾍﾝｺｳ",
                   "holds": false
                 },
                 {
-                  "condition": "PM-ﾕｳﾖﾁｭｳ",
+                  "condition": "MR-ｺｳｻﾞﾍﾝｺｳ",
                   "holds": false
                 },
                 {
-                  "condition": "WS-ﾊﾗｲｺﾐ-MM \u003e 12",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "JR-ｶｼｶﾀ",
-              "program": "GLD050",
-              "paragraph": "ﾌﾘｶｴｽﾞﾐ-RTN",
-              "source": "gondwana/programs/GLD050.cbl:388",
-              "when": [
-                {
-                  "condition": "PM-ﾈﾝﾊﾞﾗｲ",
+                  "condition": "MR-ｼﾒｲﾍﾝｺｳ",
                   "holds": false
                 },
                 {
-                  "condition": "PM-ﾕｳﾖﾁｭｳ",
+                  "condition": "MR-ｳｹﾄﾘﾆﾝﾍﾝｺｳ",
+                  "holds": false
+                },
+                {
+                  "condition": "MR-ﾌｯｶﾂ",
                   "holds": true
                 },
                 {
-                  "condition": "WS-ﾊﾗｲｺﾐ-MM \u003e 12",
+                  "condition": "PM-ｼｯｺｳ",
+                  "holds": true
+                },
+                {
+                  "condition": "WS-ｹｲｶﾆｯｽｳ \u003e 365",
+                  "holds": false
+                },
+                {
+                  "condition": "MR-ﾆｭｳｷﾝｶﾞｸ \u003c WS-ﾐﾉｳｶﾞｸ",
                   "holds": false
                 }
               ]
@@ -2025,16 +1790,24 @@
               "source": "gondwana/programs/GLD050.cbl:388",
               "when": [
                 {
-                  "condition": "PM-ﾈﾝﾊﾞﾗｲ",
+                  "condition": "WS-ﾌｧｲﾙ-ｶﾝﾘｮｳ",
+                  "holds": true
+                },
+                {
+                  "condition": "WS-POLMST-ﾅｼ",
                   "holds": false
                 },
                 {
-                  "condition": "PM-ﾕｳﾖﾁｭｳ",
-                  "holds": false
+                  "condition": "WS-ﾘﾕｳ-ﾅｼ",
+                  "holds": true
                 },
                 {
-                  "condition": "WS-ﾊﾗｲｺﾐ-MM \u003e 12",
-                  "holds": false
+                  "condition": "WS-POLMST-OK",
+                  "holds": true
+                },
+                {
+                  "condition": "ZG-D-ﾌﾘｶｴｽﾞﾐ",
+                  "holds": true
                 }
               ]
             },
@@ -2046,12 +1819,16 @@
               "source": "gondwana/programs/GLM020.cbl:323",
               "when": [
                 {
-                  "condition": "SR-ｿﾞｳｹﾞﾝ \u003e 0",
+                  "condition": "PM-ﾎｼｮｳﾁｭｳ",
                   "holds": true
                 },
                 {
-                  "condition": "WS-GLJRNL-OK",
+                  "condition": "SR-ｿﾞｳｹﾞﾝ = 0",
                   "holds": false
+                },
+                {
+                  "condition": "SR-ｿﾞｳｹﾞﾝ \u003e 0",
+                  "holds": true
                 }
               ]
             },
@@ -2063,11 +1840,15 @@
               "source": "gondwana/programs/GLM020.cbl:323",
               "when": [
                 {
-                  "condition": "SR-ｿﾞｳｹﾞﾝ \u003e 0",
+                  "condition": "PM-ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ \u003e 0",
                   "holds": true
                 },
                 {
-                  "condition": "WS-GLJRNL-OK",
+                  "condition": "SR-ｿﾞｳｹﾞﾝ = 0",
+                  "holds": false
+                },
+                {
+                  "condition": "SR-ｿﾞｳｹﾞﾝ \u003e 0",
                   "holds": true
                 }
               ]
@@ -2080,11 +1861,15 @@
               "source": "gondwana/programs/GLM020.cbl:327",
               "when": [
                 {
-                  "condition": "SR-ｿﾞｳｹﾞﾝ \u003e 0",
+                  "condition": "PM-ﾎｼｮｳﾁｭｳ",
+                  "holds": true
+                },
+                {
+                  "condition": "SR-ｿﾞｳｹﾞﾝ = 0",
                   "holds": false
                 },
                 {
-                  "condition": "WS-GLJRNL-OK",
+                  "condition": "SR-ｿﾞｳｹﾞﾝ \u003e 0",
                   "holds": false
                 }
               ]
@@ -2097,11 +1882,40 @@
               "source": "gondwana/programs/GLM020.cbl:327",
               "when": [
                 {
+                  "condition": "PM-ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ \u003e 0",
+                  "holds": true
+                },
+                {
+                  "condition": "SR-ｿﾞｳｹﾞﾝ = 0",
+                  "holds": false
+                },
+                {
                   "condition": "SR-ｿﾞｳｹﾞﾝ \u003e 0",
                   "holds": false
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "JR-ｶﾘｶﾀ",
+              "program": "GLM030",
+              "paragraph": "ﾀﾞｲﾘﾃﾝ-ｹｲ-RTN",
+              "source": "gondwana/programs/GLM030.cbl:387",
+              "when": [
+                {
+                  "condition": "RETURN SORT-F AT END",
+                  "holds": false
                 },
                 {
-                  "condition": "WS-GLJRNL-OK",
+                  "condition": "WS-ｿｳﾀﾞｲﾘﾃﾝ = SPACES",
+                  "holds": false
+                },
+                {
+                  "condition": "WS-COMMIS-OK",
+                  "holds": true
+                },
+                {
+                  "condition": "WS-ﾀﾞｲﾘﾃﾝ-ﾃｽｳﾘｮｳ \u003e 0",
                   "holds": true
                 }
               ]
@@ -2114,36 +1928,23 @@
               "source": "gondwana/programs/GLM030.cbl:387",
               "when": [
                 {
-                  "condition": "WS-COMMIS-OK",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ﾀﾞｲﾘﾃﾝ-ﾃｽｳﾘｮｳ \u003e 0",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-GLJRNL-OK",
+                  "condition": "RETURN SORT-F AT END",
                   "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "JR-ｶﾘｶﾀ",
-              "program": "GLM030",
-              "paragraph": "ﾀﾞｲﾘﾃﾝ-ｹｲ-RTN",
-              "source": "gondwana/programs/GLM030.cbl:387",
-              "when": [
+                },
+                {
+                  "condition": "SR-ﾀﾞｲﾘﾃﾝｺｰﾄﾞ = WS-ｿｳﾀﾞｲﾘﾃﾝ",
+                  "holds": false
+                },
+                {
+                  "condition": "WS-ｿｳﾀﾞｲﾘﾃﾝ = SPACES",
+                  "holds": false
+                },
                 {
                   "condition": "WS-COMMIS-OK",
                   "holds": true
                 },
                 {
                   "condition": "WS-ﾀﾞｲﾘﾃﾝ-ﾃｽｳﾘｮｳ \u003e 0",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-GLJRNL-OK",
                   "holds": true
                 }
               ]
@@ -2156,28 +1957,15 @@
               "source": "gondwana/programs/GLY010.cbl:223",
               "when": [
                 {
-                  "condition": "WS-POLMST-OK",
+                  "condition": "PM-ﾎｼｮｳﾁｭｳ AND PM-ｹｲｶﾈﾝｽｳ NOT \u003c 3",
                   "holds": true
                 },
                 {
-                  "condition": "WS-GLJRNL-OK",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "JR-ｶﾘｶﾀ",
-              "program": "GLY010",
-              "paragraph": "ﾂﾐﾀﾃ-RTN",
-              "source": "gondwana/programs/GLY010.cbl:223",
-              "when": [
-                {
-                  "condition": "WS-POLMST-OK",
+                  "condition": "WS-ﾊｲﾄｳｷﾝ \u003e 0",
                   "holds": true
                 },
                 {
-                  "condition": "WS-GLJRNL-OK",
+                  "condition": "WS-POLMST-OK",
                   "holds": true
                 }
               ]
@@ -3230,33 +3018,11 @@
               "source": "gondwana/programs/GLD020.cbl:270",
               "when": [
                 {
-                  "condition": "PM-ﾊｲﾄｳﾙｲｹｲ \u003e 0",
+                  "condition": "PM-ﾎｼｮｳﾁｭｳ AND PM-ｹｲﾔｸﾋﾞ(4:4) = WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ(4:4) AND PM-ｹｲﾔｸﾋﾞ NOT = WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ",
                   "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PY-ﾏﾝｷ",
-              "program": "GLD020",
-              "paragraph": "ﾏﾝｷ-RTN",
-              "source": "gondwana/programs/GLD020.cbl:270",
-              "when": [
+                },
                 {
-                  "condition": "PM-ﾊｲﾄｳﾙｲｹｲ \u003e 0",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PY-ﾆｭｳｲﾝ",
-              "program": "GLD030",
-              "paragraph": "ﾆｭｳｲﾝ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:455",
-              "when": [
-                {
-                  "condition": "CR-ﾆｯｽｳ \u003e 120",
+                  "condition": "PM-ﾖｳﾛｳ AND PM-ﾏﾝｷﾋﾞ = WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ",
                   "holds": true
                 }
               ]
@@ -3269,32 +3035,15 @@
               "source": "gondwana/programs/GLD030.cbl:455",
               "when": [
                 {
-                  "condition": "CR-ﾆｯｽｳ \u003e 120",
+                  "condition": "WS-ﾘﾕｳ-ﾅｼ",
+                  "holds": true
+                },
+                {
+                  "condition": "CR-ｼﾎﾞｳ",
                   "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PY-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:495",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": true
                 },
                 {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
+                  "condition": "CR-ﾆｭｳｲﾝ",
                   "holds": true
                 }
               ]
@@ -3307,634 +3056,20 @@
               "source": "gondwana/programs/GLD030.cbl:495",
               "when": [
                 {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
+                  "condition": "WS-ﾘﾕｳ-ﾅｼ",
                   "holds": true
                 },
                 {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
+                  "condition": "CR-ｼﾎﾞｳ",
+                  "holds": false
+                },
+                {
+                  "condition": "CR-ﾆｭｳｲﾝ",
+                  "holds": false
+                },
+                {
+                  "condition": "CR-ｶｲﾔｸ",
                   "holds": true
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PY-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:495",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PY-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:495",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PY-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:495",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PY-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:495",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PY-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:495",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PY-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:495",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PY-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:495",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PY-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:495",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PY-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:495",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PY-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:495",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PY-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:495",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PY-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:495",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PY-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:495",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PY-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:495",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PY-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:495",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PY-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:495",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PY-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:495",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PY-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:495",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PY-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:495",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PY-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:495",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PY-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:495",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PY-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:495",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": false
                 }
               ]
             },
@@ -3943,7 +3078,17 @@
               "to": "PY-ｼﾎﾞｳ",
               "program": "GLD030",
               "paragraph": "ｼﾎﾞｳ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:436"
+              "source": "gondwana/programs/GLD030.cbl:436",
+              "when": [
+                {
+                  "condition": "WS-ﾘﾕｳ-ﾅｼ",
+                  "holds": true
+                },
+                {
+                  "condition": "CR-ｼﾎﾞｳ",
+                  "holds": true
+                }
+              ]
             }
           ]
         }
@@ -4433,77 +3578,54 @@
               "source": "gondwana/programs/GLD010.cbl:361",
               "when": [
                 {
-                  "condition": "WS-POLMST-OK",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ﾕｳｺｳ",
-              "program": "GLD010",
-              "paragraph": "ﾄｳﾛｸ-RTN",
-              "source": "gondwana/programs/GLD010.cbl:361",
-              "when": [
-                {
-                  "condition": "WS-POLMST-OK",
+                  "condition": "WS-ﾘﾕｳ-ﾅｼ",
                   "holds": true
                 }
               ]
             },
             {
-              "from": "any",
+              "from": "PM-ﾎｼｮｳﾁｭｳ",
               "to": "PM-ﾏﾝｷ",
               "program": "GLD020",
               "paragraph": "ﾏﾝｷ-RTN",
               "source": "gondwana/programs/GLD020.cbl:288",
               "when": [
                 {
-                  "condition": "PM-ﾊｲﾄｳﾙｲｹｲ \u003e 0",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ﾏﾝｷ",
-              "program": "GLD020",
-              "paragraph": "ﾏﾝｷ-RTN",
-              "source": "gondwana/programs/GLD020.cbl:288",
-              "when": [
-                {
-                  "condition": "PM-ﾊｲﾄｳﾙｲｹｲ \u003e 0",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ﾏﾝｷ",
-              "program": "GLD020",
-              "paragraph": "ｺｳｼﾝ-RTN",
-              "source": "gondwana/programs/GLD020.cbl:309",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
+                  "condition": "PM-ｹｲﾔｸﾋﾞ(4:4) = WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ(4:4)",
                   "holds": true
                 },
                 {
-                  "condition": "WS-ﾈﾝﾚｲ \u003e WS-ｼｮｳﾋﾝ-ｻｲｺｳﾈﾝﾚｲ(WS-ｼｮｳﾋﾝ-IX)",
+                  "condition": "PM-ｹｲﾔｸﾋﾞ NOT = WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ",
+                  "holds": true
+                },
+                {
+                  "condition": "PM-ﾖｳﾛｳ AND PM-ﾏﾝｷﾋﾞ = WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ",
                   "holds": true
                 }
               ]
             },
             {
-              "from": "any",
+              "from": "PM-ﾎｼｮｳﾁｭｳ",
               "to": "PM-ﾏﾝｷ",
               "program": "GLD020",
               "paragraph": "ｺｳｼﾝ-RTN",
               "source": "gondwana/programs/GLD020.cbl:309",
               "when": [
                 {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
+                  "condition": "PM-ｹｲﾔｸﾋﾞ(4:4) = WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ(4:4)",
+                  "holds": true
+                },
+                {
+                  "condition": "PM-ｹｲﾔｸﾋﾞ NOT = WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ",
+                  "holds": true
+                },
+                {
+                  "condition": "PM-ﾖｳﾛｳ AND PM-ﾏﾝｷﾋﾞ = WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ",
                   "holds": false
+                },
+                {
+                  "condition": "PM-ﾃｲｷ AND PM-ﾏﾝｷﾋﾞ = WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ",
+                  "holds": true
                 },
                 {
                   "condition": "WS-ﾈﾝﾚｲ \u003e WS-ｼｮｳﾋﾝ-ｻｲｺｳﾈﾝﾚｲ(WS-ｼｮｳﾋﾝ-IX)",
@@ -4519,659 +3641,20 @@
               "source": "gondwana/programs/GLD030.cbl:494",
               "when": [
                 {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
+                  "condition": "WS-ﾘﾕｳ-ﾅｼ",
                   "holds": true
                 },
                 {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
+                  "condition": "CR-ｼﾎﾞｳ",
+                  "holds": false
+                },
+                {
+                  "condition": "CR-ﾆｭｳｲﾝ",
+                  "holds": false
+                },
+                {
+                  "condition": "CR-ｶｲﾔｸ",
                   "holds": true
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:494",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:494",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:494",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:494",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:494",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:494",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:494",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:494",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:494",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:494",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:494",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:494",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:494",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:494",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:494",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:494",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:494",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:494",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:494",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:494",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:494",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": true
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:494",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": true
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ｶｲﾔｸ",
-              "program": "GLD030",
-              "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:494",
-              "when": [
-                {
-                  "condition": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｹｲｶﾈﾝｽｳ \u003e 40",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾝｶﾞｸ \u003e 0",
-                  "holds": false
-                },
-                {
-                  "condition": "PM-ｶﾆｭｳﾈﾝﾚｲ \u003c 60",
-                  "holds": false
                 }
               ]
             },
@@ -5180,25 +3663,32 @@
               "to": "PM-ｼﾊﾗｲｽﾞﾐ",
               "program": "GLD030",
               "paragraph": "ｼﾎﾞｳ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:435"
+              "source": "gondwana/programs/GLD030.cbl:435",
+              "when": [
+                {
+                  "condition": "WS-ﾘﾕｳ-ﾅｼ",
+                  "holds": true
+                },
+                {
+                  "condition": "CR-ｼﾎﾞｳ",
+                  "holds": true
+                }
+              ]
             },
             {
-              "from": "any",
+              "from": "PM-ｼｯｺｳ",
               "to": "PM-ﾕｳｺｳ",
               "program": "GLD040",
               "paragraph": "ﾌｯｶﾂ-ﾊﾝｴｲ-RTN",
-              "source": "gondwana/programs/GLD040.cbl:363"
-            },
-            {
-              "from": "PM-ﾕｳﾖﾁｭｳ",
-              "to": "PM-ﾕｳｺｳ",
-              "program": "GLD050",
-              "paragraph": "ﾌﾘｶｴｽﾞﾐ-RTN",
-              "source": "gondwana/programs/GLD050.cbl:376",
+              "source": "gondwana/programs/GLD040.cbl:363",
               "when": [
                 {
-                  "condition": "PM-ﾈﾝﾊﾞﾗｲ",
-                  "holds": true
+                  "condition": "WS-ｹｲｶﾆｯｽｳ \u003e 365",
+                  "holds": false
+                },
+                {
+                  "condition": "MR-ﾆｭｳｷﾝｶﾞｸ \u003c WS-ﾐﾉｳｶﾞｸ",
+                  "holds": false
                 }
               ]
             },
@@ -5211,10 +3701,6 @@
               "when": [
                 {
                   "condition": "PM-ﾈﾝﾊﾞﾗｲ",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ﾊﾗｲｺﾐ-MM \u003e 12",
                   "holds": true
                 }
               ]
@@ -5229,10 +3715,6 @@
                 {
                   "condition": "PM-ﾈﾝﾊﾞﾗｲ",
                   "holds": false
-                },
-                {
-                  "condition": "WS-ﾊﾗｲｺﾐ-MM \u003e 12",
-                  "holds": false
                 }
               ]
             },
@@ -5241,124 +3723,17 @@
               "to": "PM-ﾕｳﾖﾁｭｳ",
               "program": "GLD050",
               "paragraph": "ﾌﾘｶｴﾌﾉｳ-RTN",
-              "source": "gondwana/programs/GLD050.cbl:403",
-              "when": [
-                {
-                  "condition": "ZG-D-ｼｷﾝﾌｿｸ",
-                  "holds": true
-                }
-              ]
+              "source": "gondwana/programs/GLD050.cbl:403"
             },
             {
-              "from": "PM-ﾕｳｺｳ",
-              "to": "PM-ﾕｳﾖﾁｭｳ",
-              "program": "GLD050",
-              "paragraph": "ﾌﾘｶｴﾌﾉｳ-RTN",
-              "source": "gondwana/programs/GLD050.cbl:403",
-              "when": [
-                {
-                  "condition": "ZG-D-ｼｷﾝﾌｿｸ",
-                  "holds": false
-                },
-                {
-                  "condition": "ZG-D-ﾄﾘﾋｷﾅｼ",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "PM-ﾕｳｺｳ",
-              "to": "PM-ﾕｳﾖﾁｭｳ",
-              "program": "GLD050",
-              "paragraph": "ﾌﾘｶｴﾌﾉｳ-RTN",
-              "source": "gondwana/programs/GLD050.cbl:403",
-              "when": [
-                {
-                  "condition": "ZG-D-ｼｷﾝﾌｿｸ",
-                  "holds": false
-                },
-                {
-                  "condition": "ZG-D-ﾄﾘﾋｷﾅｼ",
-                  "holds": false
-                },
-                {
-                  "condition": "ZG-D-ﾖｷﾝｼｬﾂｺﾞｳ",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "PM-ﾕｳｺｳ",
-              "to": "PM-ﾕｳﾖﾁｭｳ",
-              "program": "GLD050",
-              "paragraph": "ﾌﾘｶｴﾌﾉｳ-RTN",
-              "source": "gondwana/programs/GLD050.cbl:403",
-              "when": [
-                {
-                  "condition": "ZG-D-ｼｷﾝﾌｿｸ",
-                  "holds": false
-                },
-                {
-                  "condition": "ZG-D-ﾄﾘﾋｷﾅｼ",
-                  "holds": false
-                },
-                {
-                  "condition": "ZG-D-ﾖｷﾝｼｬﾂｺﾞｳ",
-                  "holds": false
-                },
-                {
-                  "condition": "ZG-D-ｲﾗｲｼｮﾅｼ",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "PM-ﾕｳｺｳ",
-              "to": "PM-ﾕｳﾖﾁｭｳ",
-              "program": "GLD050",
-              "paragraph": "ﾌﾘｶｴﾌﾉｳ-RTN",
-              "source": "gondwana/programs/GLD050.cbl:403",
-              "when": [
-                {
-                  "condition": "ZG-D-ｼｷﾝﾌｿｸ",
-                  "holds": false
-                },
-                {
-                  "condition": "ZG-D-ﾄﾘﾋｷﾅｼ",
-                  "holds": false
-                },
-                {
-                  "condition": "ZG-D-ﾖｷﾝｼｬﾂｺﾞｳ",
-                  "holds": false
-                },
-                {
-                  "condition": "ZG-D-ｲﾗｲｼｮﾅｼ",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
+              "from": "PM-ﾕｳﾖﾁｭｳ",
               "to": "PM-ｼｯｺｳ",
               "program": "GLD060",
               "paragraph": "ｼｯｺｳ-RTN",
               "source": "gondwana/programs/GLD060.cbl:181",
               "when": [
                 {
-                  "condition": "WS-POLMST-OK",
-                  "holds": false
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "PM-ｼｯｺｳ",
-              "program": "GLD060",
-              "paragraph": "ｼｯｺｳ-RTN",
-              "source": "gondwana/programs/GLD060.cbl:181",
-              "when": [
-                {
-                  "condition": "WS-POLMST-OK",
+                  "condition": "WS-ｷﾞｮｳﾑ-YYYYMM \u003e WS-ｷｹﾞﾝ-YYYYMM",
                   "holds": true
                 }
               ]
@@ -9946,28 +8321,7 @@
               "source": "gondwana/programs/GLM010.cbl:310",
               "when": [
                 {
-                  "condition": "SR-ｷﾞﾝｺｳｺｰﾄﾞ = WS-ｿｳｷﾞﾝｺｳ",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾞﾝｺｳｹﾝｽｳ \u003e 0",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "ZG-ﾃﾞｰﾀ",
-              "program": "GLM010",
-              "paragraph": "ﾃﾞｰﾀ-RTN",
-              "source": "gondwana/programs/GLM010.cbl:310",
-              "when": [
-                {
-                  "condition": "SR-ｷﾞﾝｺｳｺｰﾄﾞ = WS-ｿｳｷﾞﾝｺｳ",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾞﾝｺｳｹﾝｽｳ \u003e 0",
+                  "condition": "RETURN SORT-F AT END",
                   "holds": false
                 }
               ]
@@ -9977,13 +8331,7 @@
               "to": "ZG-ﾃﾞｰﾀ",
               "program": "GLM010",
               "paragraph": "ﾃﾞｰﾀ-RTN",
-              "source": "gondwana/programs/GLM010.cbl:310",
-              "when": [
-                {
-                  "condition": "SR-ｷﾞﾝｺｳｺｰﾄﾞ = WS-ｿｳｷﾞﾝｺｳ",
-                  "holds": true
-                }
-              ]
+              "source": "gondwana/programs/GLM010.cbl:310"
             },
             {
               "from": "any",
@@ -10543,28 +8891,7 @@
               "source": "gondwana/programs/GLM010.cbl:319",
               "when": [
                 {
-                  "condition": "SR-ｷﾞﾝｺｳｺｰﾄﾞ = WS-ｿｳｷﾞﾝｺｳ",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾞﾝｺｳｹﾝｽｳ \u003e 0",
-                  "holds": true
-                }
-              ]
-            },
-            {
-              "from": "any",
-              "to": "ZG-D-ﾐｼｮﾘ",
-              "program": "GLM010",
-              "paragraph": "ﾃﾞｰﾀ-RTN",
-              "source": "gondwana/programs/GLM010.cbl:319",
-              "when": [
-                {
-                  "condition": "SR-ｷﾞﾝｺｳｺｰﾄﾞ = WS-ｿｳｷﾞﾝｺｳ",
-                  "holds": false
-                },
-                {
-                  "condition": "WS-ｷﾞﾝｺｳｹﾝｽｳ \u003e 0",
+                  "condition": "RETURN SORT-F AT END",
                   "holds": false
                 }
               ]
@@ -10574,13 +8901,7 @@
               "to": "ZG-D-ﾐｼｮﾘ",
               "program": "GLM010",
               "paragraph": "ﾃﾞｰﾀ-RTN",
-              "source": "gondwana/programs/GLM010.cbl:319",
-              "when": [
-                {
-                  "condition": "SR-ｷﾞﾝｺｳｺｰﾄﾞ = WS-ｿｳｷﾞﾝｺｳ",
-                  "holds": true
-                }
-              ]
+              "source": "gondwana/programs/GLM010.cbl:319"
             }
           ]
         }
