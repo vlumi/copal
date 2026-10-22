@@ -64,6 +64,12 @@ cards-days: laurasia-build  ## Run the card processor's next N days
 laurasia-build:
 	go run ./laurasia/cmd/laurasia build
 
+##@ The life insurer
+
+.PHONY: gondwana-month
+gondwana-month:  ## Run Gondwana's March on the fixture and show its logs and reports
+	@scripts/gondwana-month.sh
+
 ##@ The survey
 
 .PHONY: blueprints
@@ -96,6 +102,10 @@ pangaea-golden:  ## Rewrite Pangaea's golden outputs from a run on the fixture
 .PHONY: laurasia-golden
 laurasia-golden:  ## Rewrite Laurasia's golden outputs from a run of its fixtures
 	go test ./laurasia -update
+
+.PHONY: gondwana-golden
+gondwana-golden:  ## Rewrite Gondwana's golden outputs from a run of its fixtures
+	go test ./gondwana -update
 
 SEED ?= 1
 ACCOUNTS ?= 3000
