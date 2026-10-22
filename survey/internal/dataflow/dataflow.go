@@ -71,7 +71,7 @@ type Edge struct {
 
 // Analyze finds the program's data flow, given its records laid out.
 func Analyze(p *cobol.Program, records *layout.ProgramRecords) Flow {
-	names := newNames(records)
+	names := newNames(p, records)
 	flow := Flow{storage: newStorage(records), parameters: map[string]int{}, program: p, names: names}
 	for i, item := range p.Using {
 		flow.parameters[item] = i + 1
@@ -138,14 +138,41 @@ type names struct {
 	conditions map[string]string
 	records    map[string][]string // file to records
 	files      map[string]string   // record to file
+	// reports maps a report of the REPORT SECTION, and each of its
+	// groups, to the file that prints it, and lines keeps that file's
+	// records, the lines of its reports, with their columns: what a
+	// GENERATE or TERMINATE reads through SOURCE and SUM and writes.
+	reports map[string]string
+	lines   map[string][]*layout.Field
 }
 
-func newNames(records *layout.ProgramRecords) *names {
-	n := &names{conditions: map[string]string{}, records: map[string][]string{}, files: map[string]string{}}
+func newNames(p *cobol.Program, records *layout.ProgramRecords) *names {
+	n := &names{conditions: map[string]string{}, records: map[string][]string{}, files: map[string]string{},
+		reports: map[string]string{}, lines: map[string][]*layout.Field{}}
 	for _, f := range records.Files {
 		for _, r := range f.Records {
 			n.records[f.File] = append(n.records[f.File], r.Name)
 			n.files[r.Name] = f.File
+		}
+	}
+	for _, fd := range p.FileSection {
+		for _, report := range fd.Reports {
+			n.reports[report] = fd.Name
+			for _, rd := range p.ReportSection {
+				if rd.Name != report {
+					continue
+				}
+				for _, group := range rd.Entries {
+					if group.Level == 1 && group.Name != "FILLER" {
+						n.reports[group.Name] = fd.Name
+					}
+				}
+			}
+			for _, f := range records.Files {
+				if f.File == fd.Name {
+					n.lines[fd.Name] = f.Records
+				}
+			}
 		}
 	}
 	var index func(f *layout.Field)
@@ -207,7 +234,52 @@ func (n *names) uses(s cobol.Statement) (reads, writes []string) {
 			writes = append(writes, n.records[f.Name]...)
 		}
 	}
+	if file, ok := n.reportFile(s); ok {
+		for _, line := range n.lines[file] {
+			for _, column := range line.Children {
+				if column.Source != "" {
+					reads = append(reads, n.item(column.Source))
+				}
+				for _, item := range column.Sum {
+					reads = append(reads, n.item(item))
+				}
+			}
+			writes = append(writes, line.Name)
+		}
+	}
 	return reads, writes
+}
+
+// reportFile is the file a GENERATE or TERMINATE prints to, by the report
+// or group it names.
+func (n *names) reportFile(s cobol.Statement) (string, bool) {
+	if s.Verb != "GENERATE" && s.Verb != "TERMINATE" || len(s.Reads) == 0 {
+		return "", false
+	}
+	file, ok := n.reports[s.Reads[0].Name]
+	return file, ok
+}
+
+// reportEdges lists the values a GENERATE or TERMINATE moves: each
+// column's SOURCE item and SUM items into the column, and each line of the
+// report into its file.
+func (n *names) reportEdges(paragraph string, s cobol.Statement, file string) []Edge {
+	var edges []Edge
+	add := func(from, to string, toFile bool) {
+		edges = append(edges, Edge{From: from, To: to, ToFile: toFile, Paragraph: paragraph, Verb: s.Verb, Pos: s.Pos})
+	}
+	for _, line := range n.lines[file] {
+		for _, column := range line.Children {
+			if column.Source != "" {
+				add(n.item(column.Source), column.Name, false)
+			}
+			for _, item := range column.Sum {
+				add(n.item(item), column.Name, false)
+			}
+		}
+		add(line.Name, file, true)
+	}
+	return edges
 }
 
 // lineageVerbs move values from what they read into what they write.
@@ -226,6 +298,9 @@ func (n *names) edges(paragraph string, s cobol.Statement) []Edge {
 	case s.Verb == "ACCEPT" && (s.Device == "" || s.Device == CommandLine), s.Verb == "DISPLAY" && s.Device == "":
 		return n.streamEdges(paragraph, s)
 	case !lineageVerbs[s.Verb]:
+		if file, ok := n.reportFile(s); ok {
+			return n.reportEdges(paragraph, s, file)
+		}
 		return nil
 	}
 	var edges []Edge

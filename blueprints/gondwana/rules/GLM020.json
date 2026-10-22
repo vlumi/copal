@@ -1,0 +1,946 @@
+{
+  "program": "GLM020",
+  "tables": [
+    {
+      "paragraph": "ｼｮｷ-RTN",
+      "source": "gondwana/programs/GLM020.cbl:176",
+      "conditions": [
+        "WS-ﾍﾝｶﾝｹｯｶ = 0",
+        "WS-RSVTB-OK",
+        "WS-ｴﾗｰﾌｧｲﾙ = SPACES",
+        "WS-PRODTB-OK",
+        "WS-POLMST-OK",
+        "WS-GLSCTL-OK",
+        "WS-GLJRNL-OK",
+        "WS-REPORT-OK"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ﾍﾝｶﾝｹｯｶ"
+        ],
+        [
+          "WS-RSVTB-ST"
+        ],
+        [
+          "WS-ｴﾗｰﾌｧｲﾙ"
+        ],
+        [
+          "WS-PRODTB-ST"
+        ],
+        [
+          "WS-POLMST-ST"
+        ],
+        [
+          "WS-GLSCTL-ST"
+        ],
+        [
+          "WS-GLJRNL-ST"
+        ],
+        [
+          "WS-REPORT-ST"
+        ]
+      ],
+      "actions": [
+        "ACCEPT WS-ｺﾏﾝﾄﾞｷﾞｮｳ FROM COMMAND-LINE",
+        "MOVE WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8) TO WS-ｷﾞｮｳﾑﾋﾂﾞｹ",
+        "CALL 'GLC020' USING WS-ﾎｳｺｳ WS-ｷﾞｮｳﾑﾋﾂﾞｹ WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ WS-ﾍﾝｶﾝｹｯｶ",
+        "DISPLAY 'GLM020 日付不正: ' WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)",
+        "MOVE 8 TO RETURN-CODE",
+        "STOP RUN",
+        "OPEN INPUT RSVTB-F PRODTB-F",
+        "OPEN I-O POLMST-F GLSCTL-F",
+        "OPEN EXTEND GLJRNL-F",
+        "OPEN OUTPUT REPORT-F",
+        "MOVE 'RSVTB' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-RSVTB-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "PERFORM ｲｼﾞｮｳ-RTN",
+        "MOVE 'PRODTB' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-PRODTB-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "MOVE 'POLMST' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-POLMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "MOVE 'GLSCTL' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-GLSCTL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "MOVE 'GLJRNL' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-GLJRNL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "MOVE 'GLM020R' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-REPORT-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "MOVE SPACES TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE SPACES TO JR-ｼﾜｹ-ﾚｺｰﾄﾞ",
+        "PERFORM ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN",
+        "PERFORM ｼﾞｭﾝﾋﾞｷﾝ-ﾖﾐｺﾐ-RTN",
+        "READ GLSCTL-F"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "N",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            6,
+            7,
+            8,
+            9,
+            13,
+            14,
+            12
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            6,
+            7,
+            8,
+            9,
+            15,
+            16,
+            12
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            6,
+            7,
+            8,
+            9,
+            17,
+            18,
+            12
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            6,
+            7,
+            8,
+            9,
+            19,
+            20,
+            12
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            6,
+            7,
+            8,
+            9,
+            21,
+            22,
+            12
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            6,
+            7,
+            8,
+            9,
+            23,
+            24,
+            25,
+            26,
+            27
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "ｼﾞｭﾝﾋﾞｷﾝ-ﾖﾐｺﾐ-RTN",
+      "source": "gondwana/programs/GLM020.cbl:228",
+      "conditions": [
+        "WS-RSVTB-ｵﾜﾘ"
+      ],
+      "conditionRefs": [
+        [
+          "WS-RSVTB-ST"
+        ]
+      ],
+      "actions": [
+        "MOVE ZEROS TO WS-ｼﾞｭﾝﾋﾞｷﾝ-TBL",
+        "READ RSVTB-F",
+        "PERFORM UNTIL NOT WS-RSVTB-OK",
+        "MOVE 'RSVTB' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-RSVTB-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "PERFORM ｲｼﾞｮｳ-RTN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "ｼﾞｭﾝﾋﾞｷﾝ-ﾖﾐｺﾐ-RTN",
+      "loop": "PERFORM UNTIL NOT WS-RSVTB-OK",
+      "source": "gondwana/programs/GLM020.cbl:231",
+      "conditions": [
+        "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = RS-ｼｮｳﾋﾝ"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ",
+          "WS-ｼｮｳﾋﾝ-IX",
+          "RS-ｼｮｳﾋﾝ"
+        ]
+      ],
+      "actions": [
+        "SET WS-ｼｮｳﾋﾝ-IX TO 1",
+        "SEARCH WS-ｼｮｳﾋﾝ",
+        "MOVE RS-ｹｲｽｳ TO WS-ｼﾞｭﾝﾋﾞｷﾝ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX RS-ｹｲｶﾈﾝｽｳ)",
+        "READ RSVTB-F"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "ｹｲｻﾝ-RTN",
+      "source": "gondwana/programs/GLM020.cbl:250",
+      "conditions": [
+        "WS-POLMST-ｵﾜﾘ"
+      ],
+      "conditionRefs": [
+        [
+          "WS-POLMST-ST"
+        ]
+      ],
+      "actions": [
+        "READ POLMST-F NEXT",
+        "PERFORM UNTIL NOT WS-POLMST-OK",
+        "MOVE 'POLMST' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-POLMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "PERFORM ｲｼﾞｮｳ-RTN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "ｹｲｻﾝ-RTN",
+      "loop": "PERFORM UNTIL NOT WS-POLMST-OK",
+      "source": "gondwana/programs/GLM020.cbl:252",
+      "conditions": [
+        "PM-ﾎｼｮｳﾁｭｳ",
+        "PM-ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ \u003e 0"
+      ],
+      "conditionRefs": [
+        [
+          "PM-ｼﾞｮｳﾀｲ"
+        ],
+        [
+          "PM-ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ"
+        ]
+      ],
+      "actions": [
+        "PERFORM ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ-RTN",
+        "PERFORM ｷｼﾞｭﾝ-RTN",
+        "READ POLMST-F NEXT",
+        "MOVE 0 TO SR-ｼﾞｭﾝﾋﾞｷﾝ",
+        "ADD 1 TO WS-ﾓﾄﾞｼｹﾝｽｳ"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            3,
+            4,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ-RTN",
+      "source": "gondwana/programs/GLM020.cbl:274",
+      "conditions": [
+        "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
+        "PM-ｹｲｶﾈﾝｽｳ \u003e 50"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ",
+          "WS-ｼｮｳﾋﾝ-IX",
+          "PM-ｼｮｳﾋﾝ"
+        ],
+        [
+          "PM-ｹｲｶﾈﾝｽｳ"
+        ]
+      ],
+      "actions": [
+        "SET WS-ｼｮｳﾋﾝ-IX TO 1",
+        "SEARCH WS-ｼｮｳﾋﾝ",
+        "CONTINUE",
+        "MOVE 50 TO WS-ﾈﾝｽｳ",
+        "COMPUTE SR-ｼﾞｭﾝﾋﾞｷﾝ = PM-ﾎｹﾝｷﾝｶﾞｸ / 1000 * WS-ｼﾞｭﾝﾋﾞｷﾝ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX WS-ﾈﾝｽｳ)",
+        "ADD 1 TO WS-ｹｲｻﾝｹﾝｽｳ",
+        "MOVE PM-ｹｲｶﾈﾝｽｳ TO WS-ﾈﾝｽｳ"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            6,
+            4,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            6,
+            4,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "ｷｼﾞｭﾝ-RTN",
+      "source": "gondwana/programs/GLM020.cbl:292",
+      "conditions": [
+        "SR-ｿﾞｳｹﾞﾝ = 0",
+        "WS-POLMST-OK"
+      ],
+      "conditionRefs": [
+        [
+          "SR-ｿﾞｳｹﾞﾝ"
+        ],
+        [
+          "WS-POLMST-ST"
+        ]
+      ],
+      "actions": [
+        "COMPUTE SR-ｿﾞｳｹﾞﾝ = SR-ｼﾞｭﾝﾋﾞｷﾝ - PM-ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ",
+        "PERFORM ｼﾜｹ-RTN",
+        "MOVE SR-ｼﾞｭﾝﾋﾞｷﾝ TO PM-ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ",
+        "REWRITE PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ",
+        "MOVE 'POLMST' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-POLMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "PERFORM ｲｼﾞｮｳ-RTN",
+        "MOVE PM-ｼｮｳﾋﾝ TO SR-ｼｮｳﾋﾝ",
+        "MOVE PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ TO SR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+        "MOVE PM-ｼﾒｲ TO SR-ｼﾒｲ",
+        "MOVE PM-ｹｲｶﾈﾝｽｳ TO SR-ｹｲｶﾈﾝｽｳ",
+        "MOVE PM-ﾎｹﾝｷﾝｶﾞｸ TO SR-ﾎｹﾝｷﾝｶﾞｸ",
+        "RELEASE SR-ｾｲﾚﾂ-ﾚｺｰﾄﾞ",
+        "ADD SR-ｼﾞｭﾝﾋﾞｷﾝ TO WS-ｼﾞｭﾝﾋﾞｷﾝｺﾞｳｹｲ",
+        "ADD SR-ｿﾞｳｹﾞﾝ TO WS-ｿﾞｳｹﾞﾝｺﾞｳｹｲ"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "ｼﾜｹ-RTN",
+      "source": "gondwana/programs/GLM020.cbl:316",
+      "conditions": [
+        "SR-ｿﾞｳｹﾞﾝ \u003e 0",
+        "WS-GLJRNL-OK"
+      ],
+      "conditionRefs": [
+        [
+          "SR-ｿﾞｳｹﾞﾝ"
+        ],
+        [
+          "WS-GLJRNL-ST"
+        ]
+      ],
+      "actions": [
+        "MOVE CT-ｼﾞｶｲｼﾜｹﾊﾞﾝｺﾞｳ TO JR-ｼﾜｹﾊﾞﾝｺﾞｳ",
+        "ADD 1 TO CT-ｼﾞｶｲｼﾜｹﾊﾞﾝｺﾞｳ",
+        "MOVE WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ TO JR-ﾋﾂﾞｹ",
+        "MOVE 'GLM020' TO JR-ﾌﾟﾛｸﾞﾗﾑ",
+        "MOVE 5210 TO JR-ｶﾝｼﾞｮｳｶﾓｸ",
+        "SET JR-ｶﾘｶﾀ TO TRUE",
+        "MOVE SR-ｿﾞｳｹﾞﾝ TO JR-ｷﾝｶﾞｸ",
+        "MOVE '責任準備金繰入' TO JR-ﾃｷﾖｳ",
+        "MOVE PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ TO JR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+        "WRITE JR-ｼﾜｹ-ﾚｺｰﾄﾞ",
+        "MOVE 'GLJRNL' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-GLJRNL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "PERFORM ｲｼﾞｮｳ-RTN",
+        "SET JR-ｶｼｶﾀ TO TRUE",
+        "COMPUTE JR-ｷﾝｶﾞｸ = 0 - SR-ｿﾞｳｹﾞﾝ",
+        "MOVE '責任準備金戻入' TO JR-ﾃｷﾖｳ"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            13,
+            14,
+            15,
+            8,
+            9,
+            10,
+            11,
+            12
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            13,
+            14,
+            15,
+            8,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "ﾎｳｺｸ-RTN",
+      "source": "gondwana/programs/GLM020.cbl:343",
+      "conditions": [
+        "RETURN SORT-F AT END"
+      ],
+      "conditionRefs": [
+        null
+      ],
+      "actions": [
+        "INITIATE RESERVE-RPT",
+        "RETURN SORT-F",
+        "CONTINUE",
+        "TERMINATE RESERVE-RPT",
+        "PERFORM ﾒｲｻｲ-RTN",
+        "PERFORM UNTIL SR-ｼｮｳﾋﾝ = SPACES"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            4,
+            5,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "ﾎｳｺｸ-RTN",
+      "loop": "PERFORM UNTIL SR-ｼｮｳﾋﾝ = SPACES",
+      "source": "gondwana/programs/GLM020.cbl:350",
+      "conditions": [
+        "RETURN SORT-F AT END"
+      ],
+      "conditionRefs": [
+        null
+      ],
+      "actions": [
+        "RETURN SORT-F",
+        "MOVE SPACES TO SR-ｼｮｳﾋﾝ",
+        "PERFORM ﾒｲｻｲ-RTN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "ﾒｲｻｲ-RTN",
+      "source": "gondwana/programs/GLM020.cbl:364",
+      "conditions": [
+        "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = SR-ｼｮｳﾋﾝ"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ",
+          "WS-ｼｮｳﾋﾝ-IX",
+          "SR-ｼｮｳﾋﾝ"
+        ]
+      ],
+      "actions": [
+        "SET WS-ｼｮｳﾋﾝ-IX TO 1",
+        "SEARCH WS-ｼｮｳﾋﾝ",
+        "MOVE WS-ｼｮｳﾋﾝ-ﾒｲｼｮｳ(WS-ｼｮｳﾋﾝ-IX) TO WS-ｼｮｳﾋﾝﾒｲ",
+        "GENERATE RESERVE-DETAIL",
+        "MOVE SPACES TO WS-ｼｮｳﾋﾝﾒｲ"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            4,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "ｼｭｳﾘｮｳ-RTN",
+      "source": "gondwana/programs/GLM020.cbl:377",
+      "conditions": [
+        "WS-GLSCTL-OK"
+      ],
+      "conditionRefs": [
+        [
+          "WS-GLSCTL-ST"
+        ]
+      ],
+      "actions": [
+        "REWRITE CT-ｾｲｷﾞｮ-ﾚｺｰﾄﾞ",
+        "MOVE 'GLSCTL' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-GLSCTL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "PERFORM ｲｼﾞｮｳ-RTN",
+        "CLOSE POLMST-F RSVTB-F PRODTB-F GLSCTL-F GLJRNL-F REPORT-F",
+        "DISPLAY 'GLM020 計算 ' WS-ｹｲｻﾝｹﾝｽｳ ' 戻入 ' WS-ﾓﾄﾞｼｹﾝｽｳ ' 準備金 ' WS-ｼﾞｭﾝﾋﾞｷﾝｺﾞｳｹｲ"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            4,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN",
+      "source": "gondwana/copybooks/PRDLOD.cpy:16",
+      "conditions": [
+        "WS-PRODTB-ｵﾜﾘ"
+      ],
+      "conditionRefs": [
+        [
+          "WS-PRODTB-ST"
+        ]
+      ],
+      "actions": [
+        "READ PRODTB-F",
+        "PERFORM UNTIL NOT WS-PRODTB-OK",
+        "MOVE 'PRODTB' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-PRODTB-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "PERFORM ｲｼﾞｮｳ-RTN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,409 @@
+{
+  "program": "GLO010",
+  "tables": [
+    {
+      "paragraph": "ｼｮｷ-RTN",
+      "source": "gondwana/programs/GLO010.cbl:109",
+      "conditions": [
+        "WS-ﾍﾝｶﾝｹｯｶ = 0",
+        "WS-ﾁｭｳｼｭﾂ-OK",
+        "WS-ｹｲﾔｸ-OK",
+        "WS-ｾｲｷﾞｮ-OK",
+        "WS-ﾎｳｺｸ-OK"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ﾍﾝｶﾝｹｯｶ"
+        ],
+        [
+          "WS-ﾁｭｳｼｭﾂ-ST"
+        ],
+        [
+          "WS-ｹｲﾔｸ-ST"
+        ],
+        [
+          "WS-ｾｲｷﾞｮ-ST"
+        ],
+        [
+          "WS-ﾎｳｺｸ-ST"
+        ]
+      ],
+      "actions": [
+        "ACCEPT WS-ｺﾏﾝﾄﾞｷﾞｮｳ FROM COMMAND-LINE",
+        "MOVE WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8) TO WS-ｷﾞｮｳﾑﾋﾂﾞｹ",
+        "CALL 'GLC020' USING WS-ﾎｳｺｳ WS-ｷﾞｮｳﾑﾋﾂﾞｹ WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ WS-ﾍﾝｶﾝｹｯｶ",
+        "DISPLAY 'GLO010 日付不正: ' WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)",
+        "MOVE 8 TO RETURN-CODE",
+        "STOP RUN",
+        "OPEN INPUT EXTRACT-F",
+        "MOVE 'EXTRACT' TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ",
+        "MOVE WS-ﾁｭｳｼｭﾂ-ST TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ(9:2)",
+        "PERFORM ｲｼﾞｮｳ-RTN",
+        "OPEN OUTPUT POLMST-F",
+        "MOVE 'POLMST' TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ",
+        "MOVE WS-ｹｲﾔｸ-ST TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ(9:2)",
+        "OPEN OUTPUT GLSCTL-F",
+        "MOVE 'GLSCTL' TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ",
+        "MOVE WS-ｾｲｷﾞｮ-ST TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ(9:2)",
+        "OPEN OUTPUT REPORT-F",
+        "MOVE 'GLO010R' TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ",
+        "MOVE WS-ﾎｳｺｸ-ST TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ(9:2)",
+        "PERFORM ﾁｭｳｼｭﾂ-ﾖﾐｺﾐ-RTN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            6,
+            7,
+            8,
+            9
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            6,
+            10,
+            11,
+            12,
+            9
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            6,
+            10,
+            13,
+            14,
+            15,
+            9
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            6,
+            10,
+            13,
+            16,
+            17,
+            18,
+            9
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            6,
+            10,
+            13,
+            16,
+            19
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "ﾁｭｳｼｭﾂ-ﾖﾐｺﾐ-RTN",
+      "source": "gondwana/programs/GLO010.cbl:148",
+      "conditions": [
+        "WS-ﾁｭｳｼｭﾂ-OK",
+        "WS-ﾁｭｳｼｭﾂ-ｵﾜﾘ"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ﾁｭｳｼｭﾂ-ST"
+        ],
+        [
+          "WS-ﾁｭｳｼｭﾂ-ST"
+        ]
+      ],
+      "actions": [
+        "READ EXTRACT-F",
+        "ADD 1 TO WS-ﾖﾐｺﾐｹﾝｽｳ",
+        "MOVE 'EXTRACT' TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ",
+        "MOVE WS-ﾁｭｳｼｭﾂ-ST TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ(9:2)",
+        "PERFORM ｲｼﾞｮｳ-RTN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "ﾄｳﾛｸ-RTN",
+      "source": "gondwana/programs/GLO010.cbl:163",
+      "conditions": [
+        "WRITE PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ INVALID KEY"
+      ],
+      "conditionRefs": [
+        null
+      ],
+      "actions": [
+        "MOVE ﾁｭｳｼｭﾂ-ﾚｺｰﾄﾞ TO PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ",
+        "WRITE PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ",
+        "ADD 1 TO WS-ﾁｮｳﾌｸｹﾝｽｳ",
+        "MOVE 4 TO WS-ﾌｯｷｺｰﾄﾞ",
+        "PERFORM ﾁｭｳｼｭﾂ-ﾖﾐｺﾐ-RTN",
+        "ADD 1 TO WS-ﾄｳﾛｸｹﾝｽｳ",
+        "PERFORM ｼｭｳｹｲ-RTN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            5,
+            6,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "ｼｭｳｹｲ-RTN",
+      "source": "gondwana/programs/GLO010.cbl:178",
+      "conditions": [
+        "PM-ﾕｳｺｳ",
+        "PM-ﾕｳﾖﾁｭｳ",
+        "PM-ｼｯｺｳ"
+      ],
+      "conditionRefs": [
+        [
+          "PM-ｼﾞｮｳﾀｲ"
+        ],
+        [
+          "PM-ｼﾞｮｳﾀｲ"
+        ],
+        [
+          "PM-ｼﾞｮｳﾀｲ"
+        ]
+      ],
+      "actions": [
+        "ADD 1 TO WS-ﾕｳｺｳｹﾝｽｳ",
+        "ADD PM-ﾎｹﾝｷﾝｶﾞｸ TO WS-ﾕｳｺｳﾎｹﾝｷﾝｶﾞｸ",
+        "ADD 1 TO WS-ﾕｳﾖｹﾝｽｳ",
+        "ADD 1 TO WS-ｼｯｺｳｹﾝｽｳ",
+        "ADD 1 TO WS-ｼｮｳﾒﾂｹﾝｽｳ"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            ""
+          ],
+          "actions": [
+            2,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "ｾｲｷﾞｮ-RTN",
+      "source": "gondwana/programs/GLO010.cbl:195",
+      "conditions": [
+        "WS-ｾｲｷﾞｮ-OK"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ｾｲｷﾞｮ-ST"
+        ]
+      ],
+      "actions": [
+        "MOVE SPACES TO CT-ｾｲｷﾞｮ-ﾚｺｰﾄﾞ",
+        "MOVE WS-ｷﾞｮｳﾑﾋﾂﾞｹ TO CT-ｷﾞｮｳﾑﾋﾂﾞｹ",
+        "MOVE WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ TO CT-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ",
+        "MOVE 0 TO CT-ｻｲｼｭｳｾｲｷｭｳﾈﾝｹﾞﾂ",
+        "MOVE 1 TO CT-ｼﾞｶｲｼﾊﾗｲﾊﾞﾝｺﾞｳ",
+        "MOVE 1 TO CT-ｼﾞｶｲｼﾜｹﾊﾞﾝｺﾞｳ",
+        "COMPUTE CT-ﾕｳｺｳｹﾝｽｳ = WS-ﾕｳｺｳｹﾝｽｳ + WS-ﾕｳﾖｹﾝｽｳ",
+        "MOVE WS-ﾄｳﾛｸｹﾝｽｳ TO CT-ｿｳｹﾝｽｳ",
+        "MOVE WS-ﾕｳｺｳﾎｹﾝｷﾝｶﾞｸ TO CT-ﾕｳｺｳﾎｹﾝｷﾝｶﾞｸ",
+        "WRITE CT-ｾｲｷﾞｮ-ﾚｺｰﾄﾞ",
+        "MOVE 'GLSCTL' TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ",
+        "MOVE WS-ｾｲｷﾞｮ-ST TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ(9:2)",
+        "PERFORM ｲｼﾞｮｳ-RTN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ]
+        },
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -278,16 +278,21 @@ type Copybook struct {
 	Source      string   `json:"source"`
 	Description []string `json:"description,omitempty"`
 	Records     []Record `json:"records"`
-	UsedBy      []string `json:"usedBy"`
+	// Paragraphs are the paragraphs of a copybook of procedure, one
+	// copied into the procedure division, which has no records.
+	Paragraphs []string `json:"paragraphs,omitempty"`
+	UsedBy     []string `json:"usedBy"`
 }
 
 // Analyze reads the programs, the jobs, which are the paths ending in
-// .jcl, and the batch scripts, in .sh, and every copybook in copybookDir.
+// .jcl, the batch scripts, in .sh, and the batch files, in .bat, and every
+// copybook in copybookDir, all in the dialect, which says how the source
+// is encoded and the records laid out.
 func Analyze(paths []string, copybookDir string, dialect cobol.Dialect) (*System, error) {
 	s := &System{Dialect: dialect}
 	var programPaths, jobPaths []string
 	for _, path := range paths {
-		if ext := strings.ToLower(filepath.Ext(path)); ext == ".jcl" || ext == ".sh" {
+		if ext := strings.ToLower(filepath.Ext(path)); ext == ".jcl" || ext == ".sh" || ext == ".bat" {
 			jobPaths = append(jobPaths, path)
 		} else {
 			programPaths = append(programPaths, path)
@@ -334,11 +339,13 @@ func Analyze(paths []string, copybookDir string, dialect cobol.Dialect) (*System
 	}
 	s.Entities = entities(s.Copybooks, s.Programs)
 	for _, path := range jobPaths {
-		analyze := analyzeJob
-		if strings.EqualFold(filepath.Ext(path), ".sh") {
-			analyze = analyzeScript
+		var job Job
+		var err error
+		if ext := strings.ToLower(filepath.Ext(path)); ext == ".sh" || ext == ".bat" {
+			job, err = analyzeScript(path, dialect.Encoding, s.Programs)
+		} else {
+			job, err = analyzeJob(path, s.Programs)
 		}
-		job, err := analyze(path, s.Programs)
 		if err != nil {
 			return nil, err
 		}
@@ -356,7 +363,7 @@ func Analyze(paths []string, copybookDir string, dialect cobol.Dialect) (*System
 // analyzeFile reads a program's source and describes the program and the
 // programs nested in it.
 func analyzeFile(path, copybookDir string, dialect cobol.Dialect) ([]Program, error) {
-	p, err := cobol.ReadProgram(path, []string{copybookDir})
+	p, err := cobol.ReadProgramIn(path, []string{copybookDir}, dialect)
 	if err != nil {
 		return nil, err
 	}
@@ -621,7 +628,7 @@ func newParagraph(para structure.Paragraph) Paragraph {
 	p := Paragraph{
 		Name:        para.Name,
 		Section:     para.Section,
-		Description: oneLine(para.Comment),
+		Description: oneLine(ownComment(para.Comment)),
 		Source:      para.Pos.String(),
 		FallsInto:   para.FallsInto,
 		PerformedBy: para.PerformedBy,
@@ -637,7 +644,14 @@ func newParagraph(para structure.Paragraph) Paragraph {
 }
 
 func analyzeCopybook(path, copybookDir string, dialect cobol.Dialect, programs []Program) (Copybook, error) {
-	entries, err := cobol.ReadDataEntries(path, []string{copybookDir})
+	tokens, err := cobol.ReadIn(path, []string{copybookDir}, dialect.Encoding)
+	if err != nil {
+		return Copybook{}, err
+	}
+	if len(tokens) > 0 && !isLevel(tokens[0]) {
+		return procedureCopybook(path, tokens, programs), nil
+	}
+	entries, err := cobol.ReadDataEntriesIn(path, []string{copybookDir}, dialect.Encoding)
 	if err != nil {
 		return Copybook{}, err
 	}
@@ -660,6 +674,56 @@ func analyzeCopybook(path, copybookDir string, dialect cobol.Dialect, programs [
 		}
 	}
 	return copybook, nil
+}
+
+// isLevel reports whether a token is the level number that starts a data
+// description entry.
+func isLevel(t cobol.Token) bool {
+	if t.Kind != cobol.Word || len(t.Text) == 0 || len(t.Text) > 2 {
+		return false
+	}
+	return strings.Trim(t.Text, "0123456789") == ""
+}
+
+// procedureCopybook describes a copybook of procedure: paragraphs copied
+// into the procedure division, which the programs' paragraphs that come
+// from its file are, and whose comment it opens with is its banner.
+func procedureCopybook(path string, tokens []cobol.Token, programs []Program) Copybook {
+	copybook := Copybook{Name: copybookName(path), Source: path, UsedBy: []string{}}
+	comment := tokens[0].Comment
+	copybook.Description = cobol.CommentText(comment[:len(comment)-len(ownComment(comment))])
+	for _, program := range programs {
+		used := false
+		for _, para := range program.Paragraphs {
+			if strings.HasPrefix(para.Source, path+":") {
+				used = true
+				if !slices.Contains(copybook.Paragraphs, para.Name) {
+					copybook.Paragraphs = append(copybook.Paragraphs, para.Name)
+				}
+			}
+		}
+		if used {
+			copybook.UsedBy = append(copybook.UsedBy, program.Name)
+		}
+	}
+	return copybook
+}
+
+// ownComment is the part of a paragraph's comment that is its own: the
+// comment before the first paragraph of a copybook of procedure starts
+// with the copybook's banner, closed by a rule line, and the paragraph's
+// own block, between rule lines, follows it.
+func ownComment(comment []string) []string {
+	var rules []int
+	for i, line := range comment {
+		if t := strings.TrimSpace(strings.TrimLeft(strings.TrimSpace(line), "*>")); t != "" && strings.Trim(t, "=-*") == "" {
+			rules = append(rules, i)
+		}
+	}
+	if len(rules) < 3 {
+		return comment
+	}
+	return comment[rules[len(rules)-2]:]
 }
 
 // oneLine joins the text of a short comment into one line.

@@ -104,7 +104,7 @@ func prepare(system *blueprint.System, bp *blueprint.Program, copybookDir string
 }
 
 func analyze(bp *blueprint.Program, copybookDir string, dialect cobol.Dialect) (*cobol.Program, *layout.ProgramRecords, dataflow.Flow, error) {
-	file, err := cobol.ReadProgram(bp.Source, []string{copybookDir})
+	file, err := cobol.ReadProgramIn(bp.Source, []string{copybookDir}, dialect)
 	if err != nil {
 		return nil, nil, dataflow.Flow{}, err
 	}

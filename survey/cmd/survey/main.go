@@ -2,9 +2,9 @@
 // its explorer, or searches for cases that reach the rules of its
 // programs.
 //
-//	survey blueprints -copybooks dir -out dir [-dialect ibm|mf] [-annotations dir] [-title name] program.cbl... [job.jcl...]
-//	survey explore -copybooks dir [-dialect ibm|mf] [-annotations dir] [-addr host:port] [-title name] [-cases dir] program.cbl... [job.jcl...]
-//	survey oracle -copybooks dir [-dialect ibm|mf] [-out dir -rules dir] [-title name] [-program name] [-jobs JOB,...] program.cbl... [job.jcl...]
+//	survey blueprints -copybooks dir -out dir [-dialect ibm|mf|fujitsu] [-annotations dir] [-title name] program.cbl... [job.jcl...]
+//	survey explore -copybooks dir [-dialect ibm|mf|fujitsu] [-annotations dir] [-addr host:port] [-title name] [-cases dir] program.cbl... [job.jcl...]
+//	survey oracle -copybooks dir [-dialect ibm|mf|fujitsu] [-out dir -rules dir] [-title name] [-program name] [-jobs JOB,...] program.cbl... [job.jcl...]
 package main
 
 import (
@@ -24,9 +24,9 @@ import (
 )
 
 const usage = `usage:
-  survey blueprints -copybooks dir -out dir [-dialect ibm|mf] [-annotations dir] [-title name] program.cbl... [job.jcl...]
-  survey explore -copybooks dir [-dialect ibm|mf] [-annotations dir] [-addr host:port] [-title name] [-cases dir] program.cbl... [job.jcl...]
-  survey oracle -copybooks dir [-dialect ibm|mf] [-out dir -rules dir] [-title name] [-program name] [-jobs JOB,...] program.cbl... [job.jcl...]
+  survey blueprints -copybooks dir -out dir [-dialect ibm|mf|fujitsu] [-annotations dir] [-title name] program.cbl... [job.jcl...]
+  survey explore -copybooks dir [-dialect ibm|mf|fujitsu] [-annotations dir] [-addr host:port] [-title name] [-cases dir] program.cbl... [job.jcl...]
+  survey oracle -copybooks dir [-dialect ibm|mf|fujitsu] [-out dir -rules dir] [-title name] [-program name] [-jobs JOB,...] program.cbl... [job.jcl...]
 `
 
 func main() {
@@ -44,7 +44,7 @@ func main() {
 func writeBlueprints(args []string) error {
 	flags := flag.NewFlagSet("blueprints", flag.ExitOnError)
 	copybooks := flags.String("copybooks", "", "directory of the copybooks")
-	dialect := flags.String("dialect", cobol.IBM.Name, "the dialect the system is written in, ibm or mf")
+	dialect := flags.String("dialect", cobol.IBM.Name, "the dialect the system is written in, ibm, mf or fujitsu")
 	out := flags.String("out", "", "directory to write the blueprints to")
 	annotations := flags.String("annotations", "", "directory of the prose a model wrote, to show beside the facts")
 	title := flags.String("title", "", "name of the system, for the index")
@@ -66,7 +66,7 @@ func writeBlueprints(args []string) error {
 func serveExplorer(args []string) error {
 	flags := flag.NewFlagSet("explore", flag.ExitOnError)
 	copybooks := flags.String("copybooks", "", "directory of the copybooks")
-	dialect := flags.String("dialect", cobol.IBM.Name, "the dialect the system is written in, ibm or mf")
+	dialect := flags.String("dialect", cobol.IBM.Name, "the dialect the system is written in, ibm, mf or fujitsu")
 	addr := flags.String("addr", "127.0.0.1:1192", "address to serve on")
 	title := flags.String("title", "the system", "name of the system")
 	cases := flags.String("cases", "", "directory of the cases the oracle wrote")
@@ -99,7 +99,7 @@ func serveExplorer(args []string) error {
 func searchCases(args []string) error {
 	flags := flag.NewFlagSet("oracle", flag.ExitOnError)
 	copybooks := flags.String("copybooks", "", "directory of the copybooks")
-	dialect := flags.String("dialect", cobol.IBM.Name, "the dialect the system is written in, ibm or mf")
+	dialect := flags.String("dialect", cobol.IBM.Name, "the dialect the system is written in, ibm, mf or fujitsu")
 	out := flags.String("out", "", "directory to write the cases to")
 	rules := flags.String("rules", "", "directory of the blueprints' decision tables, relative to the cases' directory")
 	title := flags.String("title", "the system", "name of the system, for the index")

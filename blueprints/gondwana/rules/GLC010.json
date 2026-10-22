@@ -1,0 +1,162 @@
+{
+  "program": "GLC010",
+  "tables": [
+    {
+      "paragraph": "ﾒｲﾝ-RTN",
+      "source": "gondwana/programs/GLC010.cbl:40",
+      "conditions": [
+        "WS-A-DD \u003c WS-B-DD",
+        "WS-ﾂｷｽｳ \u003c 0",
+        "WS-ｱﾏﾘ \u003c 6"
+      ],
+      "conditionRefs": [
+        [
+          "WS-A-DD",
+          "WS-B-DD"
+        ],
+        [
+          "WS-ﾂｷｽｳ"
+        ],
+        [
+          "WS-ｱﾏﾘ"
+        ]
+      ],
+      "actions": [
+        "MOVE LK-ｾｲﾈﾝｶﾞｯﾋﾟ TO WS-ｾｲﾈﾝｶﾞｯﾋﾟ",
+        "MOVE LK-ｷｼﾞｭﾝﾋﾞ TO WS-ｷｼﾞｭﾝﾋﾞ",
+        "COMPUTE WS-ﾂｷｽｳ = (WS-A-YYYY - WS-B-YYYY) * 12 + WS-A-MM - WS-B-MM",
+        "SUBTRACT 1 FROM WS-ﾂｷｽｳ",
+        "MOVE 0 TO WS-ﾂｷｽｳ",
+        "DIVIDE WS-ﾂｷｽｳ BY 12 GIVING LK-ﾈﾝﾚｲ REMAINDER WS-ｱﾏﾘ",
+        "ADD 1 TO LK-ﾈﾝﾚｲ",
+        "GOBACK"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            4,
+            5,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            5,
+            7
+          ]
+        }
+      ]
+    }
+  ]
+}

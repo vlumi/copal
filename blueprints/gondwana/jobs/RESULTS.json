@@ -1,0 +1,174 @@
+{
+  "job": "RESULTS",
+  "kind": "script",
+  "source": "gondwana/scripts/RESULTS.BAT",
+  "description": [
+    "RESULTS.BAT: 口座振替結果処理。収納代行から結果ファイルが届いた日",
+    "(振替日の数営業日後) に、日次処理の前に実行する。",
+    "",
+    "使い方: RESULTS.BAT YYYYMMDD  業務日付。結果ファイルの日付でもある。",
+    "環境: GLS_BIN プログラム、GLS_DATA データ",
+    "",
+    "変更履歴",
+    "2003-10-06 MS  GL-0310 初版、口座振替の開始。"
+  ],
+  "steps": [
+    {
+      "step": "GLD050",
+      "program": "GLD050",
+      "arguments": [
+        "$DATE"
+      ],
+      "stopsIf": "RC \u003e= 8",
+      "description": [
+        "振替結果の反映"
+      ],
+      "source": "gondwana/scripts/RESULTS.BAT:23",
+      "dds": [
+        {
+          "dd": "PRMRES",
+          "datasets": [
+            "$DATA/IN/PRMRES.$DATE.DAT"
+          ],
+          "file": "PRMRES-F",
+          "uses": [
+            "read"
+          ],
+          "copybook": "ZENGIN",
+          "source": "gondwana/scripts/RESULTS.BAT:23"
+        },
+        {
+          "dd": "POLMST",
+          "datasets": [
+            "$DATA/MASTER/POLMST.IDX"
+          ],
+          "indexed": true,
+          "file": "POLMST-F",
+          "uses": [
+            "update"
+          ],
+          "copybook": "POLMST",
+          "source": "gondwana/scripts/RESULTS.BAT:23"
+        },
+        {
+          "dd": "GLSCTL",
+          "datasets": [
+            "$DATA/MASTER/GLSCTL.BIN"
+          ],
+          "file": "GLSCTL-F",
+          "uses": [
+            "update"
+          ],
+          "copybook": "CTLREC",
+          "source": "gondwana/scripts/RESULTS.BAT:23"
+        },
+        {
+          "dd": "GLJRNL",
+          "datasets": [
+            "$DATA/OUT/GLJRNL.$DATE.TXT"
+          ],
+          "file": "GLJRNL-F",
+          "uses": [
+            "append"
+          ],
+          "copybook": "GLJRNL",
+          "source": "gondwana/scripts/RESULTS.BAT:23"
+        },
+        {
+          "dd": "RESREJ",
+          "datasets": [
+            "$DATA/OUT/RESREJ.$DATE.TXT"
+          ],
+          "file": "REJECT-F",
+          "uses": [
+            "write"
+          ],
+          "source": "gondwana/scripts/RESULTS.BAT:23"
+        },
+        {
+          "dd": "GLD050R",
+          "datasets": [
+            "$DATA/RPT/GLD050.$DATE.RPT"
+          ],
+          "file": "REPORT-F",
+          "uses": [
+            "write"
+          ],
+          "source": "gondwana/scripts/RESULTS.BAT:23"
+        },
+        {
+          "dd": "stdout",
+          "datasets": [
+            "$DATA/RPT/GLD050.$DATE.OUT"
+          ],
+          "uses": [
+            "write"
+          ],
+          "source": "gondwana/scripts/RESULTS.BAT:23"
+        }
+      ]
+    }
+  ],
+  "datasets": [
+    {
+      "dataset": "$DATA/IN/PRMRES.$DATE.DAT",
+      "copybook": "ZENGIN",
+      "kind": "external",
+      "readBy": [
+        "GLD050"
+      ]
+    },
+    {
+      "dataset": "$DATA/MASTER/POLMST.IDX",
+      "copybook": "POLMST",
+      "kind": "internal",
+      "indexed": true,
+      "writtenBy": [
+        "GLD050"
+      ],
+      "readBy": [
+        "GLD050"
+      ]
+    },
+    {
+      "dataset": "$DATA/MASTER/GLSCTL.BIN",
+      "copybook": "CTLREC",
+      "kind": "internal",
+      "writtenBy": [
+        "GLD050"
+      ],
+      "readBy": [
+        "GLD050"
+      ]
+    },
+    {
+      "dataset": "$DATA/OUT/GLJRNL.$DATE.TXT",
+      "copybook": "GLJRNL",
+      "kind": "output",
+      "writtenBy": [
+        "GLD050"
+      ]
+    },
+    {
+      "dataset": "$DATA/OUT/RESREJ.$DATE.TXT",
+      "kind": "output",
+      "writtenBy": [
+        "GLD050"
+      ]
+    },
+    {
+      "dataset": "$DATA/RPT/GLD050.$DATE.RPT",
+      "kind": "output",
+      "writtenBy": [
+        "GLD050"
+      ]
+    },
+    {
+      "dataset": "$DATA/RPT/GLD050.$DATE.OUT",
+      "kind": "output",
+      "writtenBy": [
+        "GLD050"
+      ]
+    }
+  ]
+}

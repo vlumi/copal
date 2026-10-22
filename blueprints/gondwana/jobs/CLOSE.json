@@ -1,0 +1,322 @@
+{
+  "job": "CLOSE",
+  "kind": "script",
+  "source": "gondwana/scripts/CLOSE.BAT",
+  "description": [
+    "CLOSE.BAT: 月次締め。月末の日次処理の後に、責任準備金の計算、",
+    "代理店手数料の計算、そしてアンロード。",
+    "",
+    "使い方: CLOSE.BAT YYYYMMDD  月末の業務日付",
+    "環境: GLS_BIN プログラム、GLS_SCRIPTS バッチファイル、GLS_DATA データ",
+    "",
+    "変更履歴",
+    "1999-11-08 MS  GL-0233 初版、PC システム移行時 (旧 JCL から)。"
+  ],
+  "steps": [
+    {
+      "step": "GLM020",
+      "program": "GLM020",
+      "arguments": [
+        "$DATE"
+      ],
+      "stopsIf": "RC \u003e= 8",
+      "description": [
+        "責任準備金計算"
+      ],
+      "source": "gondwana/scripts/CLOSE.BAT:23",
+      "dds": [
+        {
+          "dd": "POLMST",
+          "datasets": [
+            "$DATA/MASTER/POLMST.IDX"
+          ],
+          "indexed": true,
+          "file": "POLMST-F",
+          "uses": [
+            "update"
+          ],
+          "copybook": "POLMST",
+          "source": "gondwana/scripts/CLOSE.BAT:23"
+        },
+        {
+          "dd": "RSVTB",
+          "datasets": [
+            "$DATA/MASTER/RSVTB.TXT"
+          ],
+          "file": "RSVTB-F",
+          "uses": [
+            "read"
+          ],
+          "copybook": "RSVTB",
+          "source": "gondwana/scripts/CLOSE.BAT:23"
+        },
+        {
+          "dd": "PRODTB",
+          "datasets": [
+            "$DATA/MASTER/PRODTB.TXT"
+          ],
+          "file": "PRODTB-F",
+          "uses": [
+            "read"
+          ],
+          "copybook": "PRODTB",
+          "source": "gondwana/scripts/CLOSE.BAT:23"
+        },
+        {
+          "dd": "GLSCTL",
+          "datasets": [
+            "$DATA/MASTER/GLSCTL.BIN"
+          ],
+          "file": "GLSCTL-F",
+          "uses": [
+            "update"
+          ],
+          "copybook": "CTLREC",
+          "source": "gondwana/scripts/CLOSE.BAT:23"
+        },
+        {
+          "dd": "GLJRNL",
+          "datasets": [
+            "$DATA/OUT/GLJRNL.$DATE.TXT"
+          ],
+          "file": "GLJRNL-F",
+          "uses": [
+            "append"
+          ],
+          "copybook": "GLJRNL",
+          "source": "gondwana/scripts/CLOSE.BAT:23"
+        },
+        {
+          "dd": "GLM020R",
+          "datasets": [
+            "$DATA/RPT/GLM020.$DATE.RPT"
+          ],
+          "file": "REPORT-F",
+          "uses": [
+            "write"
+          ],
+          "source": "gondwana/scripts/CLOSE.BAT:23"
+        },
+        {
+          "dd": "stdout",
+          "datasets": [
+            "$DATA/RPT/GLM020.$DATE.OUT"
+          ],
+          "uses": [
+            "write"
+          ],
+          "source": "gondwana/scripts/CLOSE.BAT:23"
+        }
+      ]
+    },
+    {
+      "step": "GLM030",
+      "program": "GLM030",
+      "arguments": [
+        "$DATE"
+      ],
+      "stopsIf": "RC \u003e= 8",
+      "description": [
+        "代理店手数料計算"
+      ],
+      "source": "gondwana/scripts/CLOSE.BAT:31",
+      "dds": [
+        {
+          "dd": "POLMST",
+          "datasets": [
+            "$DATA/MASTER/POLMST.IDX"
+          ],
+          "indexed": true,
+          "file": "POLMST-F",
+          "uses": [
+            "read"
+          ],
+          "copybook": "POLMST",
+          "source": "gondwana/scripts/CLOSE.BAT:31"
+        },
+        {
+          "dd": "AGTMST",
+          "datasets": [
+            "$DATA/MASTER/AGTMST.TXT"
+          ],
+          "file": "AGTMST-F",
+          "uses": [
+            "read"
+          ],
+          "copybook": "AGTMST",
+          "source": "gondwana/scripts/CLOSE.BAT:31"
+        },
+        {
+          "dd": "GLSCTL",
+          "datasets": [
+            "$DATA/MASTER/GLSCTL.BIN"
+          ],
+          "file": "GLSCTL-F",
+          "uses": [
+            "update"
+          ],
+          "copybook": "CTLREC",
+          "source": "gondwana/scripts/CLOSE.BAT:31"
+        },
+        {
+          "dd": "GLJRNL",
+          "datasets": [
+            "$DATA/OUT/GLJRNL.$DATE.TXT"
+          ],
+          "file": "GLJRNL-F",
+          "uses": [
+            "append"
+          ],
+          "copybook": "GLJRNL",
+          "source": "gondwana/scripts/CLOSE.BAT:31"
+        },
+        {
+          "dd": "COMMIS",
+          "datasets": [
+            "$DATA/OUT/COMMIS.$DATE.TXT"
+          ],
+          "file": "COMMIS-F",
+          "uses": [
+            "write"
+          ],
+          "source": "gondwana/scripts/CLOSE.BAT:31"
+        },
+        {
+          "dd": "GLM030R",
+          "datasets": [
+            "$DATA/RPT/GLM030.$DATE.RPT"
+          ],
+          "file": "REPORT-F",
+          "uses": [
+            "write"
+          ],
+          "source": "gondwana/scripts/CLOSE.BAT:31"
+        },
+        {
+          "dd": "stdout",
+          "datasets": [
+            "$DATA/RPT/GLM030.$DATE.OUT"
+          ],
+          "uses": [
+            "write"
+          ],
+          "source": "gondwana/scripts/CLOSE.BAT:31"
+        }
+      ]
+    },
+    {
+      "step": "UNLOAD",
+      "kind": "script",
+      "runs": "UNLOAD",
+      "arguments": [
+        "$DATE"
+      ],
+      "stopsIf": "RC \u003e= 8",
+      "description": [
+        "月末のアンロード"
+      ],
+      "source": "gondwana/scripts/CLOSE.BAT:36",
+      "dds": null
+    }
+  ],
+  "datasets": [
+    {
+      "dataset": "$DATA/MASTER/POLMST.IDX",
+      "copybook": "POLMST",
+      "kind": "internal",
+      "indexed": true,
+      "writtenBy": [
+        "GLM020"
+      ],
+      "readBy": [
+        "GLM020",
+        "GLM030"
+      ]
+    },
+    {
+      "dataset": "$DATA/MASTER/RSVTB.TXT",
+      "copybook": "RSVTB",
+      "kind": "external",
+      "readBy": [
+        "GLM020"
+      ]
+    },
+    {
+      "dataset": "$DATA/MASTER/PRODTB.TXT",
+      "copybook": "PRODTB",
+      "kind": "external",
+      "readBy": [
+        "GLM020"
+      ]
+    },
+    {
+      "dataset": "$DATA/MASTER/GLSCTL.BIN",
+      "copybook": "CTLREC",
+      "kind": "internal",
+      "writtenBy": [
+        "GLM020",
+        "GLM030"
+      ],
+      "readBy": [
+        "GLM020",
+        "GLM030"
+      ]
+    },
+    {
+      "dataset": "$DATA/OUT/GLJRNL.$DATE.TXT",
+      "copybook": "GLJRNL",
+      "kind": "output",
+      "writtenBy": [
+        "GLM020",
+        "GLM030"
+      ]
+    },
+    {
+      "dataset": "$DATA/RPT/GLM020.$DATE.RPT",
+      "kind": "output",
+      "writtenBy": [
+        "GLM020"
+      ]
+    },
+    {
+      "dataset": "$DATA/RPT/GLM020.$DATE.OUT",
+      "kind": "output",
+      "writtenBy": [
+        "GLM020"
+      ]
+    },
+    {
+      "dataset": "$DATA/MASTER/AGTMST.TXT",
+      "copybook": "AGTMST",
+      "kind": "external",
+      "readBy": [
+        "GLM030"
+      ]
+    },
+    {
+      "dataset": "$DATA/OUT/COMMIS.$DATE.TXT",
+      "kind": "output",
+      "writtenBy": [
+        "GLM030"
+      ]
+    },
+    {
+      "dataset": "$DATA/RPT/GLM030.$DATE.RPT",
+      "kind": "output",
+      "writtenBy": [
+        "GLM030"
+      ]
+    },
+    {
+      "dataset": "$DATA/RPT/GLM030.$DATE.OUT",
+      "kind": "output",
+      "writtenBy": [
+        "GLM030"
+      ]
+    }
+  ],
+  "findings": [
+    "Step GLM020 exports no DD_SORTWK for GLM020's file SORT-F.",
+    "Step GLM030 exports no DD_SORTWK for GLM030's file SORT-F."
+  ]
+}

@@ -2,10 +2,12 @@ package blueprint
 
 import (
 	"fmt"
+	"path/filepath"
 	"slices"
 	"strings"
 
 	"github.com/vlumi/cobolith/cobol"
+	"github.com/vlumi/copal/bedrock/batchfile"
 	"github.com/vlumi/copal/bedrock/script"
 )
 
@@ -23,8 +25,8 @@ const (
 // it, by the names the program assigns them; a sort or a move reads its
 // input and writes its output, and passes the records on unchanged; and a
 // step may run another script, a job of its own.
-func analyzeScript(path string, programs []Program) (Job, error) {
-	parsed, err := script.ParseFile(path)
+func analyzeScript(path, encoding string, programs []Program) (Job, error) {
+	parsed, err := parseScript(path, encoding)
 	if err != nil {
 		return Job{}, err
 	}
@@ -89,4 +91,45 @@ func bindScriptStep(step *Step, s script.Step, programs []Program) []string {
 		step.DDs = append(step.DDs, DD{Name: "stdout", Datasets: []string{s.Stdout}, Uses: []string{useWrite}, Source: step.Source})
 	}
 	return findings
+}
+
+// parseScript reads a shell script, or a Windows batch file by its .bat
+// extension, into the one model of a script, its comments transcoded from
+// the encoding the system's source is in, as the programs' are.
+func parseScript(path, encoding string) (*script.Script, error) {
+	var parsed *script.Script
+	if strings.EqualFold(filepath.Ext(path), ".bat") {
+		f, err := batchfile.ParseFile(path)
+		if err != nil {
+			return nil, err
+		}
+		parsed = f.Script()
+	} else {
+		var err error
+		if parsed, err = script.ParseFile(path); err != nil {
+			return nil, err
+		}
+	}
+	var err error
+	if parsed.Comment, err = toUTF8(parsed.Comment, encoding); err != nil {
+		return nil, fmt.Errorf("%s: %w", path, err)
+	}
+	for i := range parsed.Steps {
+		if parsed.Steps[i].Comment, err = toUTF8(parsed.Steps[i].Comment, encoding); err != nil {
+			return nil, fmt.Errorf("%s: %w", path, err)
+		}
+	}
+	return parsed, nil
+}
+
+// toUTF8 transcodes comment lines from the source's encoding.
+func toUTF8(lines []string, encoding string) ([]string, error) {
+	out := make([]string, len(lines))
+	for i, line := range lines {
+		var err error
+		if out[i], err = cobol.ToUTF8(line, encoding); err != nil {
+			return nil, err
+		}
+	}
+	return out, nil
 }

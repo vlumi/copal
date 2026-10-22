@@ -120,6 +120,9 @@ func (s *System) indexMarkdown(dir, title string) string {
 		for _, r := range c.Records {
 			records = append(records, fmt.Sprintf("%s (%d bytes)", r.Name, r.Length))
 		}
+		if len(c.Paragraphs) > 0 {
+			records = append(records, "procedure: "+strings.Join(c.Paragraphs, ", "))
+		}
 		b.WriteString(row(fmt.Sprintf("[%s](copybooks/%s.md)", c.Name, c.Name), strings.Join(records, ", "),
 			programLinks(c.UsedBy, "programs/")))
 	}
@@ -220,6 +223,9 @@ func copybookMarkdown(dir string, c Copybook) string {
 	fmt.Fprintf(&b, "# %s\n\n", c.Name)
 	writeDescription(&b, c.Description)
 	fmt.Fprintf(&b, "Copybook %s, used by %s.\n", sourceLink(dir, c.Source, false), programLinks(c.UsedBy, "../programs/"))
+	if len(c.Paragraphs) > 0 {
+		fmt.Fprintf(&b, "\nA copybook of procedure: its paragraphs, %s, are copied into the procedure division of each program that uses it, and are in each program's blueprint.\n", strings.Join(c.Paragraphs, ", "))
+	}
 	for _, r := range c.Records {
 		fmt.Fprintf(&b, "\n## %s\n\n%d bytes.%s\n\n", r.Name, r.Length, sentence(r.Description))
 		writeLayout(&b, dir, r.Field)
