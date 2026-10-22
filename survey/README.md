@@ -60,4 +60,4 @@ The analyses run in order, each on the output of the ones before it, and each is
 - [blueprint/](blueprint/): the model of a system and its writers, the only exported package.
 - [internal/](internal/): the analyses, one package each, and the explorer.
 
-Tests: every analysis has unit tests on small programs under its `testdata/`, and the whole pipeline is tested against both specimens, whose blueprints in `blueprints/` and cases in `oracle/` are golden files that `make ci` regenerates and compares.
+Tests: every analysis has unit tests on small programs under its `testdata/`, and the whole pipeline is tested against the three specimens, whose blueprints in `blueprints/` and cases in `oracle/` are golden files that `make ci` regenerates and compares.
