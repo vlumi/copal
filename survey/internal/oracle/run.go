@@ -80,7 +80,7 @@ func (r *runner) run(c Case, dir string, record bool) (result, error) {
 	if err != nil {
 		return result{}, err
 	}
-	res := result{outcome: outcome, stdout: stdout.Bytes()}
+	res := result{outcome: outcome, stdout: withoutDir(stdout.Bytes(), r.programs)}
 	if record {
 		if res.outputs, err = r.outputs(c, dir); err != nil {
 			return result{}, err
@@ -209,6 +209,14 @@ func lines(records [][]byte) []byte {
 		b.WriteByte('\n')
 	}
 	return b.Bytes()
+}
+
+// withoutDir strips a directory from what a run wrote: the one the oracle
+// compiled the programs into, which GnuCOBOL's runtime error report names
+// the executable by, so that a recorded output does not say where the
+// oracle ran.
+func withoutDir(data []byte, dir string) []byte {
+	return bytes.ReplaceAll(data, []byte(dir+string(filepath.Separator)), nil)
 }
 
 // executable is the name of a program's executable, which run.Build names
