@@ -7,9 +7,9 @@ It does not translate COBOL into anything. It produces the understanding a trans
 ## Using it
 
 ```sh
-survey blueprints -copybooks dir -out dir [-title name] program.cbl... [job.jcl...]
-survey explore -copybooks dir [-addr host:port] [-title name] [-cases dir] program.cbl... [job.jcl...]
-survey oracle -copybooks dir [-out dir -rules dir] [-title name] [-program name] [-jobs JOB,...] program.cbl... [job.jcl... | script.sh...]
+survey blueprints -copybooks dir -out dir [-dialect ibm|mf] [-annotations dir] [-title name] program.cbl... [job.jcl... | script.sh...]
+survey explore -copybooks dir [-dialect ibm|mf] [-annotations dir] [-addr host:port] [-title name] [-cases dir] program.cbl... [job.jcl... | script.sh...]
+survey oracle -copybooks dir [-dialect ibm|mf] [-out dir -rules dir] [-title name] [-program name] [-jobs JOB,...] program.cbl... [job.jcl... | script.sh...]
 ```
 
 Point it at the programs and the jobs or scripts, and tell it where the copybooks are and which dialect they are in, by the name cobolith gives it: `ibm` or `mf` for the specimens.
@@ -43,7 +43,7 @@ The analyses run in order, each on the output of the ones before it, and each is
 
 ## What it does not do
 
-- It does not run the programs or execute the jobs; Pangaea's machine room does that, outside the survey.
+- It does not operate the specimens: their machine rooms run their batches, outside the survey. The oracle compiles and runs programs, jobs and scripts only on the cases it made, through bedrock.
 - Field origins follow the paths control can take, not the values that decide them: a value that only the outcome of a condition keeps from the write, such as a field set to 0 on the path that a later `IF ... = 0` sends elsewhere, still counts. A record laid out in redefinitions has types, by the field whose condition names the program tests or sets; a write's type is the one its type field's values come from on the paths to it, and each type's fields get the origins of the writes of that type alone; a type field filled from anything else writes every type. A `READ` with `INVALID KEY` or `AT END`, and an arithmetic statement with `ON SIZE ERROR`, count as leaving their targets as they were, which they do on that path; so do a `STRING`, a `CALL`, and a target with a subscript or a reference modification. Bytes still to be followed after a statement overwrites part of an item are named by the narrowest item that holds them.
 - Lineage follows values into a called program and back by the position of each argument and `USING` item, byte for byte, and from `SYSIN` through `ACCEPT`. Within the caller, every program called by reference counts as one that may change what it is passed; across programs, only one with a statement that moves a value into those bytes does. A program that updates a dataset in place, reading and rewriting it in one step, counts among the writers of what it reads. A program's outputs have every record type it writes to a file, and a reader's field finds the writer's fields over its bytes in each of them; its inputs have the fields of each record type it reads, though which type a read gets is the data's, not the code's. Forward, a dataset a step writes counts as read by every later step of its job that reads it and, unless it is temporary, by every job's step that reads it in a later run, since the survey cannot know the order of the runs; a trail stops at 400 fields and says so.
 - The kinds say no more than the code: a field is a key only where a file's `RECORD KEY` or a sort names it, so a key a master file is merely sorted by is a number. The one guess among them is the date, told by its name; a text field whose values come from a date, in the programs that write it, is a date too.

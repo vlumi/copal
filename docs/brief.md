@@ -27,7 +27,7 @@ The hard part of moving a COBOL core system to anything newer is rarely the tran
 4. **Data flow.** For each paragraph, the fields it reads and writes; field-to-field lineage through `MOVE`, `COMPUTE` and arithmetic verbs.
 5. **Business rules.** Conditions on fields, including level-88 names, extracted as decision tables per program.
 6. **File I/O and the job network.** Which program opens which file in which mode, joined with the job network file into one graph of steps and datasets: the batch network, drawn.
-7. **Blueprints.** Markdown documents per program and per job network, with diagrams generated as SVG (Graphviz or hand-laid). Checked in as golden files for Pangaea.
+7. **Blueprints.** Markdown documents per program and per job network, with diagrams generated as SVG (Graphviz or hand-laid). Checked in as golden files for both specimens.
 
 **Bedrock**, the layer both stand on: reading COBOL source and JCL, laying out records from copybooks, reading and writing records by field, and compiling and running programs and jobs. None of that is analysis, and the bank's machine room needs it as much as the survey does. What reads COBOL has since become cobolith, a library of its own (see Decisions); bedrock keeps the running.
 
@@ -64,4 +64,4 @@ The hard part of moving a COBOL core system to anything newer is rarely the tran
 
 ## Toolchain
 
-GnuCOBOL 3.2 from Homebrew (`cobc -x` for executables, `-free` is not used: Pangaea is fixed-format on purpose). Go, latest stable. `make ci` builds Pangaea, runs its batches against the golden outputs, runs the survey's tests and regenerates the blueprints to compare against the golden ones.
+GnuCOBOL 3.2 from Homebrew (`cobc -x` for executables, `-free` is not used: Pangaea is fixed-format on purpose). Go, latest stable. `make ci` builds both specimens, runs their batches against the golden outputs, runs the survey's tests, regenerates the blueprints to compare against the golden ones, and replays the oracle's cases.
