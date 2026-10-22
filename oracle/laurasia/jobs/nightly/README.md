@@ -13,6 +13,8 @@ The script ended with exit status 0.
 | FEELD | [FEELD](../../FEELD/) | RC=0000 | 5 of 23 |
 | IXFEE | [IXFEE](../../IXFEE/) | RC=0000 | 2 of 29 |
 | POST | [POST](../../POST/) | RC=0000 | 2 of 21 |
+| PAYMENTS | payments | RC=0000 | |
+| PAYMENTS.PAYIN | [PAYIN](../../PAYIN/) | RC=0004 | 5 of 17 |
 | DISPUTES | disputes | RC=0000 | |
 | DISPUTES.DSPSORT | sort | RC=0000 | |
 | DISPUTES.DISPUTE | [DISPUTE](../../DISPUTE/) | RC=0004 | 15 of 21 |

@@ -9,7 +9,7 @@ history
 2013-06-03 rk  lcs-0219 billing cycle day and paid in full flag.
 ```
 
-Copybook [cardacct.cpy](../../../laurasia/copybooks/cardacct.cpy), used by [ACCTLD](../programs/ACCTLD.md), [ACCTUL](../programs/ACCTUL.md), [CYCLE](../programs/CYCLE.md), [POST](../programs/POST.md).
+Copybook [cardacct.cpy](../../../laurasia/copybooks/cardacct.cpy), used by [ACCTLD](../programs/ACCTLD.md), [ACCTUL](../programs/ACCTUL.md), [CYCLE](../programs/CYCLE.md), [PAYIN](../programs/PAYIN.md), [POST](../programs/POST.md).
 
 ## CARD-ACCOUNT
 

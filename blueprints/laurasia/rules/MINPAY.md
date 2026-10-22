@@ -15,4 +15,4 @@ The business rules of [MINPAY](../programs/MINPAY.md), paragraph by paragraph: e
 | → `COMPUTE LK-MINIMUM ROUNDED = LK-BALANCE / 50` | | | 1 | 1 |
 | → `MOVE PAYMENT-FLOOR TO LK-MINIMUM` | | | 2 | |
 
-Source: [cycle.cbl:137](../../../laurasia/programs/cycle.cbl#L137).
+Source: [cycle.cbl:139](../../../laurasia/programs/cycle.cbl#L139).

@@ -257,3 +257,61 @@ func TestDisputes(t *testing.T) {
 		t.Errorf("%d cases moved on, %d opened", moved, opened)
 	}
 }
+
+// A business day's feed from the card system: each cardholder pays on
+// their day and not on others, a paid statement is left alone, and a
+// status change comes now and then.
+func TestPayments(t *testing.T) {
+	g := generator(t)
+	recs, err := g.Cards(500)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cards, _ := g.ReadCards(recs)
+	owing := map[string]Card{}
+	for _, c := range cards {
+		if c.Statement > 0 && !c.PaidInFull {
+			owing[c.No] = c
+		}
+	}
+	paid := map[string]int{}
+	kinds := map[string]int{}
+	for date := NewDate(2026, time.October, 1); date.Number() <= 20261031; date = date.AddDays(1) {
+		if !date.BusinessDay() {
+			continue
+		}
+		feed, err := g.Payments(date, cards)
+		if err != nil {
+			t.Fatal(err)
+		}
+		again, _ := g.Payments(date, cards)
+		if !slices.EqualFunc(feed, again, slices.Equal) {
+			t.Fatalf("%s: two feeds from the same seed differ", date)
+		}
+		for _, r := range feed {
+			card, _ := g.Layouts.Feed.Text(r, "PF-CARD-NO")
+			kind, _ := g.Layouts.Feed.Text(r, "PF-KIND")
+			amount, _ := g.Layouts.Feed.Number(r, "PF-AMOUNT")
+			kinds[kind]++
+			if kind != "P" {
+				continue
+			}
+			paid[card]++
+			if c, known := owing[card]; known && (amount <= 0 || amount > c.Balance) {
+				t.Errorf("%s: card %s pays %d of a balance of %d", date, card, amount, c.Balance)
+			}
+		}
+	}
+	twice := 0
+	for card, n := range paid {
+		if n > 1 {
+			twice++
+		}
+		if _, known := owing[card]; !known && paid[card] > 0 && slices.ContainsFunc(cards, func(c Card) bool { return c.No == card }) {
+			t.Errorf("card %s owes nothing on its statement and paid", card)
+		}
+	}
+	if len(paid) < len(owing)*8/10 || twice > 2 || kinds["S"] == 0 {
+		t.Errorf("%d of %d cards owing paid in a month, %d of them twice; %d status changes", len(paid), len(owing), twice, kinds["S"])
+	}
+}

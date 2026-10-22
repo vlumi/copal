@@ -7,13 +7,14 @@ for each open or blocked card whose cycle day is the run's day of the
 month: interest on the last statement's balance, unless it was paid in
 full, as the grace period allows; the minimum payment; and the
 statement, with the balance it closes on, which the next cycle charges
-interest on.
+interest on unless the payments to come pay it in full.
 
 return codes: 0 done, 16 cannot update the accounts.
 
 history
 2013-06-03 rk  lcs-0219 original version.
 2021-03-01 mt  lcs-0481 interest by the card's product.
+2022-09-05 ah  lcs-0497 the new statement starts unpaid; payin marks it paid.
 ```
 
 Program [cycle.cbl](../../../laurasia/programs/cycle.cbl): 3 files, 4 paragraphs. Its business rules: [3 decision tables](../rules/CYCLE.md).
@@ -71,24 +72,24 @@ Program [cycle.cbl](../../../laurasia/programs/cycle.cbl): 3 files, 4 paragraphs
 
 | Paragraph | Description | Source | Performs | Goes to | Performed by | Reached by |
 | --- | --- | --- | --- | --- | --- | --- |
-| MAIN | | [cycle.cbl:62](../../../laurasia/programs/cycle.cbl#L62) | CLOSE-CYCLE | | | |
-| CLOSE-CYCLE | | [cycle.cbl:79](../../../laurasia/programs/cycle.cbl#L79) | POST-INTEREST, WRITE-STATEMENT | | MAIN | |
-| POST-INTEREST | | [cycle.cbl:97](../../../laurasia/programs/cycle.cbl#L97) | | | CLOSE-CYCLE | |
-| WRITE-STATEMENT | | [cycle.cbl:106](../../../laurasia/programs/cycle.cbl#L106) | | | CLOSE-CYCLE | |
+| MAIN | | [cycle.cbl:63](../../../laurasia/programs/cycle.cbl#L63) | CLOSE-CYCLE | | | |
+| CLOSE-CYCLE | | [cycle.cbl:80](../../../laurasia/programs/cycle.cbl#L80) | POST-INTEREST, WRITE-STATEMENT | | MAIN | |
+| POST-INTEREST | | [cycle.cbl:99](../../../laurasia/programs/cycle.cbl#L99) | | | CLOSE-CYCLE | |
+| WRITE-STATEMENT | | [cycle.cbl:108](../../../laurasia/programs/cycle.cbl#L108) | | | CLOSE-CYCLE | |
 
 ## Calls
 
 | Calls | Passing | Paragraph | Source |
 | --- | --- | --- | --- |
-| [INTCALC](INTCALC.md) | CA-PRODUCT, CA-STATEMENT-BALANCE; returning WS-INTEREST-CENTS | CLOSE-CYCLE | [cycle.cbl:82](../../../laurasia/programs/cycle.cbl#L82) |
-| [MINPAY](MINPAY.md) | CA-BALANCE, WS-MINIMUM | CLOSE-CYCLE | [cycle.cbl:89](../../../laurasia/programs/cycle.cbl#L89) |
+| [INTCALC](INTCALC.md) | CA-PRODUCT, CA-STATEMENT-BALANCE; returning WS-INTEREST-CENTS | CLOSE-CYCLE | [cycle.cbl:83](../../../laurasia/programs/cycle.cbl#L83) |
+| [MINPAY](MINPAY.md) | CA-BALANCE, WS-MINIMUM | CLOSE-CYCLE | [cycle.cbl:90](../../../laurasia/programs/cycle.cbl#L90) |
 
 ## Data flow
 
 | Paragraph | Reads | Writes |
 | --- | --- | --- |
 | MAIN | WS-ACCOUNTS-STATUS, CA-CYCLE-DAY, WS-RUN-DAY, CA-STATUS | WS-RUN-DATE, RETURN-CODE, CARD-ACCOUNT |
-| CLOSE-CYCLE | CA-PAID-IN-FULL, CA-STATEMENT-BALANCE, CA-PRODUCT, WS-INTEREST-CENTS, WS-INTEREST, CA-BALANCE, WS-MINIMUM, WS-CLOSED-COUNT | WS-INTEREST, CA-PRODUCT, CA-STATEMENT-BALANCE, WS-INTEREST-CENTS, CA-BALANCE, WS-MINIMUM, CARD-ACCOUNT, RETURN-CODE, WS-CLOSED-COUNT |
+| CLOSE-CYCLE | CA-PAID-IN-FULL, CA-STATEMENT-BALANCE, CA-PRODUCT, WS-INTEREST-CENTS, WS-INTEREST, CA-BALANCE, WS-MINIMUM, WS-CLOSED-COUNT | WS-INTEREST, CA-PRODUCT, CA-STATEMENT-BALANCE, WS-INTEREST-CENTS, CA-BALANCE, WS-MINIMUM, CA-PAID-IN-FULL, CARD-ACCOUNT, RETURN-CODE, WS-CLOSED-COUNT |
 | POST-INTEREST | CA-CARD-NO, CA-ACCOUNT-NO, WS-INTEREST, WS-RUN-DATE | PO-CARD-NO, PO-ACCOUNT-NO, PO-KIND, PO-AMOUNT, PO-REFERENCE, PO-DATE, POSTING |
 | WRITE-STATEMENT | CA-CARD-NO, CA-ACCOUNT-NO, WS-RUN-DATE, WS-STATEMENT-HEAD, CA-STATEMENT-BALANCE, WS-STATEMENT-AMOUNT, WS-INTEREST, CA-BALANCE, WS-MINIMUM | SH-CARD-NO, SH-ACCOUNT-NO, SH-DATE, STATEMENT-LINE, SA-LABEL, SA-VALUE |
 
@@ -102,13 +103,14 @@ Record [CARD-ACCOUNT](#card-account), from copybook [cardacct](../copybooks/card
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
-| CA-BALANCE | [WS-INTEREST](#ws-interest) | ADD | CLOSE-CYCLE | [cycle.cbl:86](../../../laurasia/programs/cycle.cbl#L86) |
-| CA-BALANCE | call MINPAY argument 1 | CALL | CLOSE-CYCLE | [cycle.cbl:89](../../../laurasia/programs/cycle.cbl#L89) |
-| CA-PRODUCT | call INTCALC argument 1 | CALL | CLOSE-CYCLE | [cycle.cbl:82](../../../laurasia/programs/cycle.cbl#L82) |
-| CA-STATEMENT-BALANCE | call INTCALC argument 2 | CALL | CLOSE-CYCLE | [cycle.cbl:82](../../../laurasia/programs/cycle.cbl#L82) |
-| CA-STATEMENT-BALANCE | [CA-BALANCE](#card-account "in CARD-ACCOUNT") | MOVE | CLOSE-CYCLE | [cycle.cbl:91](../../../laurasia/programs/cycle.cbl#L91) |
-| CARD-ACCOUNT | file ACCOUNTS | READ | MAIN | [cycle.cbl:69](../../../laurasia/programs/cycle.cbl#L69) |
-| CARD-ACCOUNT | file ACCOUNTS | READ | MAIN | [cycle.cbl:74](../../../laurasia/programs/cycle.cbl#L74) |
+| CA-BALANCE | [WS-INTEREST](#ws-interest) | ADD | CLOSE-CYCLE | [cycle.cbl:87](../../../laurasia/programs/cycle.cbl#L87) |
+| CA-BALANCE | call MINPAY argument 1 | CALL | CLOSE-CYCLE | [cycle.cbl:90](../../../laurasia/programs/cycle.cbl#L90) |
+| CA-PAID-IN-FULL | literal 'N' | MOVE | CLOSE-CYCLE | [cycle.cbl:93](../../../laurasia/programs/cycle.cbl#L93) |
+| CA-PRODUCT | call INTCALC argument 1 | CALL | CLOSE-CYCLE | [cycle.cbl:83](../../../laurasia/programs/cycle.cbl#L83) |
+| CA-STATEMENT-BALANCE | call INTCALC argument 2 | CALL | CLOSE-CYCLE | [cycle.cbl:83](../../../laurasia/programs/cycle.cbl#L83) |
+| CA-STATEMENT-BALANCE | [CA-BALANCE](#card-account "in CARD-ACCOUNT") | MOVE | CLOSE-CYCLE | [cycle.cbl:92](../../../laurasia/programs/cycle.cbl#L92) |
+| CARD-ACCOUNT | file ACCOUNTS | READ | MAIN | [cycle.cbl:70](../../../laurasia/programs/cycle.cbl#L70) |
+| CARD-ACCOUNT | file ACCOUNTS | READ | MAIN | [cycle.cbl:75](../../../laurasia/programs/cycle.cbl#L75) |
 
 ### Into POSTING
 
@@ -116,12 +118,12 @@ Record [POSTING](#posting), from copybook [postrec](../copybooks/postrec.md).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
-| PO-ACCOUNT-NO | [CA-ACCOUNT-NO](#card-account "in CARD-ACCOUNT") | MOVE | POST-INTEREST | [cycle.cbl:99](../../../laurasia/programs/cycle.cbl#L99) |
-| PO-AMOUNT | [WS-INTEREST](#ws-interest) | MOVE | POST-INTEREST | [cycle.cbl:101](../../../laurasia/programs/cycle.cbl#L101) |
-| PO-CARD-NO | [CA-CARD-NO](#card-account "in CARD-ACCOUNT") | MOVE | POST-INTEREST | [cycle.cbl:98](../../../laurasia/programs/cycle.cbl#L98) |
-| PO-DATE | [WS-RUN-DATE](#ws-run-date) | MOVE | POST-INTEREST | [cycle.cbl:103](../../../laurasia/programs/cycle.cbl#L103) |
-| PO-KIND | literal condition PO-INTEREST | SET | POST-INTEREST | [cycle.cbl:100](../../../laurasia/programs/cycle.cbl#L100) |
-| PO-REFERENCE | literal SPACES | MOVE | POST-INTEREST | [cycle.cbl:102](../../../laurasia/programs/cycle.cbl#L102) |
+| PO-ACCOUNT-NO | [CA-ACCOUNT-NO](#card-account "in CARD-ACCOUNT") | MOVE | POST-INTEREST | [cycle.cbl:101](../../../laurasia/programs/cycle.cbl#L101) |
+| PO-AMOUNT | [WS-INTEREST](#ws-interest) | MOVE | POST-INTEREST | [cycle.cbl:103](../../../laurasia/programs/cycle.cbl#L103) |
+| PO-CARD-NO | [CA-CARD-NO](#card-account "in CARD-ACCOUNT") | MOVE | POST-INTEREST | [cycle.cbl:100](../../../laurasia/programs/cycle.cbl#L100) |
+| PO-DATE | [WS-RUN-DATE](#ws-run-date) | MOVE | POST-INTEREST | [cycle.cbl:105](../../../laurasia/programs/cycle.cbl#L105) |
+| PO-KIND | literal condition PO-INTEREST | SET | POST-INTEREST | [cycle.cbl:102](../../../laurasia/programs/cycle.cbl#L102) |
+| PO-REFERENCE | literal SPACES | MOVE | POST-INTEREST | [cycle.cbl:104](../../../laurasia/programs/cycle.cbl#L104) |
 
 ### Into STATEMENT-LINE
 
@@ -129,11 +131,11 @@ Record [STATEMENT-LINE](#statement-line).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
-| STATEMENT-LINE | [WS-STATEMENT-HEAD](#ws-statement-head) | WRITE | WRITE-STATEMENT | [cycle.cbl:110](../../../laurasia/programs/cycle.cbl#L110) |
-| STATEMENT-LINE | [WS-STATEMENT-AMOUNT](#ws-statement-amount) | WRITE | WRITE-STATEMENT | [cycle.cbl:113](../../../laurasia/programs/cycle.cbl#L113) |
-| STATEMENT-LINE | [WS-STATEMENT-AMOUNT](#ws-statement-amount) | WRITE | WRITE-STATEMENT | [cycle.cbl:116](../../../laurasia/programs/cycle.cbl#L116) |
-| STATEMENT-LINE | [WS-STATEMENT-AMOUNT](#ws-statement-amount) | WRITE | WRITE-STATEMENT | [cycle.cbl:119](../../../laurasia/programs/cycle.cbl#L119) |
-| STATEMENT-LINE | [WS-STATEMENT-AMOUNT](#ws-statement-amount) | WRITE | WRITE-STATEMENT | [cycle.cbl:122](../../../laurasia/programs/cycle.cbl#L122) |
+| STATEMENT-LINE | [WS-STATEMENT-HEAD](#ws-statement-head) | WRITE | WRITE-STATEMENT | [cycle.cbl:112](../../../laurasia/programs/cycle.cbl#L112) |
+| STATEMENT-LINE | [WS-STATEMENT-AMOUNT](#ws-statement-amount) | WRITE | WRITE-STATEMENT | [cycle.cbl:115](../../../laurasia/programs/cycle.cbl#L115) |
+| STATEMENT-LINE | [WS-STATEMENT-AMOUNT](#ws-statement-amount) | WRITE | WRITE-STATEMENT | [cycle.cbl:118](../../../laurasia/programs/cycle.cbl#L118) |
+| STATEMENT-LINE | [WS-STATEMENT-AMOUNT](#ws-statement-amount) | WRITE | WRITE-STATEMENT | [cycle.cbl:121](../../../laurasia/programs/cycle.cbl#L121) |
+| STATEMENT-LINE | [WS-STATEMENT-AMOUNT](#ws-statement-amount) | WRITE | WRITE-STATEMENT | [cycle.cbl:124](../../../laurasia/programs/cycle.cbl#L124) |
 
 ### Into WS-RUN-DATE
 
@@ -141,7 +143,7 @@ Record [WS-RUN-DATE](#ws-run-date).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
-| WS-RUN-DATE | COMMAND-LINE | ACCEPT | MAIN | [cycle.cbl:63](../../../laurasia/programs/cycle.cbl#L63) |
+| WS-RUN-DATE | COMMAND-LINE | ACCEPT | MAIN | [cycle.cbl:64](../../../laurasia/programs/cycle.cbl#L64) |
 
 ### Into WS-INTEREST-CENTS
 
@@ -149,7 +151,7 @@ Record [WS-INTEREST-CENTS](#ws-interest-cents).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
-| WS-INTEREST-CENTS | call INTCALC, what it returns | CALL | CLOSE-CYCLE | [cycle.cbl:82](../../../laurasia/programs/cycle.cbl#L82) |
+| WS-INTEREST-CENTS | call INTCALC, what it returns | CALL | CLOSE-CYCLE | [cycle.cbl:83](../../../laurasia/programs/cycle.cbl#L83) |
 
 ### Into WS-INTEREST
 
@@ -157,8 +159,8 @@ Record [WS-INTEREST](#ws-interest).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
-| WS-INTEREST | literal ZERO | MOVE | CLOSE-CYCLE | [cycle.cbl:80](../../../laurasia/programs/cycle.cbl#L80) |
-| WS-INTEREST | [WS-INTEREST-CENTS](#ws-interest-cents) | COMPUTE | CLOSE-CYCLE | [cycle.cbl:83](../../../laurasia/programs/cycle.cbl#L83) |
+| WS-INTEREST | literal ZERO | MOVE | CLOSE-CYCLE | [cycle.cbl:81](../../../laurasia/programs/cycle.cbl#L81) |
+| WS-INTEREST | [WS-INTEREST-CENTS](#ws-interest-cents) | COMPUTE | CLOSE-CYCLE | [cycle.cbl:84](../../../laurasia/programs/cycle.cbl#L84) |
 
 ### Into WS-MINIMUM
 
@@ -166,7 +168,7 @@ Record [WS-MINIMUM](#ws-minimum).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
-| WS-MINIMUM | call MINPAY argument 2 | CALL | CLOSE-CYCLE | [cycle.cbl:89](../../../laurasia/programs/cycle.cbl#L89) |
+| WS-MINIMUM | call MINPAY argument 2 | CALL | CLOSE-CYCLE | [cycle.cbl:90](../../../laurasia/programs/cycle.cbl#L90) |
 
 ### Into WS-CLOSED-COUNT
 
@@ -174,7 +176,7 @@ Record [WS-CLOSED-COUNT](#ws-closed-count).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
-| WS-CLOSED-COUNT | literal 1 | ADD | CLOSE-CYCLE | [cycle.cbl:95](../../../laurasia/programs/cycle.cbl#L95) |
+| WS-CLOSED-COUNT | literal 1 | ADD | CLOSE-CYCLE | [cycle.cbl:97](../../../laurasia/programs/cycle.cbl#L97) |
 
 ### Into WS-STATEMENT-HEAD
 
@@ -182,9 +184,9 @@ Record [WS-STATEMENT-HEAD](#ws-statement-head).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
-| SH-ACCOUNT-NO | [CA-ACCOUNT-NO](#card-account "in CARD-ACCOUNT") | MOVE | WRITE-STATEMENT | [cycle.cbl:108](../../../laurasia/programs/cycle.cbl#L108) |
-| SH-CARD-NO | [CA-CARD-NO](#card-account "in CARD-ACCOUNT") | MOVE | WRITE-STATEMENT | [cycle.cbl:107](../../../laurasia/programs/cycle.cbl#L107) |
-| SH-DATE | [WS-RUN-DATE](#ws-run-date) | MOVE | WRITE-STATEMENT | [cycle.cbl:109](../../../laurasia/programs/cycle.cbl#L109) |
+| SH-ACCOUNT-NO | [CA-ACCOUNT-NO](#card-account "in CARD-ACCOUNT") | MOVE | WRITE-STATEMENT | [cycle.cbl:110](../../../laurasia/programs/cycle.cbl#L110) |
+| SH-CARD-NO | [CA-CARD-NO](#card-account "in CARD-ACCOUNT") | MOVE | WRITE-STATEMENT | [cycle.cbl:109](../../../laurasia/programs/cycle.cbl#L109) |
+| SH-DATE | [WS-RUN-DATE](#ws-run-date) | MOVE | WRITE-STATEMENT | [cycle.cbl:111](../../../laurasia/programs/cycle.cbl#L111) |
 
 ### Into WS-STATEMENT-AMOUNT
 
@@ -192,14 +194,14 @@ Record [WS-STATEMENT-AMOUNT](#ws-statement-amount).
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
-| SA-LABEL | literal 'PREVIOUS BALANCE' | MOVE | WRITE-STATEMENT | [cycle.cbl:111](../../../laurasia/programs/cycle.cbl#L111) |
-| SA-LABEL | literal 'INTEREST' | MOVE | WRITE-STATEMENT | [cycle.cbl:114](../../../laurasia/programs/cycle.cbl#L114) |
-| SA-LABEL | literal 'NEW BALANCE' | MOVE | WRITE-STATEMENT | [cycle.cbl:117](../../../laurasia/programs/cycle.cbl#L117) |
-| SA-LABEL | literal 'MINIMUM PAYMENT' | MOVE | WRITE-STATEMENT | [cycle.cbl:120](../../../laurasia/programs/cycle.cbl#L120) |
-| SA-VALUE | [CA-STATEMENT-BALANCE](#card-account "in CARD-ACCOUNT") | MOVE | WRITE-STATEMENT | [cycle.cbl:112](../../../laurasia/programs/cycle.cbl#L112) |
-| SA-VALUE | [WS-INTEREST](#ws-interest) | MOVE | WRITE-STATEMENT | [cycle.cbl:115](../../../laurasia/programs/cycle.cbl#L115) |
-| SA-VALUE | [CA-BALANCE](#card-account "in CARD-ACCOUNT") | MOVE | WRITE-STATEMENT | [cycle.cbl:118](../../../laurasia/programs/cycle.cbl#L118) |
-| SA-VALUE | [WS-MINIMUM](#ws-minimum) | MOVE | WRITE-STATEMENT | [cycle.cbl:121](../../../laurasia/programs/cycle.cbl#L121) |
+| SA-LABEL | literal 'PREVIOUS BALANCE' | MOVE | WRITE-STATEMENT | [cycle.cbl:113](../../../laurasia/programs/cycle.cbl#L113) |
+| SA-LABEL | literal 'INTEREST' | MOVE | WRITE-STATEMENT | [cycle.cbl:116](../../../laurasia/programs/cycle.cbl#L116) |
+| SA-LABEL | literal 'NEW BALANCE' | MOVE | WRITE-STATEMENT | [cycle.cbl:119](../../../laurasia/programs/cycle.cbl#L119) |
+| SA-LABEL | literal 'MINIMUM PAYMENT' | MOVE | WRITE-STATEMENT | [cycle.cbl:122](../../../laurasia/programs/cycle.cbl#L122) |
+| SA-VALUE | [CA-STATEMENT-BALANCE](#card-account "in CARD-ACCOUNT") | MOVE | WRITE-STATEMENT | [cycle.cbl:114](../../../laurasia/programs/cycle.cbl#L114) |
+| SA-VALUE | [WS-INTEREST](#ws-interest) | MOVE | WRITE-STATEMENT | [cycle.cbl:117](../../../laurasia/programs/cycle.cbl#L117) |
+| SA-VALUE | [CA-BALANCE](#card-account "in CARD-ACCOUNT") | MOVE | WRITE-STATEMENT | [cycle.cbl:120](../../../laurasia/programs/cycle.cbl#L120) |
+| SA-VALUE | [WS-MINIMUM](#ws-minimum) | MOVE | WRITE-STATEMENT | [cycle.cbl:123](../../../laurasia/programs/cycle.cbl#L123) |
 
 ### Out of the program
 
@@ -207,17 +209,17 @@ Records written to files, items passed to the programs called, and items display
 
 | Into | From | Statement | Paragraph | Source |
 | --- | --- | --- | --- | --- |
-| file ACCOUNTS | [CARD-ACCOUNT](#card-account) | REWRITE | CLOSE-CYCLE | [cycle.cbl:92](../../../laurasia/programs/cycle.cbl#L92) |
-| call INTCALC argument 1 | [CA-PRODUCT](#card-account "in CARD-ACCOUNT") | CALL | CLOSE-CYCLE | [cycle.cbl:82](../../../laurasia/programs/cycle.cbl#L82) |
-| call INTCALC argument 2 | [CA-STATEMENT-BALANCE](#card-account "in CARD-ACCOUNT") | CALL | CLOSE-CYCLE | [cycle.cbl:82](../../../laurasia/programs/cycle.cbl#L82) |
-| call MINPAY argument 1 | [CA-BALANCE](#card-account "in CARD-ACCOUNT") | CALL | CLOSE-CYCLE | [cycle.cbl:89](../../../laurasia/programs/cycle.cbl#L89) |
-| call MINPAY argument 2 | [WS-MINIMUM](#ws-minimum) | CALL | CLOSE-CYCLE | [cycle.cbl:89](../../../laurasia/programs/cycle.cbl#L89) |
-| file POSTINGS-OUT | [POSTING](#posting) | WRITE | POST-INTEREST | [cycle.cbl:104](../../../laurasia/programs/cycle.cbl#L104) |
-| file STATEMENTS-OUT | [STATEMENT-LINE](#statement-line) | WRITE | WRITE-STATEMENT | [cycle.cbl:110](../../../laurasia/programs/cycle.cbl#L110) |
-| file STATEMENTS-OUT | [STATEMENT-LINE](#statement-line) | WRITE | WRITE-STATEMENT | [cycle.cbl:113](../../../laurasia/programs/cycle.cbl#L113) |
-| file STATEMENTS-OUT | [STATEMENT-LINE](#statement-line) | WRITE | WRITE-STATEMENT | [cycle.cbl:116](../../../laurasia/programs/cycle.cbl#L116) |
-| file STATEMENTS-OUT | [STATEMENT-LINE](#statement-line) | WRITE | WRITE-STATEMENT | [cycle.cbl:119](../../../laurasia/programs/cycle.cbl#L119) |
-| file STATEMENTS-OUT | [STATEMENT-LINE](#statement-line) | WRITE | WRITE-STATEMENT | [cycle.cbl:122](../../../laurasia/programs/cycle.cbl#L122) |
+| file ACCOUNTS | [CARD-ACCOUNT](#card-account) | REWRITE | CLOSE-CYCLE | [cycle.cbl:94](../../../laurasia/programs/cycle.cbl#L94) |
+| call INTCALC argument 1 | [CA-PRODUCT](#card-account "in CARD-ACCOUNT") | CALL | CLOSE-CYCLE | [cycle.cbl:83](../../../laurasia/programs/cycle.cbl#L83) |
+| call INTCALC argument 2 | [CA-STATEMENT-BALANCE](#card-account "in CARD-ACCOUNT") | CALL | CLOSE-CYCLE | [cycle.cbl:83](../../../laurasia/programs/cycle.cbl#L83) |
+| call MINPAY argument 1 | [CA-BALANCE](#card-account "in CARD-ACCOUNT") | CALL | CLOSE-CYCLE | [cycle.cbl:90](../../../laurasia/programs/cycle.cbl#L90) |
+| call MINPAY argument 2 | [WS-MINIMUM](#ws-minimum) | CALL | CLOSE-CYCLE | [cycle.cbl:90](../../../laurasia/programs/cycle.cbl#L90) |
+| file POSTINGS-OUT | [POSTING](#posting) | WRITE | POST-INTEREST | [cycle.cbl:106](../../../laurasia/programs/cycle.cbl#L106) |
+| file STATEMENTS-OUT | [STATEMENT-LINE](#statement-line) | WRITE | WRITE-STATEMENT | [cycle.cbl:112](../../../laurasia/programs/cycle.cbl#L112) |
+| file STATEMENTS-OUT | [STATEMENT-LINE](#statement-line) | WRITE | WRITE-STATEMENT | [cycle.cbl:115](../../../laurasia/programs/cycle.cbl#L115) |
+| file STATEMENTS-OUT | [STATEMENT-LINE](#statement-line) | WRITE | WRITE-STATEMENT | [cycle.cbl:118](../../../laurasia/programs/cycle.cbl#L118) |
+| file STATEMENTS-OUT | [STATEMENT-LINE](#statement-line) | WRITE | WRITE-STATEMENT | [cycle.cbl:121](../../../laurasia/programs/cycle.cbl#L121) |
+| file STATEMENTS-OUT | [STATEMENT-LINE](#statement-line) | WRITE | WRITE-STATEMENT | [cycle.cbl:124](../../../laurasia/programs/cycle.cbl#L124) |
 
 ## Field origins
 
@@ -237,7 +239,7 @@ Written from [CARD-ACCOUNT](#card-account).
 | CA-BALANCE | 39-48 | call INTCALC returns WS-INTEREST-CENTS; call MINPAY argument 1 CA-BALANCE; file ACCOUNTS CA-BALANCE; literal ZERO |
 | CA-STATEMENT-BALANCE | 49-58 | call INTCALC returns WS-INTEREST-CENTS; call MINPAY argument 1 CA-BALANCE; file ACCOUNTS CA-BALANCE; literal ZERO |
 | CA-CYCLE-DAY | 59-60 | file ACCOUNTS CA-CYCLE-DAY |
-| CA-PAID-IN-FULL | 61 | file ACCOUNTS CA-PAID-IN-FULL |
+| CA-PAID-IN-FULL | 61 | literal 'N' |
 
 ### File POSTINGS-OUT
 
@@ -277,7 +279,7 @@ Fields of one input the program relies on to find or match the records of anothe
 
 | Field | Of | Links to | Of | How | Source |
 | --- | --- | --- | --- | --- | --- |
-| CA-CYCLE-DAY | ACCOUNTS | WS-RUN-DAY | COMMAND-LINE | equal to | [cycle.cbl:71](../../../laurasia/programs/cycle.cbl#L71) |
+| CA-CYCLE-DAY | ACCOUNTS | WS-RUN-DAY | COMMAND-LINE | equal to | [cycle.cbl:72](../../../laurasia/programs/cycle.cbl#L72) |
 
 ## Records
 
@@ -295,7 +297,7 @@ File STATEMENTS-OUT. 70 bytes.
 
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
-| 01 | STATEMENT-LINE | text | 1 | 70 | X(70) | | | [cycle.cbl:38](../../../laurasia/programs/cycle.cbl#L38) |
+| 01 | STATEMENT-LINE | text | 1 | 70 | X(70) | | | [cycle.cbl:39](../../../laurasia/programs/cycle.cbl#L39) |
 
 ### WS-RUN-DATE
 
@@ -303,9 +305,9 @@ Working storage. 8 bytes.
 
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-RUN-DATE | group | 1 | 8 | | | | [cycle.cbl:41](../../../laurasia/programs/cycle.cbl#L41) |
-| 05 | ├ WS-RUN-YEAR-MONTH | date | 1 | 6 | 9(6) | | | [cycle.cbl:42](../../../laurasia/programs/cycle.cbl#L42) |
-| 05 | └ WS-RUN-DAY | number | 7 | 2 | 99 | | | [cycle.cbl:43](../../../laurasia/programs/cycle.cbl#L43) |
+| 01 | WS-RUN-DATE | group | 1 | 8 | | | | [cycle.cbl:42](../../../laurasia/programs/cycle.cbl#L42) |
+| 05 | ├ WS-RUN-YEAR-MONTH | date | 1 | 6 | 9(6) | | | [cycle.cbl:43](../../../laurasia/programs/cycle.cbl#L43) |
+| 05 | └ WS-RUN-DAY | number | 7 | 2 | 99 | | | [cycle.cbl:44](../../../laurasia/programs/cycle.cbl#L44) |
 
 ### WS-ACCOUNTS-STATUS
 
@@ -313,8 +315,8 @@ Working storage. 2 bytes.
 
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-ACCOUNTS-STATUS | code | 1 | 2 | XX | | | [cycle.cbl:44](../../../laurasia/programs/cycle.cbl#L44) |
-| 88 | └ ACCOUNTS-AT-END | | | | | | VALUE '10' | [cycle.cbl:45](../../../laurasia/programs/cycle.cbl#L45) |
+| 01 | WS-ACCOUNTS-STATUS | code | 1 | 2 | XX | | | [cycle.cbl:45](../../../laurasia/programs/cycle.cbl#L45) |
+| 88 | └ ACCOUNTS-AT-END | | | | | | VALUE '10' | [cycle.cbl:46](../../../laurasia/programs/cycle.cbl#L46) |
 
 ### WS-INTEREST-CENTS
 
@@ -322,7 +324,7 @@ Working storage. 4 bytes.
 
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-INTEREST-CENTS | number | 1 | 4 | S9(9) | COMP-5 | | [cycle.cbl:46](../../../laurasia/programs/cycle.cbl#L46) |
+| 01 | WS-INTEREST-CENTS | number | 1 | 4 | S9(9) | COMP-5 | | [cycle.cbl:47](../../../laurasia/programs/cycle.cbl#L47) |
 
 ### WS-INTEREST
 
@@ -330,7 +332,7 @@ Working storage. 9 bytes.
 
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-INTEREST | amount | 1 | 9 | S9(7)V99 | | | [cycle.cbl:47](../../../laurasia/programs/cycle.cbl#L47) |
+| 01 | WS-INTEREST | amount | 1 | 9 | S9(7)V99 | | | [cycle.cbl:48](../../../laurasia/programs/cycle.cbl#L48) |
 
 ### WS-MINIMUM
 
@@ -338,7 +340,7 @@ Working storage. 9 bytes.
 
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-MINIMUM | amount | 1 | 9 | S9(7)V99 | | | [cycle.cbl:48](../../../laurasia/programs/cycle.cbl#L48) |
+| 01 | WS-MINIMUM | amount | 1 | 9 | S9(7)V99 | | | [cycle.cbl:49](../../../laurasia/programs/cycle.cbl#L49) |
 
 ### WS-CLOSED-COUNT
 
@@ -346,7 +348,7 @@ Working storage. 6 bytes.
 
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-CLOSED-COUNT | number | 1 | 6 | 9(6) | | VALUE ZERO | [cycle.cbl:49](../../../laurasia/programs/cycle.cbl#L49) |
+| 01 | WS-CLOSED-COUNT | number | 1 | 6 | 9(6) | | VALUE ZERO | [cycle.cbl:50](../../../laurasia/programs/cycle.cbl#L50) |
 
 ### WS-STATEMENT-HEAD
 
@@ -354,12 +356,12 @@ Working storage. 39 bytes.
 
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-STATEMENT-HEAD | group | 1 | 39 | | | | [cycle.cbl:50](../../../laurasia/programs/cycle.cbl#L50) |
-| 05 | ├ SH-CARD-NO | text | 1 | 16 | X(16) | | | [cycle.cbl:51](../../../laurasia/programs/cycle.cbl#L51) |
-| 05 | ├ FILLER | filler | 17 | 1 | X | | VALUE SPACE | [cycle.cbl:52](../../../laurasia/programs/cycle.cbl#L52) |
-| 05 | ├ SH-ACCOUNT-NO | text | 18 | 10 | X(10) | | | [cycle.cbl:53](../../../laurasia/programs/cycle.cbl#L53) |
-| 05 | ├ FILLER | filler | 28 | 4 | X(4) | | VALUE ' ON ' | [cycle.cbl:54](../../../laurasia/programs/cycle.cbl#L54) |
-| 05 | └ SH-DATE | date | 32 | 8 | 9(8) | | | [cycle.cbl:55](../../../laurasia/programs/cycle.cbl#L55) |
+| 01 | WS-STATEMENT-HEAD | group | 1 | 39 | | | | [cycle.cbl:51](../../../laurasia/programs/cycle.cbl#L51) |
+| 05 | ├ SH-CARD-NO | text | 1 | 16 | X(16) | | | [cycle.cbl:52](../../../laurasia/programs/cycle.cbl#L52) |
+| 05 | ├ FILLER | filler | 17 | 1 | X | | VALUE SPACE | [cycle.cbl:53](../../../laurasia/programs/cycle.cbl#L53) |
+| 05 | ├ SH-ACCOUNT-NO | text | 18 | 10 | X(10) | | | [cycle.cbl:54](../../../laurasia/programs/cycle.cbl#L54) |
+| 05 | ├ FILLER | filler | 28 | 4 | X(4) | | VALUE ' ON ' | [cycle.cbl:55](../../../laurasia/programs/cycle.cbl#L55) |
+| 05 | └ SH-DATE | date | 32 | 8 | 9(8) | | | [cycle.cbl:56](../../../laurasia/programs/cycle.cbl#L56) |
 
 ### WS-STATEMENT-AMOUNT
 
@@ -367,7 +369,7 @@ Working storage. 45 bytes.
 
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-STATEMENT-AMOUNT | group | 1 | 45 | | | | [cycle.cbl:56](../../../laurasia/programs/cycle.cbl#L56) |
-| 05 | ├ FILLER | filler | 1 | 4 | X(4) | | VALUE SPACES | [cycle.cbl:57](../../../laurasia/programs/cycle.cbl#L57) |
-| 05 | ├ SA-LABEL | text | 5 | 30 | X(30) | | | [cycle.cbl:58](../../../laurasia/programs/cycle.cbl#L58) |
-| 05 | └ SA-VALUE | edited | 35 | 11 | -(7)9.99 | | | [cycle.cbl:59](../../../laurasia/programs/cycle.cbl#L59) |
+| 01 | WS-STATEMENT-AMOUNT | group | 1 | 45 | | | | [cycle.cbl:57](../../../laurasia/programs/cycle.cbl#L57) |
+| 05 | ├ FILLER | filler | 1 | 4 | X(4) | | VALUE SPACES | [cycle.cbl:58](../../../laurasia/programs/cycle.cbl#L58) |
+| 05 | ├ SA-LABEL | text | 5 | 30 | X(30) | | | [cycle.cbl:59](../../../laurasia/programs/cycle.cbl#L59) |
+| 05 | └ SA-VALUE | edited | 35 | 11 | -(7)9.99 | | | [cycle.cbl:60](../../../laurasia/programs/cycle.cbl#L60) |

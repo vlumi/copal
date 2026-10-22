@@ -165,12 +165,14 @@
       "ACCTLD",
       "ACCTUL",
       "CYCLE",
+      "PAYIN",
       "POST"
     ],
     "programs": [
       "ACCTLD",
       "ACCTUL",
       "CYCLE",
+      "PAYIN",
       "POST"
     ],
     "fields": [
@@ -193,6 +195,16 @@
             "readBy": [
               "POST-INTEREST",
               "WRITE-STATEMENT"
+            ]
+          },
+          {
+            "program": "PAYIN",
+            "field": "CA-CARD-NO",
+            "readBy": [
+              "APPLY-PAYMENT"
+            ],
+            "writtenBy": [
+              "APPLY-RECORD"
             ]
           },
           {
@@ -229,6 +241,13 @@
             ]
           },
           {
+            "program": "PAYIN",
+            "field": "CA-ACCOUNT-NO",
+            "readBy": [
+              "APPLY-PAYMENT"
+            ]
+          },
+          {
             "program": "POST",
             "field": "CA-ACCOUNT-NO",
             "readBy": [
@@ -259,6 +278,10 @@
             "writtenBy": [
               "CLOSE-CYCLE"
             ]
+          },
+          {
+            "program": "PAYIN",
+            "field": "CA-PRODUCT"
           },
           {
             "program": "POST",
@@ -306,7 +329,7 @@
               "program": "CYCLE",
               "from": "INTCALC",
               "paragraph": "CLOSE-CYCLE",
-              "source": "laurasia/programs/cycle.cbl:82"
+              "source": "laurasia/programs/cycle.cbl:83"
             }
           ]
         }
@@ -334,11 +357,18 @@
               {
                 "paragraph": "MAIN",
                 "loop": "PERFORM UNTIL ACCOUNTS-AT-END",
-                "source": "laurasia/programs/cycle.cbl:70",
+                "source": "laurasia/programs/cycle.cbl:71",
                 "conditions": [
                   "CA-CYCLE-DAY = WS-RUN-DAY AND NOT CA-CLOSED"
                 ]
               }
+            ]
+          },
+          {
+            "program": "PAYIN",
+            "field": "CA-STATUS",
+            "writtenBy": [
+              "APPLY-STATUS"
             ]
           },
           {
@@ -379,6 +409,14 @@
                 "'C'"
               ]
             }
+          ],
+          "copies": [
+            {
+              "program": "PAYIN",
+              "from": "PF-STATUS",
+              "paragraph": "APPLY-STATUS",
+              "source": "laurasia/programs/payin.cbl:145"
+            }
           ]
         }
       },
@@ -397,6 +435,10 @@
           },
           {
             "program": "CYCLE",
+            "field": "CA-LIMIT"
+          },
+          {
+            "program": "PAYIN",
             "field": "CA-LIMIT"
           },
           {
@@ -440,6 +482,25 @@
             ],
             "writtenBy": [
               "CLOSE-CYCLE"
+            ]
+          },
+          {
+            "program": "PAYIN",
+            "field": "CA-BALANCE",
+            "readBy": [
+              "APPLY-PAYMENT"
+            ],
+            "writtenBy": [
+              "APPLY-PAYMENT"
+            ],
+            "decisions": [
+              {
+                "paragraph": "APPLY-PAYMENT",
+                "source": "laurasia/programs/payin.cbl:129",
+                "conditions": [
+                  "CA-BALANCE NOT \u003e ZERO OR PF-AMOUNT NOT \u003c CA-STATEMENT-BALANCE"
+                ]
+              }
             ]
           },
           {
@@ -491,9 +552,25 @@
             "decisions": [
               {
                 "paragraph": "CLOSE-CYCLE",
-                "source": "laurasia/programs/cycle.cbl:79",
+                "source": "laurasia/programs/cycle.cbl:80",
                 "conditions": [
                   "NOT CA-WAS-PAID-IN-FULL AND CA-STATEMENT-BALANCE \u003e ZERO"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "PAYIN",
+            "field": "CA-STATEMENT-BALANCE",
+            "readBy": [
+              "APPLY-PAYMENT"
+            ],
+            "decisions": [
+              {
+                "paragraph": "APPLY-PAYMENT",
+                "source": "laurasia/programs/payin.cbl:129",
+                "conditions": [
+                  "CA-BALANCE NOT \u003e ZERO OR PF-AMOUNT NOT \u003c CA-STATEMENT-BALANCE"
                 ]
               }
             ]
@@ -527,12 +604,16 @@
               {
                 "paragraph": "MAIN",
                 "loop": "PERFORM UNTIL ACCOUNTS-AT-END",
-                "source": "laurasia/programs/cycle.cbl:70",
+                "source": "laurasia/programs/cycle.cbl:71",
                 "conditions": [
                   "CA-CYCLE-DAY = WS-RUN-DAY AND NOT CA-CLOSED"
                 ]
               }
             ]
+          },
+          {
+            "program": "PAYIN",
+            "field": "CA-CYCLE-DAY"
           },
           {
             "program": "POST",
@@ -559,14 +640,24 @@
             "readBy": [
               "CLOSE-CYCLE"
             ],
+            "writtenBy": [
+              "CLOSE-CYCLE"
+            ],
             "decisions": [
               {
                 "paragraph": "CLOSE-CYCLE",
-                "source": "laurasia/programs/cycle.cbl:79",
+                "source": "laurasia/programs/cycle.cbl:80",
                 "conditions": [
                   "NOT CA-WAS-PAID-IN-FULL AND CA-STATEMENT-BALANCE \u003e ZERO"
                 ]
               }
+            ]
+          },
+          {
+            "program": "PAYIN",
+            "field": "CA-PAID-IN-FULL",
+            "writtenBy": [
+              "APPLY-PAYMENT"
             ]
           },
           {
@@ -582,11 +673,40 @@
                 "'Y'"
               ]
             }
+          ],
+          "transitions": [
+            {
+              "from": "any",
+              "to": "CA-WAS-PAID-IN-FULL",
+              "program": "PAYIN",
+              "paragraph": "APPLY-PAYMENT",
+              "source": "laurasia/programs/payin.cbl:132",
+              "when": [
+                {
+                  "condition": "CA-BALANCE NOT \u003e ZERO OR PF-AMOUNT NOT \u003c CA-STATEMENT-BALANCE",
+                  "holds": true
+                }
+              ]
+            }
           ]
         }
       }
     ],
     "links": [
+      {
+        "kind": "key",
+        "from": {
+          "record": "FEED-RECORD",
+          "field": "PF-CARD-NO"
+        },
+        "to": {
+          "record": "CARD-ACCOUNT",
+          "field": "CA-CARD-NO"
+        },
+        "programs": [
+          "PAYIN"
+        ]
+      },
       {
         "kind": "key",
         "from": {
@@ -1821,18 +1941,195 @@
     ]
   },
   {
+    "record": "FEED-RECORD",
+    "copybook": "payfeed",
+    "datasets": [
+      "$DATA/inbound/PAYMENTS.$DATE.txt"
+    ],
+    "readBy": [
+      "PAYIN"
+    ],
+    "programs": [
+      "PAYIN"
+    ],
+    "fields": [
+      {
+        "name": "PF-CARD-NO",
+        "kind": "text",
+        "layout": "X(16)",
+        "uses": [
+          {
+            "program": "PAYIN",
+            "field": "PF-CARD-NO",
+            "readBy": [
+              "APPLY-RECORD"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "PF-KIND",
+        "kind": "code",
+        "layout": "X",
+        "uses": [
+          {
+            "program": "PAYIN",
+            "field": "PF-KIND",
+            "readBy": [
+              "APPLY-RECORD",
+              "VALIDATE-RECORD"
+            ],
+            "decisions": [
+              {
+                "paragraph": "APPLY-RECORD",
+                "source": "laurasia/programs/payin.cbl:93",
+                "conditions": [
+                  "PF-PAYMENT"
+                ]
+              },
+              {
+                "paragraph": "VALIDATE-RECORD",
+                "source": "laurasia/programs/payin.cbl:115",
+                "conditions": [
+                  "NOT PF-PAYMENT AND NOT PF-STATUS-CHANGE",
+                  "PF-PAYMENT AND PF-AMOUNT NOT \u003e ZERO",
+                  "PF-STATUS-CHANGE AND PF-STATUS NOT = 'A' AND PF-STATUS NOT = 'B' AND PF-STATUS NOT = 'C'"
+                ]
+              }
+            ]
+          }
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "PF-PAYMENT",
+              "values": [
+                "'P'"
+              ]
+            },
+            {
+              "name": "PF-STATUS-CHANGE",
+              "values": [
+                "'S'"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "name": "PF-AMOUNT",
+        "kind": "amount",
+        "layout": "S9(7)V99",
+        "uses": [
+          {
+            "program": "PAYIN",
+            "field": "PF-AMOUNT",
+            "readBy": [
+              "VALIDATE-RECORD",
+              "APPLY-PAYMENT"
+            ],
+            "decisions": [
+              {
+                "paragraph": "VALIDATE-RECORD",
+                "source": "laurasia/programs/payin.cbl:115",
+                "conditions": [
+                  "PF-PAYMENT AND PF-AMOUNT NOT \u003e ZERO"
+                ]
+              },
+              {
+                "paragraph": "APPLY-PAYMENT",
+                "source": "laurasia/programs/payin.cbl:129",
+                "conditions": [
+                  "CA-BALANCE NOT \u003e ZERO OR PF-AMOUNT NOT \u003c CA-STATEMENT-BALANCE"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "PF-STATUS",
+        "kind": "text",
+        "layout": "X",
+        "uses": [
+          {
+            "program": "PAYIN",
+            "field": "PF-STATUS",
+            "readBy": [
+              "VALIDATE-RECORD",
+              "APPLY-STATUS"
+            ],
+            "decisions": [
+              {
+                "paragraph": "VALIDATE-RECORD",
+                "source": "laurasia/programs/payin.cbl:115",
+                "conditions": [
+                  "PF-STATUS-CHANGE AND PF-STATUS NOT = 'A' AND PF-STATUS NOT = 'B' AND PF-STATUS NOT = 'C'"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "PF-REFERENCE",
+        "kind": "text",
+        "layout": "X(6)",
+        "uses": [
+          {
+            "program": "PAYIN",
+            "field": "PF-REFERENCE",
+            "readBy": [
+              "APPLY-PAYMENT"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "PF-DATE",
+        "kind": "date",
+        "layout": "9(8)",
+        "uses": [
+          {
+            "program": "PAYIN",
+            "field": "PF-DATE"
+          }
+        ]
+      }
+    ],
+    "links": [
+      {
+        "kind": "key",
+        "from": {
+          "record": "FEED-RECORD",
+          "field": "PF-CARD-NO"
+        },
+        "to": {
+          "record": "CARD-ACCOUNT",
+          "field": "CA-CARD-NO"
+        },
+        "programs": [
+          "PAYIN"
+        ]
+      }
+    ]
+  },
+  {
     "record": "POSTING",
     "copybook": "postrec",
     "datasets": [
+      "$DATA/outbound/CREDITS.$DATE.txt",
       "$DATA/outbound/INTEREST.$DATE.txt",
       "$DATA/outbound/POSTINGS.$DATE.txt"
     ],
     "writtenBy": [
       "CYCLE",
+      "PAYIN",
       "POST"
     ],
     "programs": [
       "CYCLE",
+      "PAYIN",
       "POST"
     ],
     "fields": [
@@ -1846,6 +2143,13 @@
             "field": "PO-CARD-NO",
             "writtenBy": [
               "POST-INTEREST"
+            ]
+          },
+          {
+            "program": "PAYIN",
+            "field": "PO-CARD-NO",
+            "writtenBy": [
+              "APPLY-PAYMENT"
             ]
           },
           {
@@ -1870,6 +2174,13 @@
             ]
           },
           {
+            "program": "PAYIN",
+            "field": "PO-ACCOUNT-NO",
+            "writtenBy": [
+              "APPLY-PAYMENT"
+            ]
+          },
+          {
             "program": "POST",
             "field": "PO-ACCOUNT-NO",
             "writtenBy": [
@@ -1888,6 +2199,13 @@
             "field": "PO-KIND",
             "writtenBy": [
               "POST-INTEREST"
+            ]
+          },
+          {
+            "program": "PAYIN",
+            "field": "PO-KIND",
+            "writtenBy": [
+              "APPLY-PAYMENT"
             ]
           },
           {
@@ -1918,6 +2236,12 @@
               "values": [
                 "'I'"
               ]
+            },
+            {
+              "name": "PO-PAYMENT",
+              "values": [
+                "'C'"
+              ]
             }
           ],
           "transitions": [
@@ -1926,7 +2250,33 @@
               "to": "PO-INTEREST",
               "program": "CYCLE",
               "paragraph": "POST-INTEREST",
-              "source": "laurasia/programs/cycle.cbl:100"
+              "source": "laurasia/programs/cycle.cbl:102"
+            },
+            {
+              "from": "any",
+              "to": "PO-PAYMENT",
+              "program": "PAYIN",
+              "paragraph": "APPLY-PAYMENT",
+              "source": "laurasia/programs/payin.cbl:136",
+              "when": [
+                {
+                  "condition": "CA-BALANCE NOT \u003e ZERO OR PF-AMOUNT NOT \u003c CA-STATEMENT-BALANCE",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "PO-PAYMENT",
+              "program": "PAYIN",
+              "paragraph": "APPLY-PAYMENT",
+              "source": "laurasia/programs/payin.cbl:136",
+              "when": [
+                {
+                  "condition": "CA-BALANCE NOT \u003e ZERO OR PF-AMOUNT NOT \u003c CA-STATEMENT-BALANCE",
+                  "holds": false
+                }
+              ]
             },
             {
               "from": "any",
@@ -2094,6 +2444,13 @@
             ]
           },
           {
+            "program": "PAYIN",
+            "field": "PO-AMOUNT",
+            "writtenBy": [
+              "APPLY-PAYMENT"
+            ]
+          },
+          {
             "program": "POST",
             "field": "PO-AMOUNT",
             "writtenBy": [
@@ -2116,6 +2473,13 @@
             ]
           },
           {
+            "program": "PAYIN",
+            "field": "PO-REFERENCE",
+            "writtenBy": [
+              "APPLY-PAYMENT"
+            ]
+          },
+          {
             "program": "POST",
             "field": "PO-REFERENCE",
             "writtenBy": [
@@ -2134,6 +2498,13 @@
             "field": "PO-DATE",
             "writtenBy": [
               "POST-INTEREST"
+            ]
+          },
+          {
+            "program": "PAYIN",
+            "field": "PO-DATE",
+            "writtenBy": [
+              "APPLY-PAYMENT"
             ]
           },
           {

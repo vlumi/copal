@@ -9,13 +9,14 @@
     "month: interest on the last statement's balance, unless it was paid in",
     "full, as the grace period allows; the minimum payment; and the",
     "statement, with the balance it closes on, which the next cycle charges",
-    "interest on.",
+    "interest on unless the payments to come pay it in full.",
     "",
     "return codes: 0 done, 16 cannot update the accounts.",
     "",
     "history",
     "2013-06-03 rk  lcs-0219 original version.",
-    "2021-03-01 mt  lcs-0481 interest by the card's product."
+    "2021-03-01 mt  lcs-0481 interest by the card's product.",
+    "2022-09-05 ah  lcs-0497 the new statement starts unpaid; payin marks it paid."
   ],
   "files": [
     {
@@ -31,7 +32,7 @@
       "records": [
         "CARD-ACCOUNT"
       ],
-      "source": "laurasia/programs/cycle.cbl:21"
+      "source": "laurasia/programs/cycle.cbl:22"
     },
     {
       "name": "POSTINGS-OUT",
@@ -44,7 +45,7 @@
       "records": [
         "POSTING"
       ],
-      "source": "laurasia/programs/cycle.cbl:26"
+      "source": "laurasia/programs/cycle.cbl:27"
     },
     {
       "name": "STATEMENTS-OUT",
@@ -57,7 +58,7 @@
       "records": [
         "STATEMENT-LINE"
       ],
-      "source": "laurasia/programs/cycle.cbl:28"
+      "source": "laurasia/programs/cycle.cbl:29"
     }
   ],
   "records": [
@@ -251,8 +252,8 @@
       "length": 51,
       "category": "group",
       "kind": "group",
-      "description": "postrec: a posting to a card's account, a record a line. history 2011-04-04 rk  lcs-0102 original version.",
-      "source": "laurasia/copybooks/postrec.cpy:6",
+      "description": "postrec: a posting to a card's account, a record a line. history 2011-04-04 rk  lcs-0102 original version. 2022-09-05 ah  lcs-0497 payments, as credits.",
+      "source": "laurasia/copybooks/postrec.cpy:7",
       "fields": [
         {
           "level": 5,
@@ -263,7 +264,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "laurasia/copybooks/postrec.cpy:7"
+          "source": "laurasia/copybooks/postrec.cpy:8"
         },
         {
           "level": 5,
@@ -274,7 +275,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "laurasia/copybooks/postrec.cpy:8"
+          "source": "laurasia/copybooks/postrec.cpy:9"
         },
         {
           "level": 5,
@@ -291,24 +292,31 @@
               "values": [
                 "'P'"
               ],
-              "source": "laurasia/copybooks/postrec.cpy:10"
+              "source": "laurasia/copybooks/postrec.cpy:11"
             },
             {
               "name": "PO-OVER-LIMIT-FEE",
               "values": [
                 "'F'"
               ],
-              "source": "laurasia/copybooks/postrec.cpy:11"
+              "source": "laurasia/copybooks/postrec.cpy:12"
             },
             {
               "name": "PO-INTEREST",
               "values": [
                 "'I'"
               ],
-              "source": "laurasia/copybooks/postrec.cpy:12"
+              "source": "laurasia/copybooks/postrec.cpy:13"
+            },
+            {
+              "name": "PO-PAYMENT",
+              "values": [
+                "'C'"
+              ],
+              "source": "laurasia/copybooks/postrec.cpy:14"
             }
           ],
-          "source": "laurasia/copybooks/postrec.cpy:9"
+          "source": "laurasia/copybooks/postrec.cpy:10"
         },
         {
           "level": 5,
@@ -323,7 +331,7 @@
           "scale": 2,
           "signed": true,
           "sign": "LEADING SEPARATE",
-          "source": "laurasia/copybooks/postrec.cpy:13"
+          "source": "laurasia/copybooks/postrec.cpy:15"
         },
         {
           "level": 5,
@@ -334,7 +342,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "laurasia/copybooks/postrec.cpy:14"
+          "source": "laurasia/copybooks/postrec.cpy:16"
         },
         {
           "level": 5,
@@ -346,7 +354,7 @@
           "category": "numeric",
           "kind": "date",
           "digits": 8,
-          "source": "laurasia/copybooks/postrec.cpy:15"
+          "source": "laurasia/copybooks/postrec.cpy:17"
         }
       ]
     },
@@ -361,7 +369,7 @@
       "usage": "DISPLAY",
       "category": "alphanumeric",
       "kind": "text",
-      "source": "laurasia/programs/cycle.cbl:38"
+      "source": "laurasia/programs/cycle.cbl:39"
     },
     {
       "section": "working-storage",
@@ -371,7 +379,7 @@
       "length": 8,
       "category": "group",
       "kind": "group",
-      "source": "laurasia/programs/cycle.cbl:41",
+      "source": "laurasia/programs/cycle.cbl:42",
       "fields": [
         {
           "level": 5,
@@ -383,7 +391,7 @@
           "category": "numeric",
           "kind": "date",
           "digits": 6,
-          "source": "laurasia/programs/cycle.cbl:42"
+          "source": "laurasia/programs/cycle.cbl:43"
         },
         {
           "level": 5,
@@ -395,7 +403,7 @@
           "category": "numeric",
           "kind": "number",
           "digits": 2,
-          "source": "laurasia/programs/cycle.cbl:43"
+          "source": "laurasia/programs/cycle.cbl:44"
         }
       ]
     },
@@ -415,10 +423,10 @@
           "values": [
             "'10'"
           ],
-          "source": "laurasia/programs/cycle.cbl:45"
+          "source": "laurasia/programs/cycle.cbl:46"
         }
       ],
-      "source": "laurasia/programs/cycle.cbl:44"
+      "source": "laurasia/programs/cycle.cbl:45"
     },
     {
       "section": "working-storage",
@@ -432,7 +440,7 @@
       "kind": "number",
       "digits": 9,
       "signed": true,
-      "source": "laurasia/programs/cycle.cbl:46"
+      "source": "laurasia/programs/cycle.cbl:47"
     },
     {
       "section": "working-storage",
@@ -447,7 +455,7 @@
       "digits": 9,
       "scale": 2,
       "signed": true,
-      "source": "laurasia/programs/cycle.cbl:47"
+      "source": "laurasia/programs/cycle.cbl:48"
     },
     {
       "section": "working-storage",
@@ -462,7 +470,7 @@
       "digits": 9,
       "scale": 2,
       "signed": true,
-      "source": "laurasia/programs/cycle.cbl:48"
+      "source": "laurasia/programs/cycle.cbl:49"
     },
     {
       "section": "working-storage",
@@ -478,7 +486,7 @@
       "values": [
         "ZERO"
       ],
-      "source": "laurasia/programs/cycle.cbl:49"
+      "source": "laurasia/programs/cycle.cbl:50"
     },
     {
       "section": "working-storage",
@@ -488,7 +496,7 @@
       "length": 39,
       "category": "group",
       "kind": "group",
-      "source": "laurasia/programs/cycle.cbl:50",
+      "source": "laurasia/programs/cycle.cbl:51",
       "fields": [
         {
           "level": 5,
@@ -499,7 +507,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "laurasia/programs/cycle.cbl:51"
+          "source": "laurasia/programs/cycle.cbl:52"
         },
         {
           "level": 5,
@@ -513,7 +521,7 @@
           "values": [
             "SPACE"
           ],
-          "source": "laurasia/programs/cycle.cbl:52"
+          "source": "laurasia/programs/cycle.cbl:53"
         },
         {
           "level": 5,
@@ -524,7 +532,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "laurasia/programs/cycle.cbl:53"
+          "source": "laurasia/programs/cycle.cbl:54"
         },
         {
           "level": 5,
@@ -538,7 +546,7 @@
           "values": [
             "' ON '"
           ],
-          "source": "laurasia/programs/cycle.cbl:54"
+          "source": "laurasia/programs/cycle.cbl:55"
         },
         {
           "level": 5,
@@ -550,7 +558,7 @@
           "category": "numeric",
           "kind": "date",
           "digits": 8,
-          "source": "laurasia/programs/cycle.cbl:55"
+          "source": "laurasia/programs/cycle.cbl:56"
         }
       ]
     },
@@ -562,7 +570,7 @@
       "length": 45,
       "category": "group",
       "kind": "group",
-      "source": "laurasia/programs/cycle.cbl:56",
+      "source": "laurasia/programs/cycle.cbl:57",
       "fields": [
         {
           "level": 5,
@@ -576,7 +584,7 @@
           "values": [
             "SPACES"
           ],
-          "source": "laurasia/programs/cycle.cbl:57"
+          "source": "laurasia/programs/cycle.cbl:58"
         },
         {
           "level": 5,
@@ -587,7 +595,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "laurasia/programs/cycle.cbl:58"
+          "source": "laurasia/programs/cycle.cbl:59"
         },
         {
           "level": 5,
@@ -598,7 +606,7 @@
           "usage": "DISPLAY",
           "category": "numeric-edited",
           "kind": "edited",
-          "source": "laurasia/programs/cycle.cbl:59"
+          "source": "laurasia/programs/cycle.cbl:60"
         }
       ]
     }
@@ -607,11 +615,11 @@
     {
       "name": "MAIN",
       "section": "MAIN",
-      "source": "laurasia/programs/cycle.cbl:62",
+      "source": "laurasia/programs/cycle.cbl:63",
       "performs": [
         {
           "target": "CLOSE-CYCLE",
-          "source": "laurasia/programs/cycle.cbl:72"
+          "source": "laurasia/programs/cycle.cbl:73"
         }
       ],
       "reads": [
@@ -629,15 +637,15 @@
     {
       "name": "CLOSE-CYCLE",
       "section": "CLOSE-CYCLE",
-      "source": "laurasia/programs/cycle.cbl:79",
+      "source": "laurasia/programs/cycle.cbl:80",
       "performs": [
         {
           "target": "POST-INTEREST",
-          "source": "laurasia/programs/cycle.cbl:87"
+          "source": "laurasia/programs/cycle.cbl:88"
         },
         {
           "target": "WRITE-STATEMENT",
-          "source": "laurasia/programs/cycle.cbl:90"
+          "source": "laurasia/programs/cycle.cbl:91"
         }
       ],
       "performedBy": [
@@ -660,6 +668,7 @@
         "WS-INTEREST-CENTS",
         "CA-BALANCE",
         "WS-MINIMUM",
+        "CA-PAID-IN-FULL",
         "CARD-ACCOUNT",
         "RETURN-CODE",
         "WS-CLOSED-COUNT"
@@ -668,7 +677,7 @@
     {
       "name": "POST-INTEREST",
       "section": "POST-INTEREST",
-      "source": "laurasia/programs/cycle.cbl:97",
+      "source": "laurasia/programs/cycle.cbl:99",
       "performedBy": [
         "CLOSE-CYCLE"
       ],
@@ -691,7 +700,7 @@
     {
       "name": "WRITE-STATEMENT",
       "section": "WRITE-STATEMENT",
-      "source": "laurasia/programs/cycle.cbl:106",
+      "source": "laurasia/programs/cycle.cbl:108",
       "performedBy": [
         "CLOSE-CYCLE"
       ],
@@ -725,7 +734,7 @@
       ],
       "returning": "WS-INTEREST-CENTS",
       "paragraph": "CLOSE-CYCLE",
-      "source": "laurasia/programs/cycle.cbl:82"
+      "source": "laurasia/programs/cycle.cbl:83"
     },
     {
       "program": "MINPAY",
@@ -734,7 +743,7 @@
         "WS-MINIMUM"
       ],
       "paragraph": "CLOSE-CYCLE",
-      "source": "laurasia/programs/cycle.cbl:89"
+      "source": "laurasia/programs/cycle.cbl:90"
     }
   ],
   "lineage": [
@@ -744,7 +753,7 @@
       "fromStream": true,
       "paragraph": "MAIN",
       "verb": "ACCEPT",
-      "source": "laurasia/programs/cycle.cbl:63"
+      "source": "laurasia/programs/cycle.cbl:64"
     },
     {
       "from": "ACCOUNTS",
@@ -752,7 +761,7 @@
       "fromFile": true,
       "paragraph": "MAIN",
       "verb": "READ",
-      "source": "laurasia/programs/cycle.cbl:69"
+      "source": "laurasia/programs/cycle.cbl:70"
     },
     {
       "from": "ACCOUNTS",
@@ -760,7 +769,7 @@
       "fromFile": true,
       "paragraph": "MAIN",
       "verb": "READ",
-      "source": "laurasia/programs/cycle.cbl:74"
+      "source": "laurasia/programs/cycle.cbl:75"
     },
     {
       "from": "ZERO",
@@ -768,7 +777,7 @@
       "fromLiteral": true,
       "paragraph": "CLOSE-CYCLE",
       "verb": "MOVE",
-      "source": "laurasia/programs/cycle.cbl:80"
+      "source": "laurasia/programs/cycle.cbl:81"
     },
     {
       "from": "CA-PRODUCT",
@@ -777,7 +786,7 @@
       "arg": 1,
       "paragraph": "CLOSE-CYCLE",
       "verb": "CALL",
-      "source": "laurasia/programs/cycle.cbl:82"
+      "source": "laurasia/programs/cycle.cbl:83"
     },
     {
       "from": "INTCALC",
@@ -786,7 +795,7 @@
       "arg": 1,
       "paragraph": "CLOSE-CYCLE",
       "verb": "CALL",
-      "source": "laurasia/programs/cycle.cbl:82"
+      "source": "laurasia/programs/cycle.cbl:83"
     },
     {
       "from": "CA-STATEMENT-BALANCE",
@@ -795,7 +804,7 @@
       "arg": 2,
       "paragraph": "CLOSE-CYCLE",
       "verb": "CALL",
-      "source": "laurasia/programs/cycle.cbl:82"
+      "source": "laurasia/programs/cycle.cbl:83"
     },
     {
       "from": "INTCALC",
@@ -804,7 +813,7 @@
       "arg": 2,
       "paragraph": "CLOSE-CYCLE",
       "verb": "CALL",
-      "source": "laurasia/programs/cycle.cbl:82"
+      "source": "laurasia/programs/cycle.cbl:83"
     },
     {
       "from": "INTCALC",
@@ -812,21 +821,21 @@
       "fromCall": true,
       "paragraph": "CLOSE-CYCLE",
       "verb": "CALL",
-      "source": "laurasia/programs/cycle.cbl:82"
+      "source": "laurasia/programs/cycle.cbl:83"
     },
     {
       "from": "WS-INTEREST-CENTS",
       "to": "WS-INTEREST",
       "paragraph": "CLOSE-CYCLE",
       "verb": "COMPUTE",
-      "source": "laurasia/programs/cycle.cbl:83"
+      "source": "laurasia/programs/cycle.cbl:84"
     },
     {
       "from": "WS-INTEREST",
       "to": "CA-BALANCE",
       "paragraph": "CLOSE-CYCLE",
       "verb": "ADD",
-      "source": "laurasia/programs/cycle.cbl:86"
+      "source": "laurasia/programs/cycle.cbl:87"
     },
     {
       "from": "CA-BALANCE",
@@ -835,7 +844,7 @@
       "arg": 1,
       "paragraph": "CLOSE-CYCLE",
       "verb": "CALL",
-      "source": "laurasia/programs/cycle.cbl:89"
+      "source": "laurasia/programs/cycle.cbl:90"
     },
     {
       "from": "MINPAY",
@@ -844,7 +853,7 @@
       "arg": 1,
       "paragraph": "CLOSE-CYCLE",
       "verb": "CALL",
-      "source": "laurasia/programs/cycle.cbl:89"
+      "source": "laurasia/programs/cycle.cbl:90"
     },
     {
       "from": "WS-MINIMUM",
@@ -853,7 +862,7 @@
       "arg": 2,
       "paragraph": "CLOSE-CYCLE",
       "verb": "CALL",
-      "source": "laurasia/programs/cycle.cbl:89"
+      "source": "laurasia/programs/cycle.cbl:90"
     },
     {
       "from": "MINPAY",
@@ -862,14 +871,22 @@
       "arg": 2,
       "paragraph": "CLOSE-CYCLE",
       "verb": "CALL",
-      "source": "laurasia/programs/cycle.cbl:89"
+      "source": "laurasia/programs/cycle.cbl:90"
     },
     {
       "from": "CA-BALANCE",
       "to": "CA-STATEMENT-BALANCE",
       "paragraph": "CLOSE-CYCLE",
       "verb": "MOVE",
-      "source": "laurasia/programs/cycle.cbl:91"
+      "source": "laurasia/programs/cycle.cbl:92"
+    },
+    {
+      "from": "'N'",
+      "to": "CA-PAID-IN-FULL",
+      "fromLiteral": true,
+      "paragraph": "CLOSE-CYCLE",
+      "verb": "MOVE",
+      "source": "laurasia/programs/cycle.cbl:93"
     },
     {
       "from": "CARD-ACCOUNT",
@@ -877,7 +894,7 @@
       "toFile": true,
       "paragraph": "CLOSE-CYCLE",
       "verb": "REWRITE",
-      "source": "laurasia/programs/cycle.cbl:92"
+      "source": "laurasia/programs/cycle.cbl:94"
     },
     {
       "from": "1",
@@ -885,21 +902,21 @@
       "fromLiteral": true,
       "paragraph": "CLOSE-CYCLE",
       "verb": "ADD",
-      "source": "laurasia/programs/cycle.cbl:95"
+      "source": "laurasia/programs/cycle.cbl:97"
     },
     {
       "from": "CA-CARD-NO",
       "to": "PO-CARD-NO",
       "paragraph": "POST-INTEREST",
       "verb": "MOVE",
-      "source": "laurasia/programs/cycle.cbl:98"
+      "source": "laurasia/programs/cycle.cbl:100"
     },
     {
       "from": "CA-ACCOUNT-NO",
       "to": "PO-ACCOUNT-NO",
       "paragraph": "POST-INTEREST",
       "verb": "MOVE",
-      "source": "laurasia/programs/cycle.cbl:99"
+      "source": "laurasia/programs/cycle.cbl:101"
     },
     {
       "from": "condition PO-INTEREST",
@@ -907,14 +924,14 @@
       "fromLiteral": true,
       "paragraph": "POST-INTEREST",
       "verb": "SET",
-      "source": "laurasia/programs/cycle.cbl:100"
+      "source": "laurasia/programs/cycle.cbl:102"
     },
     {
       "from": "WS-INTEREST",
       "to": "PO-AMOUNT",
       "paragraph": "POST-INTEREST",
       "verb": "MOVE",
-      "source": "laurasia/programs/cycle.cbl:101"
+      "source": "laurasia/programs/cycle.cbl:103"
     },
     {
       "from": "SPACES",
@@ -922,14 +939,14 @@
       "fromLiteral": true,
       "paragraph": "POST-INTEREST",
       "verb": "MOVE",
-      "source": "laurasia/programs/cycle.cbl:102"
+      "source": "laurasia/programs/cycle.cbl:104"
     },
     {
       "from": "WS-RUN-DATE",
       "to": "PO-DATE",
       "paragraph": "POST-INTEREST",
       "verb": "MOVE",
-      "source": "laurasia/programs/cycle.cbl:103"
+      "source": "laurasia/programs/cycle.cbl:105"
     },
     {
       "from": "POSTING",
@@ -937,35 +954,35 @@
       "toFile": true,
       "paragraph": "POST-INTEREST",
       "verb": "WRITE",
-      "source": "laurasia/programs/cycle.cbl:104"
+      "source": "laurasia/programs/cycle.cbl:106"
     },
     {
       "from": "CA-CARD-NO",
       "to": "SH-CARD-NO",
       "paragraph": "WRITE-STATEMENT",
       "verb": "MOVE",
-      "source": "laurasia/programs/cycle.cbl:107"
+      "source": "laurasia/programs/cycle.cbl:109"
     },
     {
       "from": "CA-ACCOUNT-NO",
       "to": "SH-ACCOUNT-NO",
       "paragraph": "WRITE-STATEMENT",
       "verb": "MOVE",
-      "source": "laurasia/programs/cycle.cbl:108"
+      "source": "laurasia/programs/cycle.cbl:110"
     },
     {
       "from": "WS-RUN-DATE",
       "to": "SH-DATE",
       "paragraph": "WRITE-STATEMENT",
       "verb": "MOVE",
-      "source": "laurasia/programs/cycle.cbl:109"
+      "source": "laurasia/programs/cycle.cbl:111"
     },
     {
       "from": "WS-STATEMENT-HEAD",
       "to": "STATEMENT-LINE",
       "paragraph": "WRITE-STATEMENT",
       "verb": "WRITE",
-      "source": "laurasia/programs/cycle.cbl:110"
+      "source": "laurasia/programs/cycle.cbl:112"
     },
     {
       "from": "STATEMENT-LINE",
@@ -973,7 +990,7 @@
       "toFile": true,
       "paragraph": "WRITE-STATEMENT",
       "verb": "WRITE",
-      "source": "laurasia/programs/cycle.cbl:110"
+      "source": "laurasia/programs/cycle.cbl:112"
     },
     {
       "from": "'PREVIOUS BALANCE'",
@@ -981,21 +998,21 @@
       "fromLiteral": true,
       "paragraph": "WRITE-STATEMENT",
       "verb": "MOVE",
-      "source": "laurasia/programs/cycle.cbl:111"
+      "source": "laurasia/programs/cycle.cbl:113"
     },
     {
       "from": "CA-STATEMENT-BALANCE",
       "to": "SA-VALUE",
       "paragraph": "WRITE-STATEMENT",
       "verb": "MOVE",
-      "source": "laurasia/programs/cycle.cbl:112"
+      "source": "laurasia/programs/cycle.cbl:114"
     },
     {
       "from": "WS-STATEMENT-AMOUNT",
       "to": "STATEMENT-LINE",
       "paragraph": "WRITE-STATEMENT",
       "verb": "WRITE",
-      "source": "laurasia/programs/cycle.cbl:113"
+      "source": "laurasia/programs/cycle.cbl:115"
     },
     {
       "from": "STATEMENT-LINE",
@@ -1003,7 +1020,7 @@
       "toFile": true,
       "paragraph": "WRITE-STATEMENT",
       "verb": "WRITE",
-      "source": "laurasia/programs/cycle.cbl:113"
+      "source": "laurasia/programs/cycle.cbl:115"
     },
     {
       "from": "'INTEREST'",
@@ -1011,21 +1028,21 @@
       "fromLiteral": true,
       "paragraph": "WRITE-STATEMENT",
       "verb": "MOVE",
-      "source": "laurasia/programs/cycle.cbl:114"
+      "source": "laurasia/programs/cycle.cbl:116"
     },
     {
       "from": "WS-INTEREST",
       "to": "SA-VALUE",
       "paragraph": "WRITE-STATEMENT",
       "verb": "MOVE",
-      "source": "laurasia/programs/cycle.cbl:115"
+      "source": "laurasia/programs/cycle.cbl:117"
     },
     {
       "from": "WS-STATEMENT-AMOUNT",
       "to": "STATEMENT-LINE",
       "paragraph": "WRITE-STATEMENT",
       "verb": "WRITE",
-      "source": "laurasia/programs/cycle.cbl:116"
+      "source": "laurasia/programs/cycle.cbl:118"
     },
     {
       "from": "STATEMENT-LINE",
@@ -1033,7 +1050,7 @@
       "toFile": true,
       "paragraph": "WRITE-STATEMENT",
       "verb": "WRITE",
-      "source": "laurasia/programs/cycle.cbl:116"
+      "source": "laurasia/programs/cycle.cbl:118"
     },
     {
       "from": "'NEW BALANCE'",
@@ -1041,21 +1058,21 @@
       "fromLiteral": true,
       "paragraph": "WRITE-STATEMENT",
       "verb": "MOVE",
-      "source": "laurasia/programs/cycle.cbl:117"
+      "source": "laurasia/programs/cycle.cbl:119"
     },
     {
       "from": "CA-BALANCE",
       "to": "SA-VALUE",
       "paragraph": "WRITE-STATEMENT",
       "verb": "MOVE",
-      "source": "laurasia/programs/cycle.cbl:118"
+      "source": "laurasia/programs/cycle.cbl:120"
     },
     {
       "from": "WS-STATEMENT-AMOUNT",
       "to": "STATEMENT-LINE",
       "paragraph": "WRITE-STATEMENT",
       "verb": "WRITE",
-      "source": "laurasia/programs/cycle.cbl:119"
+      "source": "laurasia/programs/cycle.cbl:121"
     },
     {
       "from": "STATEMENT-LINE",
@@ -1063,7 +1080,7 @@
       "toFile": true,
       "paragraph": "WRITE-STATEMENT",
       "verb": "WRITE",
-      "source": "laurasia/programs/cycle.cbl:119"
+      "source": "laurasia/programs/cycle.cbl:121"
     },
     {
       "from": "'MINIMUM PAYMENT'",
@@ -1071,21 +1088,21 @@
       "fromLiteral": true,
       "paragraph": "WRITE-STATEMENT",
       "verb": "MOVE",
-      "source": "laurasia/programs/cycle.cbl:120"
+      "source": "laurasia/programs/cycle.cbl:122"
     },
     {
       "from": "WS-MINIMUM",
       "to": "SA-VALUE",
       "paragraph": "WRITE-STATEMENT",
       "verb": "MOVE",
-      "source": "laurasia/programs/cycle.cbl:121"
+      "source": "laurasia/programs/cycle.cbl:123"
     },
     {
       "from": "WS-STATEMENT-AMOUNT",
       "to": "STATEMENT-LINE",
       "paragraph": "WRITE-STATEMENT",
       "verb": "WRITE",
-      "source": "laurasia/programs/cycle.cbl:122"
+      "source": "laurasia/programs/cycle.cbl:124"
     },
     {
       "from": "STATEMENT-LINE",
@@ -1093,7 +1110,7 @@
       "toFile": true,
       "paragraph": "WRITE-STATEMENT",
       "verb": "WRITE",
-      "source": "laurasia/programs/cycle.cbl:122"
+      "source": "laurasia/programs/cycle.cbl:124"
     }
   ],
   "outputs": [
@@ -1177,7 +1194,7 @@
           "start": 61,
           "length": 1,
           "origins": [
-            "file ACCOUNTS CA-PAID-IN-FULL"
+            "literal 'N'"
           ]
         }
       ]
@@ -1407,7 +1424,7 @@
         "file": "COMMAND-LINE",
         "field": "WS-RUN-DAY"
       },
-      "source": "laurasia/programs/cycle.cbl:71"
+      "source": "laurasia/programs/cycle.cbl:72"
     }
   ]
 }

@@ -44,6 +44,17 @@
     ]
   },
   {
+    "dataset": "$DATA/inbound/PAYMENTS.$DATE.txt",
+    "copybook": "payfeed",
+    "kind": "external",
+    "readBy": [
+      {
+        "job": "payments",
+        "step": "PAYIN"
+      }
+    ]
+  },
+  {
     "dataset": "$DATA/inbound/accounts.txt",
     "kind": "external",
     "readBy": [
@@ -70,6 +81,10 @@
       {
         "job": "open",
         "step": "ACCTLD"
+      },
+      {
+        "job": "payments",
+        "step": "PAYIN"
       }
     ],
     "readBy": [
@@ -88,6 +103,10 @@
       {
         "job": "nightly",
         "step": "ACCTUL"
+      },
+      {
+        "job": "payments",
+        "step": "PAYIN"
       }
     ]
   },
@@ -141,6 +160,17 @@
     ]
   },
   {
+    "dataset": "$DATA/outbound/CREDITS.$DATE.txt",
+    "copybook": "postrec",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "payments",
+        "step": "PAYIN"
+      }
+    ]
+  },
+  {
     "dataset": "$DATA/outbound/DISPREJ.$DATE.txt",
     "kind": "output",
     "writtenBy": [
@@ -168,6 +198,16 @@
       {
         "job": "nightly",
         "step": "SETTLE"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/outbound/PAYREJ.$DATE.txt",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "payments",
+        "step": "PAYIN"
       }
     ]
   },
@@ -319,6 +359,26 @@
       {
         "job": "nightly",
         "step": "MATCH"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/reports/payin.$DATE.out",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "payments",
+        "step": "PAYIN"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/reports/payin.$DATE.txt",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "payments",
+        "step": "PAYIN"
       }
     ]
   },

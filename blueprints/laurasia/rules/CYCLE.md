@@ -21,7 +21,7 @@ The business rules of [CYCLE](../programs/CYCLE.md), paragraph by paragraph: eac
 | → `CLOSE ACCOUNTS POSTINGS-OUT STATEMENTS-OUT` | | 5 |
 | → `STOP RUN RETURNING 0` | | 6 |
 
-Source: [cycle.cbl:62](../../../laurasia/programs/cycle.cbl#L62).
+Source: [cycle.cbl:63](../../../laurasia/programs/cycle.cbl#L63).
 
 ## MAIN, in its loop
 
@@ -33,7 +33,7 @@ Each pass of `PERFORM UNTIL ACCOUNTS-AT-END`.
 | → `PERFORM CLOSE-CYCLE` | 1 | |
 | → `READ ACCOUNTS NEXT RECORD` | 2 | 1 |
 
-Source: [cycle.cbl:70](../../../laurasia/programs/cycle.cbl#L70).
+Source: [cycle.cbl:71](../../../laurasia/programs/cycle.cbl#L71).
 
 ## CLOSE-CYCLE
 
@@ -50,8 +50,9 @@ Source: [cycle.cbl:70](../../../laurasia/programs/cycle.cbl#L70).
 | → `CALL 'minpay' USING CA-BALANCE WS-MINIMUM` | 6 | 6 | 4 | 4 | 2 | 2 |
 | → `PERFORM WRITE-STATEMENT` | 7 | 7 | 5 | 5 | 3 | 3 |
 | → `MOVE CA-BALANCE TO CA-STATEMENT-BALANCE` | 8 | 8 | 6 | 6 | 4 | 4 |
-| → `REWRITE CARD-ACCOUNT` | 9 | 9 | 7 | 7 | 5 | 5 |
-| → `STOP RUN RETURNING 16` | 10 | | 8 | | 6 | |
-| → `ADD 1 TO WS-CLOSED-COUNT` | | 10 | | 8 | | 6 |
+| → `MOVE 'N' TO CA-PAID-IN-FULL` | 9 | 9 | 7 | 7 | 5 | 5 |
+| → `REWRITE CARD-ACCOUNT` | 10 | 10 | 8 | 8 | 6 | 6 |
+| → `STOP RUN RETURNING 16` | 11 | | 9 | | 7 | |
+| → `ADD 1 TO WS-CLOSED-COUNT` | | 11 | | 9 | | 7 |
 
-Source: [cycle.cbl:79](../../../laurasia/programs/cycle.cbl#L79).
+Source: [cycle.cbl:80](../../../laurasia/programs/cycle.cbl#L80).
