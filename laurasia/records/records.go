@@ -11,13 +11,13 @@ import (
 )
 
 // Layouts are the processor's record layouts: a card's account, the
-// switch's log entry, the five records of the clearing file, a dispute's
-// event and case, a fee of the schedule, and a presentment on its way
-// through the night.
+// switch's log entry, the five records of the clearing file, the card
+// system's feed record, a dispute's event and case, a fee of the
+// schedule, and a presentment on its way through the night.
 type Layouts struct {
 	Account, Auth                                                   *record.Layout
 	FileHeader, BatchHeader, Presentment, BatchTrailer, FileTrailer *record.Layout
-	Event, Case, Fee, Pres                                          *record.Layout
+	Feed, Event, Case, Fee, Pres                                    *record.Layout
 }
 
 // Load reads the layouts from the processor's copybooks.
@@ -35,6 +35,7 @@ func Load(copybookDir string) (*Layouts, error) {
 		{&l.Presentment, "clrrec", "CLR-PRESENTMENT"},
 		{&l.BatchTrailer, "clrrec", "CLR-BATCH-TRAILER"},
 		{&l.FileTrailer, "clrrec", "CLR-FILE-TRAILER"},
+		{&l.Feed, "payfeed", "FEED-RECORD"},
 		{&l.Event, "dispevt", "DISPUTE-EVENT"},
 		{&l.Case, "dispcase", "DISPUTE-CASE"},
 		{&l.Fee, "feedef", "FEE-DEFINITION"},

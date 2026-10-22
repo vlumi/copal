@@ -58,7 +58,7 @@ func TestDaysAreReproducible(t *testing.T) {
 func checkDays(t *testing.T, days []Day) {
 	t.Helper()
 	wantDates := []string{"2026-10-01", "2026-10-02", "2026-10-03", "2026-10-04", "2026-10-05"}
-	statements, rejected := 0, 0
+	statements, rejected, payments := 0, 0, 0
 	for i, d := range days {
 		if d.Date.String() != wantDates[i] {
 			t.Errorf("day %d is %s, want %s", i+1, d.Date, wantDates[i])
@@ -75,9 +75,10 @@ func checkDays(t *testing.T, days []Day) {
 		}
 		statements += d.Statements
 		rejected += d.Rejected
+		payments += d.Payments
 	}
-	if statements < 20 || rejected == 0 {
-		t.Errorf("%d statements and %d rejects in five days", statements, rejected)
+	if statements < 20 || rejected == 0 || payments < 10 {
+		t.Errorf("%d statements, %d rejects and %d payments in five days", statements, rejected, payments)
 	}
 }
 

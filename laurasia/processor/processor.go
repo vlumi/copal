@@ -50,8 +50,9 @@ type Day struct {
 	Night        []Step
 	Cycle        []Step
 	Presentments int // in the clearing file
-	Rejected     int // by the clearing and the posting
+	Rejected     int // by the clearing, the posting and the card system's feed
 	Postings     int
+	Payments     int
 	Statements   int
 }
 
@@ -175,9 +176,10 @@ func (p Processor) tryDay(g *generate.Generator, date generate.Date) (Day, error
 	return day, p.count(&day)
 }
 
-// generateNight writes the night's inbound files: the switch's log and
-// the clearing file, from the cards as the last cycle unloaded them, and
-// the dispute events, from the cases in flight and last night's sales.
+// generateNight writes the night's inbound files: the switch's log, the
+// clearing file and the card system's feed, from the cards as the last
+// cycle unloaded them, and the dispute events, from the cases in flight
+// and last night's sales.
 func (p Processor) generateNight(g *generate.Generator, date generate.Date) (generate.Night, error) {
 	accounts, err := p.readFile(g.Layouts.Account, p.data("outbound", "ACCOUNTS.CYCLE."+date.AddDays(-1).Stamp()+".txt"))
 	if errors.Is(err, os.ErrNotExist) {
@@ -191,6 +193,10 @@ func (p Processor) generateNight(g *generate.Generator, date generate.Date) (gen
 		return generate.Night{}, err
 	}
 	n, err := g.Night(date, date.PreviousBusinessDay(), cards, g.Merchants())
+	if err != nil {
+		return n, err
+	}
+	payments, err := g.Payments(date, cards)
 	if err != nil {
 		return n, err
 	}
@@ -214,7 +220,7 @@ func (p Processor) generateNight(g *generate.Generator, date generate.Date) (gen
 	if err != nil {
 		return n, err
 	}
-	for name, recs := range map[string][][]byte{"AUTH": n.Log, "CLR": n.Clearing, "DISPEVT": events} {
+	for name, recs := range map[string][][]byte{"AUTH": n.Log, "CLR": n.Clearing, "PAYMENTS": payments, "DISPEVT": events} {
 		if err := p.write(filepath.Join("inbound", name+"."+date.Stamp()+".txt"), recs); err != nil {
 			return n, err
 		}
@@ -232,7 +238,9 @@ func (p Processor) count(day *Day) error {
 	}{
 		{"CLRREJ", &day.Rejected, nil},
 		{"POSTREJ", &day.Rejected, nil},
+		{"PAYREJ", &day.Rejected, nil},
 		{"POSTINGS", &day.Postings, nil},
+		{"CREDITS", &day.Payments, nil},
 		{"STATEMENTS", &day.Statements, func(line string) bool { return !strings.HasPrefix(line, " ") }},
 	} {
 		content, err := os.ReadFile(p.data("outbound", c.file+"."+stamp+".txt"))

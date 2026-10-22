@@ -115,9 +115,9 @@ func days(args []string) error {
 	n := flags.Int("n", 1, "number of days to run")
 	_ = flags.Parse(args)
 	return p.RunDays(*n, func(d processor.Day) {
-		night := fmt.Sprintf("%-47s", "no clearing file")
+		night := fmt.Sprintf("%-62s", "no clearing file")
 		if d.Night != nil {
-			night = fmt.Sprintf("%5d presentments  %3d rejected  %5d postings", d.Presentments, d.Rejected, d.Postings)
+			night = fmt.Sprintf("%5d presentments  %3d rejected  %5d postings  %4d payments", d.Presentments, d.Rejected, d.Postings, d.Payments)
 		}
 		fmt.Printf("%s %s  %s  %3d statements  RC=%d\n", d.Date, d.Date.Weekday().String()[:3], night, d.Statements, d.RC())
 	})
