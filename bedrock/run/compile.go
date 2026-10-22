@@ -15,19 +15,21 @@ import (
 	"github.com/vlumi/cobolith/cobol"
 )
 
+// warnings are errors, whatever the dialect.
+var warnings = []string{"-Wall", "-Werror"}
+
 // dialectFlags are the flags that make GnuCOBOL compile each dialect like
-// its compiler. IBM's signed display numbers are in the EBCDIC overpunch,
-// +5 as 'E' and -5 as 'N', rather than the ASCII one. GnuCOBOL has no
-// configuration for Fujitsu NetCOBOL; its default one compiles what the
-// two share, with the source's Shift_JIS passed through as it is.
+// its compiler, after the warnings. IBM's signed display numbers are in
+// the EBCDIC overpunch, +5 as 'E' and -5 as 'N', rather than the ASCII
+// one. GnuCOBOL has no configuration for Fujitsu NetCOBOL; its default
+// one compiles what the two share, with the source's Shift_JIS passed
+// through as it is, and the identification paragraphs NetCOBOL still
+// takes, AUTHOR and DATE-WRITTEN, allowed.
 var dialectFlags = map[string][]string{
 	cobol.IBM.Name:        {"-std=ibm", "-fsign=EBCDIC"},
 	cobol.MicroFocus.Name: {"-std=mf"},
-	cobol.Fujitsu.Name:    {"-std=default"},
+	cobol.Fujitsu.Name:    {"-std=default", "-Wno-obsolete"},
 }
-
-// warnings are errors, whatever the dialect.
-var warnings = []string{"-Wall", "-Werror"}
 
 // Build is the compiling of a directory of programs: where their sources
 // and copybooks are, where the compiled programs go, the dialect they are
@@ -56,7 +58,7 @@ func (b Build) Programs() ([]string, error) {
 	if !ok {
 		return nil, fmt.Errorf("compiling %s: no dialect", b.Sources)
 	}
-	options := append(slices.Clone(flags), warnings...)
+	options := append(slices.Clone(warnings), flags...)
 	if b.Trace {
 		options = append(options, "-ftraceall")
 	}
