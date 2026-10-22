@@ -310,6 +310,7 @@ func Analyze(paths []string, copybookDir string, dialect cobol.Dialect) (*System
 	}
 	slices.SortFunc(s.Programs, func(a, b Program) int { return strings.Compare(a.Name, b.Name) })
 	linkCalls(s.Programs)
+	originsThroughCalls(s.Programs)
 	for i := range s.Programs {
 		p := &s.Programs[i]
 		flow := p.flow.WithCalls(callWrites(*p, s.Programs))

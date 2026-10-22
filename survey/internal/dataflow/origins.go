@@ -23,6 +23,9 @@ type Origin struct {
 	Arg       int    // the position of the argument passed, 1-based
 	Parameter int    // the position of the USING item passed in, 1-based
 	Stream    string // SYSIN, for an item accepted from it
+	// Through is the program called the origin is within, for one found
+	// behind a call: a literal or a file of the program called.
+	Through string
 	// Start and Length are the bytes of a file's record the values come
 	// from, 1-based, when they are a part of Item and not all of it, as of
 	// a record read whole into another.
@@ -31,9 +34,14 @@ type Origin struct {
 
 // String writes the origin: "file TRAN-IN TD-AMOUNT", "literal 'TXPOST'",
 // "initial value of WS-COUNT", "call AUTHPUR argument 6 HD-AMOUNT",
-// "parameter 1 RQ-AMOUNT", "stream SYSIN AUTH-REQUEST".
+// "parameter 1 RQ-AMOUNT", "stream SYSIN AUTH-REQUEST", and for one
+// within a program called, "in GLC020, literal 'R'".
 func (o Origin) String() string {
 	switch {
+	case o.Through != "":
+		within := o
+		within.Through = ""
+		return "in " + o.Through + ", " + within.String()
 	case o.File != "" && o.Length > 0:
 		return fmt.Sprintf("file %s %s %d-%d", o.File, o.Item, o.Start, o.Start+o.Length-1)
 	case o.File != "":
