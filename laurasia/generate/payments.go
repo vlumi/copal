@@ -16,20 +16,20 @@ type payer struct {
 
 // payerOf is a card's cardholder, the same for the card every day: most
 // pay in full, as the product's share of them says, and of the rest most
-// pay the minimum, some a part, and a few nothing.
+// pay a good part, some the minimum, and a few nothing.
 func (g *Generator) payerOf(c Card) payer {
 	n, _ := strconv.ParseInt(c.No, 10, 64)
 	r := g.rng("payer", n)
 	full := productNamed(c.Product).paidInFull
 	roll := r.IntN(100)
-	p := payer{delay: 10 + r.IntN(12), share: 30 + r.IntN(41)}
+	p := payer{delay: 10 + r.IntN(12), share: 40 + r.IntN(51)}
 	switch {
 	case roll < full:
 		p.kind = "full"
-	case roll < full+(100-full)*6/10:
-		p.kind = "minimum"
-	case roll < full+(100-full)*9/10:
+	case roll < full+(100-full)*65/100:
 		p.kind = "partial"
+	case roll < full+(100-full)*9/10:
+		p.kind = "minimum"
 	default:
 		p.kind = "none"
 	}
@@ -102,23 +102,18 @@ func (g *Generator) payment(c Card, date Date) int64 {
 	return min(amount, max(c.Balance, 0))
 }
 
-// statusChange is a card lost or found, or an account closed, once in a
-// long while.
+// statusChange is a card lost, once in a long while, and found or
+// replaced some weeks later, or an account closed.
 func statusChange(r *rand.Rand, c Card) string {
-	if r.IntN(1000) != 0 {
-		return ""
-	}
-	switch c.Status {
-	case "A":
-		if r.IntN(4) == 0 {
-			return "C"
-		}
+	switch roll := r.IntN(10000); {
+	case c.Status == "A" && roll < 5:
 		return "B"
-	case "B":
-		if r.IntN(3) == 0 {
-			return "C"
-		}
+	case c.Status == "A" && roll < 7:
+		return "C"
+	case c.Status == "B" && roll < 300:
 		return "A"
+	case c.Status == "B" && roll < 350:
+		return "C"
 	}
 	return ""
 }
