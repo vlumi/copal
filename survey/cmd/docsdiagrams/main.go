@@ -42,7 +42,7 @@ func Write(dir string) error {
 	return nil
 }
 
-// architecture is the four parts of Copal, the second specimen and the
+// architecture is the four parts of Copal, the other specimens and the
 // blueprints between them.
 func architecture() diagram.Graph {
 	return diagram.Graph{
@@ -58,6 +58,7 @@ func architecture() diagram.Graph {
 			{ID: "survey", Label: "survey\nthe analyzer"},
 			{ID: "pangaea", Label: "pangaea\nthe legacy bank"},
 			{ID: "laurasia", Label: "laurasia\nthe card processor"},
+			{ID: "gondwana", Label: "gondwana\nthe life insurer"},
 			{ID: "blueprints", Label: "blueprints/pangaea\nthe survey of the bank", Data: true},
 			{ID: "bedrock", Label: "bedrock\nrunning programs, jobs, scripts"},
 			{ID: "cobolith", Label: "cobolith, a library\nCOBOL, JCL, layouts, records"},
@@ -72,11 +73,13 @@ func architecture() diagram.Graph {
 			{From: "survey", To: "blueprints", Style: diagram.Dashed},
 			{From: "pangaea", To: "bedrock"},
 			{From: "laurasia", To: "bedrock"},
+			{From: "gondwana", To: "bedrock"},
 			{From: "bedrock", To: "cobolith"},
 			{From: "console", To: "cobolith", Span: 4},
 			{From: "survey", To: "cobolith", Span: 3},
 			{From: "pangaea", To: "cobolith", Span: 2},
 			{From: "laurasia", To: "cobolith", Span: 2},
+			{From: "gondwana", To: "cobolith", Span: 2},
 		},
 	}
 }
