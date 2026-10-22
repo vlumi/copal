@@ -23,12 +23,12 @@ Copybook [NEWPOL.cpy](../../../gondwana/copybooks/NEWPOL.cpy), used by [GLD010](
 | 01 | NP-ｼﾝｹｲﾔｸ-ﾚｺｰﾄﾞ | group | 1 | 200 | | | | [NEWPOL.cpy:12](../../../gondwana/copybooks/NEWPOL.cpy#L12) |
 | 05 | ├ NP-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ | text | 1 | 10 | X(10) | | | [NEWPOL.cpy:13](../../../gondwana/copybooks/NEWPOL.cpy#L13) |
 | 05 | ├ NP-ｼｮｳﾋﾝ | text | 11 | 2 | X(2) | | | [NEWPOL.cpy:14](../../../gondwana/copybooks/NEWPOL.cpy#L14) |
-| 05 | ├ NP-ﾎｹﾝｷﾝｶﾞｸ | number | 13 | 9 | 9(9) | | | [NEWPOL.cpy:15](../../../gondwana/copybooks/NEWPOL.cpy#L15) |
+| 05 | ├ NP-ﾎｹﾝｷﾝｶﾞｸ | amount | 13 | 9 | 9(9) | | | [NEWPOL.cpy:15](../../../gondwana/copybooks/NEWPOL.cpy#L15) |
 | 05 | ├ NP-ﾊﾗｲｺﾐﾎｳﾎｳ | text | 22 | 1 | X | | | [NEWPOL.cpy:16](../../../gondwana/copybooks/NEWPOL.cpy#L16) |
-| 05 | ├ NP-ｹｲﾔｸﾋﾞ | number | 23 | 8 | 9(8) | | | [NEWPOL.cpy:17](../../../gondwana/copybooks/NEWPOL.cpy#L17) |
+| 05 | ├ NP-ｹｲﾔｸﾋﾞ | date | 23 | 8 | 9(8) | | | [NEWPOL.cpy:17](../../../gondwana/copybooks/NEWPOL.cpy#L17) |
 | 05 | ├ NP-ｼﾒｲ | text | 31 | 20 | X(20) | | | [NEWPOL.cpy:18](../../../gondwana/copybooks/NEWPOL.cpy#L18) |
 | 05 | ├ NP-ｼﾒｲｶﾅ | text | 51 | 20 | X(20) | | | [NEWPOL.cpy:19](../../../gondwana/copybooks/NEWPOL.cpy#L19) |
-| 05 | ├ NP-ｾｲﾈﾝｶﾞｯﾋﾟ | number | 71 | 8 | 9(8) | | | [NEWPOL.cpy:20](../../../gondwana/copybooks/NEWPOL.cpy#L20) |
+| 05 | ├ NP-ｾｲﾈﾝｶﾞｯﾋﾟ | date | 71 | 8 | 9(8) | | | [NEWPOL.cpy:20](../../../gondwana/copybooks/NEWPOL.cpy#L20) |
 | 05 | ├ NP-ｾｲﾍﾞﾂ | number | 79 | 1 | 9 | | | [NEWPOL.cpy:21](../../../gondwana/copybooks/NEWPOL.cpy#L21) |
 | 05 | ├ NP-ｼﾞｭｳｼｮ | text | 80 | 40 | X(40) | | | [NEWPOL.cpy:22](../../../gondwana/copybooks/NEWPOL.cpy#L22) |
 | 05 | ├ NP-ｳｹﾄﾘﾆﾝ | text | 120 | 20 | X(20) | | | [NEWPOL.cpy:23](../../../gondwana/copybooks/NEWPOL.cpy#L23) |

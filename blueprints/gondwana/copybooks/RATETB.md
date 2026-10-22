@@ -24,4 +24,4 @@ Copybook [RATETB.cpy](../../../gondwana/copybooks/RATETB.cpy), used by [GLD010](
 | 05 | ├ RT-ｼｮｳﾋﾝ | text | 1 | 2 | X(2) | | | [RATETB.cpy:13](../../../gondwana/copybooks/RATETB.cpy#L13) |
 | 05 | ├ RT-ｾｲﾍﾞﾂ | number | 3 | 1 | 9 | | | [RATETB.cpy:14](../../../gondwana/copybooks/RATETB.cpy#L14) |
 | 05 | ├ RT-ﾈﾝﾚｲ | number | 4 | 2 | 99 | | | [RATETB.cpy:15](../../../gondwana/copybooks/RATETB.cpy#L15) |
-| 05 | └ RT-ﾘｮｳﾘﾂ | amount | 6 | 5 | 9(3)V99 | | | [RATETB.cpy:16](../../../gondwana/copybooks/RATETB.cpy#L16) |
+| 05 | └ RT-ﾘｮｳﾘﾂ | rate | 6 | 5 | 9(3)V99 | | | [RATETB.cpy:16](../../../gondwana/copybooks/RATETB.cpy#L16) |

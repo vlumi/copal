@@ -24,6 +24,6 @@ Copybook [AGTMST.cpy](../../../gondwana/copybooks/AGTMST.cpy), used by [GLM030](
 | 05 | ├ AG-ｺｰﾄﾞ | text | 1 | 6 | X(6) | | | [AGTMST.cpy:13](../../../gondwana/copybooks/AGTMST.cpy#L13) |
 | 05 | ├ AG-ｼﾒｲ | text | 7 | 20 | X(20) | | | [AGTMST.cpy:14](../../../gondwana/copybooks/AGTMST.cpy#L14) |
 | 05 | ├ AG-ｼﾃﾝ | text | 27 | 4 | X(4) | | | [AGTMST.cpy:15](../../../gondwana/copybooks/AGTMST.cpy#L15) |
-| 05 | ├ AG-ﾆｭｳｼｬﾈﾝｹﾞﾂ | number | 31 | 4 | 9(4) | | | [AGTMST.cpy:16](../../../gondwana/copybooks/AGTMST.cpy#L16) |
+| 05 | ├ AG-ﾆｭｳｼｬﾈﾝｹﾞﾂ | date | 31 | 4 | 9(4) | | | [AGTMST.cpy:16](../../../gondwana/copybooks/AGTMST.cpy#L16) |
 | 05 | ├ AG-ｼｶｸ | number | 35 | 1 | 9 | | | [AGTMST.cpy:17](../../../gondwana/copybooks/AGTMST.cpy#L17) |
 | 05 | └ FILLER | filler | 36 | 25 | X(25) | | | [AGTMST.cpy:18](../../../gondwana/copybooks/AGTMST.cpy#L18) |

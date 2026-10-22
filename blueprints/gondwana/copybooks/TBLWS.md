@@ -38,11 +38,11 @@ Copybook [TBLWS.cpy](../../../gondwana/copybooks/TBLWS.cpy), used by [GLD010](..
 | 10 |   ├ WS-ｼｮｳﾋﾝ-ｻｲﾃｲﾈﾝﾚｲ | number | 26 | 2 | 99 | | | [TBLWS.cpy:21](../../../gondwana/copybooks/TBLWS.cpy#L21) |
 | 10 |   ├ WS-ｼｮｳﾋﾝ-ｻｲｺｳﾈﾝﾚｲ | number | 28 | 2 | 99 | | | [TBLWS.cpy:22](../../../gondwana/copybooks/TBLWS.cpy#L22) |
 | 10 |   ├ WS-ｼｮｳﾋﾝ-ﾎｹﾝｷｶﾝ | number | 30 | 2 | 99 | | | [TBLWS.cpy:23](../../../gondwana/copybooks/TBLWS.cpy#L23) |
-| 10 |   ├ WS-ｼｮｳﾋﾝ-ｻｲﾃｲｷﾝｶﾞｸ | number | 32 | 9 | 9(9) | | | [TBLWS.cpy:24](../../../gondwana/copybooks/TBLWS.cpy#L24) |
-| 10 |   ├ WS-ｼｮｳﾋﾝ-ｻｲｺｳｷﾝｶﾞｸ | number | 41 | 9 | 9(9) | | | [TBLWS.cpy:25](../../../gondwana/copybooks/TBLWS.cpy#L25) |
-| 10 |   ├ WS-ｼｮｳﾋﾝ-ﾆｭｳｲﾝﾆﾁｶﾞｸﾘﾂ | amount | 50 | 4 | 9V999 | | | [TBLWS.cpy:26](../../../gondwana/copybooks/TBLWS.cpy#L26) |
+| 10 |   ├ WS-ｼｮｳﾋﾝ-ｻｲﾃｲｷﾝｶﾞｸ | amount | 32 | 9 | 9(9) | | | [TBLWS.cpy:24](../../../gondwana/copybooks/TBLWS.cpy#L24) |
+| 10 |   ├ WS-ｼｮｳﾋﾝ-ｻｲｺｳｷﾝｶﾞｸ | amount | 41 | 9 | 9(9) | | | [TBLWS.cpy:25](../../../gondwana/copybooks/TBLWS.cpy#L25) |
+| 10 |   ├ WS-ｼｮｳﾋﾝ-ﾆｭｳｲﾝﾆﾁｶﾞｸﾘﾂ | rate | 50 | 4 | 9V999 | | | [TBLWS.cpy:26](../../../gondwana/copybooks/TBLWS.cpy#L26) |
 | 10 |   ├ WS-ｼｮｳﾋﾝ-ﾒﾝｾｷﾆｯｽｳ | number | 54 | 3 | 9(3) | | | [TBLWS.cpy:27](../../../gondwana/copybooks/TBLWS.cpy#L27) |
-| 10 |   └ WS-ｼｮｳﾋﾝ-ﾊｲﾄｳﾘﾂ | amount | 57 | 5 | 9V9(4) | | | [TBLWS.cpy:28](../../../gondwana/copybooks/TBLWS.cpy#L28) |
+| 10 |   └ WS-ｼｮｳﾋﾝ-ﾊｲﾄｳﾘﾂ | rate | 57 | 5 | 9V9(4) | | | [TBLWS.cpy:28](../../../gondwana/copybooks/TBLWS.cpy#L28) |
 
 ## WS-ﾘｮｳﾘﾂ-TBL
 
@@ -53,7 +53,7 @@ Copybook [TBLWS.cpy](../../../gondwana/copybooks/TBLWS.cpy), used by [GLD010](..
 | 01 | WS-ﾘｮｳﾘﾂ-TBL | group | 1 | 8100 | | | | [TBLWS.cpy:29](../../../gondwana/copybooks/TBLWS.cpy#L29) |
 | 05 | └ WS-ﾘｮｳﾘﾂ-ｼｮｳﾋﾝ | group | 1 | 810 | | | OCCURS 10 | [TBLWS.cpy:30](../../../gondwana/copybooks/TBLWS.cpy#L30) |
 | 10 |   └ WS-ﾘｮｳﾘﾂ-ｾｲﾍﾞﾂ | group | 1 | 405 | | | OCCURS 2 | [TBLWS.cpy:31](../../../gondwana/copybooks/TBLWS.cpy#L31) |
-| 15 |     └ WS-ﾘｮｳﾘﾂ | amount | 1 | 5 | 9(3)V99 | | OCCURS 81 | [TBLWS.cpy:32](../../../gondwana/copybooks/TBLWS.cpy#L32) |
+| 15 |     └ WS-ﾘｮｳﾘﾂ | rate | 1 | 5 | 9(3)V99 | | OCCURS 81 | [TBLWS.cpy:32](../../../gondwana/copybooks/TBLWS.cpy#L32) |
 
 ## WS-ﾈﾝﾚｲ-ｿｴｼﾞ
 

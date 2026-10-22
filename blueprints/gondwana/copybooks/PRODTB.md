@@ -33,9 +33,9 @@ Copybook [PRODTB.cpy](../../../gondwana/copybooks/PRODTB.cpy), used by [GLD010](
 | 05 | ├ PR-ｻｲﾃｲﾈﾝﾚｲ | number | 24 | 2 | 99 | | | [PRODTB.cpy:22](../../../gondwana/copybooks/PRODTB.cpy#L22) |
 | 05 | ├ PR-ｻｲｺｳﾈﾝﾚｲ | number | 26 | 2 | 99 | | | [PRODTB.cpy:23](../../../gondwana/copybooks/PRODTB.cpy#L23) |
 | 05 | ├ PR-ﾎｹﾝｷｶﾝ | number | 28 | 2 | 99 | | | [PRODTB.cpy:24](../../../gondwana/copybooks/PRODTB.cpy#L24) |
-| 05 | ├ PR-ｻｲﾃｲﾎｹﾝｷﾝｶﾞｸ | number | 30 | 9 | 9(9) | | | [PRODTB.cpy:25](../../../gondwana/copybooks/PRODTB.cpy#L25) |
-| 05 | ├ PR-ｻｲｺｳﾎｹﾝｷﾝｶﾞｸ | number | 39 | 9 | 9(9) | | | [PRODTB.cpy:26](../../../gondwana/copybooks/PRODTB.cpy#L26) |
-| 05 | ├ PR-ﾆｭｳｲﾝﾆﾁｶﾞｸﾘﾂ | amount | 48 | 4 | 9V999 | | | [PRODTB.cpy:27](../../../gondwana/copybooks/PRODTB.cpy#L27) |
+| 05 | ├ PR-ｻｲﾃｲﾎｹﾝｷﾝｶﾞｸ | amount | 30 | 9 | 9(9) | | | [PRODTB.cpy:25](../../../gondwana/copybooks/PRODTB.cpy#L25) |
+| 05 | ├ PR-ｻｲｺｳﾎｹﾝｷﾝｶﾞｸ | amount | 39 | 9 | 9(9) | | | [PRODTB.cpy:26](../../../gondwana/copybooks/PRODTB.cpy#L26) |
+| 05 | ├ PR-ﾆｭｳｲﾝﾆﾁｶﾞｸﾘﾂ | rate | 48 | 4 | 9V999 | | | [PRODTB.cpy:27](../../../gondwana/copybooks/PRODTB.cpy#L27) |
 | 05 | ├ PR-ﾒﾝｾｷﾆｯｽｳ | number | 52 | 3 | 9(3) | | | [PRODTB.cpy:28](../../../gondwana/copybooks/PRODTB.cpy#L28) |
-| 05 | ├ PR-ﾊｲﾄｳﾘﾂ | amount | 55 | 5 | 9V9(4) | | | [PRODTB.cpy:29](../../../gondwana/copybooks/PRODTB.cpy#L29) |
+| 05 | ├ PR-ﾊｲﾄｳﾘﾂ | rate | 55 | 5 | 9V9(4) | | | [PRODTB.cpy:29](../../../gondwana/copybooks/PRODTB.cpy#L29) |
 | 05 | └ FILLER | filler | 60 | 1 | X(1) | | | [PRODTB.cpy:30](../../../gondwana/copybooks/PRODTB.cpy#L30) |

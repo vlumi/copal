@@ -596,7 +596,7 @@ Working storage. 8 bytes.
 | 05 | ├ WS-EFF-CENTURY | number | 1 | 2 | 99 | | | [ACCTMNT.cbl:89](../../../pangaea/programs/ACCTMNT.cbl#L89) |
 | 05 | └ WS-EFF-YYMMDD | group | 3 | 6 | | | | [ACCTMNT.cbl:90](../../../pangaea/programs/ACCTMNT.cbl#L90) |
 | 10 |   ├ WS-EFF-YY | number | 3 | 2 | 99 | | | [ACCTMNT.cbl:91](../../../pangaea/programs/ACCTMNT.cbl#L91) |
-| 10 |   └ WS-EFF-MMDD | number | 5 | 4 | 9(4) | | | [ACCTMNT.cbl:92](../../../pangaea/programs/ACCTMNT.cbl#L92) |
+| 10 |   └ WS-EFF-MMDD | date | 5 | 4 | 9(4) | | | [ACCTMNT.cbl:92](../../../pangaea/programs/ACCTMNT.cbl#L92) |
 
 ### WS-ABORT-MESSAGE
 

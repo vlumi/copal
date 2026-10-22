@@ -24,13 +24,13 @@ Copybook [GLJRNL.cpy](../../../gondwana/copybooks/GLJRNL.cpy), used by [GLD010](
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
 | 01 | JR-ｼﾜｹ-ﾚｺｰﾄﾞ | group | 1 | 80 | | | | [GLJRNL.cpy:14](../../../gondwana/copybooks/GLJRNL.cpy#L14) |
 | 05 | ├ JR-ｼﾜｹﾊﾞﾝｺﾞｳ | number | 1 | 9 | 9(9) | | | [GLJRNL.cpy:15](../../../gondwana/copybooks/GLJRNL.cpy#L15) |
-| 05 | ├ JR-ﾋﾂﾞｹ | text | 10 | 7 | X(7) | | | [GLJRNL.cpy:16](../../../gondwana/copybooks/GLJRNL.cpy#L16) |
+| 05 | ├ JR-ﾋﾂﾞｹ | date | 10 | 7 | X(7) | | | [GLJRNL.cpy:16](../../../gondwana/copybooks/GLJRNL.cpy#L16) |
 | 05 | ├ JR-ﾌﾟﾛｸﾞﾗﾑ | text | 17 | 6 | X(6) | | | [GLJRNL.cpy:17](../../../gondwana/copybooks/GLJRNL.cpy#L17) |
 | 05 | ├ JR-ｶﾝｼﾞｮｳｶﾓｸ | number | 23 | 4 | 9(4) | | | [GLJRNL.cpy:18](../../../gondwana/copybooks/GLJRNL.cpy#L18) |
 | 05 | ├ JR-ﾀｲｼｬｸ | code | 27 | 1 | X | | | [GLJRNL.cpy:19](../../../gondwana/copybooks/GLJRNL.cpy#L19) |
 | 88 | │ ├ JR-ｶﾘｶﾀ | | | | | | VALUE 'D' | [GLJRNL.cpy:20](../../../gondwana/copybooks/GLJRNL.cpy#L20) |
 | 88 | │ └ JR-ｶｼｶﾀ | | | | | | VALUE 'C' | [GLJRNL.cpy:21](../../../gondwana/copybooks/GLJRNL.cpy#L21) |
-| 05 | ├ JR-ｷﾝｶﾞｸ | number | 28 | 11 | 9(11) | | | [GLJRNL.cpy:22](../../../gondwana/copybooks/GLJRNL.cpy#L22) |
+| 05 | ├ JR-ｷﾝｶﾞｸ | amount | 28 | 11 | 9(11) | | | [GLJRNL.cpy:22](../../../gondwana/copybooks/GLJRNL.cpy#L22) |
 | 05 | ├ JR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ | text | 39 | 10 | X(10) | | | [GLJRNL.cpy:23](../../../gondwana/copybooks/GLJRNL.cpy#L23) |
 | 05 | ├ JR-ﾃｷﾖｳ | text | 49 | 20 | X(20) | | | [GLJRNL.cpy:24](../../../gondwana/copybooks/GLJRNL.cpy#L24) |
 | 05 | └ FILLER | filler | 69 | 12 | X(12) | | | [GLJRNL.cpy:25](../../../gondwana/copybooks/GLJRNL.cpy#L25) |

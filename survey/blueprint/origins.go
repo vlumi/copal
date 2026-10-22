@@ -49,19 +49,29 @@ func outputs(p Program, flow dataflow.Flow) []Output {
 	var outs []Output
 	for _, key := range keys {
 		r := p.Records[slices.IndexFunc(p.Records, func(r Record) bool { return r.Name == key[1] })]
+		at := func(item string) dataflow.Trace { return flow.TraceAt(item, writes[key]) }
 		if len(r.Types) == 0 {
-			outs = append(outs, traced(flow, Output{File: key[0], Record: key[1]}, leaves(r.Field), writes[key]))
+			outs = append(outs, traced(Output{File: key[0], Record: key[1]}, leaves(r.Field), at))
 			continue
 		}
-		byType := make([][]cobol.Pos, len(r.Types))
-		for _, pos := range writes[key] {
-			for _, k := range writtenTypes(r, flow, pos) {
-				byType[k] = append(byType[k], pos)
+		// A write in a paragraph performed from several places writes the
+		// type each path set before performing it: the types and the
+		// origins are taken site by site where the paths are known.
+		sites := flow.SitesOf(writes[key])
+		byType := make([][]dataflow.Site, len(r.Types))
+		for _, site := range sites {
+			for _, k := range writtenTypes(r, flow.TraceAtSites(r.TypeField, []dataflow.Site{site})) {
+				byType[k] = append(byType[k], site)
 			}
 		}
 		for k, t := range r.Types {
-			if len(byType[k]) > 0 {
-				outs = append(outs, traced(flow, Output{File: key[0], Record: key[1], Type: t.Name}, typeLeaves(p.Records, r, t), byType[k]))
+			out := Output{File: key[0], Record: key[1], Type: t.Name}
+			switch {
+			case len(sites) == 0 && slices.Contains(writtenTypes(r, flow.TraceAt(r.TypeField, writes[key])), k):
+				outs = append(outs, traced(out, typeLeaves(p.Records, r, t), at))
+			case len(byType[k]) > 0:
+				atSites := func(item string) dataflow.Trace { return flow.TraceAtSites(item, byType[k]) }
+				outs = append(outs, traced(out, typeLeaves(p.Records, r, t), atSites))
 			}
 		}
 	}
@@ -69,11 +79,11 @@ func outputs(p Program, flow dataflow.Flow) []Output {
 }
 
 // traced is an output with the origins of each of its fields, as the
-// statements at the positions write them.
-func traced(flow dataflow.Flow, out Output, fields []Field, positions []cobol.Pos) Output {
+// trace finds them where the record is written.
+func traced(out Output, fields []Field, trace func(item string) dataflow.Trace) Output {
 	for _, f := range fields {
 		fo := FieldOrigin{Name: f.Name, Start: f.Start, Length: f.Length}
-		fo.origins = flow.TraceAt(f.Name, positions).Origins
+		fo.origins = trace(f.Name).Origins
 		for _, o := range fo.origins {
 			fo.Origins = append(fo.Origins, o.String())
 		}
@@ -82,15 +92,16 @@ func traced(flow dataflow.Flow, out Output, fields []Field, positions []cobol.Po
 	return out
 }
 
-// writtenTypes are the types of record a statement may write: those its
-// type field's values come from on the paths to it, a condition name set
-// or a value moved; every type, when one comes from anything else.
-func writtenTypes(r Record, flow dataflow.Flow, pos cobol.Pos) []int {
+// writtenTypes are the types of record a write may write, from the trace
+// of the record's type field where it is written: those a condition name
+// set or a value moved gives; every type, when one comes from anything
+// else.
+func writtenTypes(r Record, trace dataflow.Trace) []int {
 	all := make([]int, len(r.Types))
 	for k := range all {
 		all[k] = k
 	}
-	origins := flow.TraceAt(r.TypeField, []cobol.Pos{pos}).Origins
+	origins := trace.Origins
 	if len(origins) == 0 {
 		return all
 	}

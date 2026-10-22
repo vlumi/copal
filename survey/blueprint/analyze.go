@@ -231,7 +231,10 @@ type Field struct {
 	Description string      `json:"description,omitempty"`
 	Conditions  []Condition `json:"conditions,omitempty"`
 	Source      string      `json:"source"`
-	Fields      []Field     `json:"fields,omitempty"`
+	// sharesBytes is whether the field, or a group around it, redefines
+	// another or is redefined: its bytes are those of another record type.
+	sharesBytes bool
+	Fields      []Field `json:"fields,omitempty"`
 }
 
 // Condition is a level-88 condition name.
@@ -572,6 +575,15 @@ func constants(p *cobol.Program) []Constant {
 	return list
 }
 
+// markShared marks a field and every field in it as sharing its bytes
+// with another record type.
+func markShared(f *Field) {
+	f.sharesBytes = true
+	for i := range f.Fields {
+		markShared(&f.Fields[i])
+	}
+}
+
 // signClause is where a field's sign is, as its SIGN clause says.
 func signClause(f *layout.Field) string {
 	if f.SignSeparate {
@@ -619,6 +631,11 @@ func newField(f *layout.Field, keys map[string]bool) Field {
 			if field.Fields[i].Name == child.Redefines {
 				field.Fields[i].RedefinedBy = append(field.Fields[i].RedefinedBy, child.Name)
 			}
+		}
+	}
+	for i := range field.Fields {
+		if child := &field.Fields[i]; child.Redefines != "" || len(child.RedefinedBy) > 0 {
+			markShared(child)
 		}
 	}
 	return field

@@ -45,7 +45,7 @@ Copybook [GENGO.cpy](../../../gondwana/copybooks/GENGO.cpy), used by [GLC020](..
 | 05 | └ ｹﾞﾝｺﾞｳ-ｴﾝﾄﾘ | group | 1 | 13 | | | OCCURS 5; INDEXED BY ｹﾞﾝｺﾞｳ-IX | [GENGO.cpy:21](../../../gondwana/copybooks/GENGO.cpy#L21) |
 | 10 |   ├ ｹﾞﾝｺﾞｳ-ｷｺﾞｳ | text | 1 | 1 | X | | | [GENGO.cpy:23](../../../gondwana/copybooks/GENGO.cpy#L23) |
 | 10 |   ├ ｹﾞﾝｺﾞｳ-ﾒｲｼｮｳ | text | 2 | 4 | X(4) | | | [GENGO.cpy:24](../../../gondwana/copybooks/GENGO.cpy#L24) |
-| 10 |   ├ ｹﾞﾝｺﾞｳ-ｶｲｼﾋﾞ | number | 6 | 8 | 9(8) | | redefined by ｹﾞﾝｺﾞｳ-ｶｲｼﾈﾝ | [GENGO.cpy:25](../../../gondwana/copybooks/GENGO.cpy#L25) |
+| 10 |   ├ ｹﾞﾝｺﾞｳ-ｶｲｼﾋﾞ | date | 6 | 8 | 9(8) | | redefined by ｹﾞﾝｺﾞｳ-ｶｲｼﾈﾝ | [GENGO.cpy:25](../../../gondwana/copybooks/GENGO.cpy#L25) |
 | 10 |   ╘ ｹﾞﾝｺﾞｳ-ｶｲｼﾈﾝ | group | 6 | 8 | | | REDEFINES ｹﾞﾝｺﾞｳ-ｶｲｼﾋﾞ | [GENGO.cpy:26](../../../gondwana/copybooks/GENGO.cpy#L26) |
 | 15 |     ├ ｹﾞﾝｺﾞｳ-ｶｲｼ-YYYY | number | 6 | 4 | 9(4) | | | [GENGO.cpy:27](../../../gondwana/copybooks/GENGO.cpy#L27) |
 | 15 |     └ FILLER | filler | 10 | 4 | 9(4) | | | [GENGO.cpy:28](../../../gondwana/copybooks/GENGO.cpy#L28) |

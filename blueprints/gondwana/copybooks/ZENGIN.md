@@ -34,7 +34,7 @@ Copybook [ZENGIN.cpy](../../../gondwana/copybooks/ZENGIN.cpy), used by [GLD050](
 | 10 | │ ├ ZG-H-ｺｰﾄﾞｸﾌﾞﾝ | number | 4 | 1 | 9 | | | [ZENGIN.cpy:23](../../../gondwana/copybooks/ZENGIN.cpy#L23) |
 | 10 | │ ├ ZG-H-ｲﾀｸｼｬｺｰﾄﾞ | number | 5 | 10 | 9(10) | | | [ZENGIN.cpy:24](../../../gondwana/copybooks/ZENGIN.cpy#L24) |
 | 10 | │ ├ ZG-H-ｲﾀｸｼｬﾒｲ | text | 15 | 40 | X(40) | | | [ZENGIN.cpy:25](../../../gondwana/copybooks/ZENGIN.cpy#L25) |
-| 10 | │ ├ ZG-H-ﾋｷｵﾄｼﾋﾞ | number | 55 | 4 | 9(4) | | | [ZENGIN.cpy:26](../../../gondwana/copybooks/ZENGIN.cpy#L26) |
+| 10 | │ ├ ZG-H-ﾋｷｵﾄｼﾋﾞ | date | 55 | 4 | 9(4) | | | [ZENGIN.cpy:26](../../../gondwana/copybooks/ZENGIN.cpy#L26) |
 | 10 | │ ├ ZG-H-ｷﾞﾝｺｳｺｰﾄﾞ | number | 59 | 4 | 9(4) | | | [ZENGIN.cpy:27](../../../gondwana/copybooks/ZENGIN.cpy#L27) |
 | 10 | │ ├ ZG-H-ｷﾞﾝｺｳﾒｲ | text | 63 | 15 | X(15) | | | [ZENGIN.cpy:28](../../../gondwana/copybooks/ZENGIN.cpy#L28) |
 | 10 | │ ├ ZG-H-ｼﾃﾝｺｰﾄﾞ | number | 78 | 3 | 9(3) | | | [ZENGIN.cpy:29](../../../gondwana/copybooks/ZENGIN.cpy#L29) |
@@ -51,7 +51,7 @@ Copybook [ZENGIN.cpy](../../../gondwana/copybooks/ZENGIN.cpy), used by [GLD050](
 | 10 | │ ├ ZG-D-ﾖｷﾝｼｭﾓｸ | number | 43 | 1 | 9 | | | [ZENGIN.cpy:40](../../../gondwana/copybooks/ZENGIN.cpy#L40) |
 | 10 | │ ├ ZG-D-ｺｳｻﾞﾊﾞﾝｺﾞｳ | number | 44 | 7 | 9(7) | | | [ZENGIN.cpy:41](../../../gondwana/copybooks/ZENGIN.cpy#L41) |
 | 10 | │ ├ ZG-D-ｺｳｻﾞﾒｲｷﾞ | text | 51 | 30 | X(30) | | | [ZENGIN.cpy:42](../../../gondwana/copybooks/ZENGIN.cpy#L42) |
-| 10 | │ ├ ZG-D-ｷﾝｶﾞｸ | number | 81 | 10 | 9(10) | | | [ZENGIN.cpy:43](../../../gondwana/copybooks/ZENGIN.cpy#L43) |
+| 10 | │ ├ ZG-D-ｷﾝｶﾞｸ | amount | 81 | 10 | 9(10) | | | [ZENGIN.cpy:43](../../../gondwana/copybooks/ZENGIN.cpy#L43) |
 | 10 | │ ├ ZG-D-ｼﾝｷｺｰﾄﾞ | number | 91 | 1 | 9 | | | [ZENGIN.cpy:44](../../../gondwana/copybooks/ZENGIN.cpy#L44) |
 | 10 | │ ├ ZG-D-ｺｷｬｸﾊﾞﾝｺﾞｳ | text | 92 | 20 | X(20) | | | [ZENGIN.cpy:45](../../../gondwana/copybooks/ZENGIN.cpy#L45) |
 | 10 | │ ├ ZG-D-ﾌﾘｶｴｹｯｶ | code | 112 | 1 | X | | | [ZENGIN.cpy:46](../../../gondwana/copybooks/ZENGIN.cpy#L46) |
@@ -64,9 +64,9 @@ Copybook [ZENGIN.cpy](../../../gondwana/copybooks/ZENGIN.cpy), used by [GLD050](
 | 10 | │ └ FILLER | filler | 113 | 8 | X(8) | | | [ZENGIN.cpy:53](../../../gondwana/copybooks/ZENGIN.cpy#L53) |
 | 05 | ╘ ZG-ﾄﾚｰﾗﾌﾞ | group | 2 | 119 | | | REDEFINES ZG-ﾍｯﾀﾞﾌﾞ | [ZENGIN.cpy:54](../../../gondwana/copybooks/ZENGIN.cpy#L54) |
 | 10 |   ├ ZG-T-ｺﾞｳｹｲｹﾝｽｳ | number | 2 | 6 | 9(6) | | | [ZENGIN.cpy:55](../../../gondwana/copybooks/ZENGIN.cpy#L55) |
-| 10 |   ├ ZG-T-ｺﾞｳｹｲｷﾝｶﾞｸ | number | 8 | 12 | 9(12) | | | [ZENGIN.cpy:56](../../../gondwana/copybooks/ZENGIN.cpy#L56) |
+| 10 |   ├ ZG-T-ｺﾞｳｹｲｷﾝｶﾞｸ | amount | 8 | 12 | 9(12) | | | [ZENGIN.cpy:56](../../../gondwana/copybooks/ZENGIN.cpy#L56) |
 | 10 |   ├ ZG-T-ﾌﾘｶｴｽﾞﾐｹﾝｽｳ | number | 20 | 6 | 9(6) | | | [ZENGIN.cpy:57](../../../gondwana/copybooks/ZENGIN.cpy#L57) |
-| 10 |   ├ ZG-T-ﾌﾘｶｴｽﾞﾐｷﾝｶﾞｸ | number | 26 | 12 | 9(12) | | | [ZENGIN.cpy:58](../../../gondwana/copybooks/ZENGIN.cpy#L58) |
+| 10 |   ├ ZG-T-ﾌﾘｶｴｽﾞﾐｷﾝｶﾞｸ | amount | 26 | 12 | 9(12) | | | [ZENGIN.cpy:58](../../../gondwana/copybooks/ZENGIN.cpy#L58) |
 | 10 |   ├ ZG-T-ﾌﾘｶｴﾌﾉｳｹﾝｽｳ | number | 38 | 6 | 9(6) | | | [ZENGIN.cpy:59](../../../gondwana/copybooks/ZENGIN.cpy#L59) |
-| 10 |   ├ ZG-T-ﾌﾘｶｴﾌﾉｳｷﾝｶﾞｸ | number | 44 | 12 | 9(12) | | | [ZENGIN.cpy:60](../../../gondwana/copybooks/ZENGIN.cpy#L60) |
+| 10 |   ├ ZG-T-ﾌﾘｶｴﾌﾉｳｷﾝｶﾞｸ | amount | 44 | 12 | 9(12) | | | [ZENGIN.cpy:60](../../../gondwana/copybooks/ZENGIN.cpy#L60) |
 | 10 |   └ FILLER | filler | 56 | 65 | X(65) | | | [ZENGIN.cpy:61](../../../gondwana/copybooks/ZENGIN.cpy#L61) |
