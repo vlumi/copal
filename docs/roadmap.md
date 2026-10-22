@@ -204,9 +204,9 @@ Done when: every program, paragraph, rule and entity of both specimens has prose
 Laurasia ran one hand-written night. To show that the second specimen is a system and not an example, it gets what the bank has: a generated portfolio, and days that chain. The plan is in [plans/living-laurasia.md](plans/living-laurasia.md):
 
 - The card system's extract, the fee schedule and the merchants generated from a seed; for each day the switch's log, the networks' clearing file and the dispute events; the processor opened and run day after day, the night on business days and the billing cycle every day, a failed day backed out whole: `make cards-open` and `make cards-days N=30` (done).
-- The payments feed, which running it for months shows missing: nothing credits a payment or changes a card's status after the processor opens, so every card fills up and the switch declines more each week. A change to the specimen, with its goldens, blueprints and cases.
+- The payments feed, which running it for months showed missing: nothing credited a payment or changed a card's status after the processor opened, so every card filled up and the switch declined more each week. A change to the specimen: the card system's daily feed of payments and status changes, a program that applies it and a step in the night, the cycle starting each statement unpaid, with its goldens, blueprints and cases (done).
 
-Done when: the processor runs for a year from a seed with its cards paying, declining and disputing at steady rates, and the blueprints show the payments feed as they show the rest.
+Done when: the processor runs for months from a seed with its cards paying, declining and disputing at steady rates, and the blueprints show the payments feed as they show the rest.
 
 ## Later
 

@@ -72,9 +72,9 @@ Everything is a make target, and plain `make` lists them. You need GnuCOBOL 3.2 
 
 | | |
 | --- | --- |
-| Specimens | 2, in two dialects: 31 programs, about 5,400 lines of COBOL, 23 copybooks, 4 jobs in JCL and 4 shell scripts |
-| Blueprints | 96 pages and 40 diagrams, regenerated and compared by `make ci` |
-| Decision rules | 481, of which 218 recorded cases reach 453; 12 are marked with the reason the search cannot reach them, 16 are left |
+| Specimens | 2, in two dialects: 32 programs, about 5,500 lines of COBOL, 24 copybooks, 4 jobs in JCL and 5 shell scripts |
+| Blueprints | 100 pages and 42 diagrams, regenerated and compared by `make ci` |
+| Decision rules | 498, of which 224 recorded cases reach 468; 14 are marked with the reason the search cannot reach them, 16 are left |
 | Cobolith | 0.7.0: four dialects, and 433 of the 459 programs of NIST's COBOL-85 test suite read |
 
 ## A quick tour
