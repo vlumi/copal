@@ -199,6 +199,15 @@ The facts hold on two specimens; a model could write what they cannot say, on to
 
 Done when: every program, paragraph, rule and entity of both specimens has prose that names only what the survey established, `make ci` needs no model, and a change in the facts marks the prose it touches stale.
 
+## 17. A living Laurasia
+
+Laurasia ran one hand-written night. To show that the second specimen is a system and not an example, it gets what the bank has: a generated portfolio, and days that chain. The plan is in [plans/living-laurasia.md](plans/living-laurasia.md):
+
+- The card system's extract, the fee schedule and the merchants generated from a seed; for each day the switch's log, the networks' clearing file and the dispute events; the processor opened and run day after day, the night on business days and the billing cycle every day, a failed day backed out whole: `make cards-open` and `make cards-days N=30` (done).
+- The payments feed, which running it for months shows missing: nothing credits a payment or changes a card's status after the processor opens, so every card fills up and the switch declines more each week. A change to the specimen, with its goldens, blueprints and cases.
+
+Done when: the processor runs for a year from a seed with its cards paying, declining and disputing at steady rates, and the blueprints show the payments feed as they show the rest.
+
 ## Later
 
 Decision rules in sentences written from their conditions and the level-88 names in the code, with no model: reproducible, golden, and what a model's prose would later stand beside.
