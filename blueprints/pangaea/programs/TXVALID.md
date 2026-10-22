@@ -358,7 +358,7 @@ Written from [REJECT-RECORD](#reject-record).
 | RJ-PROGRAM | 1-8 | literal 'TXVALID' |
 | RJ-REASON | 9-12 | literal 'TYPE'; literal condition RJ-BAD-ACCOUNT; literal condition RJ-BAD-AMOUNT; literal condition RJ-BAD-CODE; literal condition RJ-BAD-COUNTER |
 | RJ-TRAN | 13-92 | file TRAN-IN TRAN-RECORD |
-| RJ-REJECT-DATE | 101-110 | file CONTROL-FILE BC-BUSINESS-DATE; literal '-' |
+| RJ-REJECT-DATE | 101-110 | file CONTROL-FILE BC-BUSINESS-DATE 1-4; file CONTROL-FILE BC-BUSINESS-DATE 5-6; file CONTROL-FILE BC-BUSINESS-DATE 7-8; literal '-' |
 
 ### File REPORT-OUT
 

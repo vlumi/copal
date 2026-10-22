@@ -52,7 +52,7 @@ Everything is a make target, and plain `make` lists them. You need GnuCOBOL 3.2 
 | --- | --- | --- |
 | `make blueprints` | Regenerates the survey of the three specimens | [blueprints/pangaea/](blueprints/pangaea/README.md), [blueprints/laurasia/](blueprints/laurasia/README.md), [blueprints/gondwana/](blueprints/gondwana/README.md) |
 | `make explore-pangaea`, `make explore-laurasia`, `make explore-gondwana` | The same analysis as a web app: every job, step, dataset, program, paragraph and field a page, and a field's values followed across programs on the diagrams | <http://127.0.0.1:1192/> |
-| `make oracle` | Finds, for each program of the first two specimens, input data that reaches the rules of its decision tables, by running it; replays the batches on those cases | [oracle/pangaea/](oracle/pangaea/README.md), [oracle/laurasia/](oracle/laurasia/README.md) |
+| `make oracle` | Finds, for each program of the specimens, input data that reaches the rules of its decision tables, by running it; replays the batches on those cases | [oracle/pangaea/](oracle/pangaea/README.md), [oracle/laurasia/](oracle/laurasia/README.md), [oracle/gondwana/](oracle/gondwana/README.md) |
 
 ### Checks
 
@@ -114,4 +114,4 @@ Copal is young amber: resin that has hardened but not quite fossilized, and the 
 
 ## License
 
-MIT, see [LICENSE](LICENSE). Both specimens, their programs, data and documents included, are fiction written for this project and covered by the same license.
+MIT, see [LICENSE](LICENSE). The specimens, their programs, data and documents included, are fiction written for this project and covered by the same license.

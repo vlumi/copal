@@ -298,7 +298,28 @@ func (p *program) base() Case {
 		}
 	}
 	c = p.matchKeys(c, kinds)
+	c = p.dateParts(c, kinds)
 	p.balance(c, nil)
+	return c
+}
+
+// dateParts puts the business date into the bytes of the inputs' text
+// fields that the program takes a date from, the first eight of its
+// command line, say, so that the base case's run has a date to open with.
+func (p *program) dateParts(c Case, kinds map[string]string) Case {
+	for _, name := range slices.Sorted(maps.Keys(kinds)) {
+		if kinds[name] != blueprint.KindDate {
+			continue
+		}
+		for _, t := range p.origins(name) {
+			if t.part == (part{}) || kinds[t.field.Name] != blueprint.KindText {
+				continue
+			}
+			if next, ok := (lever{input: t.input, field: t.field, part: t.part, value: number(dateOf(t.part.length))}).apply(p, c); ok {
+				c = next
+			}
+		}
+	}
 	return c
 }
 
@@ -372,15 +393,22 @@ func typicalValue(f *layout.Field, kind string, index int) (value, bool) {
 // dateValue is the business date in a date field's form: eight digits, a
 // month in six, or six digits, or fourteen with a time of day.
 func dateValue(f *layout.Field) value {
-	switch {
-	case f.Digits == 14:
-		return number(businessDate*1000000 + 120000)
-	case f.Digits == 6 && (strings.Contains(f.Name, "MONTH") || strings.Contains(f.Name, "YYMM")):
+	if f.Digits == 6 && (strings.Contains(f.Name, "MONTH") || strings.Contains(f.Name, "YYMM")) {
 		return number(businessDate / 100)
-	case f.Digits == 6:
-		return number(businessDate % 1000000)
 	}
-	return number(businessDate)
+	return number(dateOf(f.Digits))
+}
+
+// dateOf is the business date in a number of digits: eight, six without
+// the century, or fourteen with a time of day.
+func dateOf(digits int) int64 {
+	switch digits {
+	case 14:
+		return businessDate*1000000 + 120000
+	case 6:
+		return businessDate % 1000000
+	}
+	return businessDate
 }
 
 func pow10(n int) int64 {

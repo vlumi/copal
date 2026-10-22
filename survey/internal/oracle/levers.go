@@ -328,7 +328,7 @@ func fieldOverBytes(f *layout.Field, start, length int) *layout.Field {
 func digitsOver(f *layout.Field, start, length int) *layout.Field {
 	if len(f.Children) == 0 {
 		within := f.Start <= start && start+length <= f.Start+f.Size()
-		if within && numeric(f) && !f.Signed && f.Size() == f.Digits {
+		if within && (numeric(f) && !f.Signed && f.Size() == f.Digits || f.Category == layout.Alphanumeric) {
 			return f
 		}
 		return nil

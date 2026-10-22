@@ -24,11 +24,13 @@ import (
 
 // Event is a line of a trace: a program entering a paragraph or section,
 // or executing the statement at a line of a source file. Names are
-// upper-cased, as COBOL words are whatever their case in the source.
+// upper-cased, as COBOL words are whatever their case in the source, and
+// so are file names, which a copybook's comes out in on a file system
+// that does not mind the case, PRDLOD.CPY for PRDLOD.cpy.
 type Event struct {
 	Program   string
 	Paragraph string // the paragraph or section entered; empty for a statement
-	File      string // the source file's name, without its directory
+	File      string // the source file's name, without its directory, upper-cased
 	Line      int
 }
 
@@ -51,7 +53,7 @@ func Read(r io.Reader) ([]Event, error) {
 	for scanner.Scan() {
 		line := scanner.Text()
 		if m := sourceLine.FindStringSubmatch(line); m != nil {
-			file = filepath.Base(m[1])
+			file = strings.ToUpper(filepath.Base(m[1]))
 			continue
 		}
 		m := traceLine.FindStringSubmatch(line)
@@ -85,7 +87,7 @@ type line struct {
 	n    int
 }
 
-func lineOf(pos cobol.Pos) line { return line{filepath.Base(pos.File), pos.Line} }
+func lineOf(pos cobol.Pos) line { return line{strings.ToUpper(filepath.Base(pos.File)), pos.Line} }
 
 // scopes knows which paragraph or inline loop each statement of a program
 // is in, and the decision table of each, if it has one. A scope is named

@@ -34,7 +34,8 @@ type Origin struct {
 
 // String writes the origin: "file TRAN-IN TD-AMOUNT", "literal 'TXPOST'",
 // "initial value of WS-COUNT", "call AUTHPUR argument 6 HD-AMOUNT",
-// "parameter 1 RQ-AMOUNT", "stream SYSIN AUTH-REQUEST", and for one
+// "parameter 1 RQ-AMOUNT", "stream SYSIN AUTH-REQUEST", with the bytes
+// where they are a part of the item, "file TRAN-IN TD-DATE 1-6", and for one
 // within a program called, "in GLC020, literal 'R'".
 func (o Origin) String() string {
 	switch {
@@ -54,6 +55,8 @@ func (o Origin) String() string {
 		return fmt.Sprintf("call %s argument %d %s", o.Call, o.Arg, o.Item)
 	case o.Parameter > 0:
 		return fmt.Sprintf("parameter %d %s", o.Parameter, o.Item)
+	case o.Stream != "" && o.Length > 0:
+		return fmt.Sprintf("stream %s %s %d-%d", o.Stream, o.Item, o.Start, o.Start+o.Length-1)
 	case o.Stream != "":
 		return "stream " + o.Stream + " " + o.Item
 	}
@@ -118,6 +121,16 @@ func (s *storage) part(item string, start, length int) (place, bool) {
 		return place{}, false
 	}
 	return place{record: p.record, start: p.start + start - 1, length: length, group: p.group}, true
+}
+
+// bytesOf is where some bytes of an item are, from start, 1-based, for
+// length, or the whole item when length is 0.
+func (s *storage) bytesOf(item string, start, length int) (place, bool) {
+	if length == 0 {
+		p, ok := s.places[item]
+		return p, ok
+	}
+	return s.part(item, start, length)
 }
 
 // at is the narrowest item that holds a record's bytes from start, for
@@ -264,7 +277,7 @@ func (t *tracing) place(here place) {
 // origin, or to the bytes of the item it moves from, which it returns.
 func (t *tracing) edge(i int, here place) (from place, ok bool) {
 	e := t.flow.Lineage[i]
-	to, ok := t.flow.storage.places[e.To]
+	to, ok := t.flow.storage.bytesOf(e.To, e.ToStart, e.ToLength)
 	if e.ToFile || e.ToCall || e.ToStream || !ok || !to.overlaps(here) {
 		return place{}, false
 	}
@@ -279,7 +292,11 @@ func (t *tracing) edge(i int, here place) (from place, ok bool) {
 	case e.FromCall:
 		t.found[Origin{Call: e.From, Arg: e.Arg, Item: name}] = true
 	case e.FromStream:
-		t.found[Origin{Stream: e.From, Item: name}] = true
+		o := Origin{Stream: e.From, Item: name}
+		if item := t.flow.storage.places[name]; here.length < item.length {
+			o.Start, o.Length = here.start, here.length
+		}
+		t.found[o] = true
 	case e.FromLiteral && to.group && to.length > here.length:
 		t.clearing[Origin{Literal: e.From}] = true
 		t.cleared[i] = true
@@ -287,7 +304,7 @@ func (t *tracing) edge(i int, here place) (from place, ok bool) {
 	case e.FromLiteral:
 		t.found[Origin{Literal: e.From}] = true
 	default:
-		source, ok := t.flow.storage.places[e.From]
+		source, ok := t.flow.storage.bytesOf(e.From, e.FromStart, e.FromLength)
 		if !ok {
 			return place{}, false
 		}

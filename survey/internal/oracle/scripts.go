@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/vlumi/copal/bedrock/batchfile"
 	jobs "github.com/vlumi/copal/bedrock/runner"
 	"github.com/vlumi/copal/bedrock/script"
 	"github.com/vlumi/copal/survey/blueprint"
@@ -114,12 +115,18 @@ func (s scriptStep) path(text string) string {
 
 // command is the name of what the step runs, as the oracle's own stands in
 // for it.
+// command is the name a step's command goes by where it is run: a
+// program's name, which a batch file's runner finds without the .EXE
+// the file writes, or the file name of a script or a command.
 func (s scriptStep) command() string {
+	if s.Kind == script.Program {
+		return s.Program
+	}
 	return filepath.Base(s.Command)
 }
 
 func (sr *scriptRun) plan(job *blueprint.Job) (*scriptPlan, error) {
-	top, err := script.ParseFile(job.Source)
+	top, err := parseScript(job.Source)
 	if err != nil {
 		return nil, err
 	}
@@ -160,6 +167,10 @@ func (plan *scriptPlan) fill() {
 
 func (sr *scriptRun) run(plan *scriptPlan) (*Batch, error) {
 	b := &Batch{Job: plan.job.Name, results: sr.results, reached: map[string]map[rule]bool{}, about: scriptAbout}
+	kind, ended := "script", "exit status"
+	if isBatchFile(plan.job.Source) {
+		b.about, kind, ended = batchFileAbout, "batch file", "errorlevel"
+	}
 	if err := b.provideFiles(plan.steps, sr, plan.dir); err != nil {
 		return nil, err
 	}
@@ -175,7 +186,7 @@ func (sr *scriptRun) run(plan *scriptPlan) (*Batch, error) {
 	if err != nil {
 		return nil, err
 	}
-	b.ended = fmt.Sprintf("The script ended with exit status %d.", status)
+	b.ended = fmt.Sprintf("The %s ended with %s %d.", kind, ended, status)
 	if len(out) > 0 {
 		b.sysout = map[string][]byte{"output": out}
 	}
@@ -263,7 +274,26 @@ func (sr *scriptRun) parse(name string) (*script.Script, error) {
 	if i < 0 {
 		return nil, fmt.Errorf("no script %s", name)
 	}
-	return script.ParseFile(sr.system.Jobs[i].Source)
+	return parseScript(sr.system.Jobs[i].Source)
+}
+
+// parseScript reads a shell script, or a Windows batch file by its .bat
+// extension, as a script.
+func parseScript(path string) (*script.Script, error) {
+	if !isBatchFile(path) {
+		return script.ParseFile(path)
+	}
+	f, err := batchfile.ParseFile(path)
+	if err != nil {
+		return nil, err
+	}
+	return f.Script(), nil
+}
+
+// isBatchFile reports whether a path is a Windows batch file, by its
+// extension.
+func isBatchFile(path string) bool {
+	return strings.EqualFold(filepath.Ext(path), ".bat")
 }
 
 // flatten lists a script's steps, and in place of a step that runs another
@@ -461,13 +491,17 @@ func (sr *scriptRun) standIns(steps []scriptStep, traces, dir string) error {
 		return err
 	}
 	for _, step := range steps {
-		var stood, command string
+		var stood, command, source string
+		var err error
 		switch step.Kind {
 		case script.Program:
 			stood, command = string(script.Program), strconv.Quote(filepath.Join(sr.programs, step.command()))
 		case script.Run:
 			i := slices.IndexFunc(sr.system.Jobs, func(j blueprint.Job) bool { return j.Kind == "script" && j.Name == step.Program })
-			source, err := filepath.Abs(sr.system.Jobs[i].Source)
+			if i < 0 {
+				return fmt.Errorf("no script %s", step.Program)
+			}
+			source, err = filepath.Abs(sr.system.Jobs[i].Source)
 			if err != nil {
 				return err
 			}
@@ -479,8 +513,11 @@ func (sr *scriptRun) standIns(steps []scriptStep, traces, dir string) error {
 			}
 			stood, command = "path", strconv.Quote(path)
 		}
-		standIn := fmt.Sprintf("#!/bin/sh\nCOB_SET_TRACE=Y COB_TRACE_FILE=%q %s \"$@\"\nrc=$?\necho \"$$ %s $rc\" >> %q\nexit $rc\n",
-			traces+"/$$.trace", command, step.command(), filepath.Join(traces, "steps"))
+		standIn := fmt.Sprintf("#!/bin/sh\nCOB_SET_TRACE=Y COB_TRACE_FILE=%q COB_LIBRARY_PATH=%q %s \"$@\"\nrc=$?\necho \"$$ %s $rc\" >> %q\nexit $rc\n",
+			traces+"/$$.trace", sr.programs, command, step.command(), filepath.Join(traces, "steps"))
+		if step.Kind == script.Run && isBatchFile(step.Command) {
+			standIn = batchStandIn(source, len(step.Args), step.command(), filepath.Join(traces, "steps"))
+		}
 		path := filepath.Join(dir, stood, step.command())
 		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 			return err
@@ -492,10 +529,28 @@ func (sr *scriptRun) standIns(steps []scriptStep, traces, dir string) error {
 	return nil
 }
 
+// batchStandIn is a batch file that stands in for one a batch file calls:
+// it calls the file, with the arguments it was given, and records how it
+// ended as the shell stand-ins do, as `call` of its runner finds it.
+func batchStandIn(source string, args int, command, steps string) string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "@echo off\r\ncall %s", source)
+	for n := range args {
+		fmt.Fprintf(&b, " %%%d", n+1)
+	}
+	fmt.Fprintf(&b, "\r\n>>\"%s\" echo 0 %s %%ERRORLEVEL%%\r\nexit /b %%ERRORLEVEL%%\r\n", steps, command)
+	return b.String()
+}
+
 // execute runs a script with sh, with its arguments and its environment,
 // and sort and mv the oracle's own, and returns its output and its exit
-// status.
+// status; a batch file through its runner, which runs its programs by
+// the same stand-ins and writes its output where the file says.
 func (sr *scriptRun) execute(source string, args []string, env map[string]string, standIns string) ([]byte, int, error) {
+	if isBatchFile(source) {
+		status, err := batchfile.Runner{Env: env}.Run(source, args...)
+		return nil, status, err
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), scriptTimeout)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, "sh", append([]string{source}, args...)...)
@@ -602,7 +657,7 @@ func (b *Batch) writtenFiles(steps []scriptStep, sr *scriptRun, before map[strin
 				return nil, err
 			}
 		}
-		outputs[sr.fileName(path)] = read
+		outputs[sr.fileName(path)] = withoutDir(read, sr.programs)
 	}
 	return outputs, nil
 }
@@ -628,3 +683,7 @@ func (b *Batch) binding(steps []scriptStep, path string) (*Result, blueprint.Fil
 const scriptAbout = "The script run with sh after the scripts before it in the batch, on what they wrote, and on inputs taken from the cases of " +
 	"its steps' programs for the rest: each file it reads that no script before it, and no step of it before, wrote, with the records of the cleanest case of the first program that reads it, the first that ended with " +
 	"the lowest return code, and each of its parameters with the command line of the cleanest case of the first program it is passed to. The files it wrote and its output are recorded beside."
+
+const batchFileAbout = "The batch file run as cmd.exe would after the batch files before it in the batch, on what they wrote, and on inputs taken from the cases of " +
+	"its steps' programs for the rest: each file it reads that no batch file before it, and no step of it before, wrote, with the records of the cleanest case of the first program that reads it, the first that ended with " +
+	"the lowest return code, and each of its parameters with the command line of the cleanest case of the first program it is passed to. The files it wrote are recorded beside."

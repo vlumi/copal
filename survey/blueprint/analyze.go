@@ -456,7 +456,9 @@ func describeProgram(p *cobol.Program, path string, dialect cobol.Dialect) (Prog
 		program.Paragraphs = append(program.Paragraphs, bp)
 	}
 	for _, e := range flow.Lineage {
-		program.Lineage = append(program.Lineage, NewLineage(e))
+		if l := NewLineage(e); !slices.Contains(program.Lineage, l) {
+			program.Lineage = append(program.Lineage, l)
+		}
 	}
 	program.Outputs = outputs(program, flow)
 	program.Inputs = inputs(program, flow)
