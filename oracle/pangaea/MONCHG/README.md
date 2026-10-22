@@ -1,6 +1,6 @@
 # MONCHG: cases
 
-11 cases reach 18 of the 21 rules of MONCHG's decision tables. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's. A rule that finds two totals the program adds up itself to differ, items of its own that it only adds to, says so: no input field sets either, so the search has nothing to change to reach it. A rule that finds a write or rewrite by key to fail says so too: the search fails a file only when it is opened or read, and a program that writes keys it made new, or rewrites the record it read, meets that failure only when something else changes the file meanwhile.
+11 cases reach 18 of the 20 rules of MONCHG's decision tables. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's. A rule that finds two totals the program adds up itself to differ, items of its own that it only adds to, says so: no input field sets either, so the search has nothing to change to reach it. A rule that finds a write or rewrite by key to fail says so too: the search fails a file only when it is opened or read, and a program that writes keys it made new, or rewrites the record it read, meets that failure only when something else changes the file meanwhile.
 
 ## [1000-INITIALIZE](../../../blueprints/pangaea/rules/MONCHG.md#1000-initialize)
 
@@ -19,9 +19,8 @@
 | 3 | [case 09](09/) |
 | 4 | not reached: `READ ACCT-IN AT END` N, `READ ACCR-IN AT END` Y, `MASTER-AT-END AND ACCRUALS-AT-END` Y |
 | 5 | [case 10](10/) |
-| 6 | not reached: `READ ACCT-IN AT END` N, `READ ACCR-IN AT END` N, `MASTER-AT-END AND ACCRUALS-AT-END` Y |
-| 7 | [case 02](02/) |
-| 8 | [case 01](01/) |
+| 6 | [case 02](02/) |
+| 7 | [case 01](01/) |
 
 ## [2000-CHARGE-ACCOUNT](../../../blueprints/pangaea/rules/MONCHG.md#2000-charge-account)
 

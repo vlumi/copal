@@ -7,7 +7,7 @@ The job run after the jobs before it in the batch, on what they wrote, and on in
 | VALID | [TXVALID](../../TXVALID/) | RC=0000 | 8 of 33 |
 | VALIDC | [TXVALID](../../TXVALID/) | RC=0000 | 8 of 33 |
 | ACCRUE | [INTACCR](../../INTACCR/) | RC=0000 | 14 of 33 |
-| CHARGE | [MONCHG](../../MONCHG/) | RC=0000 | 5 of 21 |
+| CHARGE | [MONCHG](../../MONCHG/) | RC=0000 | 5 of 20 |
 | POSTMO | [TXPOST](../../TXPOST/) | RC=0000 | 10 of 30 |
 | SORT | [TXSORT](../../TXSORT/) | RC=0000 | 1 of 2 |
 | POST | [TXPOST](../../TXPOST/) | RC=0000 | 10 of 30 |
