@@ -2,6 +2,8 @@
 
 The run ended with return code 16.
 
+GLJRNL-F's directory is missing, so creating it fails.
+
 The first case to reach:
 
-- [GLD030, ｼｮｷ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLD030.md#ｼｮｷ-rtn)
+- [GLD030, ｵｰﾌﾟﾝ-ｹﾝｻ-RTN, rule 7](../../../../blueprints/gondwana/rules/GLD030.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)

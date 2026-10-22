@@ -1,8 +1,9 @@
 # GLM020: case 04
 
-The run ended with return code 0.
+The run ended with return code 16.
+
+PRODTB-F is missing, so opening it fails.
 
 The first case to reach:
 
-- [GLM020, ｹｲｻﾝ-RTN, in its loop, rule 3](../../../../blueprints/gondwana/rules/GLM020.md#ｹｲｻﾝ-rtn-in-its-loop)
-- [GLM020, ｷｼﾞｭﾝ-RTN, rule 4](../../../../blueprints/gondwana/rules/GLM020.md#ｷｼﾞｭﾝ-rtn)
+- [GLM020, ｼｮｷ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLM020.md#ｼｮｷ-rtn)
