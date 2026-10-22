@@ -48,7 +48,7 @@ func datesFrom(entities []Entity, programs []Program, held heldRecords) {
 				}
 				field := &entities[e].Fields[j]
 				for _, o := range fo.origins {
-					if o.File == "" {
+					if o.File == "" || o.Through != "" {
 						continue
 					}
 					source, ref, ok := heldField(entities, p, held, o.Item)

@@ -271,7 +271,7 @@ Written from [WS-STATEMENT-HEAD](#ws-statement-head) and [WS-STATEMENT-AMOUNT](#
 | Field | Position | Origins |
 | --- | --: | --- |
 | SA-LABEL | 5-34 | literal 'INTEREST'; literal 'MINIMUM PAYMENT'; literal 'NEW BALANCE'; literal 'PREVIOUS BALANCE' |
-| SA-VALUE | 35-45 | call INTCALC argument 2 CA-STATEMENT-BALANCE; call INTCALC returns WS-INTEREST-CENTS; call MINPAY argument 1 CA-BALANCE; call MINPAY argument 2 WS-MINIMUM; file ACCOUNTS CA-BALANCE; file ACCOUNTS CA-STATEMENT-BALANCE; literal ZERO |
+| SA-VALUE | 35-45 | call INTCALC argument 2 CA-STATEMENT-BALANCE; call INTCALC returns WS-INTEREST-CENTS; call MINPAY argument 1 CA-BALANCE; call MINPAY argument 2 WS-MINIMUM; file ACCOUNTS CA-BALANCE; file ACCOUNTS CA-STATEMENT-BALANCE; literal ZERO; in MINPAY, literal ZERO |
 
 ## Links between records
 
