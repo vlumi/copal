@@ -1,0 +1,835 @@
+{
+  "program": "GLC020",
+  "kind": "called",
+  "source": "gondwana/programs/GLC020.cbl",
+  "description": [
+    "GLC020: 和暦・西暦 日付変換",
+    "",
+    "方向 (W 和暦へ、S 西暦へ)、西暦日付 YYYYMMDD、和暦日付",
+    "GYYMMDD、結果を受けて呼ばれる。",
+    "和暦へ: その日以前に始まった最後の元号を取り、元年を 1 と",
+    "して年を数える。",
+    "西暦へ: 元号の開始年に年を足して 1 を引き、その元号の",
+    "範囲内にあることを確かめる。昭和64年は 1989-01-07 まで、",
+    "平成31年は 2019-04-30 まで。元号は GENGO にある。",
+    "",
+    "結果: 0 変換済、4 いずれの元号の日付でもない。",
+    "",
+    "変更履歴",
+    "日付       担当 変更",
+    "1987-04-01 KT   GL-0001 初版。",
+    "1989-01-16 KT   GL-0044 元号をコードでなくテーブルから。",
+    "2019-04-22 YN   GL-0702 元号の末日も検査する。"
+  ],
+  "identification": [
+    {
+      "paragraph": "AUTHOR",
+      "text": "ゴンドワナ生命 システム部."
+    },
+    {
+      "paragraph": "DATE-WRITTEN",
+      "text": "1987-04-01."
+    }
+  ],
+  "files": null,
+  "records": [
+    {
+      "section": "working-storage",
+      "copybook": "GENGO",
+      "level": 1,
+      "name": "ｹﾞﾝｺﾞｳ-ﾃｲｽﾞｳ",
+      "start": 1,
+      "length": 65,
+      "category": "group",
+      "kind": "group",
+      "description": "GENGO: 元号テーブル、日付変換用 各元号の記号、名称、西暦での開始日を古い順に持つ。 改元はここに1行加え、これを COPY するプログラムを 再コンパイルする。 変更履歴 日付       担当 変更 1987-04-01 KT   GL-0001 初版。 1989-01-16 KT   GL-0044 平成。 2019-04-22 YN   GL-0702 令和。",
+      "source": "gondwana/copybooks/GENGO.cpy:14",
+      "fields": [
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 1,
+          "length": 13,
+          "picture": "X(13)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "filler",
+          "values": [
+            "'M明治18680908'"
+          ],
+          "source": "gondwana/copybooks/GENGO.cpy:15"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 14,
+          "length": 13,
+          "picture": "X(13)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "filler",
+          "values": [
+            "'T大正19120730'"
+          ],
+          "source": "gondwana/copybooks/GENGO.cpy:16"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 27,
+          "length": 13,
+          "picture": "X(13)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "filler",
+          "values": [
+            "'S昭和19261225'"
+          ],
+          "source": "gondwana/copybooks/GENGO.cpy:17"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 40,
+          "length": 13,
+          "picture": "X(13)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "filler",
+          "values": [
+            "'H平成19890108'"
+          ],
+          "source": "gondwana/copybooks/GENGO.cpy:18"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 53,
+          "length": 13,
+          "picture": "X(13)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "filler",
+          "values": [
+            "'R令和20190501'"
+          ],
+          "source": "gondwana/copybooks/GENGO.cpy:19"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "copybook": "GENGO",
+      "level": 1,
+      "name": "ｹﾞﾝｺﾞｳ-ﾃｰﾌﾞﾙ",
+      "start": 1,
+      "length": 65,
+      "category": "group",
+      "kind": "group",
+      "redefines": "ｹﾞﾝｺﾞｳ-ﾃｲｽﾞｳ",
+      "source": "gondwana/copybooks/GENGO.cpy:20",
+      "fields": [
+        {
+          "level": 5,
+          "name": "ｹﾞﾝｺﾞｳ-ｴﾝﾄﾘ",
+          "start": 1,
+          "length": 13,
+          "category": "group",
+          "kind": "group",
+          "occurs": 5,
+          "indexedBy": [
+            "ｹﾞﾝｺﾞｳ-IX"
+          ],
+          "source": "gondwana/copybooks/GENGO.cpy:21",
+          "fields": [
+            {
+              "level": 10,
+              "name": "ｹﾞﾝｺﾞｳ-ｷｺﾞｳ",
+              "start": 1,
+              "length": 1,
+              "picture": "X",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "text",
+              "source": "gondwana/copybooks/GENGO.cpy:23"
+            },
+            {
+              "level": 10,
+              "name": "ｹﾞﾝｺﾞｳ-ﾒｲｼｮｳ",
+              "start": 2,
+              "length": 4,
+              "picture": "X(4)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "text",
+              "source": "gondwana/copybooks/GENGO.cpy:24"
+            },
+            {
+              "level": 10,
+              "name": "ｹﾞﾝｺﾞｳ-ｶｲｼﾋﾞ",
+              "start": 6,
+              "length": 8,
+              "picture": "9(8)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 8,
+              "redefinedBy": [
+                "ｹﾞﾝｺﾞｳ-ｶｲｼﾈﾝ"
+              ],
+              "source": "gondwana/copybooks/GENGO.cpy:25"
+            },
+            {
+              "level": 10,
+              "name": "ｹﾞﾝｺﾞｳ-ｶｲｼﾈﾝ",
+              "start": 6,
+              "length": 8,
+              "category": "group",
+              "kind": "group",
+              "redefines": "ｹﾞﾝｺﾞｳ-ｶｲｼﾋﾞ",
+              "source": "gondwana/copybooks/GENGO.cpy:26",
+              "fields": [
+                {
+                  "level": 15,
+                  "name": "ｹﾞﾝｺﾞｳ-ｶｲｼ-YYYY",
+                  "start": 6,
+                  "length": 4,
+                  "picture": "9(4)",
+                  "usage": "DISPLAY",
+                  "category": "numeric",
+                  "kind": "number",
+                  "digits": 4,
+                  "source": "gondwana/copybooks/GENGO.cpy:27"
+                },
+                {
+                  "level": 15,
+                  "name": "FILLER",
+                  "start": 10,
+                  "length": 4,
+                  "picture": "9(4)",
+                  "usage": "DISPLAY",
+                  "category": "numeric",
+                  "kind": "filler",
+                  "digits": 4,
+                  "source": "gondwana/copybooks/GENGO.cpy:28"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "copybook": "GENGO",
+      "level": 1,
+      "name": "ｹﾞﾝｺﾞｳ-ｹﾝｽｳ",
+      "start": 1,
+      "length": 1,
+      "picture": "9",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 1,
+      "values": [
+        "5"
+      ],
+      "source": "gondwana/copybooks/GENGO.cpy:29"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ﾋﾂﾞｹ",
+      "start": 1,
+      "length": 8,
+      "category": "group",
+      "kind": "group",
+      "source": "gondwana/programs/GLC020.cbl:28",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-YYYYMMDD",
+          "start": 1,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "date",
+          "digits": 8,
+          "redefinedBy": [
+            "WS-ﾋﾂﾞｹ-ﾌﾞﾝｶｲ"
+          ],
+          "source": "gondwana/programs/GLC020.cbl:29"
+        },
+        {
+          "level": 5,
+          "name": "WS-ﾋﾂﾞｹ-ﾌﾞﾝｶｲ",
+          "start": 1,
+          "length": 8,
+          "category": "group",
+          "kind": "group",
+          "redefines": "WS-YYYYMMDD",
+          "source": "gondwana/programs/GLC020.cbl:30",
+          "fields": [
+            {
+              "level": 10,
+              "name": "WS-YYYY",
+              "start": 1,
+              "length": 4,
+              "picture": "9(4)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 4,
+              "source": "gondwana/programs/GLC020.cbl:31"
+            },
+            {
+              "level": 10,
+              "name": "WS-MM",
+              "start": 5,
+              "length": 2,
+              "picture": "99",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 2,
+              "source": "gondwana/programs/GLC020.cbl:32"
+            },
+            {
+              "level": 10,
+              "name": "WS-DD",
+              "start": 7,
+              "length": 2,
+              "picture": "99",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 2,
+              "source": "gondwana/programs/GLC020.cbl:33"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ﾊｯｹﾝ",
+      "start": 1,
+      "length": 1,
+      "picture": "X",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "code",
+      "conditions": [
+        {
+          "name": "WS-ｹﾞﾝｺﾞｳ-ｱﾘ",
+          "values": [
+            "'Y'"
+          ],
+          "source": "gondwana/programs/GLC020.cbl:35"
+        },
+        {
+          "name": "WS-ｹﾞﾝｺﾞｳ-ﾅｼ",
+          "values": [
+            "'N'"
+          ],
+          "source": "gondwana/programs/GLC020.cbl:36"
+        }
+      ],
+      "source": "gondwana/programs/GLC020.cbl:34"
+    },
+    {
+      "section": "linkage",
+      "level": 1,
+      "name": "LK-ﾎｳｺｳ",
+      "start": 1,
+      "length": 1,
+      "picture": "X",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "code",
+      "conditions": [
+        {
+          "name": "LK-ﾜﾚｷ-ﾍ",
+          "values": [
+            "'W'"
+          ],
+          "source": "gondwana/programs/GLC020.cbl:40"
+        },
+        {
+          "name": "LK-ｾｲﾚｷ-ﾍ",
+          "values": [
+            "'S'"
+          ],
+          "source": "gondwana/programs/GLC020.cbl:41"
+        }
+      ],
+      "source": "gondwana/programs/GLC020.cbl:39"
+    },
+    {
+      "section": "linkage",
+      "level": 1,
+      "name": "LK-ｾｲﾚｷ",
+      "start": 1,
+      "length": 8,
+      "picture": "9(8)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 8,
+      "source": "gondwana/programs/GLC020.cbl:42"
+    },
+    {
+      "section": "linkage",
+      "level": 1,
+      "name": "LK-ﾜﾚｷ",
+      "start": 1,
+      "length": 7,
+      "category": "group",
+      "kind": "group",
+      "source": "gondwana/programs/GLC020.cbl:43",
+      "fields": [
+        {
+          "level": 5,
+          "name": "LK-ｹﾞﾝｺﾞｳ",
+          "start": 1,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "gondwana/programs/GLC020.cbl:44"
+        },
+        {
+          "level": 5,
+          "name": "LK-ﾈﾝ",
+          "start": 2,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 2,
+          "source": "gondwana/programs/GLC020.cbl:45"
+        },
+        {
+          "level": 5,
+          "name": "LK-MMDD",
+          "start": 4,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 4,
+          "source": "gondwana/programs/GLC020.cbl:46"
+        }
+      ]
+    },
+    {
+      "section": "linkage",
+      "level": 1,
+      "name": "LK-ｹｯｶ",
+      "start": 1,
+      "length": 1,
+      "picture": "9",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "code",
+      "digits": 1,
+      "conditions": [
+        {
+          "name": "LK-ﾍﾝｶﾝｽﾞﾐ",
+          "values": [
+            "0"
+          ],
+          "source": "gondwana/programs/GLC020.cbl:48"
+        },
+        {
+          "name": "LK-ﾋﾂﾞｹ-ﾌｾｲ",
+          "values": [
+            "4"
+          ],
+          "source": "gondwana/programs/GLC020.cbl:49"
+        }
+      ],
+      "source": "gondwana/programs/GLC020.cbl:47"
+    }
+  ],
+  "paragraphs": [
+    {
+      "name": "ﾒｲﾝ-RTN",
+      "description": "ﾒｲﾝ-RTN: どちらかの方向に1回変換する。",
+      "source": "gondwana/programs/GLC020.cbl:55",
+      "performs": [
+        {
+          "target": "ﾜﾚｷ-ﾍﾝｶﾝ-RTN",
+          "source": "gondwana/programs/GLC020.cbl:59"
+        },
+        {
+          "target": "ｾｲﾚｷ-ﾍﾝｶﾝ-RTN",
+          "source": "gondwana/programs/GLC020.cbl:61"
+        }
+      ],
+      "reads": [
+        "LK-ﾎｳｺｳ"
+      ],
+      "writes": [
+        "LK-ｹｯｶ"
+      ]
+    },
+    {
+      "name": "ﾜﾚｷ-ﾍﾝｶﾝ-RTN",
+      "description": "ﾜﾚｷ-ﾍﾝｶﾝ-RTN: その日までに始まっていた最後の元号。",
+      "source": "gondwana/programs/GLC020.cbl:70",
+      "performedBy": [
+        "ﾒｲﾝ-RTN"
+      ],
+      "reads": [
+        "LK-ｾｲﾚｷ",
+        "ｹﾞﾝｺﾞｳ-ｹﾝｽｳ",
+        "ｹﾞﾝｺﾞｳ-IX",
+        "WS-ﾊｯｹﾝ",
+        "ｹﾞﾝｺﾞｳ-ｶｲｼﾋﾞ",
+        "WS-YYYYMMDD",
+        "ｹﾞﾝｺﾞｳ-ｷｺﾞｳ",
+        "WS-YYYY",
+        "ｹﾞﾝｺﾞｳ-ｶｲｼ-YYYY",
+        "WS-ﾋﾂﾞｹ-ﾌﾞﾝｶｲ"
+      ],
+      "writes": [
+        "WS-YYYYMMDD",
+        "WS-ﾊｯｹﾝ",
+        "ｹﾞﾝｺﾞｳ-IX",
+        "LK-ｹﾞﾝｺﾞｳ",
+        "LK-ﾈﾝ",
+        "LK-MMDD",
+        "LK-ｹｯｶ"
+      ]
+    },
+    {
+      "name": "ｾｲﾚｷ-ﾍﾝｶﾝ-RTN",
+      "description": "ｾｲﾚｷ-ﾍﾝｶﾝ-RTN: 記号で元号を引き、その範囲内の日付にする。",
+      "source": "gondwana/programs/GLC020.cbl:90",
+      "performs": [
+        {
+          "target": "ﾊﾝｲ-ｹﾝｻ-RTN",
+          "source": "gondwana/programs/GLC020.cbl:100"
+        }
+      ],
+      "performedBy": [
+        "ﾒｲﾝ-RTN"
+      ],
+      "reads": [
+        "ｹﾞﾝｺﾞｳ-ｴﾝﾄﾘ",
+        "ｹﾞﾝｺﾞｳ-ｷｺﾞｳ",
+        "ｹﾞﾝｺﾞｳ-IX",
+        "LK-ｹﾞﾝｺﾞｳ",
+        "WS-ﾊｯｹﾝ"
+      ],
+      "writes": [
+        "WS-ﾊｯｹﾝ",
+        "ｹﾞﾝｺﾞｳ-IX",
+        "LK-ｹｯｶ"
+      ]
+    },
+    {
+      "name": "ﾊﾝｲ-ｹﾝｻ-RTN",
+      "description": "ﾊﾝｲ-ｹﾝｻ-RTN: 西暦日付を組み立て、元号の範囲内で、月日が 月日であることを確かめる。",
+      "source": "gondwana/programs/GLC020.cbl:107",
+      "performedBy": [
+        "ｾｲﾚｷ-ﾍﾝｶﾝ-RTN"
+      ],
+      "reads": [
+        "ｹﾞﾝｺﾞｳ-ｶｲｼ-YYYY",
+        "ｹﾞﾝｺﾞｳ-IX",
+        "LK-ﾈﾝ",
+        "LK-MMDD",
+        "WS-MM",
+        "WS-DD",
+        "WS-YYYYMMDD",
+        "ｹﾞﾝｺﾞｳ-ｶｲｼﾋﾞ",
+        "ｹﾞﾝｺﾞｳ-ｹﾝｽｳ",
+        "LK-ｹｯｶ"
+      ],
+      "writes": [
+        "WS-YYYY",
+        "WS-ﾋﾂﾞｹ-ﾌﾞﾝｶｲ",
+        "LK-ｹｯｶ",
+        "ｹﾞﾝｺﾞｳ-IX",
+        "LK-ｾｲﾚｷ"
+      ]
+    }
+  ],
+  "using": [
+    "LK-ﾎｳｺｳ",
+    "LK-ｾｲﾚｷ",
+    "LK-ﾜﾚｷ",
+    "LK-ｹｯｶ"
+  ],
+  "calledBy": [
+    "GLD010",
+    "GLD020",
+    "GLD030",
+    "GLD040",
+    "GLD050",
+    "GLD060",
+    "GLD090",
+    "GLM010",
+    "GLM020",
+    "GLM030",
+    "GLO010",
+    "GLY010"
+  ],
+  "lineage": [
+    {
+      "from": "condition LK-ﾍﾝｶﾝｽﾞﾐ",
+      "to": "LK-ｹｯｶ",
+      "fromLiteral": true,
+      "paragraph": "ﾒｲﾝ-RTN",
+      "verb": "SET",
+      "source": "gondwana/programs/GLC020.cbl:56"
+    },
+    {
+      "from": "condition LK-ﾋﾂﾞｹ-ﾌｾｲ",
+      "to": "LK-ｹｯｶ",
+      "fromLiteral": true,
+      "paragraph": "ﾒｲﾝ-RTN",
+      "verb": "SET",
+      "source": "gondwana/programs/GLC020.cbl:63"
+    },
+    {
+      "from": "LK-ｾｲﾚｷ",
+      "to": "WS-YYYYMMDD",
+      "paragraph": "ﾜﾚｷ-ﾍﾝｶﾝ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLC020.cbl:71"
+    },
+    {
+      "from": "condition WS-ｹﾞﾝｺﾞｳ-ﾅｼ",
+      "to": "WS-ﾊｯｹﾝ",
+      "fromLiteral": true,
+      "paragraph": "ﾜﾚｷ-ﾍﾝｶﾝ-RTN",
+      "verb": "SET",
+      "source": "gondwana/programs/GLC020.cbl:72"
+    },
+    {
+      "from": "condition WS-ｹﾞﾝｺﾞｳ-ｱﾘ",
+      "to": "WS-ﾊｯｹﾝ",
+      "fromLiteral": true,
+      "paragraph": "ﾜﾚｷ-ﾍﾝｶﾝ-RTN",
+      "verb": "SET",
+      "source": "gondwana/programs/GLC020.cbl:76"
+    },
+    {
+      "from": "ｹﾞﾝｺﾞｳ-ｷｺﾞｳ",
+      "to": "LK-ｹﾞﾝｺﾞｳ",
+      "paragraph": "ﾜﾚｷ-ﾍﾝｶﾝ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLC020.cbl:77"
+    },
+    {
+      "from": "WS-YYYY",
+      "to": "LK-ﾈﾝ",
+      "paragraph": "ﾜﾚｷ-ﾍﾝｶﾝ-RTN",
+      "verb": "COMPUTE",
+      "source": "gondwana/programs/GLC020.cbl:78"
+    },
+    {
+      "from": "ｹﾞﾝｺﾞｳ-ｶｲｼ-YYYY",
+      "to": "LK-ﾈﾝ",
+      "paragraph": "ﾜﾚｷ-ﾍﾝｶﾝ-RTN",
+      "verb": "COMPUTE",
+      "source": "gondwana/programs/GLC020.cbl:78"
+    },
+    {
+      "from": "ｹﾞﾝｺﾞｳ-IX",
+      "to": "LK-ﾈﾝ",
+      "paragraph": "ﾜﾚｷ-ﾍﾝｶﾝ-RTN",
+      "verb": "COMPUTE",
+      "source": "gondwana/programs/GLC020.cbl:78"
+    },
+    {
+      "from": "WS-ﾋﾂﾞｹ-ﾌﾞﾝｶｲ",
+      "to": "LK-MMDD",
+      "paragraph": "ﾜﾚｷ-ﾍﾝｶﾝ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLC020.cbl:80"
+    },
+    {
+      "from": "condition LK-ﾋﾂﾞｹ-ﾌｾｲ",
+      "to": "LK-ｹｯｶ",
+      "fromLiteral": true,
+      "paragraph": "ﾜﾚｷ-ﾍﾝｶﾝ-RTN",
+      "verb": "SET",
+      "source": "gondwana/programs/GLC020.cbl:84"
+    },
+    {
+      "from": "condition WS-ｹﾞﾝｺﾞｳ-ﾅｼ",
+      "to": "WS-ﾊｯｹﾝ",
+      "fromLiteral": true,
+      "paragraph": "ｾｲﾚｷ-ﾍﾝｶﾝ-RTN",
+      "verb": "SET",
+      "source": "gondwana/programs/GLC020.cbl:91"
+    },
+    {
+      "from": "1",
+      "to": "ｹﾞﾝｺﾞｳ-IX",
+      "fromLiteral": true,
+      "paragraph": "ｾｲﾚｷ-ﾍﾝｶﾝ-RTN",
+      "verb": "SET",
+      "source": "gondwana/programs/GLC020.cbl:92"
+    },
+    {
+      "from": "condition LK-ﾋﾂﾞｹ-ﾌｾｲ",
+      "to": "LK-ｹｯｶ",
+      "fromLiteral": true,
+      "paragraph": "ｾｲﾚｷ-ﾍﾝｶﾝ-RTN",
+      "verb": "SET",
+      "source": "gondwana/programs/GLC020.cbl:95"
+    },
+    {
+      "from": "condition WS-ｹﾞﾝｺﾞｳ-ｱﾘ",
+      "to": "WS-ﾊｯｹﾝ",
+      "fromLiteral": true,
+      "paragraph": "ｾｲﾚｷ-ﾍﾝｶﾝ-RTN",
+      "verb": "SET",
+      "source": "gondwana/programs/GLC020.cbl:97"
+    },
+    {
+      "from": "ｹﾞﾝｺﾞｳ-ｶｲｼ-YYYY",
+      "to": "WS-YYYY",
+      "paragraph": "ﾊﾝｲ-ｹﾝｻ-RTN",
+      "verb": "COMPUTE",
+      "source": "gondwana/programs/GLC020.cbl:108"
+    },
+    {
+      "from": "ｹﾞﾝｺﾞｳ-IX",
+      "to": "WS-YYYY",
+      "paragraph": "ﾊﾝｲ-ｹﾝｻ-RTN",
+      "verb": "COMPUTE",
+      "source": "gondwana/programs/GLC020.cbl:108"
+    },
+    {
+      "from": "LK-ﾈﾝ",
+      "to": "WS-YYYY",
+      "paragraph": "ﾊﾝｲ-ｹﾝｻ-RTN",
+      "verb": "COMPUTE",
+      "source": "gondwana/programs/GLC020.cbl:108"
+    },
+    {
+      "from": "LK-MMDD",
+      "to": "WS-ﾋﾂﾞｹ-ﾌﾞﾝｶｲ",
+      "paragraph": "ﾊﾝｲ-ｹﾝｻ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLC020.cbl:109"
+    },
+    {
+      "from": "condition LK-ﾋﾂﾞｹ-ﾌｾｲ",
+      "to": "LK-ｹｯｶ",
+      "fromLiteral": true,
+      "paragraph": "ﾊﾝｲ-ｹﾝｻ-RTN",
+      "verb": "SET",
+      "source": "gondwana/programs/GLC020.cbl:112"
+    },
+    {
+      "from": "condition LK-ﾋﾂﾞｹ-ﾌｾｲ",
+      "to": "LK-ｹｯｶ",
+      "fromLiteral": true,
+      "paragraph": "ﾊﾝｲ-ｹﾝｻ-RTN",
+      "verb": "SET",
+      "source": "gondwana/programs/GLC020.cbl:114"
+    },
+    {
+      "from": "condition LK-ﾋﾂﾞｹ-ﾌｾｲ",
+      "to": "LK-ｹｯｶ",
+      "fromLiteral": true,
+      "paragraph": "ﾊﾝｲ-ｹﾝｻ-RTN",
+      "verb": "SET",
+      "source": "gondwana/programs/GLC020.cbl:116"
+    },
+    {
+      "from": "condition LK-ﾋﾂﾞｹ-ﾌｾｲ",
+      "to": "LK-ｹｯｶ",
+      "fromLiteral": true,
+      "paragraph": "ﾊﾝｲ-ｹﾝｻ-RTN",
+      "verb": "SET",
+      "source": "gondwana/programs/GLC020.cbl:118"
+    },
+    {
+      "from": "1",
+      "to": "ｹﾞﾝｺﾞｳ-IX",
+      "fromLiteral": true,
+      "paragraph": "ﾊﾝｲ-ｹﾝｻ-RTN",
+      "verb": "SET",
+      "source": "gondwana/programs/GLC020.cbl:120"
+    },
+    {
+      "from": "condition LK-ﾋﾂﾞｹ-ﾌｾｲ",
+      "to": "LK-ｹｯｶ",
+      "fromLiteral": true,
+      "paragraph": "ﾊﾝｲ-ｹﾝｻ-RTN",
+      "verb": "SET",
+      "source": "gondwana/programs/GLC020.cbl:122"
+    },
+    {
+      "from": "WS-YYYYMMDD",
+      "to": "LK-ｾｲﾚｷ",
+      "paragraph": "ﾊﾝｲ-ｹﾝｻ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLC020.cbl:126"
+    }
+  ],
+  "parameters": [
+    {
+      "item": "LK-ﾎｳｺｳ",
+      "fields": [
+        {
+          "name": "LK-ﾎｳｺｳ",
+          "reads": true
+        }
+      ]
+    },
+    {
+      "item": "LK-ｾｲﾚｷ",
+      "fields": [
+        {
+          "name": "LK-ｾｲﾚｷ",
+          "reads": true,
+          "writes": true
+        }
+      ]
+    },
+    {
+      "item": "LK-ﾜﾚｷ",
+      "fields": [
+        {
+          "name": "LK-ｹﾞﾝｺﾞｳ",
+          "reads": true,
+          "writes": true
+        },
+        {
+          "name": "LK-ﾈﾝ",
+          "reads": true,
+          "writes": true
+        },
+        {
+          "name": "LK-MMDD",
+          "reads": true,
+          "writes": true
+        }
+      ]
+    },
+    {
+      "item": "LK-ｹｯｶ",
+      "fields": [
+        {
+          "name": "LK-ｹｯｶ",
+          "reads": true,
+          "writes": true
+        }
+      ]
+    }
+  ]
+}

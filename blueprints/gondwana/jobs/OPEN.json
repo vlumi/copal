@@ -1,0 +1,128 @@
+{
+  "job": "OPEN",
+  "kind": "script",
+  "source": "gondwana/scripts/OPEN.BAT",
+  "description": [
+    "OPEN.BAT: システム開設。契約抽出ファイルから契約マスタの索引",
+    "ファイルと制御レコードを作る。一度だけ実行する。",
+    "",
+    "使い方: OPEN.BAT YYYYMMDD  業務日付",
+    "環境: GLS_BIN プログラム、GLS_SCRIPTS バッチファイル、GLS_DATA データ",
+    "",
+    "変更履歴",
+    "1999-11-08 MS  GL-0233 初版、PC システム移行時。"
+  ],
+  "steps": [
+    {
+      "step": "GLO010",
+      "program": "GLO010",
+      "arguments": [
+        "$DATE"
+      ],
+      "stopsIf": "RC \u003e= 8",
+      "description": [
+        "契約マスタの初期登録と制御レコード"
+      ],
+      "source": "gondwana/scripts/OPEN.BAT:25",
+      "dds": [
+        {
+          "dd": "EXTRACT",
+          "datasets": [
+            "$DATA/IN/EXTRACT.TXT"
+          ],
+          "file": "EXTRACT-F",
+          "uses": [
+            "read"
+          ],
+          "source": "gondwana/scripts/OPEN.BAT:25"
+        },
+        {
+          "dd": "POLMST",
+          "datasets": [
+            "$DATA/MASTER/POLMST.IDX"
+          ],
+          "indexed": true,
+          "file": "POLMST-F",
+          "uses": [
+            "write"
+          ],
+          "copybook": "POLMST",
+          "source": "gondwana/scripts/OPEN.BAT:25"
+        },
+        {
+          "dd": "GLSCTL",
+          "datasets": [
+            "$DATA/MASTER/GLSCTL.BIN"
+          ],
+          "file": "GLSCTL-F",
+          "uses": [
+            "write"
+          ],
+          "copybook": "CTLREC",
+          "source": "gondwana/scripts/OPEN.BAT:25"
+        },
+        {
+          "dd": "GLO010R",
+          "datasets": [
+            "$DATA/RPT/GLO010.$DATE.RPT"
+          ],
+          "file": "REPORT-F",
+          "uses": [
+            "write"
+          ],
+          "source": "gondwana/scripts/OPEN.BAT:25"
+        },
+        {
+          "dd": "stdout",
+          "datasets": [
+            "$DATA/RPT/GLO010.$DATE.OUT"
+          ],
+          "uses": [
+            "write"
+          ],
+          "source": "gondwana/scripts/OPEN.BAT:25"
+        }
+      ]
+    }
+  ],
+  "datasets": [
+    {
+      "dataset": "$DATA/IN/EXTRACT.TXT",
+      "kind": "external",
+      "readBy": [
+        "GLO010"
+      ]
+    },
+    {
+      "dataset": "$DATA/MASTER/POLMST.IDX",
+      "copybook": "POLMST",
+      "kind": "internal",
+      "indexed": true,
+      "writtenBy": [
+        "GLO010"
+      ]
+    },
+    {
+      "dataset": "$DATA/MASTER/GLSCTL.BIN",
+      "copybook": "CTLREC",
+      "kind": "internal",
+      "writtenBy": [
+        "GLO010"
+      ]
+    },
+    {
+      "dataset": "$DATA/RPT/GLO010.$DATE.RPT",
+      "kind": "output",
+      "writtenBy": [
+        "GLO010"
+      ]
+    },
+    {
+      "dataset": "$DATA/RPT/GLO010.$DATE.OUT",
+      "kind": "output",
+      "writtenBy": [
+        "GLO010"
+      ]
+    }
+  ]
+}

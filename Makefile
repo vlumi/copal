@@ -73,10 +73,11 @@ gondwana-month:  ## Run Gondwana's March on the fixture and show its logs and re
 ##@ The survey
 
 .PHONY: blueprints
-blueprints:  ## Regenerate Pangaea's and Laurasia's blueprints with Survey
-	rm -rf blueprints/pangaea blueprints/laurasia
+blueprints:  ## Regenerate the blueprints of the three specimens with Survey
+	rm -rf blueprints/pangaea blueprints/laurasia blueprints/gondwana
 	go run ./survey/cmd/survey blueprints -copybooks pangaea/copybooks -out blueprints/pangaea -annotations annotations/pangaea -title pangaea pangaea/programs/*.cbl pangaea/jobs/*.jcl
 	go run ./survey/cmd/survey blueprints -dialect mf -copybooks laurasia/copybooks -out blueprints/laurasia -annotations annotations/laurasia -title laurasia laurasia/programs/*.cbl laurasia/scripts/*.sh
+	go run ./survey/cmd/survey blueprints -dialect fujitsu -copybooks gondwana/copybooks -out blueprints/gondwana -annotations annotations/gondwana -title gondwana gondwana/programs/*.cbl gondwana/scripts/*.BAT
 
 EXPLORE_ADDR ?= 127.0.0.1:1192
 
@@ -87,6 +88,10 @@ explore-pangaea:  ## Explore Pangaea's analysis in the browser (EXPLORE_ADDR)
 .PHONY: explore-laurasia
 explore-laurasia:  ## Explore Laurasia's analysis in the browser (EXPLORE_ADDR)
 	go run ./survey/cmd/survey explore -dialect mf -copybooks laurasia/copybooks -addr $(EXPLORE_ADDR) -title "Laurasia Card Services" -annotations annotations/laurasia -cases oracle/laurasia laurasia/programs/*.cbl laurasia/scripts/*.sh
+
+.PHONY: explore-gondwana
+explore-gondwana:  ## Explore Gondwana's analysis in the browser (EXPLORE_ADDR)
+	go run ./survey/cmd/survey explore -dialect fujitsu -copybooks gondwana/copybooks -addr $(EXPLORE_ADDR) -title "Gondwana Life Insurance" -annotations annotations/gondwana gondwana/programs/*.cbl gondwana/scripts/*.BAT
 
 .PHONY: oracle
 oracle:  ## Search both specimens' programs again for cases that reach their rules, and rewrite oracle/

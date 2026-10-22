@@ -1,0 +1,392 @@
+{
+  "program": "GLC020",
+  "tables": [
+    {
+      "paragraph": "ﾒｲﾝ-RTN",
+      "source": "gondwana/programs/GLC020.cbl:55",
+      "conditions": [
+        "LK-ﾜﾚｷ-ﾍ",
+        "LK-ｾｲﾚｷ-ﾍ"
+      ],
+      "conditionRefs": [
+        [
+          "LK-ﾎｳｺｳ"
+        ],
+        [
+          "LK-ﾎｳｺｳ"
+        ]
+      ],
+      "actions": [
+        "SET LK-ﾍﾝｶﾝｽﾞﾐ TO TRUE",
+        "PERFORM ﾜﾚｷ-ﾍﾝｶﾝ-RTN",
+        "GOBACK",
+        "PERFORM ｾｲﾚｷ-ﾍﾝｶﾝ-RTN",
+        "SET LK-ﾋﾂﾞｹ-ﾌｾｲ TO TRUE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            3,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            4,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "ﾜﾚｷ-ﾍﾝｶﾝ-RTN",
+      "source": "gondwana/programs/GLC020.cbl:70",
+      "conditions": [
+        "WS-ｹﾞﾝｺﾞｳ-ﾅｼ"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ﾊｯｹﾝ"
+        ]
+      ],
+      "actions": [
+        "MOVE LK-ｾｲﾚｷ TO WS-YYYYMMDD",
+        "SET WS-ｹﾞﾝｺﾞｳ-ﾅｼ TO TRUE",
+        "PERFORM VARYING ｹﾞﾝｺﾞｳ-IX FROM ｹﾞﾝｺﾞｳ-ｹﾝｽｳ BY -1 UNTIL ｹﾞﾝｺﾞｳ-IX \u003c 1 OR WS-ｹﾞﾝｺﾞｳ-ｱﾘ",
+        "SET LK-ﾋﾂﾞｹ-ﾌｾｲ TO TRUE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "ﾜﾚｷ-ﾍﾝｶﾝ-RTN",
+      "loop": "PERFORM VARYING ｹﾞﾝｺﾞｳ-IX FROM ｹﾞﾝｺﾞｳ-ｹﾝｽｳ BY -1 UNTIL ｹﾞﾝｺﾞｳ-IX \u003c 1 OR WS-ｹﾞﾝｺﾞｳ-ｱﾘ",
+      "source": "gondwana/programs/GLC020.cbl:73",
+      "conditions": [
+        "ｹﾞﾝｺﾞｳ-ｶｲｼﾋﾞ(ｹﾞﾝｺﾞｳ-IX) \u003e WS-YYYYMMDD"
+      ],
+      "conditionRefs": [
+        [
+          "ｹﾞﾝｺﾞｳ-ｶｲｼﾋﾞ",
+          "ｹﾞﾝｺﾞｳ-IX",
+          "WS-YYYYMMDD"
+        ]
+      ],
+      "actions": [
+        "SET WS-ｹﾞﾝｺﾞｳ-ｱﾘ TO TRUE",
+        "MOVE ｹﾞﾝｺﾞｳ-ｷｺﾞｳ(ｹﾞﾝｺﾞｳ-IX) TO LK-ｹﾞﾝｺﾞｳ",
+        "COMPUTE LK-ﾈﾝ = WS-YYYY - ｹﾞﾝｺﾞｳ-ｶｲｼ-YYYY(ｹﾞﾝｺﾞｳ-IX) + 1",
+        "MOVE WS-ﾋﾂﾞｹ-ﾌﾞﾝｶｲ(5:4) TO LK-MMDD"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": null
+        }
+      ]
+    },
+    {
+      "paragraph": "ｾｲﾚｷ-ﾍﾝｶﾝ-RTN",
+      "source": "gondwana/programs/GLC020.cbl:90",
+      "conditions": [
+        "ｹﾞﾝｺﾞｳ-ｷｺﾞｳ(ｹﾞﾝｺﾞｳ-IX) = LK-ｹﾞﾝｺﾞｳ",
+        "WS-ｹﾞﾝｺﾞｳ-ｱﾘ"
+      ],
+      "conditionRefs": [
+        [
+          "ｹﾞﾝｺﾞｳ-ｷｺﾞｳ",
+          "ｹﾞﾝｺﾞｳ-IX",
+          "LK-ｹﾞﾝｺﾞｳ"
+        ],
+        [
+          "WS-ﾊｯｹﾝ"
+        ]
+      ],
+      "actions": [
+        "SET WS-ｹﾞﾝｺﾞｳ-ﾅｼ TO TRUE",
+        "SET ｹﾞﾝｺﾞｳ-IX TO 1",
+        "SEARCH ｹﾞﾝｺﾞｳ-ｴﾝﾄﾘ",
+        "SET WS-ｹﾞﾝｺﾞｳ-ｱﾘ TO TRUE",
+        "PERFORM ﾊﾝｲ-ｹﾝｻ-RTN",
+        "SET LK-ﾋﾂﾞｹ-ﾌｾｲ TO TRUE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "ﾊﾝｲ-ｹﾝｻ-RTN",
+      "source": "gondwana/programs/GLC020.cbl:107",
+      "conditions": [
+        "LK-ﾈﾝ = 0",
+        "LK-ﾍﾝｶﾝｽﾞﾐ",
+        "WS-MM \u003c 1 OR WS-MM \u003e 12",
+        "WS-DD \u003c 1 OR WS-DD \u003e 31",
+        "WS-YYYYMMDD \u003c ｹﾞﾝｺﾞｳ-ｶｲｼﾋﾞ(ｹﾞﾝｺﾞｳ-IX)",
+        "ｹﾞﾝｺﾞｳ-IX \u003c ｹﾞﾝｺﾞｳ-ｹﾝｽｳ",
+        "WS-YYYYMMDD \u003c ｹﾞﾝｺﾞｳ-ｶｲｼﾋﾞ(ｹﾞﾝｺﾞｳ-IX), again"
+      ],
+      "conditionRefs": [
+        [
+          "LK-ﾈﾝ"
+        ],
+        [
+          "LK-ｹｯｶ"
+        ],
+        [
+          "WS-MM"
+        ],
+        [
+          "WS-DD"
+        ],
+        [
+          "WS-YYYYMMDD",
+          "ｹﾞﾝｺﾞｳ-ｶｲｼﾋﾞ",
+          "ｹﾞﾝｺﾞｳ-IX"
+        ],
+        [
+          "ｹﾞﾝｺﾞｳ-IX",
+          "ｹﾞﾝｺﾞｳ-ｹﾝｽｳ"
+        ],
+        [
+          "WS-YYYYMMDD",
+          "ｹﾞﾝｺﾞｳ-ｶｲｼﾋﾞ",
+          "ｹﾞﾝｺﾞｳ-IX"
+        ]
+      ],
+      "actions": [
+        "COMPUTE WS-YYYY = ｹﾞﾝｺﾞｳ-ｶｲｼ-YYYY(ｹﾞﾝｺﾞｳ-IX) + LK-ﾈﾝ - 1",
+        "MOVE LK-MMDD TO WS-ﾋﾂﾞｹ-ﾌﾞﾝｶｲ(5:4)",
+        "SET LK-ﾋﾂﾞｹ-ﾌｾｲ TO TRUE",
+        "SET ｹﾞﾝｺﾞｳ-IX UP BY 1",
+        "MOVE WS-YYYYMMDD TO LK-ｾｲﾚｷ"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "N",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "Y",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "N",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            3,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N",
+            "N",
+            "N",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            3,
+            4
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N",
+            "N",
+            "N",
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            4
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        }
+      ]
+    }
+  ]
+}

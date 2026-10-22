@@ -1,0 +1,356 @@
+{
+  "program": "GLC010",
+  "kind": "called",
+  "source": "gondwana/programs/GLC010.cbl",
+  "description": [
+    "GLC010: 保険年齢",
+    "",
+    "生年月日と基準日 (ともに YYYYMMDD)、年齢を受けて呼ばれる。",
+    "保険年齢は満年齢に、次の1年のうち6か月以上が過ぎていれば",
+    "1 を足したもの: 39歳7か月の人は40歳として加入する。",
+    "月数は満月数で、誕生日の日より前の日は数えない。",
+    "",
+    "変更履歴",
+    "日付       担当 変更",
+    "1987-04-01 KT   GL-0001 初版。"
+  ],
+  "identification": [
+    {
+      "paragraph": "AUTHOR",
+      "text": "ゴンドワナ生命 システム部."
+    },
+    {
+      "paragraph": "DATE-WRITTEN",
+      "text": "1987-04-01."
+    }
+  ],
+  "files": null,
+  "records": [
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ｾｲﾈﾝｶﾞｯﾋﾟ",
+      "start": 1,
+      "length": 8,
+      "category": "group",
+      "kind": "group",
+      "source": "gondwana/programs/GLC010.cbl:20",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-B-YYYY",
+          "start": 1,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 4,
+          "source": "gondwana/programs/GLC010.cbl:21"
+        },
+        {
+          "level": 5,
+          "name": "WS-B-MM",
+          "start": 5,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 2,
+          "source": "gondwana/programs/GLC010.cbl:22"
+        },
+        {
+          "level": 5,
+          "name": "WS-B-DD",
+          "start": 7,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 2,
+          "source": "gondwana/programs/GLC010.cbl:23"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ｷｼﾞｭﾝﾋﾞ",
+      "start": 1,
+      "length": 8,
+      "category": "group",
+      "kind": "group",
+      "source": "gondwana/programs/GLC010.cbl:24",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-A-YYYY",
+          "start": 1,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 4,
+          "source": "gondwana/programs/GLC010.cbl:25"
+        },
+        {
+          "level": 5,
+          "name": "WS-A-MM",
+          "start": 5,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 2,
+          "source": "gondwana/programs/GLC010.cbl:26"
+        },
+        {
+          "level": 5,
+          "name": "WS-A-DD",
+          "start": 7,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 2,
+          "source": "gondwana/programs/GLC010.cbl:27"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ﾂｷｽｳ",
+      "start": 1,
+      "length": 5,
+      "picture": "S9(5)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 5,
+      "signed": true,
+      "source": "gondwana/programs/GLC010.cbl:28"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ｱﾏﾘ",
+      "start": 1,
+      "length": 2,
+      "picture": "99",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 2,
+      "source": "gondwana/programs/GLC010.cbl:29"
+    },
+    {
+      "section": "linkage",
+      "level": 1,
+      "name": "LK-ｾｲﾈﾝｶﾞｯﾋﾟ",
+      "start": 1,
+      "length": 8,
+      "picture": "9(8)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 8,
+      "source": "gondwana/programs/GLC010.cbl:32"
+    },
+    {
+      "section": "linkage",
+      "level": 1,
+      "name": "LK-ｷｼﾞｭﾝﾋﾞ",
+      "start": 1,
+      "length": 8,
+      "picture": "9(8)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 8,
+      "source": "gondwana/programs/GLC010.cbl:33"
+    },
+    {
+      "section": "linkage",
+      "level": 1,
+      "name": "LK-ﾈﾝﾚｲ",
+      "start": 1,
+      "length": 2,
+      "picture": "99",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 2,
+      "source": "gondwana/programs/GLC010.cbl:34"
+    }
+  ],
+  "paragraphs": [
+    {
+      "name": "ﾒｲﾝ-RTN",
+      "description": "ﾒｲﾝ-RTN: 満月数を求め、6か月で切り上げて年にする。",
+      "source": "gondwana/programs/GLC010.cbl:40",
+      "reads": [
+        "LK-ｾｲﾈﾝｶﾞｯﾋﾟ",
+        "LK-ｷｼﾞｭﾝﾋﾞ",
+        "WS-A-YYYY",
+        "WS-B-YYYY",
+        "WS-A-MM",
+        "WS-B-MM",
+        "WS-A-DD",
+        "WS-B-DD",
+        "WS-ﾂｷｽｳ",
+        "WS-ｱﾏﾘ",
+        "LK-ﾈﾝﾚｲ"
+      ],
+      "writes": [
+        "WS-ｾｲﾈﾝｶﾞｯﾋﾟ",
+        "WS-ｷｼﾞｭﾝﾋﾞ",
+        "WS-ﾂｷｽｳ",
+        "LK-ﾈﾝﾚｲ",
+        "WS-ｱﾏﾘ"
+      ]
+    }
+  ],
+  "using": [
+    "LK-ｾｲﾈﾝｶﾞｯﾋﾟ",
+    "LK-ｷｼﾞｭﾝﾋﾞ",
+    "LK-ﾈﾝﾚｲ"
+  ],
+  "calledBy": [
+    "GLD010",
+    "GLD020"
+  ],
+  "lineage": [
+    {
+      "from": "LK-ｾｲﾈﾝｶﾞｯﾋﾟ",
+      "to": "WS-ｾｲﾈﾝｶﾞｯﾋﾟ",
+      "paragraph": "ﾒｲﾝ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLC010.cbl:41"
+    },
+    {
+      "from": "LK-ｷｼﾞｭﾝﾋﾞ",
+      "to": "WS-ｷｼﾞｭﾝﾋﾞ",
+      "paragraph": "ﾒｲﾝ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLC010.cbl:42"
+    },
+    {
+      "from": "WS-A-YYYY",
+      "to": "WS-ﾂｷｽｳ",
+      "paragraph": "ﾒｲﾝ-RTN",
+      "verb": "COMPUTE",
+      "source": "gondwana/programs/GLC010.cbl:43"
+    },
+    {
+      "from": "WS-B-YYYY",
+      "to": "WS-ﾂｷｽｳ",
+      "paragraph": "ﾒｲﾝ-RTN",
+      "verb": "COMPUTE",
+      "source": "gondwana/programs/GLC010.cbl:43"
+    },
+    {
+      "from": "WS-A-MM",
+      "to": "WS-ﾂｷｽｳ",
+      "paragraph": "ﾒｲﾝ-RTN",
+      "verb": "COMPUTE",
+      "source": "gondwana/programs/GLC010.cbl:43"
+    },
+    {
+      "from": "WS-B-MM",
+      "to": "WS-ﾂｷｽｳ",
+      "paragraph": "ﾒｲﾝ-RTN",
+      "verb": "COMPUTE",
+      "source": "gondwana/programs/GLC010.cbl:43"
+    },
+    {
+      "from": "1",
+      "to": "WS-ﾂｷｽｳ",
+      "fromLiteral": true,
+      "paragraph": "ﾒｲﾝ-RTN",
+      "verb": "SUBTRACT",
+      "source": "gondwana/programs/GLC010.cbl:46"
+    },
+    {
+      "from": "0",
+      "to": "WS-ﾂｷｽｳ",
+      "fromLiteral": true,
+      "paragraph": "ﾒｲﾝ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLC010.cbl:49"
+    },
+    {
+      "from": "WS-ﾂｷｽｳ",
+      "to": "LK-ﾈﾝﾚｲ",
+      "paragraph": "ﾒｲﾝ-RTN",
+      "verb": "DIVIDE",
+      "source": "gondwana/programs/GLC010.cbl:51"
+    },
+    {
+      "from": "12",
+      "to": "LK-ﾈﾝﾚｲ",
+      "fromLiteral": true,
+      "paragraph": "ﾒｲﾝ-RTN",
+      "verb": "DIVIDE",
+      "source": "gondwana/programs/GLC010.cbl:51"
+    },
+    {
+      "from": "WS-ﾂｷｽｳ",
+      "to": "WS-ｱﾏﾘ",
+      "paragraph": "ﾒｲﾝ-RTN",
+      "verb": "DIVIDE",
+      "source": "gondwana/programs/GLC010.cbl:51"
+    },
+    {
+      "from": "12",
+      "to": "WS-ｱﾏﾘ",
+      "fromLiteral": true,
+      "paragraph": "ﾒｲﾝ-RTN",
+      "verb": "DIVIDE",
+      "source": "gondwana/programs/GLC010.cbl:51"
+    },
+    {
+      "from": "1",
+      "to": "LK-ﾈﾝﾚｲ",
+      "fromLiteral": true,
+      "paragraph": "ﾒｲﾝ-RTN",
+      "verb": "ADD",
+      "source": "gondwana/programs/GLC010.cbl:54"
+    }
+  ],
+  "parameters": [
+    {
+      "item": "LK-ｾｲﾈﾝｶﾞｯﾋﾟ",
+      "fields": [
+        {
+          "name": "LK-ｾｲﾈﾝｶﾞｯﾋﾟ",
+          "reads": true
+        }
+      ]
+    },
+    {
+      "item": "LK-ｷｼﾞｭﾝﾋﾞ",
+      "fields": [
+        {
+          "name": "LK-ｷｼﾞｭﾝﾋﾞ",
+          "reads": true
+        }
+      ]
+    },
+    {
+      "item": "LK-ﾈﾝﾚｲ",
+      "fields": [
+        {
+          "name": "LK-ﾈﾝﾚｲ",
+          "reads": true,
+          "writes": true
+        }
+      ]
+    }
+  ]
+}

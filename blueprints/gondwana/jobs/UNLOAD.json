@@ -1,0 +1,133 @@
+{
+  "job": "UNLOAD",
+  "kind": "script",
+  "source": "gondwana/scripts/UNLOAD.BAT",
+  "description": [
+    "UNLOAD.BAT: 契約マスタのアンロード。日次と月次の最後に呼ばれ、",
+    "下流に渡すファイルを作り、制御レコードの業務日付を進める。",
+    "",
+    "使い方: UNLOAD.BAT YYYYMMDD  業務日付",
+    "環境: GLS_BIN プログラム、GLS_DATA データ",
+    "",
+    "変更履歴",
+    "1999-11-08 MS  GL-0233 初版、PC システム移行時。"
+  ],
+  "steps": [
+    {
+      "step": "GLD090",
+      "program": "GLD090",
+      "arguments": [
+        "$DATE"
+      ],
+      "stopsIf": "RC \u003e= 8",
+      "description": [
+        "アンロードと制御レコード"
+      ],
+      "source": "gondwana/scripts/UNLOAD.BAT:21",
+      "dds": [
+        {
+          "dd": "POLMST",
+          "datasets": [
+            "$DATA/MASTER/POLMST.IDX"
+          ],
+          "indexed": true,
+          "file": "POLMST-F",
+          "uses": [
+            "read"
+          ],
+          "copybook": "POLMST",
+          "source": "gondwana/scripts/UNLOAD.BAT:21"
+        },
+        {
+          "dd": "UNLOAD",
+          "datasets": [
+            "$DATA/OUT/POLMST.$DATE.TXT"
+          ],
+          "file": "UNLOAD-F",
+          "uses": [
+            "write"
+          ],
+          "copybook": "POLMST",
+          "source": "gondwana/scripts/UNLOAD.BAT:21"
+        },
+        {
+          "dd": "GLSCTL",
+          "datasets": [
+            "$DATA/MASTER/GLSCTL.BIN"
+          ],
+          "file": "GLSCTL-F",
+          "uses": [
+            "update"
+          ],
+          "copybook": "CTLREC",
+          "source": "gondwana/scripts/UNLOAD.BAT:21"
+        },
+        {
+          "dd": "GLD090R",
+          "datasets": [
+            "$DATA/RPT/GLD090.$DATE.RPT"
+          ],
+          "file": "REPORT-F",
+          "uses": [
+            "write"
+          ],
+          "source": "gondwana/scripts/UNLOAD.BAT:21"
+        },
+        {
+          "dd": "stdout",
+          "datasets": [
+            "$DATA/RPT/GLD090.$DATE.OUT"
+          ],
+          "uses": [
+            "write"
+          ],
+          "source": "gondwana/scripts/UNLOAD.BAT:21"
+        }
+      ]
+    }
+  ],
+  "datasets": [
+    {
+      "dataset": "$DATA/MASTER/POLMST.IDX",
+      "copybook": "POLMST",
+      "kind": "internal",
+      "indexed": true,
+      "readBy": [
+        "GLD090"
+      ]
+    },
+    {
+      "dataset": "$DATA/OUT/POLMST.$DATE.TXT",
+      "copybook": "POLMST",
+      "kind": "output",
+      "writtenBy": [
+        "GLD090"
+      ]
+    },
+    {
+      "dataset": "$DATA/MASTER/GLSCTL.BIN",
+      "copybook": "CTLREC",
+      "kind": "internal",
+      "writtenBy": [
+        "GLD090"
+      ],
+      "readBy": [
+        "GLD090"
+      ]
+    },
+    {
+      "dataset": "$DATA/RPT/GLD090.$DATE.RPT",
+      "kind": "output",
+      "writtenBy": [
+        "GLD090"
+      ]
+    },
+    {
+      "dataset": "$DATA/RPT/GLD090.$DATE.OUT",
+      "kind": "output",
+      "writtenBy": [
+        "GLD090"
+      ]
+    }
+  ]
+}

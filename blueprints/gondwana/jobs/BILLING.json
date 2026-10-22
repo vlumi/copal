@@ -1,0 +1,136 @@
+{
+  "job": "BILLING",
+  "kind": "script",
+  "source": "gondwana/scripts/BILLING.BAT",
+  "description": [
+    "BILLING.BAT: 保険料請求。月に一度、振替日 (27日) の前に、収納代行",
+    "に送る口座振替依頼ファイルを作る。",
+    "",
+    "使い方: BILLING.BAT YYYYMMDD  実行日。その月が請求月。",
+    "環境: GLS_BIN プログラム、GLS_DATA データ",
+    "",
+    "変更履歴",
+    "2003-10-06 MS  GL-0310 初版、口座振替の開始。"
+  ],
+  "steps": [
+    {
+      "step": "GLM010",
+      "program": "GLM010",
+      "arguments": [
+        "$DATE"
+      ],
+      "stopsIf": "RC \u003e= 8",
+      "description": [
+        "口座振替依頼ファイルの作成"
+      ],
+      "source": "gondwana/scripts/BILLING.BAT:21",
+      "dds": [
+        {
+          "dd": "POLMST",
+          "datasets": [
+            "$DATA/MASTER/POLMST.IDX"
+          ],
+          "indexed": true,
+          "file": "POLMST-F",
+          "uses": [
+            "read"
+          ],
+          "copybook": "POLMST",
+          "source": "gondwana/scripts/BILLING.BAT:21"
+        },
+        {
+          "dd": "PRMREQ",
+          "datasets": [
+            "$DATA/OUT/PRMREQ.$DATE.DAT"
+          ],
+          "file": "PRMREQ-F",
+          "uses": [
+            "write"
+          ],
+          "copybook": "ZENGIN",
+          "source": "gondwana/scripts/BILLING.BAT:21"
+        },
+        {
+          "dd": "GLSCTL",
+          "datasets": [
+            "$DATA/MASTER/GLSCTL.BIN"
+          ],
+          "file": "GLSCTL-F",
+          "uses": [
+            "update"
+          ],
+          "copybook": "CTLREC",
+          "source": "gondwana/scripts/BILLING.BAT:21"
+        },
+        {
+          "dd": "GLM010R",
+          "datasets": [
+            "$DATA/RPT/GLM010.$DATE.RPT"
+          ],
+          "file": "REPORT-F",
+          "uses": [
+            "write"
+          ],
+          "source": "gondwana/scripts/BILLING.BAT:21"
+        },
+        {
+          "dd": "stdout",
+          "datasets": [
+            "$DATA/RPT/GLM010.$DATE.OUT"
+          ],
+          "uses": [
+            "write"
+          ],
+          "source": "gondwana/scripts/BILLING.BAT:21"
+        }
+      ]
+    }
+  ],
+  "datasets": [
+    {
+      "dataset": "$DATA/MASTER/POLMST.IDX",
+      "copybook": "POLMST",
+      "kind": "internal",
+      "indexed": true,
+      "readBy": [
+        "GLM010"
+      ]
+    },
+    {
+      "dataset": "$DATA/OUT/PRMREQ.$DATE.DAT",
+      "copybook": "ZENGIN",
+      "kind": "output",
+      "writtenBy": [
+        "GLM010"
+      ]
+    },
+    {
+      "dataset": "$DATA/MASTER/GLSCTL.BIN",
+      "copybook": "CTLREC",
+      "kind": "internal",
+      "writtenBy": [
+        "GLM010"
+      ],
+      "readBy": [
+        "GLM010"
+      ]
+    },
+    {
+      "dataset": "$DATA/RPT/GLM010.$DATE.RPT",
+      "kind": "output",
+      "writtenBy": [
+        "GLM010"
+      ]
+    },
+    {
+      "dataset": "$DATA/RPT/GLM010.$DATE.OUT",
+      "kind": "output",
+      "writtenBy": [
+        "GLM010"
+      ]
+    }
+  ],
+  "findings": [
+    "Step GLM010 exports no DD_SORTWK for GLM010's file SORT-F."
+  ]
+}

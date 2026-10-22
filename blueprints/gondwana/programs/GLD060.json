@@ -1,0 +1,2678 @@
+{
+  "program": "GLD060",
+  "kind": "main",
+  "source": "gondwana/programs/GLD060.cbl",
+  "description": [
+    "GLD060: 失効処理",
+    "",
+    "日次。猶予中の契約のうち、払込猶予期間を過ぎたものを失効",
+    "させる。猶予期間は猶予開始日 (振替不能となった日) の属する",
+    "月の翌月末まで: 業務月が猶予開始月の翌月より後なら失効。",
+    "失効した契約は失効日を業務日付とし、1年以内なら GLD040 の",
+    "復活で戻せる。",
+    "",
+    "復帰コード: 0 処理済、8 日付が日付でない、16 ファイル異常。",
+    "",
+    "変更履歴",
+    "日付       担当 変更",
+    "1987-04-01 KT   GL-0001 初版。",
+    "2003-10-06 MS   GL-0310 猶予開始日を振替不能日から。"
+  ],
+  "identification": [
+    {
+      "paragraph": "AUTHOR",
+      "text": "ゴンドワナ生命 システム部."
+    },
+    {
+      "paragraph": "DATE-WRITTEN",
+      "text": "1987-04-01."
+    }
+  ],
+  "files": [
+    {
+      "name": "POLMST-F",
+      "kind": "FD",
+      "assign": "POLMST",
+      "organization": "INDEXED",
+      "access": "DYNAMIC",
+      "recordKey": "PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+      "status": "WS-POLMST-ST",
+      "opened": [
+        "I-O"
+      ],
+      "records": [
+        "PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ"
+      ],
+      "source": "gondwana/programs/GLD060.cbl:25"
+    },
+    {
+      "name": "REPORT-F",
+      "kind": "FD",
+      "assign": "GLD060R",
+      "organization": "LINE SEQUENTIAL",
+      "status": "WS-REPORT-ST",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "ﾎｳｺｸ-ｷﾞｮｳ"
+      ],
+      "source": "gondwana/programs/GLD060.cbl:30"
+    }
+  ],
+  "records": [
+    {
+      "section": "file",
+      "file": "POLMST-F",
+      "copybook": "POLMST",
+      "level": 1,
+      "name": "PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ",
+      "start": 1,
+      "length": 300,
+      "category": "group",
+      "kind": "group",
+      "description": "POLMST: 契約マスタ レコード (300バイト) 契約1件につき1レコード。索引マスタでは証券番号をキーとし、 開設時の抽出ファイルと日次のアンロードでは同じレコードが 1行である。 日付は和暦 GYYMMDD: 元号記号 (S 昭和, H 平成, R 令和) と 元号年。例外は払込済年月で、収納代行の振替ファイルに 合わせて西暦 YYYYMM とする。 金額は円単位、小数なし。 氏名はシフトJIS: 漢字氏名は1文字2バイト、カナ氏名は 半角カナ1文字1バイト。 変更履歴 日付       担当 変更 1987-04-01 KT   GL-0001 初版 (昭和62年)。 1989-01-16 KT   GL-0044 年の前に元号記号を置く。 2003-10-06 MS   GL-0310 口座振替用の口座。 2019-04-22 YN   GL-0702 令和: レイアウト変更なし。",
+      "source": "gondwana/copybooks/POLMST.cpy:21",
+      "fields": [
+        {
+          "level": 5,
+          "name": "PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+          "start": 1,
+          "length": 10,
+          "picture": "X(10)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "key",
+          "source": "gondwana/copybooks/POLMST.cpy:22"
+        },
+        {
+          "level": 5,
+          "name": "PM-ｼﾞｮｳﾀｲ",
+          "start": 11,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PM-ﾕｳｺｳ",
+              "values": [
+                "'1'"
+              ],
+              "source": "gondwana/copybooks/POLMST.cpy:24"
+            },
+            {
+              "name": "PM-ﾕｳﾖﾁｭｳ",
+              "values": [
+                "'2'"
+              ],
+              "source": "gondwana/copybooks/POLMST.cpy:25"
+            },
+            {
+              "name": "PM-ｼｯｺｳ",
+              "values": [
+                "'3'"
+              ],
+              "source": "gondwana/copybooks/POLMST.cpy:26"
+            },
+            {
+              "name": "PM-ｶｲﾔｸ",
+              "values": [
+                "'4'"
+              ],
+              "source": "gondwana/copybooks/POLMST.cpy:27"
+            },
+            {
+              "name": "PM-ﾏﾝｷ",
+              "values": [
+                "'5'"
+              ],
+              "source": "gondwana/copybooks/POLMST.cpy:28"
+            },
+            {
+              "name": "PM-ｼﾊﾗｲｽﾞﾐ",
+              "values": [
+                "'6'"
+              ],
+              "source": "gondwana/copybooks/POLMST.cpy:29"
+            },
+            {
+              "name": "PM-ﾊﾗｲｺﾐﾁｭｳ",
+              "values": [
+                "'1'",
+                "'2'"
+              ],
+              "source": "gondwana/copybooks/POLMST.cpy:30"
+            },
+            {
+              "name": "PM-ﾎｼｮｳﾁｭｳ",
+              "values": [
+                "'1'",
+                "'2'"
+              ],
+              "source": "gondwana/copybooks/POLMST.cpy:31"
+            }
+          ],
+          "source": "gondwana/copybooks/POLMST.cpy:23"
+        },
+        {
+          "level": 5,
+          "name": "PM-ｼｮｳﾋﾝ",
+          "start": 12,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PM-ｼｭｳｼﾝ",
+              "values": [
+                "'WL'"
+              ],
+              "source": "gondwana/copybooks/POLMST.cpy:33"
+            },
+            {
+              "name": "PM-ﾃｲｷ",
+              "values": [
+                "'TM'"
+              ],
+              "source": "gondwana/copybooks/POLMST.cpy:34"
+            },
+            {
+              "name": "PM-ﾖｳﾛｳ",
+              "values": [
+                "'EN'"
+              ],
+              "source": "gondwana/copybooks/POLMST.cpy:35"
+            },
+            {
+              "name": "PM-ｲﾘｮｳ",
+              "values": [
+                "'MD'"
+              ],
+              "source": "gondwana/copybooks/POLMST.cpy:36"
+            }
+          ],
+          "source": "gondwana/copybooks/POLMST.cpy:32"
+        },
+        {
+          "level": 5,
+          "name": "PM-ﾎｹﾝｷﾝｶﾞｸ",
+          "start": 14,
+          "length": 9,
+          "picture": "9(9)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 9,
+          "source": "gondwana/copybooks/POLMST.cpy:37"
+        },
+        {
+          "level": 5,
+          "name": "PM-ﾎｹﾝﾘｮｳ",
+          "start": 23,
+          "length": 7,
+          "picture": "9(7)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 7,
+          "source": "gondwana/copybooks/POLMST.cpy:38"
+        },
+        {
+          "level": 5,
+          "name": "PM-ﾊﾗｲｺﾐﾎｳﾎｳ",
+          "start": 30,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PM-ﾂｷﾊﾞﾗｲ",
+              "values": [
+                "'1'"
+              ],
+              "source": "gondwana/copybooks/POLMST.cpy:40"
+            },
+            {
+              "name": "PM-ﾈﾝﾊﾞﾗｲ",
+              "values": [
+                "'2'"
+              ],
+              "source": "gondwana/copybooks/POLMST.cpy:41"
+            }
+          ],
+          "source": "gondwana/copybooks/POLMST.cpy:39"
+        },
+        {
+          "level": 5,
+          "name": "PM-ｹｲﾔｸﾋﾞ",
+          "start": 31,
+          "length": 7,
+          "picture": "X(7)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "gondwana/copybooks/POLMST.cpy:42"
+        },
+        {
+          "level": 5,
+          "name": "PM-ﾎｹﾝｷｶﾝ",
+          "start": 38,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 2,
+          "source": "gondwana/copybooks/POLMST.cpy:43"
+        },
+        {
+          "level": 5,
+          "name": "PM-ﾏﾝｷﾋﾞ",
+          "start": 40,
+          "length": 7,
+          "picture": "X(7)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "gondwana/copybooks/POLMST.cpy:44"
+        },
+        {
+          "level": 5,
+          "name": "PM-ｹｲｶﾈﾝｽｳ",
+          "start": 47,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 2,
+          "source": "gondwana/copybooks/POLMST.cpy:45"
+        },
+        {
+          "level": 5,
+          "name": "PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ",
+          "start": 49,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 6,
+          "source": "gondwana/copybooks/POLMST.cpy:46"
+        },
+        {
+          "level": 5,
+          "name": "PM-ﾐﾉｳｶｲｽｳ",
+          "start": 55,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 2,
+          "source": "gondwana/copybooks/POLMST.cpy:47"
+        },
+        {
+          "level": 5,
+          "name": "PM-ﾕｳﾖｶｲｼﾋﾞ",
+          "start": 57,
+          "length": 7,
+          "picture": "X(7)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "gondwana/copybooks/POLMST.cpy:48"
+        },
+        {
+          "level": 5,
+          "name": "PM-ｼｯｺｳﾋﾞ",
+          "start": 64,
+          "length": 7,
+          "picture": "X(7)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "gondwana/copybooks/POLMST.cpy:49"
+        },
+        {
+          "level": 5,
+          "name": "PM-ｼﾞｮｳﾀｲﾋﾂﾞｹ",
+          "start": 71,
+          "length": 7,
+          "picture": "X(7)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "gondwana/copybooks/POLMST.cpy:50"
+        },
+        {
+          "level": 5,
+          "name": "PM-ﾋﾎｹﾝｼｬ",
+          "start": 78,
+          "length": 50,
+          "category": "group",
+          "kind": "group",
+          "source": "gondwana/copybooks/POLMST.cpy:51",
+          "fields": [
+            {
+              "level": 10,
+              "name": "PM-ｼﾒｲ",
+              "start": 78,
+              "length": 20,
+              "picture": "X(20)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "text",
+              "source": "gondwana/copybooks/POLMST.cpy:52"
+            },
+            {
+              "level": 10,
+              "name": "PM-ｼﾒｲｶﾅ",
+              "start": 98,
+              "length": 20,
+              "picture": "X(20)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "text",
+              "source": "gondwana/copybooks/POLMST.cpy:53"
+            },
+            {
+              "level": 10,
+              "name": "PM-ｾｲﾈﾝｶﾞｯﾋﾟ",
+              "start": 118,
+              "length": 7,
+              "picture": "X(7)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "text",
+              "source": "gondwana/copybooks/POLMST.cpy:54"
+            },
+            {
+              "level": 10,
+              "name": "PM-ｾｲﾍﾞﾂ",
+              "start": 125,
+              "length": 1,
+              "picture": "9",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "code",
+              "digits": 1,
+              "conditions": [
+                {
+                  "name": "PM-ｵﾄｺ",
+                  "values": [
+                    "1"
+                  ],
+                  "source": "gondwana/copybooks/POLMST.cpy:56"
+                },
+                {
+                  "name": "PM-ｵﾝﾅ",
+                  "values": [
+                    "2"
+                  ],
+                  "source": "gondwana/copybooks/POLMST.cpy:57"
+                }
+              ],
+              "source": "gondwana/copybooks/POLMST.cpy:55"
+            },
+            {
+              "level": 10,
+              "name": "PM-ｶﾆｭｳﾈﾝﾚｲ",
+              "start": 126,
+              "length": 2,
+              "picture": "99",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 2,
+              "source": "gondwana/copybooks/POLMST.cpy:58"
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "name": "PM-ｹｲﾔｸｼｬ",
+          "start": 128,
+          "length": 60,
+          "category": "group",
+          "kind": "group",
+          "source": "gondwana/copybooks/POLMST.cpy:59",
+          "fields": [
+            {
+              "level": 10,
+              "name": "PM-ｼﾞｭｳｼｮ",
+              "start": 128,
+              "length": 40,
+              "picture": "X(40)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "text",
+              "source": "gondwana/copybooks/POLMST.cpy:60"
+            },
+            {
+              "level": 10,
+              "name": "PM-ｳｹﾄﾘﾆﾝ",
+              "start": 168,
+              "length": 20,
+              "picture": "X(20)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "text",
+              "source": "gondwana/copybooks/POLMST.cpy:61"
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "name": "PM-ｺｳｻﾞ",
+          "start": 188,
+          "length": 45,
+          "category": "group",
+          "kind": "group",
+          "source": "gondwana/copybooks/POLMST.cpy:62",
+          "fields": [
+            {
+              "level": 10,
+              "name": "PM-ｷﾞﾝｺｳｺｰﾄﾞ",
+              "start": 188,
+              "length": 4,
+              "picture": "9(4)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 4,
+              "source": "gondwana/copybooks/POLMST.cpy:63"
+            },
+            {
+              "level": 10,
+              "name": "PM-ｼﾃﾝｺｰﾄﾞ",
+              "start": 192,
+              "length": 3,
+              "picture": "9(3)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 3,
+              "source": "gondwana/copybooks/POLMST.cpy:64"
+            },
+            {
+              "level": 10,
+              "name": "PM-ﾖｷﾝｼｭﾓｸ",
+              "start": 195,
+              "length": 1,
+              "picture": "9",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 1,
+              "source": "gondwana/copybooks/POLMST.cpy:65"
+            },
+            {
+              "level": 10,
+              "name": "PM-ｺｳｻﾞﾊﾞﾝｺﾞｳ",
+              "start": 196,
+              "length": 7,
+              "picture": "9(7)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 7,
+              "source": "gondwana/copybooks/POLMST.cpy:66"
+            },
+            {
+              "level": 10,
+              "name": "PM-ｺｳｻﾞﾒｲｷﾞ",
+              "start": 203,
+              "length": 30,
+              "picture": "X(30)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "text",
+              "source": "gondwana/copybooks/POLMST.cpy:67"
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "name": "PM-ﾀﾞｲﾘﾃﾝｺｰﾄﾞ",
+          "start": 233,
+          "length": 6,
+          "picture": "X(6)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "gondwana/copybooks/POLMST.cpy:68"
+        },
+        {
+          "level": 5,
+          "name": "PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ",
+          "start": 239,
+          "length": 9,
+          "picture": "9(9)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 9,
+          "source": "gondwana/copybooks/POLMST.cpy:69"
+        },
+        {
+          "level": 5,
+          "name": "PM-ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ",
+          "start": 248,
+          "length": 9,
+          "picture": "9(9)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 9,
+          "source": "gondwana/copybooks/POLMST.cpy:70"
+        },
+        {
+          "level": 5,
+          "name": "PM-ﾊｲﾄｳﾙｲｹｲ",
+          "start": 257,
+          "length": 9,
+          "picture": "9(9)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 9,
+          "source": "gondwana/copybooks/POLMST.cpy:71"
+        },
+        {
+          "level": 5,
+          "name": "PM-ｻｲｼｭｳﾆｭｳｷﾝﾈﾝｹﾞﾂ",
+          "start": 266,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 6,
+          "source": "gondwana/copybooks/POLMST.cpy:72"
+        },
+        {
+          "level": 5,
+          "name": "PM-ｻｲｼｭｳﾆｭｳｷﾝｶﾞｸ",
+          "start": 272,
+          "length": 7,
+          "picture": "9(7)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 7,
+          "source": "gondwana/copybooks/POLMST.cpy:73"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 279,
+          "length": 22,
+          "picture": "X(22)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "filler",
+          "source": "gondwana/copybooks/POLMST.cpy:74"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "REPORT-F",
+      "level": 1,
+      "name": "ﾎｳｺｸ-ｷﾞｮｳ",
+      "start": 1,
+      "length": 100,
+      "picture": "X(100)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "gondwana/programs/GLD060.cbl:39"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ｽﾃｰﾀｽ",
+      "start": 1,
+      "length": 4,
+      "category": "group",
+      "kind": "group",
+      "source": "gondwana/programs/GLD060.cbl:42",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-POLMST-ST",
+          "start": 1,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "WS-POLMST-OK",
+              "values": [
+                "'00'"
+              ],
+              "source": "gondwana/programs/GLD060.cbl:44"
+            },
+            {
+              "name": "WS-POLMST-ｵﾜﾘ",
+              "values": [
+                "'10'"
+              ],
+              "source": "gondwana/programs/GLD060.cbl:45"
+            }
+          ],
+          "source": "gondwana/programs/GLD060.cbl:43"
+        },
+        {
+          "level": 5,
+          "name": "WS-REPORT-ST",
+          "start": 3,
+          "length": 2,
+          "picture": "XX",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "WS-REPORT-OK",
+              "values": [
+                "'00'"
+              ],
+              "source": "gondwana/programs/GLD060.cbl:47"
+            }
+          ],
+          "source": "gondwana/programs/GLD060.cbl:46"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ｺﾏﾝﾄﾞｷﾞｮｳ",
+      "start": 1,
+      "length": 80,
+      "picture": "X(80)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "gondwana/programs/GLD060.cbl:48"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ｴﾗｰﾌｧｲﾙ",
+      "start": 1,
+      "length": 8,
+      "picture": "X(8)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "gondwana/programs/GLD060.cbl:49"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ｴﾗｰｽﾃｰﾀｽ",
+      "start": 1,
+      "length": 2,
+      "picture": "XX",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "gondwana/programs/GLD060.cbl:50"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ｷﾞｮｳﾑﾋﾂﾞｹ",
+      "start": 1,
+      "length": 8,
+      "picture": "9(8)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 8,
+      "source": "gondwana/programs/GLD060.cbl:51"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾌﾞﾝｶｲ",
+      "start": 1,
+      "length": 8,
+      "category": "group",
+      "kind": "group",
+      "redefines": "WS-ｷﾞｮｳﾑﾋﾂﾞｹ",
+      "source": "gondwana/programs/GLD060.cbl:52",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-ｷﾞｮｳﾑ-YYYYMM",
+          "start": 1,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "date",
+          "digits": 6,
+          "source": "gondwana/programs/GLD060.cbl:53"
+        },
+        {
+          "level": 5,
+          "name": "WS-ｷﾞｮｳﾑ-DD",
+          "start": 7,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 2,
+          "source": "gondwana/programs/GLD060.cbl:54"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ",
+      "start": 1,
+      "length": 7,
+      "picture": "X(7)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "gondwana/programs/GLD060.cbl:55"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ﾎｳｺｳ",
+      "start": 1,
+      "length": 1,
+      "picture": "X",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "source": "gondwana/programs/GLD060.cbl:56"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ﾍﾝｶﾝｹｯｶ",
+      "start": 1,
+      "length": 1,
+      "picture": "9",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 1,
+      "source": "gondwana/programs/GLD060.cbl:57"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ﾕｳﾖｶｲｼﾋﾞ",
+      "start": 1,
+      "length": 8,
+      "picture": "9(8)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 8,
+      "source": "gondwana/programs/GLD060.cbl:58"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ﾕｳﾖ-ﾌﾞﾝｶｲ",
+      "start": 1,
+      "length": 8,
+      "category": "group",
+      "kind": "group",
+      "redefines": "WS-ﾕｳﾖｶｲｼﾋﾞ",
+      "source": "gondwana/programs/GLD060.cbl:59",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-ﾕｳﾖ-YYYY",
+          "start": 1,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 4,
+          "source": "gondwana/programs/GLD060.cbl:60"
+        },
+        {
+          "level": 5,
+          "name": "WS-ﾕｳﾖ-MM",
+          "start": 5,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 2,
+          "source": "gondwana/programs/GLD060.cbl:61"
+        },
+        {
+          "level": 5,
+          "name": "WS-ﾕｳﾖ-DD",
+          "start": 7,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 2,
+          "source": "gondwana/programs/GLD060.cbl:62"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ｷｹﾞﾝ",
+      "start": 1,
+      "length": 6,
+      "category": "group",
+      "kind": "group",
+      "source": "gondwana/programs/GLD060.cbl:63",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-ｷｹﾞﾝ-YYYY",
+          "start": 1,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 4,
+          "source": "gondwana/programs/GLD060.cbl:64"
+        },
+        {
+          "level": 5,
+          "name": "WS-ｷｹﾞﾝ-MM",
+          "start": 5,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 2,
+          "source": "gondwana/programs/GLD060.cbl:65"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ｷｹﾞﾝ-YYYYMM",
+      "start": 1,
+      "length": 6,
+      "picture": "9(6)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "date",
+      "digits": 6,
+      "redefines": "WS-ｷｹﾞﾝ",
+      "source": "gondwana/programs/GLD060.cbl:66"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ｹﾝｽｳ",
+      "start": 1,
+      "length": 27,
+      "category": "group",
+      "kind": "group",
+      "source": "gondwana/programs/GLD060.cbl:67",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-ﾕｳﾖｹﾝｽｳ",
+          "start": 1,
+          "length": 7,
+          "picture": "9(7)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 7,
+          "values": [
+            "0"
+          ],
+          "source": "gondwana/programs/GLD060.cbl:68"
+        },
+        {
+          "level": 5,
+          "name": "WS-ｼｯｺｳｹﾝｽｳ",
+          "start": 8,
+          "length": 7,
+          "picture": "9(7)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 7,
+          "values": [
+            "0"
+          ],
+          "source": "gondwana/programs/GLD060.cbl:69"
+        },
+        {
+          "level": 5,
+          "name": "WS-ｼｯｺｳｷﾝｶﾞｸ",
+          "start": 15,
+          "length": 13,
+          "picture": "9(13)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 13,
+          "values": [
+            "0"
+          ],
+          "source": "gondwana/programs/GLD060.cbl:70"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ﾎｳｺｸ",
+      "start": 1,
+      "length": 129,
+      "category": "group",
+      "kind": "group",
+      "source": "gondwana/programs/GLD060.cbl:71",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-ﾋｮｳﾀﾞｲ-ｷﾞｮｳ",
+          "start": 1,
+          "length": 39,
+          "category": "group",
+          "kind": "group",
+          "source": "gondwana/programs/GLD060.cbl:72",
+          "fields": [
+            {
+              "level": 10,
+              "name": "FILLER",
+              "start": 1,
+              "length": 28,
+              "picture": "X(28)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "filler",
+              "values": [
+                "'ゴンドワナ生命  失効処理'"
+              ],
+              "source": "gondwana/programs/GLD060.cbl:73"
+            },
+            {
+              "level": 10,
+              "name": "FILLER",
+              "start": 29,
+              "length": 4,
+              "picture": "X(4)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "filler",
+              "values": [
+                "SPACES"
+              ],
+              "source": "gondwana/programs/GLD060.cbl:75"
+            },
+            {
+              "level": 10,
+              "name": "WS-ﾋｮｳﾀﾞｲ-ﾋﾂﾞｹ",
+              "start": 33,
+              "length": 7,
+              "picture": "X(7)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "text",
+              "source": "gondwana/programs/GLD060.cbl:76"
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "name": "WS-ﾒｲｻｲ-ｷﾞｮｳ",
+          "start": 40,
+          "length": 63,
+          "category": "group",
+          "kind": "group",
+          "source": "gondwana/programs/GLD060.cbl:77",
+          "fields": [
+            {
+              "level": 10,
+              "name": "WS-ﾒｲｻｲ-ｼｮｳｹﾝ",
+              "start": 40,
+              "length": 10,
+              "picture": "X(10)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "text",
+              "source": "gondwana/programs/GLD060.cbl:78"
+            },
+            {
+              "level": 10,
+              "name": "FILLER",
+              "start": 50,
+              "length": 2,
+              "picture": "X(2)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "filler",
+              "values": [
+                "SPACES"
+              ],
+              "source": "gondwana/programs/GLD060.cbl:79"
+            },
+            {
+              "level": 10,
+              "name": "WS-ﾒｲｻｲ-ｼﾒｲ",
+              "start": 52,
+              "length": 20,
+              "picture": "X(20)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "text",
+              "source": "gondwana/programs/GLD060.cbl:80"
+            },
+            {
+              "level": 10,
+              "name": "FILLER",
+              "start": 72,
+              "length": 2,
+              "picture": "X(2)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "filler",
+              "values": [
+                "SPACES"
+              ],
+              "source": "gondwana/programs/GLD060.cbl:81"
+            },
+            {
+              "level": 10,
+              "name": "FILLER",
+              "start": 74,
+              "length": 8,
+              "picture": "X(8)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "filler",
+              "values": [
+                "'猶予開始'"
+              ],
+              "source": "gondwana/programs/GLD060.cbl:82"
+            },
+            {
+              "level": 10,
+              "name": "WS-ﾒｲｻｲ-ﾕｳﾖ",
+              "start": 82,
+              "length": 7,
+              "picture": "X(7)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "text",
+              "source": "gondwana/programs/GLD060.cbl:83"
+            },
+            {
+              "level": 10,
+              "name": "FILLER",
+              "start": 89,
+              "length": 2,
+              "picture": "X(2)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "filler",
+              "values": [
+                "SPACES"
+              ],
+              "source": "gondwana/programs/GLD060.cbl:84"
+            },
+            {
+              "level": 10,
+              "name": "WS-ﾒｲｻｲ-ｹｯｶ",
+              "start": 91,
+              "length": 12,
+              "picture": "X(12)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "text",
+              "source": "gondwana/programs/GLD060.cbl:85"
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "name": "WS-ｹﾝｽｳ-ｷﾞｮｳ",
+          "start": 103,
+          "length": 27,
+          "category": "group",
+          "kind": "group",
+          "source": "gondwana/programs/GLD060.cbl:86",
+          "fields": [
+            {
+              "level": 10,
+              "name": "WS-ｹﾝｽｳ-ﾗﾍﾞﾙ",
+              "start": 103,
+              "length": 16,
+              "picture": "X(16)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "text",
+              "source": "gondwana/programs/GLD060.cbl:87"
+            },
+            {
+              "level": 10,
+              "name": "WS-ｹﾝｽｳ-ｱﾀｲ",
+              "start": 119,
+              "length": 11,
+              "picture": "ZZZ,ZZZ,ZZ9",
+              "usage": "DISPLAY",
+              "category": "numeric-edited",
+              "kind": "edited",
+              "source": "gondwana/programs/GLD060.cbl:88"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "paragraphs": [
+    {
+      "name": "ﾒｲﾝ-RTN",
+      "description": "ﾒｲﾝ-RTN: 準備、マスタ全件の走査、報告、終了。",
+      "source": "gondwana/programs/GLD060.cbl:94",
+      "performs": [
+        {
+          "target": "ｼｮｷ-RTN",
+          "source": "gondwana/programs/GLD060.cbl:95"
+        },
+        {
+          "target": "ｼｮﾘ-RTN",
+          "source": "gondwana/programs/GLD060.cbl:96"
+        },
+        {
+          "target": "ﾎｳｺｸ-RTN",
+          "source": "gondwana/programs/GLD060.cbl:97"
+        },
+        {
+          "target": "ｼｭｳﾘｮｳ-RTN",
+          "source": "gondwana/programs/GLD060.cbl:98"
+        }
+      ],
+      "reads": [
+        "WS-POLMST-ST"
+      ],
+      "writes": [
+        "RETURN-CODE"
+      ]
+    },
+    {
+      "name": "ｼｮｷ-RTN",
+      "description": "ｼｮｷ-RTN: 業務日付とファイル。",
+      "source": "gondwana/programs/GLD060.cbl:105",
+      "performs": [
+        {
+          "target": "ｲｼﾞｮｳ-RTN",
+          "source": "gondwana/programs/GLD060.cbl:120"
+        },
+        {
+          "target": "ｲｼﾞｮｳ-RTN",
+          "source": "gondwana/programs/GLD060.cbl:126"
+        },
+        {
+          "target": "POLMST-ﾖﾐｺﾐ-RTN",
+          "source": "gondwana/programs/GLD060.cbl:132"
+        }
+      ],
+      "performedBy": [
+        "ﾒｲﾝ-RTN"
+      ],
+      "reads": [
+        "WS-ｺﾏﾝﾄﾞｷﾞｮｳ",
+        "WS-ﾎｳｺｳ",
+        "WS-ｷﾞｮｳﾑﾋﾂﾞｹ",
+        "WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ",
+        "WS-ﾍﾝｶﾝｹｯｶ",
+        "WS-POLMST-ST",
+        "WS-REPORT-ST",
+        "WS-ﾋｮｳﾀﾞｲ-ｷﾞｮｳ"
+      ],
+      "writes": [
+        "WS-ｺﾏﾝﾄﾞｷﾞｮｳ",
+        "WS-ｷﾞｮｳﾑﾋﾂﾞｹ",
+        "WS-ﾎｳｺｳ",
+        "WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ",
+        "WS-ﾍﾝｶﾝｹｯｶ",
+        "RETURN-CODE",
+        "WS-ｴﾗｰﾌｧｲﾙ",
+        "WS-ｴﾗｰｽﾃｰﾀｽ",
+        "WS-ﾋｮｳﾀﾞｲ-ﾋﾂﾞｹ",
+        "ﾎｳｺｸ-ｷﾞｮｳ"
+      ]
+    },
+    {
+      "name": "POLMST-ﾖﾐｺﾐ-RTN",
+      "description": "POLMST-ﾖﾐｺﾐ-RTN: マスタの次の契約。",
+      "source": "gondwana/programs/GLD060.cbl:137",
+      "performs": [
+        {
+          "target": "ｲｼﾞｮｳ-RTN",
+          "source": "gondwana/programs/GLD060.cbl:142"
+        }
+      ],
+      "performedBy": [
+        "ｼｮｷ-RTN",
+        "ｼｮﾘ-RTN"
+      ],
+      "reads": [
+        "WS-POLMST-ST"
+      ],
+      "writes": [
+        "PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ",
+        "WS-ｴﾗｰﾌｧｲﾙ",
+        "WS-ｴﾗｰｽﾃｰﾀｽ"
+      ]
+    },
+    {
+      "name": "ｼｮﾘ-RTN",
+      "description": "ｼｮﾘ-RTN: 猶予中の契約の猶予期限を求め、過ぎていれば失効。",
+      "source": "gondwana/programs/GLD060.cbl:148",
+      "performs": [
+        {
+          "target": "ｷｹﾞﾝ-RTN",
+          "source": "gondwana/programs/GLD060.cbl:151"
+        },
+        {
+          "target": "ｼｯｺｳ-RTN",
+          "source": "gondwana/programs/GLD060.cbl:153"
+        },
+        {
+          "target": "ﾒｲｻｲ-RTN",
+          "source": "gondwana/programs/GLD060.cbl:157"
+        },
+        {
+          "target": "POLMST-ﾖﾐｺﾐ-RTN",
+          "source": "gondwana/programs/GLD060.cbl:159"
+        }
+      ],
+      "performedBy": [
+        "ﾒｲﾝ-RTN"
+      ],
+      "reads": [
+        "PM-ｼﾞｮｳﾀｲ",
+        "WS-ﾕｳﾖｹﾝｽｳ",
+        "WS-ｷﾞｮｳﾑ-YYYYMM",
+        "WS-ｷｹﾞﾝ-YYYYMM"
+      ],
+      "writes": [
+        "WS-ﾕｳﾖｹﾝｽｳ",
+        "WS-ﾒｲｻｲ-ｹｯｶ"
+      ]
+    },
+    {
+      "name": "ｷｹﾞﾝ-RTN",
+      "description": "ｷｹﾞﾝ-RTN: 猶予開始月の翌月が猶予期限の月。",
+      "source": "gondwana/programs/GLD060.cbl:164",
+      "performedBy": [
+        "ｼｮﾘ-RTN"
+      ],
+      "reads": [
+        "WS-ﾎｳｺｳ",
+        "WS-ﾕｳﾖｶｲｼﾋﾞ",
+        "PM-ﾕｳﾖｶｲｼﾋﾞ",
+        "WS-ﾍﾝｶﾝｹｯｶ",
+        "WS-ﾕｳﾖ-YYYY",
+        "WS-ﾕｳﾖ-MM",
+        "WS-ｷｹﾞﾝ-MM",
+        "WS-ｷｹﾞﾝ-YYYY"
+      ],
+      "writes": [
+        "WS-ﾎｳｺｳ",
+        "WS-ﾕｳﾖｶｲｼﾋﾞ",
+        "PM-ﾕｳﾖｶｲｼﾋﾞ",
+        "WS-ﾍﾝｶﾝｹｯｶ",
+        "WS-ｷｹﾞﾝ-YYYY",
+        "WS-ｷｹﾞﾝ-MM"
+      ]
+    },
+    {
+      "name": "ｼｯｺｳ-RTN",
+      "description": "ｼｯｺｳ-RTN: 失効にして書き戻す。",
+      "source": "gondwana/programs/GLD060.cbl:180",
+      "performs": [
+        {
+          "target": "ｲｼﾞｮｳ-RTN",
+          "source": "gondwana/programs/GLD060.cbl:187"
+        }
+      ],
+      "performedBy": [
+        "ｼｮﾘ-RTN"
+      ],
+      "reads": [
+        "WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ",
+        "WS-POLMST-ST",
+        "WS-ｼｯｺｳｹﾝｽｳ",
+        "PM-ﾎｹﾝｷﾝｶﾞｸ",
+        "WS-ｼｯｺｳｷﾝｶﾞｸ"
+      ],
+      "writes": [
+        "PM-ｼﾞｮｳﾀｲ",
+        "PM-ｼｯｺｳﾋﾞ",
+        "PM-ｼﾞｮｳﾀｲﾋﾂﾞｹ",
+        "PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ",
+        "WS-ｴﾗｰﾌｧｲﾙ",
+        "WS-ｴﾗｰｽﾃｰﾀｽ",
+        "WS-ｼｯｺｳｹﾝｽｳ",
+        "WS-ｼｯｺｳｷﾝｶﾞｸ",
+        "WS-ﾒｲｻｲ-ｹｯｶ"
+      ]
+    },
+    {
+      "name": "ﾒｲｻｲ-RTN",
+      "description": "ﾒｲｻｲ-RTN: 1件の明細行。",
+      "source": "gondwana/programs/GLD060.cbl:196",
+      "performedBy": [
+        "ｼｮﾘ-RTN"
+      ],
+      "reads": [
+        "PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+        "PM-ｼﾒｲ",
+        "PM-ﾕｳﾖｶｲｼﾋﾞ",
+        "WS-ﾒｲｻｲ-ｷﾞｮｳ"
+      ],
+      "writes": [
+        "WS-ﾒｲｻｲ-ｼｮｳｹﾝ",
+        "WS-ﾒｲｻｲ-ｼﾒｲ",
+        "WS-ﾒｲｻｲ-ﾕｳﾖ",
+        "ﾎｳｺｸ-ｷﾞｮｳ"
+      ]
+    },
+    {
+      "name": "ﾎｳｺｸ-RTN",
+      "description": "ﾎｳｺｸ-RTN: 件数。",
+      "source": "gondwana/programs/GLD060.cbl:205",
+      "performedBy": [
+        "ﾒｲﾝ-RTN"
+      ],
+      "reads": [
+        "WS-ﾕｳﾖｹﾝｽｳ",
+        "WS-ｹﾝｽｳ-ｷﾞｮｳ",
+        "WS-ｼｯｺｳｹﾝｽｳ",
+        "WS-ｼｯｺｳｷﾝｶﾞｸ"
+      ],
+      "writes": [
+        "ﾎｳｺｸ-ｷﾞｮｳ",
+        "WS-ｹﾝｽｳ-ﾗﾍﾞﾙ",
+        "WS-ｹﾝｽｳ-ｱﾀｲ"
+      ]
+    },
+    {
+      "name": "ｼｭｳﾘｮｳ-RTN",
+      "description": "ｼｭｳﾘｮｳ-RTN: ファイルを閉じ、件数を表示する。",
+      "source": "gondwana/programs/GLD060.cbl:221",
+      "performedBy": [
+        "ﾒｲﾝ-RTN"
+      ],
+      "reads": [
+        "WS-ﾕｳﾖｹﾝｽｳ",
+        "WS-ｼｯｺｳｹﾝｽｳ"
+      ]
+    },
+    {
+      "name": "ｲｼﾞｮｳ-RTN",
+      "description": "ｲｼﾞｮｳ-RTN: ファイル異常は 16 で終わる。",
+      "source": "gondwana/programs/GLD060.cbl:228",
+      "performedBy": [
+        "ｼｮｷ-RTN",
+        "POLMST-ﾖﾐｺﾐ-RTN",
+        "ｼｯｺｳ-RTN"
+      ],
+      "reads": [
+        "WS-ｴﾗｰﾌｧｲﾙ",
+        "WS-ｴﾗｰｽﾃｰﾀｽ"
+      ],
+      "writes": [
+        "RETURN-CODE"
+      ]
+    }
+  ],
+  "displays": [
+    {
+      "items": [
+        "'GLD060 日付不正: '",
+        "WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)"
+      ],
+      "paragraph": "ｼｮｷ-RTN",
+      "source": "gondwana/programs/GLD060.cbl:112"
+    },
+    {
+      "items": [
+        "'GLD060 猶予中 '",
+        "WS-ﾕｳﾖｹﾝｽｳ",
+        "' 失効 '",
+        "WS-ｼｯｺｳｹﾝｽｳ"
+      ],
+      "paragraph": "ｼｭｳﾘｮｳ-RTN",
+      "source": "gondwana/programs/GLD060.cbl:223"
+    },
+    {
+      "items": [
+        "'GLD060 ファイル異常 '",
+        "WS-ｴﾗｰﾌｧｲﾙ",
+        "' 状態 '",
+        "WS-ｴﾗｰｽﾃｰﾀｽ"
+      ],
+      "paragraph": "ｲｼﾞｮｳ-RTN",
+      "source": "gondwana/programs/GLD060.cbl:229"
+    }
+  ],
+  "calls": [
+    {
+      "program": "GLC020",
+      "using": [
+        "WS-ﾎｳｺｳ",
+        "WS-ｷﾞｮｳﾑﾋﾂﾞｹ",
+        "WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ",
+        "WS-ﾍﾝｶﾝｹｯｶ"
+      ],
+      "paragraph": "ｼｮｷ-RTN",
+      "source": "gondwana/programs/GLD060.cbl:109"
+    },
+    {
+      "program": "GLC020",
+      "using": [
+        "WS-ﾎｳｺｳ",
+        "WS-ﾕｳﾖｶｲｼﾋﾞ",
+        "PM-ﾕｳﾖｶｲｼﾋﾞ",
+        "WS-ﾍﾝｶﾝｹｯｶ"
+      ],
+      "paragraph": "ｷｹﾞﾝ-RTN",
+      "source": "gondwana/programs/GLD060.cbl:166"
+    }
+  ],
+  "lineage": [
+    {
+      "from": "0",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "ﾒｲﾝ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:99"
+    },
+    {
+      "from": "COMMAND-LINE",
+      "to": "WS-ｺﾏﾝﾄﾞｷﾞｮｳ",
+      "fromStream": true,
+      "paragraph": "ｼｮｷ-RTN",
+      "verb": "ACCEPT",
+      "source": "gondwana/programs/GLD060.cbl:106"
+    },
+    {
+      "from": "WS-ｺﾏﾝﾄﾞｷﾞｮｳ",
+      "to": "WS-ｷﾞｮｳﾑﾋﾂﾞｹ",
+      "paragraph": "ｼｮｷ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:107"
+    },
+    {
+      "from": "'W'",
+      "to": "WS-ﾎｳｺｳ",
+      "fromLiteral": true,
+      "paragraph": "ｼｮｷ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:108"
+    },
+    {
+      "from": "WS-ﾎｳｺｳ",
+      "to": "GLC020",
+      "toCall": true,
+      "arg": 1,
+      "paragraph": "ｼｮｷ-RTN",
+      "verb": "CALL",
+      "source": "gondwana/programs/GLD060.cbl:109"
+    },
+    {
+      "from": "GLC020",
+      "to": "WS-ﾎｳｺｳ",
+      "fromCall": true,
+      "arg": 1,
+      "paragraph": "ｼｮｷ-RTN",
+      "verb": "CALL",
+      "source": "gondwana/programs/GLD060.cbl:109"
+    },
+    {
+      "from": "WS-ｷﾞｮｳﾑﾋﾂﾞｹ",
+      "to": "GLC020",
+      "toCall": true,
+      "arg": 2,
+      "paragraph": "ｼｮｷ-RTN",
+      "verb": "CALL",
+      "source": "gondwana/programs/GLD060.cbl:109"
+    },
+    {
+      "from": "GLC020",
+      "to": "WS-ｷﾞｮｳﾑﾋﾂﾞｹ",
+      "fromCall": true,
+      "arg": 2,
+      "paragraph": "ｼｮｷ-RTN",
+      "verb": "CALL",
+      "source": "gondwana/programs/GLD060.cbl:109"
+    },
+    {
+      "from": "WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ",
+      "to": "GLC020",
+      "toCall": true,
+      "arg": 3,
+      "paragraph": "ｼｮｷ-RTN",
+      "verb": "CALL",
+      "source": "gondwana/programs/GLD060.cbl:109"
+    },
+    {
+      "from": "GLC020",
+      "to": "WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ",
+      "fromCall": true,
+      "arg": 3,
+      "paragraph": "ｼｮｷ-RTN",
+      "verb": "CALL",
+      "source": "gondwana/programs/GLD060.cbl:109"
+    },
+    {
+      "from": "WS-ﾍﾝｶﾝｹｯｶ",
+      "to": "GLC020",
+      "toCall": true,
+      "arg": 4,
+      "paragraph": "ｼｮｷ-RTN",
+      "verb": "CALL",
+      "source": "gondwana/programs/GLD060.cbl:109"
+    },
+    {
+      "from": "GLC020",
+      "to": "WS-ﾍﾝｶﾝｹｯｶ",
+      "fromCall": true,
+      "arg": 4,
+      "paragraph": "ｼｮｷ-RTN",
+      "verb": "CALL",
+      "source": "gondwana/programs/GLD060.cbl:109"
+    },
+    {
+      "from": "WS-ｺﾏﾝﾄﾞｷﾞｮｳ",
+      "to": "SYSOUT",
+      "toStream": true,
+      "paragraph": "ｼｮｷ-RTN",
+      "verb": "DISPLAY",
+      "source": "gondwana/programs/GLD060.cbl:112"
+    },
+    {
+      "from": "8",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "ｼｮｷ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:113"
+    },
+    {
+      "from": "'POLMST'",
+      "to": "WS-ｴﾗｰﾌｧｲﾙ",
+      "fromLiteral": true,
+      "paragraph": "ｼｮｷ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:118"
+    },
+    {
+      "from": "WS-POLMST-ST",
+      "to": "WS-ｴﾗｰｽﾃｰﾀｽ",
+      "paragraph": "ｼｮｷ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:119"
+    },
+    {
+      "from": "'GLD060R'",
+      "to": "WS-ｴﾗｰﾌｧｲﾙ",
+      "fromLiteral": true,
+      "paragraph": "ｼｮｷ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:124"
+    },
+    {
+      "from": "WS-REPORT-ST",
+      "to": "WS-ｴﾗｰｽﾃｰﾀｽ",
+      "paragraph": "ｼｮｷ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:125"
+    },
+    {
+      "from": "WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ",
+      "to": "WS-ﾋｮｳﾀﾞｲ-ﾋﾂﾞｹ",
+      "paragraph": "ｼｮｷ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:128"
+    },
+    {
+      "from": "WS-ﾋｮｳﾀﾞｲ-ｷﾞｮｳ",
+      "to": "ﾎｳｺｸ-ｷﾞｮｳ",
+      "paragraph": "ｼｮｷ-RTN",
+      "verb": "WRITE",
+      "source": "gondwana/programs/GLD060.cbl:129"
+    },
+    {
+      "from": "ﾎｳｺｸ-ｷﾞｮｳ",
+      "to": "REPORT-F",
+      "toFile": true,
+      "paragraph": "ｼｮｷ-RTN",
+      "verb": "WRITE",
+      "source": "gondwana/programs/GLD060.cbl:129"
+    },
+    {
+      "from": "SPACES",
+      "to": "ﾎｳｺｸ-ｷﾞｮｳ",
+      "fromLiteral": true,
+      "paragraph": "ｼｮｷ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:130"
+    },
+    {
+      "from": "ﾎｳｺｸ-ｷﾞｮｳ",
+      "to": "REPORT-F",
+      "toFile": true,
+      "paragraph": "ｼｮｷ-RTN",
+      "verb": "WRITE",
+      "source": "gondwana/programs/GLD060.cbl:131"
+    },
+    {
+      "from": "POLMST-F",
+      "to": "PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ",
+      "fromFile": true,
+      "paragraph": "POLMST-ﾖﾐｺﾐ-RTN",
+      "verb": "READ",
+      "source": "gondwana/programs/GLD060.cbl:138"
+    },
+    {
+      "from": "'POLMST'",
+      "to": "WS-ｴﾗｰﾌｧｲﾙ",
+      "fromLiteral": true,
+      "paragraph": "POLMST-ﾖﾐｺﾐ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:140"
+    },
+    {
+      "from": "WS-POLMST-ST",
+      "to": "WS-ｴﾗｰｽﾃｰﾀｽ",
+      "paragraph": "POLMST-ﾖﾐｺﾐ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:141"
+    },
+    {
+      "from": "1",
+      "to": "WS-ﾕｳﾖｹﾝｽｳ",
+      "fromLiteral": true,
+      "paragraph": "ｼｮﾘ-RTN",
+      "verb": "ADD",
+      "source": "gondwana/programs/GLD060.cbl:150"
+    },
+    {
+      "from": "'猶予中'",
+      "to": "WS-ﾒｲｻｲ-ｹｯｶ",
+      "fromLiteral": true,
+      "paragraph": "ｼｮﾘ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:155"
+    },
+    {
+      "from": "'S'",
+      "to": "WS-ﾎｳｺｳ",
+      "fromLiteral": true,
+      "paragraph": "ｷｹﾞﾝ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:165"
+    },
+    {
+      "from": "WS-ﾎｳｺｳ",
+      "to": "GLC020",
+      "toCall": true,
+      "arg": 1,
+      "paragraph": "ｷｹﾞﾝ-RTN",
+      "verb": "CALL",
+      "source": "gondwana/programs/GLD060.cbl:166"
+    },
+    {
+      "from": "GLC020",
+      "to": "WS-ﾎｳｺｳ",
+      "fromCall": true,
+      "arg": 1,
+      "paragraph": "ｷｹﾞﾝ-RTN",
+      "verb": "CALL",
+      "source": "gondwana/programs/GLD060.cbl:166"
+    },
+    {
+      "from": "WS-ﾕｳﾖｶｲｼﾋﾞ",
+      "to": "GLC020",
+      "toCall": true,
+      "arg": 2,
+      "paragraph": "ｷｹﾞﾝ-RTN",
+      "verb": "CALL",
+      "source": "gondwana/programs/GLD060.cbl:166"
+    },
+    {
+      "from": "GLC020",
+      "to": "WS-ﾕｳﾖｶｲｼﾋﾞ",
+      "fromCall": true,
+      "arg": 2,
+      "paragraph": "ｷｹﾞﾝ-RTN",
+      "verb": "CALL",
+      "source": "gondwana/programs/GLD060.cbl:166"
+    },
+    {
+      "from": "PM-ﾕｳﾖｶｲｼﾋﾞ",
+      "to": "GLC020",
+      "toCall": true,
+      "arg": 3,
+      "paragraph": "ｷｹﾞﾝ-RTN",
+      "verb": "CALL",
+      "source": "gondwana/programs/GLD060.cbl:166"
+    },
+    {
+      "from": "GLC020",
+      "to": "PM-ﾕｳﾖｶｲｼﾋﾞ",
+      "fromCall": true,
+      "arg": 3,
+      "paragraph": "ｷｹﾞﾝ-RTN",
+      "verb": "CALL",
+      "source": "gondwana/programs/GLD060.cbl:166"
+    },
+    {
+      "from": "WS-ﾍﾝｶﾝｹｯｶ",
+      "to": "GLC020",
+      "toCall": true,
+      "arg": 4,
+      "paragraph": "ｷｹﾞﾝ-RTN",
+      "verb": "CALL",
+      "source": "gondwana/programs/GLD060.cbl:166"
+    },
+    {
+      "from": "GLC020",
+      "to": "WS-ﾍﾝｶﾝｹｯｶ",
+      "fromCall": true,
+      "arg": 4,
+      "paragraph": "ｷｹﾞﾝ-RTN",
+      "verb": "CALL",
+      "source": "gondwana/programs/GLD060.cbl:166"
+    },
+    {
+      "from": "WS-ﾕｳﾖ-YYYY",
+      "to": "WS-ｷｹﾞﾝ-YYYY",
+      "paragraph": "ｷｹﾞﾝ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:168"
+    },
+    {
+      "from": "WS-ﾕｳﾖ-MM",
+      "to": "WS-ｷｹﾞﾝ-MM",
+      "paragraph": "ｷｹﾞﾝ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:169"
+    },
+    {
+      "from": "1",
+      "to": "WS-ｷｹﾞﾝ-MM",
+      "fromLiteral": true,
+      "paragraph": "ｷｹﾞﾝ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:171"
+    },
+    {
+      "from": "1",
+      "to": "WS-ｷｹﾞﾝ-YYYY",
+      "fromLiteral": true,
+      "paragraph": "ｷｹﾞﾝ-RTN",
+      "verb": "ADD",
+      "source": "gondwana/programs/GLD060.cbl:172"
+    },
+    {
+      "from": "1",
+      "to": "WS-ｷｹﾞﾝ-MM",
+      "fromLiteral": true,
+      "paragraph": "ｷｹﾞﾝ-RTN",
+      "verb": "ADD",
+      "source": "gondwana/programs/GLD060.cbl:174"
+    },
+    {
+      "from": "condition PM-ｼｯｺｳ",
+      "to": "PM-ｼﾞｮｳﾀｲ",
+      "fromLiteral": true,
+      "paragraph": "ｼｯｺｳ-RTN",
+      "verb": "SET",
+      "source": "gondwana/programs/GLD060.cbl:181"
+    },
+    {
+      "from": "WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ",
+      "to": "PM-ｼｯｺｳﾋﾞ",
+      "paragraph": "ｼｯｺｳ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:182"
+    },
+    {
+      "from": "WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ",
+      "to": "PM-ｼﾞｮｳﾀｲﾋﾂﾞｹ",
+      "paragraph": "ｼｯｺｳ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:182"
+    },
+    {
+      "from": "PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ",
+      "to": "POLMST-F",
+      "toFile": true,
+      "paragraph": "ｼｯｺｳ-RTN",
+      "verb": "REWRITE",
+      "source": "gondwana/programs/GLD060.cbl:183"
+    },
+    {
+      "from": "'POLMST'",
+      "to": "WS-ｴﾗｰﾌｧｲﾙ",
+      "fromLiteral": true,
+      "paragraph": "ｼｯｺｳ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:185"
+    },
+    {
+      "from": "WS-POLMST-ST",
+      "to": "WS-ｴﾗｰｽﾃｰﾀｽ",
+      "paragraph": "ｼｯｺｳ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:186"
+    },
+    {
+      "from": "1",
+      "to": "WS-ｼｯｺｳｹﾝｽｳ",
+      "fromLiteral": true,
+      "paragraph": "ｼｯｺｳ-RTN",
+      "verb": "ADD",
+      "source": "gondwana/programs/GLD060.cbl:189"
+    },
+    {
+      "from": "PM-ﾎｹﾝｷﾝｶﾞｸ",
+      "to": "WS-ｼｯｺｳｷﾝｶﾞｸ",
+      "paragraph": "ｼｯｺｳ-RTN",
+      "verb": "ADD",
+      "source": "gondwana/programs/GLD060.cbl:190"
+    },
+    {
+      "from": "'失効'",
+      "to": "WS-ﾒｲｻｲ-ｹｯｶ",
+      "fromLiteral": true,
+      "paragraph": "ｼｯｺｳ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:191"
+    },
+    {
+      "from": "PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+      "to": "WS-ﾒｲｻｲ-ｼｮｳｹﾝ",
+      "paragraph": "ﾒｲｻｲ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:197"
+    },
+    {
+      "from": "PM-ｼﾒｲ",
+      "to": "WS-ﾒｲｻｲ-ｼﾒｲ",
+      "paragraph": "ﾒｲｻｲ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:198"
+    },
+    {
+      "from": "PM-ﾕｳﾖｶｲｼﾋﾞ",
+      "to": "WS-ﾒｲｻｲ-ﾕｳﾖ",
+      "paragraph": "ﾒｲｻｲ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:199"
+    },
+    {
+      "from": "WS-ﾒｲｻｲ-ｷﾞｮｳ",
+      "to": "ﾎｳｺｸ-ｷﾞｮｳ",
+      "paragraph": "ﾒｲｻｲ-RTN",
+      "verb": "WRITE",
+      "source": "gondwana/programs/GLD060.cbl:200"
+    },
+    {
+      "from": "ﾎｳｺｸ-ｷﾞｮｳ",
+      "to": "REPORT-F",
+      "toFile": true,
+      "paragraph": "ﾒｲｻｲ-RTN",
+      "verb": "WRITE",
+      "source": "gondwana/programs/GLD060.cbl:200"
+    },
+    {
+      "from": "SPACES",
+      "to": "ﾎｳｺｸ-ｷﾞｮｳ",
+      "fromLiteral": true,
+      "paragraph": "ﾎｳｺｸ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:206"
+    },
+    {
+      "from": "ﾎｳｺｸ-ｷﾞｮｳ",
+      "to": "REPORT-F",
+      "toFile": true,
+      "paragraph": "ﾎｳｺｸ-RTN",
+      "verb": "WRITE",
+      "source": "gondwana/programs/GLD060.cbl:207"
+    },
+    {
+      "from": "'猶予中件数'",
+      "to": "WS-ｹﾝｽｳ-ﾗﾍﾞﾙ",
+      "fromLiteral": true,
+      "paragraph": "ﾎｳｺｸ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:208"
+    },
+    {
+      "from": "WS-ﾕｳﾖｹﾝｽｳ",
+      "to": "WS-ｹﾝｽｳ-ｱﾀｲ",
+      "paragraph": "ﾎｳｺｸ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:209"
+    },
+    {
+      "from": "WS-ｹﾝｽｳ-ｷﾞｮｳ",
+      "to": "ﾎｳｺｸ-ｷﾞｮｳ",
+      "paragraph": "ﾎｳｺｸ-RTN",
+      "verb": "WRITE",
+      "source": "gondwana/programs/GLD060.cbl:210"
+    },
+    {
+      "from": "ﾎｳｺｸ-ｷﾞｮｳ",
+      "to": "REPORT-F",
+      "toFile": true,
+      "paragraph": "ﾎｳｺｸ-RTN",
+      "verb": "WRITE",
+      "source": "gondwana/programs/GLD060.cbl:210"
+    },
+    {
+      "from": "'失効件数'",
+      "to": "WS-ｹﾝｽｳ-ﾗﾍﾞﾙ",
+      "fromLiteral": true,
+      "paragraph": "ﾎｳｺｸ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:211"
+    },
+    {
+      "from": "WS-ｼｯｺｳｹﾝｽｳ",
+      "to": "WS-ｹﾝｽｳ-ｱﾀｲ",
+      "paragraph": "ﾎｳｺｸ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:212"
+    },
+    {
+      "from": "WS-ｹﾝｽｳ-ｷﾞｮｳ",
+      "to": "ﾎｳｺｸ-ｷﾞｮｳ",
+      "paragraph": "ﾎｳｺｸ-RTN",
+      "verb": "WRITE",
+      "source": "gondwana/programs/GLD060.cbl:213"
+    },
+    {
+      "from": "ﾎｳｺｸ-ｷﾞｮｳ",
+      "to": "REPORT-F",
+      "toFile": true,
+      "paragraph": "ﾎｳｺｸ-RTN",
+      "verb": "WRITE",
+      "source": "gondwana/programs/GLD060.cbl:213"
+    },
+    {
+      "from": "'失効保険金額'",
+      "to": "WS-ｹﾝｽｳ-ﾗﾍﾞﾙ",
+      "fromLiteral": true,
+      "paragraph": "ﾎｳｺｸ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:214"
+    },
+    {
+      "from": "WS-ｼｯｺｳｷﾝｶﾞｸ",
+      "to": "WS-ｹﾝｽｳ-ｱﾀｲ",
+      "paragraph": "ﾎｳｺｸ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:215"
+    },
+    {
+      "from": "WS-ｹﾝｽｳ-ｷﾞｮｳ",
+      "to": "ﾎｳｺｸ-ｷﾞｮｳ",
+      "paragraph": "ﾎｳｺｸ-RTN",
+      "verb": "WRITE",
+      "source": "gondwana/programs/GLD060.cbl:216"
+    },
+    {
+      "from": "ﾎｳｺｸ-ｷﾞｮｳ",
+      "to": "REPORT-F",
+      "toFile": true,
+      "paragraph": "ﾎｳｺｸ-RTN",
+      "verb": "WRITE",
+      "source": "gondwana/programs/GLD060.cbl:216"
+    },
+    {
+      "from": "WS-ﾕｳﾖｹﾝｽｳ",
+      "to": "SYSOUT",
+      "toStream": true,
+      "paragraph": "ｼｭｳﾘｮｳ-RTN",
+      "verb": "DISPLAY",
+      "source": "gondwana/programs/GLD060.cbl:223"
+    },
+    {
+      "from": "WS-ｼｯｺｳｹﾝｽｳ",
+      "to": "SYSOUT",
+      "toStream": true,
+      "paragraph": "ｼｭｳﾘｮｳ-RTN",
+      "verb": "DISPLAY",
+      "source": "gondwana/programs/GLD060.cbl:223"
+    },
+    {
+      "from": "WS-ｴﾗｰﾌｧｲﾙ",
+      "to": "SYSOUT",
+      "toStream": true,
+      "paragraph": "ｲｼﾞｮｳ-RTN",
+      "verb": "DISPLAY",
+      "source": "gondwana/programs/GLD060.cbl:229"
+    },
+    {
+      "from": "WS-ｴﾗｰｽﾃｰﾀｽ",
+      "to": "SYSOUT",
+      "toStream": true,
+      "paragraph": "ｲｼﾞｮｳ-RTN",
+      "verb": "DISPLAY",
+      "source": "gondwana/programs/GLD060.cbl:229"
+    },
+    {
+      "from": "16",
+      "to": "RETURN-CODE",
+      "fromLiteral": true,
+      "paragraph": "ｲｼﾞｮｳ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLD060.cbl:231"
+    }
+  ],
+  "outputs": [
+    {
+      "file": "REPORT-F",
+      "record": "ﾎｳｺｸ-ｷﾞｮｳ",
+      "fields": [
+        {
+          "name": "ﾎｳｺｸ-ｷﾞｮｳ",
+          "start": 1,
+          "length": 100,
+          "origins": [
+            "literal SPACES"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "POLMST-F",
+      "record": "PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ",
+      "fields": [
+        {
+          "name": "PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+          "start": 1,
+          "length": 10,
+          "origins": [
+            "file POLMST-F PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ"
+          ]
+        },
+        {
+          "name": "PM-ｼﾞｮｳﾀｲ",
+          "start": 11,
+          "length": 1,
+          "origins": [
+            "literal condition PM-ｼｯｺｳ"
+          ]
+        },
+        {
+          "name": "PM-ｼｮｳﾋﾝ",
+          "start": 12,
+          "length": 2,
+          "origins": [
+            "file POLMST-F PM-ｼｮｳﾋﾝ"
+          ]
+        },
+        {
+          "name": "PM-ﾎｹﾝｷﾝｶﾞｸ",
+          "start": 14,
+          "length": 9,
+          "origins": [
+            "file POLMST-F PM-ﾎｹﾝｷﾝｶﾞｸ"
+          ]
+        },
+        {
+          "name": "PM-ﾎｹﾝﾘｮｳ",
+          "start": 23,
+          "length": 7,
+          "origins": [
+            "file POLMST-F PM-ﾎｹﾝﾘｮｳ"
+          ]
+        },
+        {
+          "name": "PM-ﾊﾗｲｺﾐﾎｳﾎｳ",
+          "start": 30,
+          "length": 1,
+          "origins": [
+            "file POLMST-F PM-ﾊﾗｲｺﾐﾎｳﾎｳ"
+          ]
+        },
+        {
+          "name": "PM-ｹｲﾔｸﾋﾞ",
+          "start": 31,
+          "length": 7,
+          "origins": [
+            "file POLMST-F PM-ｹｲﾔｸﾋﾞ"
+          ]
+        },
+        {
+          "name": "PM-ﾎｹﾝｷｶﾝ",
+          "start": 38,
+          "length": 2,
+          "origins": [
+            "file POLMST-F PM-ﾎｹﾝｷｶﾝ"
+          ]
+        },
+        {
+          "name": "PM-ﾏﾝｷﾋﾞ",
+          "start": 40,
+          "length": 7,
+          "origins": [
+            "file POLMST-F PM-ﾏﾝｷﾋﾞ"
+          ]
+        },
+        {
+          "name": "PM-ｹｲｶﾈﾝｽｳ",
+          "start": 47,
+          "length": 2,
+          "origins": [
+            "file POLMST-F PM-ｹｲｶﾈﾝｽｳ"
+          ]
+        },
+        {
+          "name": "PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ",
+          "start": 49,
+          "length": 6,
+          "origins": [
+            "file POLMST-F PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ"
+          ]
+        },
+        {
+          "name": "PM-ﾐﾉｳｶｲｽｳ",
+          "start": 55,
+          "length": 2,
+          "origins": [
+            "file POLMST-F PM-ﾐﾉｳｶｲｽｳ"
+          ]
+        },
+        {
+          "name": "PM-ﾕｳﾖｶｲｼﾋﾞ",
+          "start": 57,
+          "length": 7,
+          "origins": [
+            "call GLC020 argument 3 PM-ﾕｳﾖｶｲｼﾋﾞ",
+            "file POLMST-F PM-ﾕｳﾖｶｲｼﾋﾞ"
+          ]
+        },
+        {
+          "name": "PM-ｼｯｺｳﾋﾞ",
+          "start": 64,
+          "length": 7,
+          "origins": [
+            "call GLC020 argument 3 WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ"
+          ]
+        },
+        {
+          "name": "PM-ｼﾞｮｳﾀｲﾋﾂﾞｹ",
+          "start": 71,
+          "length": 7,
+          "origins": [
+            "call GLC020 argument 3 WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ"
+          ]
+        },
+        {
+          "name": "PM-ｼﾒｲ",
+          "start": 78,
+          "length": 20,
+          "origins": [
+            "file POLMST-F PM-ｼﾒｲ"
+          ]
+        },
+        {
+          "name": "PM-ｼﾒｲｶﾅ",
+          "start": 98,
+          "length": 20,
+          "origins": [
+            "file POLMST-F PM-ｼﾒｲｶﾅ"
+          ]
+        },
+        {
+          "name": "PM-ｾｲﾈﾝｶﾞｯﾋﾟ",
+          "start": 118,
+          "length": 7,
+          "origins": [
+            "file POLMST-F PM-ｾｲﾈﾝｶﾞｯﾋﾟ"
+          ]
+        },
+        {
+          "name": "PM-ｾｲﾍﾞﾂ",
+          "start": 125,
+          "length": 1,
+          "origins": [
+            "file POLMST-F PM-ｾｲﾍﾞﾂ"
+          ]
+        },
+        {
+          "name": "PM-ｶﾆｭｳﾈﾝﾚｲ",
+          "start": 126,
+          "length": 2,
+          "origins": [
+            "file POLMST-F PM-ｶﾆｭｳﾈﾝﾚｲ"
+          ]
+        },
+        {
+          "name": "PM-ｼﾞｭｳｼｮ",
+          "start": 128,
+          "length": 40,
+          "origins": [
+            "file POLMST-F PM-ｼﾞｭｳｼｮ"
+          ]
+        },
+        {
+          "name": "PM-ｳｹﾄﾘﾆﾝ",
+          "start": 168,
+          "length": 20,
+          "origins": [
+            "file POLMST-F PM-ｳｹﾄﾘﾆﾝ"
+          ]
+        },
+        {
+          "name": "PM-ｷﾞﾝｺｳｺｰﾄﾞ",
+          "start": 188,
+          "length": 4,
+          "origins": [
+            "file POLMST-F PM-ｷﾞﾝｺｳｺｰﾄﾞ"
+          ]
+        },
+        {
+          "name": "PM-ｼﾃﾝｺｰﾄﾞ",
+          "start": 192,
+          "length": 3,
+          "origins": [
+            "file POLMST-F PM-ｼﾃﾝｺｰﾄﾞ"
+          ]
+        },
+        {
+          "name": "PM-ﾖｷﾝｼｭﾓｸ",
+          "start": 195,
+          "length": 1,
+          "origins": [
+            "file POLMST-F PM-ﾖｷﾝｼｭﾓｸ"
+          ]
+        },
+        {
+          "name": "PM-ｺｳｻﾞﾊﾞﾝｺﾞｳ",
+          "start": 196,
+          "length": 7,
+          "origins": [
+            "file POLMST-F PM-ｺｳｻﾞﾊﾞﾝｺﾞｳ"
+          ]
+        },
+        {
+          "name": "PM-ｺｳｻﾞﾒｲｷﾞ",
+          "start": 203,
+          "length": 30,
+          "origins": [
+            "file POLMST-F PM-ｺｳｻﾞﾒｲｷﾞ"
+          ]
+        },
+        {
+          "name": "PM-ﾀﾞｲﾘﾃﾝｺｰﾄﾞ",
+          "start": 233,
+          "length": 6,
+          "origins": [
+            "file POLMST-F PM-ﾀﾞｲﾘﾃﾝｺｰﾄﾞ"
+          ]
+        },
+        {
+          "name": "PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ",
+          "start": 239,
+          "length": 9,
+          "origins": [
+            "file POLMST-F PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ"
+          ]
+        },
+        {
+          "name": "PM-ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ",
+          "start": 248,
+          "length": 9,
+          "origins": [
+            "file POLMST-F PM-ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ"
+          ]
+        },
+        {
+          "name": "PM-ﾊｲﾄｳﾙｲｹｲ",
+          "start": 257,
+          "length": 9,
+          "origins": [
+            "file POLMST-F PM-ﾊｲﾄｳﾙｲｹｲ"
+          ]
+        },
+        {
+          "name": "PM-ｻｲｼｭｳﾆｭｳｷﾝﾈﾝｹﾞﾂ",
+          "start": 266,
+          "length": 6,
+          "origins": [
+            "file POLMST-F PM-ｻｲｼｭｳﾆｭｳｷﾝﾈﾝｹﾞﾂ"
+          ]
+        },
+        {
+          "name": "PM-ｻｲｼｭｳﾆｭｳｷﾝｶﾞｸ",
+          "start": 272,
+          "length": 7,
+          "origins": [
+            "file POLMST-F PM-ｻｲｼｭｳﾆｭｳｷﾝｶﾞｸ"
+          ]
+        }
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "file": "POLMST-F",
+      "record": "PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ",
+      "fields": [
+        {
+          "name": "PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+          "start": 1,
+          "length": 10,
+          "reaches": [
+            "WS-ﾒｲｻｲ-ｼｮｳｹﾝ",
+            "ﾎｳｺｸ-ｷﾞｮｳ",
+            "file POLMST-F",
+            "file REPORT-F"
+          ]
+        },
+        {
+          "name": "PM-ｼﾞｮｳﾀｲ",
+          "start": 11,
+          "length": 1,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ｼｮｳﾋﾝ",
+          "start": 12,
+          "length": 2,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ﾎｹﾝｷﾝｶﾞｸ",
+          "start": 14,
+          "length": 9,
+          "reaches": [
+            "WS-ｼｯｺｳｷﾝｶﾞｸ",
+            "WS-ｹﾝｽｳ-ｱﾀｲ",
+            "ﾎｳｺｸ-ｷﾞｮｳ",
+            "file POLMST-F",
+            "file REPORT-F"
+          ]
+        },
+        {
+          "name": "PM-ﾎｹﾝﾘｮｳ",
+          "start": 23,
+          "length": 7,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ﾊﾗｲｺﾐﾎｳﾎｳ",
+          "start": 30,
+          "length": 1,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ｹｲﾔｸﾋﾞ",
+          "start": 31,
+          "length": 7,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ﾎｹﾝｷｶﾝ",
+          "start": 38,
+          "length": 2,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ﾏﾝｷﾋﾞ",
+          "start": 40,
+          "length": 7,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ｹｲｶﾈﾝｽｳ",
+          "start": 47,
+          "length": 2,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ",
+          "start": 49,
+          "length": 6,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ﾐﾉｳｶｲｽｳ",
+          "start": 55,
+          "length": 2,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ﾕｳﾖｶｲｼﾋﾞ",
+          "start": 57,
+          "length": 7,
+          "reaches": [
+            "WS-ﾒｲｻｲ-ﾕｳﾖ",
+            "ﾎｳｺｸ-ｷﾞｮｳ",
+            "file POLMST-F",
+            "file REPORT-F"
+          ]
+        },
+        {
+          "name": "PM-ｼｯｺｳﾋﾞ",
+          "start": 64,
+          "length": 7,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ｼﾞｮｳﾀｲﾋﾂﾞｹ",
+          "start": 71,
+          "length": 7,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ｼﾒｲ",
+          "start": 78,
+          "length": 20,
+          "reaches": [
+            "WS-ﾒｲｻｲ-ｼﾒｲ",
+            "ﾎｳｺｸ-ｷﾞｮｳ",
+            "file POLMST-F",
+            "file REPORT-F"
+          ]
+        },
+        {
+          "name": "PM-ｼﾒｲｶﾅ",
+          "start": 98,
+          "length": 20,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ｾｲﾈﾝｶﾞｯﾋﾟ",
+          "start": 118,
+          "length": 7,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ｾｲﾍﾞﾂ",
+          "start": 125,
+          "length": 1,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ｶﾆｭｳﾈﾝﾚｲ",
+          "start": 126,
+          "length": 2,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ｼﾞｭｳｼｮ",
+          "start": 128,
+          "length": 40,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ｳｹﾄﾘﾆﾝ",
+          "start": 168,
+          "length": 20,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ｷﾞﾝｺｳｺｰﾄﾞ",
+          "start": 188,
+          "length": 4,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ｼﾃﾝｺｰﾄﾞ",
+          "start": 192,
+          "length": 3,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ﾖｷﾝｼｭﾓｸ",
+          "start": 195,
+          "length": 1,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ｺｳｻﾞﾊﾞﾝｺﾞｳ",
+          "start": 196,
+          "length": 7,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ｺｳｻﾞﾒｲｷﾞ",
+          "start": 203,
+          "length": 30,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ﾀﾞｲﾘﾃﾝｺｰﾄﾞ",
+          "start": 233,
+          "length": 6,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ",
+          "start": 239,
+          "length": 9,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ",
+          "start": 248,
+          "length": 9,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ﾊｲﾄｳﾙｲｹｲ",
+          "start": 257,
+          "length": 9,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ｻｲｼｭｳﾆｭｳｷﾝﾈﾝｹﾞﾂ",
+          "start": 266,
+          "length": 6,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        },
+        {
+          "name": "PM-ｻｲｼｭｳﾆｭｳｷﾝｶﾞｸ",
+          "start": 272,
+          "length": 7,
+          "reaches": [
+            "file POLMST-F"
+          ]
+        }
+      ]
+    }
+  ]
+}

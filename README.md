@@ -50,9 +50,9 @@ Everything is a make target, and plain `make` lists them. You need GnuCOBOL 3.2 
 
 | Target | What it does | Where to look |
 | --- | --- | --- |
-| `make blueprints` | Regenerates the survey of both specimens | [blueprints/pangaea/](blueprints/pangaea/README.md), [blueprints/laurasia/](blueprints/laurasia/README.md) |
-| `make explore-pangaea`, `make explore-laurasia` | The same analysis as a web app: every job, step, dataset, program, paragraph and field a page, and a field's values followed across programs on the diagrams | <http://127.0.0.1:1192/> |
-| `make oracle` | Finds, for each program, input data that reaches the rules of its decision tables, by running it; replays the batches on those cases | [oracle/pangaea/](oracle/pangaea/README.md), [oracle/laurasia/](oracle/laurasia/README.md) |
+| `make blueprints` | Regenerates the survey of the three specimens | [blueprints/pangaea/](blueprints/pangaea/README.md), [blueprints/laurasia/](blueprints/laurasia/README.md), [blueprints/gondwana/](blueprints/gondwana/README.md) |
+| `make explore-pangaea`, `make explore-laurasia`, `make explore-gondwana` | The same analysis as a web app: every job, step, dataset, program, paragraph and field a page, and a field's values followed across programs on the diagrams | <http://127.0.0.1:1192/> |
+| `make oracle` | Finds, for each program of the first two specimens, input data that reaches the rules of its decision tables, by running it; replays the batches on those cases | [oracle/pangaea/](oracle/pangaea/README.md), [oracle/laurasia/](oracle/laurasia/README.md) |
 
 ### Checks
 
@@ -80,9 +80,9 @@ Everything is a make target, and plain `make` lists them. You need GnuCOBOL 3.2 
 | | |
 | --- | --- |
 | Specimens | 3, in three dialects: 46 programs, about 10,000 lines of COBOL, 41 copybooks, 4 jobs in JCL, 5 shell scripts and 7 batch files |
-| Blueprints | 100 pages and 42 diagrams, regenerated and compared by `make ci` |
-| Decision rules | 498, of which 224 recorded cases reach 468; 14 are marked with the reason the search cannot reach them, 16 are left |
-| Cobolith | 0.7.0: four dialects, and 433 of the 459 programs of NIST's COBOL-85 test suite read |
+| Blueprints | 153 pages and 63 diagrams, regenerated and compared by `make ci` |
+| Decision rules | 498 in the bank and the card processor, of which 224 recorded cases reach 468; 14 are marked with the reason the search cannot reach them, 16 are left. Gondwana's 473 wait for the oracle |
+| Cobolith | 0.8.1: four dialects, the Report Writer, and 439 of the 459 programs of NIST's COBOL-85 test suite read |
 
 ## A quick tour
 
@@ -92,7 +92,7 @@ Everything is a make target, and plain `make` lists them. You need GnuCOBOL 3.2 
 4. `make console`, then open an account, a day's jobs, and **Compare**.
 5. `make simulate` from another terminal: the **Online** page fills with authorizations. Run a day from the console: the channel closes for the batch, and the next morning the purchases and withdrawals are in the master.
 6. Read a blueprint: [TXPOST](blueprints/pangaea/programs/TXPOST.md), its [decision tables](blueprints/pangaea/rules/TXPOST.md), and the [DAILY job](blueprints/pangaea/jobs/DAILY.md).
-7. `make explore-pangaea`: search for `AM-BALANCE`, open it in TXPOST, and follow its values back to the files that come from outside.
+7. `make explore-pangaea`: search for `AM-BALANCE`, open it in TXPOST, and follow its values back to the files that come from outside. `make explore-gondwana`: the same, in Japanese, with the Report Writer's lines among the records.
 8. Read an oracle case: [TXPOST's](oracle/pangaea/TXPOST/README.md), rule by rule.
 9. `make ci`.
 

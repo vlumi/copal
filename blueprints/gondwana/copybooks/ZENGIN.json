@@ -1,0 +1,532 @@
+{
+  "copybook": "ZENGIN",
+  "source": "gondwana/copybooks/ZENGIN.cpy",
+  "description": [
+    "ZENGIN: 口座振替ファイル レコード (120バイト、固定長)",
+    "",
+    "収納代行に送る振替依頼 PRMREQ.YYYYMM.DAT と、戻ってくる",
+    "振替結果 PRMRES.YYYYMMDD.DAT に共通の、銀行間で交換する",
+    "レイアウト: ヘッダ、データ、件数と金額のトレーラ、",
+    "エンドの4種で、先頭1バイトのデータ区分で区別する。",
+    "レコード区切りなし。名義は半角カナ。",
+    "振替結果は依頼では空白、結果で埋まる。",
+    "",
+    "変更履歴",
+    "日付       担当 変更",
+    "2003-10-06 MS   GL-0310 初版。"
+  ],
+  "records": [
+    {
+      "level": 1,
+      "name": "ZG-ﾌﾘｶｴ-ﾚｺｰﾄﾞ",
+      "start": 1,
+      "length": 120,
+      "category": "group",
+      "kind": "group",
+      "source": "gondwana/copybooks/ZENGIN.cpy:15",
+      "fields": [
+        {
+          "level": 5,
+          "name": "ZG-ﾃﾞｰﾀｸﾌﾞﾝ",
+          "start": 1,
+          "length": 1,
+          "picture": "9",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "code",
+          "digits": 1,
+          "conditions": [
+            {
+              "name": "ZG-ﾍｯﾀﾞ",
+              "values": [
+                "1"
+              ],
+              "source": "gondwana/copybooks/ZENGIN.cpy:17"
+            },
+            {
+              "name": "ZG-ﾃﾞｰﾀ",
+              "values": [
+                "2"
+              ],
+              "source": "gondwana/copybooks/ZENGIN.cpy:18"
+            },
+            {
+              "name": "ZG-ﾄﾚｰﾗ",
+              "values": [
+                "8"
+              ],
+              "source": "gondwana/copybooks/ZENGIN.cpy:19"
+            },
+            {
+              "name": "ZG-ｴﾝﾄﾞ",
+              "values": [
+                "9"
+              ],
+              "source": "gondwana/copybooks/ZENGIN.cpy:20"
+            }
+          ],
+          "source": "gondwana/copybooks/ZENGIN.cpy:16"
+        },
+        {
+          "level": 5,
+          "name": "ZG-ﾍｯﾀﾞﾌﾞ",
+          "start": 2,
+          "length": 119,
+          "category": "group",
+          "kind": "group",
+          "redefinedBy": [
+            "ZG-ﾃﾞｰﾀﾌﾞ",
+            "ZG-ﾄﾚｰﾗﾌﾞ"
+          ],
+          "source": "gondwana/copybooks/ZENGIN.cpy:21",
+          "fields": [
+            {
+              "level": 10,
+              "name": "ZG-H-ｼｭﾍﾞﾂｺｰﾄﾞ",
+              "start": 2,
+              "length": 2,
+              "picture": "99",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 2,
+              "source": "gondwana/copybooks/ZENGIN.cpy:22"
+            },
+            {
+              "level": 10,
+              "name": "ZG-H-ｺｰﾄﾞｸﾌﾞﾝ",
+              "start": 4,
+              "length": 1,
+              "picture": "9",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 1,
+              "source": "gondwana/copybooks/ZENGIN.cpy:23"
+            },
+            {
+              "level": 10,
+              "name": "ZG-H-ｲﾀｸｼｬｺｰﾄﾞ",
+              "start": 5,
+              "length": 10,
+              "picture": "9(10)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 10,
+              "source": "gondwana/copybooks/ZENGIN.cpy:24"
+            },
+            {
+              "level": 10,
+              "name": "ZG-H-ｲﾀｸｼｬﾒｲ",
+              "start": 15,
+              "length": 40,
+              "picture": "X(40)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "text",
+              "source": "gondwana/copybooks/ZENGIN.cpy:25"
+            },
+            {
+              "level": 10,
+              "name": "ZG-H-ﾋｷｵﾄｼﾋﾞ",
+              "start": 55,
+              "length": 4,
+              "picture": "9(4)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 4,
+              "source": "gondwana/copybooks/ZENGIN.cpy:26"
+            },
+            {
+              "level": 10,
+              "name": "ZG-H-ｷﾞﾝｺｳｺｰﾄﾞ",
+              "start": 59,
+              "length": 4,
+              "picture": "9(4)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 4,
+              "source": "gondwana/copybooks/ZENGIN.cpy:27"
+            },
+            {
+              "level": 10,
+              "name": "ZG-H-ｷﾞﾝｺｳﾒｲ",
+              "start": 63,
+              "length": 15,
+              "picture": "X(15)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "text",
+              "source": "gondwana/copybooks/ZENGIN.cpy:28"
+            },
+            {
+              "level": 10,
+              "name": "ZG-H-ｼﾃﾝｺｰﾄﾞ",
+              "start": 78,
+              "length": 3,
+              "picture": "9(3)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 3,
+              "source": "gondwana/copybooks/ZENGIN.cpy:29"
+            },
+            {
+              "level": 10,
+              "name": "ZG-H-ｼﾃﾝﾒｲ",
+              "start": 81,
+              "length": 15,
+              "picture": "X(15)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "text",
+              "source": "gondwana/copybooks/ZENGIN.cpy:30"
+            },
+            {
+              "level": 10,
+              "name": "ZG-H-ﾖｷﾝｼｭﾓｸ",
+              "start": 96,
+              "length": 1,
+              "picture": "9",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 1,
+              "source": "gondwana/copybooks/ZENGIN.cpy:31"
+            },
+            {
+              "level": 10,
+              "name": "ZG-H-ｺｳｻﾞﾊﾞﾝｺﾞｳ",
+              "start": 97,
+              "length": 7,
+              "picture": "9(7)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 7,
+              "source": "gondwana/copybooks/ZENGIN.cpy:32"
+            },
+            {
+              "level": 10,
+              "name": "FILLER",
+              "start": 104,
+              "length": 17,
+              "picture": "X(17)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "filler",
+              "source": "gondwana/copybooks/ZENGIN.cpy:33"
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "name": "ZG-ﾃﾞｰﾀﾌﾞ",
+          "start": 2,
+          "length": 119,
+          "category": "group",
+          "kind": "group",
+          "redefines": "ZG-ﾍｯﾀﾞﾌﾞ",
+          "source": "gondwana/copybooks/ZENGIN.cpy:34",
+          "fields": [
+            {
+              "level": 10,
+              "name": "ZG-D-ｷﾞﾝｺｳｺｰﾄﾞ",
+              "start": 2,
+              "length": 4,
+              "picture": "9(4)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 4,
+              "source": "gondwana/copybooks/ZENGIN.cpy:35"
+            },
+            {
+              "level": 10,
+              "name": "ZG-D-ｷﾞﾝｺｳﾒｲ",
+              "start": 6,
+              "length": 15,
+              "picture": "X(15)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "text",
+              "source": "gondwana/copybooks/ZENGIN.cpy:36"
+            },
+            {
+              "level": 10,
+              "name": "ZG-D-ｼﾃﾝｺｰﾄﾞ",
+              "start": 21,
+              "length": 3,
+              "picture": "9(3)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 3,
+              "source": "gondwana/copybooks/ZENGIN.cpy:37"
+            },
+            {
+              "level": 10,
+              "name": "ZG-D-ｼﾃﾝﾒｲ",
+              "start": 24,
+              "length": 15,
+              "picture": "X(15)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "text",
+              "source": "gondwana/copybooks/ZENGIN.cpy:38"
+            },
+            {
+              "level": 10,
+              "name": "FILLER",
+              "start": 39,
+              "length": 4,
+              "picture": "X(4)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "filler",
+              "source": "gondwana/copybooks/ZENGIN.cpy:39"
+            },
+            {
+              "level": 10,
+              "name": "ZG-D-ﾖｷﾝｼｭﾓｸ",
+              "start": 43,
+              "length": 1,
+              "picture": "9",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 1,
+              "source": "gondwana/copybooks/ZENGIN.cpy:40"
+            },
+            {
+              "level": 10,
+              "name": "ZG-D-ｺｳｻﾞﾊﾞﾝｺﾞｳ",
+              "start": 44,
+              "length": 7,
+              "picture": "9(7)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 7,
+              "source": "gondwana/copybooks/ZENGIN.cpy:41"
+            },
+            {
+              "level": 10,
+              "name": "ZG-D-ｺｳｻﾞﾒｲｷﾞ",
+              "start": 51,
+              "length": 30,
+              "picture": "X(30)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "text",
+              "source": "gondwana/copybooks/ZENGIN.cpy:42"
+            },
+            {
+              "level": 10,
+              "name": "ZG-D-ｷﾝｶﾞｸ",
+              "start": 81,
+              "length": 10,
+              "picture": "9(10)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 10,
+              "source": "gondwana/copybooks/ZENGIN.cpy:43"
+            },
+            {
+              "level": 10,
+              "name": "ZG-D-ｼﾝｷｺｰﾄﾞ",
+              "start": 91,
+              "length": 1,
+              "picture": "9",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 1,
+              "source": "gondwana/copybooks/ZENGIN.cpy:44"
+            },
+            {
+              "level": 10,
+              "name": "ZG-D-ｺｷｬｸﾊﾞﾝｺﾞｳ",
+              "start": 92,
+              "length": 20,
+              "picture": "X(20)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "text",
+              "source": "gondwana/copybooks/ZENGIN.cpy:45"
+            },
+            {
+              "level": 10,
+              "name": "ZG-D-ﾌﾘｶｴｹｯｶ",
+              "start": 112,
+              "length": 1,
+              "picture": "X",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "code",
+              "conditions": [
+                {
+                  "name": "ZG-D-ﾌﾘｶｴｽﾞﾐ",
+                  "values": [
+                    "'0'"
+                  ],
+                  "source": "gondwana/copybooks/ZENGIN.cpy:47"
+                },
+                {
+                  "name": "ZG-D-ｼｷﾝﾌｿｸ",
+                  "values": [
+                    "'1'"
+                  ],
+                  "source": "gondwana/copybooks/ZENGIN.cpy:48"
+                },
+                {
+                  "name": "ZG-D-ﾄﾘﾋｷﾅｼ",
+                  "values": [
+                    "'2'"
+                  ],
+                  "source": "gondwana/copybooks/ZENGIN.cpy:49"
+                },
+                {
+                  "name": "ZG-D-ﾖｷﾝｼｬﾂｺﾞｳ",
+                  "values": [
+                    "'3'"
+                  ],
+                  "source": "gondwana/copybooks/ZENGIN.cpy:50"
+                },
+                {
+                  "name": "ZG-D-ｲﾗｲｼｮﾅｼ",
+                  "values": [
+                    "'4'"
+                  ],
+                  "source": "gondwana/copybooks/ZENGIN.cpy:51"
+                },
+                {
+                  "name": "ZG-D-ﾐｼｮﾘ",
+                  "values": [
+                    "' '"
+                  ],
+                  "source": "gondwana/copybooks/ZENGIN.cpy:52"
+                }
+              ],
+              "source": "gondwana/copybooks/ZENGIN.cpy:46"
+            },
+            {
+              "level": 10,
+              "name": "FILLER",
+              "start": 113,
+              "length": 8,
+              "picture": "X(8)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "filler",
+              "source": "gondwana/copybooks/ZENGIN.cpy:53"
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "name": "ZG-ﾄﾚｰﾗﾌﾞ",
+          "start": 2,
+          "length": 119,
+          "category": "group",
+          "kind": "group",
+          "redefines": "ZG-ﾍｯﾀﾞﾌﾞ",
+          "source": "gondwana/copybooks/ZENGIN.cpy:54",
+          "fields": [
+            {
+              "level": 10,
+              "name": "ZG-T-ｺﾞｳｹｲｹﾝｽｳ",
+              "start": 2,
+              "length": 6,
+              "picture": "9(6)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 6,
+              "source": "gondwana/copybooks/ZENGIN.cpy:55"
+            },
+            {
+              "level": 10,
+              "name": "ZG-T-ｺﾞｳｹｲｷﾝｶﾞｸ",
+              "start": 8,
+              "length": 12,
+              "picture": "9(12)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 12,
+              "source": "gondwana/copybooks/ZENGIN.cpy:56"
+            },
+            {
+              "level": 10,
+              "name": "ZG-T-ﾌﾘｶｴｽﾞﾐｹﾝｽｳ",
+              "start": 20,
+              "length": 6,
+              "picture": "9(6)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 6,
+              "source": "gondwana/copybooks/ZENGIN.cpy:57"
+            },
+            {
+              "level": 10,
+              "name": "ZG-T-ﾌﾘｶｴｽﾞﾐｷﾝｶﾞｸ",
+              "start": 26,
+              "length": 12,
+              "picture": "9(12)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 12,
+              "source": "gondwana/copybooks/ZENGIN.cpy:58"
+            },
+            {
+              "level": 10,
+              "name": "ZG-T-ﾌﾘｶｴﾌﾉｳｹﾝｽｳ",
+              "start": 38,
+              "length": 6,
+              "picture": "9(6)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 6,
+              "source": "gondwana/copybooks/ZENGIN.cpy:59"
+            },
+            {
+              "level": 10,
+              "name": "ZG-T-ﾌﾘｶｴﾌﾉｳｷﾝｶﾞｸ",
+              "start": 44,
+              "length": 12,
+              "picture": "9(12)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 12,
+              "source": "gondwana/copybooks/ZENGIN.cpy:60"
+            },
+            {
+              "level": 10,
+              "name": "FILLER",
+              "start": 56,
+              "length": 65,
+              "picture": "X(65)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "filler",
+              "source": "gondwana/copybooks/ZENGIN.cpy:61"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "usedBy": [
+    "GLD050",
+    "GLM010"
+  ]
+}

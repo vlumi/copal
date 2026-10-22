@@ -1,0 +1,1270 @@
+{
+  "program": "GLD040",
+  "tables": [
+    {
+      "paragraph": "ｼｮｷ-RTN",
+      "source": "gondwana/programs/GLD040.cbl:168",
+      "conditions": [
+        "WS-ﾍﾝｶﾝｹｯｶ = 0",
+        "WS-GLSCTL-OK"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ﾍﾝｶﾝｹｯｶ"
+        ],
+        [
+          "WS-GLSCTL-ST"
+        ]
+      ],
+      "actions": [
+        "ACCEPT WS-ｺﾏﾝﾄﾞｷﾞｮｳ FROM COMMAND-LINE",
+        "MOVE WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8) TO WS-ｷﾞｮｳﾑﾋﾂﾞｹ",
+        "MOVE 'W' TO WS-ﾎｳｺｳ",
+        "CALL 'GLC020' USING WS-ﾎｳｺｳ WS-ｷﾞｮｳﾑﾋﾂﾞｹ WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ WS-ﾍﾝｶﾝｹｯｶ",
+        "DISPLAY 'GLD040 日付不正: ' WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)",
+        "MOVE 8 TO RETURN-CODE",
+        "STOP RUN",
+        "OPEN INPUT MNTREQ-F",
+        "OPEN I-O POLMST-F GLSCTL-F",
+        "OPEN EXTEND GLJRNL-F",
+        "OPEN OUTPUT REJECT-F REPORT-F",
+        "PERFORM ｵｰﾌﾟﾝ-ｹﾝｻ-RTN",
+        "READ GLSCTL-F",
+        "MOVE 'GLSCTL' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-GLSCTL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "PERFORM ｲｼﾞｮｳ-RTN",
+        "MOVE WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ TO WS-ﾋｮｳﾀﾞｲ-ﾋﾂﾞｹ",
+        "WRITE ﾎｳｺｸ-ｷﾞｮｳ FROM WS-ﾋｮｳﾀﾞｲ-ｷﾞｮｳ",
+        "MOVE SPACES TO ﾎｳｺｸ-ｷﾞｮｳ",
+        "WRITE ﾎｳｺｸ-ｷﾞｮｳ",
+        "PERFORM MNTREQ-ﾖﾐｺﾐ-RTN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            16,
+            17,
+            18,
+            19,
+            20
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "ｵｰﾌﾟﾝ-ｹﾝｻ-RTN",
+      "source": "gondwana/programs/GLD040.cbl:199",
+      "conditions": [
+        "WS-MNTREQ-OK",
+        "WS-ｴﾗｰﾌｧｲﾙ = SPACES",
+        "WS-POLMST-OK",
+        "WS-GLSCTL-OK",
+        "WS-GLJRNL-OK",
+        "WS-REJECT-OK",
+        "WS-REPORT-OK"
+      ],
+      "conditionRefs": [
+        [
+          "WS-MNTREQ-ST"
+        ],
+        [
+          "WS-ｴﾗｰﾌｧｲﾙ"
+        ],
+        [
+          "WS-POLMST-ST"
+        ],
+        [
+          "WS-GLSCTL-ST"
+        ],
+        [
+          "WS-GLJRNL-ST"
+        ],
+        [
+          "WS-REJECT-ST"
+        ],
+        [
+          "WS-REPORT-ST"
+        ]
+      ],
+      "actions": [
+        "MOVE 'MNTREQ' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-MNTREQ-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "PERFORM ｲｼﾞｮｳ-RTN",
+        "MOVE 'POLMST' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-POLMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "MOVE 'GLSCTL' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-GLSCTL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "MOVE 'GLJRNL' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-GLJRNL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "MOVE 'MNTREJ' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-REJECT-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "MOVE 'GLD040R' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-REPORT-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "MOVE SPACES TO WS-ｴﾗｰﾌｧｲﾙ"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            "N",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            3,
+            4,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            5,
+            6,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            7,
+            8,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            ""
+          ],
+          "actions": [
+            9,
+            10,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            11,
+            12,
+            2
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            13
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "MNTREQ-ﾖﾐｺﾐ-RTN",
+      "source": "gondwana/programs/GLD040.cbl:229",
+      "conditions": [
+        "WS-MNTREQ-OK",
+        "WS-MNTREQ-ｵﾜﾘ"
+      ],
+      "conditionRefs": [
+        [
+          "WS-MNTREQ-ST"
+        ],
+        [
+          "WS-MNTREQ-ST"
+        ]
+      ],
+      "actions": [
+        "READ MNTREQ-F",
+        "ADD 1 TO WS-ﾖﾐｺﾐｹﾝｽｳ",
+        "MOVE 'MNTREQ' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-MNTREQ-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "PERFORM ｲｼﾞｮｳ-RTN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "ｼｮﾘ-RTN",
+      "source": "gondwana/programs/GLD040.cbl:244",
+      "conditions": [
+        "WS-POLMST-ﾅｼ",
+        "MR-ｼﾞｭｳｼｮﾍﾝｺｳ",
+        "WS-ﾘﾕｳ-ﾅｼ",
+        "MR-ｺｳｻﾞﾍﾝｺｳ",
+        "MR-ｼﾒｲﾍﾝｺｳ",
+        "MR-ｳｹﾄﾘﾆﾝﾍﾝｺｳ",
+        "MR-ﾌｯｶﾂ",
+        "WS-POLMST-OK",
+        "WS-ﾘﾕｳ-ﾅｼ, again"
+      ],
+      "conditionRefs": [
+        [
+          "WS-POLMST-ST"
+        ],
+        [
+          "MR-ｼｭﾍﾞﾂ"
+        ],
+        [
+          "WS-ﾘﾕｳ"
+        ],
+        [
+          "MR-ｼｭﾍﾞﾂ"
+        ],
+        [
+          "MR-ｼｭﾍﾞﾂ"
+        ],
+        [
+          "MR-ｼｭﾍﾞﾂ"
+        ],
+        [
+          "MR-ｼｭﾍﾞﾂ"
+        ],
+        [
+          "WS-POLMST-ST"
+        ],
+        [
+          "WS-ﾘﾕｳ"
+        ]
+      ],
+      "actions": [
+        "SET WS-ﾘﾕｳ-ﾅｼ TO TRUE",
+        "MOVE 0 TO WS-ﾒｲｻｲ-ｷﾝｶﾞｸ",
+        "MOVE MR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ TO PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+        "READ POLMST-F",
+        "SET WS-ｹｲﾔｸ-ﾅｼ TO TRUE",
+        "MOVE '住所変更' TO WS-ｼｭﾍﾞﾂﾒｲ",
+        "PERFORM ｷｬｯｶ-RTN",
+        "PERFORM MNTREQ-ﾖﾐｺﾐ-RTN",
+        "MOVE '口座変更' TO WS-ｼｭﾍﾞﾂﾒｲ",
+        "MOVE '氏名変更' TO WS-ｼｭﾍﾞﾂﾒｲ",
+        "MOVE '受取人変更' TO WS-ｼｭﾍﾞﾂﾒｲ",
+        "MOVE '復活' TO WS-ｼｭﾍﾞﾂﾒｲ",
+        "MOVE '不明' TO WS-ｼｭﾍﾞﾂﾒｲ",
+        "MOVE 'POLMST' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-POLMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "PERFORM ｲｼﾞｮｳ-RTN",
+        "PERFORM ﾍﾝｺｳ-RTN",
+        "REWRITE PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ",
+        "ADD 1 TO WS-ﾊﾝｴｲｹﾝｽｳ",
+        "MOVE '反映' TO WS-ﾒｲｻｲ-ｹｯｶ",
+        "PERFORM ﾒｲｻｲ-RTN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "Y",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            8,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "N",
+            "Y",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            9,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "N",
+            "N",
+            "Y",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            10,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            11,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            12,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "",
+            "",
+            "",
+            "",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            16,
+            17,
+            18,
+            19,
+            20,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "",
+            "",
+            "",
+            "",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            16,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "Y",
+            "",
+            "",
+            "",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            8,
+            16,
+            17,
+            18,
+            19,
+            20,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "Y",
+            "",
+            "",
+            "",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            8,
+            16,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "N",
+            "Y",
+            "",
+            "",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            9,
+            16,
+            17,
+            18,
+            19,
+            20,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "N",
+            "Y",
+            "",
+            "",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            9,
+            16,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "Y",
+            "",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            10,
+            16,
+            17,
+            18,
+            19,
+            20,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "Y",
+            "",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            10,
+            16,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "N",
+            "Y",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            11,
+            16,
+            17,
+            18,
+            19,
+            20,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "N",
+            "Y",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            11,
+            16,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "N",
+            "N",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            12,
+            16,
+            17,
+            18,
+            19,
+            20,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "N",
+            "N",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            12,
+            16,
+            6,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "ﾍﾝｺｳ-RTN",
+      "source": "gondwana/programs/GLD040.cbl:293",
+      "conditions": [
+        "MR-ｼﾞｭｳｼｮﾍﾝｺｳ",
+        "MR-ｼﾞｭｳｼｮ = SPACES",
+        "MR-ｺｳｻﾞﾍﾝｺｳ",
+        "MR-ｷﾞﾝｺｳｺｰﾄﾞ = 0 OR MR-ｺｳｻﾞﾊﾞﾝｺﾞｳ = 0 OR MR-ｺｳｻﾞﾒｲｷﾞ = SPACES",
+        "MR-ｼﾒｲﾍﾝｺｳ",
+        "MR-ｼﾒｲ = SPACES OR MR-ｼﾒｲｶﾅ = SPACES",
+        "MR-ｳｹﾄﾘﾆﾝﾍﾝｺｳ",
+        "MR-ｳｹﾄﾘﾆﾝ = SPACES",
+        "MR-ﾌｯｶﾂ"
+      ],
+      "conditionRefs": [
+        [
+          "MR-ｼｭﾍﾞﾂ"
+        ],
+        [
+          "MR-ｼﾞｭｳｼｮ"
+        ],
+        [
+          "MR-ｼｭﾍﾞﾂ"
+        ],
+        [
+          "MR-ｷﾞﾝｺｳｺｰﾄﾞ",
+          "MR-ｺｳｻﾞﾊﾞﾝｺﾞｳ",
+          "MR-ｺｳｻﾞﾒｲｷﾞ"
+        ],
+        [
+          "MR-ｼｭﾍﾞﾂ"
+        ],
+        [
+          "MR-ｼﾒｲ",
+          "MR-ｼﾒｲｶﾅ"
+        ],
+        [
+          "MR-ｼｭﾍﾞﾂ"
+        ],
+        [
+          "MR-ｳｹﾄﾘﾆﾝ"
+        ],
+        [
+          "MR-ｼｭﾍﾞﾂ"
+        ]
+      ],
+      "actions": [
+        "SET WS-ｼﾞｭｳｼｮ-ﾅｼ TO TRUE",
+        "MOVE MR-ｼﾞｭｳｼｮ TO PM-ｼﾞｭｳｼｮ",
+        "SET WS-ｺｳｻﾞ-ﾌｾｲ TO TRUE",
+        "MOVE MR-ｺｳｻﾞ TO PM-ｺｳｻﾞ",
+        "SET WS-ｼﾒｲ-ﾅｼ TO TRUE",
+        "MOVE MR-ｼﾒｲ TO PM-ｼﾒｲ",
+        "MOVE MR-ｼﾒｲｶﾅ TO PM-ｼﾒｲｶﾅ",
+        "SET WS-ｳｹﾄﾘﾆﾝ-ﾅｼ TO TRUE",
+        "MOVE MR-ｳｹﾄﾘﾆﾝ TO PM-ｳｹﾄﾘﾆﾝ",
+        "PERFORM ﾌｯｶﾂ-RTN",
+        "SET WS-ｼｭﾍﾞﾂ-ﾌｾｲ TO TRUE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            1
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "",
+            "Y",
+            "Y",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            2
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "",
+            "Y",
+            "N",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            3
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "",
+            "N",
+            "",
+            "Y",
+            "Y",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            4
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "",
+            "N",
+            "",
+            "Y",
+            "N",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            5,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "",
+            "N",
+            "",
+            "N",
+            "",
+            "Y",
+            "Y",
+            ""
+          ],
+          "actions": [
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "",
+            "N",
+            "",
+            "N",
+            "",
+            "Y",
+            "N",
+            ""
+          ],
+          "actions": [
+            8
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "",
+            "N",
+            "",
+            "N",
+            "",
+            "N",
+            "",
+            "Y"
+          ],
+          "actions": [
+            9
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "",
+            "N",
+            "",
+            "N",
+            "",
+            "N",
+            "",
+            "N"
+          ],
+          "actions": [
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "ﾌｯｶﾂ-RTN",
+      "source": "gondwana/programs/GLD040.cbl:331",
+      "conditions": [
+        "PM-ｼｯｺｳ",
+        "PM-ﾈﾝﾊﾞﾗｲ",
+        "WS-ｹｲｶﾆｯｽｳ \u003e 365",
+        "MR-ﾆｭｳｷﾝｶﾞｸ \u003c WS-ﾐﾉｳｶﾞｸ"
+      ],
+      "conditionRefs": [
+        [
+          "PM-ｼﾞｮｳﾀｲ"
+        ],
+        [
+          "PM-ﾊﾗｲｺﾐﾎｳﾎｳ"
+        ],
+        [
+          "WS-ｹｲｶﾆｯｽｳ"
+        ],
+        [
+          "MR-ﾆｭｳｷﾝｶﾞｸ",
+          "WS-ﾐﾉｳｶﾞｸ"
+        ]
+      ],
+      "actions": [
+        "SET WS-ｼｯｺｳﾁｭｳ-ﾃﾞﾅｲ TO TRUE",
+        "MOVE 'S' TO WS-ﾎｳｺｳ",
+        "CALL 'GLC020' USING WS-ﾎｳｺｳ WS-ｼｯｺｳﾋﾞ PM-ｼｯｺｳﾋﾞ WS-ﾍﾝｶﾝｹｯｶ",
+        "COMPUTE WS-ｹｲｶﾆｯｽｳ = FUNCTION INTEGER-OF-DATE(WS-ｷﾞｮｳﾑﾋﾂﾞｹ) - FUNCTION INTEGER-OF-DATE(WS-ｼｯｺｳﾋﾞ)",
+        "MOVE PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ TO WS-ﾊﾗｲｺﾐｽﾞﾐ-ﾌﾞﾝｶｲ",
+        "COMPUTE WS-ﾐﾉｳﾂｷｽｳ = (WS-ｷﾞｮｳﾑ-YYYY - WS-ﾊﾗｲｺﾐ-YYYY) * 12 + WS-ｷﾞｮｳﾑ-MM - WS-ﾊﾗｲｺﾐ-MM",
+        "COMPUTE WS-ﾐﾉｳﾂｷｽｳ = (WS-ﾐﾉｳﾂｷｽｳ + 11) / 12",
+        "COMPUTE WS-ﾐﾉｳｶﾞｸ = WS-ﾐﾉｳﾂｷｽｳ * PM-ﾎｹﾝﾘｮｳ",
+        "SET WS-ﾌｯｶﾂｷｶﾝ-ｹｲｶ TO TRUE",
+        "SET WS-ﾐﾉｳｶﾞｸ-ﾌｿｸ TO TRUE",
+        "PERFORM ﾌｯｶﾂ-ﾊﾝｴｲ-RTN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            ""
+          ],
+          "actions": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            9
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "N"
+          ],
+          "actions": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            10
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            ""
+          ],
+          "actions": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            7,
+            8
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            7,
+            9
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            7,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "ｼｭｳﾘｮｳ-RTN",
+      "source": "gondwana/programs/GLD040.cbl:432",
+      "conditions": [
+        "WS-GLSCTL-OK"
+      ],
+      "conditionRefs": [
+        [
+          "WS-GLSCTL-ST"
+        ]
+      ],
+      "actions": [
+        "REWRITE CT-ｾｲｷﾞｮ-ﾚｺｰﾄﾞ",
+        "MOVE 'GLSCTL' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-GLSCTL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "PERFORM ｲｼﾞｮｳ-RTN",
+        "CLOSE MNTREQ-F POLMST-F GLSCTL-F GLJRNL-F REJECT-F REPORT-F",
+        "DISPLAY 'GLD040 反映 ' WS-ﾊﾝｴｲｹﾝｽｳ ' 却下 ' WS-ｷｬｯｶｹﾝｽｳ"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            4,
+            5
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,156 @@
+{
+  "job": "ANNUAL",
+  "kind": "script",
+  "source": "gondwana/scripts/ANNUAL.BAT",
+  "description": [
+    "ANNUAL.BAT: 年次処理。年度末 (3月31日) の月次締めの後に、契約者",
+    "配当の割り当て。",
+    "",
+    "使い方: ANNUAL.BAT YYYYMMDD  年度末の業務日付",
+    "環境: GLS_BIN プログラム、GLS_DATA データ",
+    "",
+    "変更履歴",
+    "1999-11-08 MS  GL-0233 初版、PC システム移行時 (旧 JCL から)。"
+  ],
+  "steps": [
+    {
+      "step": "GLY010",
+      "program": "GLY010",
+      "arguments": [
+        "$DATE"
+      ],
+      "stopsIf": "RC \u003e= 8",
+      "description": [
+        "契約者配当"
+      ],
+      "source": "gondwana/scripts/ANNUAL.BAT:22",
+      "dds": [
+        {
+          "dd": "POLMST",
+          "datasets": [
+            "$DATA/MASTER/POLMST.IDX"
+          ],
+          "indexed": true,
+          "file": "POLMST-F",
+          "uses": [
+            "update"
+          ],
+          "copybook": "POLMST",
+          "source": "gondwana/scripts/ANNUAL.BAT:22"
+        },
+        {
+          "dd": "PRODTB",
+          "datasets": [
+            "$DATA/MASTER/PRODTB.TXT"
+          ],
+          "file": "PRODTB-F",
+          "uses": [
+            "read"
+          ],
+          "copybook": "PRODTB",
+          "source": "gondwana/scripts/ANNUAL.BAT:22"
+        },
+        {
+          "dd": "GLSCTL",
+          "datasets": [
+            "$DATA/MASTER/GLSCTL.BIN"
+          ],
+          "file": "GLSCTL-F",
+          "uses": [
+            "update"
+          ],
+          "copybook": "CTLREC",
+          "source": "gondwana/scripts/ANNUAL.BAT:22"
+        },
+        {
+          "dd": "GLJRNL",
+          "datasets": [
+            "$DATA/OUT/GLJRNL.$DATE.TXT"
+          ],
+          "file": "GLJRNL-F",
+          "uses": [
+            "append"
+          ],
+          "copybook": "GLJRNL",
+          "source": "gondwana/scripts/ANNUAL.BAT:22"
+        },
+        {
+          "dd": "GLY010R",
+          "datasets": [
+            "$DATA/RPT/GLY010.$DATE.RPT"
+          ],
+          "file": "REPORT-F",
+          "uses": [
+            "write"
+          ],
+          "source": "gondwana/scripts/ANNUAL.BAT:22"
+        },
+        {
+          "dd": "stdout",
+          "datasets": [
+            "$DATA/RPT/GLY010.$DATE.OUT"
+          ],
+          "uses": [
+            "write"
+          ],
+          "source": "gondwana/scripts/ANNUAL.BAT:22"
+        }
+      ]
+    }
+  ],
+  "datasets": [
+    {
+      "dataset": "$DATA/MASTER/POLMST.IDX",
+      "copybook": "POLMST",
+      "kind": "internal",
+      "indexed": true,
+      "writtenBy": [
+        "GLY010"
+      ],
+      "readBy": [
+        "GLY010"
+      ]
+    },
+    {
+      "dataset": "$DATA/MASTER/PRODTB.TXT",
+      "copybook": "PRODTB",
+      "kind": "external",
+      "readBy": [
+        "GLY010"
+      ]
+    },
+    {
+      "dataset": "$DATA/MASTER/GLSCTL.BIN",
+      "copybook": "CTLREC",
+      "kind": "internal",
+      "writtenBy": [
+        "GLY010"
+      ],
+      "readBy": [
+        "GLY010"
+      ]
+    },
+    {
+      "dataset": "$DATA/OUT/GLJRNL.$DATE.TXT",
+      "copybook": "GLJRNL",
+      "kind": "output",
+      "writtenBy": [
+        "GLY010"
+      ]
+    },
+    {
+      "dataset": "$DATA/RPT/GLY010.$DATE.RPT",
+      "kind": "output",
+      "writtenBy": [
+        "GLY010"
+      ]
+    },
+    {
+      "dataset": "$DATA/RPT/GLY010.$DATE.OUT",
+      "kind": "output",
+      "writtenBy": [
+        "GLY010"
+      ]
+    }
+  ]
+}
