@@ -53,7 +53,7 @@ Program [acctld.cbl](../../../laurasia/programs/acctld.cbl): 2 files, 1 paragrap
 
 | Paragraph | Reads | Writes |
 | --- | --- | --- |
-| MAIN | WS-ACCOUNTS-STATUS, WS-AT-END, ACCOUNT-LINE, WS-RESULT | RETURN-CODE, ACCOUNT-LINE, WS-AT-END, CARD-ACCOUNT, WS-RESULT |
+| MAIN | WS-ACCOUNTS-STATUS, WS-AT-END, ACCOUNT-LINE, WS-RESULT | WS-ACCOUNTS-STATUS, RETURN-CODE, ACCOUNT-LINE, WS-AT-END, CARD-ACCOUNT, WS-RESULT |
 
 ## Lineage
 

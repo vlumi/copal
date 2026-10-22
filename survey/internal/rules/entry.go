@@ -102,7 +102,7 @@ func (g *program) atPerforms(i int) []event {
 			known = append(known, before...)
 		}
 	}
-	return g.agreed(g.source.Paragraphs[i], known)
+	return g.agreed(i, known)
 }
 
 // before lists what each path of a paragraph knows just before a
@@ -120,14 +120,16 @@ func (e *extractor) before(s cobol.Statement) [][]event {
 }
 
 // agreed gives, as tests a paragraph's paths start with, the outcome of
-// each condition it tests, or part of one, that all of the known agree on.
-func (g *program) agreed(para cobol.Paragraph, known [][]event) []event {
+// each condition it tests, or part of one, that all of the known agree
+// on; and of those the paragraphs it performs test, which carry on to
+// them.
+func (g *program) agreed(i int, known [][]event) []event {
 	if len(known) == 0 {
 		return nil
 	}
 	x := &extractor{knowledge: g.knowledge}
 	var given []event
-	for _, c := range conditionsIn(para.Statements) {
+	for _, c := range conditionsIn(g.statementsReached(i)) {
 		outcome, ok := x.evaluate(known[0], c)
 		if ok && !slices.ContainsFunc(known[1:], func(events []event) bool {
 			o, k := x.evaluate(events, c)
@@ -139,6 +141,45 @@ func (g *program) agreed(para cobol.Paragraph, known [][]event) []event {
 		}
 	}
 	return given
+}
+
+// statementsReached lists a paragraph's statements and those of the
+// paragraphs it performs, through them, each paragraph once.
+func (g *program) statementsReached(i int) []cobol.Statement {
+	index := map[string]int{}
+	for j, para := range g.source.Paragraphs {
+		index[para.Name] = j
+	}
+	var statements []cobol.Statement
+	seen := map[int]bool{}
+	var add func(i int)
+	add = func(i int) {
+		if seen[i] {
+			return
+		}
+		seen[i] = true
+		statements = append(statements, g.source.Paragraphs[i].Statements...)
+		cobol.Walk(g.source.Paragraphs[i].Statements, func(s cobol.Statement) {
+			if s.Verb != "PERFORM" {
+				return
+			}
+			for _, r := range s.Procedures {
+				from, ok := index[r.Name]
+				if !ok {
+					continue
+				}
+				to, ok := index[r.Thru]
+				if !ok {
+					to = from
+				}
+				for k := from; k <= to; k++ {
+					add(k)
+				}
+			}
+		})
+	}
+	add(i)
+	return statements
 }
 
 // conditionsIn lists the conditions statements test, and their parts,

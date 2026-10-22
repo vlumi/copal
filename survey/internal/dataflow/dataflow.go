@@ -138,6 +138,7 @@ type names struct {
 	conditions map[string]string
 	records    map[string][]string // file to records
 	files      map[string]string   // record to file
+	status     map[string]string   // file to its FILE STATUS item
 	// reports maps a report of the REPORT SECTION, and each of its
 	// groups, to the file that prints it, and lines keeps that file's
 	// records, the lines of its reports, with their columns: what a
@@ -148,7 +149,12 @@ type names struct {
 
 func newNames(p *cobol.Program, records *layout.ProgramRecords) *names {
 	n := &names{conditions: map[string]string{}, records: map[string][]string{}, files: map[string]string{},
-		reports: map[string]string{}, lines: map[string][]*layout.Field{}}
+		status: map[string]string{}, reports: map[string]string{}, lines: map[string][]*layout.Field{}}
+	for _, fc := range p.Files {
+		if fc.Status != "" {
+			n.status[fc.Name] = fc.Status
+		}
+	}
 	for _, f := range records.Files {
 		for _, r := range f.Records {
 			n.records[f.File] = append(n.records[f.File], r.Name)
@@ -198,6 +204,25 @@ func (n *names) item(name string) string {
 	return name
 }
 
+// filesOf lists the files a statement operates on, whose status it sets:
+// those it names, and the file of each record it writes.
+func (n *names) filesOf(s cobol.Statement) []string {
+	var files []string
+	switch s.Verb {
+	case "OPEN", "CLOSE", "READ", "START", "DELETE":
+		for _, f := range s.Files {
+			files = append(files, f.Name)
+		}
+	case "WRITE", "REWRITE":
+		for _, record := range s.Writes {
+			if file, ok := n.files[record.Name]; ok {
+				files = append(files, file)
+			}
+		}
+	}
+	return files
+}
+
 // uses lists the items a statement reads and writes: its operands and
 // condition, a written operand's subscripts read, and the records of the
 // files it reads.
@@ -232,6 +257,11 @@ func (n *names) uses(s cobol.Statement) (reads, writes []string) {
 	if s.Verb == "READ" || s.Verb == "RETURN" {
 		for _, f := range s.Files {
 			writes = append(writes, n.records[f.Name]...)
+		}
+	}
+	for _, file := range n.filesOf(s) {
+		if status, ok := n.status[file]; ok {
+			writes = append(writes, n.item(status))
 		}
 	}
 	if file, ok := n.reportFile(s); ok {

@@ -12,7 +12,7 @@ For each main program, input data that reaches the rules of its decision tables,
 | [GLSUM](GLSUM/) | 20 of 24 | 7 |
 | [HOLDEXT](HOLDEXT/) | 11 of 11 | 6 |
 | [INTACCR](INTACCR/) | 33 of 33 | 13 |
-| [MONCHG](MONCHG/) | 18 of 21 | 11 |
+| [MONCHG](MONCHG/) | 18 of 20 | 11 |
 | [STMTPRT](STMTPRT/) | 31 of 33 | 12 |
 | [TXPOST](TXPOST/) | 30 of 30 | 13 |
 | [TXSORT](TXSORT/) | 2 of 2 | 2 |
