@@ -213,7 +213,7 @@ Done when: the processor runs for months from a seed with its cards paying, decl
 Gondwana Life Insurance, a life insurer on Fujitsu NetCOBOL, run from Windows batch files: Shift_JIS source and data, whole yen, dates in the Japanese eras, the Report Writer, and a third job control. Insurance is the third home of COBOL after banking and government, and Japan the biggest COBOL world the survey has not seen. The plan is in [plans/third-specimen.md](plans/third-specimen.md):
 
 - Gondwana runs: the programs, batch files, a fixture and goldens, bedrock compiling the dialect and running the batch files (done).
-- The survey on it as it is, and every break and wrong fact written down.
+- The survey on it as it is, and every break and wrong fact written down (done).
 - The language: the Report Writer in cobolith, and every reader of source in the dialect's encoding.
 - The facts: yen, era dates, deep tables, the batch files as jobs; lineage, the design views and the oracle on it.
 - A living Gondwana: a generated portfolio and a year of days.
