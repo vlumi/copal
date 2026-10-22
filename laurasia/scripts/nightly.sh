@@ -11,6 +11,7 @@
 # 2011-04-04 rk  lcs-0102 original version.
 # 2012-01-09 ah  lcs-0140 interchange.
 # 2015-03-23 mt  lcs-0302 disputes before settlement.
+# 2022-09-05 ah  lcs-0497 the card system's feed after posting.
 
 DATE="$1"
 export LC_ALL=C
@@ -79,6 +80,11 @@ export DD_POSTRPT="$DATA/reports/post.$DATE.txt"
 "$BIN/post" "$DATE" > "$DATA/reports/post.$DATE.out" 2>&1
 rc=$?
 echo "POST post $rc" >> "$LOG"
+if [ "$rc" -ge 8 ]; then exit "$rc"; fi
+
+# STEP PAYMENTS: the card system's feed: payments and status changes
+"$LCS_SCRIPTS/payments.sh" "$DATE"
+rc=$?
 if [ "$rc" -ge 8 ]; then exit "$rc"; fi
 
 # STEP DISPUTES: the disputes moved on, the merchants' adjustments

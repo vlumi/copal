@@ -3,6 +3,7 @@
 *>
 *> history
 *> 2011-04-04 rk  lcs-0102 original version.
+*> 2022-09-05 ah  lcs-0497 payments, as credits.
 01  posting.
     05  po-card-no               pic x(16).
     05  po-account-no            pic x(10).
@@ -10,6 +11,7 @@
         88  po-purchase          value "P".
         88  po-over-limit-fee    value "F".
         88  po-interest          value "I".
+        88  po-payment           value "C".
     05  po-amount                pic s9(7)v99 sign leading separate.
     05  po-reference             pic x(6).
     05  po-date                  pic 9(8).

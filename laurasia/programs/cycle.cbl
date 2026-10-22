@@ -5,13 +5,14 @@
 *> month: interest on the last statement's balance, unless it was paid in
 *> full, as the grace period allows; the minimum payment; and the
 *> statement, with the balance it closes on, which the next cycle charges
-*> interest on.
+*> interest on unless the payments to come pay it in full.
 *>
 *> return codes: 0 done, 16 cannot update the accounts.
 *>
 *> history
 *> 2013-06-03 rk  lcs-0219 original version.
 *> 2021-03-01 mt  lcs-0481 interest by the card's product.
+*> 2022-09-05 ah  lcs-0497 the new statement starts unpaid; payin marks it paid.
 identification division.
 program-id. cycle.
 
@@ -89,6 +90,7 @@ close-cycle section.
     call "minpay" using ca-balance ws-minimum
     perform write-statement
     move ca-balance to ca-statement-balance
+    move "N" to ca-paid-in-full
     rewrite card-account
         invalid key stop run returning 16
     end-rewrite
