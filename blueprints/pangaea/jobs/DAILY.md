@@ -94,7 +94,7 @@ Job [DAILY.jcl](../../../pangaea/jobs/DAILY.jcl): 15 steps.
 | BANKCTL | BANK.CONTROL(0) | SHR | CONTROL-FILE | [BANKCTL](../copybooks/BANKCTL.md) | read |
 | RATES | BANK.RATES | SHR | RATE-FILE | [RATEREC](../copybooks/RATEREC.md) | read |
 | ACCTIN | ACCT.MASTER(0) | SHR | ACCT-IN | [ACCTMAST](../copybooks/ACCTMAST.md) | read |
-| ACCRIN | ACCT.ACCRUAL(0) | SHR | ACCR-IN | | read |
+| ACCRIN | ACCT.ACCRUAL(0) | SHR | ACCR-IN | [ACCRREC](../copybooks/ACCRREC.md) | read |
 | ACCROUT | ACCT.ACCRUAL(+1) | NEW | ACCR-OUT | [ACCRREC](../copybooks/ACCRREC.md) | write |
 | ACCRRPT | job output | | REPORT-OUT | | write |
 
@@ -186,7 +186,7 @@ Job [DAILY.jcl](../../../pangaea/jobs/DAILY.jcl): 15 steps.
 | DD | Dataset | DISP | File | Copybook | Use |
 | --- | --- | --- | --- | --- | --- |
 | BANKCTL | BANK.CONTROL(0) | SHR | CONTROL-FILE | [BANKCTL](../copybooks/BANKCTL.md) | read |
-| ACCTIN | &&RETURNED | OLD | ACCT-IN | | read |
+| ACCTIN | &&RETURNED | OLD | ACCT-IN | [ACCTMAST](../copybooks/ACCTMAST.md) | read |
 | MAINTIN | ACCT.MAINT(0) | SHR | MAINT-IN | [MAINTREC](../copybooks/MAINTREC.md) | read |
 | ACCTOUT | ACCT.MASTER(+1) | NEW | ACCT-OUT | [ACCTMAST](../copybooks/ACCTMAST.md) | write |
 | REJECTS | MAINT.REJECTS(+1) | NEW | REJECT-OUT | [REJREC](../copybooks/REJREC.md) | write |

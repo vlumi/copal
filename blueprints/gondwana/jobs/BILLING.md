@@ -55,4 +55,4 @@ Each dataset the job names, the copybook that describes its records, from the pr
 
 ## Findings
 
-- Step GLM010 exports no DD_SORTWK for GLM010's file SORT-F.
+None: every program's file is bound by a DD_ variable.

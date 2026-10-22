@@ -46,7 +46,7 @@ Script [disputes.sh](../../../laurasia/scripts/disputes.sh): 3 steps.
 
 | Name | File | File in the program | Copybook | Use |
 | --- | --- | --- | --- | --- |
-| DISPIN | $DATA/master/disputes.txt | MASTER-IN | | read |
+| DISPIN | $DATA/master/disputes.txt | MASTER-IN | [dispcase](../copybooks/dispcase.md) | read |
 | DISPEVT | $DATA/work/$DATE/dispevt.sorted | EVENTS-IN | [dispevt](../copybooks/dispevt.md) | read |
 | DISPOUT | $DATA/work/$DATE/disputes.new | MASTER-OUT | [dispcase](../copybooks/dispcase.md) | write |
 | ADJOUT | $DATA/work/$DATE/adjustments.txt | ADJUST-OUT | | write |
