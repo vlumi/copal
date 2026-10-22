@@ -6,4 +6,4 @@ The batch file ended with errorlevel 0.
 
 | Step | Program | Outcome | Rules reached |
 | --- | --- | --- | --: |
-| GLY010 | [GLY010](../../GLY010/) | RC=0000 | 8 of 38 |
+| GLY010 | [GLY010](../../GLY010/) | RC=0000 | 9 of 38 |

@@ -4,18 +4,18 @@ For each main program, input data that reaches the rules of its decision tables,
 
 | Program | Rules reached | Cases |
 | --- | --: | --: |
-| [GLD010](GLD010/) | 39 of 67 | 23 |
-| [GLD020](GLD020/) | 19 of 61 | 10 |
-| [GLD030](GLD030/) | 32 of 117 | 20 |
+| [GLD010](GLD010/) | 43 of 67 | 23 |
+| [GLD020](GLD020/) | 23 of 61 | 11 |
+| [GLD030](GLD030/) | 33 of 117 | 20 |
 | [GLD040](GLD040/) | 50 of 73 | 30 |
 | [GLD050](GLD050/) | 20 of 71 | 11 |
 | [GLD060](GLD060/) | 15 of 29 | 5 |
 | [GLD090](GLD090/) | 16 of 30 | 8 |
 | [GLM010](GLM010/) | 28 of 46 | 13 |
-| [GLM020](GLM020/) | 36 of 56 | 15 |
+| [GLM020](GLM020/) | 37 of 56 | 15 |
 | [GLM030](GLM030/) | 19 of 51 | 9 |
 | [GLO010](GLO010/) | 18 of 33 | 10 |
-| [GLY010](GLY010/) | 21 of 38 | 10 |
+| [GLY010](GLY010/) | 22 of 38 | 10 |
 
 And for each job, a batch: the job run through its steps on inputs from its programs' cleanest cases, with the datasets it wrote and its output.
 
