@@ -17,10 +17,13 @@ import (
 
 // dialectFlags are the flags that make GnuCOBOL compile each dialect like
 // its compiler. IBM's signed display numbers are in the EBCDIC overpunch,
-// +5 as 'E' and -5 as 'N', rather than the ASCII one.
+// +5 as 'E' and -5 as 'N', rather than the ASCII one. GnuCOBOL has no
+// configuration for Fujitsu NetCOBOL; its default one compiles what the
+// two share, with the source's Shift_JIS passed through as it is.
 var dialectFlags = map[string][]string{
 	cobol.IBM.Name:        {"-std=ibm", "-fsign=EBCDIC"},
 	cobol.MicroFocus.Name: {"-std=mf"},
+	cobol.Fujitsu.Name:    {"-std=default"},
 }
 
 // warnings are errors, whatever the dialect.
@@ -60,7 +63,7 @@ func (b Build) Programs() ([]string, error) {
 	var names []string
 	for _, source := range sources {
 		name := strings.TrimSuffix(filepath.Base(source), ".cbl")
-		kind, err := kindFlag(source, b.Copybooks)
+		kind, err := kindFlag(source, b.Copybooks, b.Dialect.Encoding)
 		if err != nil {
 			return nil, err
 		}
@@ -75,9 +78,10 @@ func (b Build) Programs() ([]string, error) {
 }
 
 // kindFlag is -m for a program that is called with USING, that is, whose
-// PROCEDURE DIVISION header has a USING phrase, and -x otherwise.
-func kindFlag(source, copybookDir string) (string, error) {
-	tokens, err := cobol.Read(source, []string{copybookDir})
+// PROCEDURE DIVISION header has a USING phrase, and -x otherwise. The
+// source is read in the dialect's encoding.
+func kindFlag(source, copybookDir, encoding string) (string, error) {
+	tokens, err := cobol.ReadIn(source, []string{copybookDir}, encoding)
 	if err != nil {
 		return "", err
 	}

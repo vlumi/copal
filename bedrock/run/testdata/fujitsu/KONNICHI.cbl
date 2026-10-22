@@ -1,0 +1,15 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. KONNICHI.
+      * à•éAÇï\é¶Ç∑ÇÈ: THE SOURCE IS IN SHIFT_JIS, AND SO ARE ITS DATA.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01  WS-GREETING         PIC X(14) VALUE "Ç±ÇÒÇ…ÇøÇÕê¢äE".
+       01  WS-COUNT            PIC S9(4) COMP-5 SYNC.
+       01  WS-YEN              PIC 9(7).
+       01  WS-YEN-EDITED       PIC Z,ZZZ,ZZ9.
+       PROCEDURE DIVISION.
+           MOVE 1234567 TO WS-YEN.
+           MOVE WS-YEN TO WS-YEN-EDITED.
+           DISPLAY WS-GREETING " " WS-YEN-EDITED "â~".
+           MOVE 4 TO RETURN-CODE.
+           STOP RUN.
