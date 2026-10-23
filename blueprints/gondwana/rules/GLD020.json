@@ -3,7 +3,7 @@
   "tables": [
     {
       "paragraph": "ｼｮｷ-RTN",
-      "source": "gondwana/programs/GLD020.cbl:152",
+      "source": "gondwana/programs/GLD020.cbl:166",
       "conditions": [
         "WS-ﾍﾝｶﾝｹｯｶ = 0",
         "WS-GLSCTL-OK"
@@ -112,7 +112,7 @@
     },
     {
       "paragraph": "ｵｰﾌﾟﾝ-ｹﾝｻ-RTN",
-      "source": "gondwana/programs/GLD020.cbl:186",
+      "source": "gondwana/programs/GLD020.cbl:200",
       "conditions": [
         "WS-PRODTB-OK",
         "WS-ｴﾗｰﾌｧｲﾙ = SPACES",
@@ -306,7 +306,7 @@
     },
     {
       "paragraph": "POLMST-ﾖﾐｺﾐ-RTN",
-      "source": "gondwana/programs/GLD020.cbl:219",
+      "source": "gondwana/programs/GLD020.cbl:233",
       "conditions": [
         "NOT WS-POLMST-OK AND NOT WS-POLMST-ｵﾜﾘ"
       ],
@@ -345,22 +345,25 @@
     },
     {
       "paragraph": "ｼｮﾘ-RTN",
-      "source": "gondwana/programs/GLD020.cbl:231",
+      "source": "gondwana/programs/GLD020.cbl:245",
       "conditions": [
-        "PM-ﾎｼｮｳﾁｭｳ AND PM-ｹｲﾔｸﾋﾞ(4:4) = WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ(4:4) AND PM-ｹｲﾔｸﾋﾞ NOT = WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ",
+        "PM-ﾎｼｮｳﾁｭｳ",
+        "WS-ｵｳﾄｳ-ｱﾘ",
         "WS-POLMST-OK"
       ],
       "conditionRefs": [
         [
-          "PM-ｼﾞｮｳﾀｲ",
-          "PM-ｹｲﾔｸﾋﾞ",
-          "WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ"
+          "PM-ｼﾞｮｳﾀｲ"
+        ],
+        [
+          "WS-ｵｳﾄｳ-ﾊﾝﾃｲ"
         ],
         [
           "WS-POLMST-ST"
         ]
       ],
       "actions": [
+        "PERFORM ｵｳﾄｳﾋﾞ-RTN",
         "PERFORM ｵｳﾄｳ-RTN",
         "REWRITE PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ",
         "MOVE 'POLMST' TO WS-ｴﾗｰﾌｧｲﾙ",
@@ -372,6 +375,7 @@
         {
           "entries": [
             "Y",
+            "Y",
             "N"
           ],
           "actions": [
@@ -379,9 +383,77 @@
             1,
             2,
             3,
-            4
+            4,
+            5
           ]
         },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            6
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            6
+          ]
+        }
+      ]
+    },
+    {
+      "paragraph": "ｵｳﾄｳﾋﾞ-RTN",
+      "source": "gondwana/programs/GLD020.cbl:266",
+      "conditions": [
+        "WS-ｵｳﾄｳﾋﾞ \u003e WS-ｷﾞｮｳﾑﾋﾂﾞｹ",
+        "WS-ｵｳﾄｳﾋﾞ \u003e WS-ｹｲﾔｸﾋﾞ AND (WS-ｵｳﾄｳﾋﾞ \u003e CT-ｷﾞｮｳﾑﾋﾂﾞｹ OR WS-ｵｳﾄｳﾋﾞ = WS-ｷﾞｮｳﾑﾋﾂﾞｹ)"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ｵｳﾄｳﾋﾞ",
+          "WS-ｷﾞｮｳﾑﾋﾂﾞｹ"
+        ],
+        [
+          "WS-ｵｳﾄｳﾋﾞ",
+          "WS-ｹｲﾔｸﾋﾞ",
+          "CT-ｷﾞｮｳﾑﾋﾂﾞｹ",
+          "WS-ｷﾞｮｳﾑﾋﾂﾞｹ"
+        ]
+      ],
+      "actions": [
+        "MOVE 'S' TO WS-ﾎｳｺｳ",
+        "CALL 'GLC020' USING WS-ﾎｳｺｳ WS-ｹｲﾔｸﾋﾞ PM-ｹｲﾔｸﾋﾞ WS-ﾍﾝｶﾝｹｯｶ",
+        "MOVE WS-ｷﾞｮｳﾑ-YYYY TO WS-ｵｳﾄｳ-YYYY",
+        "MOVE WS-ｹｲﾔｸ-MMDD TO WS-ｵｳﾄｳ-MMDD",
+        "SUBTRACT 1 FROM WS-ｵｳﾄｳ-YYYY",
+        "SET WS-ｵｳﾄｳ-ｱﾘ TO TRUE",
+        "MOVE 'W' TO WS-ﾎｳｺｳ",
+        "CALL 'GLC020' USING WS-ﾎｳｺｳ WS-ｵｳﾄｳﾋﾞ WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ WS-ﾍﾝｶﾝｹｯｶ",
+        "SET WS-ｵｳﾄｳ-ﾅｼ TO TRUE"
+      ],
+      "rules": [
         {
           "entries": [
             "Y",
@@ -390,37 +462,75 @@
           "actions": [
             0,
             1,
-            5
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            8
           ]
         },
         {
           "entries": [
             "N",
-            ""
+            "Y"
           ],
           "actions": [
-            5
+            0,
+            1,
+            2,
+            3,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            8
           ]
         }
       ]
     },
     {
       "paragraph": "ｵｳﾄｳ-RTN",
-      "source": "gondwana/programs/GLD020.cbl:248",
+      "source": "gondwana/programs/GLD020.cbl:290",
       "conditions": [
-        "PM-ﾖｳﾛｳ AND PM-ﾏﾝｷﾋﾞ = WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ",
-        "PM-ﾃｲｷ AND PM-ﾏﾝｷﾋﾞ = WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ"
+        "PM-ﾖｳﾛｳ AND PM-ﾏﾝｷﾋﾞ = WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ",
+        "PM-ﾃｲｷ AND PM-ﾏﾝｷﾋﾞ = WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ"
       ],
       "conditionRefs": [
         [
           "PM-ｼｮｳﾋﾝ",
           "PM-ﾏﾝｷﾋﾞ",
-          "WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ"
+          "WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ"
         ],
         [
           "PM-ｼｮｳﾋﾝ",
           "PM-ﾏﾝｷﾋﾞ",
-          "WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ"
+          "WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ"
         ]
       ],
       "actions": [
@@ -478,7 +588,7 @@
     },
     {
       "paragraph": "ﾏﾝｷ-RTN",
-      "source": "gondwana/programs/GLD020.cbl:264",
+      "source": "gondwana/programs/GLD020.cbl:306",
       "conditions": [
         "PM-ﾊｲﾄｳﾙｲｹｲ \u003e 0"
       ],
@@ -575,7 +685,7 @@
     },
     {
       "paragraph": "ｺｳｼﾝ-RTN",
-      "source": "gondwana/programs/GLD020.cbl:297",
+      "source": "gondwana/programs/GLD020.cbl:339",
       "conditions": [
         "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
         "WS-ﾈﾝﾚｲ \u003e WS-ｼｮｳﾋﾝ-ｻｲｺｳﾈﾝﾚｲ(WS-ｼｮｳﾋﾝ-IX)",
@@ -599,7 +709,7 @@
       "actions": [
         "MOVE 'S' TO WS-ﾎｳｺｳ",
         "CALL 'GLC020' USING WS-ﾎｳｺｳ WS-ｾｲﾈﾝｶﾞｯﾋﾟ PM-ｾｲﾈﾝｶﾞｯﾋﾟ WS-ﾍﾝｶﾝｹｯｶ",
-        "CALL 'GLC010' USING WS-ｾｲﾈﾝｶﾞｯﾋﾟ WS-ｷﾞｮｳﾑﾋﾂﾞｹ WS-ﾈﾝﾚｲ",
+        "CALL 'GLC010' USING WS-ｾｲﾈﾝｶﾞｯﾋﾟ WS-ｵｳﾄｳﾋﾞ WS-ﾈﾝﾚｲ",
         "SET WS-ｼｮｳﾋﾝ-IX TO 1",
         "SEARCH WS-ｼｮｳﾋﾝ",
         "CONTINUE",
@@ -611,7 +721,7 @@
         "COMPUTE WS-ﾈﾝﾚｲ-ｿｴｼﾞ = WS-ﾈﾝﾚｲ + 1",
         "COMPUTE WS-ｹﾞﾂｶﾞｸ = PM-ﾎｹﾝｷﾝｶﾞｸ / 1000 * WS-ﾘｮｳﾘﾂ(WS-ｼｮｳﾋﾝ-IX PM-ｾｲﾍﾞﾂ WS-ﾈﾝﾚｲ-ｿｴｼﾞ)",
         "COMPUTE PM-ﾎｹﾝﾘｮｳ = WS-ｹﾞﾂｶﾞｸ * 12 * 0.95",
-        "MOVE WS-ｷﾞｮｳﾑﾋﾂﾞｹ TO WS-ﾏﾝｷﾋﾞ",
+        "MOVE WS-ｵｳﾄｳﾋﾞ TO WS-ﾏﾝｷﾋﾞ",
         "ADD PM-ﾎｹﾝｷｶﾝ TO WS-ﾏﾝｷ-YYYY",
         "MOVE 'W' TO WS-ﾎｳｺｳ",
         "CALL 'GLC020' USING WS-ﾎｳｺｳ WS-ﾏﾝｷﾋﾞ WS-ﾏﾝｷﾋﾞ-ﾜﾚｷ WS-ﾍﾝｶﾝｹｯｶ",
@@ -764,7 +874,7 @@
     },
     {
       "paragraph": "ｼﾜｹ-RTN",
-      "source": "gondwana/programs/GLD020.cbl:335",
+      "source": "gondwana/programs/GLD020.cbl:377",
       "conditions": [
         "WS-GLJRNL-OK"
       ],
@@ -821,7 +931,7 @@
     },
     {
       "paragraph": "ｼｭｳﾘｮｳ-RTN",
-      "source": "gondwana/programs/GLD020.cbl:384",
+      "source": "gondwana/programs/GLD020.cbl:426",
       "conditions": [
         "WS-GLSCTL-OK"
       ],
