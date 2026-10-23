@@ -8,8 +8,8 @@ Copal is a project in four parts, and three specimens. Survey, in `survey/`, rea
 - Survey is deterministic. Every blueprint fact is derived from the source by parsing and analysis, and is reproducible. Models may come later, only for naming and prose, and only on top of facts the analysis already established.
 - The specimens are fiction written for this project. Never copy real proprietary code, layouts or data into them.
 - The specimens run: every program compiles with GnuCOBOL, Pangaea's in IBM dialect, Laurasia's in Micro Focus dialect and Gondwana's in Fujitsu dialect, and their batches produce outputs that are checked in as golden files. A change to a specimen updates its golden outputs in the same commit.
-- A coupling to one specimen that the other shows is fixed generically, never by special-casing either.
-- Survey's blueprints of both specimens are golden files too, so a change in the analyzer shows as a diff in the blueprints.
+- A coupling to one specimen that another shows is fixed generically, never by special-casing any of them.
+- Survey's blueprints of the specimens are golden files too, so a change in the analyzer shows as a diff in the blueprints.
 - The dependencies run one way, and `make ci` checks it: `bedrock` imports nothing of Copal but cobolith, the library; `survey`, `pangaea`, `laurasia` and `gondwana` import `bedrock` and `cobolith`, never each other; only `console` imports the rest. Survey's tests read the specimens as their fixtures, which is data, not an import.
 - Code is organized by feature, not by layer.
 - All text is English with en-US spelling: code, comments, documentation, commit messages, and the specimens' programs and data. Comments are minimal. The exception is Gondwana, whose point is a Japanese shop's COBOL: its programs, copybooks, batch files and data are in Japanese, comments, data names in half-width katakana, literals and reports alike, in Shift_JIS as its compiler reads them; its documentation and the Go around it are English like the rest.

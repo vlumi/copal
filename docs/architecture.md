@@ -2,7 +2,7 @@
 
 Copal is one Go module in four parts, each a directory at the top of the repository, and the files where two of them meet. What reads COBOL is a library of its own, [cobolith](https://github.com/vlumi/cobolith), which every part imports.
 
-![The parts of Copal: the console imports the survey, the bank, bedrock and cobolith; the survey, the bank and Laurasia import bedrock and cobolith, and bedrock imports cobolith; the survey writes the blueprints and reads the bank](diagrams/architecture.svg)
+![The parts of Copal: the console imports the survey, the bank, bedrock and cobolith; the survey and the three specimens import bedrock and cobolith, and bedrock imports cobolith; the survey writes the blueprints and reads the bank](diagrams/architecture.svg)
 
 ## The parts
 
@@ -11,7 +11,7 @@ Copal is one Go module in four parts, each a directory at the top of the reposit
 - **Laurasia**, `laurasia/`, is the second specimen: a card processor in another shop's COBOL, Micro Focus dialect and free format, run by shell scripts instead of JCL, with a machine room of its own that opens it on a generated portfolio and runs it day after day. It is there to show where the survey assumes Pangaea. Its operations guide is in [laurasia/docs/](../laurasia/docs/operations.md).
 - **Gondwana**, `gondwana/`, is the third specimen: a life insurer in Fujitsu NetCOBOL, source and data in Shift_JIS with Japanese names and comments, amounts in yen and dates in the Japanese eras, run by Windows batch files that bedrock interprets. It is there to show where the survey assumes ASCII and the first two. Its operations guide is in [gondwana/docs/](../gondwana/docs/operations.md).
 - **Cobolith**, [cobolith](https://github.com/vlumi/cobolith), is the language layer everything stands on: reading COBOL source and copybooks in the IBM, Micro Focus, Hitachi and Fujitsu dialects, laying out records, reading and writing them by field, and reading JCL. It was written here and is now a library in a repository of its own, which Copal requires by version; how it got there is in [plans/library.md](plans/library.md).
-- **Bedrock**, `bedrock/`, is the harness built on it: keeping datasets and their catalog, reading batch scripts and batch files, and compiling COBOL programs with GnuCOBOL and running them and the jobs, scripts and batch files that run them. The survey's oracle runs programs with it, and the specimens' machine rooms run the bank and the card processor with it. None of it is analysis.
+- **Bedrock**, `bedrock/`, is the harness built on it: keeping datasets and their catalog, reading batch scripts and batch files, and compiling COBOL programs with GnuCOBOL and running them and the jobs, scripts and batch files that run them. The survey's oracle runs programs with it, and the specimens' machine rooms run the bank, the card processor and the life insurer with it. None of it is analysis.
 - **The console**, `console/`, is the one part built for the modernization rather than inherited from the past: it runs the bank, watches its online day, and shows each run's jobs as the survey draws them, with links into the blueprints. It is the only part that knows both the bank and the survey.
 
 ## The rule
@@ -27,7 +27,7 @@ Two kinds of thing are checked in that a build regenerates and compares, the spe
 - **Pangaea's outputs.** Each fixture under `pangaea/testdata/` runs its jobs through GnuCOBOL, and the datasets, job logs and reports they produce are golden. A change to the bank updates them in the same commit, so the history of the bank's behavior is in the history of its goldens.
 - **Laurasia's outputs.** Each fixture under `laurasia/testdata/` runs its scripts on its input files, and what they leave behind is golden, the same way.
 - **Gondwana's outputs.** Each fixture under `gondwana/testdata/` runs its batch files on its input files, and what they leave behind is golden, the same way; the working tree holds them in Shift_JIS and the repository in UTF-8.
-- **The survey of both.** `blueprints/pangaea/` and `blueprints/laurasia/` are what the survey says about the bank and the card processor, and `oracle/` the cases it found and what the programs did on them. A change in the analyzer shows as a diff there, which is how its behavior is reviewed: not by reading the code change alone, but by reading what it changed in the blueprints of a real system.
+- **The survey of the three.** `blueprints/pangaea/`, `blueprints/laurasia/` and `blueprints/gondwana/` are what the survey says about the bank, the card processor and the life insurer, and `oracle/` the cases it found and what the programs did on them. A change in the analyzer shows as a diff there, which is how its behavior is reviewed: not by reading the code change alone, but by reading what it changed in the blueprints of a real system.
 
 Both depend on everything being deterministic: the analysis, the diagram layout, and the specimens themselves, whose days follow from a seed and never read the clock.
 

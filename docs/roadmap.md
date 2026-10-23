@@ -1,6 +1,6 @@
 # Roadmap
 
-The order in which Survey and its specimens, the First Bank of Pangaea and then Laurasia Card Services, are built. [brief.md](brief.md) has the reasons and the open decisions; this file has the sequence. Each milestone ends with something that runs, a `make` target that shows it, and `make ci` green.
+The order in which Survey and its specimens, the First Bank of Pangaea, then Laurasia Card Services and Gondwana Life Insurance, are built. [brief.md](brief.md) has the reasons and the open decisions; this file has the sequence. Each milestone ends with something that runs, a `make` target that shows it, and `make ci` green.
 
 The two parts grow together: Pangaea gets a little bigger, the survey learns to read what was added, and the blueprints are regenerated as golden files. Somewhere in the middle Pangaea also becomes a bank you can watch: a dataset large enough to feel real, a business calendar, a reset button, a console in the browser, and an online day of card purchases and ATM withdrawals between the nightly batches.
 
@@ -172,9 +172,9 @@ The oracle runs Pangaea's jobs as well as its programs, and on both specimens it
 - What a called program returns. Most of the rules this was for were paths that contradict themselves, now left out of the tables, or rules the search reaches now through what a called program computes from what it is passed (done). Carrying back what a called program sets is not built; three of AUTHSRV's rules wait on it.
 - Totals that agree by construction, such as debits and credits, marked where no case reaches them, with the reason (done).
 
-Where it stands: 468 of the 498 rules are reached, 14 are marked with the reason the search cannot reach them, 3 as totals the program adds up itself and 11 as a write or rewrite by key that fails, and 16 are left. The plan lists them by kind: a rewrite that fails after a read, values no caller passes, a result no called paragraph sets, and the rest within programs.
+Where it stands: 468 of the 497 rules are reached, 14 are marked with the reason the search cannot reach them, 3 as totals the program adds up itself and 11 as a write or rewrite by key that fails, and 15 are left. The plan lists them by kind: a rewrite that fails after a read, values no caller passes, a result no called paragraph sets, and the rest within programs. Gondwana's rules, from milestone 18, stand apart: 318 of its 677 are reached, and [plans/third-specimen.md](plans/third-specimen.md) says what the search does not yet make for the rest.
 
-Done when: every rule of both specimens is reached by a recorded case, left out as one no run can take, or listed as reached only by an I/O error or bad data that no case records, with the reason.
+Done when: every rule of the specimens is reached by a recorded case, left out as one no run can take, or listed as reached only by an I/O error or bad data that no case records, with the reason.
 
 ## 15. Bedrock's COBOL as a library (done)
 
@@ -182,14 +182,14 @@ What reads COBOL, lays out its records and reads them by field, `cobol`, `layout
 
 - First a module of its own within this repository, with the public API it would have, so that the survey and both specimens use it only through that. The module is done: `cobolith/`, which Copal requires through a `replace`. It has its public API, tests of its own, a report against NIST's COBOL-85 suite, 383 of its 459 programs read, and a README that says what it covers.
 - Then its own repository, versioned below 1.0 and published as pre-production: a comprehensive starting point that is honest about what it has been run against, two specimens written for it, and what it has not. Done: [cobolith](https://github.com/vlumi/cobolith), public, tagged `v0.1.0` with a changelog, and required by Copal at that version.
-- Since then, in its own repository, each release a pull request there and a version bump here: binary and floating-point fields in `record`, section-qualified paragraph names, `SYNCHRONIZED` as IBM documents it, `REPLACE`, `RENAMES` and SPECIAL-NAMES, which took NIST's suite to 433 of 459; and the first Japanese dialects, Hitachi COBOL2002 and Fujitsu NetCOBOL, read in Shift_JIS with national items. Since then the Report Writer and Shift_JIS source given out in UTF-8, for the third specimen, which took NIST's suite to 439. Copal requires `v0.8.1`.
+- Since then, in its own repository, each release a pull request there and a version bump here: binary and floating-point fields in `record`, section-qualified paragraph names, `SYNCHRONIZED` as IBM documents it, `REPLACE`, `RENAMES` and SPECIAL-NAMES, which took NIST's suite to 433 of 459; and the first Japanese dialects, Hitachi COBOL2002 and Fujitsu NetCOBOL, read in Shift_JIS with national items. Since then the Report Writer and Shift_JIS source given out in UTF-8, for the third specimen, which took NIST's suite to 439. Since then the readers return errors, never panics, on source cut short or left open, with fuzz tests to keep it so. Copal requires `v0.8.3`.
 - Stability comes only from real code. Its API and coverage settle as code it was not written for is run through it, by this project or by others; in a vacuum it stays pre-production.
 
 Done when: it is published, the survey and the specimens import it from there, and its README says what it covers, what it has been tested against, and what it does not yet read.
 
 ## 16. Names and prose by a model
 
-The facts hold on two specimens; a model could write what they cannot say, on top of them and apart from them. It waits until the deterministic work is done: until then the repository builds, tests and renders its blueprints with no model and no API key, and nothing in it is non-deterministic. The plan is in [plans/model-prose.md](plans/model-prose.md):
+The facts hold on three specimens; a model could write what they cannot say, on top of them and apart from them. It waits until the deterministic work is done: until then the repository builds, tests and renders its blueprints with no model and no API key, and nothing in it is non-deterministic. The plan is in [plans/model-prose.md](plans/model-prose.md):
 
 - Annotations kept apart from the facts, each with a hash of the facts it was written from, checked before it is kept, and shown marked as a model's; built first with no model at all (done).
 - What each paragraph and section is for, and a name that says it.
@@ -197,7 +197,7 @@ The facts hold on two specimens; a model could write what they cannot say, on to
 - Programs, entities, fields and states.
 - A reading of the prose against the code.
 
-Done when: every program, paragraph, rule and entity of both specimens has prose that names only what the survey established, `make ci` needs no model, and a change in the facts marks the prose it touches stale.
+Done when: every program, paragraph, rule and entity of the three specimens has prose that names only what the survey established, `make ci` needs no model, and a change in the facts marks the prose it touches stale.
 
 ## 17. A living Laurasia (done)
 
@@ -208,7 +208,7 @@ Laurasia ran one hand-written night. To show that the second specimen is a syste
 
 Done when: the processor runs for months from a seed with its cards paying, declining and disputing at steady rates, and the blueprints show the payments feed as they show the rest.
 
-## 18. A third specimen
+## 18. A third specimen (done)
 
 Gondwana Life Insurance, a life insurer on Fujitsu NetCOBOL, run from Windows batch files: Shift_JIS source and data, whole yen, dates in the Japanese eras, the Report Writer, and a third job control. Insurance is the third home of COBOL after banking and government, and Japan the biggest COBOL world the survey has not seen. The plan is in [plans/third-specimen.md](plans/third-specimen.md):
 
