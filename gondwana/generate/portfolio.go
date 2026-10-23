@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand/v2"
 	"slices"
+	"strings"
 	"time"
 )
 
@@ -24,7 +25,7 @@ func (g *Generator) Extract(n int, opening Date) ([][]byte, error) {
 		p.No = fmt.Sprintf("%04d%06d", p.Contract.Year(), issued[p.Contract.Year()])
 		policies = append(policies, p)
 	}
-	slices.SortFunc(policies, func(a, b Policy) int { return cmpStrings(a.No, b.No) })
+	slices.SortFunc(policies, func(a, b Policy) int { return strings.Compare(a.No, b.No) })
 	var recs [][]byte
 	for _, p := range policies {
 		rec, err := g.record(p)
@@ -36,24 +37,10 @@ func (g *Generator) Extract(n int, opening Date) ([][]byte, error) {
 	return recs, nil
 }
 
-func cmpStrings(a, b string) int {
-	switch {
-	case a < b:
-		return -1
-	case a > b:
-		return 1
-	}
-	return 0
-}
-
 // policy makes up one policy as the old system holds it on the opening
 // date.
 func (g *Generator) policy(r *rand.Rand, opening Date) Policy {
-	weights := make([]int, len(products))
-	for i, pr := range products {
-		weights[i] = pr.weight
-	}
-	pr := products[pick(r, weights)]
+	pr := aProduct(r)
 	holder := somebody(r)
 	yearsBack := int(float64(opening.Year()-firstYear) * r.Float64() * r.Float64())
 	contract := opening.AddDays(-1 - r.IntN(365)).AddYears(-yearsBack)

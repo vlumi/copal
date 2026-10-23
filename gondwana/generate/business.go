@@ -17,7 +17,7 @@ func (g *Generator) NewBusiness(date Date, policies []Policy) ([][]byte, error) 
 	count := poisson(r, newBusinessRate*float64(len(policies))/1000)
 	var recs [][]byte
 	for i := range count {
-		p, _ := g.application(r, date, i+1)
+		p := g.application(r, date, i+1)
 		fields := map[string]any{
 			"NP-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ": p.No, "NP-ｼｮｳﾋﾝ": p.Product, "NP-ﾎｹﾝｷﾝｶﾞｸ": p.Sum, "NP-ﾊﾗｲｺﾐﾎｳﾎｳ": string(rune('0' + p.Mode)),
 			"NP-ｹｲﾔｸﾋﾞ": p.Contract.Number(), "NP-ｼﾒｲ": p.Name, "NP-ｼﾒｲｶﾅ": p.Kana, "NP-ｾｲﾈﾝｶﾞｯﾋﾟ": p.Birth.Number(),
@@ -41,12 +41,8 @@ func (g *Generator) NewBusiness(date Date, policies []Policy) ([][]byte, error) 
 // application makes up a policy as the sales system sends it: numbered
 // by the day, contracted within the last few days, sold by an office
 // still open.
-func (g *Generator) application(r *rand.Rand, date Date, n int) (Policy, product) {
-	weights := make([]int, len(products))
-	for i, pr := range products {
-		weights[i] = pr.weight
-	}
-	pr := products[pick(r, weights)]
+func (g *Generator) application(r *rand.Rand, date Date, n int) Policy {
+	pr := aProduct(r)
 	holder := somebody(r)
 	p := Policy{
 		No: policyNumber(date, n), Product: pr.code, Mode: 1, Contract: date.AddDays(-r.IntN(4)),
@@ -59,7 +55,7 @@ func (g *Generator) application(r *rand.Rand, date Date, n int) (Policy, product
 	}
 	p.Birth, p.EntryAge = g.birth(r, pr, p.Contract)
 	p.Sum = g.sum(r, pr)
-	return p, pr
+	return p
 }
 
 // mistake spoils one field of an application the way the sales system's

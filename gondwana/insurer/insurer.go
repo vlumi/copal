@@ -104,14 +104,15 @@ func (in Insurer) Open(seed uint64, policies int) error {
 	if err := in.write("IN/EXTRACT.TXT", generate.File(extract)); err != nil {
 		return err
 	}
-	for name, table := range map[string]func() ([][]byte, error){
-		"PRODTB": g.Products, "RATETB": g.Rates, "CSVTB": g.CashValues, "RSVTB": g.Reserves, "AGTMST": g.Agents,
-	} {
-		recs, err := table()
+	for _, t := range []struct {
+		name  string
+		table func() ([][]byte, error)
+	}{{"PRODTB", g.Products}, {"RATETB", g.Rates}, {"CSVTB", g.CashValues}, {"RSVTB", g.Reserves}, {"AGTMST", g.Agents}} {
+		recs, err := t.table()
 		if err != nil {
 			return err
 		}
-		if err := in.write(filepath.Join("MASTER", name+".TXT"), generate.File(recs)); err != nil {
+		if err := in.write(filepath.Join("MASTER", t.name+".TXT"), generate.File(recs)); err != nil {
 			return err
 		}
 	}
@@ -283,10 +284,10 @@ func (in Insurer) policies(g *generate.Generator, date generate.Date) ([]generat
 	if err != nil {
 		return nil, err
 	}
-	latest := in.data("IN", "EXTRACT.TXT")
+	latest, latestStamp := in.data("IN", "EXTRACT.TXT"), ""
 	for _, unload := range unloads {
-		if stamp := stampOf(unload); stamp < date.Stamp() && (latest == in.data("IN", "EXTRACT.TXT") || stamp > stampOf(latest)) {
-			latest = unload
+		if stamp := stampOf(unload); stamp < date.Stamp() && stamp > latestStamp {
+			latest, latestStamp = unload, stamp
 		}
 	}
 	recs, err := in.readFile(g.Layouts.Policy, latest)
@@ -309,39 +310,35 @@ func stampOf(path string) string {
 // portfolio stands from the unload.
 func (in Insurer) count(g *generate.Generator, day *Day) error {
 	stamp := day.Date.Stamp()
-	lines := func(name string) (int, error) {
-		content, err := os.ReadFile(in.data("OUT", name+"."+stamp+".TXT"))
+	lines := func(dir, name string) (int, error) {
+		content, err := os.ReadFile(in.data(dir, name+"."+stamp+".TXT"))
 		if errors.Is(err, os.ErrNotExist) {
 			return 0, nil
 		}
-		if err != nil {
-			return 0, err
-		}
-		return strings.Count(string(content), "\n"), nil
+		return strings.Count(string(content), "\n"), err
 	}
-	inbound := func(name string) (int, error) {
-		content, err := os.ReadFile(in.data("IN", name+"."+stamp+".TXT"))
+	rejects := map[string]int{}
+	for _, name := range []string{"NEWREJ", "CLMREJ", "MNTREJ", "RESREJ"} {
+		n, err := lines("OUT", name)
 		if err != nil {
-			return 0, err
+			return err
 		}
-		return strings.Count(string(content), "\n"), nil
+		rejects[name] = n
+		day.Rejected += n
 	}
-	var counts [8]int
 	var err error
-	for i, name := range []string{"NEWREJ", "CLMREJ", "MNTREJ", "RESREJ", "PAYOUT"} {
-		if counts[i], err = lines(name); err != nil {
-			return err
-		}
+	if day.Benefits, err = lines("OUT", "PAYOUT"); err != nil {
+		return err
 	}
-	for i, name := range []string{"NEWPOL", "MNTREQ"} {
-		if counts[5+i], err = inbound(name); err != nil {
-			return err
-		}
+	applications, err := lines("IN", "NEWPOL")
+	if err != nil {
+		return err
 	}
-	day.Rejected = counts[0] + counts[1] + counts[2] + counts[3]
-	day.Benefits = counts[4]
-	day.New = counts[5] - counts[0]
-	day.Changes = counts[6] - counts[2]
+	changes, err := lines("IN", "MNTREQ")
+	if err != nil {
+		return err
+	}
+	day.New, day.Changes = applications-rejects["NEWREJ"], changes-rejects["MNTREJ"]
 	if err := in.countTransfers(g, day); err != nil {
 		return err
 	}
