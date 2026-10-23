@@ -216,7 +216,7 @@ Gondwana Life Insurance, a life insurer on Fujitsu NetCOBOL, run from Windows ba
 - The survey on it as it is, and every break and wrong fact written down (done).
 - The language: the Report Writer in cobolith, and every reader of source in the dialect's encoding (done).
 - The facts: yen, era dates, deep tables, the batch files as jobs; lineage, the design views and the oracle on it (done).
-- A living Gondwana: a generated portfolio and a year of days.
+- A living Gondwana: a generated portfolio and a year of days (done).
 
 Done when: the survey's blueprints and cases of Gondwana are as right as the other two's, with no special case for any of the three, and a year of the generated insurer runs from a seed.
 
