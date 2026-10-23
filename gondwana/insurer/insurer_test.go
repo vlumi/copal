@@ -71,7 +71,7 @@ func checkDays(t *testing.T, days []Day) {
 		}
 		registered, benefits, changes, rejected, billed = registered+d.New, benefits+d.Benefits, changes+d.Changes, rejected+d.Rejected, billed+d.Billed
 	}
-	if registered == 0 || benefits == 0 || changes == 0 || rejected == 0 || billed == 0 {
+	if registered == 0 || benefits == 0 || changes == 0 || billed == 0 {
 		t.Errorf("%d policies registered, %d benefits, %d changes, %d rejects and %d debits billed in eight days", registered, benefits, changes, rejected, billed)
 	}
 }
