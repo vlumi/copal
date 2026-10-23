@@ -1,5 +1,7 @@
 package generate
 
+import "math/rand/v2"
+
 // product is a product the insurer sells, as the product table has it:
 // its kind, the ages it is sold at, its term, the sums it insures, the
 // daily hospitalization benefit per 1,000 yen and the waiting days of a
@@ -27,6 +29,15 @@ var products = []product{
 	{"TM", sjis("定期保険"), 2, 20, 60, 10, 1_000_000, 300_000_000, 0, 0, 0, 20, 80, 20, 3},
 	{"EN", sjis("養老保険"), 3, 0, 55, 20, 500_000, 50_000_000, 0, 0, 15, 20, 380, 0, 2},
 	{"MD", sjis("医療保険"), 4, 15, 75, 0, 1_000_000, 20_000_000, 1, 90, 0, 15, 90, 20, 2},
+}
+
+// aProduct draws a product by its share of the business.
+func aProduct(r *rand.Rand) product {
+	weights := make([]int, len(products))
+	for i, p := range products {
+		weights[i] = p.weight
+	}
+	return products[pick(r, weights)]
 }
 
 // rate is the monthly premium per 1,000 yen of the sum, in hundredths of

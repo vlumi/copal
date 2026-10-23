@@ -34,7 +34,7 @@ func (g *Generator) Results(date Date, request [][]byte) ([][]byte, error) {
 			bankName, branchName := bankNamed(int(bankCode), int(branchCode))
 			result := "0"
 			if chance(r, failureRate(customer)) {
-				result = []string{"1", "1", "1", "1", "1", "1", "2", "3", "3", "4"}[r.IntN(10)]
+				result = string("1234"[pick(r, []int{6, 1, 2, 1})])
 				unpaidCount, unpaidAmount = unpaidCount+1, unpaidAmount+amount
 			} else {
 				paidCount, paidAmount = paidCount+1, paidAmount+amount
