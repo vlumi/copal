@@ -103,7 +103,7 @@ func (g *Generator) birth(r *rand.Rand, pr product, contract Date) (Date, int) {
 func (g *Generator) sum(r *rand.Rand, pr product) int64 {
 	unit := map[string]int64{"WL": 1_000_000, "TM": 5_000_000, "EN": 500_000, "MD": 1_000_000}[pr.code]
 	steps := int((pr.maxSum - pr.minSum) / unit)
-	n := int(float64(steps+1) * r.Float64() * r.Float64())
+	n := int(float64(steps+1) * r.Float64() * r.Float64() * r.Float64())
 	return min(pr.minSum+int64(n)*unit, pr.maxSum)
 }
 
