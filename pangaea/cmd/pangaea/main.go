@@ -104,7 +104,7 @@ func unload(args []string) error {
 	dir := flags.String("datasets", "", "dataset directory")
 	_ = flags.Parse(args)
 	if flags.NArg() != 1 {
-		return fmt.Errorf("unload needs an output directory")
+		return errors.New("unload needs an output directory")
 	}
 	store, err := dataset.Open(*dir)
 	if err != nil {
@@ -120,7 +120,7 @@ func runJob(args []string) error {
 	programs := flags.String("programs", "pangaea/build", "directory of the compiled programs")
 	_ = flags.Parse(args)
 	if flags.NArg() != 1 {
-		return fmt.Errorf("run needs one job file")
+		return errors.New("run needs one job file")
 	}
 	job, err := jcl.ParseFile(flags.Arg(0))
 	if err != nil {

@@ -155,7 +155,7 @@ func (b *Batch) provide(job *jcl.Job, store *dataset.Store, dir string) error {
 		}
 	}
 	for _, name := range order {
-		if err := b.provideDataset(readers[name], store, dir); err != nil {
+		if err := b.provideDataset(readers[name], store); err != nil {
 			return err
 		}
 	}
@@ -179,7 +179,7 @@ func datasetKey(dd jcl.DD) string {
 	return dd.DSN
 }
 
-func (b *Batch) provideDataset(readers []reading, store *dataset.Store, dir string) error {
+func (b *Batch) provideDataset(readers []reading, store *dataset.Store) error {
 	first := readers[0]
 	result := b.results[first.step.Program]
 	if result == nil {

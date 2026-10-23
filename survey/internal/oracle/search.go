@@ -1,10 +1,10 @@
 package oracle
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"sync"
 
 	"github.com/vlumi/copal/survey/blueprint"
@@ -209,7 +209,7 @@ func (s *searcher) runAll(cases []Case, record bool) ([]result, error) {
 		go func() {
 			defer wg.Done()
 			for i := range work {
-				dir := filepath.Join(s.scratch, "runs", fmt.Sprint(s.runs+i))
+				dir := filepath.Join(s.scratch, "runs", strconv.Itoa(s.runs+i))
 				if errs[i] = os.MkdirAll(dir, 0o755); errs[i] == nil {
 					results[i], errs[i] = s.runner.run(cases[i], dir, record)
 					_ = os.RemoveAll(dir)

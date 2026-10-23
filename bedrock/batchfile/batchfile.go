@@ -9,6 +9,7 @@ package batchfile
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -136,7 +137,7 @@ func (p *parser) line(n int, text string) error {
 			words = append(words[:1], words[2:]...)
 		}
 		if len(words) != 3 {
-			return fmt.Errorf("move takes a source and a target")
+			return errors.New("move takes a source and a target")
 		}
 		line.Kind, line.Words = Move, words[1:]
 	case words[0] == ">>" && len(words) >= 3 && strings.EqualFold(words[2], "echo"):
