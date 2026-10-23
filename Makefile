@@ -70,6 +70,19 @@ laurasia-build:
 gondwana-month:  ## Run Gondwana's March on the fixture and show its logs and reports
 	@scripts/gondwana-month.sh
 
+.PHONY: life-open
+life-open: gondwana-build  ## Open the running life insurer on a generated portfolio (SEED, POLICIES)
+	go run ./gondwana/cmd/gondwana open -seed $(SEED) -policies $(POLICIES)
+
+.PHONY: life-days
+life-days: gondwana-build  ## Run the life insurer's next N business days
+	go run ./gondwana/cmd/gondwana days -n $(N)
+
+# Compiles Gondwana's programs for the targets that run the insurer; not listed.
+.PHONY: gondwana-build
+gondwana-build:
+	go run ./gondwana/cmd/gondwana build
+
 ##@ The survey
 
 .PHONY: blueprints
@@ -116,6 +129,7 @@ gondwana-golden:  ## Rewrite Gondwana's golden outputs from a run of its fixture
 SEED ?= 1
 ACCOUNTS ?= 3000
 CARDS ?= 1000
+POLICIES ?= 2000
 N ?= 1
 
 ##@ Checks

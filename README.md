@@ -45,6 +45,7 @@ Everything is a make target, and plain `make` lists them. You need GnuCOBOL 3.2 
 | Target | What it does | Where to look |
 | --- | --- | --- |
 | `make gondwana-month` | Runs Gondwana's March on its fixture: the system opened, three business days, the premium billing and the collection agent's results, the month-end close and the year-end dividends, with each batch file's log and every program's report, transcoded for the terminal | the terminal, and `gondwana/run/month/data/` |
+| `make life-open`, `make life-days N=261` | Opens a life insurer of about 2,000 generated policies and runs business days, one line each: the daily run, and the billing, the agent's results, the close and the year end on their days | `gondwana/run/insurer/data/` |
 
 ### The survey
 
@@ -88,7 +89,7 @@ Everything is a make target, and plain `make` lists them. You need GnuCOBOL 3.2 
 
 1. `make toolchain`: check that the tools are there.
 2. `make pangaea-daily`: the bank in one screen; `make laurasia-night`: the card processor's night in one; `make gondwana-month`: the life insurer's March, in Japanese.
-3. `make bank-reset` and `make bank-days N=5`: five business days of the generated bank. `make cards-open` and `make cards-days N=30`: a month of the card processor, weekends included.
+3. `make bank-reset` and `make bank-days N=5`: five business days of the generated bank. `make cards-open` and `make cards-days N=30`: a month of the card processor, weekends included. `make life-open` and `make life-days N=261`: a fiscal year of the life insurer, its dividends on the last day.
 4. `make console`, then open an account, a day's jobs, and **Compare**.
 5. `make simulate` from another terminal: the **Online** page fills with authorizations. Run a day from the console: the channel closes for the batch, and the next morning the purchases and withdrawals are in the master.
 6. Read a blueprint: [TXPOST](blueprints/pangaea/programs/TXPOST.md), its [decision tables](blueprints/pangaea/rules/TXPOST.md), and the [DAILY job](blueprints/pangaea/jobs/DAILY.md).
