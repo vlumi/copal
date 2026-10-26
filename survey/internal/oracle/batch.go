@@ -355,7 +355,7 @@ func (b *Batch) unload(job *jcl.Job, dsn, path, dir string) ([]byte, error) {
 			}
 			out := filepath.Join(dir, "unloaded")
 			outcome, err := run.Step{Programs: result.runner.loaders, Program: unloaderName(result.program.blueprint.Files[i]),
-				DDs: map[string]string{"UNLOADIN": path, "UNLOADOUT": out}, Stdout: io.Discard, Timeout: timeout}.Run()
+				DDs: map[string]string{"UNLOADIN": path, "UNLOADOUT": out}, Stdout: io.Discard, Timeout: loadTimeout}.Run()
 			if err == nil && (outcome.RC != 0 || outcome.Abended) {
 				err = fmt.Errorf("unloading %s: %+v", dsn, outcome)
 			}
