@@ -32,16 +32,19 @@ type DecisionTable struct {
 	Rules         []DecisionRule `json:"rules"`
 }
 
-// DecisionRule is one path through a decision table.
+// DecisionRule is one path through a decision table, and the path as a
+// sentence, written from its conditions and statements.
 type DecisionRule struct {
-	Entries []string `json:"entries"`
-	Actions []int    `json:"actions"`
+	Entries  []string `json:"entries"`
+	Actions  []int    `json:"actions"`
+	Sentence string   `json:"sentence"`
 }
 
 // newRules converts a program's decision tables, resolving the condition
 // names their conditions refer to with the fields they are declared on.
 func newRules(program string, tables []rules.Table, records []Record) Rules {
 	fields := conditionFields(records)
+	words := sentences{names: conditionNames(records)}
 	r := Rules{Program: program}
 	for _, t := range tables {
 		dt := DecisionTable{Paragraph: t.Paragraph, Loop: t.Loop, Source: t.Pos.String(), Conditions: t.Conditions, Actions: t.Actions}
@@ -56,7 +59,7 @@ func newRules(program string, tables []rules.Table, records []Record) Rules {
 			dt.ConditionRefs = append(dt.ConditionRefs, items)
 		}
 		for _, rule := range t.Rules {
-			dt.Rules = append(dt.Rules, DecisionRule{Entries: rule.Entries, Actions: rule.Actions})
+			dt.Rules = append(dt.Rules, DecisionRule{Entries: rule.Entries, Actions: rule.Actions, Sentence: words.rule(t, rule)})
 		}
 		r.Tables = append(r.Tables, dt)
 	}
@@ -119,7 +122,9 @@ func rulesMarkdown(dir string, r Rules) string {
 	fmt.Fprintf(&b, "The business rules of [%s](../programs/%s.md), paragraph by paragraph: each column is one path through "+
 		"the paragraph's decisions, with the outcome of each condition it tests, Y or N, and the actions it takes, numbered "+
 		"in the order they run. The WHENs of an EVALUATE are tried in order, and an IF whose THEN jumps away has the rest "+
-		"of its paragraph as its ELSE. The body of an inline PERFORM has a table of its own, for one pass.\n", r.Program, r.Program)
+		"of its paragraph as its ELSE. The body of an inline PERFORM has a table of its own, for one pass. Under each table, "+
+		"each rule as a sentence, written from the conditions it tests and the statements it runs, with no more in it than "+
+		"the table has: a condition name with the field it is declared on and its values.\n", r.Program, r.Program)
 	for _, t := range r.Tables {
 		fmt.Fprintf(&b, "\n## %s\n\n", t.Title())
 		if t.Loop != "" {
@@ -152,6 +157,10 @@ func rulesMarkdown(dir string, r Rules) string {
 				cells = append(cells, strings.Join(orders, ", "))
 			}
 			b.WriteString(row(cells...))
+		}
+		b.WriteString("\n")
+		for i, rule := range t.Rules {
+			fmt.Fprintf(&b, "- **Rule %d.** %s\n", i+1, rule.Sentence)
 		}
 		fmt.Fprintf(&b, "\nSource: %s.\n", sourceLink(dir, t.Source, true))
 	}

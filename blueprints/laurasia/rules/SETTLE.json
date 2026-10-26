@@ -35,7 +35,8 @@
             4,
             5,
             6
-          ]
+          ],
+          "sentence": "When `WS-OWING-COUNT` is more than zero, it opens `PRES-IN` and `ADJUST-IN` for input and `PAYOUT-OUT` and `REPORT-OUT` for output; performs `READ-PRESENTMENT`; performs `READ-ADJUSTMENT`; performs `SETTLE-MERCHANT` until `WS-PRES-KEY` is high values and `WS-ADJUST-KEY` is high values; performs `WRITE-REPORT`; closes `PRES-IN`, `ADJUST-IN`, `PAYOUT-OUT`, and `REPORT-OUT`; and stops the run."
         },
         {
           "entries": [
@@ -49,7 +50,8 @@
             4,
             5,
             7
-          ]
+          ],
+          "sentence": "When `WS-OWING-COUNT` is at most zero, it opens `PRES-IN` and `ADJUST-IN` for input and `PAYOUT-OUT` and `REPORT-OUT` for output; performs `READ-PRESENTMENT`; performs `READ-ADJUSTMENT`; performs `SETTLE-MERCHANT` until `WS-PRES-KEY` is high values and `WS-ADJUST-KEY` is high values; performs `WRITE-REPORT`; closes `PRES-IN`, `ADJUST-IN`, `PAYOUT-OUT`, and `REPORT-OUT`; and stops the run."
         }
       ]
     },
@@ -75,7 +77,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When reading `PRES-IN` finds no more records, it reads `PRES-IN` and sets `WS-PRES-KEY` to high values."
         },
         {
           "entries": [
@@ -84,7 +87,8 @@
           "actions": [
             0,
             2
-          ]
+          ],
+          "sentence": "When reading `PRES-IN` finds a record, it reads `PRES-IN` and sets `WS-PRES-KEY` to `PS-MERCHANT`."
         }
       ]
     },
@@ -110,7 +114,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When reading `ADJUST-IN` finds no more records, it reads `ADJUST-IN` and sets `WS-ADJUST-KEY` to high values."
         },
         {
           "entries": [
@@ -119,7 +124,8 @@
           "actions": [
             0,
             2
-          ]
+          ],
+          "sentence": "When reading `ADJUST-IN` finds a record, it reads `ADJUST-IN` and sets `WS-ADJUST-KEY` to `AD-MERCHANT`."
         }
       ]
     },
@@ -154,7 +160,8 @@
             2,
             3,
             4
-          ]
+          ],
+          "sentence": "When `WS-PRES-KEY` is less than `WS-ADJUST-KEY`, it sets `WS-MERCHANT` to `WS-PRES-KEY`; sets `WS-GROSS`, `WS-INTERCHANGE`, and `WS-ADJUSTMENTS` to zero; repeats its loop until `WS-PRES-KEY` is not `WS-MERCHANT`; repeats its loop until `WS-ADJUST-KEY` is not `WS-MERCHANT`; and performs `WRITE-PAYOUT`."
         },
         {
           "entries": [
@@ -166,7 +173,8 @@
             2,
             3,
             4
-          ]
+          ],
+          "sentence": "When `WS-PRES-KEY` is at least `WS-ADJUST-KEY`, it sets `WS-MERCHANT` to `WS-ADJUST-KEY`; sets `WS-GROSS`, `WS-INTERCHANGE`, and `WS-ADJUSTMENTS` to zero; repeats its loop until `WS-PRES-KEY` is not `WS-MERCHANT`; repeats its loop until `WS-ADJUST-KEY` is not `WS-MERCHANT`; and performs `WRITE-PAYOUT`."
         }
       ]
     },
@@ -196,7 +204,8 @@
             0,
             1,
             2
-          ]
+          ],
+          "sentence": "When `PS-MATCH` is `'M'` (`PS-MATCHED`), it adds `PS-AMOUNT` to `WS-GROSS`, adds `PS-FEE` to `WS-INTERCHANGE`, and performs `READ-PRESENTMENT`."
         },
         {
           "entries": [
@@ -204,7 +213,8 @@
           ],
           "actions": [
             2
-          ]
+          ],
+          "sentence": "When `PS-MATCH` is not `'M'` (not `PS-MATCHED`), it performs `READ-PRESENTMENT`."
         }
       ]
     },
@@ -246,7 +256,8 @@
             5,
             6,
             7
-          ]
+          ],
+          "sentence": "When `PA-NET` is less than zero, it sets `PA-MERCHANT` to `WS-MERCHANT`, sets `PA-GROSS` to `WS-GROSS`, sets `PA-INTERCHANGE` to `WS-INTERCHANGE`, sets `PA-ADJUSTMENTS` to `WS-ADJUSTMENTS`, computes `PA-NET` as `WS-GROSS - WS-INTERCHANGE + WS-ADJUSTMENTS`, sets `PA-STATUS` to `PA-OWES`, adds 1 to `WS-OWING-COUNT`, and writes `PAYOUT`."
         },
         {
           "entries": [
@@ -262,7 +273,8 @@
             9,
             10,
             7
-          ]
+          ],
+          "sentence": "When `PA-NET` is at least zero, it sets `PA-MERCHANT` to `WS-MERCHANT`, sets `PA-GROSS` to `WS-GROSS`, sets `PA-INTERCHANGE` to `WS-INTERCHANGE`, sets `PA-ADJUSTMENTS` to `WS-ADJUSTMENTS`, computes `PA-NET` as `WS-GROSS - WS-INTERCHANGE + WS-ADJUSTMENTS`, sets `PA-STATUS` to `PA-PAID`, adds 1 to `WS-PAID-COUNT`, adds `PA-NET` to `WS-PAID-TOTAL`, and writes `PAYOUT`."
         }
       ]
     }

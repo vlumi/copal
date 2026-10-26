@@ -36,7 +36,8 @@
             0,
             1,
             2
-          ]
+          ],
+          "sentence": "When `WS-ACCOUNTS-STATUS` is not `'00'`, it accepts `WS-RUN-DATE` from its command line; opens `FEED-IN` for input, `ACCOUNTS` to update, and `POSTINGS-OUT`, `REJECT-OUT`, and `REPORT-OUT` for output; and stops the run."
         },
         {
           "entries": [
@@ -50,7 +51,8 @@
             4,
             5,
             6
-          ]
+          ],
+          "sentence": "When `WS-ACCOUNTS-STATUS` is `'00'` and `WS-REJECTED` is more than zero, it accepts `WS-RUN-DATE` from its command line; opens `FEED-IN` for input, `ACCOUNTS` to update, and `POSTINGS-OUT`, `REJECT-OUT`, and `REPORT-OUT` for output; repeats its loop until `WS-AT-END` is `'Y'` (`FEED-AT-END`); performs `WRITE-REPORT`; closes `FEED-IN`, `ACCOUNTS`, `POSTINGS-OUT`, `REJECT-OUT`, and `REPORT-OUT`; and stops the run."
         },
         {
           "entries": [
@@ -64,7 +66,8 @@
             4,
             5,
             7
-          ]
+          ],
+          "sentence": "When `WS-ACCOUNTS-STATUS` is `'00'` and `WS-REJECTED` is at most zero, it accepts `WS-RUN-DATE` from its command line; opens `FEED-IN` for input, `ACCOUNTS` to update, and `POSTINGS-OUT`, `REJECT-OUT`, and `REPORT-OUT` for output; repeats its loop until `WS-AT-END` is `'Y'` (`FEED-AT-END`); performs `WRITE-REPORT`; closes `FEED-IN`, `ACCOUNTS`, `POSTINGS-OUT`, `REJECT-OUT`, and `REPORT-OUT`; and stops the run."
         }
       ]
     },
@@ -91,7 +94,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When reading `FEED-IN` finds no more records, it reads `FEED-IN` and sets `WS-AT-END` to `FEED-AT-END`."
         },
         {
           "entries": [
@@ -100,7 +104,8 @@
           "actions": [
             0,
             2
-          ]
+          ],
+          "sentence": "When reading `FEED-IN` finds a record, it reads `FEED-IN` and performs `APPLY-RECORD`."
         }
       ]
     },
@@ -147,7 +152,8 @@
             0,
             1,
             2
-          ]
+          ],
+          "sentence": "When `WS-REASON` is not spaces (not `RECORD-IS-GOOD`), it performs `VALIDATE-RECORD`, performs `REJECT-RECORD`, and leaves the section."
         },
         {
           "entries": [
@@ -163,7 +169,8 @@
             5,
             1,
             2
-          ]
+          ],
+          "sentence": "When `WS-REASON` is spaces (`RECORD-IS-GOOD`) and reading `ACCOUNTS` fails on its key, it performs `VALIDATE-RECORD`, sets `CA-CARD-NO` to `PF-CARD-NO`, reads `ACCOUNTS`, sets `WS-REASON` to `'CARD'`, performs `REJECT-RECORD`, and leaves the section."
         },
         {
           "entries": [
@@ -179,7 +186,8 @@
             6,
             7,
             8
-          ]
+          ],
+          "sentence": "When `WS-REASON` is spaces (`RECORD-IS-GOOD`), reading `ACCOUNTS` succeeds by its key, `PF-KIND` is `'P'` (`PF-PAYMENT`), and rewriting `CARD-ACCOUNT` fails on its key, it performs `VALIDATE-RECORD`, sets `CA-CARD-NO` to `PF-CARD-NO`, reads `ACCOUNTS`, performs `APPLY-PAYMENT`, rewrites `CARD-ACCOUNT`, and stops the run."
         },
         {
           "entries": [
@@ -194,7 +202,8 @@
             4,
             6,
             7
-          ]
+          ],
+          "sentence": "When `WS-REASON` is spaces (`RECORD-IS-GOOD`), reading `ACCOUNTS` succeeds by its key, `PF-KIND` is `'P'` (`PF-PAYMENT`), and rewriting `CARD-ACCOUNT` succeeds by its key, it performs `VALIDATE-RECORD`, sets `CA-CARD-NO` to `PF-CARD-NO`, reads `ACCOUNTS`, performs `APPLY-PAYMENT`, and rewrites `CARD-ACCOUNT`."
         },
         {
           "entries": [
@@ -210,7 +219,8 @@
             9,
             7,
             8
-          ]
+          ],
+          "sentence": "When `WS-REASON` is spaces (`RECORD-IS-GOOD`), reading `ACCOUNTS` succeeds by its key, `PF-KIND` is not `'P'` (not `PF-PAYMENT`), and rewriting `CARD-ACCOUNT` fails on its key, it performs `VALIDATE-RECORD`, sets `CA-CARD-NO` to `PF-CARD-NO`, reads `ACCOUNTS`, performs `APPLY-STATUS`, rewrites `CARD-ACCOUNT`, and stops the run."
         },
         {
           "entries": [
@@ -225,7 +235,8 @@
             4,
             9,
             7
-          ]
+          ],
+          "sentence": "When `WS-REASON` is spaces (`RECORD-IS-GOOD`), reading `ACCOUNTS` succeeds by its key, `PF-KIND` is not `'P'` (not `PF-PAYMENT`), and rewriting `CARD-ACCOUNT` succeeds by its key, it performs `VALIDATE-RECORD`, sets `CA-CARD-NO` to `PF-CARD-NO`, reads `ACCOUNTS`, performs `APPLY-STATUS`, and rewrites `CARD-ACCOUNT`."
         }
       ]
     },
@@ -265,7 +276,8 @@
           ],
           "actions": [
             0
-          ]
+          ],
+          "sentence": "When `PF-KIND` is not `'P'` (not `PF-PAYMENT`) and `PF-KIND` is not `'S'` (not `PF-STATUS-CHANGE`), it sets `WS-REASON` to `'KIND'`."
         },
         {
           "entries": [
@@ -275,7 +287,8 @@
           ],
           "actions": [
             1
-          ]
+          ],
+          "sentence": "When `PF-KIND` is `'P'` (`PF-PAYMENT`) or `PF-KIND` is `'S'` (`PF-STATUS-CHANGE`); and `PF-KIND` is `'P'` (`PF-PAYMENT`) and `PF-AMOUNT` is at most zero, it sets `WS-REASON` to `'AMNT'`."
         },
         {
           "entries": [
@@ -285,7 +298,8 @@
           ],
           "actions": [
             2
-          ]
+          ],
+          "sentence": "When `PF-KIND` is `'P'` (`PF-PAYMENT`) or `PF-KIND` is `'S'` (`PF-STATUS-CHANGE`); `PF-KIND` is not `'P'` (not `PF-PAYMENT`) or `PF-AMOUNT` is more than zero; and `PF-KIND` is `'S'` (`PF-STATUS-CHANGE`), `PF-STATUS` is not `'A'`, `PF-STATUS` is not `'B'`, and `PF-STATUS` is not `'C'`, it sets `WS-REASON` to `'STAT'`."
         },
         {
           "entries": [
@@ -295,7 +309,8 @@
           ],
           "actions": [
             3
-          ]
+          ],
+          "sentence": "When `PF-KIND` is `'P'` (`PF-PAYMENT`) or `PF-KIND` is `'S'` (`PF-STATUS-CHANGE`); `PF-KIND` is not `'P'` (not `PF-PAYMENT`) or `PF-AMOUNT` is more than zero; and `PF-KIND` is not `'S'` (not `PF-STATUS-CHANGE`), `PF-STATUS` is `'A'`, `PF-STATUS` is `'B'`, or `PF-STATUS` is `'C'`, it sets `WS-REASON` to spaces."
         }
       ]
     },
@@ -342,7 +357,8 @@
             8,
             9,
             10
-          ]
+          ],
+          "sentence": "When `CA-BALANCE` is at most zero or `PF-AMOUNT` is at least `CA-STATEMENT-BALANCE`, it subtracts `PF-AMOUNT` from `CA-BALANCE`, sets `CA-PAID-IN-FULL` to `CA-WAS-PAID-IN-FULL`, sets `PO-CARD-NO` to `CA-CARD-NO`, sets `PO-ACCOUNT-NO` to `CA-ACCOUNT-NO`, sets `PO-KIND` to `PO-PAYMENT`, computes `PO-AMOUNT` as `0 - PF-AMOUNT`, sets `PO-REFERENCE` to `PF-REFERENCE`, sets `PO-DATE` to `WS-RUN-DATE`, writes `POSTING`, adds 1 to `WS-PAYMENTS`, and adds `PF-AMOUNT` to `WS-PAID`."
         },
         {
           "entries": [
@@ -359,7 +375,8 @@
             8,
             9,
             10
-          ]
+          ],
+          "sentence": "When `CA-BALANCE` is more than zero and `PF-AMOUNT` is less than `CA-STATEMENT-BALANCE`, it subtracts `PF-AMOUNT` from `CA-BALANCE`, sets `PO-CARD-NO` to `CA-CARD-NO`, sets `PO-ACCOUNT-NO` to `CA-ACCOUNT-NO`, sets `PO-KIND` to `PO-PAYMENT`, computes `PO-AMOUNT` as `0 - PF-AMOUNT`, sets `PO-REFERENCE` to `PF-REFERENCE`, sets `PO-DATE` to `WS-RUN-DATE`, writes `POSTING`, adds 1 to `WS-PAYMENTS`, and adds `PF-AMOUNT` to `WS-PAID`."
         }
       ]
     }

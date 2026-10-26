@@ -36,7 +36,8 @@
             1,
             2,
             3
-          ]
+          ],
+          "sentence": "When `WS-FILE-STATUSES` is not `ALL '0'`, it opens `CONTROL-FILE` and `ACCT-IN` for input and `ONLINE-OUT`, `HOLD-OUT`, and `REPORT-OUT` for output; displays `'ACCTLOAD: CANNOT OPEN FILES '` `WS-FILE-STATUSES`; sets `RETURN-CODE` to 16; and stops the run."
         },
         {
           "entries": [
@@ -48,7 +49,8 @@
             4,
             5,
             6
-          ]
+          ],
+          "sentence": "When `WS-FILE-STATUSES` is `ALL '0'` and reading `CONTROL-FILE` finds no more records, it opens `CONTROL-FILE` and `ACCT-IN` for input and `ONLINE-OUT`, `HOLD-OUT`, and `REPORT-OUT` for output; reads `CONTROL-FILE`; sets `WS-ABORT-MESSAGE` to `'NO BANK CONTROL RECORD'`; and performs `9900-ABORT`."
         },
         {
           "entries": [
@@ -60,7 +62,8 @@
             4,
             7,
             8
-          ]
+          ],
+          "sentence": "When `WS-FILE-STATUSES` is `ALL '0'` and reading `CONTROL-FILE` finds a record, it opens `CONTROL-FILE` and `ACCT-IN` for input and `ONLINE-OUT`, `HOLD-OUT`, and `REPORT-OUT` for output; reads `CONTROL-FILE`; sets `WS-BUSINESS-DATE` to `BC-BUSINESS-DATE`; and performs `1200-READ-ACCOUNT`."
         }
       ]
     },
@@ -86,7 +89,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When reading `ACCT-IN` finds no more records, it reads `ACCT-IN` and sets `WS-MASTER-END-SW` to `MASTER-AT-END`."
         },
         {
           "entries": [
@@ -95,7 +99,8 @@
           "actions": [
             0,
             2
-          ]
+          ],
+          "sentence": "When reading `ACCT-IN` finds a record, it reads `ACCT-IN` and adds 1 to `WS-READ-COUNT`."
         }
       ]
     },
@@ -123,7 +128,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When `AM-STATUS` is `'X'` (`AM-CLOSED`), it adds 1 to `WS-CLOSED-COUNT` and performs `1200-READ-ACCOUNT`."
         },
         {
           "entries": [
@@ -132,7 +138,8 @@
           "actions": [
             2,
             1
-          ]
+          ],
+          "sentence": "When `AM-STATUS` is not `'X'` (not `AM-CLOSED`), it performs `2100-WRITE-ONLINE` and performs `1200-READ-ACCOUNT`."
         }
       ]
     },
@@ -181,7 +188,8 @@
             10,
             11,
             12
-          ]
+          ],
+          "sentence": "When writing `ACCT-ONLINE-RECORD` fails on its key, it sets `ACCT-ONLINE-RECORD` to spaces, sets `AO-ACCT-NO` to `AM-ACCT-NO`, sets `AO-CUST-NO` to `AM-CUST-NO`, sets `AO-SHORT-NAME` to `AM-SHORT-NAME`, sets `AO-ACCT-TYPE` to `AM-ACCT-TYPE`, sets `AO-STATUS` to `AM-STATUS`, sets `AO-BALANCE` to `AM-BALANCE`, sets `AO-OVERDRAFT-LIMIT` to `AM-OVERDRAFT-LIMIT`, sets `AO-HOLDS` to 0, sets `AO-AS-OF-DATE` to `WS-BUSINESS-DATE`, writes `ACCT-ONLINE-RECORD`, sets `WS-ABORT-MESSAGE` to `'MASTER NOT IN ACCOUNT NUMBER ORDER'`, and performs `9900-ABORT`."
         },
         {
           "entries": [
@@ -201,7 +209,8 @@
             10,
             13,
             14
-          ]
+          ],
+          "sentence": "When writing `ACCT-ONLINE-RECORD` succeeds by its key, it sets `ACCT-ONLINE-RECORD` to spaces, sets `AO-ACCT-NO` to `AM-ACCT-NO`, sets `AO-CUST-NO` to `AM-CUST-NO`, sets `AO-SHORT-NAME` to `AM-SHORT-NAME`, sets `AO-ACCT-TYPE` to `AM-ACCT-TYPE`, sets `AO-STATUS` to `AM-STATUS`, sets `AO-BALANCE` to `AM-BALANCE`, sets `AO-OVERDRAFT-LIMIT` to `AM-OVERDRAFT-LIMIT`, sets `AO-HOLDS` to 0, sets `AO-AS-OF-DATE` to `WS-BUSINESS-DATE`, writes `ACCT-ONLINE-RECORD`, adds 1 to `WS-LOADED-COUNT`, and adds `AM-BALANCE` to `WS-LOADED-BALANCE`."
         }
       ]
     }

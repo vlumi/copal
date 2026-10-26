@@ -41,7 +41,8 @@
             0,
             1,
             2
-          ]
+          ],
+          "sentence": "When `HD-CARD-NO` is not `CR-CARD-NO`, it sets `RS-RESULT` to `RS-NO-SUCH-AUTH`, sets `RS-MESSAGE` to `'AUTHORIZATION OF ANOTHER CARD'`, and returns to its caller."
         },
         {
           "entries": [
@@ -53,7 +54,8 @@
             3,
             4,
             2
-          ]
+          ],
+          "sentence": "When `HD-CARD-NO` is `CR-CARD-NO` and `HD-KIND` is not `'P'` (not `HD-PURCHASE`), it sets `RS-RESULT` to `RS-INVALID-REQUEST`, sets `RS-MESSAGE` to `'ONLY PURCHASES ARE REVERSED'`, and returns to its caller."
         },
         {
           "entries": [
@@ -65,7 +67,8 @@
             0,
             5,
             2
-          ]
+          ],
+          "sentence": "When `HD-CARD-NO` is `CR-CARD-NO`, `HD-KIND` is `'P'` (`HD-PURCHASE`), and `HD-STATUS` is `'R'` (`HD-REVERSED`), it sets `RS-RESULT` to `RS-NO-SUCH-AUTH`, sets `RS-MESSAGE` to `'ALREADY REVERSED'`, and returns to its caller."
         },
         {
           "entries": [
@@ -76,7 +79,8 @@
           "actions": [
             6,
             2
-          ]
+          ],
+          "sentence": "When `HD-CARD-NO` is `CR-CARD-NO`, `HD-KIND` is `'P'` (`HD-PURCHASE`), and `HD-STATUS` is not `'R'` (not `HD-REVERSED`), it performs `2000-APPROVE` and returns to its caller."
         }
       ]
     },
@@ -124,7 +128,8 @@
             9,
             10,
             11
-          ]
+          ],
+          "sentence": "When `CR-TOTALS-DATE` is `HD-BUSINESS-DATE`, it subtracts `HD-AMOUNT` from `AO-HOLDS`, subtracts `HD-AMOUNT` from `CR-DAY-PURCHASES`, sets `HD-STATUS` to `HD-REVERSED`, sets `RS-RESULT` to `RS-APPROVED`, sets `RS-MESSAGE` to `'REVERSED'`, sets `RS-AUTH-CODE` to `HD-HOLD-NO`, sets `RS-AMOUNT` to `HD-AMOUNT`, sets `RS-FEE` to 0, sets `RS-BALANCE` to `AO-BALANCE`, runs `ADD AO-BALANCE AO-OVERDRAFT-LIMIT GIVING WS-AVAILABLE`, subtracts `AO-HOLDS` from `WS-AVAILABLE`, and sets `RS-AVAILABLE` to `WS-AVAILABLE`."
         },
         {
           "entries": [
@@ -142,7 +147,8 @@
             9,
             10,
             11
-          ]
+          ],
+          "sentence": "When `CR-TOTALS-DATE` is not `HD-BUSINESS-DATE`, it subtracts `HD-AMOUNT` from `AO-HOLDS`, sets `HD-STATUS` to `HD-REVERSED`, sets `RS-RESULT` to `RS-APPROVED`, sets `RS-MESSAGE` to `'REVERSED'`, sets `RS-AUTH-CODE` to `HD-HOLD-NO`, sets `RS-AMOUNT` to `HD-AMOUNT`, sets `RS-FEE` to 0, sets `RS-BALANCE` to `AO-BALANCE`, runs `ADD AO-BALANCE AO-OVERDRAFT-LIMIT GIVING WS-AVAILABLE`, subtracts `AO-HOLDS` from `WS-AVAILABLE`, and sets `RS-AVAILABLE` to `WS-AVAILABLE`."
         }
       ]
     }

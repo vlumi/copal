@@ -1,6 +1,6 @@
 # ACCTLOAD: decision tables
 
-The business rules of [ACCTLOAD](../programs/ACCTLOAD.md), paragraph by paragraph: each column is one path through the paragraph's decisions, with the outcome of each condition it tests, Y or N, and the actions it takes, numbered in the order they run. The WHENs of an EVALUATE are tried in order, and an IF whose THEN jumps away has the rest of its paragraph as its ELSE. The body of an inline PERFORM has a table of its own, for one pass.
+The business rules of [ACCTLOAD](../programs/ACCTLOAD.md), paragraph by paragraph: each column is one path through the paragraph's decisions, with the outcome of each condition it tests, Y or N, and the actions it takes, numbered in the order they run. The WHENs of an EVALUATE are tried in order, and an IF whose THEN jumps away has the rest of its paragraph as its ELSE. The body of an inline PERFORM has a table of its own, for one pass. Under each table, each rule as a sentence, written from the conditions it tests and the statements it runs, with no more in it than the table has: a condition name with the field it is declared on and its values.
 
 ## Contents
 
@@ -25,6 +25,10 @@ The business rules of [ACCTLOAD](../programs/ACCTLOAD.md), paragraph by paragrap
 | → `MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE` | | | 3 |
 | → `PERFORM 1200-READ-ACCOUNT` | | | 4 |
 
+- **Rule 1.** When `WS-FILE-STATUSES` is not `ALL '0'`, it opens `CONTROL-FILE` and `ACCT-IN` for input and `ONLINE-OUT`, `HOLD-OUT`, and `REPORT-OUT` for output; displays `'ACCTLOAD: CANNOT OPEN FILES '` `WS-FILE-STATUSES`; sets `RETURN-CODE` to 16; and stops the run.
+- **Rule 2.** When `WS-FILE-STATUSES` is `ALL '0'` and reading `CONTROL-FILE` finds no more records, it opens `CONTROL-FILE` and `ACCT-IN` for input and `ONLINE-OUT`, `HOLD-OUT`, and `REPORT-OUT` for output; reads `CONTROL-FILE`; sets `WS-ABORT-MESSAGE` to `'NO BANK CONTROL RECORD'`; and performs `9900-ABORT`.
+- **Rule 3.** When `WS-FILE-STATUSES` is `ALL '0'` and reading `CONTROL-FILE` finds a record, it opens `CONTROL-FILE` and `ACCT-IN` for input and `ONLINE-OUT`, `HOLD-OUT`, and `REPORT-OUT` for output; reads `CONTROL-FILE`; sets `WS-BUSINESS-DATE` to `BC-BUSINESS-DATE`; and performs `1200-READ-ACCOUNT`.
+
 Source: [ACCTLOAD.cbl:100](../../../pangaea/programs/ACCTLOAD.cbl#L100).
 
 ## 1200-READ-ACCOUNT
@@ -36,6 +40,9 @@ Source: [ACCTLOAD.cbl:100](../../../pangaea/programs/ACCTLOAD.cbl#L100).
 | → `SET MASTER-AT-END TO TRUE` | 2 | |
 | → `ADD 1 TO WS-READ-COUNT` | | 2 |
 
+- **Rule 1.** When reading `ACCT-IN` finds no more records, it reads `ACCT-IN` and sets `WS-MASTER-END-SW` to `MASTER-AT-END`.
+- **Rule 2.** When reading `ACCT-IN` finds a record, it reads `ACCT-IN` and adds 1 to `WS-READ-COUNT`.
+
 Source: [ACCTLOAD.cbl:116](../../../pangaea/programs/ACCTLOAD.cbl#L116).
 
 ## 2000-LOAD-ACCOUNT
@@ -46,6 +53,9 @@ Source: [ACCTLOAD.cbl:116](../../../pangaea/programs/ACCTLOAD.cbl#L116).
 | → `ADD 1 TO WS-CLOSED-COUNT` | 1 | |
 | → `PERFORM 1200-READ-ACCOUNT` | 2 | 2 |
 | → `PERFORM 2100-WRITE-ONLINE` | | 1 |
+
+- **Rule 1.** When `AM-STATUS` is `'X'` (`AM-CLOSED`), it adds 1 to `WS-CLOSED-COUNT` and performs `1200-READ-ACCOUNT`.
+- **Rule 2.** When `AM-STATUS` is not `'X'` (not `AM-CLOSED`), it performs `2100-WRITE-ONLINE` and performs `1200-READ-ACCOUNT`.
 
 Source: [ACCTLOAD.cbl:125](../../../pangaea/programs/ACCTLOAD.cbl#L125).
 
@@ -69,5 +79,8 @@ Source: [ACCTLOAD.cbl:125](../../../pangaea/programs/ACCTLOAD.cbl#L125).
 | → `PERFORM 9900-ABORT` | 13 | |
 | → `ADD 1 TO WS-LOADED-COUNT` | | 12 |
 | → `ADD AM-BALANCE TO WS-LOADED-BALANCE` | | 13 |
+
+- **Rule 1.** When writing `ACCT-ONLINE-RECORD` fails on its key, it sets `ACCT-ONLINE-RECORD` to spaces, sets `AO-ACCT-NO` to `AM-ACCT-NO`, sets `AO-CUST-NO` to `AM-CUST-NO`, sets `AO-SHORT-NAME` to `AM-SHORT-NAME`, sets `AO-ACCT-TYPE` to `AM-ACCT-TYPE`, sets `AO-STATUS` to `AM-STATUS`, sets `AO-BALANCE` to `AM-BALANCE`, sets `AO-OVERDRAFT-LIMIT` to `AM-OVERDRAFT-LIMIT`, sets `AO-HOLDS` to 0, sets `AO-AS-OF-DATE` to `WS-BUSINESS-DATE`, writes `ACCT-ONLINE-RECORD`, sets `WS-ABORT-MESSAGE` to `'MASTER NOT IN ACCOUNT NUMBER ORDER'`, and performs `9900-ABORT`.
+- **Rule 2.** When writing `ACCT-ONLINE-RECORD` succeeds by its key, it sets `ACCT-ONLINE-RECORD` to spaces, sets `AO-ACCT-NO` to `AM-ACCT-NO`, sets `AO-CUST-NO` to `AM-CUST-NO`, sets `AO-SHORT-NAME` to `AM-SHORT-NAME`, sets `AO-ACCT-TYPE` to `AM-ACCT-TYPE`, sets `AO-STATUS` to `AM-STATUS`, sets `AO-BALANCE` to `AM-BALANCE`, sets `AO-OVERDRAFT-LIMIT` to `AM-OVERDRAFT-LIMIT`, sets `AO-HOLDS` to 0, sets `AO-AS-OF-DATE` to `WS-BUSINESS-DATE`, writes `ACCT-ONLINE-RECORD`, adds 1 to `WS-LOADED-COUNT`, and adds `AM-BALANCE` to `WS-LOADED-BALANCE`.
 
 Source: [ACCTLOAD.cbl:133](../../../pangaea/programs/ACCTLOAD.cbl#L133).

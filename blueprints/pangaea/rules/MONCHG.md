@@ -1,6 +1,6 @@
 # MONCHG: decision tables
 
-The business rules of [MONCHG](../programs/MONCHG.md), paragraph by paragraph: each column is one path through the paragraph's decisions, with the outcome of each condition it tests, Y or N, and the actions it takes, numbered in the order they run. The WHENs of an EVALUATE are tried in order, and an IF whose THEN jumps away has the rest of its paragraph as its ELSE. The body of an inline PERFORM has a table of its own, for one pass.
+The business rules of [MONCHG](../programs/MONCHG.md), paragraph by paragraph: each column is one path through the paragraph's decisions, with the outcome of each condition it tests, Y or N, and the actions it takes, numbered in the order they run. The WHENs of an EVALUATE are tried in order, and an IF whose THEN jumps away has the rest of its paragraph as its ELSE. The body of an inline PERFORM has a table of its own, for one pass. Under each table, each rule as a sentence, written from the conditions it tests and the statements it runs, with no more in it than the table has: a condition name with the field it is declared on and its values.
 
 ## Contents
 
@@ -28,6 +28,10 @@ The business rules of [MONCHG](../programs/MONCHG.md), paragraph by paragraph: e
 | → `MOVE SPACES TO TRAN-RECORD` | | | 4 |
 | → `PERFORM 1200-READ-ACCOUNT` | | | 5 |
 
+- **Rule 1.** When `WS-FILE-STATUSES` is not `ALL '0'`, it opens `CONTROL-FILE`, `ACCT-IN`, and `ACCR-IN` for input and `TRAN-OUT` and `REPORT-OUT` for output; displays `'MONCHG: CANNOT OPEN FILES '` `WS-FILE-STATUSES`; sets `RETURN-CODE` to 16; and stops the run.
+- **Rule 2.** When `WS-FILE-STATUSES` is `ALL '0'` and reading `CONTROL-FILE` finds no more records, it opens `CONTROL-FILE`, `ACCT-IN`, and `ACCR-IN` for input and `TRAN-OUT` and `REPORT-OUT` for output; reads `CONTROL-FILE`; sets `WS-ABORT-MESSAGE` to `'NO BANK CONTROL RECORD'`; and performs `9900-ABORT`.
+- **Rule 3.** When `WS-FILE-STATUSES` is `ALL '0'` and reading `CONTROL-FILE` finds a record, it opens `CONTROL-FILE`, `ACCT-IN`, and `ACCR-IN` for input and `TRAN-OUT` and `REPORT-OUT` for output; reads `CONTROL-FILE`; sets `WS-BUSINESS-DATE` to `BC-BUSINESS-DATE`; sets `TRAN-RECORD` to spaces; and performs `1200-READ-ACCOUNT`.
+
 Source: [MONCHG.cbl:122](../../../pangaea/programs/MONCHG.cbl#L122).
 
 ## 1200-READ-ACCOUNT
@@ -46,6 +50,14 @@ Source: [MONCHG.cbl:122](../../../pangaea/programs/MONCHG.cbl#L122).
 | → `MOVE 'ACCRUALS OUT OF STEP WITH THE MASTER' TO WS-ABORT-MESSAGE` | | | 4 | | 4 | 3 | |
 | → `PERFORM 9900-ABORT` | | | 5 | | 5 | 4 | |
 
+- **Rule 1.** When reading `ACCT-IN` finds no more records; reading `ACCR-IN` finds no more records; and `WS-MASTER-END-SW` is `'Y'` (`MASTER-AT-END`) and `WS-ACCRUAL-END-SW` is `'Y'` (`ACCRUALS-AT-END`), it reads `ACCT-IN`, sets `WS-MASTER-END-SW` to `MASTER-AT-END`, reads `ACCR-IN`, and sets `WS-ACCRUAL-END-SW` to `ACCRUALS-AT-END`.
+- **Rule 2.** When reading `ACCT-IN` finds no more records; reading `ACCR-IN` finds a record; and `WS-MASTER-END-SW` is `'Y'` (`MASTER-AT-END`) and `WS-ACCRUAL-END-SW` is `'Y'` (`ACCRUALS-AT-END`), it reads `ACCT-IN`, sets `WS-MASTER-END-SW` to `MASTER-AT-END`, and reads `ACCR-IN`.
+- **Rule 3.** When reading `ACCT-IN` finds no more records; reading `ACCR-IN` finds a record; `WS-MASTER-END-SW` is not `'Y'` (not `MASTER-AT-END`) or `WS-ACCRUAL-END-SW` is not `'Y'` (not `ACCRUALS-AT-END`); and `WS-MASTER-END-SW` is `'Y'` (`MASTER-AT-END`), `WS-ACCRUAL-END-SW` is `'Y'` (`ACCRUALS-AT-END`), or `AC-ACCT-NO` is not `AM-ACCT-NO`, it reads `ACCT-IN`, sets `WS-MASTER-END-SW` to `MASTER-AT-END`, reads `ACCR-IN`, sets `WS-ABORT-MESSAGE` to `'ACCRUALS OUT OF STEP WITH THE MASTER'`, and performs `9900-ABORT`.
+- **Rule 4.** When reading `ACCT-IN` finds a record; reading `ACCR-IN` finds no more records; and `WS-MASTER-END-SW` is `'Y'` (`MASTER-AT-END`) and `WS-ACCRUAL-END-SW` is `'Y'` (`ACCRUALS-AT-END`), it reads `ACCT-IN`, reads `ACCR-IN`, and sets `WS-ACCRUAL-END-SW` to `ACCRUALS-AT-END`.
+- **Rule 5.** When reading `ACCT-IN` finds a record; reading `ACCR-IN` finds no more records; `WS-MASTER-END-SW` is not `'Y'` (not `MASTER-AT-END`) or `WS-ACCRUAL-END-SW` is not `'Y'` (not `ACCRUALS-AT-END`); and `WS-MASTER-END-SW` is `'Y'` (`MASTER-AT-END`), `WS-ACCRUAL-END-SW` is `'Y'` (`ACCRUALS-AT-END`), or `AC-ACCT-NO` is not `AM-ACCT-NO`, it reads `ACCT-IN`, reads `ACCR-IN`, sets `WS-ACCRUAL-END-SW` to `ACCRUALS-AT-END`, sets `WS-ABORT-MESSAGE` to `'ACCRUALS OUT OF STEP WITH THE MASTER'`, and performs `9900-ABORT`.
+- **Rule 6.** When reading `ACCT-IN` finds a record; reading `ACCR-IN` finds a record; `WS-MASTER-END-SW` is not `'Y'` (not `MASTER-AT-END`) or `WS-ACCRUAL-END-SW` is not `'Y'` (not `ACCRUALS-AT-END`); and `WS-MASTER-END-SW` is `'Y'` (`MASTER-AT-END`), `WS-ACCRUAL-END-SW` is `'Y'` (`ACCRUALS-AT-END`), or `AC-ACCT-NO` is not `AM-ACCT-NO`, it reads `ACCT-IN`, reads `ACCR-IN`, sets `WS-ABORT-MESSAGE` to `'ACCRUALS OUT OF STEP WITH THE MASTER'`, and performs `9900-ABORT`.
+- **Rule 7.** When reading `ACCT-IN` finds a record; reading `ACCR-IN` finds a record; `WS-MASTER-END-SW` is not `'Y'` (not `MASTER-AT-END`) or `WS-ACCRUAL-END-SW` is not `'Y'` (not `ACCRUALS-AT-END`); and `WS-MASTER-END-SW` is not `'Y'` (not `MASTER-AT-END`), `WS-ACCRUAL-END-SW` is not `'Y'` (not `ACCRUALS-AT-END`), and `AC-ACCT-NO` is `AM-ACCT-NO`, it reads `ACCT-IN` and reads `ACCR-IN`.
+
 Source: [MONCHG.cbl:140](../../../pangaea/programs/MONCHG.cbl#L140).
 
 ## 2000-CHARGE-ACCOUNT
@@ -58,6 +70,9 @@ Source: [MONCHG.cbl:140](../../../pangaea/programs/MONCHG.cbl#L140).
 | → `PERFORM 2100-SETTLE-INTEREST` | 3 | |
 | → `PERFORM 2200-CHARGE-FEE` | 4 | |
 | → `PERFORM 1200-READ-ACCOUNT` | 5 | 1 |
+
+- **Rule 1.** When `AC-DUE-MONTH` is not 0, it sets `WS-CLOSED-MONTH` to `AC-DUE-MONTH`, sets `WS-TI-YYMM` to `WS-CM-YYMM`, performs `2100-SETTLE-INTEREST`, performs `2200-CHARGE-FEE`, and performs `1200-READ-ACCOUNT`.
+- **Rule 2.** When `AC-DUE-MONTH` is 0, it performs `1200-READ-ACCOUNT`.
 
 Source: [MONCHG.cbl:161](../../../pangaea/programs/MONCHG.cbl#L161).
 
@@ -80,6 +95,10 @@ Source: [MONCHG.cbl:161](../../../pangaea/programs/MONCHG.cbl#L161).
 | → `ADD TD-AMOUNT TO WS-OVERDRAFT-TOTAL` | | 6 | |
 | → `CONTINUE` | | | 1 |
 
+- **Rule 1.** When `AC-DUE` is more than 0, it sets `TD-TRAN-CODE` to `TD-INTEREST`, sets `TD-AMOUNT` to `AC-DUE`, sets `TD-DESCRIPTION` to `'CREDIT INTEREST'`, performs `2900-WRITE-TRAN`, adds 1 to `WS-INTEREST-COUNT`, and adds `TD-AMOUNT` to `WS-INTEREST-TOTAL`.
+- **Rule 2.** When `AC-DUE` is at most 0 and `AC-DUE` is less than 0, it sets `TD-TRAN-CODE` to `TD-OVERDRAFT-INTEREST`, computes `TD-AMOUNT` as `0 - AC-DUE`, sets `TD-DESCRIPTION` to `'OVERDRAFT INTEREST'`, performs `2900-WRITE-TRAN`, adds 1 to `WS-OVERDRAFT-COUNT`, and adds `TD-AMOUNT` to `WS-OVERDRAFT-TOTAL`.
+- **Rule 3.** When `AC-DUE` is at most 0 and `AC-DUE` is at least 0, it does nothing more.
+
 Source: [MONCHG.cbl:172](../../../pangaea/programs/MONCHG.cbl#L172).
 
 ## 2200-CHARGE-FEE
@@ -96,6 +115,10 @@ Source: [MONCHG.cbl:172](../../../pangaea/programs/MONCHG.cbl#L172).
 | → `ADD TD-AMOUNT TO WS-FEE-TOTAL` | 6 | | |
 | → `ADD 1 TO WS-WAIVED-COUNT` | | 1 | |
 | → `CONTINUE` | | | 1 |
+
+- **Rule 1.** When `AM-ACCT-TYPE` is `'C'` and `AM-STATUS` is `'O'`; and `AM-BALANCE` is less than `WS-FEE-WAIVER-BALANCE`, it sets `TD-TRAN-CODE` to `TD-MAINTENANCE-FEE`, sets `TD-AMOUNT` to `WS-MAINTENANCE-FEE`, sets `TD-DESCRIPTION` to `'MAINTENANCE FEE'`, performs `2900-WRITE-TRAN`, adds 1 to `WS-FEE-COUNT`, and adds `TD-AMOUNT` to `WS-FEE-TOTAL`.
+- **Rule 2.** When `AM-ACCT-TYPE` is `'C'` and `AM-STATUS` is `'O'`; and `AM-BALANCE` is at least `WS-FEE-WAIVER-BALANCE`, it adds 1 to `WS-WAIVED-COUNT`.
+- **Rule 3.** When `AM-ACCT-TYPE` is not `'C'` or `AM-STATUS` is not `'O'`, it does nothing more.
 
 Source: [MONCHG.cbl:194](../../../pangaea/programs/MONCHG.cbl#L194).
 
@@ -125,5 +148,8 @@ Source: [MONCHG.cbl:194](../../../pangaea/programs/MONCHG.cbl#L194).
 | → `MOVE WS-FEE-TOTAL TO WS-RA-VALUE` | | 27 |
 | → `MOVE 'MAINTENANCE FEES WAIVED' TO WS-RC-LABEL` | | 29 |
 | → `MOVE WS-WAIVED-COUNT TO WS-RC-VALUE` | | 30 |
+
+- **Rule 1.** When `WS-CLOSED-MONTH` is 0, it sets `REPORT-LINE` to spaces, builds `REPORT-LINE` from `'MONCHG   MONTH-END CHARGES       BUSINESS DATE '` `WS-BUSINESS-DATE`, writes `REPORT-LINE`, sets `REPORT-LINE` to spaces, writes `REPORT-LINE`, sets `REPORT-LINE` to `'NO MONTH CLOSED'`, and writes `REPORT-LINE`.
+- **Rule 2.** When `WS-CLOSED-MONTH` is not 0, it sets `REPORT-LINE` to spaces, builds `REPORT-LINE` from `'MONCHG   MONTH-END CHARGES       BUSINESS DATE '` `WS-BUSINESS-DATE`, writes `REPORT-LINE`, sets `REPORT-LINE` to spaces, writes `REPORT-LINE`, sets `REPORT-LINE` to spaces, builds `REPORT-LINE` from `'MONTH CLOSED                  '` `WS-CLOSED-MONTH`, writes `REPORT-LINE`, sets `REPORT-LINE` to spaces, writes `REPORT-LINE`, sets `WS-RC-LABEL` to `'INTEREST CREDITS'`, sets `WS-RC-VALUE` to `WS-INTEREST-COUNT`, writes `REPORT-LINE` from `WS-REPORT-COUNT-LINE`, sets `WS-RA-LABEL` to `'INTEREST CREDITED'`, sets `WS-RA-VALUE` to `WS-INTEREST-TOTAL`, writes `REPORT-LINE` from `WS-REPORT-AMOUNT-LINE`, sets `WS-RC-LABEL` to `'OVERDRAFT INTEREST CHARGES'`, sets `WS-RC-VALUE` to `WS-OVERDRAFT-COUNT`, writes `REPORT-LINE` from `WS-REPORT-COUNT-LINE`, sets `WS-RA-LABEL` to `'OVERDRAFT INTEREST CHARGED'`, sets `WS-RA-VALUE` to `WS-OVERDRAFT-TOTAL`, writes `REPORT-LINE` from `WS-REPORT-AMOUNT-LINE`, sets `WS-RC-LABEL` to `'MAINTENANCE FEES'`, sets `WS-RC-VALUE` to `WS-FEE-COUNT`, writes `REPORT-LINE` from `WS-REPORT-COUNT-LINE`, sets `WS-RA-LABEL` to `'MAINTENANCE FEES CHARGED'`, sets `WS-RA-VALUE` to `WS-FEE-TOTAL`, writes `REPORT-LINE` from `WS-REPORT-AMOUNT-LINE`, sets `WS-RC-LABEL` to `'MAINTENANCE FEES WAIVED'`, sets `WS-RC-VALUE` to `WS-WAIVED-COUNT`, and writes `REPORT-LINE` from `WS-REPORT-COUNT-LINE`.
 
 Source: [MONCHG.cbl:220](../../../pangaea/programs/MONCHG.cbl#L220).

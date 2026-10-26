@@ -34,7 +34,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When `WS-FEE-STATUS` is not `'00'`, it opens `PRES-IN` and `FEE-TABLE` for input and `PRES-OUT` and `REPORT-OUT` for output; and stops the run."
         },
         {
           "entries": [
@@ -47,7 +48,8 @@
             3,
             4,
             5
-          ]
+          ],
+          "sentence": "When `WS-FEE-STATUS` is `'00'` and `WS-DEFAULT-COUNT` is more than zero, it opens `PRES-IN` and `FEE-TABLE` for input and `PRES-OUT` and `REPORT-OUT` for output; repeats its loop until `WS-AT-END` is `'Y'` (`PRESENTMENTS-AT-END`); performs `WRITE-REPORT`; closes `PRES-IN`, `FEE-TABLE`, `PRES-OUT`, and `REPORT-OUT`; and stops the run."
         },
         {
           "entries": [
@@ -60,7 +62,8 @@
             3,
             4,
             6
-          ]
+          ],
+          "sentence": "When `WS-FEE-STATUS` is `'00'` and `WS-DEFAULT-COUNT` is at most zero, it opens `PRES-IN` and `FEE-TABLE` for input and `PRES-OUT` and `REPORT-OUT` for output; repeats its loop until `WS-AT-END` is `'Y'` (`PRESENTMENTS-AT-END`); performs `WRITE-REPORT`; closes `PRES-IN`, `FEE-TABLE`, `PRES-OUT`, and `REPORT-OUT`; and stops the run."
         }
       ]
     },
@@ -87,7 +90,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When reading `PRES-IN` finds no more records, it reads `PRES-IN` into `PRES-RECORD` and sets `WS-AT-END` to `PRESENTMENTS-AT-END`."
         },
         {
           "entries": [
@@ -96,7 +100,8 @@
           "actions": [
             0,
             2
-          ]
+          ],
+          "sentence": "When reading `PRES-IN` finds a record, it reads `PRES-IN` into `PRES-RECORD` and performs `PRICE-PRESENTMENT`."
         }
       ]
     },
@@ -139,7 +144,8 @@
             5,
             6,
             7
-          ]
+          ],
+          "sentence": "When `PS-MATCH` is `'M'` (`PS-MATCHED`) and reading `FEE-TABLE` fails on its key, it sets `PS-FEE` to zero, performs `FIND-GROUP`, calls `FEESLOT`, reads `FEE-TABLE`, adds 1 to `WS-DEFAULT-COUNT`, computes `PS-FEE` as `PS-AMOUNT * DEFAULT-RATE + DEFAULT-FIXED-CENTS / 100`, adds `PS-FEE` to `WS-FEES`, and writes `PRES-RECORD`."
         },
         {
           "entries": [
@@ -154,7 +160,8 @@
             8,
             6,
             7
-          ]
+          ],
+          "sentence": "When `PS-MATCH` is `'M'` (`PS-MATCHED`) and reading `FEE-TABLE` succeeds by its key, it sets `PS-FEE` to zero, performs `FIND-GROUP`, calls `FEESLOT`, reads `FEE-TABLE`, computes `PS-FEE` as `PS-AMOUNT * FS-RATE + FS-FIXED-CENTS / 100`, adds `PS-FEE` to `WS-FEES`, and writes `PRES-RECORD`."
         },
         {
           "entries": [
@@ -164,7 +171,8 @@
           "actions": [
             0,
             7
-          ]
+          ],
+          "sentence": "When `PS-MATCH` is not `'M'` (not `PS-MATCHED`), it sets `PS-FEE` to zero and writes `PRES-RECORD`."
         }
       ]
     },
@@ -208,7 +216,8 @@
           ],
           "actions": [
             0
-          ]
+          ],
+          "sentence": "When `PS-MCC` is at least 5411 and `PS-MCC` is at most 5499, it sets `WS-GROUP` to `GROUP-GROCERY`."
         },
         {
           "entries": [
@@ -219,7 +228,8 @@
           ],
           "actions": [
             1
-          ]
+          ],
+          "sentence": "When `PS-MCC` is less than 5411 or `PS-MCC` is more than 5499; and `PS-MCC` is at least 5811 and `PS-MCC` is at most 5814, it sets `WS-GROUP` to `GROUP-RESTAURANTS`."
         },
         {
           "entries": [
@@ -230,7 +240,8 @@
           ],
           "actions": [
             2
-          ]
+          ],
+          "sentence": "When `PS-MCC` is less than 5411 or `PS-MCC` is more than 5499; `PS-MCC` is less than 5811 or `PS-MCC` is more than 5814; and both `PS-MCC` is at least 3000 and `PS-MCC` is at most 3999 or both `PS-MCC` is at least 4111 and `PS-MCC` is at most 4789, it sets `WS-GROUP` to `GROUP-TRAVEL`."
         },
         {
           "entries": [
@@ -241,7 +252,8 @@
           ],
           "actions": [
             3
-          ]
+          ],
+          "sentence": "When `PS-MCC` is less than 5411 or `PS-MCC` is more than 5499; `PS-MCC` is less than 5811 or `PS-MCC` is more than 5814; either `PS-MCC` is less than 3000 or `PS-MCC` is more than 3999 and either `PS-MCC` is less than 4111 or `PS-MCC` is more than 4789; and `PS-MCC` is 5541, `PS-MCC` is 5542, or `PS-MCC` is 5983, it sets `WS-GROUP` to `GROUP-FUEL`."
         },
         {
           "entries": [
@@ -252,7 +264,8 @@
           ],
           "actions": [
             4
-          ]
+          ],
+          "sentence": "When `PS-MCC` is less than 5411 or `PS-MCC` is more than 5499; `PS-MCC` is less than 5811 or `PS-MCC` is more than 5814; either `PS-MCC` is less than 3000 or `PS-MCC` is more than 3999 and either `PS-MCC` is less than 4111 or `PS-MCC` is more than 4789; and `PS-MCC` is not 5541, `PS-MCC` is not 5542, and `PS-MCC` is not 5983, it sets `WS-GROUP` to `GROUP-OTHER`."
         }
       ]
     }
