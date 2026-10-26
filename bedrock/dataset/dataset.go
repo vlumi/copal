@@ -265,35 +265,6 @@ func (s *Store) LoadFile(path string) error {
 	return s.Load(strings.TrimSuffix(filepath.Base(path), ".txt"), bytes.NewReader(data))
 }
 
-// UnloadAll writes every cataloged dataset but the indexed ones to outDir
-// as DSN.txt.
-func (s *Store) UnloadAll(outDir string) error {
-	if err := os.MkdirAll(outDir, 0o755); err != nil {
-		return err
-	}
-	for _, dsn := range s.Names() {
-		if s.Indexed(dsn) {
-			continue
-		}
-		if err := s.unloadFile(dsn, filepath.Join(outDir, dsn+".txt")); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (s *Store) unloadFile(dsn, path string) error {
-	f, err := os.Create(path)
-	if err != nil {
-		return err
-	}
-	if err := s.Unload(dsn, f); err != nil {
-		_ = f.Close()
-		return err
-	}
-	return f.Close()
-}
-
 func (s *Store) readCatalog() error {
 	data, err := os.ReadFile(filepath.Join(s.dir, catalogFile))
 	if errors.Is(err, os.ErrNotExist) {

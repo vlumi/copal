@@ -46,7 +46,7 @@ func TestServer(t *testing.T) {
 		t.Fatal(err)
 	}
 	b := bank.Bank{Dir: t.TempDir(), Programs: programs, Copybooks: "../copybooks", Jobs: "../jobs"}
-	if err := b.Reset(7, 300); err != nil {
+	if err := b.Open(7, 300); err != nil {
 		t.Fatal(err)
 	}
 	l, err := records.Load("../copybooks")

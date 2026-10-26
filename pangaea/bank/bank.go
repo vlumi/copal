@@ -1,5 +1,5 @@
-// Package bank runs the First Bank of Pangaea day after day: it resets the
-// bank to a generated starting point, and for each business day generates
+// Package bank runs the First Bank of Pangaea day after day: it opens a
+// bank at a generated starting point, and for each business day generates
 // the branches' transaction file and runs the daily batch on it.
 package bank
 
@@ -21,7 +21,7 @@ import (
 	"github.com/vlumi/copal/pangaea/records"
 )
 
-// StartDate is the first business day of every reset bank.
+// StartDate is the first business day of every bank opened.
 var StartDate = generate.NewDate(2026, 9, 1)
 
 // Bank is a bank in a directory: its datasets, every generation of them,
@@ -67,14 +67,14 @@ func (b Bank) job(name string) (*jcl.Job, error) {
 
 const seedFile = "SEED"
 
-// ErrNoBank is for a directory where no bank has been reset yet.
-var ErrNoBank = errors.New("no bank here yet; reset one first")
+// ErrNoBank is for a directory where no bank has been opened yet.
+var ErrNoBank = errors.New("no bank here yet; open one first")
 
-// Reset replaces the bank with a new one: about the given number of
+// Open replaces the bank with a new one: about the given number of
 // accounts and their cards, generated from the seed, on the start date,
 // with the rate table and nothing accrued yet, and opens it by running the
 // job that loads the online files for its first day.
-func (b Bank) Reset(seed uint64, accounts int) error {
+func (b Bank) Open(seed uint64, accounts int) error {
 	if err := os.RemoveAll(b.Dir); err != nil {
 		return err
 	}

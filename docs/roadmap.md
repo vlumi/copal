@@ -19,7 +19,7 @@ Done when: a pushed branch shows a green build.
 - The job network file in its small JCL-like format, and a runner that executes it and stops on bad return codes.
 - A small hand-written fixture: a dozen accounts, one day of transactions with a reject or two. Its outputs are the first golden files.
 
-Done when: `make pangaea-daily` runs the batch on the fixture and `make ci` compares the outputs with the golden ones.
+Done when: `make pangaea-fixture` runs the batch on the fixture and `make ci` compares the outputs with the golden ones.
 
 ## 3. The survey: layouts and structure (done)
 
@@ -47,7 +47,7 @@ Pangaea stops being a fixture and becomes a running bank.
 - A business calendar. The bank has a business date of its own, never the wall clock, and BANKDATE moves it to the next weekday as the batch's last step, so every run is reproducible: day N from seed S is always the same.
 - A seeded data generator: about two thousand customers and three thousand accounts (current and savings, a few closed or frozen), and for each business day the branches' transaction file: salaries on the 25th, rent on the first business day of the month, savings after payday, cash, deposits, transfers between customers, fees, and a few percent that validation or posting rejects.
 - The generator reads and writes records through the layouts the survey computes from the copybooks, with no record format written out by hand.
-- The bank's state lives under `pangaea/run/bank` (ignored by git). `make bank-reset` regenerates the starting point from a seed, `make bank-days N=5` runs the next five business days.
+- The bank's state lives under `pangaea/run/bank` (ignored by git). `make pangaea-open` regenerates the starting point from a seed, `make pangaea-days N=5` runs the next five business days.
 
 The hand-written fixtures stay as the CI golden set; the generated bank is for watching, and a test runs three days in two banks from the same seed and compares them byte for byte.
 
@@ -59,7 +59,7 @@ A small web UI that shows the bank's state and how each batch changed it.
 - Views: accounts and balances with search, one account's history across days, the day's transactions and rejects, the audit trail, control totals per run.
 - Before and after: pick two business days and see what changed, balances moved, accounts opened or closed, totals reconciled.
 - Buttons for the same operations as the make targets (reset, run a day), calling the same scripts. The console is a window onto the bank, not part of it: it never writes Pangaea's files itself.
-- Served locally by `make console`; plain server-rendered pages with a little script, no frontend build.
+- Served locally by `make pangaea-console`; plain server-rendered pages with a little script, no frontend build.
 
 Done when: you can reset the bank, run a day from the browser, and see the master change.
 
@@ -203,7 +203,7 @@ Done when: every program, paragraph, rule and entity of the three specimens has 
 
 Laurasia ran one hand-written night. To show that the second specimen is a system and not an example, it gets what the bank has: a generated portfolio, and days that chain. The plan is in [plans/living-laurasia.md](plans/living-laurasia.md):
 
-- The card system's extract, the fee schedule and the merchants generated from a seed; for each day the switch's log, the networks' clearing file and the dispute events; the processor opened and run day after day, the night on business days and the billing cycle every day, a failed day backed out whole: `make cards-open` and `make cards-days N=30` (done).
+- The card system's extract, the fee schedule and the merchants generated from a seed; for each day the switch's log, the networks' clearing file and the dispute events; the processor opened and run day after day, the night on business days and the billing cycle every day, a failed day backed out whole: `make laurasia-open` and `make laurasia-days N=30` (done).
 - The payments feed, which running it for months showed missing: nothing credited a payment or changed a card's status after the processor opened, so every card filled up and the switch declined more each week. A change to the specimen: the card system's daily feed of payments and status changes, a program that applies it and a step in the night, the cycle starting each statement unpaid, with its goldens, blueprints and cases (done).
 
 Done when: the processor runs for months from a seed with its cards paying, declining and disputing at steady rates, and the blueprints show the payments feed as they show the rest.
@@ -240,9 +240,9 @@ Done when: every rule of the three specimens has its sentence, and a statement t
 
 The console was built for the modernization, the bank and the survey side by side, and so it was the one part that knew both, and only of the bank. Each specimen gets a console of its own instead, its operators' window onto it, knowing nothing of the survey; and the survey shows the runs of any of them on its own drawings.
 
-- The bank's console moved into the bank, `pangaea/console`: each day's jobs as tables of steps, return codes and the records of every dataset, rather than the survey's drawings; `make bank-console` (done).
-- A console for the card processor: its cards, each night and cycle with its steps, and the files they wrote; `make cards-console` (done).
-- A console for the life insurer: its policies, each day's batch files with their steps, and the files they wrote, its Japanese names and data shown as they are; `make life-console` (done).
+- The bank's console moved into the bank, `pangaea/console`: each day's jobs as tables of steps, return codes and the records of every dataset, rather than the survey's drawings; `make pangaea-console` (done).
+- A console for the card processor: its cards, each night and cycle with its steps, and the files they wrote; `make laurasia-console` (done).
+- A console for the life insurer: its policies, each day's batch files with their steps, and the files they wrote, its Japanese names and data shown as they are; `make gondwana-console` (done).
 - The runs on the explorer's job drawings: a run record in bedrock, `bedrock/runlog`, a line for every step a machine room ran, which all three keep in `RUNS` beside their data; `survey explore -runs` lists a job's runs and draws each with its steps' outcomes, and `make explore-pangaea` and the others read the running system's (done).
 
 Done when: each specimen has a console of its own that shows what it is doing, none of them imports the survey, and the explorer draws the runs of any of the three.

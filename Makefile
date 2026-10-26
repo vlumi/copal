@@ -8,37 +8,38 @@ help:  ## List the available commands
 
 ##@ The bank
 
-.PHONY: pangaea-daily
-pangaea-daily:  ## Run the daily batch on the fixture and show its reports
-	@scripts/pangaea-daily.sh
+.PHONY: pangaea-fixture
+pangaea-fixture:  ## Run the bank's daily batch on its fixture and show its reports
+	@scripts/pangaea-fixture.sh
 
-.PHONY: bank-reset
-bank-reset:  ## Reset the running bank to a generated start (SEED, ACCOUNTS)
-	go run ./pangaea/cmd/pangaea reset -seed $(SEED) -accounts $(ACCOUNTS)
+.PHONY: pangaea-open
+pangaea-open: pangaea-build  ## Open the running bank on generated accounts (SEED, ACCOUNTS)
+	go run ./pangaea/cmd/pangaea open -seed $(SEED) -accounts $(ACCOUNTS)
 
-.PHONY: bank-days
-bank-days: pangaea-build  ## Run the bank's next N business days
+.PHONY: pangaea-days
+pangaea-days: pangaea-build  ## Run the bank's next N business days
 	go run ./pangaea/cmd/pangaea days -n $(N)
 
 # The ports are goroawase, Japanese number puns: 4510 shigoto, "work";
-# 2951 fukukoi, "come, fortune"; 1192 ii kuni, "good country".
-ADDR ?= 127.0.0.1:4510
+# 2951 fukukoi, "come, fortune"; 4649 yoroshiku, "I leave it in your
+# hands"; 2525 niko niko, "all smiles"; 1192 ii kuni, "good country".
+PANGAEA_ADDR ?= 127.0.0.1:4510
 
-.PHONY: bank-console
-bank-console: pangaea-build  ## Serve the bank's console in the browser (ADDR)
-	go run ./pangaea/cmd/console -addr $(ADDR)
+.PHONY: pangaea-console
+pangaea-console: pangaea-build  ## Serve the bank's console in the browser (PANGAEA_ADDR)
+	go run ./pangaea/cmd/console -addr $(PANGAEA_ADDR)
 
 ONLINE_ADDR ?= 127.0.0.1:2951
 
-.PHONY: online
-online: pangaea-build  ## Serve the bank's online day until interrupted (ONLINE_ADDR)
+.PHONY: pangaea-online
+pangaea-online: pangaea-build  ## Serve the bank's online day alone until interrupted (ONLINE_ADDR)
 	go run ./pangaea/cmd/pangaea online -addr $(ONLINE_ADDR)
 
 RATE ?= 5
 
-.PHONY: simulate
-simulate:  ## Send card traffic to the bank console's online channel until interrupted (RATE)
-	go run ./pangaea/cmd/pangaea simulate -api http://$(ADDR)/api -rate $(RATE)
+.PHONY: pangaea-simulate
+pangaea-simulate:  ## Send card traffic to the bank console's online channel until interrupted (RATE)
+	go run ./pangaea/cmd/pangaea simulate -api http://$(PANGAEA_ADDR)/api -rate $(RATE)
 
 # Compiles Pangaea's programs for the targets that run the bank; not listed.
 .PHONY: pangaea-build
@@ -47,24 +48,23 @@ pangaea-build:
 
 ##@ The card processor
 
-.PHONY: laurasia-night
-laurasia-night:  ## Run Laurasia's night on the fixture and show its logs and reports
-	@scripts/laurasia-night.sh
+.PHONY: laurasia-fixture
+laurasia-fixture:  ## Run the card processor's night on its fixture and show its logs and reports
+	@scripts/laurasia-fixture.sh
 
-.PHONY: cards-open
-cards-open: laurasia-build  ## Open the running card processor on a generated portfolio (SEED, CARDS)
+.PHONY: laurasia-open
+laurasia-open: laurasia-build  ## Open the running card processor on generated cards (SEED, CARDS)
 	go run ./laurasia/cmd/laurasia open -seed $(SEED) -cards $(CARDS)
 
-.PHONY: cards-days
-cards-days: laurasia-build  ## Run the card processor's next N days
+.PHONY: laurasia-days
+laurasia-days: laurasia-build  ## Run the card processor's next N days
 	go run ./laurasia/cmd/laurasia days -n $(N)
 
-# 4649 yoroshiku, "I leave it in your hands".
-CARDS_ADDR ?= 127.0.0.1:4649
+LAURASIA_ADDR ?= 127.0.0.1:4649
 
-.PHONY: cards-console
-cards-console: laurasia-build  ## Serve the card processor's console in the browser (CARDS_ADDR)
-	go run ./laurasia/cmd/console -addr $(CARDS_ADDR)
+.PHONY: laurasia-console
+laurasia-console: laurasia-build  ## Serve the card processor's console in the browser (LAURASIA_ADDR)
+	go run ./laurasia/cmd/console -addr $(LAURASIA_ADDR)
 
 # Compiles Laurasia's programs for the targets that run the processor; not listed.
 .PHONY: laurasia-build
@@ -73,24 +73,23 @@ laurasia-build:
 
 ##@ The life insurer
 
-.PHONY: gondwana-month
-gondwana-month:  ## Run Gondwana's March on the fixture and show its logs and reports
-	@scripts/gondwana-month.sh
+.PHONY: gondwana-fixture
+gondwana-fixture:  ## Run the life insurer's March on its fixture and show its logs and reports
+	@scripts/gondwana-fixture.sh
 
-.PHONY: life-open
-life-open: gondwana-build  ## Open the running life insurer on a generated portfolio (SEED, POLICIES)
+.PHONY: gondwana-open
+gondwana-open: gondwana-build  ## Open the running life insurer on generated policies (SEED, POLICIES)
 	go run ./gondwana/cmd/gondwana open -seed $(SEED) -policies $(POLICIES)
 
-.PHONY: life-days
-life-days: gondwana-build  ## Run the life insurer's next N business days
+.PHONY: gondwana-days
+gondwana-days: gondwana-build  ## Run the life insurer's next N business days
 	go run ./gondwana/cmd/gondwana days -n $(N)
 
-# 2525 niko niko, "all smiles".
-LIFE_ADDR ?= 127.0.0.1:2525
+GONDWANA_ADDR ?= 127.0.0.1:2525
 
-.PHONY: life-console
-life-console: gondwana-build  ## Serve the life insurer's console in the browser (LIFE_ADDR)
-	go run ./gondwana/cmd/console -addr $(LIFE_ADDR)
+.PHONY: gondwana-console
+gondwana-console: gondwana-build  ## Serve the life insurer's console in the browser (GONDWANA_ADDR)
+	go run ./gondwana/cmd/console -addr $(GONDWANA_ADDR)
 
 # Compiles Gondwana's programs for the targets that run the insurer; not listed.
 .PHONY: gondwana-build

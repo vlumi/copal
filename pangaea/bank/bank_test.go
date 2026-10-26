@@ -17,7 +17,7 @@ import (
 	"github.com/vlumi/copal/bedrock/runlog"
 )
 
-// TestDaysAreReproducible resets two banks from the same seed, runs three
+// TestDaysAreReproducible opens two banks from the same seed, runs three
 // business days in each, and checks that every dataset and report is the
 // same, byte for byte, but for what readTree leaves out.
 func TestDaysAreReproducible(t *testing.T) {
@@ -28,7 +28,7 @@ func TestDaysAreReproducible(t *testing.T) {
 	var trees []map[string][]byte
 	for range 2 {
 		b := Bank{Dir: t.TempDir(), Programs: programs, Copybooks: "../copybooks", Jobs: "../jobs"}
-		if err := b.Reset(7, 300); err != nil {
+		if err := b.Open(7, 300); err != nil {
 			t.Fatal(err)
 		}
 		var days []Day
@@ -151,7 +151,7 @@ func TestFailedDayIsBackedOut(t *testing.T) {
 	}
 	newBank := func(programs string) Bank {
 		b := Bank{Dir: t.TempDir(), Programs: programs, Copybooks: "../copybooks", Jobs: "../jobs"}
-		if err := b.Reset(7, 300); err != nil {
+		if err := b.Open(7, 300); err != nil {
 			t.Fatal(err)
 		}
 		return b
@@ -221,7 +221,7 @@ func TestOnlineDay(t *testing.T) {
 		t.Fatal(err)
 	}
 	b := Bank{Dir: t.TempDir(), Programs: programs, Copybooks: "../copybooks", Jobs: "../jobs"}
-	if err := b.Reset(7, 300); err != nil {
+	if err := b.Open(7, 300); err != nil {
 		t.Fatal(err)
 	}
 	g, store, err := b.open()

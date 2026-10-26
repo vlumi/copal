@@ -14,7 +14,7 @@ import (
 	"github.com/vlumi/copal/pangaea/bank"
 )
 
-// TestConsole resets a bank and runs two days from the console, as from
+// TestConsole opens a bank and runs two days from the console, as from
 // the browser, then reads every page.
 func TestConsole(t *testing.T) {
 	programs := t.TempDir()
@@ -38,7 +38,7 @@ func TestConsole(t *testing.T) {
 
 	get(t, server.URL+"/", http.StatusOK, "No bank yet", "/brand/rex.png", `src="/brand/icon.png"`, `href="/brand/icon.png"`)
 	get(t, server.URL+"/brand/icon.png", http.StatusOK)
-	post(t, client, server.URL+"/reset", url.Values{"seed": {"3"}, "accounts": {"200"}}, "/")
+	post(t, client, server.URL+"/open", url.Values{"seed": {"3"}, "accounts": {"200"}}, "/")
 	get(t, server.URL+"/", http.StatusOK, "The bank on 2026-09-01", "No days run yet")
 	post(t, client, server.URL+"/run", url.Values{"days": {"2"}}, "/compare?from=2026-09-01&to=2026-09-03")
 	get(t, server.URL+"/compare?from=2026-09-01&to=2026-09-03", http.StatusOK,
@@ -73,7 +73,7 @@ func TestConsole(t *testing.T) {
 	get(t, server.URL+"/days/2026-09-03", http.StatusNotFound, "not found")
 	post(t, client, server.URL+"/run", url.Values{"days": {"none"}}, "")
 
-	foreign, err := http.NewRequest("POST", server.URL+"/reset", strings.NewReader("seed=1&accounts=100"))
+	foreign, err := http.NewRequest("POST", server.URL+"/open", strings.NewReader("seed=1&accounts=100"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -85,7 +85,7 @@ func TestConsole(t *testing.T) {
 	}
 	_ = resp.Body.Close()
 	if resp.StatusCode != http.StatusForbidden {
-		t.Errorf("a reset from another site: %s, want it forbidden", resp.Status)
+		t.Errorf("an open from another site: %s, want it forbidden", resp.Status)
 	}
 }
 

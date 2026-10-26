@@ -111,13 +111,6 @@ func TestCatalogIndexed(t *testing.T) {
 	if _, err := reopened.Read("ACCT.ONLINE"); err == nil {
 		t.Error("read an indexed dataset as records")
 	}
-	out := t.TempDir()
-	if err := reopened.UnloadAll(out); err != nil {
-		t.Fatal(err)
-	}
-	if entries, _ := os.ReadDir(out); len(entries) != 1 || entries[0].Name() != "ACCT.MASTER.txt" {
-		t.Errorf("unloaded %v, want only ACCT.MASTER.txt", entries)
-	}
 }
 
 func TestGenerations(t *testing.T) {
