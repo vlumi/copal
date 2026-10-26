@@ -1,0 +1,24 @@
+{{define "title"}}Policy {{.View.Policy.No}}{{end}}
+{{define "content"}}
+{{with .View}}{{$p := .Policy}}
+<h1>Policy {{$p.No}}, <span lang="ja">{{$p.Name}}</span></h1>
+<dl class="facts">
+  <div><dt>Product</dt><dd>{{$p.Product}}</dd></div>
+  <div><dt>State</dt><dd>{{$p.StatusName}}</dd></div>
+  <div><dt>Sum insured</dt><dd>{{yen $p.Sum}}</dd></div>
+  <div><dt>Premium, {{$p.ModeName}}</dt><dd>{{yen $p.Premium}}</dd></div>
+  <div><dt>Paid to</dt><dd>{{$p.PaidToMonth}}</dd></div>
+  <div><dt>Reserve</dt><dd>{{yen $p.Reserve}}</dd></div>
+  <div><dt>Dividends</dt><dd>{{yen $p.Dividends}}</dd></div>
+</dl>
+<h2>The master record</h2>
+<p class="note">Each field as the copybook names it, its bytes and their value, read from Shift_JIS; dates are kept in their era, as the system keeps them.</p>
+<table>
+  <thead><tr><th>Field</th><th class="num">At</th><th class="num">Length</th><th>Bytes</th><th>Value</th></tr></thead>
+  <tbody>
+  {{range .Fields}}<tr><td lang="ja">{{.Field.Name}}</td><td class="num">{{.Field.Start}}</td><td class="num">{{.Field.Length}}</td><td lang="ja"><code class="raw">{{.Raw}}</code></td><td lang="ja">{{.Value}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{end}}
+{{end}}

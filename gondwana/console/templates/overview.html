@@ -1,0 +1,33 @@
+{{define "title"}}Overview{{end}}
+{{define "content"}}
+{{with .View}}
+<h1>The insurer before {{$.History.Next}}</h1>
+<dl class="facts">
+  <div><dt>Policies</dt><dd><a href="/policies">{{count .Policies}}</a></dd></div>
+  {{range .ByStatus}}<div><dt>{{.Status}}</dt><dd>{{count .N}}</dd></div>{{end}}
+  <div><dt>Premiums in force</dt><dd>{{yen .Premiums}}</dd></div>
+</dl>
+<div class="actions">
+<form method="post" action="/run" class="action" data-busy="Running…">
+  <label>Business days <input name="days" type="number" min="1" max="366" value="1" required></label>
+  <button>Run days</button>
+</form>
+{{template "open" $.History.Seed}}
+</div>
+<h2>Business days</h2>
+{{if .Days}}
+<p class="note">The daily run every business day; the collection agent's results before it on theirs, the billing on the 10th or the business day after, the close on the month's last business day, and the year end after March's.</p>
+<table>
+  <thead><tr><th>Day</th><th></th><th>Batch files</th><th class="num">New</th><th class="num">Benefits</th><th class="num">Changes</th><th class="num">Rejected</th><th class="num">Billed</th><th class="num">Collected, unpaid</th><th class="num">In force</th><th class="num">In grace</th><th class="num">Lapsed</th><th>Worst</th></tr></thead>
+  <tbody>
+  {{range .Days}}<tr><td><a href="/days/{{.Date}}">{{.Date}}</a></td><td>{{slice .Date.Weekday.String 0 3}}</td>
+    <td>{{range $i, $b := .Batches}}{{if $i}}, {{end}}{{$b.Name}}{{end}}</td>
+    <td class="num">{{count .New}}</td><td class="num">{{count .Benefits}}</td><td class="num">{{count .Changes}}</td><td class="num">{{count .Rejected}}</td>
+    <td class="num">{{if .Billed}}{{count .Billed}}{{end}}</td><td class="num">{{if or .Collected .Unpaid}}{{count .Collected}}, {{count .Unpaid}}{{end}}</td>
+    <td class="num">{{count .InForce}}</td><td class="num">{{count .InGrace}}</td><td class="num">{{count .Lapsed}}</td><td>{{template "rc" .RC}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{else}}<p>No days run yet.</p>{{end}}
+{{end}}
+{{end}}

@@ -1,0 +1,35 @@
+{{define "base"}}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{template "title" .}} · Gondwana Life Insurance</title>
+<link rel="stylesheet" href="/static/console.css">
+<script src="/static/console.js" defer></script>
+</head>
+<body>
+<header>
+  <a class="name" href="/">Gondwana Life Insurance<small lang="ja">ゴンドワナ生命</small></a>
+  <nav>
+    <a href="/policies">Policies</a>
+  </nav>
+  {{if .History.Seed}}<span class="today">Next business day <strong>{{.History.Next}}</strong> · seed {{.History.Seed}}</span>{{end}}
+</header>
+<main>
+{{template "content" .}}
+</main>
+</body>
+</html>
+{{end}}
+
+{{define "open"}}
+<form method="post" action="/open" class="action" data-busy="Opening…">
+  <label>Seed <input name="seed" type="number" min="0" value="{{.}}" required></label>
+  <label>Policies <input name="policies" type="number" min="10" max="100000" value="2000" required></label>
+  <button>Open an insurer</button>
+</form>
+{{end}}
+
+{{define "rc"}}<span class="rc{{if ge . 8}}8{{else if ge . 4}}4{{end}}">RC={{printf "%04d" .}}</span>{{end}}
+
+{{define "policy-link"}}<a href="/policies/{{.}}">{{.}}</a>{{end}}

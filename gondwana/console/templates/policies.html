@@ -1,0 +1,18 @@
+{{define "title"}}Policies{{end}}
+{{define "content"}}
+{{with .View}}
+<h1>Policies</h1>
+<form method="get" action="/policies" class="search">
+  <input name="q" value="{{.Query}}" placeholder="Policy number, or the start of one, or part of a name in kanji or kana">
+  <button>Search</button>
+</form>
+<p class="note">{{count (len .Policies)}} of {{count .Found}} found, of {{count .Total}} policies, as the last day's unload left the master.</p>
+<table>
+  <thead><tr><th>Policy</th><th>Policyholder</th><th></th><th>Product</th><th>State</th><th class="num">Sum insured</th><th class="num">Premium</th><th>Paid</th><th>Paid to</th><th>Contracted</th></tr></thead>
+  <tbody>
+  {{range .Policies}}<tr><td>{{template "policy-link" .No}}</td><td lang="ja">{{.Name}}</td><td lang="ja">{{.Kana}}</td><td>{{.Product}}</td><td>{{.StatusName}}</td><td class="num">{{yen .Sum}}</td><td class="num">{{yen .Premium}}</td><td>{{.ModeName}}</td><td>{{.PaidToMonth}}</td><td>{{.Contract}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{end}}
+{{end}}
