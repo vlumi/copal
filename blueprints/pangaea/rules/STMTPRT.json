@@ -37,7 +37,8 @@
             1,
             2,
             3
-          ]
+          ],
+          "sentence": "When `WS-CLOSED-MONTH-NUMBER` is not 0 and `SORT-RETURN` is not 0, it performs `1000-INITIALIZE`, runs `SORT STMT-SORT ON ASCENDING KEY SR-ACCT-NO SR-DATE SR-SEQ INPUT PROCEDURE IS 2000-SELECT-POSTINGS OUTPUT PROCEDURE IS 3000-PRINT-STATEMENTS`, sets `WS-ABORT-MESSAGE` to `'SORT FAILED'`, and performs `9900-ABORT`."
         },
         {
           "entries": [
@@ -51,7 +52,8 @@
             5,
             6,
             7
-          ]
+          ],
+          "sentence": "When `WS-CLOSED-MONTH-NUMBER` is not 0 and `SORT-RETURN` is 0, it performs `1000-INITIALIZE`, runs `SORT STMT-SORT ON ASCENDING KEY SR-ACCT-NO SR-DATE SR-SEQ INPUT PROCEDURE IS 2000-SELECT-POSTINGS OUTPUT PROCEDURE IS 3000-PRINT-STATEMENTS`, performs `8000-WRITE-REPORT`, performs `9000-CLOSE-FILES`, sets `RETURN-CODE` to 0, and stops the run."
         },
         {
           "entries": [
@@ -64,7 +66,8 @@
             5,
             6,
             7
-          ]
+          ],
+          "sentence": "When `WS-CLOSED-MONTH-NUMBER` is 0, it performs `1000-INITIALIZE`, performs `8000-WRITE-REPORT`, performs `9000-CLOSE-FILES`, sets `RETURN-CODE` to 0, and stops the run."
         }
       ]
     },
@@ -110,7 +113,8 @@
             1,
             2,
             3
-          ]
+          ],
+          "sentence": "When `WS-FILE-STATUSES` is not `ALL '0'`, it opens `ACCR-IN`, `ACCT-IN`, and `AUDIT-IN` for input and `STMT-OUT` and `REPORT-OUT` for output; displays `'STMTPRT: CANNOT OPEN FILES '` `WS-FILE-STATUSES`; sets `RETURN-CODE` to 16; and stops the run."
         },
         {
           "entries": [
@@ -126,7 +130,8 @@
             7,
             8,
             9
-          ]
+          ],
+          "sentence": "When `WS-FILE-STATUSES` is `ALL '0'`, reading `ACCR-IN` finds a record, and `WS-CM-MONTH` is 12, it opens `ACCR-IN`, `ACCT-IN`, and `AUDIT-IN` for input and `STMT-OUT` and `REPORT-OUT` for output; sets `WS-CLOSED-MONTH-NUMBER` to 0; reads `ACCR-IN`; sets `WS-CLOSED-MONTH-NUMBER` to `AC-DUE-MONTH`; sets `WS-NM-YEAR` to `WS-CM-YEAR`; adds 1 to `WS-NM-YEAR`; and sets `WS-NM-MONTH` to 1."
         },
         {
           "entries": [
@@ -141,7 +146,8 @@
             6,
             7,
             10
-          ]
+          ],
+          "sentence": "When `WS-FILE-STATUSES` is `ALL '0'`, reading `ACCR-IN` finds a record, and `WS-CM-MONTH` is not 12, it opens `ACCR-IN`, `ACCT-IN`, and `AUDIT-IN` for input and `STMT-OUT` and `REPORT-OUT` for output; sets `WS-CLOSED-MONTH-NUMBER` to 0; reads `ACCR-IN`; sets `WS-CLOSED-MONTH-NUMBER` to `AC-DUE-MONTH`; sets `WS-NM-YEAR` to `WS-CM-YEAR`; and computes `WS-NM-MONTH` as `WS-CM-MONTH + 1`."
         },
         {
           "entries": [
@@ -155,7 +161,8 @@
             5,
             7,
             10
-          ]
+          ],
+          "sentence": "When `WS-FILE-STATUSES` is `ALL '0'`, reading `ACCR-IN` finds no more records, and `WS-CM-MONTH` is not 12, it opens `ACCR-IN`, `ACCT-IN`, and `AUDIT-IN` for input and `STMT-OUT` and `REPORT-OUT` for output; sets `WS-CLOSED-MONTH-NUMBER` to 0; reads `ACCR-IN`; sets `WS-NM-YEAR` to `WS-CM-YEAR`; and computes `WS-NM-MONTH` as `WS-CM-MONTH + 1`."
         }
       ]
     },
@@ -186,7 +193,8 @@
             1,
             2,
             3
-          ]
+          ],
+          "sentence": "When `WS-AUDIT-STATUS` is not `'10'`, it reads `AUDIT-IN`, repeats its loop until `WS-AUDIT-STATUS` is not `'00'`, sets `WS-ABORT-MESSAGE` to `'CANNOT READ THE AUDIT TRAILS'`, and performs `9900-ABORT`."
         },
         {
           "entries": [
@@ -195,7 +203,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When `WS-AUDIT-STATUS` is `'10'`, it reads `AUDIT-IN` and repeats its loop until `WS-AUDIT-STATUS` is not `'00'`."
         }
       ]
     },
@@ -232,7 +241,8 @@
             2,
             3,
             4
-          ]
+          ],
+          "sentence": "When `WS-POSTING-MONTH` is `WS-CLOSED-MONTH` or both `WS-POSTING-MONTH` is `WS-NEXT-MONTH` and `WS-POSTING-CODE` is `'IN'`, `'OD'`, or `'MF'` (`WS-MONTH-END-CODE`), it adds 1 to `WS-SEQ`, sets `WS-POSTING-MONTH` to `AU-BUSINESS-DATE(1:6)`, sets `WS-POSTING-CODE` to `AU-TRAN-CODE`, performs `2100-RELEASE-POSTING`, and reads `AUDIT-IN`."
         },
         {
           "entries": [
@@ -243,7 +253,8 @@
             1,
             2,
             4
-          ]
+          ],
+          "sentence": "When `WS-POSTING-MONTH` is not `WS-CLOSED-MONTH` and either `WS-POSTING-MONTH` is not `WS-NEXT-MONTH` or `WS-POSTING-CODE` is none of `'IN'`, `'OD'`, and `'MF'` (not `WS-MONTH-END-CODE`), it adds 1 to `WS-SEQ`, sets `WS-POSTING-MONTH` to `AU-BUSINESS-DATE(1:6)`, sets `WS-POSTING-CODE` to `AU-TRAN-CODE`, and reads `AUDIT-IN`."
         }
       ]
     },
@@ -276,7 +287,8 @@
             2,
             3,
             4
-          ]
+          ],
+          "sentence": "When `WS-POSTING-END-SW` is not `'Y'` (not `POSTINGS-AT-END`), it performs `3100-RETURN-POSTING`, performs `3200-READ-MASTER`, repeats its loop until `WS-MASTER-END-SW` is `'Y'` (`MASTER-AT-END`), sets `WS-ABORT-MESSAGE` to `'POSTINGS FOR NO ACCOUNT'`, and performs `9900-ABORT`."
         },
         {
           "entries": [
@@ -286,7 +298,8 @@
             0,
             1,
             2
-          ]
+          ],
+          "sentence": "When `WS-POSTING-END-SW` is `'Y'` (`POSTINGS-AT-END`), it performs `3100-RETURN-POSTING`, performs `3200-READ-MASTER`, and repeats its loop until `WS-MASTER-END-SW` is `'Y'` (`MASTER-AT-END`)."
         }
       ]
     },
@@ -317,7 +330,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When `WS-POSTING-KEY` is less than `AM-ACCT-NO`, it sets `WS-ABORT-MESSAGE` to `'POSTINGS FOR NO ACCOUNT'` and performs `9900-ABORT`."
         },
         {
           "entries": [
@@ -326,7 +340,8 @@
           "actions": [
             2,
             3
-          ]
+          ],
+          "sentence": "When `WS-POSTING-KEY` is at least `AM-ACCT-NO`, it performs `3300-PRINT-STATEMENT` and performs `3200-READ-MASTER`."
         }
       ]
     },
@@ -354,7 +369,8 @@
             0,
             1,
             2
-          ]
+          ],
+          "sentence": "When taking the next record from `STMT-SORT` finds no more records, it takes the next record from `STMT-SORT`, sets `WS-POSTING-END-SW` to `POSTINGS-AT-END`, and sets `WS-POSTING-KEY` to high values."
         },
         {
           "entries": [
@@ -363,7 +379,8 @@
           "actions": [
             0,
             3
-          ]
+          ],
+          "sentence": "When taking the next record from `STMT-SORT` finds a record, it takes the next record from `STMT-SORT` and sets `WS-POSTING-KEY` to `SR-ACCT-NO`."
         }
       ]
     },
@@ -389,7 +406,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When reading `ACCT-IN` finds no more records, it reads `ACCT-IN` and sets `WS-MASTER-END-SW` to `MASTER-AT-END`."
         },
         {
           "entries": [
@@ -398,7 +416,8 @@
           "actions": [
             0,
             2
-          ]
+          ],
+          "sentence": "When reading `ACCT-IN` finds a record, it reads `ACCT-IN` and adds 1 to `WS-ACCOUNT-COUNT`."
         }
       ]
     },
@@ -440,7 +459,8 @@
           ],
           "actions": [
             0
-          ]
+          ],
+          "sentence": "When `AM-STATUS` is `'X'` (`AM-CLOSED`), `AM-BALANCE` is 0, and `WS-POSTING-KEY` is not `AM-ACCT-NO`, it leaves the paragraph."
         },
         {
           "entries": [
@@ -456,7 +476,8 @@
             6,
             7,
             8
-          ]
+          ],
+          "sentence": "When `AM-STATUS` is not `'X'` (not `AM-CLOSED`), `AM-BALANCE` is not 0, or `WS-POSTING-KEY` is `AM-ACCT-NO`; and `WS-POSTING-KEY` is `AM-ACCT-NO`, it sets `WS-OPENING` to `AM-BALANCE`; sets `WS-OPENING` to `SR-BALANCE-BEFORE`; sets `WS-CLOSING` to `WS-OPENING`; sets `WS-CREDITS` and `WS-DEBITS` to 0; performs `3400-PRINT-HEADING`; repeats its loop until `WS-POSTING-KEY` is not `AM-ACCT-NO`; performs `3600-PRINT-CLOSING`; and adds 1 to `WS-STATEMENT-COUNT`."
         },
         {
           "entries": [
@@ -471,7 +492,8 @@
             6,
             7,
             8
-          ]
+          ],
+          "sentence": "When `AM-STATUS` is not `'X'` (not `AM-CLOSED`), `AM-BALANCE` is not 0, or `WS-POSTING-KEY` is `AM-ACCT-NO`; and `WS-POSTING-KEY` is not `AM-ACCT-NO`, it sets `WS-OPENING` to `AM-BALANCE`; sets `WS-CLOSING` to `WS-OPENING`; sets `WS-CREDITS` and `WS-DEBITS` to 0; performs `3400-PRINT-HEADING`; repeats its loop until `WS-POSTING-KEY` is not `AM-ACCT-NO`; performs `3600-PRINT-CLOSING`; and adds 1 to `WS-STATEMENT-COUNT`."
         }
       ]
     },
@@ -536,7 +558,8 @@
             11,
             12,
             13
-          ]
+          ],
+          "sentence": "When `AM-ACCT-TYPE` is `'S'` (`AM-SAVINGS`) and `AM-STATUS` is `'F'` (`AM-FROZEN`), it writes `STMT-LINE` from `WS-RULE-LINE`; sets `WS-TL-PERIOD` to spaces; builds `WS-TL-PERIOD` from `'STATEMENT FOR '` `WS-MONTH-NAME(WS-CM-MONTH)` spaces `' '` `WS-CM-YEAR`; writes `STMT-LINE` from `WS-TITLE-LINE`; sets `WS-AL-ACCT-NO` to `AM-ACCT-NO`; sets `WS-AL-NAME` to `AM-SHORT-NAME`; sets `WS-AL-KIND` to `'SAVINGS ACCOUNT, FROZEN'`; writes `STMT-LINE` from `WS-ACCOUNT-LINE`; sets `STMT-LINE` to spaces; writes `STMT-LINE`; writes `STMT-LINE` from `WS-HEADING-LINE`; sets `WS-BL-LABEL` to `'OPENING BALANCE'`; sets `WS-BL-BALANCE` to `WS-OPENING`; and writes `STMT-LINE` from `WS-BALANCE-LINE`."
         },
         {
           "entries": [
@@ -559,7 +582,8 @@
             11,
             12,
             13
-          ]
+          ],
+          "sentence": "When `AM-ACCT-TYPE` is not `'S'` (not `AM-SAVINGS`) or `AM-STATUS` is not `'F'` (not `AM-FROZEN`); and `AM-ACCT-TYPE` is `'S'` (`AM-SAVINGS`), it writes `STMT-LINE` from `WS-RULE-LINE`, sets `WS-TL-PERIOD` to spaces, builds `WS-TL-PERIOD` from `'STATEMENT FOR '` `WS-MONTH-NAME(WS-CM-MONTH)` spaces `' '` `WS-CM-YEAR`, writes `STMT-LINE` from `WS-TITLE-LINE`, sets `WS-AL-ACCT-NO` to `AM-ACCT-NO`, sets `WS-AL-NAME` to `AM-SHORT-NAME`, sets `WS-AL-KIND` to `'SAVINGS ACCOUNT'`, writes `STMT-LINE` from `WS-ACCOUNT-LINE`, sets `STMT-LINE` to spaces, writes `STMT-LINE`, writes `STMT-LINE` from `WS-HEADING-LINE`, sets `WS-BL-LABEL` to `'OPENING BALANCE'`, sets `WS-BL-BALANCE` to `WS-OPENING`, and writes `STMT-LINE` from `WS-BALANCE-LINE`."
         },
         {
           "entries": [
@@ -582,7 +606,8 @@
             11,
             12,
             13
-          ]
+          ],
+          "sentence": "When `AM-ACCT-TYPE` is not `'S'` (not `AM-SAVINGS`) or `AM-STATUS` is not `'F'` (not `AM-FROZEN`); `AM-ACCT-TYPE` is not `'S'` (not `AM-SAVINGS`); and `AM-STATUS` is `'F'` (`AM-FROZEN`), it writes `STMT-LINE` from `WS-RULE-LINE`; sets `WS-TL-PERIOD` to spaces; builds `WS-TL-PERIOD` from `'STATEMENT FOR '` `WS-MONTH-NAME(WS-CM-MONTH)` spaces `' '` `WS-CM-YEAR`; writes `STMT-LINE` from `WS-TITLE-LINE`; sets `WS-AL-ACCT-NO` to `AM-ACCT-NO`; sets `WS-AL-NAME` to `AM-SHORT-NAME`; sets `WS-AL-KIND` to `'CURRENT ACCOUNT, FROZEN'`; writes `STMT-LINE` from `WS-ACCOUNT-LINE`; sets `STMT-LINE` to spaces; writes `STMT-LINE`; writes `STMT-LINE` from `WS-HEADING-LINE`; sets `WS-BL-LABEL` to `'OPENING BALANCE'`; sets `WS-BL-BALANCE` to `WS-OPENING`; and writes `STMT-LINE` from `WS-BALANCE-LINE`."
         },
         {
           "entries": [
@@ -605,7 +630,8 @@
             11,
             12,
             13
-          ]
+          ],
+          "sentence": "When `AM-ACCT-TYPE` is not `'S'` (not `AM-SAVINGS`) or `AM-STATUS` is not `'F'` (not `AM-FROZEN`); `AM-ACCT-TYPE` is not `'S'` (not `AM-SAVINGS`); and `AM-STATUS` is not `'F'` (not `AM-FROZEN`), it writes `STMT-LINE` from `WS-RULE-LINE`, sets `WS-TL-PERIOD` to spaces, builds `WS-TL-PERIOD` from `'STATEMENT FOR '` `WS-MONTH-NAME(WS-CM-MONTH)` spaces `' '` `WS-CM-YEAR`, writes `STMT-LINE` from `WS-TITLE-LINE`, sets `WS-AL-ACCT-NO` to `AM-ACCT-NO`, sets `WS-AL-NAME` to `AM-SHORT-NAME`, sets `WS-AL-KIND` to `'CURRENT ACCOUNT'`, writes `STMT-LINE` from `WS-ACCOUNT-LINE`, sets `STMT-LINE` to spaces, writes `STMT-LINE`, writes `STMT-LINE` from `WS-HEADING-LINE`, sets `WS-BL-LABEL` to `'OPENING BALANCE'`, sets `WS-BL-BALANCE` to `WS-OPENING`, and writes `STMT-LINE` from `WS-BALANCE-LINE`."
         }
       ]
     },
@@ -665,7 +691,8 @@
             11,
             12,
             13
-          ]
+          ],
+          "sentence": "When `ST-CODE(ST-CX)` is `SR-TRAN-CODE` and `SR-AMOUNT` is less than 0, it sets `WS-DATE` to `SR-DATE`, sets `WS-PL-YEAR` to `WS-DATE-YEAR`, sets `WS-PL-MONTH` to `WS-DATE-MONTH`, sets `WS-PL-DAY` to `WS-DATE-DAY`, sets `WS-PL-TRAN-ID` to `SR-TRAN-ID`, sets `ST-CX` to 1, searches `ST-CODE-ENTRY`, sets `WS-PL-DESCRIPTION` to `ST-CODE-TEXT(ST-CX)`, sets `WS-PL-AMOUNT` to `SR-AMOUNT`, sets `WS-PL-BALANCE` to `SR-BALANCE-AFTER`, writes `STMT-LINE` from `WS-POSTING-LINE`, subtracts `SR-AMOUNT` from `WS-DEBITS`, sets `WS-CLOSING` to `SR-BALANCE-AFTER`, and adds 1 to `WS-PRINTED-COUNT`."
         },
         {
           "entries": [
@@ -687,7 +714,8 @@
             14,
             12,
             13
-          ]
+          ],
+          "sentence": "When `ST-CODE(ST-CX)` is `SR-TRAN-CODE` and `SR-AMOUNT` is at least 0, it sets `WS-DATE` to `SR-DATE`, sets `WS-PL-YEAR` to `WS-DATE-YEAR`, sets `WS-PL-MONTH` to `WS-DATE-MONTH`, sets `WS-PL-DAY` to `WS-DATE-DAY`, sets `WS-PL-TRAN-ID` to `SR-TRAN-ID`, sets `ST-CX` to 1, searches `ST-CODE-ENTRY`, sets `WS-PL-DESCRIPTION` to `ST-CODE-TEXT(ST-CX)`, sets `WS-PL-AMOUNT` to `SR-AMOUNT`, sets `WS-PL-BALANCE` to `SR-BALANCE-AFTER`, writes `STMT-LINE` from `WS-POSTING-LINE`, adds `SR-AMOUNT` to `WS-CREDITS`, sets `WS-CLOSING` to `SR-BALANCE-AFTER`, and adds 1 to `WS-PRINTED-COUNT`."
         },
         {
           "entries": [
@@ -709,7 +737,8 @@
             11,
             12,
             13
-          ]
+          ],
+          "sentence": "When `ST-CODE(ST-CX)` is not `SR-TRAN-CODE` and `SR-AMOUNT` is less than 0, it sets `WS-DATE` to `SR-DATE`, sets `WS-PL-YEAR` to `WS-DATE-YEAR`, sets `WS-PL-MONTH` to `WS-DATE-MONTH`, sets `WS-PL-DAY` to `WS-DATE-DAY`, sets `WS-PL-TRAN-ID` to `SR-TRAN-ID`, sets `ST-CX` to 1, searches `ST-CODE-ENTRY`, sets `WS-PL-DESCRIPTION` to `SR-TRAN-CODE`, sets `WS-PL-AMOUNT` to `SR-AMOUNT`, sets `WS-PL-BALANCE` to `SR-BALANCE-AFTER`, writes `STMT-LINE` from `WS-POSTING-LINE`, subtracts `SR-AMOUNT` from `WS-DEBITS`, sets `WS-CLOSING` to `SR-BALANCE-AFTER`, and adds 1 to `WS-PRINTED-COUNT`."
         },
         {
           "entries": [
@@ -731,7 +760,8 @@
             14,
             12,
             13
-          ]
+          ],
+          "sentence": "When `ST-CODE(ST-CX)` is not `SR-TRAN-CODE` and `SR-AMOUNT` is at least 0, it sets `WS-DATE` to `SR-DATE`, sets `WS-PL-YEAR` to `WS-DATE-YEAR`, sets `WS-PL-MONTH` to `WS-DATE-MONTH`, sets `WS-PL-DAY` to `WS-DATE-DAY`, sets `WS-PL-TRAN-ID` to `SR-TRAN-ID`, sets `ST-CX` to 1, searches `ST-CODE-ENTRY`, sets `WS-PL-DESCRIPTION` to `SR-TRAN-CODE`, sets `WS-PL-AMOUNT` to `SR-AMOUNT`, sets `WS-PL-BALANCE` to `SR-BALANCE-AFTER`, writes `STMT-LINE` from `WS-POSTING-LINE`, adds `SR-AMOUNT` to `WS-CREDITS`, sets `WS-CLOSING` to `SR-BALANCE-AFTER`, and adds 1 to `WS-PRINTED-COUNT`."
         }
       ]
     },
@@ -789,7 +819,8 @@
             3,
             1,
             4
-          ]
+          ],
+          "sentence": "When `WS-CLOSED-MONTH-NUMBER` is 0, it sets `REPORT-LINE` to `'STMTPRT  MONTHLY STATEMENTS'`, writes `REPORT-LINE`, sets `REPORT-LINE` to spaces, writes `REPORT-LINE`, sets `REPORT-LINE` to `'NO MONTH CLOSED'`, writes `REPORT-LINE`, and leaves the paragraph."
         },
         {
           "entries": [
@@ -824,7 +855,8 @@
             17,
             20,
             21
-          ]
+          ],
+          "sentence": "When `WS-CLOSED-MONTH-NUMBER` is not 0 and `WS-PRINTED-COUNT` is not `WS-SELECTED-COUNT`, it sets `REPORT-LINE` to `'STMTPRT  MONTHLY STATEMENTS'`, writes `REPORT-LINE`, sets `REPORT-LINE` to spaces, writes `REPORT-LINE`, sets `REPORT-LINE` to spaces, builds `REPORT-LINE` from `'MONTH CLOSED                  '` `WS-CLOSED-MONTH`, writes `REPORT-LINE`, sets `WS-RC-LABEL` to `'ACCOUNTS READ'`, sets `WS-RC-VALUE` to `WS-ACCOUNT-COUNT`, writes `REPORT-LINE` from `WS-REPORT-COUNT-LINE`, sets `WS-RC-LABEL` to `'STATEMENTS PRINTED'`, sets `WS-RC-VALUE` to `WS-STATEMENT-COUNT`, writes `REPORT-LINE` from `WS-REPORT-COUNT-LINE`, sets `WS-RC-LABEL` to `'POSTINGS SELECTED'`, sets `WS-RC-VALUE` to `WS-SELECTED-COUNT`, writes `REPORT-LINE` from `WS-REPORT-COUNT-LINE`, sets `WS-RC-LABEL` to `'POSTINGS PRINTED'`, sets `WS-RC-VALUE` to `WS-PRINTED-COUNT`, writes `REPORT-LINE` from `WS-REPORT-COUNT-LINE`, sets `WS-RA-LABEL` to `'CREDITS'`, sets `WS-RA-VALUE` to `WS-CREDIT-TOTAL`, writes `REPORT-LINE` from `WS-REPORT-AMOUNT-LINE`, sets `WS-RA-LABEL` to `'DEBITS'`, sets `WS-RA-VALUE` to `WS-DEBIT-TOTAL`, writes `REPORT-LINE` from `WS-REPORT-AMOUNT-LINE`, sets `WS-ABORT-MESSAGE` to `'POSTINGS SELECTED BUT NOT PRINTED'`, and performs `9900-ABORT`."
         },
         {
           "entries": [
@@ -857,7 +889,8 @@
             18,
             19,
             17
-          ]
+          ],
+          "sentence": "When `WS-CLOSED-MONTH-NUMBER` is not 0 and `WS-PRINTED-COUNT` is `WS-SELECTED-COUNT`, it sets `REPORT-LINE` to `'STMTPRT  MONTHLY STATEMENTS'`, writes `REPORT-LINE`, sets `REPORT-LINE` to spaces, writes `REPORT-LINE`, sets `REPORT-LINE` to spaces, builds `REPORT-LINE` from `'MONTH CLOSED                  '` `WS-CLOSED-MONTH`, writes `REPORT-LINE`, sets `WS-RC-LABEL` to `'ACCOUNTS READ'`, sets `WS-RC-VALUE` to `WS-ACCOUNT-COUNT`, writes `REPORT-LINE` from `WS-REPORT-COUNT-LINE`, sets `WS-RC-LABEL` to `'STATEMENTS PRINTED'`, sets `WS-RC-VALUE` to `WS-STATEMENT-COUNT`, writes `REPORT-LINE` from `WS-REPORT-COUNT-LINE`, sets `WS-RC-LABEL` to `'POSTINGS SELECTED'`, sets `WS-RC-VALUE` to `WS-SELECTED-COUNT`, writes `REPORT-LINE` from `WS-REPORT-COUNT-LINE`, sets `WS-RC-LABEL` to `'POSTINGS PRINTED'`, sets `WS-RC-VALUE` to `WS-PRINTED-COUNT`, writes `REPORT-LINE` from `WS-REPORT-COUNT-LINE`, sets `WS-RA-LABEL` to `'CREDITS'`, sets `WS-RA-VALUE` to `WS-CREDIT-TOTAL`, writes `REPORT-LINE` from `WS-REPORT-AMOUNT-LINE`, sets `WS-RA-LABEL` to `'DEBITS'`, sets `WS-RA-VALUE` to `WS-DEBIT-TOTAL`, and writes `REPORT-LINE` from `WS-REPORT-AMOUNT-LINE`."
         }
       ]
     }

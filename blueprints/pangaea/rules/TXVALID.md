@@ -1,6 +1,6 @@
 # TXVALID: decision tables
 
-The business rules of [TXVALID](../programs/TXVALID.md), paragraph by paragraph: each column is one path through the paragraph's decisions, with the outcome of each condition it tests, Y or N, and the actions it takes, numbered in the order they run. The WHENs of an EVALUATE are tried in order, and an IF whose THEN jumps away has the rest of its paragraph as its ELSE. The body of an inline PERFORM has a table of its own, for one pass.
+The business rules of [TXVALID](../programs/TXVALID.md), paragraph by paragraph: each column is one path through the paragraph's decisions, with the outcome of each condition it tests, Y or N, and the actions it takes, numbered in the order they run. The WHENs of an EVALUATE are tried in order, and an IF whose THEN jumps away has the rest of its paragraph as its ELSE. The body of an inline PERFORM has a table of its own, for one pass. Under each table, each rule as a sentence, written from the conditions it tests and the statements it runs, with no more in it than the table has: a condition name with the field it is declared on and its values.
 
 ## Contents
 
@@ -32,6 +32,12 @@ The business rules of [TXVALID](../programs/TXVALID.md), paragraph by paragraph:
 | → `MOVE 4 TO RETURN-CODE` | | 7 | | | |
 | → `MOVE 0 TO RETURN-CODE` | | | 7 | | |
 
+- **Rule 1.** When `WS-FILE-ERROR` is spaces (`FILE-IS-GOOD`); `WS-FILE-ERROR` is spaces (`FILE-IS-GOOD`), tested again; and `WS-FILE-ERROR` is not spaces (not `FILE-IS-GOOD`), tested again, it performs `1000-OPEN-FILES`, performs `2000-READ-HEADER`, performs `3000-READ-DETAILS`, performs `4000-CHECK-TRAILER`, performs `8000-WRITE-REPORT`, performs `9000-CLOSE-FILES`, sets `RETURN-CODE` to 12, and stops the run.
+- **Rule 2.** When `WS-FILE-ERROR` is spaces (`FILE-IS-GOOD`); `WS-FILE-ERROR` is spaces (`FILE-IS-GOOD`), tested again; `WS-FILE-ERROR` is spaces (`FILE-IS-GOOD`), tested again; and `WS-REJECT-COUNT` is more than 0, it performs `1000-OPEN-FILES`, performs `2000-READ-HEADER`, performs `3000-READ-DETAILS`, performs `4000-CHECK-TRAILER`, performs `8000-WRITE-REPORT`, performs `9000-CLOSE-FILES`, sets `RETURN-CODE` to 4, and stops the run.
+- **Rule 3.** When `WS-FILE-ERROR` is spaces (`FILE-IS-GOOD`); `WS-FILE-ERROR` is spaces (`FILE-IS-GOOD`), tested again; `WS-FILE-ERROR` is spaces (`FILE-IS-GOOD`), tested again; and `WS-REJECT-COUNT` is at most 0, it performs `1000-OPEN-FILES`, performs `2000-READ-HEADER`, performs `3000-READ-DETAILS`, performs `4000-CHECK-TRAILER`, performs `8000-WRITE-REPORT`, performs `9000-CLOSE-FILES`, sets `RETURN-CODE` to 0, and stops the run.
+- **Rule 4.** When `WS-FILE-ERROR` is spaces (`FILE-IS-GOOD`); and `WS-FILE-ERROR` is not spaces (not `FILE-IS-GOOD`), tested again, it performs `1000-OPEN-FILES`, performs `2000-READ-HEADER`, performs `3000-READ-DETAILS`, performs `8000-WRITE-REPORT`, performs `9000-CLOSE-FILES`, sets `RETURN-CODE` to 12, and stops the run.
+- **Rule 5.** When `WS-FILE-ERROR` is not spaces (not `FILE-IS-GOOD`), it performs `1000-OPEN-FILES`, performs `2000-READ-HEADER`, performs `8000-WRITE-REPORT`, performs `9000-CLOSE-FILES`, sets `RETURN-CODE` to 12, and stops the run.
+
 Source: [TXVALID.cbl:113](../../../pangaea/programs/TXVALID.cbl#L113).
 
 ## 1000-OPEN-FILES
@@ -49,6 +55,10 @@ Source: [TXVALID.cbl:113](../../../pangaea/programs/TXVALID.cbl#L113).
 | → `MOVE BC-BUSINESS-DATE TO WS-BUSINESS-DATE` | | | 3 |
 | → `MOVE SPACES TO REJECT-RECORD` | | | 4 |
 | → `STRING WS-BUSINESS-DATE(1:4) '-' WS-BUSINESS-DATE(5:2) '-' WS-BUSINESS-DATE(7:2) DELIMITED BY SIZE INTO RJ-REJECT-DATE` | | | 5 |
+
+- **Rule 1.** When `WS-CONTROL-STATUS` is not `'00'`, `WS-TRAN-IN-STATUS` is not `'00'`, `WS-TRAN-OUT-STATUS` is not `'00'`, `WS-REJECT-STATUS` is neither `'00'` nor `'05'` (not `REJECTS-OPENED`), or `WS-REPORT-STATUS` is not `'00'`, it opens `CONTROL-FILE` and `TRAN-IN` for input, `TRAN-OUT` and `REPORT-OUT` for output, and `REJECT-OUT` to extend; displays `'TXVALID: CANNOT OPEN FILES '` `WS-FILE-STATUSES`; sets `RETURN-CODE` to 16; and stops the run.
+- **Rule 2.** When `WS-CONTROL-STATUS` is `'00'`, `WS-TRAN-IN-STATUS` is `'00'`, `WS-TRAN-OUT-STATUS` is `'00'`, `WS-REJECT-STATUS` is `'00'` or `'05'` (`REJECTS-OPENED`), and `WS-REPORT-STATUS` is `'00'`; and reading `CONTROL-FILE` finds no more records, it opens `CONTROL-FILE` and `TRAN-IN` for input, `TRAN-OUT` and `REPORT-OUT` for output, and `REJECT-OUT` to extend; reads `CONTROL-FILE`; displays `'TXVALID: NO BANK CONTROL RECORD'`; sets `RETURN-CODE` to 16; and stops the run.
+- **Rule 3.** When `WS-CONTROL-STATUS` is `'00'`, `WS-TRAN-IN-STATUS` is `'00'`, `WS-TRAN-OUT-STATUS` is `'00'`, `WS-REJECT-STATUS` is `'00'` or `'05'` (`REJECTS-OPENED`), and `WS-REPORT-STATUS` is `'00'`; and reading `CONTROL-FILE` finds a record, it opens `CONTROL-FILE` and `TRAN-IN` for input, `TRAN-OUT` and `REPORT-OUT` for output, and `REJECT-OUT` to extend; reads `CONTROL-FILE`; sets `WS-BUSINESS-DATE` to `BC-BUSINESS-DATE`; sets `REJECT-RECORD` to spaces; and builds `RJ-REJECT-DATE` from `WS-BUSINESS-DATE(1:4)` `'-'` `WS-BUSINESS-DATE(5:2)` `'-'` `WS-BUSINESS-DATE(7:2)`.
 
 Source: [TXVALID.cbl:136](../../../pangaea/programs/TXVALID.cbl#L136).
 
@@ -70,6 +80,12 @@ Source: [TXVALID.cbl:136](../../../pangaea/programs/TXVALID.cbl#L136).
 | → `MOVE 'HEADER IS FROM AN UNKNOWN SOURCE' TO WS-FILE-ERROR` | | | | 2 | |
 | → `MOVE TH-SOURCE TO WS-SOURCE` | | | | | 2 |
 
+- **Rule 1.** When reading `TRAN-IN` finds no more records and `WS-FILE-ERROR` is not spaces (not `FILE-IS-GOOD`), it reads `TRAN-IN` and sets `WS-FILE-ERROR` to `'EMPTY FILE'`.
+- **Rule 2.** When reading `TRAN-IN` finds a record; `WS-FILE-ERROR` is spaces (`FILE-IS-GOOD`); `TR-REC-TYPE` is not `'H'` (not `TR-HEADER`); and `WS-FILE-ERROR` is not spaces (not `FILE-IS-GOOD`), tested again, it reads `TRAN-IN` and sets `WS-FILE-ERROR` to `'FIRST RECORD IS NOT A HEADER'`.
+- **Rule 3.** When reading `TRAN-IN` finds a record; `WS-FILE-ERROR` is spaces (`FILE-IS-GOOD`); `TR-REC-TYPE` is `'H'` (`TR-HEADER`); `WS-FILE-ERROR` is not spaces (not `FILE-IS-GOOD`), tested again; and `TH-BUSINESS-DATE` is not `WS-BUSINESS-DATE`, it reads `TRAN-IN` and sets `WS-FILE-ERROR` to `'HEADER IS NOT FOR THE BUSINESS DATE'`.
+- **Rule 4.** When reading `TRAN-IN` finds a record; `WS-FILE-ERROR` is spaces (`FILE-IS-GOOD`); `TR-REC-TYPE` is `'H'` (`TR-HEADER`); `WS-FILE-ERROR` is not spaces (not `FILE-IS-GOOD`), tested again; `TH-BUSINESS-DATE` is `WS-BUSINESS-DATE`; and `TH-SOURCE` is not `'BRANCHES'` (not `TH-FROM-BRANCHES`) and `TH-SOURCE` is not `'CARDS'` (not `TH-FROM-CARDS`), it reads `TRAN-IN` and sets `WS-FILE-ERROR` to `'HEADER IS FROM AN UNKNOWN SOURCE'`.
+- **Rule 5.** When reading `TRAN-IN` finds a record; `WS-FILE-ERROR` is spaces (`FILE-IS-GOOD`); `TR-REC-TYPE` is `'H'` (`TR-HEADER`); `TH-BUSINESS-DATE` is `WS-BUSINESS-DATE`; and `TH-SOURCE` is `'BRANCHES'` (`TH-FROM-BRANCHES`) or `TH-SOURCE` is `'CARDS'` (`TH-FROM-CARDS`), it reads `TRAN-IN` and sets `WS-SOURCE` to `TH-SOURCE`.
+
 Source: [TXVALID.cbl:163](../../../pangaea/programs/TXVALID.cbl#L163).
 
 ## 3000-READ-DETAILS, in its loop
@@ -87,6 +103,10 @@ Each pass of `PERFORM UNTIL TR-TRAILER OR NOT FILE-IS-GOOD`.
 | → `MOVE 'TYPE' TO RJ-REASON` | | | 1 |
 | → `PERFORM 3300-REJECT-RECORD` | | | 2 |
 
+- **Rule 1.** When `TR-REC-TYPE` is `'D'` (`TR-DETAIL`) and `WS-FILE-ERROR` is spaces (`FILE-IS-GOOD`), it performs `3200-VALIDATE-DETAIL` and performs `3100-READ-NEXT`.
+- **Rule 2.** When `TR-REC-TYPE` is not `'D'` (not `TR-DETAIL`), `WS-FILE-ERROR` is not spaces (not `FILE-IS-GOOD`), and `TR-REC-TYPE` is `'H'` (`TR-HEADER`), it sets `WS-FILE-ERROR` to `'SECOND HEADER'`.
+- **Rule 3.** When `TR-REC-TYPE` is not `'D'` (not `TR-DETAIL`), `WS-FILE-ERROR` is spaces (`FILE-IS-GOOD`), and `TR-REC-TYPE` is not `'H'` (not `TR-HEADER`), it sets `RJ-REASON` to `'TYPE'`, performs `3300-REJECT-RECORD`, and performs `3100-READ-NEXT`.
+
 Source: [TXVALID.cbl:187](../../../pangaea/programs/TXVALID.cbl#L187).
 
 ## 3100-READ-NEXT
@@ -96,6 +116,9 @@ Source: [TXVALID.cbl:187](../../../pangaea/programs/TXVALID.cbl#L187).
 | `READ TRAN-IN AT END` | Y | N |
 | → `READ TRAN-IN` | 1 | 1 |
 | → `MOVE 'NO TRAILER' TO WS-FILE-ERROR` | 2 | |
+
+- **Rule 1.** When reading `TRAN-IN` finds no more records, it reads `TRAN-IN` and sets `WS-FILE-ERROR` to `'NO TRAILER'`.
+- **Rule 2.** When reading `TRAN-IN` finds a record, it reads `TRAN-IN`.
 
 Source: [TXVALID.cbl:203](../../../pangaea/programs/TXVALID.cbl#L203).
 
@@ -122,6 +145,15 @@ Source: [TXVALID.cbl:203](../../../pangaea/programs/TXVALID.cbl#L203).
 | → `ADD 1 TO WS-VALID-COUNT` | | | | 6 | | | | |
 | → `SET RJ-BAD-ACCOUNT TO TRUE` | | | | | 4 | | | 3 |
 
+- **Rule 1.** When `TD-AMOUNT` is numeric; `TD-ACCT-NO` is numeric; both `WS-SOURCE` is `'BRANCHES'` (`FROM-BRANCHES`) and `TD-TRAN-CODE` is none of `'DP'`, `'WD'`, `'FE'`, and `'TR'` (not `TD-KNOWN-CODE`) or both `WS-SOURCE` is `'CARDS'` (`FROM-CARDS`) and `TD-TRAN-CODE` is none of `'CP'`, `'AW'`, and `'AF'` (not `TD-CARD-CODE`); and `WS-DETAIL-STATE` is not `'Y'` (not `DETAIL-IS-VALID`), it adds 1 to `WS-DETAIL-COUNT`, adds `TD-AMOUNT` to `WS-AMOUNT-TOTAL`, adds `TD-ACCT-NO` to `WS-ACCT-HASH`, sets `WS-DETAIL-STATE` to `DETAIL-IS-VALID`, sets `RJ-REASON` to `RJ-BAD-CODE`, sets `WS-DETAIL-STATE` to `DETAIL-IS-REJECTED`, and performs `3300-REJECT-RECORD`.
+- **Rule 2.** When `TD-AMOUNT` is numeric; `TD-ACCT-NO` is numeric; either `WS-SOURCE` is not `'BRANCHES'` (not `FROM-BRANCHES`) or `TD-TRAN-CODE` is `'DP'`, `'WD'`, `'FE'`, or `'TR'` (`TD-KNOWN-CODE`) and either `WS-SOURCE` is not `'CARDS'` (not `FROM-CARDS`) or `TD-TRAN-CODE` is `'CP'`, `'AW'`, or `'AF'` (`TD-CARD-CODE`); `WS-DETAIL-STATE` is not `'Y'` (not `DETAIL-IS-VALID`); and `TD-AMOUNT` is not numeric or `TD-AMOUNT` is zero, it adds 1 to `WS-DETAIL-COUNT`, adds `TD-AMOUNT` to `WS-AMOUNT-TOTAL`, adds `TD-ACCT-NO` to `WS-ACCT-HASH`, sets `WS-DETAIL-STATE` to `DETAIL-IS-VALID`, sets `RJ-REASON` to `RJ-BAD-AMOUNT`, sets `WS-DETAIL-STATE` to `DETAIL-IS-REJECTED`, and performs `3300-REJECT-RECORD`.
+- **Rule 3.** When `TD-AMOUNT` is numeric; `TD-ACCT-NO` is numeric; either `WS-SOURCE` is not `'BRANCHES'` (not `FROM-BRANCHES`) or `TD-TRAN-CODE` is `'DP'`, `'WD'`, `'FE'`, or `'TR'` (`TD-KNOWN-CODE`) and either `WS-SOURCE` is not `'CARDS'` (not `FROM-CARDS`) or `TD-TRAN-CODE` is `'CP'`, `'AW'`, or `'AF'` (`TD-CARD-CODE`); `WS-DETAIL-STATE` is not `'Y'` (not `DETAIL-IS-VALID`); `TD-AMOUNT` is numeric and `TD-AMOUNT` is not zero; and `TD-TRAN-CODE` is `'TR'` (`TD-TRANSFER`) and either `TD-COUNTER-ACCT-NO` is not numeric or `TD-COUNTER-ACCT-NO` is `TD-ACCT-NO`, it adds 1 to `WS-DETAIL-COUNT`, adds `TD-AMOUNT` to `WS-AMOUNT-TOTAL`, adds `TD-ACCT-NO` to `WS-ACCT-HASH`, sets `WS-DETAIL-STATE` to `DETAIL-IS-VALID`, sets `RJ-REASON` to `RJ-BAD-COUNTER`, sets `WS-DETAIL-STATE` to `DETAIL-IS-REJECTED`, and performs `3300-REJECT-RECORD`.
+- **Rule 4.** When `TD-AMOUNT` is numeric; `TD-ACCT-NO` is numeric; either `WS-SOURCE` is not `'BRANCHES'` (not `FROM-BRANCHES`) or `TD-TRAN-CODE` is `'DP'`, `'WD'`, `'FE'`, or `'TR'` (`TD-KNOWN-CODE`) and either `WS-SOURCE` is not `'CARDS'` (not `FROM-CARDS`) or `TD-TRAN-CODE` is `'CP'`, `'AW'`, or `'AF'` (`TD-CARD-CODE`); `WS-DETAIL-STATE` is `'Y'` (`DETAIL-IS-VALID`); `TD-AMOUNT` is numeric and `TD-AMOUNT` is not zero; and `TD-TRAN-CODE` is not `'TR'` (not `TD-TRANSFER`) or both `TD-COUNTER-ACCT-NO` is numeric and `TD-COUNTER-ACCT-NO` is not `TD-ACCT-NO`, it adds 1 to `WS-DETAIL-COUNT`, adds `TD-AMOUNT` to `WS-AMOUNT-TOTAL`, adds `TD-ACCT-NO` to `WS-ACCT-HASH`, sets `WS-DETAIL-STATE` to `DETAIL-IS-VALID`, writes `TRAN-OUT-RECORD` from `TRAN-RECORD`, and adds 1 to `WS-VALID-COUNT`.
+- **Rule 5.** When `TD-AMOUNT` is numeric, `TD-ACCT-NO` is not numeric, and `WS-DETAIL-STATE` is not `'Y'` (not `DETAIL-IS-VALID`), it adds 1 to `WS-DETAIL-COUNT`, adds `TD-AMOUNT` to `WS-AMOUNT-TOTAL`, sets `WS-DETAIL-STATE` to `DETAIL-IS-VALID`, sets `RJ-REASON` to `RJ-BAD-ACCOUNT`, sets `WS-DETAIL-STATE` to `DETAIL-IS-REJECTED`, and performs `3300-REJECT-RECORD`.
+- **Rule 6.** When `TD-AMOUNT` is not numeric; `TD-ACCT-NO` is numeric; both `WS-SOURCE` is `'BRANCHES'` (`FROM-BRANCHES`) and `TD-TRAN-CODE` is none of `'DP'`, `'WD'`, `'FE'`, and `'TR'` (not `TD-KNOWN-CODE`) or both `WS-SOURCE` is `'CARDS'` (`FROM-CARDS`) and `TD-TRAN-CODE` is none of `'CP'`, `'AW'`, and `'AF'` (not `TD-CARD-CODE`); and `WS-DETAIL-STATE` is not `'Y'` (not `DETAIL-IS-VALID`), it adds 1 to `WS-DETAIL-COUNT`, adds `TD-ACCT-NO` to `WS-ACCT-HASH`, sets `WS-DETAIL-STATE` to `DETAIL-IS-VALID`, sets `RJ-REASON` to `RJ-BAD-CODE`, sets `WS-DETAIL-STATE` to `DETAIL-IS-REJECTED`, and performs `3300-REJECT-RECORD`.
+- **Rule 7.** When `TD-AMOUNT` is not numeric; `TD-ACCT-NO` is numeric; either `WS-SOURCE` is not `'BRANCHES'` (not `FROM-BRANCHES`) or `TD-TRAN-CODE` is `'DP'`, `'WD'`, `'FE'`, or `'TR'` (`TD-KNOWN-CODE`) and either `WS-SOURCE` is not `'CARDS'` (not `FROM-CARDS`) or `TD-TRAN-CODE` is `'CP'`, `'AW'`, or `'AF'` (`TD-CARD-CODE`); `WS-DETAIL-STATE` is not `'Y'` (not `DETAIL-IS-VALID`); and `TD-AMOUNT` is not numeric or `TD-AMOUNT` is zero, it adds 1 to `WS-DETAIL-COUNT`, adds `TD-ACCT-NO` to `WS-ACCT-HASH`, sets `WS-DETAIL-STATE` to `DETAIL-IS-VALID`, sets `RJ-REASON` to `RJ-BAD-AMOUNT`, sets `WS-DETAIL-STATE` to `DETAIL-IS-REJECTED`, and performs `3300-REJECT-RECORD`.
+- **Rule 8.** When `TD-AMOUNT` is not numeric, `TD-ACCT-NO` is not numeric, and `WS-DETAIL-STATE` is not `'Y'` (not `DETAIL-IS-VALID`), it adds 1 to `WS-DETAIL-COUNT`, sets `WS-DETAIL-STATE` to `DETAIL-IS-VALID`, sets `RJ-REASON` to `RJ-BAD-ACCOUNT`, sets `WS-DETAIL-STATE` to `DETAIL-IS-REJECTED`, and performs `3300-REJECT-RECORD`.
+
 Source: [TXVALID.cbl:210](../../../pangaea/programs/TXVALID.cbl#L210).
 
 ## 4000-CHECK-TRAILER
@@ -138,6 +170,12 @@ Source: [TXVALID.cbl:210](../../../pangaea/programs/TXVALID.cbl#L210).
 | → `MOVE 'TRAILER ACCOUNT HASH DIFFERS' TO WS-FILE-ERROR` | | | 1 | | |
 | → `READ TRAN-IN` | | | | 1 | 1 |
 | → `MOVE 'RECORDS AFTER THE TRAILER' TO WS-FILE-ERROR` | | | | 2 | |
+
+- **Rule 1.** When `TT-DETAIL-COUNT` is not `WS-DETAIL-COUNT` and `WS-FILE-ERROR` is not spaces (not `FILE-IS-GOOD`), it sets `WS-FILE-ERROR` to `'TRAILER DETAIL COUNT DIFFERS'`.
+- **Rule 2.** When `TT-DETAIL-COUNT` is `WS-DETAIL-COUNT`, `WS-FILE-ERROR` is not spaces (not `FILE-IS-GOOD`), and `TT-AMOUNT-TOTAL` is not `WS-AMOUNT-TOTAL`, it sets `WS-FILE-ERROR` to `'TRAILER AMOUNT TOTAL DIFFERS'`.
+- **Rule 3.** When `TT-DETAIL-COUNT` is `WS-DETAIL-COUNT`, `WS-FILE-ERROR` is not spaces (not `FILE-IS-GOOD`), `TT-AMOUNT-TOTAL` is `WS-AMOUNT-TOTAL`, and `TT-ACCT-HASH` is not `WS-ACCT-HASH`, it sets `WS-FILE-ERROR` to `'TRAILER ACCOUNT HASH DIFFERS'`.
+- **Rule 4.** When `TT-DETAIL-COUNT` is `WS-DETAIL-COUNT`, `WS-FILE-ERROR` is spaces (`FILE-IS-GOOD`), `TT-AMOUNT-TOTAL` is `WS-AMOUNT-TOTAL`, `TT-ACCT-HASH` is `WS-ACCT-HASH`, and reading `TRAN-IN` finds a record, it reads `TRAN-IN` and sets `WS-FILE-ERROR` to `'RECORDS AFTER THE TRAILER'`.
+- **Rule 5.** When `TT-DETAIL-COUNT` is `WS-DETAIL-COUNT`, `WS-FILE-ERROR` is spaces (`FILE-IS-GOOD`), `TT-AMOUNT-TOTAL` is `WS-AMOUNT-TOTAL`, `TT-ACCT-HASH` is `WS-ACCT-HASH`, and reading `TRAN-IN` finds no more records, it reads `TRAN-IN`.
 
 Source: [TXVALID.cbl:252](../../../pangaea/programs/TXVALID.cbl#L252).
 
@@ -161,5 +199,8 @@ Source: [TXVALID.cbl:252](../../../pangaea/programs/TXVALID.cbl#L252).
 | → `WRITE REPORT-LINE FROM WS-REPORT-AMOUNT-LINE` | 17 | 17 |
 | → `MOVE 'FILE ACCEPTED' TO REPORT-LINE` | 21 | |
 | → `STRING 'FILE REJECTED: ' WS-FILE-ERROR DELIMITED BY SIZE INTO REPORT-LINE` | | 21 |
+
+- **Rule 1.** When `WS-FILE-ERROR` is spaces (`FILE-IS-GOOD`), it sets `REPORT-LINE` to spaces, builds `REPORT-LINE` from `'TXVALID  TRANSACTION VALIDATION  BUSINESS DATE '` `WS-BUSINESS-DATE`, writes `REPORT-LINE`, sets `REPORT-LINE` to spaces, writes `REPORT-LINE`, sets `WS-RC-LABEL` to `'DETAILS READ'`, sets `WS-RC-VALUE` to `WS-DETAIL-COUNT`, writes `REPORT-LINE` from `WS-REPORT-COUNT-LINE`, sets `WS-RC-LABEL` to `'DETAILS VALID'`, sets `WS-RC-VALUE` to `WS-VALID-COUNT`, writes `REPORT-LINE` from `WS-REPORT-COUNT-LINE`, sets `WS-RC-LABEL` to `'RECORDS REJECTED'`, sets `WS-RC-VALUE` to `WS-REJECT-COUNT`, writes `REPORT-LINE` from `WS-REPORT-COUNT-LINE`, sets `WS-RA-LABEL` to `'AMOUNT TOTAL'`, sets `WS-RA-VALUE` to `WS-AMOUNT-TOTAL`, writes `REPORT-LINE` from `WS-REPORT-AMOUNT-LINE`, sets `REPORT-LINE` to spaces, writes `REPORT-LINE`, sets `REPORT-LINE` to spaces, sets `REPORT-LINE` to `'FILE ACCEPTED'`, and writes `REPORT-LINE`.
+- **Rule 2.** When `WS-FILE-ERROR` is not spaces (not `FILE-IS-GOOD`), it sets `REPORT-LINE` to spaces, builds `REPORT-LINE` from `'TXVALID  TRANSACTION VALIDATION  BUSINESS DATE '` `WS-BUSINESS-DATE`, writes `REPORT-LINE`, sets `REPORT-LINE` to spaces, writes `REPORT-LINE`, sets `WS-RC-LABEL` to `'DETAILS READ'`, sets `WS-RC-VALUE` to `WS-DETAIL-COUNT`, writes `REPORT-LINE` from `WS-REPORT-COUNT-LINE`, sets `WS-RC-LABEL` to `'DETAILS VALID'`, sets `WS-RC-VALUE` to `WS-VALID-COUNT`, writes `REPORT-LINE` from `WS-REPORT-COUNT-LINE`, sets `WS-RC-LABEL` to `'RECORDS REJECTED'`, sets `WS-RC-VALUE` to `WS-REJECT-COUNT`, writes `REPORT-LINE` from `WS-REPORT-COUNT-LINE`, sets `WS-RA-LABEL` to `'AMOUNT TOTAL'`, sets `WS-RA-VALUE` to `WS-AMOUNT-TOTAL`, writes `REPORT-LINE` from `WS-REPORT-AMOUNT-LINE`, sets `REPORT-LINE` to spaces, writes `REPORT-LINE`, sets `REPORT-LINE` to spaces, builds `REPORT-LINE` from `'FILE REJECTED: '` `WS-FILE-ERROR`, and writes `REPORT-LINE`.
 
 Source: [TXVALID.cbl:273](../../../pangaea/programs/TXVALID.cbl#L273).

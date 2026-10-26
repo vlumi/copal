@@ -39,7 +39,8 @@
             1,
             2,
             3
-          ]
+          ],
+          "sentence": "When `WS-BALANCES-OUT` is not `WS-BALANCES-IN`, it performs `1000-INITIALIZE`; performs `2000-NEXT-ACCOUNT` through `2999-EXIT` until `WS-MASTER-KEY` is high values and `WS-REQUEST-KEY` is high values; sets `WS-ABORT-MESSAGE` to `'NEW MASTER OUT OF BALANCE'`; and performs `9900-ABORT`."
         },
         {
           "entries": [
@@ -53,7 +54,8 @@
             5,
             6,
             7
-          ]
+          ],
+          "sentence": "When `WS-BALANCES-OUT` is `WS-BALANCES-IN` and `WS-REJECT-COUNT` is more than 0, it performs `1000-INITIALIZE`; performs `2000-NEXT-ACCOUNT` through `2999-EXIT` until `WS-MASTER-KEY` is high values and `WS-REQUEST-KEY` is high values; performs `8000-WRITE-REPORT`; performs `9000-CLOSE-FILES`; sets `RETURN-CODE` to 4; and stops the run."
         },
         {
           "entries": [
@@ -67,7 +69,8 @@
             5,
             8,
             7
-          ]
+          ],
+          "sentence": "When `WS-BALANCES-OUT` is `WS-BALANCES-IN` and `WS-REJECT-COUNT` is at most 0, it performs `1000-INITIALIZE`; performs `2000-NEXT-ACCOUNT` through `2999-EXIT` until `WS-MASTER-KEY` is high values and `WS-REQUEST-KEY` is high values; performs `8000-WRITE-REPORT`; performs `9000-CLOSE-FILES`; sets `RETURN-CODE` to 0; and stops the run."
         }
       ]
     },
@@ -109,7 +112,8 @@
             1,
             2,
             3
-          ]
+          ],
+          "sentence": "When `WS-FILE-STATUSES` is not `ALL '0'`, it opens `CONTROL-FILE`, `ACCT-IN`, and `MAINT-IN` for input and `ACCT-OUT`, `REJECT-OUT`, and `REPORT-OUT` for output; displays `'ACCTMNT: CANNOT OPEN FILES '` `WS-FILE-STATUSES`; sets `RETURN-CODE` to 16; and stops the run."
         },
         {
           "entries": [
@@ -121,7 +125,8 @@
             4,
             5,
             6
-          ]
+          ],
+          "sentence": "When `WS-FILE-STATUSES` is `ALL '0'` and reading `CONTROL-FILE` finds no more records, it opens `CONTROL-FILE`, `ACCT-IN`, and `MAINT-IN` for input and `ACCT-OUT`, `REJECT-OUT`, and `REPORT-OUT` for output; reads `CONTROL-FILE`; sets `WS-ABORT-MESSAGE` to `'NO BANK CONTROL RECORD'`; and performs `9900-ABORT`."
         },
         {
           "entries": [
@@ -136,7 +141,8 @@
             9,
             10,
             11
-          ]
+          ],
+          "sentence": "When `WS-FILE-STATUSES` is `ALL '0'` and reading `CONTROL-FILE` finds a record, it opens `CONTROL-FILE`, `ACCT-IN`, and `MAINT-IN` for input and `ACCT-OUT`, `REJECT-OUT`, and `REPORT-OUT` for output; reads `CONTROL-FILE`; sets `WS-BUSINESS-DATE` to `BC-BUSINESS-DATE`; sets `REJECT-RECORD` to spaces; builds `RJ-REJECT-DATE` from `WS-BUSINESS-DATE(1:4)` `'-'` `WS-BUSINESS-DATE(5:2)` `'-'` `WS-BUSINESS-DATE(7:2)`; performs `1200-READ-MASTER` through `1200-EXIT`; and performs `1300-READ-REQUEST` through `1300-EXIT`."
         }
       ]
     },
@@ -174,7 +180,8 @@
             0,
             1,
             2
-          ]
+          ],
+          "sentence": "When reading `ACCT-IN` finds no more records, it reads `ACCT-IN`, sets `WS-MASTER-KEY` to high values, and goes to `1200-EXIT`."
         },
         {
           "entries": [
@@ -186,7 +193,8 @@
             3,
             4,
             5
-          ]
+          ],
+          "sentence": "When reading `ACCT-IN` finds a record and `WS-MASTER-KEY` is at most `WS-PREV-MASTER-KEY`, it reads `ACCT-IN`, sets `WS-MASTER-KEY` to `AI-ACCT-NO`, sets `WS-ABORT-MESSAGE` to `'MASTER NOT IN ACCOUNT ORDER'`, and performs `9900-ABORT`."
         },
         {
           "entries": [
@@ -198,7 +206,8 @@
             3,
             6,
             7
-          ]
+          ],
+          "sentence": "When reading `ACCT-IN` finds a record and `WS-MASTER-KEY` is more than `WS-PREV-MASTER-KEY`, it reads `ACCT-IN`, sets `WS-MASTER-KEY` to `AI-ACCT-NO`, sets `WS-PREV-MASTER-KEY` to `WS-MASTER-KEY`, and adds 1 to `WS-MASTERS-READ`."
         }
       ]
     },
@@ -237,7 +246,8 @@
             0,
             1,
             2
-          ]
+          ],
+          "sentence": "When reading `MAINT-IN` finds no more records, it reads `MAINT-IN`, sets `WS-REQUEST-KEY` to high values, and goes to `1300-EXIT`."
         },
         {
           "entries": [
@@ -250,7 +260,8 @@
             4,
             5,
             6
-          ]
+          ],
+          "sentence": "When reading `MAINT-IN` finds a record and `WS-REQUEST-ORDER-KEY` is at most `WS-PREV-REQUEST-ORDER-KEY`, it reads `MAINT-IN`; sets `WS-REQUEST-KEY` and `WS-ROK-ACCT-NO` to `MR-ACCT-NO`; sets `WS-ROK-REQUEST-ID` to `MR-REQUEST-ID`; sets `WS-ABORT-MESSAGE` to `'REQUESTS NOT IN ACCOUNT ORDER'`; and performs `9900-ABORT`."
         },
         {
           "entries": [
@@ -263,7 +274,8 @@
             4,
             7,
             8
-          ]
+          ],
+          "sentence": "When reading `MAINT-IN` finds a record and `WS-REQUEST-ORDER-KEY` is more than `WS-PREV-REQUEST-ORDER-KEY`, it reads `MAINT-IN`; sets `WS-REQUEST-KEY` and `WS-ROK-ACCT-NO` to `MR-ACCT-NO`; sets `WS-ROK-REQUEST-ID` to `MR-REQUEST-ID`; sets `WS-PREV-REQUEST-ORDER-KEY` to `WS-REQUEST-ORDER-KEY`; and adds 1 to `WS-REQUEST-COUNT`."
         }
       ]
     },
@@ -303,7 +315,8 @@
             0,
             1,
             2
-          ]
+          ],
+          "sentence": "When `WS-REQUEST-KEY` is less than `WS-MASTER-KEY` and `WS-MASTER-KEY` is not `WS-ACTIVE-KEY`, it sets `WS-ACTIVE-KEY` to `WS-MASTER-KEY`, sets `WS-ACTIVE-KEY` to `WS-REQUEST-KEY`, and sets `WS-HELD-SW` to `NOTHING-HELD`."
         },
         {
           "entries": [
@@ -317,7 +330,8 @@
             4,
             5,
             6
-          ]
+          ],
+          "sentence": "When `WS-REQUEST-KEY` is at least `WS-MASTER-KEY` and `WS-MASTER-KEY` is `WS-ACTIVE-KEY`, it sets `WS-ACTIVE-KEY` to `WS-MASTER-KEY`, sets `WS-HELD-SW` to `NOTHING-HELD`, sets `ACCT-MASTER-RECORD` to `ACCT-IN-RECORD`, adds `AM-BALANCE` to `WS-BALANCES-IN`, sets `WS-HELD-SW` to `ACCOUNT-HELD`, and performs `1200-READ-MASTER` through `1200-EXIT`."
         }
       ]
     },
@@ -346,7 +360,8 @@
           ],
           "actions": [
             0
-          ]
+          ],
+          "sentence": "When `WS-REQUEST-KEY` is not `WS-ACTIVE-KEY`, it goes to `2800-WRITE-HELD`."
         },
         {
           "entries": [
@@ -356,7 +371,8 @@
             1,
             2,
             3
-          ]
+          ],
+          "sentence": "When `WS-REQUEST-KEY` is `WS-ACTIVE-KEY`, it performs `2200-APPLY-REQUEST` through `2299-EXIT`, performs `1300-READ-REQUEST` through `1300-EXIT`, and goes to `2100-APPLY-REQUESTS`."
         }
       ]
     },
@@ -419,7 +435,8 @@
           ],
           "actions": [
             0
-          ]
+          ],
+          "sentence": "When `MR-REQUEST-TYPE` is `'O'` (`MR-OPEN`), it goes to `2210-OPEN`."
         },
         {
           "entries": [
@@ -434,7 +451,8 @@
           "actions": [
             1,
             2
-          ]
+          ],
+          "sentence": "When `MR-REQUEST-TYPE` is not `'O'` (not `MR-OPEN`) and `WS-HELD-SW` is `'N'` (`NOTHING-HELD`), it sets `RJ-REASON` to `RJ-NO-ACCOUNT` and goes to `2290-REJECT`."
         },
         {
           "entries": [
@@ -449,7 +467,8 @@
           "actions": [
             3,
             2
-          ]
+          ],
+          "sentence": "When `MR-REQUEST-TYPE` is not `'O'` (not `MR-OPEN`), `WS-HELD-SW` is not `'N'` (not `NOTHING-HELD`), and `AM-STATUS` is `'X'` (`AM-CLOSED`), it sets `RJ-REASON` to `RJ-CLOSED` and goes to `2290-REJECT`."
         },
         {
           "entries": [
@@ -463,7 +482,8 @@
           ],
           "actions": [
             4
-          ]
+          ],
+          "sentence": "When `MR-REQUEST-TYPE` is not `'O'` (not `MR-OPEN`), `WS-HELD-SW` is not `'N'` (not `NOTHING-HELD`), `AM-STATUS` is not `'X'` (not `AM-CLOSED`), and `MR-REQUEST-TYPE` is `'C'` (`MR-CLOSE`), it goes to `2220-CLOSE`."
         },
         {
           "entries": [
@@ -477,7 +497,8 @@
           ],
           "actions": [
             5
-          ]
+          ],
+          "sentence": "When `MR-REQUEST-TYPE` is not `'O'` (not `MR-OPEN`), `WS-HELD-SW` is not `'N'` (not `NOTHING-HELD`), `AM-STATUS` is not `'X'` (not `AM-CLOSED`), `MR-REQUEST-TYPE` is not `'C'` (not `MR-CLOSE`), and `MR-REQUEST-TYPE` is `'F'` (`MR-FREEZE`), it goes to `2230-FREEZE`."
         },
         {
           "entries": [
@@ -491,7 +512,8 @@
           ],
           "actions": [
             6
-          ]
+          ],
+          "sentence": "When `MR-REQUEST-TYPE` is not `'O'` (not `MR-OPEN`), `WS-HELD-SW` is not `'N'` (not `NOTHING-HELD`), `AM-STATUS` is not `'X'` (not `AM-CLOSED`), `MR-REQUEST-TYPE` is not `'C'` (not `MR-CLOSE`), `MR-REQUEST-TYPE` is not `'F'` (not `MR-FREEZE`), and `MR-REQUEST-TYPE` is `'U'` (`MR-UNFREEZE`), it goes to `2240-UNFREEZE`."
         },
         {
           "entries": [
@@ -505,7 +527,8 @@
           ],
           "actions": [
             7
-          ]
+          ],
+          "sentence": "When `MR-REQUEST-TYPE` is not `'O'` (not `MR-OPEN`), `WS-HELD-SW` is not `'N'` (not `NOTHING-HELD`), `AM-STATUS` is not `'X'` (not `AM-CLOSED`), `MR-REQUEST-TYPE` is not `'C'` (not `MR-CLOSE`), `MR-REQUEST-TYPE` is not `'F'` (not `MR-FREEZE`), `MR-REQUEST-TYPE` is not `'U'` (not `MR-UNFREEZE`), and `MR-REQUEST-TYPE` is `'L'` (`MR-LIMIT`), it goes to `2250-LIMIT`."
         },
         {
           "entries": [
@@ -520,7 +543,8 @@
           "actions": [
             8,
             2
-          ]
+          ],
+          "sentence": "When `MR-REQUEST-TYPE` is not `'O'` (not `MR-OPEN`), `WS-HELD-SW` is not `'N'` (not `NOTHING-HELD`), `AM-STATUS` is not `'X'` (not `AM-CLOSED`), `MR-REQUEST-TYPE` is not `'C'` (not `MR-CLOSE`), `MR-REQUEST-TYPE` is not `'F'` (not `MR-FREEZE`), `MR-REQUEST-TYPE` is not `'U'` (not `MR-UNFREEZE`), and `MR-REQUEST-TYPE` is not `'L'` (not `MR-LIMIT`), it sets `RJ-REASON` to `RJ-BAD-TYPE` and goes to `2290-REJECT`."
         }
       ]
     },
@@ -574,7 +598,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When `WS-HELD-SW` is `'Y'` (`ACCOUNT-HELD`), it sets `RJ-REASON` to `RJ-EXISTS` and goes to `2290-REJECT`."
         },
         {
           "entries": [
@@ -599,7 +624,8 @@
             15,
             16,
             17
-          ]
+          ],
+          "sentence": "When `WS-HELD-SW` is not `'Y'` (not `ACCOUNT-HELD`), `WS-EFF-YY` is less than 50, and `AM-ACCT-TYPE` is `'S'` (`AM-SAVINGS`), it sets `ACCT-MASTER-RECORD` to spaces, sets `AM-ACCT-NO` to `MR-ACCT-NO`, sets `AM-CUST-NO` to `MR-CUST-NO`, sets `AM-SHORT-NAME` to `MR-SHORT-NAME`, sets `AM-ACCT-TYPE` to `MR-ACCT-TYPE`, sets `AM-STATUS` to `AM-OPEN`, sets `WS-EFF-YYMMDD` to `MR-EFFECTIVE-DATE`, sets `WS-EFF-CENTURY` to 20, sets `AM-OPEN-DATE` to `WS-EFFECTIVE-DATE`, sets `AM-LAST-ACTIVITY-DATE` to `WS-BUSINESS-DATE`, sets `AM-BALANCE` to 0, sets `AM-OVERDRAFT-LIMIT` to `MR-OVERDRAFT-LIMIT`, sets `AM-OVERDRAFT-LIMIT` to 0, sets `WS-HELD-SW` to `ACCOUNT-HELD`, adds 1 to `WS-OPENED-COUNT`, and goes to `2299-EXIT`."
         },
         {
           "entries": [
@@ -623,7 +649,8 @@
             15,
             16,
             17
-          ]
+          ],
+          "sentence": "When `WS-HELD-SW` is not `'Y'` (not `ACCOUNT-HELD`), `WS-EFF-YY` is less than 50, and `AM-ACCT-TYPE` is not `'S'` (not `AM-SAVINGS`), it sets `ACCT-MASTER-RECORD` to spaces, sets `AM-ACCT-NO` to `MR-ACCT-NO`, sets `AM-CUST-NO` to `MR-CUST-NO`, sets `AM-SHORT-NAME` to `MR-SHORT-NAME`, sets `AM-ACCT-TYPE` to `MR-ACCT-TYPE`, sets `AM-STATUS` to `AM-OPEN`, sets `WS-EFF-YYMMDD` to `MR-EFFECTIVE-DATE`, sets `WS-EFF-CENTURY` to 20, sets `AM-OPEN-DATE` to `WS-EFFECTIVE-DATE`, sets `AM-LAST-ACTIVITY-DATE` to `WS-BUSINESS-DATE`, sets `AM-BALANCE` to 0, sets `AM-OVERDRAFT-LIMIT` to `MR-OVERDRAFT-LIMIT`, sets `WS-HELD-SW` to `ACCOUNT-HELD`, adds 1 to `WS-OPENED-COUNT`, and goes to `2299-EXIT`."
         },
         {
           "entries": [
@@ -648,7 +675,8 @@
             15,
             16,
             17
-          ]
+          ],
+          "sentence": "When `WS-HELD-SW` is not `'Y'` (not `ACCOUNT-HELD`), `WS-EFF-YY` is at least 50, and `AM-ACCT-TYPE` is `'S'` (`AM-SAVINGS`), it sets `ACCT-MASTER-RECORD` to spaces, sets `AM-ACCT-NO` to `MR-ACCT-NO`, sets `AM-CUST-NO` to `MR-CUST-NO`, sets `AM-SHORT-NAME` to `MR-SHORT-NAME`, sets `AM-ACCT-TYPE` to `MR-ACCT-TYPE`, sets `AM-STATUS` to `AM-OPEN`, sets `WS-EFF-YYMMDD` to `MR-EFFECTIVE-DATE`, sets `WS-EFF-CENTURY` to 19, sets `AM-OPEN-DATE` to `WS-EFFECTIVE-DATE`, sets `AM-LAST-ACTIVITY-DATE` to `WS-BUSINESS-DATE`, sets `AM-BALANCE` to 0, sets `AM-OVERDRAFT-LIMIT` to `MR-OVERDRAFT-LIMIT`, sets `AM-OVERDRAFT-LIMIT` to 0, sets `WS-HELD-SW` to `ACCOUNT-HELD`, adds 1 to `WS-OPENED-COUNT`, and goes to `2299-EXIT`."
         },
         {
           "entries": [
@@ -672,7 +700,8 @@
             15,
             16,
             17
-          ]
+          ],
+          "sentence": "When `WS-HELD-SW` is not `'Y'` (not `ACCOUNT-HELD`), `WS-EFF-YY` is at least 50, and `AM-ACCT-TYPE` is not `'S'` (not `AM-SAVINGS`), it sets `ACCT-MASTER-RECORD` to spaces, sets `AM-ACCT-NO` to `MR-ACCT-NO`, sets `AM-CUST-NO` to `MR-CUST-NO`, sets `AM-SHORT-NAME` to `MR-SHORT-NAME`, sets `AM-ACCT-TYPE` to `MR-ACCT-TYPE`, sets `AM-STATUS` to `AM-OPEN`, sets `WS-EFF-YYMMDD` to `MR-EFFECTIVE-DATE`, sets `WS-EFF-CENTURY` to 19, sets `AM-OPEN-DATE` to `WS-EFFECTIVE-DATE`, sets `AM-LAST-ACTIVITY-DATE` to `WS-BUSINESS-DATE`, sets `AM-BALANCE` to 0, sets `AM-OVERDRAFT-LIMIT` to `MR-OVERDRAFT-LIMIT`, sets `WS-HELD-SW` to `ACCOUNT-HELD`, adds 1 to `WS-OPENED-COUNT`, and goes to `2299-EXIT`."
         }
       ]
     },
@@ -703,7 +732,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When `AM-BALANCE` is not 0, it sets `RJ-REASON` to `RJ-HAS-BALANCE` and goes to `2290-REJECT`."
         },
         {
           "entries": [
@@ -714,7 +744,8 @@
             3,
             4,
             5
-          ]
+          ],
+          "sentence": "When `AM-BALANCE` is 0, it sets `AM-STATUS` to `AM-CLOSED`, sets `AM-OVERDRAFT-LIMIT` to 0, adds 1 to `WS-CLOSED-COUNT`, and goes to `2299-EXIT`."
         }
       ]
     },
@@ -744,7 +775,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When `AM-STATUS` is not `'O'` (not `AM-OPEN`), it sets `RJ-REASON` to `RJ-BAD-STATUS` and goes to `2290-REJECT`."
         },
         {
           "entries": [
@@ -754,7 +786,8 @@
             2,
             3,
             4
-          ]
+          ],
+          "sentence": "When `AM-STATUS` is `'O'` (`AM-OPEN`), it sets `AM-STATUS` to `AM-FROZEN`, adds 1 to `WS-FROZEN-COUNT`, and goes to `2299-EXIT`."
         }
       ]
     },
@@ -784,7 +817,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When `AM-STATUS` is not `'F'` (not `AM-FROZEN`), it sets `RJ-REASON` to `RJ-BAD-STATUS` and goes to `2290-REJECT`."
         },
         {
           "entries": [
@@ -794,7 +828,8 @@
             2,
             3,
             4
-          ]
+          ],
+          "sentence": "When `AM-STATUS` is `'F'` (`AM-FROZEN`), it sets `AM-STATUS` to `AM-OPEN`, adds 1 to `WS-UNFROZEN-COUNT`, and goes to `2299-EXIT`."
         }
       ]
     },
@@ -824,7 +859,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When `AM-ACCT-TYPE` is not `'C'` (not `AM-CURRENT`), it sets `RJ-REASON` to `RJ-BAD-TYPE` and goes to `2290-REJECT`."
         },
         {
           "entries": [
@@ -834,7 +870,8 @@
             2,
             3,
             4
-          ]
+          ],
+          "sentence": "When `AM-ACCT-TYPE` is `'C'` (`AM-CURRENT`), it sets `AM-OVERDRAFT-LIMIT` to `MR-OVERDRAFT-LIMIT`, adds 1 to `WS-LIMIT-COUNT`, and goes to `2299-EXIT`."
         }
       ]
     },
@@ -863,13 +900,15 @@
             0,
             1,
             2
-          ]
+          ],
+          "sentence": "When `WS-HELD-SW` is `'Y'` (`ACCOUNT-HELD`), it writes `ACCT-OUT-RECORD` from `ACCT-MASTER-RECORD`, adds 1 to `WS-MASTERS-WRITTEN`, and adds `AM-BALANCE` to `WS-BALANCES-OUT`."
         },
         {
           "entries": [
             "N"
           ],
-          "actions": null
+          "actions": null,
+          "sentence": "When `WS-HELD-SW` is not `'Y'` (not `ACCOUNT-HELD`), it does nothing more."
         }
       ]
     }

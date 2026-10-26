@@ -36,7 +36,8 @@
             0,
             1,
             2
-          ]
+          ],
+          "sentence": "When `WS-ACCOUNTS-STATUS` is not `'00'`, it accepts `WS-RUN-DATE` from its command line; opens `PRES-IN` for input, `ACCOUNTS` to update, and `POSTINGS-OUT`, `REJECT-OUT`, and `REPORT-OUT` for output; and stops the run."
         },
         {
           "entries": [
@@ -50,7 +51,8 @@
             4,
             5,
             6
-          ]
+          ],
+          "sentence": "When `WS-ACCOUNTS-STATUS` is `'00'` and `WS-REJECTED` is more than zero, it accepts `WS-RUN-DATE` from its command line; opens `PRES-IN` for input, `ACCOUNTS` to update, and `POSTINGS-OUT`, `REJECT-OUT`, and `REPORT-OUT` for output; repeats its loop until `WS-AT-END` is `'Y'` (`PRESENTMENTS-AT-END`); performs `WRITE-REPORT`; closes `PRES-IN`, `ACCOUNTS`, `POSTINGS-OUT`, `REJECT-OUT`, and `REPORT-OUT`; and stops the run."
         },
         {
           "entries": [
@@ -64,7 +66,8 @@
             4,
             5,
             7
-          ]
+          ],
+          "sentence": "When `WS-ACCOUNTS-STATUS` is `'00'` and `WS-REJECTED` is at most zero, it accepts `WS-RUN-DATE` from its command line; opens `PRES-IN` for input, `ACCOUNTS` to update, and `POSTINGS-OUT`, `REJECT-OUT`, and `REPORT-OUT` for output; repeats its loop until `WS-AT-END` is `'Y'` (`PRESENTMENTS-AT-END`); performs `WRITE-REPORT`; closes `PRES-IN`, `ACCOUNTS`, `POSTINGS-OUT`, `REJECT-OUT`, and `REPORT-OUT`; and stops the run."
         }
       ]
     },
@@ -96,7 +99,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When reading `PRES-IN` finds no more records, it reads `PRES-IN` and sets `WS-AT-END` to `PRESENTMENTS-AT-END`."
         },
         {
           "entries": [
@@ -106,7 +110,8 @@
           "actions": [
             0,
             2
-          ]
+          ],
+          "sentence": "When reading `PRES-IN` finds a record and `PS-MATCH` is `'M'` (`PS-MATCHED`), it reads `PRES-IN` and performs `POST-PRESENTMENT`."
         },
         {
           "entries": [
@@ -115,7 +120,8 @@
           ],
           "actions": [
             0
-          ]
+          ],
+          "sentence": "When reading `PRES-IN` finds a record and `PS-MATCH` is not `'M'` (not `PS-MATCHED`), it reads `PRES-IN`."
         }
       ]
     },
@@ -175,7 +181,8 @@
             2,
             3,
             4
-          ]
+          ],
+          "sentence": "When reading `ACCOUNTS` fails on its key, it sets `CA-CARD-NO` to `PS-CARD-NO`, reads `ACCOUNTS`, sets `RJ-REASON` to `'CARD'`, performs `REJECT-PRESENTMENT`, and leaves the section."
         },
         {
           "entries": [
@@ -191,7 +198,8 @@
             5,
             3,
             4
-          ]
+          ],
+          "sentence": "When reading `ACCOUNTS` succeeds by its key and `CA-STATUS` is `'B'` (`CA-BLOCKED`), it sets `CA-CARD-NO` to `PS-CARD-NO`, reads `ACCOUNTS`, sets `RJ-REASON` to `'BLKD'`, performs `REJECT-PRESENTMENT`, and leaves the section."
         },
         {
           "entries": [
@@ -207,7 +215,8 @@
             6,
             3,
             4
-          ]
+          ],
+          "sentence": "When reading `ACCOUNTS` succeeds by its key, `CA-STATUS` is not `'B'` (not `CA-BLOCKED`), and `CA-STATUS` is `'C'` (`CA-CLOSED`), it sets `CA-CARD-NO` to `PS-CARD-NO`, reads `ACCOUNTS`, sets `RJ-REASON` to `'CLSD'`, performs `REJECT-PRESENTMENT`, and leaves the section."
         },
         {
           "entries": [
@@ -228,7 +237,8 @@
             12,
             13,
             14
-          ]
+          ],
+          "sentence": "When reading `ACCOUNTS` succeeds by its key, `CA-STATUS` is not `'B'` (not `CA-BLOCKED`), `CA-STATUS` is not `'C'` (not `CA-CLOSED`), `CA-BALANCE` is more than `CA-LIMIT`, and rewriting `CARD-ACCOUNT` fails on its key, it sets `CA-CARD-NO` to `PS-CARD-NO`, reads `ACCOUNTS`, adds `PS-AMOUNT` to `CA-BALANCE`, sets `PO-KIND` to `'P'`, sets `PO-AMOUNT` to `PS-AMOUNT`, performs `WRITE-POSTING`, adds `PS-AMOUNT` to `WS-PURCHASES`, performs `CHARGE-OVER-LIMIT`, rewrites `CARD-ACCOUNT`, and stops the run."
         },
         {
           "entries": [
@@ -248,7 +258,8 @@
             11,
             12,
             13
-          ]
+          ],
+          "sentence": "When reading `ACCOUNTS` succeeds by its key, `CA-STATUS` is not `'B'` (not `CA-BLOCKED`), `CA-STATUS` is not `'C'` (not `CA-CLOSED`), `CA-BALANCE` is more than `CA-LIMIT`, and rewriting `CARD-ACCOUNT` succeeds by its key, it sets `CA-CARD-NO` to `PS-CARD-NO`, reads `ACCOUNTS`, adds `PS-AMOUNT` to `CA-BALANCE`, sets `PO-KIND` to `'P'`, sets `PO-AMOUNT` to `PS-AMOUNT`, performs `WRITE-POSTING`, adds `PS-AMOUNT` to `WS-PURCHASES`, performs `CHARGE-OVER-LIMIT`, and rewrites `CARD-ACCOUNT`."
         },
         {
           "entries": [
@@ -268,7 +279,8 @@
             11,
             13,
             14
-          ]
+          ],
+          "sentence": "When reading `ACCOUNTS` succeeds by its key, `CA-STATUS` is not `'B'` (not `CA-BLOCKED`), `CA-STATUS` is not `'C'` (not `CA-CLOSED`), `CA-BALANCE` is at most `CA-LIMIT`, and rewriting `CARD-ACCOUNT` fails on its key, it sets `CA-CARD-NO` to `PS-CARD-NO`, reads `ACCOUNTS`, adds `PS-AMOUNT` to `CA-BALANCE`, sets `PO-KIND` to `'P'`, sets `PO-AMOUNT` to `PS-AMOUNT`, performs `WRITE-POSTING`, adds `PS-AMOUNT` to `WS-PURCHASES`, rewrites `CARD-ACCOUNT`, and stops the run."
         },
         {
           "entries": [
@@ -287,7 +299,8 @@
             10,
             11,
             13
-          ]
+          ],
+          "sentence": "When reading `ACCOUNTS` succeeds by its key, `CA-STATUS` is not `'B'` (not `CA-BLOCKED`), `CA-STATUS` is not `'C'` (not `CA-CLOSED`), `CA-BALANCE` is at most `CA-LIMIT`, and rewriting `CARD-ACCOUNT` succeeds by its key, it sets `CA-CARD-NO` to `PS-CARD-NO`, reads `ACCOUNTS`, adds `PS-AMOUNT` to `CA-BALANCE`, sets `PO-KIND` to `'P'`, sets `PO-AMOUNT` to `PS-AMOUNT`, performs `WRITE-POSTING`, adds `PS-AMOUNT` to `WS-PURCHASES`, and rewrites `CARD-ACCOUNT`."
         }
       ]
     },
@@ -330,7 +343,8 @@
             4,
             5,
             6
-          ]
+          ],
+          "sentence": "When `CA-PRODUCT` is `'BZ'` (`CA-BUSINESS`) and `WS-FEE` is more than zero, it sets `WS-FEE-PROGRAM` to `'ovlbiz'`; computes `WS-OVER-AMOUNT` as `CA-BALANCE - CA-LIMIT`; calls the program `WS-FEE-PROGRAM` names; adds `WS-FEE` to `CA-BALANCE` and `WS-FEES`; sets `PO-KIND` to `'F'`; sets `PO-AMOUNT` to `WS-FEE`; and performs `WRITE-POSTING`."
         },
         {
           "entries": [
@@ -341,7 +355,8 @@
             0,
             1,
             2
-          ]
+          ],
+          "sentence": "When `CA-PRODUCT` is `'BZ'` (`CA-BUSINESS`) and `WS-FEE` is at most zero, it sets `WS-FEE-PROGRAM` to `'ovlbiz'`, computes `WS-OVER-AMOUNT` as `CA-BALANCE - CA-LIMIT`, and calls the program `WS-FEE-PROGRAM` names."
         },
         {
           "entries": [
@@ -356,7 +371,8 @@
             4,
             5,
             6
-          ]
+          ],
+          "sentence": "When `CA-PRODUCT` is not `'BZ'` (not `CA-BUSINESS`) and `WS-FEE` is more than zero, it sets `WS-FEE-PROGRAM` to `'ovlfee'`; computes `WS-OVER-AMOUNT` as `CA-BALANCE - CA-LIMIT`; calls the program `WS-FEE-PROGRAM` names; adds `WS-FEE` to `CA-BALANCE` and `WS-FEES`; sets `PO-KIND` to `'F'`; sets `PO-AMOUNT` to `WS-FEE`; and performs `WRITE-POSTING`."
         },
         {
           "entries": [
@@ -367,7 +383,8 @@
             7,
             1,
             2
-          ]
+          ],
+          "sentence": "When `CA-PRODUCT` is not `'BZ'` (not `CA-BUSINESS`) and `WS-FEE` is at most zero, it sets `WS-FEE-PROGRAM` to `'ovlfee'`, computes `WS-OVER-AMOUNT` as `CA-BALANCE - CA-LIMIT`, and calls the program `WS-FEE-PROGRAM` names."
         }
       ]
     }

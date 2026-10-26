@@ -32,7 +32,8 @@
             1,
             2,
             3
-          ]
+          ],
+          "sentence": "When `WS-ACCRUAL-KEY` is not high values, it performs `1000-INITIALIZE`, performs `2000-ACCRUE-ACCOUNT` until `WS-MASTER-END-SW` is `'Y'` (`MASTER-AT-END`), sets `WS-ABORT-MESSAGE` to `'AN ACCRUAL FOR NO ACCOUNT'`, and performs `9900-ABORT`."
         },
         {
           "entries": [
@@ -45,7 +46,8 @@
             5,
             6,
             7
-          ]
+          ],
+          "sentence": "When `WS-ACCRUAL-KEY` is high values, it performs `1000-INITIALIZE`, performs `2000-ACCRUE-ACCOUNT` until `WS-MASTER-END-SW` is `'Y'` (`MASTER-AT-END`), performs `8000-WRITE-REPORT`, performs `9000-CLOSE-FILES`, sets `RETURN-CODE` to 0, and stops the run."
         }
       ]
     },
@@ -87,7 +89,8 @@
             1,
             2,
             3
-          ]
+          ],
+          "sentence": "When `WS-FILE-STATUSES` is not `ALL '0'`, it opens `CONTROL-FILE`, `RATE-FILE`, `ACCT-IN`, and `ACCR-IN` for input and `ACCR-OUT` and `REPORT-OUT` for output; displays `'INTACCR: CANNOT OPEN FILES '` `WS-FILE-STATUSES`; sets `RETURN-CODE` to 16; and stops the run."
         },
         {
           "entries": [
@@ -99,7 +102,8 @@
             4,
             5,
             6
-          ]
+          ],
+          "sentence": "When `WS-FILE-STATUSES` is `ALL '0'` and reading `CONTROL-FILE` finds no more records, it opens `CONTROL-FILE`, `RATE-FILE`, `ACCT-IN`, and `ACCR-IN` for input and `ACCR-OUT` and `REPORT-OUT` for output; reads `CONTROL-FILE`; sets `WS-ABORT-MESSAGE` to `'NO BANK CONTROL RECORD'`; and performs `9900-ABORT`."
         },
         {
           "entries": [
@@ -114,7 +118,8 @@
             9,
             10,
             11
-          ]
+          ],
+          "sentence": "When `WS-FILE-STATUSES` is `ALL '0'` and reading `CONTROL-FILE` finds a record, it opens `CONTROL-FILE`, `RATE-FILE`, `ACCT-IN`, and `ACCR-IN` for input and `ACCR-OUT` and `REPORT-OUT` for output; reads `CONTROL-FILE`; sets `WS-BUSINESS-DATE` to `BC-BUSINESS-DATE`; computes `WS-TODAY` as `FUNCTION INTEGER-OF-DATE(WS-BUSINESS-DATE)`; performs `1100-LOAD-RATES`; performs `1200-READ-MASTER`; and performs `1300-READ-ACCRUAL`."
         }
       ]
     },
@@ -145,7 +150,8 @@
             1,
             2,
             3
-          ]
+          ],
+          "sentence": "When `WS-RATE-STATUS` is not `'10'`, it reads `RATE-FILE`, repeats its loop until `WS-RATE-STATUS` is not `'00'`, sets `WS-ABORT-MESSAGE` to `'CANNOT READ THE RATES'`, and performs `9900-ABORT`."
         },
         {
           "entries": [
@@ -154,7 +160,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When `WS-RATE-STATUS` is `'10'`, it reads `RATE-FILE` and repeats its loop until `WS-RATE-STATUS` is not `'00'`."
         }
       ]
     },
@@ -188,7 +195,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When `WS-RATE-COUNT` is 20, it sets `WS-ABORT-MESSAGE` to `'MORE THAN 20 RATES'` and performs `9900-ABORT`."
         },
         {
           "entries": [
@@ -201,7 +209,8 @@
             5,
             6,
             7
-          ]
+          ],
+          "sentence": "When `WS-RATE-COUNT` is not 20, it adds 1 to `WS-RATE-COUNT`, sets `WS-RT-ACCT-TYPE(WS-RATE-COUNT)` to `RT-ACCT-TYPE`, sets `WS-RT-KIND(WS-RATE-COUNT)` to `RT-KIND`, sets `WS-RT-FLOOR(WS-RATE-COUNT)` to `RT-FLOOR`, sets `WS-RT-ANNUAL-RATE(WS-RATE-COUNT)` to `RT-ANNUAL-RATE`, and reads `RATE-FILE`."
         }
       ]
     },
@@ -226,7 +235,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When reading `ACCT-IN` finds no more records, it reads `ACCT-IN` and sets `WS-MASTER-END-SW` to `MASTER-AT-END`."
         },
         {
           "entries": [
@@ -234,7 +244,8 @@
           ],
           "actions": [
             0
-          ]
+          ],
+          "sentence": "When reading `ACCT-IN` finds a record, it reads `ACCT-IN`."
         }
       ]
     },
@@ -260,7 +271,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When reading `ACCR-IN` finds no more records, it reads `ACCR-IN` and sets `WS-ACCRUAL-KEY` to high values."
         },
         {
           "entries": [
@@ -269,7 +281,8 @@
           "actions": [
             0,
             2
-          ]
+          ],
+          "sentence": "When reading `ACCR-IN` finds a record, it reads `ACCR-IN` and sets `WS-ACCRUAL-KEY` to `AI-ACCT-NO`."
         }
       ]
     },
@@ -310,7 +323,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When `WS-ACCRUAL-KEY` is `AM-ACCT-NO`, it sets `ACCRUAL-RECORD` to `ACCR-IN-RECORD` and performs `1300-READ-ACCRUAL`."
         },
         {
           "entries": [
@@ -323,7 +337,8 @@
             4,
             5,
             6
-          ]
+          ],
+          "sentence": "When `WS-ACCRUAL-KEY` is not `AM-ACCT-NO` and `WS-ACCRUAL-KEY` is more than `AM-ACCT-NO`, it sets `ACCRUAL-RECORD` to spaces, sets `AC-ACCT-NO` to `AM-ACCT-NO`, sets `AC-THROUGH-DATE` to `WS-BUSINESS-DATE`, sets `AC-ACCRUED` to 0, and adds 1 to `WS-STARTED-COUNT`."
         },
         {
           "entries": [
@@ -333,7 +348,8 @@
           "actions": [
             7,
             8
-          ]
+          ],
+          "sentence": "When `WS-ACCRUAL-KEY` is not `AM-ACCT-NO` and `WS-ACCRUAL-KEY` is at most `AM-ACCT-NO`, it sets `WS-ABORT-MESSAGE` to `'AN ACCRUAL FOR NO ACCOUNT'` and performs `9900-ABORT`."
         }
       ]
     },
@@ -386,7 +402,8 @@
             11,
             12,
             13
-          ]
+          ],
+          "sentence": "When `WS-MONTH-START-DAY` is at most `WS-TODAY`, it performs `1400-TAKE-ACCRUAL`; performs `2100-FIND-RATE`; sets `AC-DUE` and `AC-DUE-MONTH` to 0; computes `WS-FROM-DAY` as `FUNCTION INTEGER-OF-DATE(AC-THROUGH-DATE)`; performs `2200-FIND-MONTH-START`; computes `WS-DAYS` as `WS-MONTH-START-DAY - WS-FROM-DAY`; performs `2300-ACCRUE-DAYS`; performs `2400-CLOSE-MONTH`; sets `WS-FROM-DAY` to `WS-MONTH-START-DAY`; computes `WS-DAYS` as `WS-TODAY - WS-FROM-DAY`; performs `2300-ACCRUE-DAYS`; sets `AC-THROUGH-DATE` to `WS-BUSINESS-DATE`; writes `ACCR-OUT-RECORD` from `ACCRUAL-RECORD`; adds 1 to `WS-ACCOUNT-COUNT`; and performs `1200-READ-MASTER`."
         },
         {
           "entries": [
@@ -404,7 +421,8 @@
             11,
             12,
             13
-          ]
+          ],
+          "sentence": "When `WS-MONTH-START-DAY` is more than `WS-TODAY`, it performs `1400-TAKE-ACCRUAL`; performs `2100-FIND-RATE`; sets `AC-DUE` and `AC-DUE-MONTH` to 0; computes `WS-FROM-DAY` as `FUNCTION INTEGER-OF-DATE(AC-THROUGH-DATE)`; performs `2200-FIND-MONTH-START`; computes `WS-DAYS` as `WS-TODAY - WS-FROM-DAY`; performs `2300-ACCRUE-DAYS`; sets `AC-THROUGH-DATE` to `WS-BUSINESS-DATE`; writes `ACCR-OUT-RECORD` from `ACCRUAL-RECORD`; adds 1 to `WS-ACCOUNT-COUNT`; and performs `1200-READ-MASTER`."
         }
       ]
     },
@@ -435,7 +453,8 @@
             1,
             2,
             3
-          ]
+          ],
+          "sentence": "When `WS-RATE-FOUND-SW` is not `'Y'` (not `RATE-FOUND`), it sets `WS-RATE-FOUND-SW` to `'N'`, repeats its loop varying `WS-RX` from 1 by 1 until `WS-RX` is more than `WS-RATE-COUNT`, sets `WS-ABORT-MESSAGE` to `'NO RATE FOR AN ACCOUNT TYPE'`, and performs `9900-ABORT`."
         },
         {
           "entries": [
@@ -444,7 +463,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When `WS-RATE-FOUND-SW` is `'Y'` (`RATE-FOUND`), it sets `WS-RATE-FOUND-SW` to `'N'` and repeats its loop varying `WS-RX` from 1 by 1 until `WS-RX` is more than `WS-RATE-COUNT`."
         }
       ]
     },
@@ -493,7 +513,8 @@
           ],
           "actions": [
             0
-          ]
+          ],
+          "sentence": "When `WS-RT-ACCT-TYPE(WS-RX)` is `AM-ACCT-TYPE`, `AM-BALANCE` is less than 0, and `WS-RT-KIND` is `'D'` (`WS-RT-DEBIT(WS-RX)`), it performs `2110-TAKE-RATE`."
         },
         {
           "entries": [
@@ -502,7 +523,8 @@
             "N",
             ""
           ],
-          "actions": null
+          "actions": null,
+          "sentence": "When `WS-RT-ACCT-TYPE(WS-RX)` is `AM-ACCT-TYPE`, `AM-BALANCE` is less than 0, and `WS-RT-KIND` is not `'D'` (not `WS-RT-DEBIT(WS-RX)`), it does nothing more."
         },
         {
           "entries": [
@@ -513,7 +535,8 @@
           ],
           "actions": [
             0
-          ]
+          ],
+          "sentence": "When `WS-RT-ACCT-TYPE(WS-RX)` is `AM-ACCT-TYPE`; `AM-BALANCE` is at least 0; and `WS-RT-KIND` is `'C'` (`WS-RT-CREDIT(WS-RX)`), `WS-RT-FLOOR(WS-RX)` is at most `AM-BALANCE`, and either `WS-RATE-FOUND-SW` is not `'Y'` (not `RATE-FOUND`) or `WS-RT-FLOOR(WS-RX)` is more than `WS-BEST-FLOOR`, it performs `2110-TAKE-RATE`."
         },
         {
           "entries": [
@@ -522,7 +545,8 @@
             "",
             "N"
           ],
-          "actions": null
+          "actions": null,
+          "sentence": "When `WS-RT-ACCT-TYPE(WS-RX)` is `AM-ACCT-TYPE`; `AM-BALANCE` is at least 0; and `WS-RT-KIND` is not `'C'` (not `WS-RT-CREDIT(WS-RX)`), `WS-RT-FLOOR(WS-RX)` is more than `AM-BALANCE`, or both `WS-RATE-FOUND-SW` is `'Y'` (`RATE-FOUND`) and `WS-RT-FLOOR(WS-RX)` is at most `WS-BEST-FLOOR`, it does nothing more."
         },
         {
           "entries": [
@@ -531,7 +555,8 @@
             "",
             ""
           ],
-          "actions": null
+          "actions": null,
+          "sentence": "When `WS-RT-ACCT-TYPE(WS-RX)` is not `AM-ACCT-TYPE`, it does nothing more."
         }
       ]
     },
@@ -567,7 +592,8 @@
             3,
             4,
             5
-          ]
+          ],
+          "sentence": "When `WS-TH-MONTH` is 12, it sets `WS-THROUGH-DATE` to `AC-THROUGH-DATE`, sets `WS-MS-YEAR` to `WS-TH-YEAR`, adds 1 to `WS-MS-YEAR`, sets `WS-MS-MONTH` to 1, sets `WS-MS-DAY` to 1, and computes `WS-MONTH-START-DAY` as `FUNCTION INTEGER-OF-DATE(WS-MONTH-START-DATE)`."
         },
         {
           "entries": [
@@ -579,7 +605,8 @@
             6,
             4,
             5
-          ]
+          ],
+          "sentence": "When `WS-TH-MONTH` is not 12, it sets `WS-THROUGH-DATE` to `AC-THROUGH-DATE`, sets `WS-MS-YEAR` to `WS-TH-YEAR`, computes `WS-MS-MONTH` as `WS-TH-MONTH + 1`, sets `WS-MS-DAY` to 1, and computes `WS-MONTH-START-DAY` as `FUNCTION INTEGER-OF-DATE(WS-MONTH-START-DATE)`."
         }
       ]
     },
@@ -613,7 +640,8 @@
             2,
             3,
             4
-          ]
+          ],
+          "sentence": "When `WS-INCREMENT` is less than 0, it runs `MULTIPLY AM-BALANCE BY WS-ACCOUNT-RATE GIVING WS-INTEREST-PRODUCT`, runs `MULTIPLY WS-DAYS BY WS-INTEREST-PRODUCT`, runs `DIVIDE WS-INTEREST-PRODUCT BY 365 GIVING WS-INCREMENT ROUNDED`, adds `WS-INCREMENT` to `AC-ACCRUED`, and adds `WS-INCREMENT` to `WS-DEBIT-ACCRUED`."
         },
         {
           "entries": [
@@ -625,7 +653,8 @@
             2,
             3,
             5
-          ]
+          ],
+          "sentence": "When `WS-INCREMENT` is at least 0, it runs `MULTIPLY AM-BALANCE BY WS-ACCOUNT-RATE GIVING WS-INTEREST-PRODUCT`, runs `MULTIPLY WS-DAYS BY WS-INTEREST-PRODUCT`, runs `DIVIDE WS-INTEREST-PRODUCT BY 365 GIVING WS-INCREMENT ROUNDED`, adds `WS-INCREMENT` to `AC-ACCRUED`, and adds `WS-INCREMENT` to `WS-CREDIT-ACCRUED`."
         }
       ]
     },
@@ -663,7 +692,8 @@
             4,
             5,
             6
-          ]
+          ],
+          "sentence": "When `AC-DUE` is less than 0, it computes `AC-DUE` as `AC-ACCRUED`, subtracts `AC-DUE` from `AC-ACCRUED`, sets `WS-DM-YEAR` to `WS-TH-YEAR`, sets `WS-DM-MONTH` to `WS-TH-MONTH`, sets `AC-DUE-MONTH` to `WS-DUE-MONTH`, sets `WS-CLOSED-MONTH` to `AC-DUE-MONTH`, and adds `AC-DUE` to `WS-DEBIT-DUE`."
         },
         {
           "entries": [
@@ -677,7 +707,8 @@
             4,
             5,
             7
-          ]
+          ],
+          "sentence": "When `AC-DUE` is at least 0, it computes `AC-DUE` as `AC-ACCRUED`, subtracts `AC-DUE` from `AC-ACCRUED`, sets `WS-DM-YEAR` to `WS-TH-YEAR`, sets `WS-DM-MONTH` to `WS-TH-MONTH`, sets `AC-DUE-MONTH` to `WS-DUE-MONTH`, sets `WS-CLOSED-MONTH` to `AC-DUE-MONTH`, and adds `AC-DUE` to `WS-CREDIT-DUE`."
         }
       ]
     },
@@ -745,7 +776,8 @@
             2,
             15,
             2
-          ]
+          ],
+          "sentence": "When `WS-CLOSED-MONTH` is 0, it sets `REPORT-LINE` to spaces, builds `REPORT-LINE` from `'INTACCR  INTEREST ACCRUAL        BUSINESS DATE '` `WS-BUSINESS-DATE`, writes `REPORT-LINE`, sets `REPORT-LINE` to spaces, writes `REPORT-LINE`, sets `WS-RC-LABEL` to `'RATES'`, sets `WS-RC-VALUE` to `WS-RATE-COUNT`, writes `REPORT-LINE` from `WS-REPORT-COUNT-LINE`, sets `WS-RC-LABEL` to `'ACCOUNTS ACCRUED'`, sets `WS-RC-VALUE` to `WS-ACCOUNT-COUNT`, writes `REPORT-LINE` from `WS-REPORT-COUNT-LINE`, sets `WS-RC-LABEL` to `'ACCRUALS STARTED'`, sets `WS-RC-VALUE` to `WS-STARTED-COUNT`, writes `REPORT-LINE` from `WS-REPORT-COUNT-LINE`, sets `WS-RA-LABEL` to `'CREDIT INTEREST ACCRUED'`, sets `WS-RA-VALUE` to `WS-CREDIT-ACCRUED`, writes `REPORT-LINE` from `WS-REPORT-AMOUNT-LINE`, sets `WS-RA-LABEL` to `'DEBIT INTEREST ACCRUED'`, sets `WS-RA-VALUE` to `WS-DEBIT-ACCRUED`, writes `REPORT-LINE` from `WS-REPORT-AMOUNT-LINE`, sets `REPORT-LINE` to spaces, writes `REPORT-LINE`, sets `REPORT-LINE` to `'NO MONTH CLOSED'`, and writes `REPORT-LINE`."
         },
         {
           "entries": [
@@ -783,7 +815,8 @@
             19,
             20,
             12
-          ]
+          ],
+          "sentence": "When `WS-CLOSED-MONTH` is not 0, it sets `REPORT-LINE` to spaces, builds `REPORT-LINE` from `'INTACCR  INTEREST ACCRUAL        BUSINESS DATE '` `WS-BUSINESS-DATE`, writes `REPORT-LINE`, sets `REPORT-LINE` to spaces, writes `REPORT-LINE`, sets `WS-RC-LABEL` to `'RATES'`, sets `WS-RC-VALUE` to `WS-RATE-COUNT`, writes `REPORT-LINE` from `WS-REPORT-COUNT-LINE`, sets `WS-RC-LABEL` to `'ACCOUNTS ACCRUED'`, sets `WS-RC-VALUE` to `WS-ACCOUNT-COUNT`, writes `REPORT-LINE` from `WS-REPORT-COUNT-LINE`, sets `WS-RC-LABEL` to `'ACCRUALS STARTED'`, sets `WS-RC-VALUE` to `WS-STARTED-COUNT`, writes `REPORT-LINE` from `WS-REPORT-COUNT-LINE`, sets `WS-RA-LABEL` to `'CREDIT INTEREST ACCRUED'`, sets `WS-RA-VALUE` to `WS-CREDIT-ACCRUED`, writes `REPORT-LINE` from `WS-REPORT-AMOUNT-LINE`, sets `WS-RA-LABEL` to `'DEBIT INTEREST ACCRUED'`, sets `WS-RA-VALUE` to `WS-DEBIT-ACCRUED`, writes `REPORT-LINE` from `WS-REPORT-AMOUNT-LINE`, sets `REPORT-LINE` to spaces, writes `REPORT-LINE`, sets `REPORT-LINE` to spaces, builds `REPORT-LINE` from `'MONTH CLOSED                  '` `WS-CLOSED-MONTH`, writes `REPORT-LINE`, sets `WS-RA-LABEL` to `'CREDIT INTEREST DUE'`, sets `WS-RA-VALUE` to `WS-CREDIT-DUE`, writes `REPORT-LINE` from `WS-REPORT-AMOUNT-LINE`, sets `WS-RA-LABEL` to `'DEBIT INTEREST DUE'`, sets `WS-RA-VALUE` to `WS-DEBIT-DUE`, and writes `REPORT-LINE` from `WS-REPORT-AMOUNT-LINE`."
         }
       ]
     }

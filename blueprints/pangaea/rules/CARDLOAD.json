@@ -36,7 +36,8 @@
             1,
             2,
             3
-          ]
+          ],
+          "sentence": "When `WS-FILE-STATUSES` is not `ALL '0'`, it opens `CONTROL-FILE` and `CARD-IN` for input and `ONLINE-OUT` and `REPORT-OUT` for output; displays `'CARDLOAD: CANNOT OPEN FILES '` `WS-FILE-STATUSES`; sets `RETURN-CODE` to 16; and stops the run."
         },
         {
           "entries": [
@@ -48,7 +49,8 @@
             4,
             5,
             6
-          ]
+          ],
+          "sentence": "When `WS-FILE-STATUSES` is `ALL '0'` and reading `CONTROL-FILE` finds no more records, it opens `CONTROL-FILE` and `CARD-IN` for input and `ONLINE-OUT` and `REPORT-OUT` for output; reads `CONTROL-FILE`; sets `WS-ABORT-MESSAGE` to `'NO BANK CONTROL RECORD'`; and performs `9900-ABORT`."
         },
         {
           "entries": [
@@ -60,7 +62,8 @@
             4,
             7,
             8
-          ]
+          ],
+          "sentence": "When `WS-FILE-STATUSES` is `ALL '0'` and reading `CONTROL-FILE` finds a record, it opens `CONTROL-FILE` and `CARD-IN` for input and `ONLINE-OUT` and `REPORT-OUT` for output; reads `CONTROL-FILE`; sets `WS-BUSINESS-DATE` to `BC-BUSINESS-DATE`; and performs `1200-READ-CARD`."
         }
       ]
     },
@@ -86,7 +89,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When reading `CARD-IN` finds no more records, it reads `CARD-IN` and sets `WS-MASTER-END-SW` to `MASTER-AT-END`."
         },
         {
           "entries": [
@@ -95,7 +99,8 @@
           "actions": [
             0,
             2
-          ]
+          ],
+          "sentence": "When reading `CARD-IN` finds a record, it reads `CARD-IN` and adds 1 to `WS-READ-COUNT`."
         }
       ]
     },
@@ -130,7 +135,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When `CR-EXPIRY-MONTH` is less than `WS-BUSINESS-MONTH`, it adds 1 to `WS-EXPIRED-COUNT` and performs `1200-READ-CARD`."
         },
         {
           "entries": [
@@ -141,7 +147,8 @@
             2,
             3,
             1
-          ]
+          ],
+          "sentence": "When `CR-EXPIRY-MONTH` is at least `WS-BUSINESS-MONTH` and `CR-STATUS` is `'B'` (`CR-BLOCKED`), it adds 1 to `WS-BLOCKED-COUNT`, performs `2100-WRITE-ONLINE`, and performs `1200-READ-CARD`."
         },
         {
           "entries": [
@@ -151,7 +158,8 @@
           "actions": [
             3,
             1
-          ]
+          ],
+          "sentence": "When `CR-EXPIRY-MONTH` is at least `WS-BUSINESS-MONTH` and `CR-STATUS` is not `'B'` (not `CR-BLOCKED`), it performs `2100-WRITE-ONLINE` and performs `1200-READ-CARD`."
         }
       ]
     },
@@ -179,7 +187,8 @@
             0,
             1,
             2
-          ]
+          ],
+          "sentence": "When writing `ONLINE-CARD` fails on its key, it writes `ONLINE-CARD` from `CARD-RECORD`, sets `WS-ABORT-MESSAGE` to `'MASTER NOT IN CARD NUMBER ORDER'`, and performs `9900-ABORT`."
         },
         {
           "entries": [
@@ -188,7 +197,8 @@
           "actions": [
             0,
             3
-          ]
+          ],
+          "sentence": "When writing `ONLINE-CARD` succeeds by its key, it writes `ONLINE-CARD` from `CARD-RECORD` and adds 1 to `WS-LOADED-COUNT`."
         }
       ]
     }

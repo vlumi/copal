@@ -35,7 +35,8 @@
             4,
             5,
             6
-          ]
+          ],
+          "sentence": "When `WS-NOT-MATCHED` is more than zero, it opens `PRES-IN` and `AUTH-IN` for input and `PRES-OUT` and `REPORT-OUT` for output; performs `READ-PRESENTMENT`; performs `READ-AUTHORIZATION`; performs `MATCH-NEXT` until `WS-PRES-KEY` is high values and `WS-AUTH-KEY` is high values; performs `WRITE-REPORT`; closes `PRES-IN`, `AUTH-IN`, `PRES-OUT`, and `REPORT-OUT`; and stops the run."
         },
         {
           "entries": [
@@ -49,7 +50,8 @@
             4,
             5,
             7
-          ]
+          ],
+          "sentence": "When `WS-NOT-MATCHED` is at most zero, it opens `PRES-IN` and `AUTH-IN` for input and `PRES-OUT` and `REPORT-OUT` for output; performs `READ-PRESENTMENT`; performs `READ-AUTHORIZATION`; performs `MATCH-NEXT` until `WS-PRES-KEY` is high values and `WS-AUTH-KEY` is high values; performs `WRITE-REPORT`; closes `PRES-IN`, `AUTH-IN`, `PRES-OUT`, and `REPORT-OUT`; and stops the run."
         }
       ]
     },
@@ -75,7 +77,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When reading `PRES-IN` finds no more records, it reads `PRES-IN` into `PRES-RECORD` and sets `WS-PRES-KEY` to high values."
         },
         {
           "entries": [
@@ -84,7 +87,8 @@
           "actions": [
             0,
             2
-          ]
+          ],
+          "sentence": "When reading `PRES-IN` finds a record, it reads `PRES-IN` into `PRES-RECORD` and sets `WS-PRES-KEY` to `PS-AUTH-CODE`."
         }
       ]
     },
@@ -112,7 +116,8 @@
             0,
             1,
             2
-          ]
+          ],
+          "sentence": "When reading `AUTH-IN` finds no more records, it reads `AUTH-IN`, sets `WS-AUTH-KEY` to high values, and sets `WS-AUTH-CLAIMED` to `'N'`."
         },
         {
           "entries": [
@@ -122,7 +127,8 @@
             0,
             3,
             2
-          ]
+          ],
+          "sentence": "When reading `AUTH-IN` finds a record, it reads `AUTH-IN`, sets `WS-AUTH-KEY` to `AL-AUTH-CODE`, and sets `WS-AUTH-CLAIMED` to `'N'`."
         }
       ]
     },
@@ -167,7 +173,8 @@
             0,
             1,
             2
-          ]
+          ],
+          "sentence": "When `WS-PRES-KEY` is less than `WS-AUTH-KEY`, it sets `PS-MATCH` to `PS-NO-AUTH`, performs `WRITE-PRESENTMENT`, and performs `READ-PRESENTMENT`."
         },
         {
           "entries": [
@@ -178,7 +185,8 @@
           "actions": [
             3,
             4
-          ]
+          ],
+          "sentence": "When `WS-PRES-KEY` is at least `WS-AUTH-KEY`, `WS-PRES-KEY` is more than `WS-AUTH-KEY`, and `WS-AUTH-CLAIMED` is not `'Y'` (not `AUTH-CLAIMED`), it adds 1 to `WS-LAPSED` and performs `READ-AUTHORIZATION`."
         },
         {
           "entries": [
@@ -188,7 +196,8 @@
           ],
           "actions": [
             4
-          ]
+          ],
+          "sentence": "When `WS-PRES-KEY` is at least `WS-AUTH-KEY`, `WS-PRES-KEY` is more than `WS-AUTH-KEY`, and `WS-AUTH-CLAIMED` is `'Y'` (`AUTH-CLAIMED`), it performs `READ-AUTHORIZATION`."
         },
         {
           "entries": [
@@ -201,7 +210,8 @@
             6,
             1,
             2
-          ]
+          ],
+          "sentence": "When `WS-PRES-KEY` is at least `WS-AUTH-KEY` and `WS-PRES-KEY` is at most `WS-AUTH-KEY`, it performs `MARK-PRESENTMENT`, sets `WS-AUTH-CLAIMED` to `AUTH-CLAIMED`, performs `WRITE-PRESENTMENT`, and performs `READ-PRESENTMENT`."
         }
       ]
     },
@@ -235,7 +245,8 @@
           ],
           "actions": [
             0
-          ]
+          ],
+          "sentence": "When `AL-DECISION` is `'D'` (`AL-DECLINED`), it sets `PS-MATCH` to `PS-DECLINED`."
         },
         {
           "entries": [
@@ -244,7 +255,8 @@
           ],
           "actions": [
             1
-          ]
+          ],
+          "sentence": "When `AL-DECISION` is not `'D'` (not `AL-DECLINED`) and `PS-AMOUNT` is more than `AL-AMOUNT * TOLERANCE`, it sets `PS-MATCH` to `PS-OVER-AUTH`."
         },
         {
           "entries": [
@@ -253,7 +265,8 @@
           ],
           "actions": [
             2
-          ]
+          ],
+          "sentence": "When `AL-DECISION` is not `'D'` (not `AL-DECLINED`) and `PS-AMOUNT` is at most `AL-AMOUNT * TOLERANCE`, it sets `PS-MATCH` to `PS-MATCHED`."
         }
       ]
     },
@@ -281,7 +294,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When `PS-MATCH` is `'M'` (`PS-MATCHED`), it writes `PRES-RECORD` and adds 1 to `WS-MATCHED`."
         },
         {
           "entries": [
@@ -290,7 +304,8 @@
           "actions": [
             0,
             2
-          ]
+          ],
+          "sentence": "When `PS-MATCH` is not `'M'` (not `PS-MATCHED`), it writes `PRES-RECORD` and adds 1 to `WS-NOT-MATCHED`."
         }
       ]
     }

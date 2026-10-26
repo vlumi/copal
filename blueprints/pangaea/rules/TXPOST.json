@@ -35,7 +35,8 @@
             4,
             5,
             6
-          ]
+          ],
+          "sentence": "When `WS-REJECT-COUNT` is more than 0, it performs `1000-INITIALIZE`; performs `2000-MATCH` until `WS-MASTER-KEY` is high values and `WS-TRAN-KEY` is high values; performs `5000-RECONCILE`; performs `8000-WRITE-REPORT`; performs `9000-CLOSE-FILES`; sets `RETURN-CODE` to 4; and stops the run."
         },
         {
           "entries": [
@@ -49,7 +50,8 @@
             4,
             7,
             6
-          ]
+          ],
+          "sentence": "When `WS-REJECT-COUNT` is at most 0, it performs `1000-INITIALIZE`; performs `2000-MATCH` until `WS-MASTER-KEY` is high values and `WS-TRAN-KEY` is high values; performs `5000-RECONCILE`; performs `8000-WRITE-REPORT`; performs `9000-CLOSE-FILES`; sets `RETURN-CODE` to 0; and stops the run."
         }
       ]
     },
@@ -98,7 +100,8 @@
             1,
             2,
             3
-          ]
+          ],
+          "sentence": "When `WS-CONTROL-STATUS` is not `'00'`, `WS-ACCT-IN-STATUS` is not `'00'`, `WS-TRAN-IN-STATUS` is not `'00'`, `WS-ACCT-OUT-STATUS` is not `'00'`, `WS-AUDIT-STATUS` is neither `'00'` nor `'05'` (not `AUDIT-OPENED`), `WS-REJECT-STATUS` is neither `'00'` nor `'05'` (not `REJECTS-OPENED`), `WS-LEGS-STATUS` is not `'00'`, or `WS-REPORT-STATUS` is not `'00'`, it opens `CONTROL-FILE`, `ACCT-IN`, and `TRAN-IN` for input, `ACCT-OUT`, `LEGS-OUT`, and `REPORT-OUT` for output, and `AUDIT-OUT` and `REJECT-OUT` to extend; displays `'TXPOST: CANNOT OPEN FILES '` `WS-FILE-STATUSES`; sets `RETURN-CODE` to 16; and stops the run."
         },
         {
           "entries": [
@@ -110,7 +113,8 @@
             4,
             5,
             6
-          ]
+          ],
+          "sentence": "When `WS-CONTROL-STATUS` is `'00'`, `WS-ACCT-IN-STATUS` is `'00'`, `WS-TRAN-IN-STATUS` is `'00'`, `WS-ACCT-OUT-STATUS` is `'00'`, `WS-AUDIT-STATUS` is `'00'` or `'05'` (`AUDIT-OPENED`), `WS-REJECT-STATUS` is `'00'` or `'05'` (`REJECTS-OPENED`), `WS-LEGS-STATUS` is `'00'`, and `WS-REPORT-STATUS` is `'00'`; and reading `CONTROL-FILE` finds no more records, it opens `CONTROL-FILE`, `ACCT-IN`, and `TRAN-IN` for input, `ACCT-OUT`, `LEGS-OUT`, and `REPORT-OUT` for output, and `AUDIT-OUT` and `REJECT-OUT` to extend; reads `CONTROL-FILE`; sets `WS-ABORT-MESSAGE` to `'NO BANK CONTROL RECORD'`; and performs `9900-ABORT`."
         },
         {
           "entries": [
@@ -125,7 +129,8 @@
             9,
             10,
             11
-          ]
+          ],
+          "sentence": "When `WS-CONTROL-STATUS` is `'00'`, `WS-ACCT-IN-STATUS` is `'00'`, `WS-TRAN-IN-STATUS` is `'00'`, `WS-ACCT-OUT-STATUS` is `'00'`, `WS-AUDIT-STATUS` is `'00'` or `'05'` (`AUDIT-OPENED`), `WS-REJECT-STATUS` is `'00'` or `'05'` (`REJECTS-OPENED`), `WS-LEGS-STATUS` is `'00'`, and `WS-REPORT-STATUS` is `'00'`; and reading `CONTROL-FILE` finds a record, it opens `CONTROL-FILE`, `ACCT-IN`, and `TRAN-IN` for input, `ACCT-OUT`, `LEGS-OUT`, and `REPORT-OUT` for output, and `AUDIT-OUT` and `REJECT-OUT` to extend; reads `CONTROL-FILE`; sets `WS-BUSINESS-DATE` to `BC-BUSINESS-DATE`; sets `AUDIT-RECORD` and `REJECT-RECORD` to spaces; builds `RJ-REJECT-DATE` from `WS-BUSINESS-DATE(1:4)` `'-'` `WS-BUSINESS-DATE(5:2)` `'-'` `WS-BUSINESS-DATE(7:2)`; performs `1200-READ-MASTER`; and performs `1300-READ-TRAN`."
         }
       ]
     },
@@ -162,7 +167,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When reading `ACCT-IN` finds no more records, it reads `ACCT-IN` and sets `WS-MASTER-KEY` to high values."
         },
         {
           "entries": [
@@ -174,7 +180,8 @@
             2,
             3,
             4
-          ]
+          ],
+          "sentence": "When reading `ACCT-IN` finds a record and `WS-MASTER-KEY` is at most `WS-PREV-MASTER-KEY`, it reads `ACCT-IN`, sets `WS-MASTER-KEY` to `AM-ACCT-NO`, sets `WS-ABORT-MESSAGE` to `'MASTER NOT IN ACCOUNT ORDER'`, and performs `9900-ABORT`."
         },
         {
           "entries": [
@@ -187,7 +194,8 @@
             5,
             6,
             7
-          ]
+          ],
+          "sentence": "When reading `ACCT-IN` finds a record and `WS-MASTER-KEY` is more than `WS-PREV-MASTER-KEY`, it reads `ACCT-IN`, sets `WS-MASTER-KEY` to `AM-ACCT-NO`, sets `WS-PREV-MASTER-KEY` to `WS-MASTER-KEY`, adds 1 to `WS-MASTERS-READ`, and adds `AM-BALANCE` to `WS-OPENING-TOTAL`."
         }
       ]
     },
@@ -223,7 +231,8 @@
           "actions": [
             0,
             1
-          ]
+          ],
+          "sentence": "When reading `TRAN-IN` finds no more records, it reads `TRAN-IN` and sets `WS-TRAN-KEY` to high values."
         },
         {
           "entries": [
@@ -236,7 +245,8 @@
             3,
             4,
             5
-          ]
+          ],
+          "sentence": "When reading `TRAN-IN` finds a record and `WS-TRAN-ORDER-KEY` is at most `WS-PREV-TRAN-ORDER-KEY`, it reads `TRAN-IN`; sets `WS-TRAN-KEY` and `WS-TOK-ACCT-NO` to `TD-ACCT-NO`; sets `WS-TOK-TRAN-ID` to `TD-TRAN-ID`; sets `WS-ABORT-MESSAGE` to `'TRANSACTIONS NOT IN ACCOUNT ORDER'`; and performs `9900-ABORT`."
         },
         {
           "entries": [
@@ -248,7 +258,8 @@
             2,
             3,
             6
-          ]
+          ],
+          "sentence": "When reading `TRAN-IN` finds a record and `WS-TRAN-ORDER-KEY` is more than `WS-PREV-TRAN-ORDER-KEY`, it reads `TRAN-IN`; sets `WS-TRAN-KEY` and `WS-TOK-ACCT-NO` to `TD-ACCT-NO`; sets `WS-TOK-TRAN-ID` to `TD-TRAN-ID`; and sets `WS-PREV-TRAN-ORDER-KEY` to `WS-TRAN-ORDER-KEY`."
         }
       ]
     },
@@ -287,7 +298,8 @@
             0,
             1,
             2
-          ]
+          ],
+          "sentence": "When `WS-TRAN-KEY` is less than `WS-MASTER-KEY`, it sets `RJ-REASON` to `RJ-NO-ACCOUNT`, performs `3900-REJECT-TRAN`, and performs `1300-READ-TRAN`."
         },
         {
           "entries": [
@@ -297,7 +309,8 @@
           "actions": [
             3,
             2
-          ]
+          ],
+          "sentence": "When `WS-TRAN-KEY` is at least `WS-MASTER-KEY` and `WS-TRAN-KEY` is `WS-MASTER-KEY`, it performs `3000-APPLY-TRAN` and performs `1300-READ-TRAN`."
         },
         {
           "entries": [
@@ -307,7 +320,8 @@
           "actions": [
             4,
             5
-          ]
+          ],
+          "sentence": "When `WS-TRAN-KEY` is at least `WS-MASTER-KEY` and `WS-TRAN-KEY` is not `WS-MASTER-KEY`, it performs `4000-WRITE-MASTER` and performs `1200-READ-MASTER`."
         }
       ]
     },
@@ -366,7 +380,8 @@
             0,
             1,
             2
-          ]
+          ],
+          "sentence": "When `AM-STATUS` is `'X'` (`AM-CLOSED`), it sets `WS-BALANCE-BEFORE` to `AM-BALANCE`, sets `RJ-REASON` to `RJ-CLOSED`, and performs `3900-REJECT-TRAN`."
         },
         {
           "entries": [
@@ -380,7 +395,8 @@
           "actions": [
             0,
             3
-          ]
+          ],
+          "sentence": "When `AM-STATUS` is not `'X'` (not `AM-CLOSED`); and `TD-TRAN-CODE` is `'DP'` (`TD-DEPOSIT`), `TD-TRAN-CODE` is `'TC'` (`TD-TRANSFER-CREDIT`), `TD-TRAN-CODE` is `'RT'` (`TD-TRANSFER-RETURN`), or `TD-TRAN-CODE` is `'IN'` (`TD-INTEREST`), it sets `WS-BALANCE-BEFORE` to `AM-BALANCE` and performs `3100-POST-CREDIT`."
         },
         {
           "entries": [
@@ -394,7 +410,8 @@
           "actions": [
             0,
             4
-          ]
+          ],
+          "sentence": "When `AM-STATUS` is not `'X'` (not `AM-CLOSED`); `TD-TRAN-CODE` is not `'DP'` (not `TD-DEPOSIT`), `TD-TRAN-CODE` is not `'TC'` (not `TD-TRANSFER-CREDIT`), `TD-TRAN-CODE` is not `'RT'` (not `TD-TRANSFER-RETURN`), and `TD-TRAN-CODE` is not `'IN'` (not `TD-INTEREST`); and `TD-TRAN-CODE` is `'FE'` (`TD-FEE`), `TD-TRAN-CODE` is `'OD'` (`TD-OVERDRAFT-INTEREST`), `TD-TRAN-CODE` is `'MF'` (`TD-MAINTENANCE-FEE`), or `TD-TRAN-CODE` is `'AF'` (`TD-ATM-FEE`), it sets `WS-BALANCE-BEFORE` to `AM-BALANCE` and performs `3300-POST-FEE`."
         },
         {
           "entries": [
@@ -408,7 +425,8 @@
           "actions": [
             0,
             5
-          ]
+          ],
+          "sentence": "When `AM-STATUS` is not `'X'` (not `AM-CLOSED`); `TD-TRAN-CODE` is not `'DP'` (not `TD-DEPOSIT`), `TD-TRAN-CODE` is not `'TC'` (not `TD-TRANSFER-CREDIT`), `TD-TRAN-CODE` is not `'RT'` (not `TD-TRANSFER-RETURN`), and `TD-TRAN-CODE` is not `'IN'` (not `TD-INTEREST`); `TD-TRAN-CODE` is not `'FE'` (not `TD-FEE`), `TD-TRAN-CODE` is not `'OD'` (not `TD-OVERDRAFT-INTEREST`), `TD-TRAN-CODE` is not `'MF'` (not `TD-MAINTENANCE-FEE`), and `TD-TRAN-CODE` is not `'AF'` (not `TD-ATM-FEE`); and `TD-TRAN-CODE` is `'CP'` (`TD-CARD-PURCHASE`) or `TD-TRAN-CODE` is `'AW'` (`TD-ATM-WITHDRAWAL`), it sets `WS-BALANCE-BEFORE` to `AM-BALANCE` and performs `3400-POST-AUTHORIZED`."
         },
         {
           "entries": [
@@ -423,7 +441,8 @@
             0,
             6,
             2
-          ]
+          ],
+          "sentence": "When `AM-STATUS` is not `'X'` (not `AM-CLOSED`); `TD-TRAN-CODE` is not `'DP'` (not `TD-DEPOSIT`), `TD-TRAN-CODE` is not `'TC'` (not `TD-TRANSFER-CREDIT`), `TD-TRAN-CODE` is not `'RT'` (not `TD-TRANSFER-RETURN`), and `TD-TRAN-CODE` is not `'IN'` (not `TD-INTEREST`); `TD-TRAN-CODE` is not `'FE'` (not `TD-FEE`), `TD-TRAN-CODE` is not `'OD'` (not `TD-OVERDRAFT-INTEREST`), `TD-TRAN-CODE` is not `'MF'` (not `TD-MAINTENANCE-FEE`), and `TD-TRAN-CODE` is not `'AF'` (not `TD-ATM-FEE`); `TD-TRAN-CODE` is not `'CP'` (not `TD-CARD-PURCHASE`) and `TD-TRAN-CODE` is not `'AW'` (not `TD-ATM-WITHDRAWAL`); and `AM-STATUS` is `'F'` (`AM-FROZEN`), it sets `WS-BALANCE-BEFORE` to `AM-BALANCE`, sets `RJ-REASON` to `RJ-FROZEN`, and performs `3900-REJECT-TRAN`."
         },
         {
           "entries": [
@@ -437,7 +456,8 @@
           "actions": [
             0,
             7
-          ]
+          ],
+          "sentence": "When `AM-STATUS` is not `'X'` (not `AM-CLOSED`); `TD-TRAN-CODE` is not `'DP'` (not `TD-DEPOSIT`), `TD-TRAN-CODE` is not `'TC'` (not `TD-TRANSFER-CREDIT`), `TD-TRAN-CODE` is not `'RT'` (not `TD-TRANSFER-RETURN`), and `TD-TRAN-CODE` is not `'IN'` (not `TD-INTEREST`); `TD-TRAN-CODE` is not `'FE'` (not `TD-FEE`), `TD-TRAN-CODE` is not `'OD'` (not `TD-OVERDRAFT-INTEREST`), `TD-TRAN-CODE` is not `'MF'` (not `TD-MAINTENANCE-FEE`), and `TD-TRAN-CODE` is not `'AF'` (not `TD-ATM-FEE`); `TD-TRAN-CODE` is not `'CP'` (not `TD-CARD-PURCHASE`) and `TD-TRAN-CODE` is not `'AW'` (not `TD-ATM-WITHDRAWAL`); `AM-STATUS` is not `'F'` (not `AM-FROZEN`); and `TD-TRAN-CODE` is `'WD'` (`TD-WITHDRAWAL`) or `TD-TRAN-CODE` is `'TR'` (`TD-TRANSFER`), it sets `WS-BALANCE-BEFORE` to `AM-BALANCE` and performs `3200-POST-DEBIT`."
         },
         {
           "entries": [
@@ -450,7 +470,8 @@
           ],
           "actions": [
             0
-          ]
+          ],
+          "sentence": "When `AM-STATUS` is not `'X'` (not `AM-CLOSED`); `TD-TRAN-CODE` is not `'DP'` (not `TD-DEPOSIT`), `TD-TRAN-CODE` is not `'TC'` (not `TD-TRANSFER-CREDIT`), `TD-TRAN-CODE` is not `'RT'` (not `TD-TRANSFER-RETURN`), and `TD-TRAN-CODE` is not `'IN'` (not `TD-INTEREST`); `TD-TRAN-CODE` is not `'FE'` (not `TD-FEE`), `TD-TRAN-CODE` is not `'OD'` (not `TD-OVERDRAFT-INTEREST`), `TD-TRAN-CODE` is not `'MF'` (not `TD-MAINTENANCE-FEE`), and `TD-TRAN-CODE` is not `'AF'` (not `TD-ATM-FEE`); `TD-TRAN-CODE` is not `'CP'` (not `TD-CARD-PURCHASE`) and `TD-TRAN-CODE` is not `'AW'` (not `TD-ATM-WITHDRAWAL`); `AM-STATUS` is not `'F'` (not `AM-FROZEN`); and `TD-TRAN-CODE` is not `'WD'` (not `TD-WITHDRAWAL`) and `TD-TRAN-CODE` is not `'TR'` (not `TD-TRANSFER`), it sets `WS-BALANCE-BEFORE` to `AM-BALANCE`."
         }
       ]
     },
@@ -492,7 +513,8 @@
             1,
             2,
             3
-          ]
+          ],
+          "sentence": "When `WS-NEW-BALANCE` is less than `WS-BALANCE-FLOOR`, it computes `WS-NEW-BALANCE` as `AM-BALANCE - TD-AMOUNT`, computes `WS-BALANCE-FLOOR` as `0 - AM-OVERDRAFT-LIMIT`, sets `RJ-REASON` to `RJ-NO-FUNDS`, and performs `3900-REJECT-TRAN`."
         },
         {
           "entries": [
@@ -507,7 +529,8 @@
             6,
             7,
             8
-          ]
+          ],
+          "sentence": "When `WS-NEW-BALANCE` is at least `WS-BALANCE-FLOOR` and `TD-TRAN-CODE` is `'TR'` (`TD-TRANSFER`), it computes `WS-NEW-BALANCE` as `AM-BALANCE - TD-AMOUNT`, computes `WS-BALANCE-FLOOR` as `0 - AM-OVERDRAFT-LIMIT`, sets `AM-BALANCE` to `WS-NEW-BALANCE`, adds `TD-AMOUNT` to `WS-DEBIT-TOTAL`, computes `WS-SIGNED-AMOUNT` as `0 - TD-AMOUNT`, performs `3800-WRITE-AUDIT`, and performs `3500-WRITE-LEG`."
         },
         {
           "entries": [
@@ -521,7 +544,8 @@
             5,
             6,
             7
-          ]
+          ],
+          "sentence": "When `WS-NEW-BALANCE` is at least `WS-BALANCE-FLOOR` and `TD-TRAN-CODE` is not `'TR'` (not `TD-TRANSFER`), it computes `WS-NEW-BALANCE` as `AM-BALANCE - TD-AMOUNT`, computes `WS-BALANCE-FLOOR` as `0 - AM-OVERDRAFT-LIMIT`, sets `AM-BALANCE` to `WS-NEW-BALANCE`, adds `TD-AMOUNT` to `WS-DEBIT-TOTAL`, computes `WS-SIGNED-AMOUNT` as `0 - TD-AMOUNT`, and performs `3800-WRITE-AUDIT`."
         }
       ]
     },
@@ -561,7 +585,8 @@
             5,
             6,
             7
-          ]
+          ],
+          "sentence": "When `TD-TRAN-CODE` is `'TR'` (`TD-TRANSFER`), it sets `WS-SAVED-TRAN` to `TRAN-RECORD`, sets `TD-TRAN-CODE` to `TD-TRANSFER-CREDIT`, sets `WS-LEG-ACCT-NO` to `TD-ACCT-NO`, sets `TD-ACCT-NO` to `TD-COUNTER-ACCT-NO`, sets `TD-COUNTER-ACCT-NO` to `WS-LEG-ACCT-NO`, writes `LEGS-OUT-RECORD` from `TRAN-RECORD`, adds 1 to `WS-LEG-COUNT`, and sets `TRAN-RECORD` to `WS-SAVED-TRAN`."
         },
         {
           "entries": [
@@ -576,7 +601,8 @@
             5,
             6,
             7
-          ]
+          ],
+          "sentence": "When `TD-TRAN-CODE` is not `'TR'` (not `TD-TRANSFER`), it sets `WS-SAVED-TRAN` to `TRAN-RECORD`, sets `TD-TRAN-CODE` to `TD-TRANSFER-RETURN`, sets `WS-LEG-ACCT-NO` to `TD-ACCT-NO`, sets `TD-ACCT-NO` to `TD-COUNTER-ACCT-NO`, sets `TD-COUNTER-ACCT-NO` to `WS-LEG-ACCT-NO`, writes `LEGS-OUT-RECORD` from `TRAN-RECORD`, adds 1 to `WS-LEG-COUNT`, and sets `TRAN-RECORD` to `WS-SAVED-TRAN`."
         }
       ]
     },
@@ -609,7 +635,8 @@
             2,
             3,
             4
-          ]
+          ],
+          "sentence": "When `TD-TRAN-CODE` is `'TC'` (`TD-TRANSFER-CREDIT`), it sets `RJ-PROGRAM` to `'TXPOST'`, sets `RJ-TRAN` to `TRAN-RECORD`, writes `REJECT-OUT-RECORD` from `REJECT-RECORD`, adds 1 to `WS-REJECT-COUNT`, and performs `3500-WRITE-LEG`."
         },
         {
           "entries": [
@@ -620,7 +647,8 @@
             1,
             2,
             3
-          ]
+          ],
+          "sentence": "When `TD-TRAN-CODE` is not `'TC'` (not `TD-TRANSFER-CREDIT`), it sets `RJ-PROGRAM` to `'TXPOST'`, sets `RJ-TRAN` to `TRAN-RECORD`, writes `REJECT-OUT-RECORD` from `REJECT-RECORD`, and adds 1 to `WS-REJECT-COUNT`."
         }
       ]
     },
@@ -658,7 +686,8 @@
             3,
             4,
             5
-          ]
+          ],
+          "sentence": "When `WS-EXPECTED-TOTAL` is not `WS-CLOSING-TOTAL` or `WS-MASTERS-WRITTEN` is not `WS-MASTERS-READ`, it sets `WS-EXPECTED-TOTAL` to `WS-OPENING-TOTAL`, adds `WS-CREDIT-TOTAL` to `WS-EXPECTED-TOTAL`, subtracts `WS-DEBIT-TOTAL` from `WS-EXPECTED-TOTAL`, subtracts `WS-FEE-TOTAL` from `WS-EXPECTED-TOTAL`, sets `WS-ABORT-MESSAGE` to `'NEW MASTER OUT OF BALANCE'`, and performs `9900-ABORT`."
         },
         {
           "entries": [
@@ -669,7 +698,8 @@
             1,
             2,
             3
-          ]
+          ],
+          "sentence": "When `WS-EXPECTED-TOTAL` is `WS-CLOSING-TOTAL` and `WS-MASTERS-WRITTEN` is `WS-MASTERS-READ`, it sets `WS-EXPECTED-TOTAL` to `WS-OPENING-TOTAL`, adds `WS-CREDIT-TOTAL` to `WS-EXPECTED-TOTAL`, subtracts `WS-DEBIT-TOTAL` from `WS-EXPECTED-TOTAL`, and subtracts `WS-FEE-TOTAL` from `WS-EXPECTED-TOTAL`."
         }
       ]
     }

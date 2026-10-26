@@ -65,7 +65,8 @@
             4,
             5,
             6
-          ]
+          ],
+          "sentence": "When `CR-STATUS` is `'B'` (`CR-BLOCKED`), it performs `1000-START-CARD-TOTALS`, runs `ADD AO-BALANCE AO-OVERDRAFT-LIMIT GIVING WS-AVAILABLE`, subtracts `AO-HOLDS` from `WS-AVAILABLE`, computes `WS-DAY-PURCHASES` as `CR-DAY-PURCHASES + RQ-AMOUNT`, sets `RS-RESULT` to `RS-CARD-BLOCKED`, sets `RS-MESSAGE` to `'CARD BLOCKED'`, and returns to its caller."
         },
         {
           "entries": [
@@ -83,7 +84,8 @@
             7,
             8,
             6
-          ]
+          ],
+          "sentence": "When `CR-STATUS` is not `'B'` (not `CR-BLOCKED`) and `AO-STATUS` is not `'O'` (not `AO-OPEN`), it performs `1000-START-CARD-TOTALS`, runs `ADD AO-BALANCE AO-OVERDRAFT-LIMIT GIVING WS-AVAILABLE`, subtracts `AO-HOLDS` from `WS-AVAILABLE`, computes `WS-DAY-PURCHASES` as `CR-DAY-PURCHASES + RQ-AMOUNT`, sets `RS-RESULT` to `RS-ACCOUNT-NOT-OPEN`, sets `RS-MESSAGE` to `'ACCOUNT NOT OPEN'`, and returns to its caller."
         },
         {
           "entries": [
@@ -101,7 +103,8 @@
             9,
             10,
             6
-          ]
+          ],
+          "sentence": "When `CR-STATUS` is not `'B'` (not `CR-BLOCKED`), `AO-STATUS` is `'O'` (`AO-OPEN`), and `RQ-AMOUNT` is 0, it performs `1000-START-CARD-TOTALS`, runs `ADD AO-BALANCE AO-OVERDRAFT-LIMIT GIVING WS-AVAILABLE`, subtracts `AO-HOLDS` from `WS-AVAILABLE`, computes `WS-DAY-PURCHASES` as `CR-DAY-PURCHASES + RQ-AMOUNT`, sets `RS-RESULT` to `RS-INVALID-AMOUNT`, sets `RS-MESSAGE` to `'NO AMOUNT'`, and returns to its caller."
         },
         {
           "entries": [
@@ -119,7 +122,8 @@
             11,
             12,
             6
-          ]
+          ],
+          "sentence": "When `CR-STATUS` is not `'B'` (not `CR-BLOCKED`), `AO-STATUS` is `'O'` (`AO-OPEN`), `RQ-AMOUNT` is not 0, and `WS-DAY-PURCHASES` is more than `CR-PURCHASE-LIMIT`, it performs `1000-START-CARD-TOTALS`, runs `ADD AO-BALANCE AO-OVERDRAFT-LIMIT GIVING WS-AVAILABLE`, subtracts `AO-HOLDS` from `WS-AVAILABLE`, computes `WS-DAY-PURCHASES` as `CR-DAY-PURCHASES + RQ-AMOUNT`, sets `RS-RESULT` to `RS-OVER-LIMIT`, sets `RS-MESSAGE` to `'OVER DAILY PURCHASE LIMIT'`, and returns to its caller."
         },
         {
           "entries": [
@@ -137,7 +141,8 @@
             13,
             14,
             6
-          ]
+          ],
+          "sentence": "When `CR-STATUS` is not `'B'` (not `CR-BLOCKED`), `AO-STATUS` is `'O'` (`AO-OPEN`), `RQ-AMOUNT` is not 0, `WS-DAY-PURCHASES` is at most `CR-PURCHASE-LIMIT`, and `RQ-AMOUNT` is more than `WS-AVAILABLE`, it performs `1000-START-CARD-TOTALS`, runs `ADD AO-BALANCE AO-OVERDRAFT-LIMIT GIVING WS-AVAILABLE`, subtracts `AO-HOLDS` from `WS-AVAILABLE`, computes `WS-DAY-PURCHASES` as `CR-DAY-PURCHASES + RQ-AMOUNT`, sets `RS-RESULT` to `RS-INSUFFICIENT-FUNDS`, sets `RS-MESSAGE` to `'INSUFFICIENT FUNDS'`, and returns to its caller."
         },
         {
           "entries": [
@@ -154,7 +159,8 @@
             3,
             15,
             6
-          ]
+          ],
+          "sentence": "When `CR-STATUS` is not `'B'` (not `CR-BLOCKED`), `AO-STATUS` is `'O'` (`AO-OPEN`), `RQ-AMOUNT` is not 0, `WS-DAY-PURCHASES` is at most `CR-PURCHASE-LIMIT`, and `RQ-AMOUNT` is at most `WS-AVAILABLE`, it performs `1000-START-CARD-TOTALS`, runs `ADD AO-BALANCE AO-OVERDRAFT-LIMIT GIVING WS-AVAILABLE`, subtracts `AO-HOLDS` from `WS-AVAILABLE`, computes `WS-DAY-PURCHASES` as `CR-DAY-PURCHASES + RQ-AMOUNT`, performs `2000-APPROVE`, and returns to its caller."
         }
       ]
     },
@@ -190,7 +196,8 @@
             0,
             1,
             2
-          ]
+          ],
+          "sentence": "When `CR-TOTALS-DATE` is not `BC-BUSINESS-DATE` and `CR-TOTALS-DATE(1:6)` is not `BC-BUSINESS-DATE(1:6)`, it sets `CR-MONTH-WITHDRAWALS` to 0; sets `CR-DAY-PURCHASES` and `CR-DAY-CASH` to 0; and sets `CR-TOTALS-DATE` to `BC-BUSINESS-DATE`."
         },
         {
           "entries": [
@@ -200,14 +207,16 @@
           "actions": [
             1,
             2
-          ]
+          ],
+          "sentence": "When `CR-TOTALS-DATE` is not `BC-BUSINESS-DATE` and `CR-TOTALS-DATE(1:6)` is `BC-BUSINESS-DATE(1:6)`, it sets `CR-DAY-PURCHASES` and `CR-DAY-CASH` to 0; and sets `CR-TOTALS-DATE` to `BC-BUSINESS-DATE`."
         },
         {
           "entries": [
             "Y",
             ""
           ],
-          "actions": null
+          "actions": null,
+          "sentence": "When `CR-TOTALS-DATE` is `BC-BUSINESS-DATE`, it does nothing more."
         }
       ]
     }
