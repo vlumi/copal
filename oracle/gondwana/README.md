@@ -8,7 +8,7 @@ For each main program, input data that reaches the rules of its decision tables,
 | [GLD020](GLD020/) | 29 of 66 | 12 |
 | [GLD030](GLD030/) | 33 of 117 | 20 |
 | [GLD040](GLD040/) | 50 of 73 | 30 |
-| [GLD050](GLD050/) | 20 of 71 | 11 |
+| [GLD050](GLD050/) | 50 of 71 | 33 |
 | [GLD060](GLD060/) | 15 of 29 | 5 |
 | [GLD090](GLD090/) | 16 of 30 | 8 |
 | [GLM010](GLM010/) | 28 of 46 | 13 |
@@ -24,6 +24,6 @@ And for each job, a batch: the job run through its steps on inputs from its prog
 | [OPEN](jobs/OPEN/) | GLO010 RC=0000 |
 | [DAILY](jobs/DAILY/) | GLD010 RC=0000, GLD020 RC=0000, GLD030 RC=0000, GLD040 RC=0000, GLD060 RC=0000, UNLOAD RC=0000, UNLOAD.GLD090 RC=0000 |
 | [BILLING](jobs/BILLING/) | GLM010 RC=0000 |
-| [RESULTS](jobs/RESULTS/) | GLD050 RC=0008 |
+| [RESULTS](jobs/RESULTS/) | GLD050 RC=0000 |
 | [CLOSE](jobs/CLOSE/) | GLM020 RC=0001, GLM030 RC=0000, UNLOAD RC=0000, UNLOAD.GLD090 RC=0000 |
 | [ANNUAL](jobs/ANNUAL/) | GLY010 RC=0000 |

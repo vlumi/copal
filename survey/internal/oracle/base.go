@@ -148,7 +148,7 @@ func (p *program) blueprintShape(in input) (shape, bool) {
 		return shape{}, false
 	}
 	r := p.blueprint.Records[i]
-	if len(r.Types) == 0 || slices.ContainsFunc(r.Types, func(t blueprint.RecordType) bool { return t.Fields == "" }) {
+	if !slices.ContainsFunc(r.Types, func(t blueprint.RecordType) bool { return t.Fields != "" }) {
 		return shape{}, false
 	}
 	s := shape{discriminator: find(in.root, r.TypeField), variants: map[*layout.Field]int{}}
@@ -163,7 +163,9 @@ func (p *program) blueprintShape(in input) (shape, bool) {
 			return shape{}, false
 		}
 		s.types, s.typeNames = append(s.types, v), append(s.typeNames, t.Name)
-		s.variants[find(in.root, t.Fields)] = k
+		if t.Fields != "" {
+			s.variants[find(in.root, t.Fields)] = k
+		}
 	}
 	return s, true
 }

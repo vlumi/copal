@@ -2,8 +2,8 @@
 
 The run ended with return code 16.
 
-GLJRNL-F's directory is missing, so creating it fails.
+GLSCTL-F is missing, so opening it fails.
 
 The first case to reach:
 
-- [GLD050, ｵｰﾌﾟﾝ-ｹﾝｻ-RTN, rule 4](../../../../blueprints/gondwana/rules/GLD050.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)
+- [GLD050, ｵｰﾌﾟﾝ-ｹﾝｻ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLD050.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)
