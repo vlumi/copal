@@ -241,7 +241,7 @@ Done when: every rule of the three specimens has its sentence, and a statement t
 The console was built for the modernization, the bank and the survey side by side, and so it was the one part that knew both, and only of the bank. Each specimen gets a console of its own instead, its operators' window onto it, knowing nothing of the survey; and the survey shows the runs of any of them on its own drawings.
 
 - The bank's console moved into the bank, `pangaea/console`: each day's jobs as tables of steps, return codes and the records of every dataset, rather than the survey's drawings; `make bank-console` (done).
-- A console for the card processor: its cards, each night and cycle with its steps, and the files they wrote.
+- A console for the card processor: its cards, each night and cycle with its steps, and the files they wrote; `make cards-console` (done).
 - A console for the life insurer: its policies, each day's batch files with their steps, and the files they wrote, its Japanese names and data shown as they are.
 - The runs on the explorer's job drawings: a specimen's run history read from what its machine room keeps, each step's return code on the survey's drawing of its job.
 
