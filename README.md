@@ -6,13 +6,12 @@ Copal is a study of one problem: understanding a legacy COBOL batch system well 
 
 ## The parts
 
-Four parts, and three specimens for them to work on.
+The survey is the analyzer; it stands on two parts, and works on three specimens.
 
 | Directory | Part | What it is |
 | --- | --- | --- |
 | [survey/](survey/) | **Survey** | The analyzer. Reads a COBOL system and writes its blueprints: record layouts, program structure, data flow, business rules as decision tables, and the job network. Serves the same analysis in the browser, finds test cases that reach the rules, and checks a replacement against them. |
 | [bedrock/](bedrock/) | **Bedrock** | What runs the specimens: compiling and running COBOL programs, jobs and scripts, and keeping datasets and their catalog. |
-| [console/](console/) | **The console** | A web window that runs the bank, watches its online day, and shows each run's jobs as the survey draws them. The one part that knows both a specimen and the survey. |
 | [cobolith](https://github.com/vlumi/cobolith) | **Cobolith** | The library everything reads COBOL with: source, copybooks, record layouts and fields, and JCL, in the IBM, Micro Focus, Hitachi and Fujitsu dialects. Written here, now a repository of its own. |
 
 ![The parts of Copal and what imports what](docs/diagrams/architecture.svg)
@@ -27,7 +26,7 @@ Three working COBOL systems, fiction written for this project, each in another s
 | [laurasia/](laurasia/) | **Laurasia Card Services**, a card processor: clearing, posting, disputes, settlement and billing | Micro Focus, free format | shell scripts | To show where the survey assumed Pangaea's dialect, format and JCL |
 | [gondwana/](gondwana/) | **Gondwana Life Insurance**, a life insurer: new business, premiums, claims, lapses, reserves and dividends | Fujitsu NetCOBOL, Shift_JIS with Japanese names | Windows batch files | To show where it assumed ASCII, cents and the Western calendar |
 
-The dependencies run one way, and `make ci` checks it: the specimens know nothing of the survey, and only the console knows both. The specimens' outputs are golden files, and so are the survey's blueprints of them: a change to the analyzer shows as a diff in what it says about a real system.
+The dependencies run one way, and `make ci` checks it: the specimens know nothing of the survey, nor the survey of them; its tests read them as data. The specimens' outputs are golden files, and so are the survey's blueprints of them: a change to the analyzer shows as a diff in what it says about a real system.
 
 ## What you can run
 
@@ -44,13 +43,9 @@ Each specimen runs the same two ways: once on its fixture, printing each step's 
 | Run days | `make bank-days N=5`: business days | `make cards-days N=30`: the night on business days, the billing cycle every day | `make life-days N=261`: the daily run, and the billing, the results, the close and the year end on their days |
 | Its data | `pangaea/run/bank/` | `laurasia/run/processor/data/` | `gondwana/run/insurer/data/` |
 | Rewrite its goldens | `make pangaea-golden` | `make laurasia-golden` | `make gondwana-golden` |
+| Its console | `make bank-console`: accounts, each day's jobs with their return codes and records, what the days changed, at <http://127.0.0.1:4510/> | none yet | none yet |
 
-### The console
-
-| Target | What it does | Where to look |
-| --- | --- | --- |
-| `make console` | The bank in the browser: accounts, each day's jobs drawn as networks with return codes and record counts, what the days changed | <http://127.0.0.1:4510/> |
-| `make simulate` | Sends card and ATM traffic to the console's online channel | the console's **Online** page |
+The bank has an online day too: `make simulate` sends card and ATM traffic to its console's online channel, and the console's **Online** page shows the authorizations as they are answered.
 
 ### The survey
 
@@ -96,7 +91,7 @@ Each specimen runs the same two ways: once on its fixture, printing each step's 
 1. `make toolchain`: check that the tools are there.
 2. `make pangaea-daily`: the bank in one screen; `make laurasia-night`: the card processor's night in one; `make gondwana-month`: the life insurer's March, in Japanese.
 3. `make bank-reset` and `make bank-days N=5`: five business days of the generated bank. `make cards-open` and `make cards-days N=30`: a month of the card processor, weekends included. `make life-open` and `make life-days N=261`: a fiscal year of the life insurer, its dividends on the last day.
-4. `make console`, then open an account, a day's jobs, and **Compare**.
+4. `make bank-console`, then open an account, a day's jobs, and **Compare**.
 5. `make simulate` from another terminal: the **Online** page fills with authorizations. Run a day from the console: the channel closes for the batch, and the next morning the purchases and withdrawals are in the master.
 6. Read a blueprint: [TXPOST](blueprints/pangaea/programs/TXPOST.md), its [decision tables](blueprints/pangaea/rules/TXPOST.md), and the [DAILY job](blueprints/pangaea/jobs/DAILY.md).
 7. `make explore-pangaea`: search for `AM-BALANCE`, open it in TXPOST, and follow its values back to the files that come from outside. `make explore-gondwana`: the same, in Japanese, with the Report Writer's lines among the records.
