@@ -27,6 +27,7 @@ import (
 	"github.com/vlumi/copal/bedrock/run"
 	"github.com/vlumi/copal/bedrock/runner"
 	"github.com/vlumi/copal/pangaea/bank"
+	"github.com/vlumi/copal/pangaea/fixture"
 	"github.com/vlumi/copal/pangaea/online"
 	"github.com/vlumi/copal/pangaea/records"
 	"github.com/vlumi/copal/pangaea/simulate"
@@ -83,34 +84,54 @@ func build(args []string) error {
 	return nil
 }
 
+// load loads text files as datasets, DSN.txt a record a line and
+// DSN.fields field by field, as the fixtures hold them.
 func load(args []string) error {
 	flags := flag.NewFlagSet("load", flag.ExitOnError)
 	dir := flags.String("datasets", "", "dataset directory")
+	copybooks := flags.String("copybooks", "pangaea/copybooks", "directory of the copybooks")
 	_ = flags.Parse(args)
-	store, err := dataset.Open(*dir)
+	store, codec, err := openWithCodec(*dir, *copybooks)
 	if err != nil {
 		return err
 	}
 	for _, path := range flags.Args() {
-		if err := store.LoadFile(path); err != nil {
+		if err := codec.LoadFile(store, path); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
+// unload writes every cataloged dataset as text, as the golden files hold
+// them.
 func unload(args []string) error {
 	flags := flag.NewFlagSet("unload", flag.ExitOnError)
 	dir := flags.String("datasets", "", "dataset directory")
+	copybooks := flags.String("copybooks", "pangaea/copybooks", "directory of the copybooks")
 	_ = flags.Parse(args)
 	if flags.NArg() != 1 {
 		return errors.New("unload needs an output directory")
 	}
-	store, err := dataset.Open(*dir)
+	store, codec, err := openWithCodec(*dir, *copybooks)
 	if err != nil {
 		return err
 	}
-	return store.UnloadAll(flags.Arg(0))
+	return codec.UnloadAll(store, flags.Arg(0))
+}
+
+// openWithCodec opens a dataset directory, and the codec that reads and
+// writes the bank's datasets as text by the copybooks' layouts.
+func openWithCodec(dir, copybooks string) (*dataset.Store, *fixture.Codec, error) {
+	store, err := dataset.Open(dir)
+	if err != nil {
+		return nil, nil, err
+	}
+	layouts, err := records.Load(copybooks)
+	if err != nil {
+		return nil, nil, err
+	}
+	return store, fixture.NewCodec(layouts), nil
 }
 
 func runJob(args []string) error {
