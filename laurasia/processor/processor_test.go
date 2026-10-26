@@ -6,9 +6,11 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"slices"
 	"strings"
 	"testing"
 
+	"github.com/vlumi/copal/bedrock/runlog"
 	"github.com/vlumi/copal/laurasia/night"
 )
 
@@ -51,6 +53,7 @@ func TestDaysAreReproducible(t *testing.T) {
 		if !reflect.DeepEqual(h.Days, days) || h.Seed != 7 || h.Next.String() != "2026-10-06" {
 			t.Errorf("history %+v, want the days run, seed 7 and next 2026-10-06", h)
 		}
+		checkRuns(t, p)
 		trees = append(trees, readTree(t, p.Dir))
 	}
 	if len(trees[0]) != len(trees[1]) {
@@ -60,6 +63,25 @@ func TestDaysAreReproducible(t *testing.T) {
 		if !bytes.Equal(data, trees[1][name]) {
 			t.Errorf("%s differs between the two processors", name)
 		}
+	}
+}
+
+// checkRuns checks the run record: the script that opened the processor,
+// and for each day the night on a business day and the cycle every day.
+func checkRuns(t *testing.T, p Processor) {
+	t.Helper()
+	runs, err := runlog.Read(filepath.Join(p.Dir, runlog.File))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got []string
+	for _, r := range runs {
+		got = append(got, r.Date+" "+r.Job)
+	}
+	want := []string{"2026-10-01 open", "2026-10-01 nightly", "2026-10-01 cycle", "2026-10-02 nightly", "2026-10-02 cycle",
+		"2026-10-03 cycle", "2026-10-04 cycle", "2026-10-05 nightly", "2026-10-05 cycle"}
+	if !slices.Equal(got, want) {
+		t.Errorf("runs %q, want %q", got, want)
 	}
 }
 

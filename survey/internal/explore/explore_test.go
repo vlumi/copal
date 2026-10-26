@@ -31,7 +31,7 @@ func newPangaea(t *testing.T) *httptest.Server {
 	if err != nil {
 		t.Fatal(err)
 	}
-	x, err := New(system, "Pangaea", "oracle/pangaea")
+	x, err := New(system, "Pangaea", "oracle/pangaea", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -57,7 +57,7 @@ func newGondwana(t *testing.T) *httptest.Server {
 	if err != nil {
 		t.Fatal(err)
 	}
-	x, err := New(system, "Gondwana", "oracle/gondwana")
+	x, err := New(system, "Gondwana", "oracle/gondwana", nil)
 	if err != nil {
 		t.Fatal(err)
 	}

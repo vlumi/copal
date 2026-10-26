@@ -8,7 +8,7 @@ Copal is one Go module: the survey, the part it stands on, and three specimens, 
 
 - **Survey**, `survey/`, is the analyzer: it reads a COBOL system and writes its blueprints, and serves the explorer. Only `blueprint`, its model of a system, is exported; every analysis is under `survey/internal/`. [survey/README.md](../survey/README.md) describes the pipeline.
 - **Cobolith**, [cobolith](https://github.com/vlumi/cobolith), is the language layer everything stands on: reading COBOL source and copybooks in the IBM, Micro Focus, Hitachi and Fujitsu dialects, laying out records, reading and writing them by field, and reading JCL. It was written here and is now a library in a repository of its own, which Copal requires by version; how it got there is in [plans/library.md](plans/library.md).
-- **Bedrock**, `bedrock/`, is the harness built on it: keeping datasets and their catalog, reading batch scripts and batch files, and compiling COBOL programs with GnuCOBOL and running them and the jobs, scripts and batch files that run them. The survey's oracle runs programs with it, and the specimens' machine rooms run the bank, the card processor and the life insurer with it. None of it is analysis.
+- **Bedrock**, `bedrock/`, is the harness built on it: keeping datasets and their catalog, keeping the record of what a system ran in one form whatever its own logs look like, reading batch scripts and batch files, and compiling COBOL programs with GnuCOBOL and running them and the jobs, scripts and batch files that run them. The survey's oracle runs programs with it, and the specimens' machine rooms run the bank, the card processor and the life insurer with it. None of it is analysis.
 
 ## The specimens
 

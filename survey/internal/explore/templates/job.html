@@ -16,5 +16,16 @@
   </tbody>
 </table>
 {{if .Findings}}<h2>Findings</h2><ul>{{range .Findings}}<li>{{.}}</li>{{end}}</ul>{{end}}
+{{end}}
+{{if .Runs}}
+<h2>Runs</h2>
+<p class="note">Each day the machine room ran the job, from its run record, with the outcome of the step that ended worst.</p>
+<table>
+  <thead><tr><th>Date</th><th>Worst</th></tr></thead>
+  <tbody>
+  {{range .Runs}}<tr><td><a href="{{job $.View.Job.Name}}/runs/{{.Date}}">{{.Date}}</a></td><td>{{.Worst}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
 {{end}}{{end}}
 {{end}}

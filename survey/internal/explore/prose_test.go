@@ -32,7 +32,7 @@ func TestProse(t *testing.T) {
 		{Kind: blueprint.KindParagraph, Program: "MINPAY", Subject: "MAIN", Hash: facts.Hash,
 			Name: "Work out the minimum payment", Text: "At least the floor.", Writer: "test", Prompt: "1"},
 	}
-	x, err := New(system, "Laurasia", "")
+	x, err := New(system, "Laurasia", "", nil)
 	if err != nil {
 		t.Fatal(err)
 	}

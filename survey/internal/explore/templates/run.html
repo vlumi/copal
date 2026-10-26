@@ -1,0 +1,15 @@
+{{define "title"}}{{.View.Job.Name}} on {{.View.Date}}{{end}}
+{{define "content"}}
+{{with .View}}
+<h1><span class="kind">run</span> <a href="{{job .Job.Name}}">{{.Job.Name}}</a> on {{.Date}}</h1>
+<p class="note">The job as it ran that day, each step with its outcome from the machine room's run record.</p>
+<div class="diagram">{{.Network}}</div>
+<table>
+  <thead><tr><th>Step</th><th>Program</th><th>Outcome</th></tr></thead>
+  <tbody>
+  {{range .Steps}}<tr><td><a href="{{step (stepRef $.View.Job.Name .Step.Name)}}">{{.Step.Name}}</a></td><td>{{if .Step.Program}}<a href="{{program .Step.Program}}">{{.Step.Program}}</a>{{else if .Step.Runs}}<a href="{{job .Step.Runs}}">{{.Step.Runs}}</a>{{end}}</td><td>{{if .Outcome}}{{.Outcome}}{{else}}<span class="note">not run</span>{{end}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{end}}
+{{end}}

@@ -59,6 +59,7 @@ func (b Bank) OpenDay() (*OnlineDay, error) {
 	r.InStream, r.Output = inStream, output
 	go func() {
 		d.results, d.err = runJob(r, job)
+		d.err = errors.Join(d.err, b.record(date, job.Name, d.results))
 		_ = output.Close()
 		_ = inStream.Close()
 		close(d.done)

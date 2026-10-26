@@ -17,6 +17,8 @@ import (
 	"time"
 
 	"github.com/vlumi/cobolith/record"
+	"github.com/vlumi/copal/bedrock/runlog"
+	"github.com/vlumi/copal/bedrock/runner"
 	"github.com/vlumi/copal/gondwana/batch"
 	"github.com/vlumi/copal/gondwana/generate"
 	"github.com/vlumi/copal/gondwana/records"
@@ -119,6 +121,13 @@ func (in Insurer) Open(seed uint64, policies int) error {
 	if err := in.runner().Run("OPEN.BAT", StartDate.Stamp()); err != nil {
 		return err
 	}
+	opened, err := in.logSteps(in.data("LOG", "OPEN.LOG"))
+	if err != nil {
+		return err
+	}
+	if err := in.record(StartDate, []Batch{{Name: "OPEN", Steps: opened}}); err != nil {
+		return err
+	}
 	return os.WriteFile(filepath.Join(in.Dir, seedFile), []byte(strconv.FormatUint(seed, 10)+"\n"), 0o644)
 }
 
@@ -136,6 +145,9 @@ func (in Insurer) RunDays(n int, report func(Day)) error {
 		}
 		day, err := in.runDay(g, date)
 		if err != nil {
+			return err
+		}
+		if err := in.record(date, day.Batches); err != nil {
 			return err
 		}
 		report(day)
@@ -403,6 +415,20 @@ func (in Insurer) countTransfers(g *generate.Generator, day *Day) error {
 	return nil
 }
 
+// record adds the batch files a day ran, each with its steps, to the
+// insurer's run record, under the batch file's name.
+func (in Insurer) record(date generate.Date, batches []Batch) error {
+	var runs []runlog.Run
+	for _, b := range batches {
+		run := runlog.Run{Date: date.String(), Job: b.Name}
+		for _, s := range b.Steps {
+			run.Steps = append(run.Steps, runner.Result{Step: s.Name, Program: s.Program, RC: s.RC})
+		}
+		runs = append(runs, run)
+	}
+	return runlog.Append(filepath.Join(in.Dir, runlog.File), runs...)
+}
+
 // batches reads the logs a batch file wrote on a date: its own, and the
 // unload's when it called it.
 func (in Insurer) batches(name string, date generate.Date) ([]Batch, error) {
@@ -421,10 +447,15 @@ func (in Insurer) batches(name string, date generate.Date) ([]Batch, error) {
 	return batches, nil
 }
 
-// steps reads a batch file's log: a step a line, its name, its program
-// and its errorlevel.
+// steps reads a batch file's log of a date.
 func (in Insurer) steps(name string, date generate.Date) ([]Step, error) {
-	content, err := os.ReadFile(in.data("LOG", name+"."+date.Stamp()+".LOG"))
+	return in.logSteps(in.data("LOG", name+"."+date.Stamp()+".LOG"))
+}
+
+// logSteps reads a batch file's log: a step a line, its name, its program
+// and its errorlevel.
+func (in Insurer) logSteps(path string) ([]Step, error) {
+	content, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
@@ -432,11 +463,11 @@ func (in Insurer) steps(name string, date generate.Date) ([]Step, error) {
 	for _, line := range strings.Split(strings.TrimSpace(string(content)), "\n") {
 		fields := strings.Fields(line)
 		if len(fields) != 3 {
-			return nil, fmt.Errorf("%s log of %s: %q is not a step", name, date, line)
+			return nil, fmt.Errorf("%s: %q is not a step", path, line)
 		}
 		rc, err := strconv.Atoi(fields[2])
 		if err != nil {
-			return nil, fmt.Errorf("%s log of %s: %q is not a step", name, date, line)
+			return nil, fmt.Errorf("%s: %q is not a step", path, line)
 		}
 		steps = append(steps, Step{Name: fields[0], Program: fields[1], RC: rc})
 	}

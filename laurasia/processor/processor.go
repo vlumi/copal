@@ -16,6 +16,8 @@ import (
 	"time"
 
 	"github.com/vlumi/cobolith/record"
+	"github.com/vlumi/copal/bedrock/runlog"
+	"github.com/vlumi/copal/bedrock/runner"
 	"github.com/vlumi/copal/laurasia/generate"
 	"github.com/vlumi/copal/laurasia/night"
 	"github.com/vlumi/copal/laurasia/records"
@@ -104,6 +106,13 @@ func (p Processor) Open(seed uint64, cards int) error {
 	if err := p.runner().Run("open.sh"); err != nil {
 		return err
 	}
+	opened, err := p.logSteps(p.data("logs", "open.log"))
+	if err != nil {
+		return err
+	}
+	if err := p.record(StartDate, "open", opened); err != nil {
+		return err
+	}
 	return os.WriteFile(filepath.Join(p.Dir, seedFile), []byte(strconv.FormatUint(seed, 10)+"\n"), 0o644)
 }
 
@@ -121,6 +130,9 @@ func (p Processor) RunDays(n int, report func(Day)) error {
 		}
 		day, err := p.runDay(g, date)
 		if err != nil {
+			return err
+		}
+		if err := errors.Join(p.record(date, "nightly", day.Night), p.record(date, "cycle", day.Cycle)); err != nil {
 			return err
 		}
 		report(day)
@@ -258,10 +270,15 @@ func (p Processor) count(day *Day) error {
 	return nil
 }
 
-// steps reads a script's log: a step a line, its name, its program and
-// its return code.
+// steps reads a script's log of a date.
 func (p Processor) steps(script string, date generate.Date) ([]Step, error) {
-	content, err := os.ReadFile(p.data("logs", script+"."+date.Stamp()+".log"))
+	return p.logSteps(p.data("logs", script+"."+date.Stamp()+".log"))
+}
+
+// logSteps reads a script's log: a step a line, its name, its program and
+// its return code.
+func (p Processor) logSteps(path string) ([]Step, error) {
+	content, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
@@ -269,15 +286,30 @@ func (p Processor) steps(script string, date generate.Date) ([]Step, error) {
 	for _, line := range strings.Split(strings.TrimSpace(string(content)), "\n") {
 		fields := strings.Fields(line)
 		if len(fields) != 3 {
-			return nil, fmt.Errorf("%s log of %s: %q is not a step", script, date, line)
+			return nil, fmt.Errorf("%s: %q is not a step", path, line)
 		}
 		rc, err := strconv.Atoi(fields[2])
 		if err != nil {
-			return nil, fmt.Errorf("%s log of %s: %q is not a step", script, date, line)
+			return nil, fmt.Errorf("%s: %q is not a step", path, line)
 		}
 		steps = append(steps, Step{Name: fields[0], Program: fields[1], RC: rc})
 	}
 	return steps, nil
+}
+
+// record adds the steps a script ran on a date to the processor's run
+// record, under the script's name; the night's log holds the steps of the
+// scripts the nightly one calls, and so does its record. A script that did
+// not run, the night on a weekend, is not added.
+func (p Processor) record(date generate.Date, script string, steps []Step) error {
+	if len(steps) == 0 {
+		return nil
+	}
+	run := runlog.Run{Date: date.String(), Job: script}
+	for _, s := range steps {
+		run.Steps = append(run.Steps, runner.Result{Step: s.Name, Program: s.Program, RC: s.RC})
+	}
+	return runlog.Append(filepath.Join(p.Dir, runlog.File), run)
 }
 
 // backOut puts the masters back as they were before the day and moves

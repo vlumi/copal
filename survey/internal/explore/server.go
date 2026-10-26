@@ -15,6 +15,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/vlumi/copal/bedrock/runlog"
 	"github.com/vlumi/copal/survey/blueprint"
 	"github.com/vlumi/copal/survey/internal/diagram"
 	"github.com/vlumi/copal/survey/internal/oracle"
@@ -35,12 +36,17 @@ type Server struct {
 	// where they are, if they were given.
 	cases    map[string]*oracle.Coverage
 	casesDir string
+	// runs is the run record of the system's machine room, if it was
+	// given.
+	runs *runIndex
 }
 
-// New makes an explorer of the system, titled with its name, and with the
-// cases the oracle wrote to casesDir, if it is given.
-func New(system *blueprint.System, title, casesDir string) (*Server, error) {
+// New makes an explorer of the system, titled with its name, with the
+// cases the oracle wrote to casesDir, if it is given, and the runs its
+// machine room recorded.
+func New(system *blueprint.System, title, casesDir string, runs []runlog.Run) (*Server, error) {
 	s := &Server{title: title, index: newIndex(system), pages: map[string]*template.Template{}, casesDir: casesDir}
+	s.runs = newRunIndex(s.index.jobs, runs)
 	if casesDir != "" {
 		var err error
 		if s.cases, err = oracle.ReadCoverage(casesDir); err != nil {
@@ -66,7 +72,7 @@ func New(system *blueprint.System, title, casesDir string) (*Server, error) {
 		},
 		"sentence": sentenceHTML,
 	}
-	for _, page := range []string{"index", "search", "job", "step", "dataset", "program", "paragraph", "field", "copybook",
+	for _, page := range []string{"index", "search", "job", "run", "step", "dataset", "program", "paragraph", "field", "copybook",
 		"entities", "entity", "entityfield", "ownership", "boundary", "schedule", "source", "trace", "case", "error"} {
 		t, err := template.New("").Funcs(funcs).ParseFS(files, "templates/base.html", "templates/"+page+".html")
 		if err != nil {
@@ -86,6 +92,7 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /search", s.view("search", s.search))
 	mux.HandleFunc("GET /jobs/{job}", s.view("job", s.job))
 	mux.HandleFunc("GET /jobs/{job}/steps/{step}", s.view("step", s.step))
+	mux.HandleFunc("GET /jobs/{job}/runs/{date}", s.view("run", s.run))
 	mux.HandleFunc("GET /datasets/{name}", s.view("dataset", s.dataset))
 	mux.HandleFunc("GET /programs/{program}", s.view("program", s.program))
 	mux.HandleFunc("GET /programs/{program}/paragraphs/{paragraph}", s.view("paragraph", s.paragraph))
@@ -177,6 +184,7 @@ func (s *Server) search(r *http.Request) (any, error) {
 type JobView struct {
 	Job     *blueprint.Job
 	Network template.HTML
+	Runs    []RunSummary
 }
 
 func (s *Server) job(r *http.Request) (any, error) {
@@ -188,7 +196,15 @@ func (s *Server) job(r *http.Request) (any, error) {
 		StepLink:    func(step blueprint.Step) string { return stepLink(blueprint.StepRef{Job: j.Name, Step: step.Name}) },
 		DatasetLink: func(ds string) string { return datasetLink(datasetBase(ds)) },
 	}))
-	return JobView{Job: j, Network: network}, err
+	return JobView{Job: j, Network: network, Runs: s.runs.runsOf(j)}, err
+}
+
+func (s *Server) run(r *http.Request) (any, error) {
+	j, ok := s.index.jobs[r.PathValue("job")]
+	if !ok {
+		return nil, fmt.Errorf("job %s: %w", r.PathValue("job"), errNotFound)
+	}
+	return s.jobRun(j, r.PathValue("date"))
 }
 
 // StepView is a step of a job, and whether its program was analyzed.

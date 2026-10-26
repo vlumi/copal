@@ -21,7 +21,9 @@ func (r Result) Outcome() string {
 	return fmt.Sprintf("RC=%04d", r.RC)
 }
 
-func parseResult(line string) (Result, error) {
+// ParseResult reads a step's outcome as the job log writes it, the step,
+// its program and the outcome: VALID TXVALID RC=0004.
+func ParseResult(line string) (Result, error) {
 	fields := strings.Fields(line)
 	if len(fields) != 3 {
 		return Result{}, fmt.Errorf("%q is not a step's outcome", line)
@@ -55,7 +57,7 @@ func ReadJobLog(dir string) (string, []Result, error) {
 	}
 	var results []Result
 	for _, line := range lines[1:] {
-		r, err := parseResult(line)
+		r, err := ParseResult(line)
 		if err != nil {
 			return "", nil, fmt.Errorf("%s: %w", filepath.Join(dir, JobLog), err)
 		}
@@ -91,7 +93,7 @@ func ReadMessages(dir string) ([]Allocation, error) {
 	var step, dd string
 	for _, line := range lines {
 		if !strings.HasPrefix(line, "  ") {
-			r, err := parseResult(line)
+			r, err := ParseResult(line)
 			if err != nil {
 				return nil, fmt.Errorf("%s: %w", path, err)
 			}
