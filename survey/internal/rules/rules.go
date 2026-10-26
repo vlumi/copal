@@ -32,11 +32,23 @@ type Table struct {
 	Pos        cobol.Pos
 	Conditions []string
 	Refs       [][]string // parallel to Conditions
+	Tests      []Test     // parallel to Conditions
 	Actions    []string
+	Statements []cobol.Statement // parallel to Actions
 	Rules      []Rule
 	// Collapsed are the statements inside decisions shown as actions, past
 	// maxPaths, whose paths the rules do not tell apart.
 	Collapsed []cobol.Pos
+}
+
+// Test is what a table's condition tests: a condition, or a statement's
+// conditional phrase, such as a READ's AT END, by its kind; and which time
+// the path tests it, from 1.
+type Test struct {
+	Condition *cobol.Condition
+	Statement *cobol.Statement
+	Phrase    string
+	Time      int
 }
 
 // Rule is one path: the outcome of each condition, Y, N or empty when the
@@ -82,6 +94,8 @@ type test struct {
 	outcome   bool
 	instance  int
 	cond      *cobol.Condition // nil for a conditional phrase
+	statement *cobol.Statement // the statement of a conditional phrase
+	phrase    string           // its kind, such as AT END
 	// given is a test the path knows the outcome of when it starts, which
 	// its table does not show.
 	given bool
@@ -117,7 +131,7 @@ type event struct {
 // or by stopping the run, and takes no more actions.
 type path struct {
 	events  []event
-	actions []string
+	actions []cobol.Statement
 	steps   []cobol.Pos
 	ended   bool
 }
@@ -168,7 +182,7 @@ func (e *extractor) pathsKnowing(given []event, statements []cobol.Statement) []
 		case s.Verb == "EVALUATE":
 			alternatives = e.cases(s)
 		case s.Verb == "SEARCH":
-			alternatives = e.cross([]path{{actions: []string{s.Text}, events: changes(head(s))}}, e.cases(s))
+			alternatives = e.cross([]path{{actions: []cobol.Statement{s}, events: changes(head(s))}}, e.cases(s))
 		case s.Verb == "PERFORM" && len(s.Branches) > 0:
 			outer := e.collapsed
 			e.collapsed = nil
@@ -181,7 +195,7 @@ func (e *extractor) pathsKnowing(given []event, statements []cobol.Statement) []
 		case len(s.Branches) > 0:
 			alternatives = e.phrases(s)
 		}
-		action := []path{{actions: []string{s.Text}, events: append(changes(s), e.assignments(s)...), ended: e.endsPath(s)}}
+		action := []path{{actions: []cobol.Statement{s}, events: append(changes(s), e.assignments(s)...), ended: e.endsPath(s)}}
 		if alternatives == nil {
 			alternatives = action
 		}
@@ -314,10 +328,10 @@ func (e *extractor) phrases(s cobol.Statement) []path {
 	var paths []path
 	for _, b := range s.Branches {
 		kind, negated := strings.CutPrefix(b.Kind, "NOT ")
-		start := []path{{events: phraseEvents(s, kind, !negated), actions: []string{s.Text}}}
+		start := []path{{events: phraseEvents(s, kind, !negated), actions: []cobol.Statement{s}}}
 		paths = append(paths, e.cross(start, e.paths(b.Statements))...)
 		if len(s.Branches) == 1 {
-			paths = append(paths, path{events: phraseEvents(s, kind, negated), actions: []string{s.Text}})
+			paths = append(paths, path{events: phraseEvents(s, kind, negated), actions: []cobol.Statement{s}})
 		}
 	}
 	return paths
@@ -326,7 +340,8 @@ func (e *extractor) phrases(s cobol.Statement) []path {
 // phraseEvents is a statement running and its phrase's condition, such
 // as AT END, being raised or not, then what the statement changes.
 func phraseEvents(s cobol.Statement, kind string, outcome bool) []event {
-	return append([]event{{test: &test{condition: s.Text + " " + kind, outcome: outcome}}}, changes(head(s))...)
+	h := head(s)
+	return append([]event{{test: &test{condition: s.Text + " " + kind, outcome: outcome, statement: &h, phrase: kind}}}, changes(h)...)
 }
 
 // head is a statement without the statements nested in it, whose paths
@@ -458,11 +473,13 @@ func newTable(paragraph, loop string, pos cobol.Pos, paths []path, collapsed []c
 			if !slices.Contains(t.Conditions, test.label()) {
 				t.Conditions = append(t.Conditions, test.label())
 				t.Refs = append(t.Refs, test.refs)
+				t.Tests = append(t.Tests, Test{Condition: test.cond, Statement: test.statement, Phrase: test.phrase, Time: max(test.instance, 1)})
 			}
 		}
 		for _, a := range p.actions {
-			if !slices.Contains(t.Actions, a) {
-				t.Actions = append(t.Actions, a)
+			if !slices.Contains(t.Actions, a.Text) {
+				t.Actions = append(t.Actions, a.Text)
+				t.Statements = append(t.Statements, a)
 			}
 		}
 	}
@@ -479,7 +496,7 @@ func newTable(paragraph, loop string, pos cobol.Pos, paths []path, collapsed []c
 			r.Entries[slices.Index(t.Conditions, test.label())] = entry
 		}
 		for _, a := range p.actions {
-			r.Actions = append(r.Actions, slices.Index(t.Actions, a))
+			r.Actions = append(r.Actions, slices.Index(t.Actions, a.Text))
 		}
 		t.Rules = append(t.Rules, r)
 	}
