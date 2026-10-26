@@ -43,7 +43,7 @@ Each specimen runs the same two ways: once on its fixture, printing each step's 
 | Run days | `make bank-days N=5`: business days | `make cards-days N=30`: the night on business days, the billing cycle every day | `make life-days N=261`: the daily run, and the billing, the results, the close and the year end on their days |
 | Its data | `pangaea/run/bank/` | `laurasia/run/processor/data/` | `gondwana/run/insurer/data/` |
 | Rewrite its goldens | `make pangaea-golden` | `make laurasia-golden` | `make gondwana-golden` |
-| Its console | `make bank-console`: accounts, each day's jobs with their return codes and records, what the days changed, at <http://127.0.0.1:4510/> | `make cards-console`: cards, each night and cycle with its steps and files, at <http://127.0.0.1:4649/> | none yet |
+| Its console | `make bank-console`: accounts, each day's jobs with their return codes and records, what the days changed, at <http://127.0.0.1:4510/> | `make cards-console`: cards, each night and cycle with its steps and files, at <http://127.0.0.1:4649/> | `make life-console`: policies, each day's batch files with their steps and files, at <http://127.0.0.1:2525/> |
 
 The bank has an online day too: `make simulate` sends card and ATM traffic to its console's online channel, and the console's **Online** page shows the authorizations as they are answered.
 
