@@ -87,6 +87,21 @@ func TestPart(t *testing.T) {
 	if month.set(r, root, date, number(100)) {
 		t.Errorf("month 100 set: %q", r)
 	}
+	merchant := &layout.Field{Name: "MERCHANT", Start: 1, Length: 10, Category: "alphanumeric"}
+	prefix := part{offset: 0, length: 3}
+	if _, ok := prefix.textOf(date); ok {
+		t.Error("a part of a number taken as text")
+	}
+	if text, ok := prefix.textOf(merchant); !ok || numeric(text) || text.Length != 3 {
+		t.Errorf("the prefix as text: %+v", text)
+	}
+	m := []byte("MER0000001")
+	if !prefix.set(m, merchant, merchant, text("LC")) || string(m) != "LC 0000001" {
+		t.Errorf("prefix LC set: %q", m)
+	}
+	if prefix.set(m, merchant, merchant, text("LCSX")) || !prefix.set(m, merchant, merchant, number(42)) || string(m) != "0420000001" {
+		t.Errorf("a prefix too long, or digits, set: %q", m)
+	}
 }
 
 // A comparison of an item with a number, within a condition, is a count

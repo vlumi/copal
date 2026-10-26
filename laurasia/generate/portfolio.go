@@ -127,9 +127,17 @@ var trades = []trade{
 	{4900, 3000, 25000, 3, false, 0},    // utilities
 }
 
-// acquirers are the acquirers the clearing file's batches come from: the
-// first three domestic, the others abroad.
-var acquirers = []string{"ACQ001", "ACQ002", "ACQ003", "ACQ004", "ACQ005"}
+// acquirers are the acquirers of the merchants: the first three domestic,
+// the others abroad. The first is our own acquiring, whose merchants'
+// presentments come on-us, not through the network.
+var acquirers = []string{OwnAcquirer, "ACQ002", "ACQ003", "ACQ004", "ACQ005"}
+
+// OwnAcquirer is our own acquiring business, and ownMerchants the range
+// its merchants are numbered in.
+const (
+	OwnAcquirer  = "LCSACQ"
+	ownMerchants = "LCS"
+)
 
 // Merchants makes up the merchants: the same for a seed, whatever the
 // portfolio.
@@ -148,6 +156,9 @@ func (g *Generator) Merchants() []Merchant {
 			m.Region, m.Acquirer = "D", acquirers[r.IntN(3)]
 		} else {
 			m.Region, m.Acquirer = "I", acquirers[3+r.IntN(2)]
+		}
+		if m.Acquirer == OwnAcquirer {
+			m.ID = fmt.Sprintf("%s%07d", ownMerchants, 1000+i)
 		}
 		merchants = append(merchants, m)
 	}

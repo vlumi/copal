@@ -59,18 +59,21 @@ func (p Processor) Day(date generate.Date) (Day, error) {
 	return day, p.count(&day)
 }
 
-// presentments counts the presentments of a day's clearing file.
+// presentments counts the presentments of a day's clearing files, the
+// network's and the on-us one.
 func (p Processor) presentments(date generate.Date) (int, error) {
-	content, err := os.ReadFile(p.data("inbound", "CLR."+date.Stamp()+".txt"))
-	if errors.Is(err, os.ErrNotExist) {
-		return 0, nil
-	} else if err != nil {
-		return 0, err
-	}
 	n := 0
-	for _, line := range strings.Split(string(content), "\n") {
-		if strings.HasPrefix(line, "PR") {
-			n++
+	for _, name := range []string{"CLR", "ONUS"} {
+		content, err := os.ReadFile(p.data("inbound", name+"."+date.Stamp()+".txt"))
+		if errors.Is(err, os.ErrNotExist) {
+			continue
+		} else if err != nil {
+			return 0, err
+		}
+		for _, line := range strings.Split(string(content), "\n") {
+			if strings.HasPrefix(line, "PR") {
+				n++
+			}
 		}
 	}
 	return n, nil

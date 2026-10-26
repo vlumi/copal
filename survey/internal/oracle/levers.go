@@ -154,15 +154,23 @@ func comparisons(c *cobol.Condition) []*cobol.Condition {
 }
 
 // fieldLevers lists the values worth putting into the input fields a
-// condition of a unit depends on.
+// condition of a unit depends on. A part of a field of text is tried as
+// digits, which a date in it is, and as text, which a prefix a range of
+// numbers is told by is.
 func (p *program) fieldLevers(u Unit, c *cobol.Condition) []lever {
 	var levers []lever
 	for _, item := range c.Refs() {
 		for _, target := range p.callerOrigins(u, item) {
-			for _, v := range valuesFor(u.records, constantsOf(u.blueprint), c, item, target.part.of(target.field)) {
-				l := lever{input: target.input, field: target.field, part: target.part, value: v}
-				if !slices.Contains(levers, l) {
-					levers = append(levers, l)
+			as := []*layout.Field{target.part.of(target.field)}
+			if text, ok := target.part.textOf(target.field); ok {
+				as = append(as, text)
+			}
+			for _, f := range as {
+				for _, v := range valuesFor(u.records, constantsOf(u.blueprint), c, item, f) {
+					l := lever{input: target.input, field: target.field, part: target.part, value: v}
+					if !slices.Contains(levers, l) {
+						levers = append(levers, l)
+					}
 				}
 			}
 		}
@@ -252,9 +260,10 @@ type target struct {
 	part  part
 }
 
-// part is digits of a field of digits, from offset, 0-based, for length,
-// which a lever sets alone: the month of a date, say. The zero part is
-// the whole field.
+// part is bytes of a field, from offset, 0-based, for length, which a
+// lever sets alone: digits of a field of digits, the month of a date, or
+// characters of a field of text, the prefix of a number a range is told
+// by. The zero part is the whole field.
 type part struct{ offset, length int }
 
 // of is a field as its part: a number of the part's digits.
@@ -262,16 +271,35 @@ func (pt part) of(f *layout.Field) *layout.Field {
 	if pt.length == 0 {
 		return f
 	}
-	return &layout.Field{Name: fmt.Sprintf("%s(%d:%d)", f.Name, pt.offset+1, pt.length), Start: f.Start + pt.offset,
-		Length: pt.length, Category: layout.Numeric, Digits: pt.length, Picture: fmt.Sprintf("9(%d)", pt.length)}
+	return &layout.Field{Name: pt.name(f), Start: f.Start + pt.offset, Length: pt.length, Category: layout.Numeric, Digits: pt.length,
+		Picture: fmt.Sprintf("9(%d)", pt.length)}
 }
 
-// set writes a number into a part of a field of a record, if it fits.
+// textOf is a part of a field of text as text, its characters, or nothing
+// for a part of a number, or the whole field.
+func (pt part) textOf(f *layout.Field) (*layout.Field, bool) {
+	if pt.length == 0 || numeric(f) {
+		return nil, false
+	}
+	return &layout.Field{Name: pt.name(f), Start: f.Start + pt.offset, Length: pt.length, Category: f.Category,
+		Picture: fmt.Sprintf("X(%d)", pt.length)}, true
+}
+
+func (pt part) name(f *layout.Field) string {
+	return fmt.Sprintf("%s(%d:%d)", f.Name, pt.offset+1, pt.length)
+}
+
+// set writes a value into a part of a field of a record, if it fits: a
+// number as digits, or into a field of text, text, padded with spaces.
 func (pt part) set(r []byte, root, f *layout.Field, v value) bool {
-	if v.kind != numberValue || v.number < 0 || v.number > largest(pt.of(f)) {
+	start := f.Start - root.Start + pt.offset
+	switch {
+	case v.kind == textValue && !numeric(f) && len(v.text) <= pt.length:
+		copy(r[start:start+pt.length], fmt.Sprintf("%-*s", pt.length, v.text))
+		return true
+	case v.kind != numberValue || v.number < 0 || v.number > largest(pt.of(f)):
 		return false
 	}
-	start := f.Start - root.Start + pt.offset
 	copy(r[start:start+pt.length], fmt.Sprintf("%0*d", pt.length, v.number))
 	return true
 }

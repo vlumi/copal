@@ -1,7 +1,8 @@
 #!/bin/sh
-# nightly.sh: the night's run: take in the clearing file, match it to the
-# day's authorizations, price the interchange, post to the cards, move the
-# disputes on, and settle with the merchants.
+# nightly.sh: the night's run: take in the clearing files, the network's
+# and our own acquiring's on-us one, match them to the day's
+# authorizations, price the interchange, post to the cards, move the
+# disputes on, and settle with our merchants and the network.
 #
 # usage: nightly.sh DATE, the business date as YYYYMMDD.
 # environment: LCS_BIN, the programs; LCS_SCRIPTS, the scripts; LCS_DATA,
@@ -12,6 +13,7 @@
 # 2012-01-09 ah  lcs-0140 interchange.
 # 2015-03-23 mt  lcs-0302 disputes before settlement.
 # 2022-09-05 ah  lcs-0497 the card system's feed after posting.
+# 2024-06-03 ah  lcs-0561 on-us clearing from our own acquiring.
 
 DATE="$1"
 export LC_ALL=C
@@ -31,8 +33,18 @@ rc=$?
 echo "CLRIN clrin $rc" >> "$LOG"
 if [ "$rc" -ge 8 ]; then exit "$rc"; fi
 
-# STEP PRESSORT: the presentments in authorization code order
-sort -s -t "|" -k1.29,1.34 "$WORK/pres.txt" > "$WORK/pres.byauth"
+# STEP CLRONUS: the on-us clearing file, our own acquiring's, the same way
+export DD_CLRIN="$DATA/inbound/ONUS.$DATE.txt"
+export DD_PRESOUT="$WORK/pres.onus"
+export DD_CLRREJ="$DATA/outbound/ONUSREJ.$DATE.txt"
+export DD_CLRRPT="$DATA/reports/clronus.$DATE.txt"
+"$BIN/clrin" "$DATE" > "$DATA/reports/clronus.$DATE.out" 2>&1
+rc=$?
+echo "CLRONUS clrin $rc" >> "$LOG"
+if [ "$rc" -ge 8 ]; then exit "$rc"; fi
+
+# STEP PRESSORT: the presentments of both in authorization code order
+sort -s -t "|" -k1.29,1.34 "$WORK/pres.txt" "$WORK/pres.onus" > "$WORK/pres.byauth"
 rc=$?
 echo "PRESSORT sort $rc" >> "$LOG"
 if [ "$rc" -ne 0 ]; then exit 16; fi
@@ -104,10 +116,11 @@ rc=$?
 echo "ADJSORT sort $rc" >> "$LOG"
 if [ "$rc" -ne 0 ]; then exit 16; fi
 
-# STEP SETTLE: what each merchant is paid
+# STEP SETTLE: what each of our merchants is paid, and what the network is
 export DD_PRESIN="$WORK/pres.bymerchant"
 export DD_ADJIN="$WORK/adjustments.bymerchant"
 export DD_PAYOUT="$DATA/outbound/PAYOUT.$DATE.txt"
+export DD_NETSETL="$DATA/outbound/NETSETL.$DATE.txt"
 export DD_SETLRPT="$DATA/reports/settle.$DATE.txt"
 "$BIN/settle" "$DATE" > "$DATA/reports/settle.$DATE.out" 2>&1
 rc=$?

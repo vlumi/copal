@@ -28,8 +28,8 @@ func laurasia(t *testing.T) *blueprint.System {
 
 // The authorization code MATCH reads comes, through the script's sort into
 // authorization code order, from CLRIN, which took it from the clearing
-// file's presentment; and the code CLRIN writes goes on, through the sort,
-// to MATCH.
+// file's presentment, run twice, on the network's file and on the on-us
+// one; and the code CLRIN writes goes on, through the sort, to MATCH.
 func TestThroughScriptSort(t *testing.T) {
 	s := laurasia(t)
 	hops := map[Node]Hop{}
@@ -41,7 +41,7 @@ func TestThroughScriptSort(t *testing.T) {
 		t.Fatalf("no sources of MATCH's PS-AUTH-CODE: %+v", match)
 	}
 	src := match.Sources[0]
-	if got := fmt.Sprint(src.Sorts, src.Writers); got != "[{nightly PRESSORT sort  0 0}] [{nightly CLRIN CLRIN PS-AUTH-CODE 0 0}]" {
+	if got := fmt.Sprint(src.Sorts, src.Writers); got != "[{nightly PRESSORT sort  0 0}] [{nightly CLRIN CLRIN PS-AUTH-CODE 0 0} {nightly CLRONUS CLRIN PS-AUTH-CODE 0 0}]" {
 		t.Errorf("MATCH's authorization code comes from %s", got)
 	}
 	clrin := hops[Node{Job: "nightly", Step: "CLRIN", Program: "CLRIN", Field: "PS-AUTH-CODE"}]

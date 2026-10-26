@@ -44,6 +44,17 @@
     ]
   },
   {
+    "dataset": "$DATA/inbound/ONUS.$DATE.txt",
+    "copybook": "clrrec",
+    "kind": "external",
+    "readBy": [
+      {
+        "job": "nightly",
+        "step": "CLRONUS"
+      }
+    ]
+  },
+  {
     "dataset": "$DATA/inbound/PAYMENTS.$DATE.txt",
     "copybook": "payfeed",
     "kind": "external",
@@ -192,6 +203,26 @@
     ]
   },
   {
+    "dataset": "$DATA/outbound/NETSETL.$DATE.txt",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "SETTLE"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/outbound/ONUSREJ.$DATE.txt",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "CLRONUS"
+      }
+    ]
+  },
+  {
     "dataset": "$DATA/outbound/PAYOUT.$DATE.txt",
     "kind": "output",
     "writtenBy": [
@@ -289,6 +320,26 @@
       {
         "job": "nightly",
         "step": "CLRIN"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/reports/clronus.$DATE.out",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "CLRONUS"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/reports/clronus.$DATE.txt",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "CLRONUS"
       }
     ]
   },
@@ -570,6 +621,23 @@
       {
         "job": "nightly",
         "step": "IXFEE"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/work/$DATE/pres.onus",
+    "copybook": "presrec",
+    "kind": "internal",
+    "writtenBy": [
+      {
+        "job": "nightly",
+        "step": "CLRONUS"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "nightly",
+        "step": "PRESSORT"
       }
     ]
   },

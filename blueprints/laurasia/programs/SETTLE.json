@@ -3,18 +3,22 @@
   "kind": "main",
   "source": "laurasia/programs/settle.cbl",
   "description": [
-    "settle: work out what each merchant is paid",
+    "settle: work out what each merchant is paid, and what the network is",
     "",
     "reads the priced presentments and the dispute adjustments, both in",
-    "merchant order, and for each merchant pays the matched presentments,",
-    "less their interchange, plus or minus the adjustments. a merchant that",
-    "ends up owing is not paid, and is listed for collection.",
+    "merchant order. our own merchants, those our acquiring signed, numbered",
+    "lcs..., are paid their matched presentments, less their interchange,",
+    "plus or minus their adjustments; one that ends up owing is not paid,",
+    "and is listed for collection. every other merchant is another",
+    "acquirer's: what is due for them is settled with the network, all of it",
+    "in one sum.",
     "",
     "return codes: 0 all paid, 4 some owe.",
     "",
     "history",
     "2011-04-04 rk  lcs-0102 original version.",
-    "2015-03-23 mt  lcs-0302 dispute adjustments."
+    "2015-03-23 mt  lcs-0302 dispute adjustments.",
+    "2024-06-03 ah  lcs-0561 our own merchants paid, the rest through the network."
   ],
   "files": [
     {
@@ -28,7 +32,7 @@
       "records": [
         "PRES-RECORD"
       ],
-      "source": "laurasia/programs/settle.cbl:20"
+      "source": "laurasia/programs/settle.cbl:24"
     },
     {
       "name": "ADJUST-IN",
@@ -41,7 +45,7 @@
       "records": [
         "ADJUSTMENT"
       ],
-      "source": "laurasia/programs/settle.cbl:22"
+      "source": "laurasia/programs/settle.cbl:26"
     },
     {
       "name": "PAYOUT-OUT",
@@ -54,7 +58,20 @@
       "records": [
         "PAYOUT"
       ],
-      "source": "laurasia/programs/settle.cbl:24"
+      "source": "laurasia/programs/settle.cbl:28"
+    },
+    {
+      "name": "NETWORK-OUT",
+      "kind": "FD",
+      "assign": "NETSETL",
+      "organization": "LINE SEQUENTIAL",
+      "opened": [
+        "OUTPUT"
+      ],
+      "records": [
+        "NETWORK-SETTLEMENT"
+      ],
+      "source": "laurasia/programs/settle.cbl:30"
     },
     {
       "name": "REPORT-OUT",
@@ -67,7 +84,7 @@
       "records": [
         "REPORT-LINE"
       ],
-      "source": "laurasia/programs/settle.cbl:26"
+      "source": "laurasia/programs/settle.cbl:32"
     }
   ],
   "records": [
@@ -303,7 +320,7 @@
       "length": 32,
       "category": "group",
       "kind": "group",
-      "source": "laurasia/programs/settle.cbl:34",
+      "source": "laurasia/programs/settle.cbl:40",
       "fields": [
         {
           "level": 5,
@@ -314,7 +331,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "laurasia/programs/settle.cbl:35"
+          "source": "laurasia/programs/settle.cbl:41"
         },
         {
           "level": 5,
@@ -329,7 +346,7 @@
           "scale": 2,
           "signed": true,
           "sign": "LEADING SEPARATE",
-          "source": "laurasia/programs/settle.cbl:36"
+          "source": "laurasia/programs/settle.cbl:42"
         },
         {
           "level": 5,
@@ -341,7 +358,7 @@
           "category": "numeric",
           "kind": "number",
           "digits": 8,
-          "source": "laurasia/programs/settle.cbl:37"
+          "source": "laurasia/programs/settle.cbl:43"
         },
         {
           "level": 5,
@@ -352,7 +369,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "laurasia/programs/settle.cbl:38"
+          "source": "laurasia/programs/settle.cbl:44"
         }
       ]
     },
@@ -365,7 +382,7 @@
       "length": 65,
       "category": "group",
       "kind": "group",
-      "source": "laurasia/programs/settle.cbl:40",
+      "source": "laurasia/programs/settle.cbl:46",
       "fields": [
         {
           "level": 5,
@@ -376,7 +393,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "laurasia/programs/settle.cbl:41"
+          "source": "laurasia/programs/settle.cbl:47"
         },
         {
           "level": 5,
@@ -391,7 +408,7 @@
           "scale": 2,
           "signed": true,
           "sign": "LEADING SEPARATE",
-          "source": "laurasia/programs/settle.cbl:42"
+          "source": "laurasia/programs/settle.cbl:48"
         },
         {
           "level": 5,
@@ -406,7 +423,7 @@
           "scale": 2,
           "signed": true,
           "sign": "LEADING SEPARATE",
-          "source": "laurasia/programs/settle.cbl:43"
+          "source": "laurasia/programs/settle.cbl:49"
         },
         {
           "level": 5,
@@ -421,7 +438,7 @@
           "scale": 2,
           "signed": true,
           "sign": "LEADING SEPARATE",
-          "source": "laurasia/programs/settle.cbl:44"
+          "source": "laurasia/programs/settle.cbl:50"
         },
         {
           "level": 5,
@@ -436,7 +453,7 @@
           "scale": 2,
           "signed": true,
           "sign": "LEADING SEPARATE",
-          "source": "laurasia/programs/settle.cbl:45"
+          "source": "laurasia/programs/settle.cbl:51"
         },
         {
           "level": 5,
@@ -453,17 +470,90 @@
               "values": [
                 "'P'"
               ],
-              "source": "laurasia/programs/settle.cbl:47"
+              "source": "laurasia/programs/settle.cbl:53"
             },
             {
               "name": "PA-OWES",
               "values": [
                 "'C'"
               ],
-              "source": "laurasia/programs/settle.cbl:48"
+              "source": "laurasia/programs/settle.cbl:54"
             }
           ],
-          "source": "laurasia/programs/settle.cbl:46"
+          "source": "laurasia/programs/settle.cbl:52"
+        }
+      ]
+    },
+    {
+      "section": "file",
+      "file": "NETWORK-OUT",
+      "level": 1,
+      "name": "NETWORK-SETTLEMENT",
+      "start": 1,
+      "length": 62,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/settle.cbl:56",
+      "fields": [
+        {
+          "level": 5,
+          "name": "NS-GROSS",
+          "start": 1,
+          "length": 16,
+          "picture": "S9(13)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 15,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/programs/settle.cbl:57"
+        },
+        {
+          "level": 5,
+          "name": "NS-INTERCHANGE",
+          "start": 17,
+          "length": 14,
+          "picture": "S9(11)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 13,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/programs/settle.cbl:58"
+        },
+        {
+          "level": 5,
+          "name": "NS-ADJUSTMENTS",
+          "start": 31,
+          "length": 16,
+          "picture": "S9(13)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 15,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/programs/settle.cbl:59"
+        },
+        {
+          "level": 5,
+          "name": "NS-NET",
+          "start": 47,
+          "length": 16,
+          "picture": "S9(13)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 15,
+          "scale": 2,
+          "signed": true,
+          "sign": "LEADING SEPARATE",
+          "source": "laurasia/programs/settle.cbl:60"
         }
       ]
     },
@@ -478,7 +568,7 @@
       "usage": "DISPLAY",
       "category": "alphanumeric",
       "kind": "text",
-      "source": "laurasia/programs/settle.cbl:50"
+      "source": "laurasia/programs/settle.cbl:62"
     },
     {
       "section": "working-storage",
@@ -490,7 +580,7 @@
       "usage": "DISPLAY",
       "category": "alphanumeric",
       "kind": "text",
-      "source": "laurasia/programs/settle.cbl:53"
+      "source": "laurasia/programs/settle.cbl:65"
     },
     {
       "section": "working-storage",
@@ -502,7 +592,7 @@
       "usage": "DISPLAY",
       "category": "alphanumeric",
       "kind": "text",
-      "source": "laurasia/programs/settle.cbl:54"
+      "source": "laurasia/programs/settle.cbl:66"
     },
     {
       "section": "working-storage",
@@ -510,11 +600,42 @@
       "name": "WS-MERCHANT",
       "start": 1,
       "length": 10,
-      "picture": "X(10)",
-      "usage": "DISPLAY",
-      "category": "alphanumeric",
-      "kind": "text",
-      "source": "laurasia/programs/settle.cbl:55"
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/settle.cbl:67",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-MERCHANT-RANGE",
+          "start": 1,
+          "length": 3,
+          "picture": "X(3)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "WS-OUR-MERCHANT",
+              "values": [
+                "'LCS'"
+              ],
+              "source": "laurasia/programs/settle.cbl:69"
+            }
+          ],
+          "source": "laurasia/programs/settle.cbl:68"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 4,
+          "length": 7,
+          "picture": "X(7)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "filler",
+          "source": "laurasia/programs/settle.cbl:70"
+        }
+      ]
     },
     {
       "section": "working-storage",
@@ -524,7 +645,7 @@
       "length": 37,
       "category": "group",
       "kind": "group",
-      "source": "laurasia/programs/settle.cbl:56",
+      "source": "laurasia/programs/settle.cbl:71",
       "fields": [
         {
           "level": 5,
@@ -538,7 +659,7 @@
           "digits": 13,
           "scale": 2,
           "signed": true,
-          "source": "laurasia/programs/settle.cbl:57"
+          "source": "laurasia/programs/settle.cbl:72"
         },
         {
           "level": 5,
@@ -552,7 +673,7 @@
           "digits": 11,
           "scale": 2,
           "signed": true,
-          "source": "laurasia/programs/settle.cbl:58"
+          "source": "laurasia/programs/settle.cbl:73"
         },
         {
           "level": 5,
@@ -566,7 +687,7 @@
           "digits": 13,
           "scale": 2,
           "signed": true,
-          "source": "laurasia/programs/settle.cbl:59"
+          "source": "laurasia/programs/settle.cbl:74"
         }
       ]
     },
@@ -575,10 +696,10 @@
       "level": 1,
       "name": "WS-TOTALS",
       "start": 1,
-      "length": 27,
+      "length": 33,
       "category": "group",
       "kind": "group",
-      "source": "laurasia/programs/settle.cbl:60",
+      "source": "laurasia/programs/settle.cbl:75",
       "fields": [
         {
           "level": 5,
@@ -593,7 +714,7 @@
           "values": [
             "ZERO"
           ],
-          "source": "laurasia/programs/settle.cbl:61"
+          "source": "laurasia/programs/settle.cbl:76"
         },
         {
           "level": 5,
@@ -608,7 +729,7 @@
           "values": [
             "ZERO"
           ],
-          "source": "laurasia/programs/settle.cbl:62"
+          "source": "laurasia/programs/settle.cbl:77"
         },
         {
           "level": 5,
@@ -625,7 +746,85 @@
           "values": [
             "ZERO"
           ],
-          "source": "laurasia/programs/settle.cbl:63"
+          "source": "laurasia/programs/settle.cbl:78"
+        },
+        {
+          "level": 5,
+          "name": "WS-NETWORK-COUNT",
+          "start": 28,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 6,
+          "values": [
+            "ZERO"
+          ],
+          "source": "laurasia/programs/settle.cbl:79"
+        }
+      ]
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-NETWORK-TOTALS",
+      "start": 1,
+      "length": 43,
+      "category": "group",
+      "kind": "group",
+      "source": "laurasia/programs/settle.cbl:80",
+      "fields": [
+        {
+          "level": 5,
+          "name": "WS-NETWORK-GROSS",
+          "start": 1,
+          "length": 15,
+          "picture": "S9(13)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 15,
+          "scale": 2,
+          "signed": true,
+          "values": [
+            "ZERO"
+          ],
+          "source": "laurasia/programs/settle.cbl:81"
+        },
+        {
+          "level": 5,
+          "name": "WS-NETWORK-INTERCHANGE",
+          "start": 16,
+          "length": 13,
+          "picture": "S9(11)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 13,
+          "scale": 2,
+          "signed": true,
+          "values": [
+            "ZERO"
+          ],
+          "source": "laurasia/programs/settle.cbl:82"
+        },
+        {
+          "level": 5,
+          "name": "WS-NETWORK-ADJUSTMENTS",
+          "start": 29,
+          "length": 15,
+          "picture": "S9(13)V99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 15,
+          "scale": 2,
+          "signed": true,
+          "values": [
+            "ZERO"
+          ],
+          "source": "laurasia/programs/settle.cbl:83"
         }
       ]
     },
@@ -637,7 +836,7 @@
       "length": 45,
       "category": "group",
       "kind": "group",
-      "source": "laurasia/programs/settle.cbl:64",
+      "source": "laurasia/programs/settle.cbl:84",
       "fields": [
         {
           "level": 5,
@@ -648,7 +847,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "laurasia/programs/settle.cbl:65"
+          "source": "laurasia/programs/settle.cbl:85"
         },
         {
           "level": 5,
@@ -659,7 +858,7 @@
           "usage": "DISPLAY",
           "category": "numeric-edited",
           "kind": "edited",
-          "source": "laurasia/programs/settle.cbl:66"
+          "source": "laurasia/programs/settle.cbl:86"
         }
       ]
     },
@@ -671,7 +870,7 @@
       "length": 36,
       "category": "group",
       "kind": "group",
-      "source": "laurasia/programs/settle.cbl:67",
+      "source": "laurasia/programs/settle.cbl:87",
       "fields": [
         {
           "level": 5,
@@ -682,7 +881,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "laurasia/programs/settle.cbl:68"
+          "source": "laurasia/programs/settle.cbl:88"
         },
         {
           "level": 5,
@@ -693,7 +892,7 @@
           "usage": "DISPLAY",
           "category": "numeric-edited",
           "kind": "edited",
-          "source": "laurasia/programs/settle.cbl:69"
+          "source": "laurasia/programs/settle.cbl:89"
         }
       ]
     }
@@ -702,23 +901,27 @@
     {
       "name": "MAIN",
       "section": "MAIN",
-      "source": "laurasia/programs/settle.cbl:72",
+      "source": "laurasia/programs/settle.cbl:92",
       "performs": [
         {
           "target": "READ-PRESENTMENT",
-          "source": "laurasia/programs/settle.cbl:75"
+          "source": "laurasia/programs/settle.cbl:95"
         },
         {
           "target": "READ-ADJUSTMENT",
-          "source": "laurasia/programs/settle.cbl:76"
+          "source": "laurasia/programs/settle.cbl:96"
         },
         {
           "target": "SETTLE-MERCHANT",
-          "source": "laurasia/programs/settle.cbl:77"
+          "source": "laurasia/programs/settle.cbl:97"
+        },
+        {
+          "target": "WRITE-NETWORK-SETTLEMENT",
+          "source": "laurasia/programs/settle.cbl:98"
         },
         {
           "target": "WRITE-REPORT",
-          "source": "laurasia/programs/settle.cbl:78"
+          "source": "laurasia/programs/settle.cbl:99"
         }
       ],
       "reads": [
@@ -733,7 +936,7 @@
     {
       "name": "READ-PRESENTMENT",
       "section": "READ-PRESENTMENT",
-      "source": "laurasia/programs/settle.cbl:85",
+      "source": "laurasia/programs/settle.cbl:106",
       "performedBy": [
         "MAIN",
         "SETTLE-MERCHANT"
@@ -749,7 +952,7 @@
     {
       "name": "READ-ADJUSTMENT",
       "section": "READ-ADJUSTMENT",
-      "source": "laurasia/programs/settle.cbl:91",
+      "source": "laurasia/programs/settle.cbl:112",
       "performedBy": [
         "MAIN",
         "SETTLE-MERCHANT"
@@ -766,19 +969,23 @@
       "name": "SETTLE-MERCHANT",
       "section": "SETTLE-MERCHANT",
       "description": "the next merchant: the lower of the two keys, and everything of both files for it.",
-      "source": "laurasia/programs/settle.cbl:99",
+      "source": "laurasia/programs/settle.cbl:120",
       "performs": [
         {
           "target": "READ-PRESENTMENT",
-          "source": "laurasia/programs/settle.cbl:111"
+          "source": "laurasia/programs/settle.cbl:132"
         },
         {
           "target": "READ-ADJUSTMENT",
-          "source": "laurasia/programs/settle.cbl:115"
+          "source": "laurasia/programs/settle.cbl:136"
         },
         {
           "target": "WRITE-PAYOUT",
-          "source": "laurasia/programs/settle.cbl:117"
+          "source": "laurasia/programs/settle.cbl:139"
+        },
+        {
+          "target": "ADD-TO-NETWORK",
+          "source": "laurasia/programs/settle.cbl:141"
         }
       ],
       "performedBy": [
@@ -794,7 +1001,8 @@
         "PS-FEE",
         "WS-INTERCHANGE",
         "AD-AMOUNT",
-        "WS-ADJUSTMENTS"
+        "WS-ADJUSTMENTS",
+        "WS-MERCHANT-RANGE"
       ],
       "writes": [
         "WS-MERCHANT",
@@ -804,9 +1012,33 @@
       ]
     },
     {
+      "name": "ADD-TO-NETWORK",
+      "section": "ADD-TO-NETWORK",
+      "description": "another acquirer's merchant: what is due goes into the network's sum.",
+      "source": "laurasia/programs/settle.cbl:144",
+      "performedBy": [
+        "SETTLE-MERCHANT"
+      ],
+      "reads": [
+        "WS-NETWORK-COUNT",
+        "WS-GROSS",
+        "WS-NETWORK-GROSS",
+        "WS-INTERCHANGE",
+        "WS-NETWORK-INTERCHANGE",
+        "WS-ADJUSTMENTS",
+        "WS-NETWORK-ADJUSTMENTS"
+      ],
+      "writes": [
+        "WS-NETWORK-COUNT",
+        "WS-NETWORK-GROSS",
+        "WS-NETWORK-INTERCHANGE",
+        "WS-NETWORK-ADJUSTMENTS"
+      ]
+    },
+    {
       "name": "WRITE-PAYOUT",
       "section": "WRITE-PAYOUT",
-      "source": "laurasia/programs/settle.cbl:119",
+      "source": "laurasia/programs/settle.cbl:150",
       "performedBy": [
         "SETTLE-MERCHANT"
       ],
@@ -834,9 +1066,29 @@
       ]
     },
     {
+      "name": "WRITE-NETWORK-SETTLEMENT",
+      "section": "WRITE-NETWORK-SETTLEMENT",
+      "source": "laurasia/programs/settle.cbl:166",
+      "performedBy": [
+        "MAIN"
+      ],
+      "reads": [
+        "WS-NETWORK-GROSS",
+        "WS-NETWORK-INTERCHANGE",
+        "WS-NETWORK-ADJUSTMENTS"
+      ],
+      "writes": [
+        "NS-GROSS",
+        "NS-INTERCHANGE",
+        "NS-ADJUSTMENTS",
+        "NS-NET",
+        "NETWORK-SETTLEMENT"
+      ]
+    },
+    {
       "name": "WRITE-REPORT",
       "section": "WRITE-REPORT",
-      "source": "laurasia/programs/settle.cbl:135",
+      "source": "laurasia/programs/settle.cbl:172",
       "performedBy": [
         "MAIN"
       ],
@@ -845,7 +1097,9 @@
         "WS-REPORT-COUNT",
         "WS-OWING-COUNT",
         "WS-PAID-TOTAL",
-        "WS-REPORT-AMOUNT"
+        "WS-REPORT-AMOUNT",
+        "WS-NETWORK-COUNT",
+        "NS-NET"
       ],
       "writes": [
         "REPORT-LINE",
@@ -863,7 +1117,7 @@
       "fromFile": true,
       "paragraph": "READ-PRESENTMENT",
       "verb": "READ",
-      "source": "laurasia/programs/settle.cbl:86"
+      "source": "laurasia/programs/settle.cbl:107"
     },
     {
       "from": "HIGH-VALUES",
@@ -871,14 +1125,14 @@
       "fromLiteral": true,
       "paragraph": "READ-PRESENTMENT",
       "verb": "MOVE",
-      "source": "laurasia/programs/settle.cbl:87"
+      "source": "laurasia/programs/settle.cbl:108"
     },
     {
       "from": "PS-MERCHANT",
       "to": "WS-PRES-KEY",
       "paragraph": "READ-PRESENTMENT",
       "verb": "MOVE",
-      "source": "laurasia/programs/settle.cbl:88"
+      "source": "laurasia/programs/settle.cbl:109"
     },
     {
       "from": "ADJUST-IN",
@@ -886,7 +1140,7 @@
       "fromFile": true,
       "paragraph": "READ-ADJUSTMENT",
       "verb": "READ",
-      "source": "laurasia/programs/settle.cbl:92"
+      "source": "laurasia/programs/settle.cbl:113"
     },
     {
       "from": "HIGH-VALUES",
@@ -894,28 +1148,28 @@
       "fromLiteral": true,
       "paragraph": "READ-ADJUSTMENT",
       "verb": "MOVE",
-      "source": "laurasia/programs/settle.cbl:93"
+      "source": "laurasia/programs/settle.cbl:114"
     },
     {
       "from": "AD-MERCHANT",
       "to": "WS-ADJUST-KEY",
       "paragraph": "READ-ADJUSTMENT",
       "verb": "MOVE",
-      "source": "laurasia/programs/settle.cbl:94"
+      "source": "laurasia/programs/settle.cbl:115"
     },
     {
       "from": "WS-PRES-KEY",
       "to": "WS-MERCHANT",
       "paragraph": "SETTLE-MERCHANT",
       "verb": "MOVE",
-      "source": "laurasia/programs/settle.cbl:101"
+      "source": "laurasia/programs/settle.cbl:122"
     },
     {
       "from": "WS-ADJUST-KEY",
       "to": "WS-MERCHANT",
       "paragraph": "SETTLE-MERCHANT",
       "verb": "MOVE",
-      "source": "laurasia/programs/settle.cbl:103"
+      "source": "laurasia/programs/settle.cbl:124"
     },
     {
       "from": "ZERO",
@@ -923,7 +1177,7 @@
       "fromLiteral": true,
       "paragraph": "SETTLE-MERCHANT",
       "verb": "MOVE",
-      "source": "laurasia/programs/settle.cbl:105"
+      "source": "laurasia/programs/settle.cbl:126"
     },
     {
       "from": "ZERO",
@@ -931,7 +1185,7 @@
       "fromLiteral": true,
       "paragraph": "SETTLE-MERCHANT",
       "verb": "MOVE",
-      "source": "laurasia/programs/settle.cbl:105"
+      "source": "laurasia/programs/settle.cbl:126"
     },
     {
       "from": "ZERO",
@@ -939,77 +1193,106 @@
       "fromLiteral": true,
       "paragraph": "SETTLE-MERCHANT",
       "verb": "MOVE",
-      "source": "laurasia/programs/settle.cbl:105"
+      "source": "laurasia/programs/settle.cbl:126"
     },
     {
       "from": "PS-AMOUNT",
       "to": "WS-GROSS",
       "paragraph": "SETTLE-MERCHANT",
       "verb": "ADD",
-      "source": "laurasia/programs/settle.cbl:108"
+      "source": "laurasia/programs/settle.cbl:129"
     },
     {
       "from": "PS-FEE",
       "to": "WS-INTERCHANGE",
       "paragraph": "SETTLE-MERCHANT",
       "verb": "ADD",
-      "source": "laurasia/programs/settle.cbl:109"
+      "source": "laurasia/programs/settle.cbl:130"
     },
     {
       "from": "AD-AMOUNT",
       "to": "WS-ADJUSTMENTS",
       "paragraph": "SETTLE-MERCHANT",
       "verb": "ADD",
-      "source": "laurasia/programs/settle.cbl:114"
+      "source": "laurasia/programs/settle.cbl:135"
+    },
+    {
+      "from": "1",
+      "to": "WS-NETWORK-COUNT",
+      "fromLiteral": true,
+      "paragraph": "ADD-TO-NETWORK",
+      "verb": "ADD",
+      "source": "laurasia/programs/settle.cbl:145"
+    },
+    {
+      "from": "WS-GROSS",
+      "to": "WS-NETWORK-GROSS",
+      "paragraph": "ADD-TO-NETWORK",
+      "verb": "ADD",
+      "source": "laurasia/programs/settle.cbl:146"
+    },
+    {
+      "from": "WS-INTERCHANGE",
+      "to": "WS-NETWORK-INTERCHANGE",
+      "paragraph": "ADD-TO-NETWORK",
+      "verb": "ADD",
+      "source": "laurasia/programs/settle.cbl:147"
+    },
+    {
+      "from": "WS-ADJUSTMENTS",
+      "to": "WS-NETWORK-ADJUSTMENTS",
+      "paragraph": "ADD-TO-NETWORK",
+      "verb": "ADD",
+      "source": "laurasia/programs/settle.cbl:148"
     },
     {
       "from": "WS-MERCHANT",
       "to": "PA-MERCHANT",
       "paragraph": "WRITE-PAYOUT",
       "verb": "MOVE",
-      "source": "laurasia/programs/settle.cbl:120"
+      "source": "laurasia/programs/settle.cbl:151"
     },
     {
       "from": "WS-GROSS",
       "to": "PA-GROSS",
       "paragraph": "WRITE-PAYOUT",
       "verb": "MOVE",
-      "source": "laurasia/programs/settle.cbl:121"
+      "source": "laurasia/programs/settle.cbl:152"
     },
     {
       "from": "WS-INTERCHANGE",
       "to": "PA-INTERCHANGE",
       "paragraph": "WRITE-PAYOUT",
       "verb": "MOVE",
-      "source": "laurasia/programs/settle.cbl:122"
+      "source": "laurasia/programs/settle.cbl:153"
     },
     {
       "from": "WS-ADJUSTMENTS",
       "to": "PA-ADJUSTMENTS",
       "paragraph": "WRITE-PAYOUT",
       "verb": "MOVE",
-      "source": "laurasia/programs/settle.cbl:123"
+      "source": "laurasia/programs/settle.cbl:154"
     },
     {
       "from": "WS-GROSS",
       "to": "PA-NET",
       "paragraph": "WRITE-PAYOUT",
       "verb": "COMPUTE",
-      "source": "laurasia/programs/settle.cbl:124"
+      "source": "laurasia/programs/settle.cbl:155"
     },
     {
       "from": "WS-INTERCHANGE",
       "to": "PA-NET",
       "paragraph": "WRITE-PAYOUT",
       "verb": "COMPUTE",
-      "source": "laurasia/programs/settle.cbl:124"
+      "source": "laurasia/programs/settle.cbl:155"
     },
     {
       "from": "WS-ADJUSTMENTS",
       "to": "PA-NET",
       "paragraph": "WRITE-PAYOUT",
       "verb": "COMPUTE",
-      "source": "laurasia/programs/settle.cbl:124"
+      "source": "laurasia/programs/settle.cbl:155"
     },
     {
       "from": "condition PA-OWES",
@@ -1017,7 +1300,7 @@
       "fromLiteral": true,
       "paragraph": "WRITE-PAYOUT",
       "verb": "SET",
-      "source": "laurasia/programs/settle.cbl:126"
+      "source": "laurasia/programs/settle.cbl:157"
     },
     {
       "from": "1",
@@ -1025,7 +1308,7 @@
       "fromLiteral": true,
       "paragraph": "WRITE-PAYOUT",
       "verb": "ADD",
-      "source": "laurasia/programs/settle.cbl:127"
+      "source": "laurasia/programs/settle.cbl:158"
     },
     {
       "from": "condition PA-PAID",
@@ -1033,7 +1316,7 @@
       "fromLiteral": true,
       "paragraph": "WRITE-PAYOUT",
       "verb": "SET",
-      "source": "laurasia/programs/settle.cbl:129"
+      "source": "laurasia/programs/settle.cbl:160"
     },
     {
       "from": "1",
@@ -1041,14 +1324,14 @@
       "fromLiteral": true,
       "paragraph": "WRITE-PAYOUT",
       "verb": "ADD",
-      "source": "laurasia/programs/settle.cbl:130"
+      "source": "laurasia/programs/settle.cbl:161"
     },
     {
       "from": "PA-NET",
       "to": "WS-PAID-TOTAL",
       "paragraph": "WRITE-PAYOUT",
       "verb": "ADD",
-      "source": "laurasia/programs/settle.cbl:131"
+      "source": "laurasia/programs/settle.cbl:162"
     },
     {
       "from": "PAYOUT",
@@ -1056,7 +1339,57 @@
       "toFile": true,
       "paragraph": "WRITE-PAYOUT",
       "verb": "WRITE",
-      "source": "laurasia/programs/settle.cbl:133"
+      "source": "laurasia/programs/settle.cbl:164"
+    },
+    {
+      "from": "WS-NETWORK-GROSS",
+      "to": "NS-GROSS",
+      "paragraph": "WRITE-NETWORK-SETTLEMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:167"
+    },
+    {
+      "from": "WS-NETWORK-INTERCHANGE",
+      "to": "NS-INTERCHANGE",
+      "paragraph": "WRITE-NETWORK-SETTLEMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:168"
+    },
+    {
+      "from": "WS-NETWORK-ADJUSTMENTS",
+      "to": "NS-ADJUSTMENTS",
+      "paragraph": "WRITE-NETWORK-SETTLEMENT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:169"
+    },
+    {
+      "from": "WS-NETWORK-GROSS",
+      "to": "NS-NET",
+      "paragraph": "WRITE-NETWORK-SETTLEMENT",
+      "verb": "COMPUTE",
+      "source": "laurasia/programs/settle.cbl:170"
+    },
+    {
+      "from": "WS-NETWORK-INTERCHANGE",
+      "to": "NS-NET",
+      "paragraph": "WRITE-NETWORK-SETTLEMENT",
+      "verb": "COMPUTE",
+      "source": "laurasia/programs/settle.cbl:170"
+    },
+    {
+      "from": "WS-NETWORK-ADJUSTMENTS",
+      "to": "NS-NET",
+      "paragraph": "WRITE-NETWORK-SETTLEMENT",
+      "verb": "COMPUTE",
+      "source": "laurasia/programs/settle.cbl:170"
+    },
+    {
+      "from": "NETWORK-SETTLEMENT",
+      "to": "NETWORK-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-NETWORK-SETTLEMENT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/settle.cbl:171"
     },
     {
       "from": "'SETTLE   MERCHANT SETTLEMENT'",
@@ -1064,7 +1397,7 @@
       "fromLiteral": true,
       "paragraph": "WRITE-REPORT",
       "verb": "MOVE",
-      "source": "laurasia/programs/settle.cbl:136"
+      "source": "laurasia/programs/settle.cbl:173"
     },
     {
       "from": "REPORT-LINE",
@@ -1072,7 +1405,7 @@
       "toFile": true,
       "paragraph": "WRITE-REPORT",
       "verb": "WRITE",
-      "source": "laurasia/programs/settle.cbl:137"
+      "source": "laurasia/programs/settle.cbl:174"
     },
     {
       "from": "'MERCHANTS PAID'",
@@ -1080,21 +1413,21 @@
       "fromLiteral": true,
       "paragraph": "WRITE-REPORT",
       "verb": "MOVE",
-      "source": "laurasia/programs/settle.cbl:138"
+      "source": "laurasia/programs/settle.cbl:175"
     },
     {
       "from": "WS-PAID-COUNT",
       "to": "RC-VALUE",
       "paragraph": "WRITE-REPORT",
       "verb": "MOVE",
-      "source": "laurasia/programs/settle.cbl:139"
+      "source": "laurasia/programs/settle.cbl:176"
     },
     {
       "from": "WS-REPORT-COUNT",
       "to": "REPORT-LINE",
       "paragraph": "WRITE-REPORT",
       "verb": "WRITE",
-      "source": "laurasia/programs/settle.cbl:140"
+      "source": "laurasia/programs/settle.cbl:177"
     },
     {
       "from": "REPORT-LINE",
@@ -1102,7 +1435,7 @@
       "toFile": true,
       "paragraph": "WRITE-REPORT",
       "verb": "WRITE",
-      "source": "laurasia/programs/settle.cbl:140"
+      "source": "laurasia/programs/settle.cbl:177"
     },
     {
       "from": "'MERCHANTS OWING'",
@@ -1110,21 +1443,21 @@
       "fromLiteral": true,
       "paragraph": "WRITE-REPORT",
       "verb": "MOVE",
-      "source": "laurasia/programs/settle.cbl:141"
+      "source": "laurasia/programs/settle.cbl:178"
     },
     {
       "from": "WS-OWING-COUNT",
       "to": "RC-VALUE",
       "paragraph": "WRITE-REPORT",
       "verb": "MOVE",
-      "source": "laurasia/programs/settle.cbl:142"
+      "source": "laurasia/programs/settle.cbl:179"
     },
     {
       "from": "WS-REPORT-COUNT",
       "to": "REPORT-LINE",
       "paragraph": "WRITE-REPORT",
       "verb": "WRITE",
-      "source": "laurasia/programs/settle.cbl:143"
+      "source": "laurasia/programs/settle.cbl:180"
     },
     {
       "from": "REPORT-LINE",
@@ -1132,7 +1465,7 @@
       "toFile": true,
       "paragraph": "WRITE-REPORT",
       "verb": "WRITE",
-      "source": "laurasia/programs/settle.cbl:143"
+      "source": "laurasia/programs/settle.cbl:180"
     },
     {
       "from": "'PAID'",
@@ -1140,21 +1473,21 @@
       "fromLiteral": true,
       "paragraph": "WRITE-REPORT",
       "verb": "MOVE",
-      "source": "laurasia/programs/settle.cbl:144"
+      "source": "laurasia/programs/settle.cbl:181"
     },
     {
       "from": "WS-PAID-TOTAL",
       "to": "RA-VALUE",
       "paragraph": "WRITE-REPORT",
       "verb": "MOVE",
-      "source": "laurasia/programs/settle.cbl:145"
+      "source": "laurasia/programs/settle.cbl:182"
     },
     {
       "from": "WS-REPORT-AMOUNT",
       "to": "REPORT-LINE",
       "paragraph": "WRITE-REPORT",
       "verb": "WRITE",
-      "source": "laurasia/programs/settle.cbl:146"
+      "source": "laurasia/programs/settle.cbl:183"
     },
     {
       "from": "REPORT-LINE",
@@ -1162,7 +1495,67 @@
       "toFile": true,
       "paragraph": "WRITE-REPORT",
       "verb": "WRITE",
-      "source": "laurasia/programs/settle.cbl:146"
+      "source": "laurasia/programs/settle.cbl:183"
+    },
+    {
+      "from": "'OTHER ACQUIRERS' MERCHANTS'",
+      "to": "RC-LABEL",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:184"
+    },
+    {
+      "from": "WS-NETWORK-COUNT",
+      "to": "RC-VALUE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:185"
+    },
+    {
+      "from": "WS-REPORT-COUNT",
+      "to": "REPORT-LINE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/settle.cbl:186"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/settle.cbl:186"
+    },
+    {
+      "from": "'OWED TO THE NETWORK'",
+      "to": "RA-LABEL",
+      "fromLiteral": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:187"
+    },
+    {
+      "from": "NS-NET",
+      "to": "RA-VALUE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "MOVE",
+      "source": "laurasia/programs/settle.cbl:188"
+    },
+    {
+      "from": "WS-REPORT-AMOUNT",
+      "to": "REPORT-LINE",
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/settle.cbl:189"
+    },
+    {
+      "from": "REPORT-LINE",
+      "to": "REPORT-OUT",
+      "toFile": true,
+      "paragraph": "WRITE-REPORT",
+      "verb": "WRITE",
+      "source": "laurasia/programs/settle.cbl:189"
     }
   ],
   "outputs": [
@@ -1230,6 +1623,56 @@
       ]
     },
     {
+      "file": "NETWORK-OUT",
+      "record": "NETWORK-SETTLEMENT",
+      "fields": [
+        {
+          "name": "NS-GROSS",
+          "start": 1,
+          "length": 16,
+          "origins": [
+            "file PRES-IN PS-AMOUNT",
+            "initial value of WS-NETWORK-GROSS",
+            "literal ZERO"
+          ]
+        },
+        {
+          "name": "NS-INTERCHANGE",
+          "start": 17,
+          "length": 14,
+          "origins": [
+            "file PRES-IN PS-FEE",
+            "initial value of WS-NETWORK-INTERCHANGE",
+            "literal ZERO"
+          ]
+        },
+        {
+          "name": "NS-ADJUSTMENTS",
+          "start": 31,
+          "length": 16,
+          "origins": [
+            "file ADJUST-IN AD-AMOUNT",
+            "initial value of WS-NETWORK-ADJUSTMENTS",
+            "literal ZERO"
+          ]
+        },
+        {
+          "name": "NS-NET",
+          "start": 47,
+          "length": 16,
+          "origins": [
+            "file ADJUST-IN AD-AMOUNT",
+            "file PRES-IN PS-AMOUNT",
+            "file PRES-IN PS-FEE",
+            "initial value of WS-NETWORK-ADJUSTMENTS",
+            "initial value of WS-NETWORK-GROSS",
+            "initial value of WS-NETWORK-INTERCHANGE",
+            "literal ZERO"
+          ]
+        }
+      ]
+    },
+    {
       "file": "REPORT-OUT",
       "record": "REPORT-LINE",
       "fields": [
@@ -1253,7 +1696,8 @@
           "length": 30,
           "origins": [
             "literal 'MERCHANTS OWING'",
-            "literal 'MERCHANTS PAID'"
+            "literal 'MERCHANTS PAID'",
+            "literal 'OTHER ACQUIRERS' MERCHANTS'"
           ]
         },
         {
@@ -1261,6 +1705,7 @@
           "start": 31,
           "length": 6,
           "origins": [
+            "initial value of WS-NETWORK-COUNT",
             "initial value of WS-OWING-COUNT",
             "initial value of WS-PAID-COUNT",
             "literal 1"
@@ -1277,6 +1722,7 @@
           "start": 1,
           "length": 30,
           "origins": [
+            "literal 'OWED TO THE NETWORK'",
             "literal 'PAID'"
           ]
         },
@@ -1288,6 +1734,9 @@
             "file ADJUST-IN AD-AMOUNT",
             "file PRES-IN PS-AMOUNT",
             "file PRES-IN PS-FEE",
+            "initial value of WS-NETWORK-ADJUSTMENTS",
+            "initial value of WS-NETWORK-GROSS",
+            "initial value of WS-NETWORK-INTERCHANGE",
             "initial value of WS-PAID-TOTAL",
             "literal ZERO"
           ]
@@ -1312,11 +1761,15 @@
           "reaches": [
             "WS-GROSS",
             "PA-GROSS",
+            "WS-NETWORK-GROSS",
             "PA-NET",
+            "NS-GROSS",
             "WS-PAID-TOTAL",
+            "NS-NET",
             "RA-VALUE",
             "REPORT-LINE",
             "file PAYOUT-OUT",
+            "file NETWORK-OUT",
             "file REPORT-OUT"
           ]
         },
@@ -1373,11 +1826,15 @@
           "reaches": [
             "WS-INTERCHANGE",
             "PA-INTERCHANGE",
+            "WS-NETWORK-INTERCHANGE",
             "PA-NET",
             "WS-PAID-TOTAL",
+            "NS-INTERCHANGE",
+            "NS-NET",
             "RA-VALUE",
             "REPORT-LINE",
             "file PAYOUT-OUT",
+            "file NETWORK-OUT",
             "file REPORT-OUT"
           ]
         }
@@ -1405,11 +1862,15 @@
           "reaches": [
             "WS-ADJUSTMENTS",
             "PA-ADJUSTMENTS",
+            "WS-NETWORK-ADJUSTMENTS",
             "PA-NET",
             "WS-PAID-TOTAL",
+            "NS-ADJUSTMENTS",
+            "NS-NET",
             "RA-VALUE",
             "REPORT-LINE",
             "file PAYOUT-OUT",
+            "file NETWORK-OUT",
             "file REPORT-OUT"
           ]
         },
@@ -1437,7 +1898,7 @@
         "file": "ADJUST-IN",
         "field": "AD-MERCHANT"
       },
-      "source": "laurasia/programs/settle.cbl:100"
+      "source": "laurasia/programs/settle.cbl:121"
     }
   ]
 }

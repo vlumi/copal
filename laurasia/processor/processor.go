@@ -51,7 +51,7 @@ type Day struct {
 	Date         generate.Date
 	Night        []Step
 	Cycle        []Step
-	Presentments int // in the clearing file
+	Presentments int // in the network's clearing file and the on-us one
 	Rejected     int // by the clearing, the posting and the card system's feed
 	Postings     int
 	Payments     int
@@ -232,7 +232,7 @@ func (p Processor) generateNight(g *generate.Generator, date generate.Date) (gen
 	if err != nil {
 		return n, err
 	}
-	for name, recs := range map[string][][]byte{"AUTH": n.Log, "CLR": n.Clearing, "PAYMENTS": payments, "DISPEVT": events} {
+	for name, recs := range map[string][][]byte{"AUTH": n.Log, "CLR": n.Clearing, "ONUS": n.OnUs, "PAYMENTS": payments, "DISPEVT": events} {
 		if err := p.write(filepath.Join("inbound", name+"."+date.Stamp()+".txt"), recs); err != nil {
 			return n, err
 		}
@@ -249,6 +249,7 @@ func (p Processor) count(day *Day) error {
 		only  func(string) bool
 	}{
 		{"CLRREJ", &day.Rejected, nil},
+		{"ONUSREJ", &day.Rejected, nil},
 		{"POSTREJ", &day.Rejected, nil},
 		{"PAYREJ", &day.Rejected, nil},
 		{"POSTINGS", &day.Postings, nil},
