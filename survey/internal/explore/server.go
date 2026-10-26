@@ -64,6 +64,7 @@ func New(system *blueprint.System, title, casesDir string) (*Server, error) {
 		"decisions": func(program string, rows []blueprint.Decision) decisionTable {
 			return decisionTable{Program: program, Rows: rows}
 		},
+		"sentence": sentenceHTML,
 	}
 	for _, page := range []string{"index", "search", "job", "step", "dataset", "program", "paragraph", "field", "copybook",
 		"entities", "entity", "entityfield", "ownership", "boundary", "schedule", "source", "trace", "case", "error"} {
@@ -673,6 +674,20 @@ func (s *Server) source(r *http.Request) (any, error) {
 // sourceText writes a source reference as the file's name and the line.
 func sourceText(source string) string {
 	return source[strings.LastIndex(source, "/")+1:]
+}
+
+// sentenceHTML writes a rule's sentence for a page, escaped, with what it
+// quotes in backquotes, the code's names and literals, set as code.
+func sentenceHTML(sentence string) template.HTML {
+	var b strings.Builder
+	for i, part := range strings.Split(sentence, "`") {
+		if i%2 == 1 {
+			b.WriteString("<code>" + template.HTMLEscapeString(part) + "</code>")
+		} else {
+			b.WriteString(template.HTMLEscapeString(part))
+		}
+	}
+	return template.HTML(b.String()) //nolint:gosec // every part escaped
 }
 
 func svg(g diagram.Graph) (template.HTML, error) {
