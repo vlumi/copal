@@ -112,6 +112,23 @@ oracle:  ## Search the specimens' programs again for cases that reach their rule
 	go run ./survey/cmd/survey oracle -dialect mf -copybooks laurasia/copybooks -out oracle/laurasia -rules ../../blueprints/laurasia/rules -title laurasia -jobs open,nightly,cycle laurasia/programs/*.cbl laurasia/scripts/*.sh
 	go run ./survey/cmd/survey oracle -dialect fujitsu -copybooks gondwana/copybooks -out oracle/gondwana -rules ../../blueprints/gondwana/rules -title gondwana -jobs OPEN,DAILY,BILLING,RESULTS,CLOSE,ANNUAL gondwana/programs/*.cbl gondwana/scripts/*.BAT
 
+.PHONY: conform-pangaea
+conform-pangaea:  ## Run a replacement for one of Pangaea's programs on its recorded cases (PROGRAM, WITH)
+	go run ./survey/cmd/survey conform -copybooks pangaea/copybooks -cases oracle/pangaea -program $(PROGRAM) -with $(WITH) pangaea/programs/*.cbl pangaea/jobs/*.jcl
+
+.PHONY: conform-laurasia
+conform-laurasia:  ## Run a replacement for one of Laurasia's programs on its recorded cases (PROGRAM, WITH)
+	go run ./survey/cmd/survey conform -dialect mf -copybooks laurasia/copybooks -cases oracle/laurasia -program $(PROGRAM) -with $(WITH) laurasia/programs/*.cbl laurasia/scripts/*.sh
+
+.PHONY: conform-gondwana
+conform-gondwana:  ## Run a replacement for one of Gondwana's programs on its recorded cases (PROGRAM, WITH)
+	go run ./survey/cmd/survey conform -dialect fujitsu -copybooks gondwana/copybooks -cases oracle/gondwana -program $(PROGRAM) -with $(WITH) gondwana/programs/*.cbl gondwana/scripts/*.BAT
+
+.PHONY: conform-demo
+conform-demo:  ## Check BANKDATE rewritten in Go against the bank's recorded cases
+	go build -o build/bankdate ./survey/internal/oracle/testdata/rewrites/bankdate
+	$(MAKE) conform-pangaea PROGRAM=BANKDATE WITH=build/bankdate
+
 ##@ Golden files
 
 .PHONY: pangaea-golden

@@ -269,7 +269,7 @@ func Index(title string, results []*Result, batches []*Batch) []byte {
 	fmt.Fprintf(&b, "# %s: cases\n\n", title)
 	b.WriteString("For each main program, input data that reaches the rules of its decision tables, and of the programs it calls, " +
 		"with what the program wrote and returned: the cases a rewrite has to match. `survey oracle` found them, and replays them " +
-		"to check them.\n\n| Program | Rules reached | Cases |\n| --- | --: | --: |\n")
+		"to check them; `survey conform` runs a replacement for a program on them.\n\n| Program | Rules reached | Cases |\n| --- | --: | --: |\n")
 	for _, r := range results {
 		var reached, total int
 		for u := range r.Units {
