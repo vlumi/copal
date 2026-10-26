@@ -42,8 +42,10 @@ func Write(dir string) error {
 	return nil
 }
 
-// architecture is the four parts of Copal, the other specimens and the
-// blueprints between them.
+// architecture is the four parts of Copal, the three specimens as one,
+// since they stand in the same place, and the survey's files between them.
+// Every part imports cobolith; only bedrock's import is drawn, and the
+// library's box says the rest, so that the arrows show the layers.
 func architecture() diagram.Graph {
 	return diagram.Graph{
 		Legend: []diagram.Key{
@@ -56,30 +58,21 @@ func architecture() diagram.Graph {
 		Nodes: []diagram.Node{
 			{ID: "console", Label: "console\nruns the bank, shows its survey"},
 			{ID: "survey", Label: "survey\nthe analyzer"},
-			{ID: "pangaea", Label: "pangaea\nthe legacy bank"},
-			{ID: "laurasia", Label: "laurasia\nthe card processor"},
-			{ID: "gondwana", Label: "gondwana\nthe life insurer"},
-			{ID: "blueprints", Label: "blueprints/pangaea\nthe survey of the bank", Data: true},
+			{ID: "specimens", Label: "the specimens\npangaea, the bank\nlaurasia, the card processor\ngondwana, the life insurer"},
+			{ID: "blueprints", Label: "blueprints, oracle\nthe survey of each specimen", Data: true},
 			{ID: "bedrock", Label: "bedrock\nrunning programs, jobs, scripts"},
-			{ID: "cobolith", Label: "cobolith, a library\nCOBOL, JCL, layouts, records"},
+			{ID: "cobolith", Label: "cobolith, a library\nCOBOL, JCL, layouts, records\nimported by every part"},
 		},
 		Edges: []diagram.Edge{
 			{From: "console", To: "survey"},
-			{From: "console", To: "pangaea"},
-			{From: "console", To: "bedrock", Span: 3},
+			{From: "console", To: "specimens"},
 			{From: "console", To: "blueprints", Style: diagram.Dotted, Span: 2},
-			{From: "survey", To: "bedrock", Span: 2},
-			{From: "survey", To: "pangaea", Style: diagram.Dotted},
+			{From: "console", To: "bedrock", Span: 3},
+			{From: "survey", To: "specimens", Style: diagram.Dotted},
 			{From: "survey", To: "blueprints", Style: diagram.Dashed},
-			{From: "pangaea", To: "bedrock"},
-			{From: "laurasia", To: "bedrock"},
-			{From: "gondwana", To: "bedrock"},
+			{From: "survey", To: "bedrock", Span: 2},
+			{From: "specimens", To: "bedrock"},
 			{From: "bedrock", To: "cobolith"},
-			{From: "console", To: "cobolith", Span: 4},
-			{From: "survey", To: "cobolith", Span: 3},
-			{From: "pangaea", To: "cobolith", Span: 2},
-			{From: "laurasia", To: "cobolith", Span: 2},
-			{From: "gondwana", To: "cobolith", Span: 2},
 		},
 	}
 }
