@@ -3,7 +3,7 @@
 // or checks a replacement for one of them against the cases.
 //
 //	survey blueprints -copybooks dir -out dir [-dialect ibm|mf|fujitsu] [-annotations dir] [-title name] program.cbl... [job.jcl...]
-//	survey explore -copybooks dir [-dialect ibm|mf|fujitsu] [-annotations dir] [-addr host:port] [-title name] [-cases dir] program.cbl... [job.jcl...]
+//	survey explore -copybooks dir [-dialect ibm|mf|fujitsu] [-annotations dir] [-addr host:port] [-title name] [-cases dir] [-runs file] program.cbl... [job.jcl...]
 //	survey oracle -copybooks dir [-dialect ibm|mf|fujitsu] [-out dir -rules dir] [-title name] [-program name] [-jobs JOB,...] program.cbl... [job.jcl...]
 //	survey conform -copybooks dir [-dialect ibm|mf|fujitsu] -cases dir -program name -with executable program.cbl... [job.jcl...]
 package main
@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/vlumi/cobolith/cobol"
+	"github.com/vlumi/copal/bedrock/runlog"
 	"github.com/vlumi/copal/survey/blueprint"
 	"github.com/vlumi/copal/survey/internal/explore"
 	"github.com/vlumi/copal/survey/internal/oracle"
@@ -26,7 +27,7 @@ import (
 
 const usage = `usage:
   survey blueprints -copybooks dir -out dir [-dialect ibm|mf|fujitsu] [-annotations dir] [-title name] program.cbl... [job.jcl...]
-  survey explore -copybooks dir [-dialect ibm|mf|fujitsu] [-annotations dir] [-addr host:port] [-title name] [-cases dir] program.cbl... [job.jcl...]
+  survey explore -copybooks dir [-dialect ibm|mf|fujitsu] [-annotations dir] [-addr host:port] [-title name] [-cases dir] [-runs file] program.cbl... [job.jcl...]
   survey oracle -copybooks dir [-dialect ibm|mf|fujitsu] [-out dir -rules dir] [-title name] [-program name] [-jobs JOB,...] program.cbl... [job.jcl...]
   survey conform -copybooks dir [-dialect ibm|mf|fujitsu] -cases dir -program name -with executable program.cbl... [job.jcl...]
 `
@@ -72,6 +73,7 @@ func serveExplorer(args []string) error {
 	addr := flags.String("addr", "127.0.0.1:1192", "address to serve on")
 	title := flags.String("title", "the system", "name of the system")
 	cases := flags.String("cases", "", "directory of the cases the oracle wrote")
+	runsPath := flags.String("runs", "", "the run record the system's machine room kept")
 	annotations := flags.String("annotations", "", "directory of the prose a model wrote, to show beside the facts")
 	_ = flags.Parse(args)
 	if *copybooks == "" || flags.NArg() == 0 {
@@ -85,7 +87,11 @@ func serveExplorer(args []string) error {
 	if system.Annotations, err = blueprint.ReadAnnotations(*annotations); err != nil {
 		return err
 	}
-	x, err := explore.New(system, *title, *cases)
+	runs, err := runlog.Read(*runsPath)
+	if err != nil {
+		return err
+	}
+	x, err := explore.New(system, *title, *cases, runs)
 	if err != nil {
 		return err
 	}
