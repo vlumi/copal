@@ -126,7 +126,7 @@ conform-gondwana:  ## Run a replacement for one of Gondwana's programs on its re
 
 .PHONY: conform-demo
 conform-demo:  ## Check BANKDATE rewritten in Go against the bank's recorded cases
-	go build -o build/bankdate ./survey/internal/oracle/testdata/rewrites/bankdate
+	go build -buildvcs=false -o build/bankdate ./survey/internal/oracle/testdata/rewrites/bankdate
 	$(MAKE) conform-pangaea PROGRAM=BANKDATE WITH=build/bankdate
 
 ##@ Golden files

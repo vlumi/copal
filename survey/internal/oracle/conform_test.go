@@ -18,7 +18,7 @@ import (
 // reports of both.
 func TestConform(t *testing.T) {
 	rewrite := filepath.Join(t.TempDir(), "bankdate")
-	if out, err := exec.Command("go", "build", "-o", rewrite, "./testdata/rewrites/bankdate").CombinedOutput(); err != nil {
+	if out, err := exec.Command("go", "build", "-buildvcs=false", "-o", rewrite, "./testdata/rewrites/bankdate").CombinedOutput(); err != nil {
 		t.Fatalf("building the rewrite: %v\n%s", err, out)
 	}
 	wrong, err := filepath.Abs("testdata/rewrites/wrong.sh")
