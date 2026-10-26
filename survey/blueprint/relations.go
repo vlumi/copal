@@ -15,11 +15,14 @@ type EntityLink struct {
 
 // EntityTotal is a control total of an entity's records, as the programs
 // that check it check it: a field that is the sum of another over the
-// records of a type, or with no Sum, how many of them there are.
+// records of a type, or with no Sum, how many of them there are; of those
+// where a condition holds, When, as the programs write it, if they add up
+// only those.
 type EntityTotal struct {
 	Field    string   `json:"field"`
 	Sum      string   `json:"sum,omitempty"`
 	Type     string   `json:"type,omitempty"`
+	When     string   `json:"when,omitempty"`
 	Programs []string `json:"programs"`
 }
 
@@ -45,7 +48,7 @@ func relate(entities []Entity, programs []Program, held heldRecords) {
 			if !ok {
 				continue
 			}
-			total := EntityTotal{Field: field.Field, Type: t.Type}
+			total := EntityTotal{Field: field.Field, Type: t.Type, When: t.When}
 			if t.Sum != "" {
 				_, sum, found := heldField(entities, p, held, t.Sum)
 				if !found {
@@ -54,7 +57,9 @@ func relate(entities []Entity, programs []Program, held heldRecords) {
 				total.Sum = sum.Field
 			}
 			e := &entities[slices.IndexFunc(entities, func(e Entity) bool { return e.Record == field.Record })]
-			i := slices.IndexFunc(e.Totals, func(u EntityTotal) bool { return u.Field == total.Field && u.Sum == total.Sum && u.Type == total.Type })
+			i := slices.IndexFunc(e.Totals, func(u EntityTotal) bool {
+				return u.Field == total.Field && u.Sum == total.Sum && u.Type == total.Type && u.When == total.When
+			})
 			if i < 0 {
 				e.Totals = append(e.Totals, total)
 				i = len(e.Totals) - 1

@@ -29,6 +29,12 @@ type rule struct{ unit, table, rule int }
 // timeout is how long a run may take before the search gives up on it.
 const timeout = 10 * time.Second
 
+// loadTimeout is how long loading or unloading an indexed or relative
+// file may take: longer than a run, since a loader that fails stops the
+// search, and while the search runs cases in parallel a busy machine
+// slows it.
+const loadTimeout = time.Minute
+
 // runner runs a program on cases: the system's programs compiled with
 // trace code, and the loaders of the indexed files it reads.
 type runner struct {
@@ -135,7 +141,7 @@ func (r *runner) read(f blueprint.File, path, unloaded string) ([]byte, error) {
 	}
 	if keyed(f) {
 		outcome, err := run.Step{Programs: r.loaders, Program: unloaderName(f), DDs: map[string]string{"UNLOADIN": path, "UNLOADOUT": unloaded},
-			Stdout: io.Discard, Timeout: timeout}.Run()
+			Stdout: io.Discard, Timeout: loadTimeout}.Run()
 		if err == nil && (outcome.RC != 0 || outcome.Abended) {
 			err = fmt.Errorf("unloading %s: %+v", f.Name, outcome)
 		}
@@ -242,7 +248,7 @@ func (r *runner) load(f blueprint.File, records [][]byte, path string) error {
 		return err
 	}
 	outcome, err := run.Step{Programs: r.loaders, Program: loaderName(f), DDs: map[string]string{"LOADIN": in, "LOADOUT": path},
-		Stdout: io.Discard, Timeout: timeout}.Run()
+		Stdout: io.Discard, Timeout: loadTimeout}.Run()
 	if err == nil && (outcome.RC != 0 || outcome.Abended) {
 		err = fmt.Errorf("loading %s: %+v", f.Name, outcome)
 	}

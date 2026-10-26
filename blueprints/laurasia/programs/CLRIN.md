@@ -405,15 +405,15 @@ Fields of one input the program relies on to find or match the records of anothe
 
 ## Control totals
 
-Fields of an input the program checks against what it adds up from the input's other records.
+Fields of an input the program checks against what it adds up from the input's other records: those of a type, and of them, those where a condition on their fields holds, if it adds up only those.
 
-| Field | Of | Is | Over the records of type | Source |
-| --- | --- | --- | --- | --- |
-| BT-COUNT | CLEARING-IN | their count | IS-PRESENTMENT | [clrin.cbl:137](../../../laurasia/programs/clrin.cbl#L137) |
-| BT-AMOUNT | CLEARING-IN | the sum of PR-AMOUNT | IS-PRESENTMENT | [clrin.cbl:137](../../../laurasia/programs/clrin.cbl#L137) |
-| FT-BATCH-COUNT | CLEARING-IN | their count | | [clrin.cbl:212](../../../laurasia/programs/clrin.cbl#L212) |
-| FT-RECORD-COUNT | CLEARING-IN | their count | IS-PRESENTMENT | [clrin.cbl:212](../../../laurasia/programs/clrin.cbl#L212) |
-| FT-AMOUNT | CLEARING-IN | the sum of PR-AMOUNT | IS-PRESENTMENT | [clrin.cbl:212](../../../laurasia/programs/clrin.cbl#L212) |
+| Field | Of | Is | Over the records of type | Where | Source |
+| --- | --- | --- | --- | --- | --- |
+| BT-COUNT | CLEARING-IN | their count | IS-PRESENTMENT | | [clrin.cbl:137](../../../laurasia/programs/clrin.cbl#L137) |
+| BT-AMOUNT | CLEARING-IN | the sum of PR-AMOUNT | IS-PRESENTMENT | | [clrin.cbl:137](../../../laurasia/programs/clrin.cbl#L137) |
+| FT-BATCH-COUNT | CLEARING-IN | their count | | | [clrin.cbl:212](../../../laurasia/programs/clrin.cbl#L212) |
+| FT-RECORD-COUNT | CLEARING-IN | their count | IS-PRESENTMENT | | [clrin.cbl:212](../../../laurasia/programs/clrin.cbl#L212) |
+| FT-AMOUNT | CLEARING-IN | the sum of PR-AMOUNT | IS-PRESENTMENT | | [clrin.cbl:212](../../../laurasia/programs/clrin.cbl#L212) |
 
 ## Records
 

@@ -2,6 +2,7 @@ package blueprint
 
 import (
 	"path/filepath"
+	"reflect"
 	"slices"
 	"testing"
 
@@ -132,9 +133,9 @@ func TestRelations(t *testing.T) {
 	if !hasLink("TXPOST", "merge", "TD-ACCT-NO", "AM-ACCT-NO") || !hasLink("AUTHSRV", "key", "RQ-CARD-NO", "CR-CARD-NO") {
 		t.Errorf("links: TXPOST %+v, AUTHSRV %+v", byName["TXPOST"].Links, byName["AUTHSRV"].Links)
 	}
-	if want := (Total{File: "TRAN-IN", Field: "TT-AMOUNT-TOTAL", Sum: "TD-AMOUNT", Type: "TR-DETAIL"}); !slices.ContainsFunc(byName["TXVALID"].Totals, func(u Total) bool {
-		u.Source, u.added = "", ""
-		return u == want
+	if want := (Total{File: "TRAN-IN", Field: "TT-AMOUNT-TOTAL", Sum: "TD-AMOUNT", Type: "TR-DETAIL", When: "TD-AMOUNT IS NUMERIC"}); !slices.ContainsFunc(byName["TXVALID"].Totals, func(u Total) bool {
+		u.Source, u.added, u.Guards = "", "", nil
+		return reflect.DeepEqual(u, want)
 	}) {
 		t.Errorf("TXVALID's totals %+v", byName["TXVALID"].Totals)
 	}
