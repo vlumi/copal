@@ -85,6 +85,13 @@ life-open: gondwana-build  ## Open the running life insurer on a generated portf
 life-days: gondwana-build  ## Run the life insurer's next N business days
 	go run ./gondwana/cmd/gondwana days -n $(N)
 
+# 2525 niko niko, "all smiles".
+LIFE_ADDR ?= 127.0.0.1:2525
+
+.PHONY: life-console
+life-console: gondwana-build  ## Serve the life insurer's console in the browser (LIFE_ADDR)
+	go run ./gondwana/cmd/console -addr $(LIFE_ADDR)
+
 # Compiles Gondwana's programs for the targets that run the insurer; not listed.
 .PHONY: gondwana-build
 gondwana-build:
