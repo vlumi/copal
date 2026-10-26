@@ -1,9 +1,10 @@
 # nightly
 
 ```text
-nightly.sh: the night's run: take in the clearing file, match it to the
-day's authorizations, price the interchange, post to the cards, move the
-disputes on, and settle with the merchants.
+nightly.sh: the night's run: take in the clearing files, the network's
+and our own acquiring's on-us one, match them to the day's
+authorizations, price the interchange, post to the cards, move the
+disputes on, and settle with our merchants and the network.
 
 usage: nightly.sh DATE, the business date as YYYYMMDD.
 environment: LCS_BIN, the programs; LCS_SCRIPTS, the scripts; LCS_DATA,
@@ -14,15 +15,17 @@ history
 2012-01-09 ah  lcs-0140 interchange.
 2015-03-23 mt  lcs-0302 disputes before settlement.
 2022-09-05 ah  lcs-0497 the card system's feed after posting.
+2024-06-03 ah  lcs-0561 on-us clearing from our own acquiring.
 ```
 
-Script [nightly.sh](../../../laurasia/scripts/nightly.sh): 13 steps.
+Script [nightly.sh](../../../laurasia/scripts/nightly.sh): 14 steps.
 
 ## Contents
 
 - [Network](#network)
 - [Steps](#steps)
   - [CLRIN](#clrin)
+  - [CLRONUS](#clronus)
   - [PRESSORT](#pressort)
   - [AUTHSORT](#authsort)
   - [MATCH](#match)
@@ -44,19 +47,20 @@ Script [nightly.sh](../../../laurasia/scripts/nightly.sh): 13 steps.
 
 | Step | Program | Reads | Writes | Stops the script if | Description | Source |
 | --- | --- | --- | --- | --- | --- | --- |
-| CLRIN | [CLRIN](../programs/CLRIN.md), with $DATE | $DATA/inbound/CLR.$DATE.txt | $DATA/work/$DATE/pres.txt, $DATA/outbound/CLRREJ.$DATE.txt, $DATA/reports/clrin.$DATE.txt, $DATA/reports/clrin.$DATE.out | RC >= 8 | the clearing file, checked batch by batch | [nightly.sh:29](../../../laurasia/scripts/nightly.sh#L29) |
-| PRESSORT | sort by columns 29-34 | $DATA/work/$DATE/pres.txt | $DATA/work/$DATE/pres.byauth | RC != 0 | the presentments in authorization code order | [nightly.sh:35](../../../laurasia/scripts/nightly.sh#L35) |
-| AUTHSORT | sort by columns 1-6 | $DATA/inbound/AUTH.$DATE.txt | $DATA/work/$DATE/auth.byauth | RC != 0 | the day's authorizations in authorization code order | [nightly.sh:41](../../../laurasia/scripts/nightly.sh#L41) |
-| MATCH | [MATCH](../programs/MATCH.md), with $DATE | $DATA/work/$DATE/pres.byauth, $DATA/work/$DATE/auth.byauth | $DATA/work/$DATE/pres.matched, $DATA/reports/match.$DATE.txt, $DATA/reports/match.$DATE.out | RC >= 8 | each presentment marked by its authorization | [nightly.sh:51](../../../laurasia/scripts/nightly.sh#L51) |
-| FEELD | [FEELD](../programs/FEELD.md), with $DATE | $DATA/inbound/FEES.txt | $DATA/work/$DATE/fees.rel, $DATA/reports/feeld.$DATE.out | RC >= 8 | the fee schedule into the fee table | [nightly.sh:59](../../../laurasia/scripts/nightly.sh#L59) |
-| IXFEE | [IXFEE](../programs/IXFEE.md), with $DATE | $DATA/work/$DATE/pres.matched, $DATA/work/$DATE/fees.rel | $DATA/work/$DATE/pres.priced, $DATA/reports/ixfee.$DATE.txt, $DATA/reports/ixfee.$DATE.out | RC >= 8 | the interchange of each matched presentment | [nightly.sh:69](../../../laurasia/scripts/nightly.sh#L69) |
-| POST | [POST](../programs/POST.md), with $DATE | $DATA/work/$DATE/pres.priced, $DATA/master/accounts.idx | $DATA/master/accounts.idx, $DATA/outbound/POSTINGS.$DATE.txt, $DATA/outbound/POSTREJ.$DATE.txt, $DATA/reports/post.$DATE.txt, $DATA/reports/post.$DATE.out | RC >= 8 | the purchases on the cards' accounts | [nightly.sh:80](../../../laurasia/scripts/nightly.sh#L80) |
-| PAYMENTS | script [payments](payments.md), with $DATE | | | RC >= 8 | the card system's feed: payments and status changes | [nightly.sh:86](../../../laurasia/scripts/nightly.sh#L86) |
-| DISPUTES | script [disputes](disputes.md), with $DATE | | | RC >= 8 | the disputes moved on, the merchants' adjustments | [nightly.sh:91](../../../laurasia/scripts/nightly.sh#L91) |
-| SETLSORT | sort by columns 35-44 | $DATA/work/$DATE/pres.priced | $DATA/work/$DATE/pres.bymerchant | RC != 0 | the priced presentments in merchant order | [nightly.sh:96](../../../laurasia/scripts/nightly.sh#L96) |
-| ADJSORT | sort by columns 1-10 | $DATA/work/$DATE/adjustments.txt | $DATA/work/$DATE/adjustments.bymerchant | RC != 0 | the adjustments in merchant order | [nightly.sh:102](../../../laurasia/scripts/nightly.sh#L102) |
-| SETTLE | [SETTLE](../programs/SETTLE.md), with $DATE | $DATA/work/$DATE/pres.bymerchant, $DATA/work/$DATE/adjustments.bymerchant | $DATA/outbound/PAYOUT.$DATE.txt, $DATA/reports/settle.$DATE.txt, $DATA/reports/settle.$DATE.out | RC >= 8 | what each merchant is paid | [nightly.sh:112](../../../laurasia/scripts/nightly.sh#L112) |
-| ACCTUL | [ACCTUL](../programs/ACCTUL.md) | $DATA/master/accounts.idx | $DATA/outbound/ACCOUNTS.$DATE.txt, $DATA/reports/acctul.$DATE.out | | the accounts as they stand, for the card system | [nightly.sh:120](../../../laurasia/scripts/nightly.sh#L120) |
+| CLRIN | [CLRIN](../programs/CLRIN.md), with $DATE | $DATA/inbound/CLR.$DATE.txt | $DATA/work/$DATE/pres.txt, $DATA/outbound/CLRREJ.$DATE.txt, $DATA/reports/clrin.$DATE.txt, $DATA/reports/clrin.$DATE.out | RC >= 8 | the clearing file, checked batch by batch | [nightly.sh:31](../../../laurasia/scripts/nightly.sh#L31) |
+| CLRONUS | [CLRIN](../programs/CLRIN.md), with $DATE | $DATA/inbound/ONUS.$DATE.txt | $DATA/work/$DATE/pres.onus, $DATA/outbound/ONUSREJ.$DATE.txt, $DATA/reports/clronus.$DATE.txt, $DATA/reports/clronus.$DATE.out | RC >= 8 | the on-us clearing file, our own acquiring's, the same way | [nightly.sh:41](../../../laurasia/scripts/nightly.sh#L41) |
+| PRESSORT | sort by columns 29-34 | $DATA/work/$DATE/pres.txt, $DATA/work/$DATE/pres.onus | $DATA/work/$DATE/pres.byauth | RC != 0 | the presentments of both in authorization code order | [nightly.sh:47](../../../laurasia/scripts/nightly.sh#L47) |
+| AUTHSORT | sort by columns 1-6 | $DATA/inbound/AUTH.$DATE.txt | $DATA/work/$DATE/auth.byauth | RC != 0 | the day's authorizations in authorization code order | [nightly.sh:53](../../../laurasia/scripts/nightly.sh#L53) |
+| MATCH | [MATCH](../programs/MATCH.md), with $DATE | $DATA/work/$DATE/pres.byauth, $DATA/work/$DATE/auth.byauth | $DATA/work/$DATE/pres.matched, $DATA/reports/match.$DATE.txt, $DATA/reports/match.$DATE.out | RC >= 8 | each presentment marked by its authorization | [nightly.sh:63](../../../laurasia/scripts/nightly.sh#L63) |
+| FEELD | [FEELD](../programs/FEELD.md), with $DATE | $DATA/inbound/FEES.txt | $DATA/work/$DATE/fees.rel, $DATA/reports/feeld.$DATE.out | RC >= 8 | the fee schedule into the fee table | [nightly.sh:71](../../../laurasia/scripts/nightly.sh#L71) |
+| IXFEE | [IXFEE](../programs/IXFEE.md), with $DATE | $DATA/work/$DATE/pres.matched, $DATA/work/$DATE/fees.rel | $DATA/work/$DATE/pres.priced, $DATA/reports/ixfee.$DATE.txt, $DATA/reports/ixfee.$DATE.out | RC >= 8 | the interchange of each matched presentment | [nightly.sh:81](../../../laurasia/scripts/nightly.sh#L81) |
+| POST | [POST](../programs/POST.md), with $DATE | $DATA/work/$DATE/pres.priced, $DATA/master/accounts.idx | $DATA/master/accounts.idx, $DATA/outbound/POSTINGS.$DATE.txt, $DATA/outbound/POSTREJ.$DATE.txt, $DATA/reports/post.$DATE.txt, $DATA/reports/post.$DATE.out | RC >= 8 | the purchases on the cards' accounts | [nightly.sh:92](../../../laurasia/scripts/nightly.sh#L92) |
+| PAYMENTS | script [payments](payments.md), with $DATE | | | RC >= 8 | the card system's feed: payments and status changes | [nightly.sh:98](../../../laurasia/scripts/nightly.sh#L98) |
+| DISPUTES | script [disputes](disputes.md), with $DATE | | | RC >= 8 | the disputes moved on, the merchants' adjustments | [nightly.sh:103](../../../laurasia/scripts/nightly.sh#L103) |
+| SETLSORT | sort by columns 35-44 | $DATA/work/$DATE/pres.priced | $DATA/work/$DATE/pres.bymerchant | RC != 0 | the priced presentments in merchant order | [nightly.sh:108](../../../laurasia/scripts/nightly.sh#L108) |
+| ADJSORT | sort by columns 1-10 | $DATA/work/$DATE/adjustments.txt | $DATA/work/$DATE/adjustments.bymerchant | RC != 0 | the adjustments in merchant order | [nightly.sh:114](../../../laurasia/scripts/nightly.sh#L114) |
+| SETTLE | [SETTLE](../programs/SETTLE.md), with $DATE | $DATA/work/$DATE/pres.bymerchant, $DATA/work/$DATE/adjustments.bymerchant | $DATA/outbound/PAYOUT.$DATE.txt, $DATA/outbound/NETSETL.$DATE.txt, $DATA/reports/settle.$DATE.txt, $DATA/reports/settle.$DATE.out | RC >= 8 | what each of our merchants is paid, and what the network is | [nightly.sh:125](../../../laurasia/scripts/nightly.sh#L125) |
+| ACCTUL | [ACCTUL](../programs/ACCTUL.md) | $DATA/master/accounts.idx | $DATA/outbound/ACCOUNTS.$DATE.txt, $DATA/reports/acctul.$DATE.out | | the accounts as they stand, for the card system | [nightly.sh:133](../../../laurasia/scripts/nightly.sh#L133) |
 
 ### CLRIN
 
@@ -68,11 +72,21 @@ Script [nightly.sh](../../../laurasia/scripts/nightly.sh): 13 steps.
 | CLRRPT | $DATA/reports/clrin.$DATE.txt | REPORT-OUT | | write |
 | stdout | $DATA/reports/clrin.$DATE.out | | | write |
 
+### CLRONUS
+
+| Name | File | File in the program | Copybook | Use |
+| --- | --- | --- | --- | --- |
+| CLRIN | $DATA/inbound/ONUS.$DATE.txt | CLEARING-IN | [clrrec](../copybooks/clrrec.md) | read |
+| PRESOUT | $DATA/work/$DATE/pres.onus | PRES-OUT | [presrec](../copybooks/presrec.md) | write |
+| CLRREJ | $DATA/outbound/ONUSREJ.$DATE.txt | REJECT-OUT | | write |
+| CLRRPT | $DATA/reports/clronus.$DATE.txt | REPORT-OUT | | write |
+| stdout | $DATA/reports/clronus.$DATE.out | | | write |
+
 ### PRESSORT
 
 | Name | File | File in the program | Copybook | Use |
 | --- | --- | --- | --- | --- |
-| input | $DATA/work/$DATE/pres.txt | | | read |
+| input | $DATA/work/$DATE/pres.txt, $DATA/work/$DATE/pres.onus | | | read |
 | output | $DATA/work/$DATE/pres.byauth | | | write |
 
 ### AUTHSORT
@@ -142,6 +156,7 @@ Script [nightly.sh](../../../laurasia/scripts/nightly.sh): 13 steps.
 | PRESIN | $DATA/work/$DATE/pres.bymerchant | PRES-IN | [presrec](../copybooks/presrec.md) | read |
 | ADJIN | $DATA/work/$DATE/adjustments.bymerchant | ADJUST-IN | | read |
 | PAYOUT | $DATA/outbound/PAYOUT.$DATE.txt | PAYOUT-OUT | | write |
+| NETSETL | $DATA/outbound/NETSETL.$DATE.txt | NETWORK-OUT | | write |
 | SETLRPT | $DATA/reports/settle.$DATE.txt | REPORT-OUT | | write |
 | stdout | $DATA/reports/settle.$DATE.out | | | write |
 
@@ -164,6 +179,11 @@ Each dataset the job names, the copybook that describes its records, from the pr
 | $DATA/outbound/CLRREJ.$DATE.txt | | CLRIN | |
 | $DATA/reports/clrin.$DATE.txt | | CLRIN | |
 | $DATA/reports/clrin.$DATE.out | | CLRIN | |
+| $DATA/inbound/ONUS.$DATE.txt | [clrrec](../copybooks/clrrec.md) | | CLRONUS |
+| $DATA/work/$DATE/pres.onus | [presrec](../copybooks/presrec.md) | CLRONUS | PRESSORT |
+| $DATA/outbound/ONUSREJ.$DATE.txt | | CLRONUS | |
+| $DATA/reports/clronus.$DATE.txt | | CLRONUS | |
+| $DATA/reports/clronus.$DATE.out | | CLRONUS | |
 | $DATA/work/$DATE/pres.byauth | [presrec](../copybooks/presrec.md) | PRESSORT | MATCH |
 | $DATA/inbound/AUTH.$DATE.txt | [authlog](../copybooks/authlog.md) | | AUTHSORT |
 | $DATA/work/$DATE/auth.byauth | [authlog](../copybooks/authlog.md) | AUTHSORT | MATCH |
@@ -185,6 +205,7 @@ Each dataset the job names, the copybook that describes its records, from the pr
 | $DATA/work/$DATE/adjustments.txt | | | ADJSORT |
 | $DATA/work/$DATE/adjustments.bymerchant | | ADJSORT | SETTLE |
 | $DATA/outbound/PAYOUT.$DATE.txt | | SETTLE | |
+| $DATA/outbound/NETSETL.$DATE.txt | | SETTLE | |
 | $DATA/reports/settle.$DATE.txt | | SETTLE | |
 | $DATA/reports/settle.$DATE.out | | SETTLE | |
 | $DATA/outbound/ACCOUNTS.$DATE.txt | [cardacct](../copybooks/cardacct.md) | ACCTUL | |

@@ -7,6 +7,7 @@ The script ended with exit status 0.
 | Step | Program | Outcome | Rules reached |
 | --- | --- | --- | --: |
 | CLRIN | [CLRIN](../../CLRIN/) | RC=0004 | 7 of 23 |
+| CLRONUS | [CLRIN](../../CLRIN/) | RC=0004 | 7 of 23 |
 | PRESSORT | sort | RC=0000 | |
 | AUTHSORT | sort | RC=0000 | |
 | MATCH | [MATCH](../../MATCH/) | RC=0000 | 5 of 15 |
@@ -21,5 +22,5 @@ The script ended with exit status 0.
 | DISPUTES.DSPNEW | mv | RC=0000 | |
 | SETLSORT | sort | RC=0000 | |
 | ADJSORT | sort | RC=0000 | |
-| SETTLE | [SETTLE](../../SETTLE/) | RC=0004 | 6 of 12 |
+| SETTLE | [SETTLE](../../SETTLE/) | RC=0000 | 5 of 14 |
 | ACCTUL | [ACCTUL](../../ACCTUL/) | RC=0000 | 1 of 2 |

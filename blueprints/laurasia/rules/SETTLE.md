@@ -16,19 +16,20 @@ The business rules of [SETTLE](../programs/SETTLE.md), paragraph by paragraph: e
 | | 1 | 2 |
 | --- | :-: | :-: |
 | `WS-OWING-COUNT > ZERO` | Y | N |
-| → `OPEN INPUT PRES-IN ADJUST-IN OUTPUT PAYOUT-OUT REPORT-OUT` | 1 | 1 |
+| → `OPEN INPUT PRES-IN ADJUST-IN OUTPUT PAYOUT-OUT NETWORK-OUT REPORT-OUT` | 1 | 1 |
 | → `PERFORM READ-PRESENTMENT` | 2 | 2 |
 | → `PERFORM READ-ADJUSTMENT` | 3 | 3 |
 | → `PERFORM SETTLE-MERCHANT UNTIL WS-PRES-KEY = HIGH-VALUES AND WS-ADJUST-KEY = HIGH-VALUES` | 4 | 4 |
-| → `PERFORM WRITE-REPORT` | 5 | 5 |
-| → `CLOSE PRES-IN ADJUST-IN PAYOUT-OUT REPORT-OUT` | 6 | 6 |
-| → `STOP RUN RETURNING 4` | 7 | |
-| → `STOP RUN RETURNING 0` | | 7 |
+| → `PERFORM WRITE-NETWORK-SETTLEMENT` | 5 | 5 |
+| → `PERFORM WRITE-REPORT` | 6 | 6 |
+| → `CLOSE PRES-IN ADJUST-IN PAYOUT-OUT NETWORK-OUT REPORT-OUT` | 7 | 7 |
+| → `STOP RUN RETURNING 4` | 8 | |
+| → `STOP RUN RETURNING 0` | | 8 |
 
-- **Rule 1.** When `WS-OWING-COUNT` is more than zero, it opens `PRES-IN` and `ADJUST-IN` for input and `PAYOUT-OUT` and `REPORT-OUT` for output; performs `READ-PRESENTMENT`; performs `READ-ADJUSTMENT`; performs `SETTLE-MERCHANT` until `WS-PRES-KEY` is high values and `WS-ADJUST-KEY` is high values; performs `WRITE-REPORT`; closes `PRES-IN`, `ADJUST-IN`, `PAYOUT-OUT`, and `REPORT-OUT`; and stops the run.
-- **Rule 2.** When `WS-OWING-COUNT` is at most zero, it opens `PRES-IN` and `ADJUST-IN` for input and `PAYOUT-OUT` and `REPORT-OUT` for output; performs `READ-PRESENTMENT`; performs `READ-ADJUSTMENT`; performs `SETTLE-MERCHANT` until `WS-PRES-KEY` is high values and `WS-ADJUST-KEY` is high values; performs `WRITE-REPORT`; closes `PRES-IN`, `ADJUST-IN`, `PAYOUT-OUT`, and `REPORT-OUT`; and stops the run.
+- **Rule 1.** When `WS-OWING-COUNT` is more than zero, it opens `PRES-IN` and `ADJUST-IN` for input and `PAYOUT-OUT`, `NETWORK-OUT`, and `REPORT-OUT` for output; performs `READ-PRESENTMENT`; performs `READ-ADJUSTMENT`; performs `SETTLE-MERCHANT` until `WS-PRES-KEY` is high values and `WS-ADJUST-KEY` is high values; performs `WRITE-NETWORK-SETTLEMENT`; performs `WRITE-REPORT`; closes `PRES-IN`, `ADJUST-IN`, `PAYOUT-OUT`, `NETWORK-OUT`, and `REPORT-OUT`; and stops the run.
+- **Rule 2.** When `WS-OWING-COUNT` is at most zero, it opens `PRES-IN` and `ADJUST-IN` for input and `PAYOUT-OUT`, `NETWORK-OUT`, and `REPORT-OUT` for output; performs `READ-PRESENTMENT`; performs `READ-ADJUSTMENT`; performs `SETTLE-MERCHANT` until `WS-PRES-KEY` is high values and `WS-ADJUST-KEY` is high values; performs `WRITE-NETWORK-SETTLEMENT`; performs `WRITE-REPORT`; closes `PRES-IN`, `ADJUST-IN`, `PAYOUT-OUT`, `NETWORK-OUT`, and `REPORT-OUT`; and stops the run.
 
-Source: [settle.cbl:72](../../../laurasia/programs/settle.cbl#L72).
+Source: [settle.cbl:92](../../../laurasia/programs/settle.cbl#L92).
 
 ## READ-PRESENTMENT
 
@@ -42,7 +43,7 @@ Source: [settle.cbl:72](../../../laurasia/programs/settle.cbl#L72).
 - **Rule 1.** When reading `PRES-IN` finds no more records, it reads `PRES-IN` and sets `WS-PRES-KEY` to high values.
 - **Rule 2.** When reading `PRES-IN` finds a record, it reads `PRES-IN` and sets `WS-PRES-KEY` to `PS-MERCHANT`.
 
-Source: [settle.cbl:85](../../../laurasia/programs/settle.cbl#L85).
+Source: [settle.cbl:106](../../../laurasia/programs/settle.cbl#L106).
 
 ## READ-ADJUSTMENT
 
@@ -56,24 +57,28 @@ Source: [settle.cbl:85](../../../laurasia/programs/settle.cbl#L85).
 - **Rule 1.** When reading `ADJUST-IN` finds no more records, it reads `ADJUST-IN` and sets `WS-ADJUST-KEY` to high values.
 - **Rule 2.** When reading `ADJUST-IN` finds a record, it reads `ADJUST-IN` and sets `WS-ADJUST-KEY` to `AD-MERCHANT`.
 
-Source: [settle.cbl:91](../../../laurasia/programs/settle.cbl#L91).
+Source: [settle.cbl:112](../../../laurasia/programs/settle.cbl#L112).
 
 ## SETTLE-MERCHANT
 
-| | 1 | 2 |
-| --- | :-: | :-: |
-| `WS-PRES-KEY < WS-ADJUST-KEY` | Y | N |
-| → `MOVE WS-PRES-KEY TO WS-MERCHANT` | 1 | |
-| → `MOVE ZERO TO WS-GROSS WS-INTERCHANGE WS-ADJUSTMENTS` | 2 | 2 |
-| → `PERFORM UNTIL WS-PRES-KEY NOT = WS-MERCHANT` | 3 | 3 |
-| → `PERFORM UNTIL WS-ADJUST-KEY NOT = WS-MERCHANT` | 4 | 4 |
-| → `PERFORM WRITE-PAYOUT` | 5 | 5 |
-| → `MOVE WS-ADJUST-KEY TO WS-MERCHANT` | | 1 |
+| | 1 | 2 | 3 | 4 |
+| --- | :-: | :-: | :-: | :-: |
+| `WS-PRES-KEY < WS-ADJUST-KEY` | Y | Y | N | N |
+| `WS-OUR-MERCHANT` | Y | N | Y | N |
+| → `MOVE WS-PRES-KEY TO WS-MERCHANT` | 1 | 1 | | |
+| → `MOVE ZERO TO WS-GROSS WS-INTERCHANGE WS-ADJUSTMENTS` | 2 | 2 | 2 | 2 |
+| → `PERFORM UNTIL WS-PRES-KEY NOT = WS-MERCHANT` | 3 | 3 | 3 | 3 |
+| → `PERFORM UNTIL WS-ADJUST-KEY NOT = WS-MERCHANT` | 4 | 4 | 4 | 4 |
+| → `PERFORM WRITE-PAYOUT` | 5 | | 5 | |
+| → `PERFORM ADD-TO-NETWORK` | | 5 | | 5 |
+| → `MOVE WS-ADJUST-KEY TO WS-MERCHANT` | | | 1 | 1 |
 
-- **Rule 1.** When `WS-PRES-KEY` is less than `WS-ADJUST-KEY`, it sets `WS-MERCHANT` to `WS-PRES-KEY`; sets `WS-GROSS`, `WS-INTERCHANGE`, and `WS-ADJUSTMENTS` to zero; repeats its loop until `WS-PRES-KEY` is not `WS-MERCHANT`; repeats its loop until `WS-ADJUST-KEY` is not `WS-MERCHANT`; and performs `WRITE-PAYOUT`.
-- **Rule 2.** When `WS-PRES-KEY` is at least `WS-ADJUST-KEY`, it sets `WS-MERCHANT` to `WS-ADJUST-KEY`; sets `WS-GROSS`, `WS-INTERCHANGE`, and `WS-ADJUSTMENTS` to zero; repeats its loop until `WS-PRES-KEY` is not `WS-MERCHANT`; repeats its loop until `WS-ADJUST-KEY` is not `WS-MERCHANT`; and performs `WRITE-PAYOUT`.
+- **Rule 1.** When `WS-PRES-KEY` is less than `WS-ADJUST-KEY` and `WS-MERCHANT-RANGE` is `'LCS'` (`WS-OUR-MERCHANT`), it sets `WS-MERCHANT` to `WS-PRES-KEY`; sets `WS-GROSS`, `WS-INTERCHANGE`, and `WS-ADJUSTMENTS` to zero; repeats its loop until `WS-PRES-KEY` is not `WS-MERCHANT`; repeats its loop until `WS-ADJUST-KEY` is not `WS-MERCHANT`; and performs `WRITE-PAYOUT`.
+- **Rule 2.** When `WS-PRES-KEY` is less than `WS-ADJUST-KEY` and `WS-MERCHANT-RANGE` is not `'LCS'` (not `WS-OUR-MERCHANT`), it sets `WS-MERCHANT` to `WS-PRES-KEY`; sets `WS-GROSS`, `WS-INTERCHANGE`, and `WS-ADJUSTMENTS` to zero; repeats its loop until `WS-PRES-KEY` is not `WS-MERCHANT`; repeats its loop until `WS-ADJUST-KEY` is not `WS-MERCHANT`; and performs `ADD-TO-NETWORK`.
+- **Rule 3.** When `WS-PRES-KEY` is at least `WS-ADJUST-KEY` and `WS-MERCHANT-RANGE` is `'LCS'` (`WS-OUR-MERCHANT`), it sets `WS-MERCHANT` to `WS-ADJUST-KEY`; sets `WS-GROSS`, `WS-INTERCHANGE`, and `WS-ADJUSTMENTS` to zero; repeats its loop until `WS-PRES-KEY` is not `WS-MERCHANT`; repeats its loop until `WS-ADJUST-KEY` is not `WS-MERCHANT`; and performs `WRITE-PAYOUT`.
+- **Rule 4.** When `WS-PRES-KEY` is at least `WS-ADJUST-KEY` and `WS-MERCHANT-RANGE` is not `'LCS'` (not `WS-OUR-MERCHANT`), it sets `WS-MERCHANT` to `WS-ADJUST-KEY`; sets `WS-GROSS`, `WS-INTERCHANGE`, and `WS-ADJUSTMENTS` to zero; repeats its loop until `WS-PRES-KEY` is not `WS-MERCHANT`; repeats its loop until `WS-ADJUST-KEY` is not `WS-MERCHANT`; and performs `ADD-TO-NETWORK`.
 
-Source: [settle.cbl:99](../../../laurasia/programs/settle.cbl#L99).
+Source: [settle.cbl:120](../../../laurasia/programs/settle.cbl#L120).
 
 ## SETTLE-MERCHANT, in its loop
 
@@ -89,7 +94,7 @@ Each pass of `PERFORM UNTIL WS-PRES-KEY NOT = WS-MERCHANT`.
 - **Rule 1.** When `PS-MATCH` is `'M'` (`PS-MATCHED`), it adds `PS-AMOUNT` to `WS-GROSS`, adds `PS-FEE` to `WS-INTERCHANGE`, and performs `READ-PRESENTMENT`.
 - **Rule 2.** When `PS-MATCH` is not `'M'` (not `PS-MATCHED`), it performs `READ-PRESENTMENT`.
 
-Source: [settle.cbl:106](../../../laurasia/programs/settle.cbl#L106).
+Source: [settle.cbl:127](../../../laurasia/programs/settle.cbl#L127).
 
 ## WRITE-PAYOUT
 
@@ -111,4 +116,4 @@ Source: [settle.cbl:106](../../../laurasia/programs/settle.cbl#L106).
 - **Rule 1.** When `PA-NET` is less than zero, it sets `PA-MERCHANT` to `WS-MERCHANT`, sets `PA-GROSS` to `WS-GROSS`, sets `PA-INTERCHANGE` to `WS-INTERCHANGE`, sets `PA-ADJUSTMENTS` to `WS-ADJUSTMENTS`, computes `PA-NET` as `WS-GROSS - WS-INTERCHANGE + WS-ADJUSTMENTS`, sets `PA-STATUS` to `PA-OWES`, adds 1 to `WS-OWING-COUNT`, and writes `PAYOUT`.
 - **Rule 2.** When `PA-NET` is at least zero, it sets `PA-MERCHANT` to `WS-MERCHANT`, sets `PA-GROSS` to `WS-GROSS`, sets `PA-INTERCHANGE` to `WS-INTERCHANGE`, sets `PA-ADJUSTMENTS` to `WS-ADJUSTMENTS`, computes `PA-NET` as `WS-GROSS - WS-INTERCHANGE + WS-ADJUSTMENTS`, sets `PA-STATUS` to `PA-PAID`, adds 1 to `WS-PAID-COUNT`, adds `PA-NET` to `WS-PAID-TOTAL`, and writes `PAYOUT`.
 
-Source: [settle.cbl:119](../../../laurasia/programs/settle.cbl#L119).
+Source: [settle.cbl:150](../../../laurasia/programs/settle.cbl#L150).

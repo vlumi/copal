@@ -3,7 +3,7 @@
   "tables": [
     {
       "paragraph": "MAIN",
-      "source": "laurasia/programs/settle.cbl:72",
+      "source": "laurasia/programs/settle.cbl:92",
       "conditions": [
         "WS-OWING-COUNT \u003e ZERO"
       ],
@@ -13,12 +13,13 @@
         ]
       ],
       "actions": [
-        "OPEN INPUT PRES-IN ADJUST-IN OUTPUT PAYOUT-OUT REPORT-OUT",
+        "OPEN INPUT PRES-IN ADJUST-IN OUTPUT PAYOUT-OUT NETWORK-OUT REPORT-OUT",
         "PERFORM READ-PRESENTMENT",
         "PERFORM READ-ADJUSTMENT",
         "PERFORM SETTLE-MERCHANT UNTIL WS-PRES-KEY = HIGH-VALUES AND WS-ADJUST-KEY = HIGH-VALUES",
+        "PERFORM WRITE-NETWORK-SETTLEMENT",
         "PERFORM WRITE-REPORT",
-        "CLOSE PRES-IN ADJUST-IN PAYOUT-OUT REPORT-OUT",
+        "CLOSE PRES-IN ADJUST-IN PAYOUT-OUT NETWORK-OUT REPORT-OUT",
         "STOP RUN RETURNING 4",
         "STOP RUN RETURNING 0"
       ],
@@ -34,9 +35,10 @@
             3,
             4,
             5,
-            6
+            6,
+            7
           ],
-          "sentence": "When `WS-OWING-COUNT` is more than zero, it opens `PRES-IN` and `ADJUST-IN` for input and `PAYOUT-OUT` and `REPORT-OUT` for output; performs `READ-PRESENTMENT`; performs `READ-ADJUSTMENT`; performs `SETTLE-MERCHANT` until `WS-PRES-KEY` is high values and `WS-ADJUST-KEY` is high values; performs `WRITE-REPORT`; closes `PRES-IN`, `ADJUST-IN`, `PAYOUT-OUT`, and `REPORT-OUT`; and stops the run."
+          "sentence": "When `WS-OWING-COUNT` is more than zero, it opens `PRES-IN` and `ADJUST-IN` for input and `PAYOUT-OUT`, `NETWORK-OUT`, and `REPORT-OUT` for output; performs `READ-PRESENTMENT`; performs `READ-ADJUSTMENT`; performs `SETTLE-MERCHANT` until `WS-PRES-KEY` is high values and `WS-ADJUST-KEY` is high values; performs `WRITE-NETWORK-SETTLEMENT`; performs `WRITE-REPORT`; closes `PRES-IN`, `ADJUST-IN`, `PAYOUT-OUT`, `NETWORK-OUT`, and `REPORT-OUT`; and stops the run."
         },
         {
           "entries": [
@@ -49,15 +51,16 @@
             3,
             4,
             5,
-            7
+            6,
+            8
           ],
-          "sentence": "When `WS-OWING-COUNT` is at most zero, it opens `PRES-IN` and `ADJUST-IN` for input and `PAYOUT-OUT` and `REPORT-OUT` for output; performs `READ-PRESENTMENT`; performs `READ-ADJUSTMENT`; performs `SETTLE-MERCHANT` until `WS-PRES-KEY` is high values and `WS-ADJUST-KEY` is high values; performs `WRITE-REPORT`; closes `PRES-IN`, `ADJUST-IN`, `PAYOUT-OUT`, and `REPORT-OUT`; and stops the run."
+          "sentence": "When `WS-OWING-COUNT` is at most zero, it opens `PRES-IN` and `ADJUST-IN` for input and `PAYOUT-OUT`, `NETWORK-OUT`, and `REPORT-OUT` for output; performs `READ-PRESENTMENT`; performs `READ-ADJUSTMENT`; performs `SETTLE-MERCHANT` until `WS-PRES-KEY` is high values and `WS-ADJUST-KEY` is high values; performs `WRITE-NETWORK-SETTLEMENT`; performs `WRITE-REPORT`; closes `PRES-IN`, `ADJUST-IN`, `PAYOUT-OUT`, `NETWORK-OUT`, and `REPORT-OUT`; and stops the run."
         }
       ]
     },
     {
       "paragraph": "READ-PRESENTMENT",
-      "source": "laurasia/programs/settle.cbl:85",
+      "source": "laurasia/programs/settle.cbl:106",
       "conditions": [
         "READ PRES-IN AT END"
       ],
@@ -94,7 +97,7 @@
     },
     {
       "paragraph": "READ-ADJUSTMENT",
-      "source": "laurasia/programs/settle.cbl:91",
+      "source": "laurasia/programs/settle.cbl:112",
       "conditions": [
         "READ ADJUST-IN AT END"
       ],
@@ -131,14 +134,18 @@
     },
     {
       "paragraph": "SETTLE-MERCHANT",
-      "source": "laurasia/programs/settle.cbl:99",
+      "source": "laurasia/programs/settle.cbl:120",
       "conditions": [
-        "WS-PRES-KEY \u003c WS-ADJUST-KEY"
+        "WS-PRES-KEY \u003c WS-ADJUST-KEY",
+        "WS-OUR-MERCHANT"
       ],
       "conditionRefs": [
         [
           "WS-PRES-KEY",
           "WS-ADJUST-KEY"
+        ],
+        [
+          "WS-MERCHANT-RANGE"
         ]
       ],
       "actions": [
@@ -147,11 +154,13 @@
         "PERFORM UNTIL WS-PRES-KEY NOT = WS-MERCHANT",
         "PERFORM UNTIL WS-ADJUST-KEY NOT = WS-MERCHANT",
         "PERFORM WRITE-PAYOUT",
+        "PERFORM ADD-TO-NETWORK",
         "MOVE WS-ADJUST-KEY TO WS-MERCHANT"
       ],
       "rules": [
         {
           "entries": [
+            "Y",
             "Y"
           ],
           "actions": [
@@ -161,27 +170,56 @@
             3,
             4
           ],
-          "sentence": "When `WS-PRES-KEY` is less than `WS-ADJUST-KEY`, it sets `WS-MERCHANT` to `WS-PRES-KEY`; sets `WS-GROSS`, `WS-INTERCHANGE`, and `WS-ADJUSTMENTS` to zero; repeats its loop until `WS-PRES-KEY` is not `WS-MERCHANT`; repeats its loop until `WS-ADJUST-KEY` is not `WS-MERCHANT`; and performs `WRITE-PAYOUT`."
+          "sentence": "When `WS-PRES-KEY` is less than `WS-ADJUST-KEY` and `WS-MERCHANT-RANGE` is `'LCS'` (`WS-OUR-MERCHANT`), it sets `WS-MERCHANT` to `WS-PRES-KEY`; sets `WS-GROSS`, `WS-INTERCHANGE`, and `WS-ADJUSTMENTS` to zero; repeats its loop until `WS-PRES-KEY` is not `WS-MERCHANT`; repeats its loop until `WS-ADJUST-KEY` is not `WS-MERCHANT`; and performs `WRITE-PAYOUT`."
         },
         {
           "entries": [
+            "Y",
             "N"
           ],
           "actions": [
-            5,
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "sentence": "When `WS-PRES-KEY` is less than `WS-ADJUST-KEY` and `WS-MERCHANT-RANGE` is not `'LCS'` (not `WS-OUR-MERCHANT`), it sets `WS-MERCHANT` to `WS-PRES-KEY`; sets `WS-GROSS`, `WS-INTERCHANGE`, and `WS-ADJUSTMENTS` to zero; repeats its loop until `WS-PRES-KEY` is not `WS-MERCHANT`; repeats its loop until `WS-ADJUST-KEY` is not `WS-MERCHANT`; and performs `ADD-TO-NETWORK`."
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            6,
             1,
             2,
             3,
             4
           ],
-          "sentence": "When `WS-PRES-KEY` is at least `WS-ADJUST-KEY`, it sets `WS-MERCHANT` to `WS-ADJUST-KEY`; sets `WS-GROSS`, `WS-INTERCHANGE`, and `WS-ADJUSTMENTS` to zero; repeats its loop until `WS-PRES-KEY` is not `WS-MERCHANT`; repeats its loop until `WS-ADJUST-KEY` is not `WS-MERCHANT`; and performs `WRITE-PAYOUT`."
+          "sentence": "When `WS-PRES-KEY` is at least `WS-ADJUST-KEY` and `WS-MERCHANT-RANGE` is `'LCS'` (`WS-OUR-MERCHANT`), it sets `WS-MERCHANT` to `WS-ADJUST-KEY`; sets `WS-GROSS`, `WS-INTERCHANGE`, and `WS-ADJUSTMENTS` to zero; repeats its loop until `WS-PRES-KEY` is not `WS-MERCHANT`; repeats its loop until `WS-ADJUST-KEY` is not `WS-MERCHANT`; and performs `WRITE-PAYOUT`."
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            6,
+            1,
+            2,
+            3,
+            5
+          ],
+          "sentence": "When `WS-PRES-KEY` is at least `WS-ADJUST-KEY` and `WS-MERCHANT-RANGE` is not `'LCS'` (not `WS-OUR-MERCHANT`), it sets `WS-MERCHANT` to `WS-ADJUST-KEY`; sets `WS-GROSS`, `WS-INTERCHANGE`, and `WS-ADJUSTMENTS` to zero; repeats its loop until `WS-PRES-KEY` is not `WS-MERCHANT`; repeats its loop until `WS-ADJUST-KEY` is not `WS-MERCHANT`; and performs `ADD-TO-NETWORK`."
         }
       ]
     },
     {
       "paragraph": "SETTLE-MERCHANT",
       "loop": "PERFORM UNTIL WS-PRES-KEY NOT = WS-MERCHANT",
-      "source": "laurasia/programs/settle.cbl:106",
+      "source": "laurasia/programs/settle.cbl:127",
       "conditions": [
         "PS-MATCHED"
       ],
@@ -220,7 +258,7 @@
     },
     {
       "paragraph": "WRITE-PAYOUT",
-      "source": "laurasia/programs/settle.cbl:119",
+      "source": "laurasia/programs/settle.cbl:150",
       "conditions": [
         "PA-NET \u003c ZERO"
       ],

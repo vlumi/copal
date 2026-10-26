@@ -83,7 +83,7 @@ The bank has an online day too: `make pangaea-simulate` sends card and ATM traff
 | --- | --- |
 | Specimens | 3, in three dialects: 46 programs, about 10,000 lines of COBOL, 41 copybooks, 4 jobs in JCL, 5 shell scripts and 7 batch files |
 | Blueprints | 153 pages and 63 diagrams, regenerated and compared by `make ci` |
-| Decision rules | 497 in the bank and the card processor, of which 224 recorded cases reach 468; 14 are marked with the reason the search cannot reach them, 15 are left. The insurer's 677, counting a called program's by each caller, of which 184 cases reach 348 |
+| Decision rules | 499 in the bank and the card processor, of which 225 recorded cases reach 470; 14 are marked with the reason the search cannot reach them, 15 are left. The insurer's 677, counting a called program's by each caller, of which 184 cases reach 348 |
 | Cobolith | 0.8.3: four dialects, the Report Writer, and 439 of the 459 programs of NIST's COBOL-85 test suite read |
 
 ## A quick tour

@@ -2,6 +2,7 @@ package generate
 
 import (
 	"slices"
+	"strings"
 	"testing"
 	"time"
 
@@ -128,17 +129,26 @@ func TestNight(t *testing.T) {
 		t.Errorf("decisions %v, %d in stand-in", decisions, standIns)
 	}
 
-	f := clearingFile{t: t, l: g.Layouts}
+	f := clearingFile{t: t, l: g.Layouts, network: "LCN1"}
 	f.read(n.Clearing)
-	if f.date != monday.Number() || f.presentments != n.Presentments || f.batches < 5 {
-		t.Errorf("file of %d with %d presentments in %d batches, want %s, %d, 5 or more", f.date, f.presentments, f.batches, monday, n.Presentments)
+	ours := clearingFile{t: t, l: g.Layouts, network: "ONUS", own: true}
+	ours.read(n.OnUs)
+	if f.date != monday.Number() || ours.date != monday.Number() || f.presentments+ours.presentments != n.Presentments || f.batches < 4 || ours.batches < 1 {
+		t.Errorf("files of %d and %d with %d and %d presentments in %d and %d batches, want %s, %d in all, 4 or more and 1 or more",
+			f.date, ours.date, f.presentments, ours.presentments, f.batches, ours.batches, monday, n.Presentments)
 	}
-	if f.trailerBatches != int64(f.batches) || f.trailerRecords != int64(f.presentments) || f.trailerAmount != f.amount {
-		t.Errorf("file trailer says %d batches, %d records, %d; the file has %d, %d, %d", f.trailerBatches, f.trailerRecords, f.trailerAmount, f.batches, f.presentments, f.amount)
+	for _, file := range []clearingFile{f, ours} {
+		if file.trailerBatches != int64(file.batches) || file.trailerRecords != int64(file.presentments) || file.trailerAmount != file.amount {
+			t.Errorf("file trailer says %d batches, %d records, %d; the file has %d, %d, %d", file.trailerBatches, file.trailerRecords, file.trailerAmount, file.batches, file.presentments, file.amount)
+		}
 	}
-	if f.badBatches > 1 {
-		t.Errorf("%d batches with a bad trailer, want one at most", f.badBatches)
+	if f.badBatches+ours.badBatches > 2 {
+		t.Errorf("%d batches with a bad trailer, want one a file at most", f.badBatches+ours.badBatches)
 	}
+	for auth := range ours.auths {
+		f.auths[auth] = true
+	}
+	f.presentments += ours.presentments
 	if n.Presentments < decisions["A"]*8/10 || n.Presentments > decisions["A"] {
 		t.Errorf("%d presentments of %d approvals", n.Presentments, decisions["A"])
 	}
@@ -166,6 +176,11 @@ type clearingFile struct {
 	trailerAmount                     int64
 	batchCount, batchAmount           int64
 	auths                             map[string]bool
+	// network is what the file header names, and own whether the file is
+	// our own acquiring's, every batch and merchant ours, or the network's,
+	// none of them.
+	network string
+	own     bool
 }
 
 func (f *clearingFile) read(file [][]byte) {
@@ -174,9 +189,15 @@ func (f *clearingFile) read(file [][]byte) {
 		switch string(r[:2]) {
 		case "FH":
 			f.date = f.number(f.l.FileHeader, r, "FH-FILE-DATE")
+			if network, _ := f.l.FileHeader.Text(r, "FH-NETWORK"); network != f.network {
+				f.t.Errorf("a file from %s, want %s", network, f.network)
+			}
 		case "BH":
 			f.batches++
 			f.batchCount, f.batchAmount = 0, 0
+			if acquirer, _ := f.l.BatchHeader.Text(r, "BH-ACQUIRER"); (acquirer == OwnAcquirer) != f.own {
+				f.t.Errorf("a batch from %s in the %s file", acquirer, f.network)
+			}
 		case "PR":
 			f.presentments++
 			f.batchCount++
@@ -185,6 +206,9 @@ func (f *clearingFile) read(file [][]byte) {
 			f.amount += amount
 			auth, _ := f.l.Presentment.Text(r, "PR-AUTH-CODE")
 			f.auths[auth] = true
+			if merchant, _ := f.l.Presentment.Text(r, "PR-MERCHANT"); strings.HasPrefix(merchant, ownMerchants) != f.own {
+				f.t.Errorf("merchant %s in the %s file", merchant, f.network)
+			}
 		case "BT":
 			if f.batchCount > maxBatch {
 				f.t.Errorf("a batch of %d presentments", f.batchCount)

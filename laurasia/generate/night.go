@@ -9,17 +9,23 @@ import (
 )
 
 // Night is what a business day's night finds in its inbound directory:
-// the switch's log of the authorizations since the last night, and the
-// networks' clearing file.
+// the switch's log of the authorizations since the last night, the
+// network's clearing file of the purchases at other acquirers' merchants,
+// and our own acquiring's on-us file of those at ours, in the same layout.
 type Night struct {
 	Log      [][]byte
 	Clearing [][]byte
-	// Presentments is how many presentments the clearing file carries.
+	OnUs     [][]byte
+	// Presentments is how many presentments the two files carry.
 	Presentments int
 }
 
-// network is the network the clearing file comes from.
-const network = "LCN1"
+// network is the network the clearing file comes from, and onUs what the
+// on-us file names in its place.
+const (
+	network = "LCN1"
+	onUs    = "ONUS"
+)
 
 // maxBatch is the most presentments an acquirer sends in one batch.
 const maxBatch = 500
@@ -74,8 +80,20 @@ func (g *Generator) Night(date, since Date, cards []Card, merchants []Merchant) 
 	if t.err != nil {
 		return Night{}, t.err
 	}
-	clearing, err := t.clearingFile(date)
-	return Night{Log: t.log, Clearing: clearing, Presentments: len(t.presentments)}, err
+	var ours, theirs []presentment
+	for _, p := range t.presentments {
+		if p.merchant.Acquirer == OwnAcquirer {
+			ours = append(ours, p)
+		} else {
+			theirs = append(theirs, p)
+		}
+	}
+	clearing, err := t.clearingFile(date, network, theirs)
+	if err != nil {
+		return Night{}, err
+	}
+	onUsFile, err := t.clearingFile(date, onUs, ours)
+	return Night{Log: t.log, Clearing: clearing, OnUs: onUsFile, Presentments: len(t.presentments)}, err
 }
 
 // day is one calendar day's purchases, and a few presentments of earlier
@@ -210,13 +228,13 @@ func (t *traffic) fail(err error) {
 	}
 }
 
-// clearingFile lays the presentments out as the network sends them: a
-// batch or more an acquirer, each with its trailer, and the file's. A
-// presentment in a few thousand is mistyped, and a batch in a few dozen
-// files has a trailer a cent out.
-func (t *traffic) clearingFile(date Date) ([][]byte, error) {
+// clearingFile lays presentments out as a clearing file, the network's or
+// the on-us one: a batch or more an acquirer, each with its trailer, and
+// the file's. A presentment in a few thousand is mistyped, and a batch in
+// a few dozen files has a trailer a cent out.
+func (t *traffic) clearingFile(date Date, from string, presentments []presentment) ([][]byte, error) {
 	byAcquirer := map[string][]presentment{}
-	for _, p := range t.presentments {
+	for _, p := range presentments {
 		byAcquirer[p.merchant.Acquirer] = append(byAcquirer[p.merchant.Acquirer], p)
 	}
 	var batches [][]presentment
@@ -239,7 +257,7 @@ func (t *traffic) clearingFile(date Date) ([][]byte, error) {
 		t.fail(err)
 		file = append(file, rec)
 	}
-	add(clearing("FH", l.FileHeader, map[string]any{"FH-NETWORK": network, "FH-FILE-DATE": date.Number(), "FH-FILE-SEQ": 1}))
+	add(clearing("FH", l.FileHeader, map[string]any{"FH-NETWORK": from, "FH-FILE-DATE": date.Number(), "FH-FILE-SEQ": 1}))
 	var records int
 	var total int64
 	for i, batch := range batches {
