@@ -1,6 +1,6 @@
 # Bedrock
 
-The harness that the survey's oracle and the bank's machine room run the specimens with. Nothing here is analysis, and nothing here reads COBOL: that is [cobolith](https://github.com/vlumi/cobolith), the library bedrock stands on.
+The harness that the survey's oracle and the specimens' machine rooms run the specimens with. Nothing here is analysis, and nothing here reads COBOL: that is [cobolith](https://github.com/vlumi/cobolith), the library bedrock stands on.
 
 - [script/](script/): batch scripts in a subset of POSIX sh: variables, exported `DD_` bindings, programs with their output redirected, return codes tested with `if`, `sort`, `mv`, and one script running another.
 - [batchfile/](batchfile/): Windows batch files in a subset of their own, read into the same model as the scripts, and run, standing in for `cmd.exe` as `runner` stands in for JES: variables set, `DD_` bindings among them, programs with their output redirected, `echo` into a log, `move`, `call`, and `if errorlevel`.

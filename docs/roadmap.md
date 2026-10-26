@@ -236,7 +236,7 @@ Each rule of a decision table as a sentence, written from its conditions and sta
 
 Done when: every rule of the three specimens has its sentence, and a statement the sentences have no words for is quoted, not guessed.
 
-## 21. Consoles of their own
+## 21. Consoles of their own (done)
 
 The console was built for the modernization, the bank and the survey side by side, and so it was the one part that knew both, and only of the bank. Each specimen gets a console of its own instead, its operators' window onto it, knowing nothing of the survey; and the survey shows the runs of any of them on its own drawings.
 

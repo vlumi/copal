@@ -44,6 +44,10 @@ Under `%GLS_DATA%`:
 - `OUT\`: what goes to the other systems: the rejects, `NEWREJ`, `CLMREJ`, `MNTREJ` and `RESREJ`; the journal; the payments; the transfer request; the commissions; the unloaded master.
 - `RPT\`: each program's report, `.RPT`, in Japanese, with its counts and amounts, and anything it displayed, `.OUT`.
 
+## The console
+
+The console, `make life-console`, shows the same without opening the files: every business day run with its batch files, counts and worst errorlevel, each batch file step by step, the files each day read and wrote, and any policy's master record. Its Run button runs the next business days as the scheduler would.
+
 ## Return codes
 
 | Code | Meaning | What to do |
