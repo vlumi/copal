@@ -41,6 +41,10 @@ Under `$LCS_DATA`:
 - `reports/`: each program's report, `.txt`, with its counts and totals, and anything it displayed, `.out`.
 - `work/DATE/`: the night's intermediate files. Keep them until the night is checked.
 
+## The console
+
+The console, `make cards-console`, shows the same without a shell: every day run with its counts and worst return code, each night and cycle step by step, the files each day read and wrote, and any card's account record and postings. Its Run button runs the next days as the scheduler would.
+
 ## Return codes
 
 | RC | Meaning | What to do |
