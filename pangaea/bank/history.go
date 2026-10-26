@@ -35,7 +35,7 @@ func (d RunDay) MasterBefore() string { return dataset.GenerationName("ACCT.MAST
 // MasterAfter is the account master the day wrote.
 func (d RunDay) MasterAfter() string { return dataset.GenerationName("ACCT.MASTER", d.Generation+1) }
 
-// History is what the bank has done since its reset.
+// History is what the bank has done since it opened.
 type History struct {
 	Seed uint64
 	// Date is the business day the bank runs next.

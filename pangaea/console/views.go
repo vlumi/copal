@@ -104,7 +104,7 @@ func Search(accounts []Account, query string) []Account {
 }
 
 // AccountPage is an account's current record, field by field, and its
-// history: every posting and every reject since the reset.
+// history: every posting and every reject since the bank opened.
 type AccountPage struct {
 	Account  Account
 	Fields   []FieldValue

@@ -33,7 +33,7 @@ type Server struct {
 	layouts *records.Layouts
 	online  *online.Server
 	pages   map[string]*template.Template
-	// busy is locked while the bank runs or resets, and read-locked while
+	// busy is locked while the bank runs or opens, and read-locked while
 	// a page reads its files.
 	busy sync.RWMutex
 }
@@ -57,7 +57,7 @@ func New(b bank.Bank) (*Server, error) {
 	return s, nil
 }
 
-// Handler routes the console's pages and actions. Its forms reset and run
+// Handler routes the console's pages and actions. Its forms open and run
 // the bank, so it refuses them from pages of other origins.
 func (s *Server) Handler() http.Handler {
 	static, _ := fs.Sub(files, "static")
@@ -70,7 +70,7 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /days/{date}", s.view("day", s.day))
 	mux.HandleFunc("GET /days/{date}/sysout/{file...}", s.sysout)
 	mux.HandleFunc("GET /compare", s.view("compare", s.compare))
-	mux.HandleFunc("POST /reset", s.reset)
+	mux.HandleFunc("POST /open", s.openBank)
 	mux.HandleFunc("POST /run", s.run)
 	mux.HandleFunc("GET /live", s.view("live", s.live))
 	mux.HandleFunc("GET /live/events", s.events)
@@ -104,7 +104,7 @@ type page struct {
 type viewFunc func(*Ledger, bank.History, *http.Request) (any, error)
 
 // view serves a page that reads the bank. Without a bank, every page offers
-// to reset one.
+// to open one.
 func (s *Server) view(name string, read viewFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		s.busy.RLock()
@@ -209,8 +209,8 @@ func (s *Server) sysout(w http.ResponseWriter, r *http.Request) {
 	http.FileServer(http.Dir(h.Days[i].Sysout)).ServeHTTP(w, file)
 }
 
-// reset resets the bank from the form's seed and number of accounts.
-func (s *Server) reset(w http.ResponseWriter, r *http.Request) {
+// openBank opens a new bank from the form's seed and number of accounts.
+func (s *Server) openBank(w http.ResponseWriter, r *http.Request) {
 	seed, err := strconv.ParseUint(r.FormValue("seed"), 10, 64)
 	if err != nil {
 		s.refuse(w, fmt.Errorf("seed %q: %w", r.FormValue("seed"), err))
@@ -224,7 +224,7 @@ func (s *Server) reset(w http.ResponseWriter, r *http.Request) {
 	s.busy.Lock()
 	err = s.Close()
 	if err == nil {
-		err = s.bank.Reset(seed, accounts)
+		err = s.bank.Open(seed, accounts)
 	}
 	if err == nil {
 		err = s.Open()

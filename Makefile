@@ -14,7 +14,7 @@ pangaea-daily:  ## Run the daily batch on the fixture and show its reports
 
 .PHONY: bank-reset
 bank-reset:  ## Reset the running bank to a generated start (SEED, ACCOUNTS)
-	go run ./pangaea/cmd/pangaea reset -seed $(SEED) -accounts $(ACCOUNTS)
+	go run ./pangaea/cmd/pangaea open -seed $(SEED) -accounts $(ACCOUNTS)
 
 .PHONY: bank-days
 bank-days: pangaea-build  ## Run the bank's next N business days

@@ -4,7 +4,7 @@
 //	pangaea load    load text files, one record per line, as datasets
 //	pangaea unload  write every cataloged dataset as text
 //	pangaea run     run a job
-//	pangaea reset   reset the running bank to a generated starting point
+//	pangaea open    open the running bank at a generated starting point
 //	pangaea days    run the running bank's next business days
 //	pangaea online  serve the running bank's online day until interrupted
 //	pangaea simulate send card traffic to the online day until interrupted
@@ -37,7 +37,7 @@ const usage = `usage:
   pangaea load -datasets dir file.txt...
   pangaea unload -datasets dir outdir
   pangaea run -datasets dir -sysout dir [-programs dir] job.jcl
-  pangaea reset [-bank dir] [-seed n] [-accounts n]
+  pangaea open [-bank dir] [-seed n] [-accounts n]
   pangaea days [-bank dir] [-n days]
   pangaea online [-bank dir] [-addr host:port]
   pangaea simulate [-bank dir] [-api url] [-rate n] [-seed n]
@@ -53,7 +53,7 @@ func main() {
 		"load":     load,
 		"unload":   unload,
 		"run":      runJob,
-		"reset":    reset,
+		"open":     open,
 		"days":     days,
 		"online":   serveOnline,
 		"simulate": simulateTraffic,
@@ -146,15 +146,15 @@ func bankFlags(name string) (*flag.FlagSet, *bank.Bank) {
 	return flags, b
 }
 
-func reset(args []string) error {
-	flags, b := bankFlags("reset")
+func open(args []string) error {
+	flags, b := bankFlags("open")
 	seed := flags.Uint64("seed", 1, "seed the bank is generated from")
 	accounts := flags.Int("accounts", 3000, "number of accounts, about")
 	_ = flags.Parse(args)
-	if err := b.Reset(*seed, *accounts); err != nil {
+	if err := b.Open(*seed, *accounts); err != nil {
 		return err
 	}
-	fmt.Printf("bank reset in %s: seed %d, about %d accounts, first business day %s\n", b.Dir, *seed, *accounts, bank.StartDate)
+	fmt.Printf("bank opened in %s: seed %d, about %d accounts, first business day %s\n", b.Dir, *seed, *accounts, bank.StartDate)
 	return nil
 }
 
