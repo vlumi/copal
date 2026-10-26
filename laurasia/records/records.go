@@ -13,11 +13,12 @@ import (
 // Layouts are the processor's record layouts: a card's account, the
 // switch's log entry, the five records of the clearing file, the card
 // system's feed record, a dispute's event and case, a fee of the
-// schedule, and a presentment on its way through the night.
+// schedule, a presentment on its way through the night, and a posting to
+// a card.
 type Layouts struct {
 	Account, Auth                                                   *record.Layout
 	FileHeader, BatchHeader, Presentment, BatchTrailer, FileTrailer *record.Layout
-	Feed, Event, Case, Fee, Pres                                    *record.Layout
+	Feed, Event, Case, Fee, Pres, Posting                           *record.Layout
 }
 
 // Load reads the layouts from the processor's copybooks.
@@ -40,6 +41,7 @@ func Load(copybookDir string) (*Layouts, error) {
 		{&l.Case, "dispcase", "DISPUTE-CASE"},
 		{&l.Fee, "feedef", "FEE-DEFINITION"},
 		{&l.Pres, "presrec", "PRES-RECORD"},
+		{&l.Posting, "postrec", "POSTING"},
 	} {
 		layout, err := record.FromCopybook(filepath.Join(copybookDir, c.copybook+".cpy"), []string{copybookDir}, c.name, cobol.MicroFocus)
 		if err != nil {

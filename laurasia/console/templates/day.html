@@ -1,0 +1,28 @@
+{{define "title"}}{{.View.Day.Date}}{{end}}
+{{define "content"}}
+{{with .View}}
+<h1>{{.Day.Date}}, {{.Day.Date.Weekday}}</h1>
+{{if .Day.Night}}
+<h2>The night</h2>
+<p class="note">{{count .Day.Presentments}} presentments in the clearing file, {{count .Day.Rejected}} rejected, {{count .Day.Postings}} postings and {{count .Day.Payments}} payments.</p>
+{{template "steps" .Day.Night}}
+{{else}}
+<p class="note">No clearing file on {{.Day.Date.Weekday}}, so no night.</p>
+{{end}}
+<h2>The billing cycle</h2>
+<p class="note">{{count .Day.Statements}} statements.</p>
+{{template "steps" .Day.Cycle}}
+<h2>Files</h2>
+<p class="note">What the day read from <code>inbound/</code>, and wrote to <code>outbound/</code> and <code>reports/</code>.</p>
+{{range .Files}}
+{{if not .Large}}
+<details>
+  <summary><code>{{.Path}}</code>, {{size .Size}}</summary>
+  <pre>{{.Text}}</pre>
+</details>
+{{else}}
+<p><a href="/files/{{.Path}}"><code>{{.Path}}</code></a>, {{size .Size}}, too large to show here</p>
+{{end}}
+{{end}}
+{{end}}
+{{end}}

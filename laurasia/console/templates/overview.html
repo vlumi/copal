@@ -1,0 +1,32 @@
+{{define "title"}}Overview{{end}}
+{{define "content"}}
+{{with .View}}
+<h1>The processor before {{$.History.Next}}</h1>
+<dl class="facts">
+  <div><dt>Cards</dt><dd><a href="/cards">{{count .Cards}}</a></dd></div>
+  {{range $status, $n := .ByStatus}}<div><dt>{{$status}}</dt><dd>{{count $n}}</dd></div>{{end}}
+  <div><dt>Balances</dt><dd>{{money .Balance}}</dd></div>
+  <div><dt>Limits</dt><dd>{{money .Limit}}</dd></div>
+</dl>
+<div class="actions">
+<form method="post" action="/run" class="action" data-busy="Running…">
+  <label>Days <input name="days" type="number" min="1" max="366" value="1" required></label>
+  <button>Run days</button>
+</form>
+{{template "open" $.History.Seed}}
+</div>
+<h2>Days</h2>
+{{if .Days}}
+<p class="note">The night runs on business days, when the networks' clearing file comes; the billing cycle runs every day.</p>
+<table>
+  <thead><tr><th>Day</th><th></th><th class="num">Presentments</th><th class="num">Rejected</th><th class="num">Postings</th><th class="num">Payments</th><th class="num">Statements</th><th>Worst</th></tr></thead>
+  <tbody>
+  {{range .Days}}<tr><td><a href="/days/{{.Date}}">{{.Date}}</a></td><td>{{slice .Date.Weekday.String 0 3}}</td>
+    {{if .Night}}<td class="num">{{count .Presentments}}</td><td class="num">{{count .Rejected}}</td><td class="num">{{count .Postings}}</td><td class="num">{{count .Payments}}</td>{{else}}<td class="note" colspan="4">no clearing file</td>{{end}}
+    <td class="num">{{count .Statements}}</td><td>{{template "rc" .RC}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{else}}<p>No days run yet.</p>{{end}}
+{{end}}
+{{end}}

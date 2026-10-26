@@ -1,0 +1,18 @@
+{{define "title"}}Cards{{end}}
+{{define "content"}}
+{{with .View}}
+<h1>Cards</h1>
+<form method="get" action="/cards" class="search">
+  <input name="q" value="{{.Query}}" placeholder="Card number, or the start of one, or an account number">
+  <button>Search</button>
+</form>
+<p class="note">{{count (len .Cards)}} of {{count .Found}} found, of {{count .Total}} cards, as the last billing cycle left them.</p>
+<table>
+  <thead><tr><th>Card</th><th>Account</th><th>Product</th><th>Status</th><th class="num">Limit</th><th class="num">Balance</th><th class="num">Statement balance</th><th class="num">Cycle day</th></tr></thead>
+  <tbody>
+  {{range .Cards}}<tr><td><a href="/cards/{{.No}}">{{.No}}</a></td><td>{{.Account}}</td><td>{{.ProductName}}</td><td>{{.StatusName}}</td><td class="num">{{money .Limit}}</td><td class="num">{{money .Balance}}</td><td class="num">{{money .Statement}}</td><td class="num">{{.CycleDay}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{end}}
+{{end}}

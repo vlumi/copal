@@ -12,7 +12,7 @@ Copal is one Go module: the survey, the part it stands on, and three specimens, 
 
 ## The specimens
 
-`pangaea/`, `laurasia/` and `gondwana/` are three legacy systems written for the survey to read, and they are built alike. Each is a directory of COBOL programs, copybooks and what runs them, with a machine room in Go beside them: a generator that writes its inputs from a seed, a command that opens it and runs it day after day through bedrock, backing out a day that fails, and fixtures under `testdata/` whose outputs are golden. The bank also has a console for its operators, `pangaea/console/`: its accounts, each day's jobs and files, and its online day, in the browser. Each is written and documented as a legacy system would be, its operations guide in its operators' voice under `docs/`, and none of them knows the survey. They differ where shops differ, and each was added to show where the survey had assumed the ones before:
+`pangaea/`, `laurasia/` and `gondwana/` are three legacy systems written for the survey to read, and they are built alike. Each is a directory of COBOL programs, copybooks and what runs them, with a machine room in Go beside them: a generator that writes its inputs from a seed, a command that opens it and runs it day after day through bedrock, backing out a day that fails, and fixtures under `testdata/` whose outputs are golden. The bank and the card processor also have a console for their operators, `pangaea/console/` and `laurasia/console/`: their accounts or cards, and each day's steps and files, in the browser, and the bank's online day. Each is written and documented as a legacy system would be, its operations guide in its operators' voice under `docs/`, and none of them knows the survey. They differ where shops differ, and each was added to show where the survey had assumed the ones before:
 
 | Specimen | Business | COBOL | Run by | Its guide |
 | --- | --- | --- | --- | --- |
@@ -41,6 +41,6 @@ Copal is one Go module: separate modules for its parts would make the sibling re
 
 ## Commands and make
 
-Each part has its own command: `survey/cmd/survey`, `pangaea/cmd/pangaea`, `laurasia/cmd/laurasia`, `gondwana/cmd/gondwana`, and the bank's console, `pangaea/cmd/console`. Routine operations are make targets with a description, so plain `make` lists them; the Makefile names the work and scripts and commands do it. `make ci` is what the hosted build runs: the toolchain check, Markdown and Go linting, the dependency check, and every test, the goldens included.
+Each part has its own command: `survey/cmd/survey`, `pangaea/cmd/pangaea`, `laurasia/cmd/laurasia`, `gondwana/cmd/gondwana`, and the consoles, `pangaea/cmd/console` and `laurasia/cmd/console`. Routine operations are make targets with a description, so plain `make` lists them; the Makefile names the work and scripts and commands do it. `make ci` is what the hosted build runs: the toolchain check, Markdown and Go linting, the dependency check, and every test, the goldens included.
 
 The diagrams on this page are drawn by `make docs-diagrams` with the survey's own diagram package, and a test keeps them current.
