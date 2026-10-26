@@ -6,14 +6,13 @@
 {{$date := .Day.Date}}
 {{range .Runs}}
 <h2>Job {{.Name}}</h2>
-{{if .Network}}
-<p class="note">The job as it ran: each step with its return code, each dataset with the records it held. A step links to its program's blueprint.</p>
-<div class="network">{{.Network}}</div>
-{{end}}
+<p class="note">Each step with its return code, and each dataset it had with the records it held, an indexed one's not counted.</p>
 <table>
-  <thead><tr><th>Step</th><th>Program</th><th>Outcome</th></tr></thead>
+  <thead><tr><th>Step</th><th>Program</th><th>Outcome</th><th>DD</th><th>Dataset</th><th class="num">Records</th></tr></thead>
   <tbody>
-  {{range .Steps}}<tr><td>{{.Step}}</td><td><a href="/blueprints/programs/{{.Program}}.md">{{.Program}}</a></td><td>{{.Outcome}}</td></tr>
+  {{range .Steps}}{{$step := .}}{{$n := len .Datasets}}
+  {{if .Datasets}}{{range $i, $d := .Datasets}}<tr>{{if not $i}}<td rowspan="{{$n}}">{{$step.Step}}</td><td rowspan="{{$n}}">{{$step.Program}}</td><td rowspan="{{$n}}">{{$step.Outcome}}</td>{{end}}<td>{{$d.DD}}</td><td><code>{{$d.Dataset}}</code></td><td class="num">{{if $d.Indexed}}indexed{{else}}{{records $d.Records}}{{end}}</td></tr>
+  {{end}}{{else}}<tr><td>{{.Step}}</td><td>{{.Program}}</td><td>{{.Outcome}}</td><td></td><td></td><td></td></tr>{{end}}
   {{end}}
   </tbody>
 </table>

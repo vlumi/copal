@@ -1,7 +1,7 @@
 // Command console serves the bank console: a web window onto the running
-// First Bank of Pangaea, its online channel, and the survey of the bank.
+// First Bank of Pangaea and its online channel, for its operators.
 //
-//	console [-bank dir] [-addr host:port] [-blueprints dir]
+//	console [-bank dir] [-programs dir] [-addr host:port]
 package main
 
 import (
@@ -11,13 +11,10 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"time"
 
-	"github.com/vlumi/cobolith/cobol"
-	"github.com/vlumi/copal/console"
 	"github.com/vlumi/copal/pangaea/bank"
-	"github.com/vlumi/copal/survey/blueprint"
+	"github.com/vlumi/copal/pangaea/console"
 )
 
 func main() {
@@ -33,18 +30,8 @@ func serve(args []string) error {
 	flags.StringVar(&b.Dir, "bank", "pangaea/run/bank", "directory of the running bank")
 	flags.StringVar(&b.Programs, "programs", "pangaea/build", "directory of the compiled programs")
 	addr := flags.String("addr", "127.0.0.1:4510", "address to serve on")
-	src := flags.String("src", "pangaea/programs", "directory of the COBOL programs")
-	blueprints := flags.String("blueprints", "blueprints/pangaea", "directory of the bank's blueprints")
 	_ = flags.Parse(args)
-	programs, err := filepath.Glob(filepath.Join(*src, "*.cbl"))
-	if err != nil {
-		return err
-	}
-	system, err := blueprint.Analyze(append(programs, b.JobFiles()...), b.Copybooks, cobol.IBM)
-	if err != nil {
-		return err
-	}
-	c, err := console.New(b, system, *blueprints)
+	c, err := console.New(b)
 	if err != nil {
 		return err
 	}

@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
@@ -13,26 +12,17 @@ import (
 	"github.com/vlumi/cobolith/cobol"
 	"github.com/vlumi/copal/bedrock/run"
 	"github.com/vlumi/copal/pangaea/bank"
-	"github.com/vlumi/copal/survey/blueprint"
 )
 
 // TestConsole resets a bank and runs two days from the console, as from
 // the browser, then reads every page.
 func TestConsole(t *testing.T) {
 	programs := t.TempDir()
-	if _, err := (run.Build{Dialect: cobol.IBM, Sources: "../pangaea/programs", Copybooks: "../pangaea/copybooks", Out: programs}).Programs(); err != nil {
+	if _, err := (run.Build{Dialect: cobol.IBM, Sources: "../programs", Copybooks: "../copybooks", Out: programs}).Programs(); err != nil {
 		t.Fatal(err)
 	}
-	b := bank.Bank{Dir: t.TempDir(), Programs: programs, Copybooks: "../pangaea/copybooks", Jobs: "../pangaea/jobs"}
-	sources, err := filepath.Glob("../pangaea/programs/*.cbl")
-	if err != nil {
-		t.Fatal(err)
-	}
-	system, err := blueprint.Analyze(append(sources, b.JobFiles()...), "../pangaea/copybooks", cobol.IBM)
-	if err != nil {
-		t.Fatal(err)
-	}
-	c, err := New(b, system, "../blueprints/pangaea")
+	b := bank.Bank{Dir: t.TempDir(), Programs: programs, Copybooks: "../copybooks", Jobs: "../jobs"}
+	c, err := New(b)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -55,7 +45,7 @@ func TestConsole(t *testing.T) {
 		"ACCT.MASTER.G0001V00", "ACCT.MASTER.G0003V00", "Reconciled")
 	get(t, server.URL+"/", http.StatusOK, `href="/days/2026-09-02"`, "RC=0004")
 	get(t, server.URL+"/days/2026-09-02", http.StatusOK, "TRAN.AUDIT.G0002V00", "VALID.VALRPT", "POST.POSTRPT",
-		"Job DAILY", "<svg", ">program ACCTMNT<", "/blueprints/programs/ACCTMNT.md", "/blueprints/copybooks/ACCTMAST.md", " records<")
+		"Job DAILY", ">ACCTMNT</td>", "ACCT.MASTER.G0003V00", " records")
 	get(t, server.URL+"/days/2026-09-01", http.StatusOK, "Job MONTHLY", "STMT.STMTRPT", "Job ONLINE", "EXTRACT.HOLDRPT")
 	get(t, server.URL+"/live", http.StatusOK, "Open for business date 2026-09-03")
 	resp, err := client.Post(server.URL+"/api/balance", "application/json", strings.NewReader(`{"card":"9100000000099999","atm":"ATM 1"}`))
@@ -69,7 +59,6 @@ func TestConsole(t *testing.T) {
 	get(t, server.URL+"/days/2026-09-02/sysout/JOBLOG", http.StatusOK, "JOB DAILY")
 	get(t, server.URL+"/days/2026-09-01/sysout/MONTHLY/JOBLOG", http.StatusOK, "JOB MONTHLY")
 	get(t, server.URL+"/days/2026-09-02/sysout/../SEED", http.StatusNotFound)
-	get(t, server.URL+"/blueprints/programs/ACCTMNT.md", http.StatusOK, "# ACCTMNT")
 	accounts := get(t, server.URL+"/accounts", http.StatusOK)
 	if !regexp.MustCompile(`(\d+) of (\d+) accounts`).MatchString(accounts) {
 		t.Error("the account list does not say how many accounts it shows")

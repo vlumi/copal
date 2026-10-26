@@ -1,12 +1,12 @@
 # The console
 
-A web window onto the running First Bank of Pangaea, built for the modernization: it runs the bank, watches its online day, and shows each run's jobs as the survey draws them. It is the one part of Copal that knows both the bank and the survey, so it lives beside them rather than in either.
+The bank's console: a web window onto the running First Bank of Pangaea for its operators. It runs the bank, watches its online day, and shows each day's jobs and files. Like the rest of the bank, it knows nothing of the survey.
 
-`make console` serves it at <http://127.0.0.1:4510/> (`ADDR` to change it):
+`make bank-console` serves it at <http://127.0.0.1:4510/> (`ADDR` to change it):
 
 - the bank today: its business date, accounts and balances, and every day it has run, with each day's worst return code;
 - accounts, searched by account number, customer number or name, and for each account its master record field by field, every posting and every reject since the reset;
-- each business day: every job it ran, the online day, the daily batch and on the first business day of a month the month-end job, each drawn as the survey draws its network, with every step's return code and every dataset's records, with links from steps to the blueprints of their programs, and with its reports; then the transaction file's control totals against its details, the rejects of transactions and of maintenance requests, the audit trail and the transaction file;
+- each business day: every job it ran, the online day, the daily batch and on the first business day of a month the month-end job, each with every step's return code and the datasets its DD statements allocated with the records each held, and with its reports; then the transaction file's control totals against its details, the rejects of transactions and of maintenance requests, the audit trail and the transaction file;
 - what changed between any two days' openings: balances, status changes and new accounts, reconciled against the postings in the audit trails in between;
 - the online day as it happens: every authorization as it is answered, approved or declined, and the balances and available balances of the accounts as they move, followed as server-sent events.
 

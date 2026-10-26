@@ -1,9 +1,9 @@
 #!/bin/sh
 # Checks that the dependencies between Copal's parts run one way: bedrock
 # imports nothing else; survey and the specimens, pangaea, laurasia and
-# gondwana, import bedrock and never each other; and only console imports
-# survey, pangaea and bedrock. Tests count too. Cobolith, which reads
-# COBOL, is a library of its own that any of them may import.
+# gondwana, import bedrock and never each other. Tests count too.
+# Cobolith, which reads COBOL, is a library of its own that any of them
+# may import.
 set -eu
 
 module=github.com/vlumi/copal
@@ -23,9 +23,9 @@ forbid() {
     done
 }
 
-forbid bedrock survey pangaea laurasia gondwana console
-forbid survey pangaea laurasia gondwana console
-forbid pangaea survey laurasia gondwana console
-forbid laurasia survey pangaea gondwana console
-forbid gondwana survey pangaea laurasia console
+forbid bedrock survey pangaea laurasia gondwana
+forbid survey pangaea laurasia gondwana
+forbid pangaea survey laurasia gondwana
+forbid laurasia survey pangaea gondwana
+forbid gondwana survey pangaea laurasia
 exit $status
