@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -43,6 +44,13 @@ func TestDaysAreReproducible(t *testing.T) {
 			t.Fatal(err)
 		}
 		checkDays(t, days)
+		h, err := p.History()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !reflect.DeepEqual(h.Days, days) || h.Seed != 7 || h.Next.String() != "2026-10-06" {
+			t.Errorf("history %+v, want the days run, seed 7 and next 2026-10-06", h)
+		}
 		trees = append(trees, readTree(t, p.Dir))
 	}
 	if len(trees[0]) != len(trees[1]) {
