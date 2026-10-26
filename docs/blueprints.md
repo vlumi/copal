@@ -96,4 +96,4 @@ The cases are also what a replacement for a program has to match. `survey confor
 
 ## Diagrams
 
-Every diagram carries its legend. The same engine draws the program flows, the job networks, the console's run networks, and the diagrams in this documentation, deterministically, so a diagram is a golden file like the text around it.
+Every diagram carries its legend. The same engine draws the program flows, the job networks, and the diagrams in this documentation, deterministically, so a diagram is a golden file like the text around it.

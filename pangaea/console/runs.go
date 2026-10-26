@@ -1,23 +1,28 @@
 package console
 
 import (
-	"html/template"
 	"os"
 	"path/filepath"
-	"slices"
 
 	"github.com/vlumi/copal/bedrock/runner"
-	"github.com/vlumi/copal/survey/blueprint"
 )
 
-// JobRun is a job a business day ran: its steps' outcomes, its network as
-// it ran, and its reports. Dir is its sysout directory within the day's.
+// JobRun is a job a business day ran: its steps, each with its outcome and
+// the datasets it had, and its reports. Dir is its sysout directory within
+// the day's.
 type JobRun struct {
 	Name    string
 	Dir     string
-	Steps   []runner.Result
-	Network template.HTML
+	Steps   []StepRun
 	Reports []Report
+}
+
+// StepRun is a step as it ran: its outcome, and each dataset its DD
+// statements allocated, with the records it held after the step, an
+// indexed one's not counted.
+type StepRun struct {
+	runner.Result
+	Datasets []runner.Allocation
 }
 
 // Report is a report a step wrote. One too large to show is linked to.
@@ -44,7 +49,7 @@ func (l *Ledger) jobRuns(sysout string) ([]JobRun, error) {
 	}
 	var runs []JobRun
 	for _, dir := range dirs {
-		run, err := l.jobRun(filepath.Join(sysout, dir))
+		run, err := jobRun(filepath.Join(sysout, dir))
 		if err != nil {
 			return nil, err
 		}
@@ -54,48 +59,26 @@ func (l *Ledger) jobRuns(sysout string) ([]JobRun, error) {
 	return runs, nil
 }
 
-func (l *Ledger) jobRun(dir string) (JobRun, error) {
-	var run JobRun
-	var err error
-	if run.Name, run.Steps, err = runner.ReadJobLog(dir); err != nil {
+func jobRun(dir string) (JobRun, error) {
+	name, results, err := runner.ReadJobLog(dir)
+	if err != nil {
 		return JobRun{}, err
-	}
-	if run.Reports, err = reports(dir, run.Steps); err != nil {
-		return JobRun{}, err
-	}
-	i := slices.IndexFunc(l.Jobs, func(j blueprint.Job) bool { return j.Name == run.Name })
-	if i < 0 {
-		return run, nil
 	}
 	allocations, err := runner.ReadMessages(dir)
 	if err != nil {
 		return JobRun{}, err
 	}
-	records, indexed := map[[2]string]int{}, map[[2]string]bool{}
-	for _, a := range allocations {
-		records[[2]string{a.Step, a.DD}] += a.Records
-		indexed[[2]string{a.Step, a.DD}] = a.Indexed
-	}
-	outcomes := map[string]string{}
-	for _, s := range run.Steps {
-		outcomes[s.Step] = s.Outcome()
-	}
-	svg, err := blueprint.JobGraph(l.Jobs[i], blueprint.JobNotes{
-		Step: func(s blueprint.Step) string { return outcomes[s.Name] },
-		DD: func(s blueprint.Step, dd blueprint.DD) string {
-			n, ok := records[[2]string{s.Name, dd.Name}]
-			switch {
-			case !ok || indexed[[2]string{s.Name, dd.Name}]:
-				return ""
-			case n == 1:
-				return "1 record"
+	run := JobRun{Name: name}
+	for _, r := range results {
+		step := StepRun{Result: r}
+		for _, a := range allocations {
+			if a.Step == r.Step && a.Dataset != "" && !a.Sysout && !a.Dummy && !a.InStream {
+				step.Datasets = append(step.Datasets, a)
 			}
-			return count(n) + " records"
-		},
-		ProgramLink:  func(name string) string { return "/blueprints/programs/" + name + ".md" },
-		CopybookLink: func(name string) string { return "/blueprints/copybooks/" + name + ".md" },
-	}).SVG()
-	run.Network = template.HTML(svg) //nolint:gosec // drawn by the survey, its labels escaped
+		}
+		run.Steps = append(run.Steps, step)
+	}
+	run.Reports, err = reports(dir, results)
 	return run, err
 }
 

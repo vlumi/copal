@@ -42,8 +42,8 @@ func Write(dir string) error {
 	return nil
 }
 
-// architecture is the four parts of Copal, the three specimens as one,
-// since they stand in the same place, and the survey's files between them.
+// architecture is the parts of Copal, the three specimens as one, since
+// they stand in the same place, and the survey's files.
 // Every part imports cobolith; only bedrock's import is drawn, and the
 // library's box says the rest, so that the arrows show the layers.
 func architecture() diagram.Graph {
@@ -56,7 +56,6 @@ func architecture() diagram.Graph {
 			diagram.EdgeKey(diagram.Dotted, "reads"),
 		},
 		Nodes: []diagram.Node{
-			{ID: "console", Label: "console\nruns the bank, shows its survey"},
 			{ID: "survey", Label: "survey\nthe analyzer"},
 			{ID: "specimens", Label: "the specimens\npangaea, the bank\nlaurasia, the card processor\ngondwana, the life insurer"},
 			{ID: "blueprints", Label: "blueprints, oracle\nthe survey of each specimen", Data: true},
@@ -64,10 +63,6 @@ func architecture() diagram.Graph {
 			{ID: "cobolith", Label: "cobolith, a library\nCOBOL, JCL, layouts, records\nimported by every part"},
 		},
 		Edges: []diagram.Edge{
-			{From: "console", To: "survey"},
-			{From: "console", To: "specimens"},
-			{From: "console", To: "blueprints", Style: diagram.Dotted, Span: 2},
-			{From: "console", To: "bedrock", Span: 3},
 			{From: "survey", To: "specimens", Style: diagram.Dotted},
 			{From: "survey", To: "blueprints", Style: diagram.Dashed},
 			{From: "survey", To: "bedrock", Span: 2},

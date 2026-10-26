@@ -19,7 +19,6 @@ import (
 	"github.com/vlumi/copal/pangaea/brand"
 	"github.com/vlumi/copal/pangaea/online"
 	"github.com/vlumi/copal/pangaea/records"
-	"github.com/vlumi/copal/survey/blueprint"
 )
 
 //go:embed templates static
@@ -28,31 +27,26 @@ var files embed.FS
 // shown is the most accounts a search lists.
 const shown = 200
 
-// Server serves the console for one bank, with the blueprints of its
-// programs and jobs, and the bank's online channel.
+// Server serves the console for one bank, and the bank's online channel.
 type Server struct {
-	bank       bank.Bank
-	layouts    *records.Layouts
-	system     *blueprint.System
-	blueprints string
-	online     *online.Server
-	pages      map[string]*template.Template
+	bank    bank.Bank
+	layouts *records.Layouts
+	online  *online.Server
+	pages   map[string]*template.Template
 	// busy is locked while the bank runs or resets, and read-locked while
 	// a page reads its files.
 	busy sync.RWMutex
 }
 
-// New makes a console for the bank. The system is the survey of the
-// bank's programs and jobs, whose blueprints are in the blueprints
-// directory.
-func New(b bank.Bank, system *blueprint.System, blueprints string) (*Server, error) {
+// New makes a console for the bank.
+func New(b bank.Bank) (*Server, error) {
 	bankLayouts, err := records.Load(b.Copybooks)
 	if err != nil {
 		return nil, err
 	}
-	s := &Server{bank: b, layouts: bankLayouts, system: system, blueprints: blueprints, pages: map[string]*template.Template{},
+	s := &Server{bank: b, layouts: bankLayouts, pages: map[string]*template.Template{},
 		online: &online.Server{Bank: b, Layouts: bankLayouts, Clock: time.Now}}
-	funcs := template.FuncMap{"money": money, "count": count, "date": date}
+	funcs := template.FuncMap{"money": money, "count": count, "records": recordCount, "date": date}
 	for _, page := range []string{"overview", "nobank", "accounts", "account", "day", "compare", "live", "error"} {
 		t, err := template.New("").Funcs(funcs).ParseFS(files, "templates/base.html", "templates/"+page+".html")
 		if err != nil {
@@ -75,7 +69,6 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /accounts/{no}", s.view("account", s.account))
 	mux.HandleFunc("GET /days/{date}", s.view("day", s.day))
 	mux.HandleFunc("GET /days/{date}/sysout/{file...}", s.sysout)
-	mux.Handle("GET /blueprints/", http.StripPrefix("/blueprints/", http.FileServer(http.Dir(s.blueprints))))
 	mux.HandleFunc("GET /compare", s.view("compare", s.compare))
 	mux.HandleFunc("POST /reset", s.reset)
 	mux.HandleFunc("POST /run", s.run)
@@ -130,7 +123,7 @@ func (s *Server) view(name string, read viewFunc) http.HandlerFunc {
 			s.fail(w, err)
 			return
 		}
-		v, err := read(&Ledger{Layouts: s.layouts, Store: store, Jobs: s.system.Jobs}, h, r)
+		v, err := read(&Ledger{Layouts: s.layouts, Store: store}, h, r)
 		if err != nil {
 			s.fail(w, err)
 			return

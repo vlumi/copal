@@ -15,7 +15,7 @@ A new bank is opened once, with `START`, which loads the online files for its fi
 
 In this installation the scheduler is `make bank-days N=1`, which runs the online day with whatever traffic was sent to it, closes it, and runs the batch. The console's Run button does the same. `make bank-reset` opens a new bank with `START`.
 
-The online day can also be held open for real traffic with `make console` (the service is under `/api/`) or `make online`; interrupting either closes the day and extracts its holds, and the next `make bank-days` runs that day's batch alone. A business day's online day runs once; running the day again does not repeat it.
+The online day can also be held open for real traffic with `make bank-console` (the service is under `/api/`) or `make online`; interrupting either closes the day and extracts its holds, and the next `make bank-days` runs that day's batch alone. A business day's online day runs once; running the day again does not repeat it.
 
 ## Where the output is
 

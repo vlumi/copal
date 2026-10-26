@@ -20,3 +20,11 @@ func TestDecimal(t *testing.T) {
 		t.Errorf("two decimals: %q", got)
 	}
 }
+
+func TestRecordCount(t *testing.T) {
+	for n, want := range map[int]string{0: "0 records", 1: "1 record", 1500: "1,500 records"} {
+		if got := recordCount(n); got != want {
+			t.Errorf("recordCount(%d) = %q, want %q", n, got, want)
+		}
+	}
+}

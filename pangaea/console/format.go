@@ -29,6 +29,14 @@ func money(cents int64) string {
 // count writes a number with thousands separators.
 func count(n int) string { return grouped(strconv.Itoa(n)) }
 
+// recordCount writes a number of records, one in the singular.
+func recordCount(n int) string {
+	if n == 1 {
+		return "1 record"
+	}
+	return count(n) + " records"
+}
+
 func grouped(digits string) string {
 	sign := ""
 	if rest, ok := strings.CutPrefix(digits, "-"); ok {

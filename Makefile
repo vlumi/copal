@@ -24,9 +24,9 @@ bank-days: pangaea-build  ## Run the bank's next N business days
 # 2951 fukukoi, "come, fortune"; 1192 ii kuni, "good country".
 ADDR ?= 127.0.0.1:4510
 
-.PHONY: console
-console: pangaea-build  ## Serve the bank console in the browser (ADDR)
-	go run ./console/cmd/console -addr $(ADDR)
+.PHONY: bank-console
+bank-console: pangaea-build  ## Serve the bank's console in the browser (ADDR)
+	go run ./pangaea/cmd/console -addr $(ADDR)
 
 ONLINE_ADDR ?= 127.0.0.1:2951
 
@@ -37,7 +37,7 @@ online: pangaea-build  ## Serve the bank's online day until interrupted (ONLINE_
 RATE ?= 5
 
 .PHONY: simulate
-simulate:  ## Send card traffic to the console's online channel until interrupted (RATE)
+simulate:  ## Send card traffic to the bank console's online channel until interrupted (RATE)
 	go run ./pangaea/cmd/pangaea simulate -api http://$(ADDR)/api -rate $(RATE)
 
 # Compiles Pangaea's programs for the targets that run the bank; not listed.

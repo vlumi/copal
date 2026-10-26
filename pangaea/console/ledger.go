@@ -12,15 +12,13 @@ import (
 	"github.com/vlumi/cobolith/record"
 	"github.com/vlumi/copal/bedrock/dataset"
 	"github.com/vlumi/copal/pangaea/records"
-	"github.com/vlumi/copal/survey/blueprint"
 )
 
-// Ledger reads the bank's datasets through the layouts, and its jobs' runs
-// with the jobs' blueprints.
+// Ledger reads the bank's datasets through the layouts, and its jobs'
+// runs from their logs.
 type Ledger struct {
 	Layouts *records.Layouts
 	Store   *dataset.Store
-	Jobs    []blueprint.Job
 }
 
 // Account is an account master record.

@@ -1,6 +1,6 @@
 # The First Bank of Pangaea
 
-A small COBOL bank, the specimen the survey is developed against: a nightly batch, and an online day of card and ATM authorizations. Fiction written for this project. The bank knows nothing of the survey; the [console](../console/) is where the two meet.
+A small COBOL bank, the specimen the survey is developed against: a nightly batch, and an online day of card and ATM authorizations. Fiction written for this project. The bank knows nothing of the survey.
 
 ## Layout
 
@@ -14,7 +14,7 @@ A small COBOL bank, the specimen the survey is developed against: a nightly batc
 - [testdata/](testdata/): fixtures, each an `input` directory of datasets to start from and a `golden` directory of the datasets, job log and reports a run produces.
 - [brand/](brand/): the bank's seal and its mascot, which the console shows.
 
-The Go packages around the COBOL are the bank's machine room, not the bank: [records/](records/) loads the record layouts computed from the copybooks and says which describes each dataset, [generate/](generate/) makes up customers and their business, [bank/](bank/) runs the bank day after day, [online/](online/) serves the online day over HTTP and [simulate/](simulate/) sends it card traffic. [cmd/pangaea](cmd/pangaea/) puts them on the command line. Reading JCL and laying out records come from [cobolith](https://github.com/vlumi/cobolith), the library the survey reads COBOL with; keeping the datasets and their catalog, compiling the programs and running the jobs from [bedrock](../bedrock/), the harness the survey's oracle uses too.
+The Go packages around the COBOL are the bank's machine room, not the bank: [records/](records/) loads the record layouts computed from the copybooks and says which describes each dataset, [generate/](generate/) makes up customers and their business, [bank/](bank/) runs the bank day after day, [online/](online/) serves the online day over HTTP and [simulate/](simulate/) sends it card traffic, and [console/](console/) is the operators' window onto all of it. [cmd/pangaea](cmd/pangaea/) and [cmd/console](cmd/console/) put them on the command line. Reading JCL and laying out records come from [cobolith](https://github.com/vlumi/cobolith), the library the survey reads COBOL with; keeping the datasets and their catalog, compiling the programs and running the jobs from [bedrock](../bedrock/), the harness the survey's oracle uses too.
 
 ## The daily batch
 
@@ -70,7 +70,7 @@ The generator ([generate/](generate/)) reads and writes records through the layo
 
 ## The console
 
-The [console](../console/) is a web window onto the running bank, its online channel and its survey. It lives beside the bank, since it knows the survey too.
+The [console](console/) is the operators' web window onto the running bank: its accounts, each business day's jobs and files, what the days changed, and the online day as it happens. `make bank-console` serves it.
 
 ## Conventions
 
