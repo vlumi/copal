@@ -2,17 +2,24 @@
 
 Copal is one Go module in four parts, each a directory at the top of the repository, and the files where two of them meet. What reads COBOL is a library of its own, [cobolith](https://github.com/vlumi/cobolith), which every part imports.
 
-![The parts of Copal: the console imports the survey, the bank, bedrock and cobolith; the survey and the three specimens import bedrock and cobolith, and bedrock imports cobolith; the survey writes the blueprints and reads the bank](diagrams/architecture.svg)
+![The parts of Copal: the console imports the survey, the specimens and bedrock; the survey and the specimens import bedrock, which imports cobolith, as every part does; the survey reads the specimens and writes the blueprints and the oracle's cases, which the console reads](diagrams/architecture.svg)
 
 ## The parts
 
 - **Survey**, `survey/`, is the analyzer: it reads a COBOL system and writes its blueprints, and serves the explorer. Only `blueprint`, its model of a system, is exported; every analysis is under `survey/internal/`. [survey/README.md](../survey/README.md) describes the pipeline.
-- **Pangaea**, `pangaea/`, is the specimen: a legacy COBOL bank with the machine room that runs it in Go. It is written as a legacy system would be, documented as one in [pangaea/docs/](../pangaea/docs/README.md), and it knows nothing of the survey.
-- **Laurasia**, `laurasia/`, is the second specimen: a card processor in another shop's COBOL, Micro Focus dialect and free format, run by shell scripts instead of JCL, with a machine room of its own that opens it on a generated portfolio and runs it day after day. It is there to show where the survey assumes Pangaea. Its operations guide is in [laurasia/docs/](../laurasia/docs/operations.md).
-- **Gondwana**, `gondwana/`, is the third specimen: a life insurer in Fujitsu NetCOBOL, source and data in Shift_JIS with Japanese names and comments, amounts in yen and dates in the Japanese eras, run by Windows batch files that bedrock interprets. It is there to show where the survey assumes ASCII and the first two. Its operations guide is in [gondwana/docs/](../gondwana/docs/operations.md).
 - **Cobolith**, [cobolith](https://github.com/vlumi/cobolith), is the language layer everything stands on: reading COBOL source and copybooks in the IBM, Micro Focus, Hitachi and Fujitsu dialects, laying out records, reading and writing them by field, and reading JCL. It was written here and is now a library in a repository of its own, which Copal requires by version; how it got there is in [plans/library.md](plans/library.md).
 - **Bedrock**, `bedrock/`, is the harness built on it: keeping datasets and their catalog, reading batch scripts and batch files, and compiling COBOL programs with GnuCOBOL and running them and the jobs, scripts and batch files that run them. The survey's oracle runs programs with it, and the specimens' machine rooms run the bank, the card processor and the life insurer with it. None of it is analysis.
-- **The console**, `console/`, is the one part built for the modernization rather than inherited from the past: it runs the bank, watches its online day, and shows each run's jobs as the survey draws them, with links into the blueprints. It is the only part that knows both the bank and the survey.
+- **The console**, `console/`, is the one part built for the modernization rather than inherited from the past: it runs the bank, watches its online day, and shows each run's jobs as the survey draws them, with links into the blueprints. It is the only part that knows both a specimen and the survey.
+
+## The specimens
+
+`pangaea/`, `laurasia/` and `gondwana/` are three legacy systems written for the survey to read, and they are built alike. Each is a directory of COBOL programs, copybooks and what runs them, with a machine room in Go beside them: a generator that writes its inputs from a seed, a command that opens it and runs it day after day through bedrock, backing out a day that fails, and fixtures under `testdata/` whose outputs are golden. Each is written and documented as a legacy system would be, its operations guide in its operators' voice under `docs/`, and none of them knows the survey. They differ where shops differ, and each was added to show where the survey had assumed the ones before:
+
+| Specimen | Business | COBOL | Run by | Its guide |
+| --- | --- | --- | --- | --- |
+| Pangaea | a bank, with an online day of card and ATM authorizations | IBM, fixed format | JCL | [pangaea/docs/](../pangaea/docs/README.md) |
+| Laurasia | a card processor | Micro Focus, free format | shell scripts | [laurasia/docs/](../laurasia/docs/operations.md) |
+| Gondwana | a life insurer, amounts in yen and dates in the Japanese eras | Fujitsu NetCOBOL, source and data in Shift_JIS with Japanese names and comments | Windows batch files, which bedrock interprets | [gondwana/docs/](../gondwana/docs/operations.md) |
 
 ## The rule
 
@@ -24,9 +31,7 @@ The rule exists because a bank must not depend on the tool that studies it. Ever
 
 Two kinds of thing are checked in that a build regenerates and compares, the specimens' outputs and the survey's blueprints of them:
 
-- **Pangaea's outputs.** Each fixture under `pangaea/testdata/` runs its jobs through GnuCOBOL, and the datasets, job logs and reports they produce are golden. A change to the bank updates them in the same commit, so the history of the bank's behavior is in the history of its goldens.
-- **Laurasia's outputs.** Each fixture under `laurasia/testdata/` runs its scripts on its input files, and what they leave behind is golden, the same way.
-- **Gondwana's outputs.** Each fixture under `gondwana/testdata/` runs its batch files on its input files, and what they leave behind is golden, the same way; the working tree holds them in Shift_JIS and the repository in UTF-8.
+- **The specimens' outputs.** Each fixture under a specimen's `testdata/` runs its jobs, scripts or batch files through GnuCOBOL, and the datasets, logs and reports they leave behind are golden; Gondwana's are Shift_JIS in the working tree and UTF-8 in the repository. A change to a specimen updates them in the same commit, so the history of its behavior is in the history of its goldens.
 - **The survey of the three.** `blueprints/pangaea/`, `blueprints/laurasia/` and `blueprints/gondwana/` are what the survey says about the bank, the card processor and the life insurer, and `oracle/` the cases it found and what the programs did on them. A change in the analyzer shows as a diff there, which is how its behavior is reviewed: not by reading the code change alone, but by reading what it changed in the blueprints of a real system.
 
 Both depend on everything being deterministic: the analysis, the diagram layout, and the specimens themselves, whose days follow from a seed and never read the clock.
