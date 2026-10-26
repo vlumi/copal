@@ -46,7 +46,7 @@ Under `%GLS_DATA%`:
 
 ## The console
 
-The console, `make life-console`, shows the same without opening the files: every business day run with its batch files, counts and worst errorlevel, each batch file step by step, the files each day read and wrote, and any policy's master record. Its Run button runs the next business days as the scheduler would.
+The console, `make gondwana-console`, shows the same without opening the files: every business day run with its batch files, counts and worst errorlevel, each batch file step by step, the files each day read and wrote, and any policy's master record. Its Run button runs the next business days as the scheduler would.
 
 ## Return codes
 

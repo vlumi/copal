@@ -2,14 +2,14 @@
 
 The bank's console: a web window onto the running First Bank of Pangaea for its operators. It runs the bank, watches its online day, and shows each day's jobs and files. Like the rest of the bank, it knows nothing of the survey.
 
-`make bank-console` serves it at <http://127.0.0.1:4510/> (`ADDR` to change it):
+`make pangaea-console` serves it at <http://127.0.0.1:4510/> (`PANGAEA_ADDR` to change it):
 
 - the bank today: its business date, accounts and balances, and every day it has run, with each day's worst return code;
-- accounts, searched by account number, customer number or name, and for each account its master record field by field, every posting and every reject since the reset;
+- accounts, searched by account number, customer number or name, and for each account its master record field by field, every posting and every reject since the bank opened;
 - each business day: every job it ran, the online day, the daily batch and on the first business day of a month the month-end job, each with every step's return code and the datasets its DD statements allocated with the records each held, and with its reports; then the transaction file's control totals against its details, the rejects of transactions and of maintenance requests, the audit trail and the transaction file;
 - what changed between any two days' openings: balances, status changes and new accounts, reconciled against the postings in the audit trails in between;
 - the online day as it happens: every authorization as it is answered, approved or declined, and the balances and available balances of the accounts as they move, followed as server-sent events.
 
-It reads every record through the layouts computed from the copybooks, the same way the bank's generator writes them. Its buttons reset the bank and run business days by calling the same code as `make bank-reset` and `make bank-days`; the console itself never writes the bank's files.
+It reads every record through the layouts computed from the copybooks, the same way the bank's generator writes them. Its buttons open a bank and run business days by calling the same code as `make pangaea-open` and `make pangaea-days`; the console itself never writes the bank's files.
 
-The console also serves the bank's online channel, under `/api/`: it opens the business day's online day as it starts, closes it for the batch when you run days, during which the channel answers that the bank is closed, and opens the next day's after. `make simulate` sends it card traffic, five requests a second by default (`RATE`): purchases, withdrawals, balance enquiries and the odd reversal, for the bank's cards, each with a spending habit of its own, so that some run into their daily limits and some accounts out of money. Interrupting the console closes the online day and extracts its holds.
+The console also serves the bank's online channel, under `/api/`: it opens the business day's online day as it starts, closes it for the batch when you run days, during which the channel answers that the bank is closed, and opens the next day's after. `make pangaea-simulate` sends it card traffic, five requests a second by default (`RATE`): purchases, withdrawals, balance enquiries and the odd reversal, for the bank's cards, each with a spending habit of its own, so that some run into their daily limits and some accounts out of money. Interrupting the console closes the online day and extracts its holds.

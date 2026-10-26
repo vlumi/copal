@@ -34,7 +34,7 @@ The Go packages around the COBOL are the bank's machine room, not the bank: [rec
 
 The day's inputs are the current generations, (0), of the bank control record, the account master, the accruals, the transaction file, the card file, the maintenance requests and the card master, and the rate table; it writes the next generations, (+1), of the control record, the master and the accruals, the day's audit trail and the rejects of both transactions and maintenance, and the online files for the next day. Everything in between is temporary. So a month's interest and fees are posted on the first business day of the next month, as the batch's first postings.
 
-`make pangaea-daily` runs it on the fixture in `testdata/daily` and shows the reports; the fixture in `testdata/month-end` closes October and runs the month-end job after it.
+`make pangaea-fixture` runs it on the fixture in `testdata/daily` and shows the reports; the fixture in `testdata/month-end` closes October and runs the month-end job after it.
 
 ## The month-end job
 
@@ -62,7 +62,7 @@ When the requests end, at the start of the batch window, **HOLDEXT** extracts th
 
 ## The running bank
 
-`make bank-reset` makes a new bank in `pangaea/run/bank`: about three thousand accounts for two thousand customers, generated from a seed (`SEED=1`, `ACCOUNTS=3000` by default), on business day 2026-09-01. `make bank-days N=5` runs the next five business days: for each it runs the online day, with no card traffic unless one is served, generates the branches' transaction and maintenance files for the day and runs the daily batch on them, and on the first business day of a month the month-end job too. A reset runs START. `make online` serves the business day's online day instead, until interrupted: card terminals and ATMs `POST` JSON to `/purchase`, `/reversal`, `/withdrawal` and `/balance`, such as `{"card": "9100000000000018", "amount": "12.30", "merchant": "CAFE"}`, and get the response as JSON. On the interrupt the day closes and its holds are extracted; the next `make bank-days` runs that day's batch only.
+`make pangaea-open` makes a new bank in `pangaea/run/bank`: about three thousand accounts for two thousand customers, generated from a seed (`SEED=1`, `ACCOUNTS=3000` by default), on business day 2026-09-01. `make pangaea-days N=5` runs the next five business days: for each it runs the online day, with no card traffic unless one is served, generates the branches' transaction and maintenance files for the day and runs the daily batch on them, and on the first business day of a month the month-end job too. Opening a bank runs START. `make pangaea-online` serves the business day's online day instead, until interrupted: card terminals and ATMs `POST` JSON to `/purchase`, `/reversal`, `/withdrawal` and `/balance`, such as `{"card": "9100000000000018", "amount": "12.30", "merchant": "CAFE"}`, and get the response as JSON. On the interrupt the day closes and its holds are extracted; the next `make pangaea-days` runs that day's batch only.
 
 Every generation stays cataloged in `pangaea/run/bank/datasets`, so the history of the master, the audit trail and the rejects is all there; each day's job log and reports are in `pangaea/run/bank/sysout/DATE`. The same seed always gives the same bank, day after day. A business day's batch goes through whole or not at all: if a job of it fails, the bank backs the batch out, deleting every dataset it cataloged and moving its job logs and reports to `sysout/DATE.failed`, and the next run starts the batch afresh. The online day stays as it ran.
 
@@ -70,7 +70,7 @@ The generator ([generate/](generate/)) reads and writes records through the layo
 
 ## The console
 
-The [console](console/) is the operators' web window onto the running bank: its accounts, each business day's jobs and files, what the days changed, and the online day as it happens. `make bank-console` serves it.
+The [console](console/) is the operators' web window onto the running bank: its accounts, each business day's jobs and files, what the days changed, and the online day as it happens. `make pangaea-console` serves it.
 
 ## Conventions
 
