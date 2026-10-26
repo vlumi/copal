@@ -6,9 +6,11 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"slices"
 	"strings"
 	"testing"
 
+	"github.com/vlumi/copal/bedrock/runlog"
 	"github.com/vlumi/copal/gondwana/batch"
 )
 
@@ -51,6 +53,7 @@ func TestDaysAreReproducible(t *testing.T) {
 		if !reflect.DeepEqual(h.Days, days) || h.Seed != 7 || h.Next.String() != "2026-04-13" {
 			t.Errorf("history %+v, want the days run, seed 7 and next 2026-04-13", h)
 		}
+		checkRuns(t, in)
 		trees = append(trees, readTree(t, in.Dir))
 	}
 	if len(trees[0]) != len(trees[1]) {
@@ -60,6 +63,29 @@ func TestDaysAreReproducible(t *testing.T) {
 		if !bytes.Equal(data, trees[1][name]) {
 			t.Errorf("%s differs between the two insurers", name)
 		}
+	}
+}
+
+// checkRuns checks the run record: the batch file that opened the
+// insurer, and each day's, the unload the daily run calls among them, and
+// the billing on April 10.
+func checkRuns(t *testing.T, in Insurer) {
+	t.Helper()
+	runs, err := runlog.Read(filepath.Join(in.Dir, runlog.File))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got []string
+	for _, r := range runs {
+		got = append(got, r.Date+" "+r.Job)
+	}
+	want := []string{"2026-04-01 OPEN"}
+	for _, date := range []string{"2026-04-01", "2026-04-02", "2026-04-03", "2026-04-06", "2026-04-07", "2026-04-08", "2026-04-09", "2026-04-10"} {
+		want = append(want, date+" DAILY", date+" UNLOAD")
+	}
+	want = append(want, "2026-04-10 BILLING")
+	if !slices.Equal(got, want) {
+		t.Errorf("runs %q, want %q", got, want)
 	}
 }
 

@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"reflect"
 	"slices"
 	"strings"
 	"testing"
@@ -13,6 +14,7 @@ import (
 	"github.com/vlumi/cobolith/cobol"
 	"github.com/vlumi/copal/bedrock/dataset"
 	"github.com/vlumi/copal/bedrock/run"
+	"github.com/vlumi/copal/bedrock/runlog"
 )
 
 // TestDaysAreReproducible resets two banks from the same seed, runs three
@@ -35,6 +37,7 @@ func TestDaysAreReproducible(t *testing.T) {
 		}
 		checkDays(t, days)
 		checkHistory(t, b)
+		checkRuns(t, b, days)
 		trees = append(trees, readTree(t, b.Dir))
 	}
 	if len(trees[0]) != len(trees[1]) {
@@ -44,6 +47,29 @@ func TestDaysAreReproducible(t *testing.T) {
 		if !bytes.Equal(data, trees[1][name]) {
 			t.Errorf("%s differs between the two banks", name)
 		}
+	}
+}
+
+// checkRuns checks the run record: START on the day the bank opened, and
+// for each day its online day, its daily batch and, on the first business
+// day of the month, the month-end, with the steps the day reported.
+func checkRuns(t *testing.T, b Bank, days []Day) {
+	t.Helper()
+	runs, err := runlog.Read(filepath.Join(b.Dir, runlog.File))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got []string
+	for _, r := range runs {
+		got = append(got, r.Date+" "+r.Job)
+	}
+	want := []string{"2026-09-01 START", "2026-09-01 ONLINE", "2026-09-01 DAILY", "2026-09-01 MONTHLY",
+		"2026-09-02 ONLINE", "2026-09-02 DAILY", "2026-09-03 ONLINE", "2026-09-03 DAILY"}
+	if !slices.Equal(got, want) {
+		t.Fatalf("runs %q, want %q", got, want)
+	}
+	if !reflect.DeepEqual(runs[2].Steps, days[0].Results) || !reflect.DeepEqual(runs[1].Steps, days[0].Online) {
+		t.Errorf("the first day's runs %+v, want its steps as reported", runs[1:3])
 	}
 }
 

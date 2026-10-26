@@ -15,6 +15,7 @@ import (
 	"github.com/vlumi/cobolith/jcl"
 	"github.com/vlumi/cobolith/record"
 	"github.com/vlumi/copal/bedrock/dataset"
+	"github.com/vlumi/copal/bedrock/runlog"
 	"github.com/vlumi/copal/bedrock/runner"
 	"github.com/vlumi/copal/pangaea/generate"
 	"github.com/vlumi/copal/pangaea/records"
@@ -128,7 +129,11 @@ func (b Bank) Reset(seed uint64, accounts int) error {
 	if err != nil {
 		return err
 	}
-	if _, err := runJob(b.runner(store, filepath.Join(b.Dir, "sysout", start.Name)), start); err != nil {
+	results, err := runJob(b.runner(store, filepath.Join(b.Dir, "sysout", start.Name)), start)
+	if err != nil {
+		return err
+	}
+	if err := b.record(StartDate, start.Name, results); err != nil {
 		return err
 	}
 	return os.WriteFile(filepath.Join(b.Dir, seedFile), []byte(strconv.FormatUint(seed, 10)+"\n"), 0o644)
@@ -156,6 +161,9 @@ func (b Bank) RunDays(n int, report func(Day)) error {
 		day, err := b.runDay(g, j)
 		day.Online = online
 		if err != nil {
+			return err
+		}
+		if err := errors.Join(b.record(day.Date, j.daily.Name, day.Results), b.record(day.Date, j.monthly.Name, day.MonthEnd)); err != nil {
 			return err
 		}
 		report(day)
@@ -278,6 +286,15 @@ func (b Bank) failedSysout(date generate.Date) string { return b.sysout(date) + 
 
 func (b Bank) runner(store *dataset.Store, sysout string) runner.Runner {
 	return runner.Runner{Programs: b.Programs, Datasets: store, Sysout: sysout}
+}
+
+// record adds a job a business day ran to the bank's run record; one
+// that did not run, the month-end on most days, is not added.
+func (b Bank) record(date generate.Date, job string, steps []runner.Result) error {
+	if len(steps) == 0 {
+		return nil
+	}
+	return runlog.Append(filepath.Join(b.Dir, runlog.File), runlog.Run{Date: date.String(), Job: job, Steps: steps})
 }
 
 // runJob runs a job, which must go through: no step may end above RC 4,
