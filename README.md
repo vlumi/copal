@@ -54,6 +54,8 @@ Everything is a make target, and plain `make` lists them. You need GnuCOBOL 3.2 
 | `make blueprints` | Regenerates the survey of the three specimens | [blueprints/pangaea/](blueprints/pangaea/README.md), [blueprints/laurasia/](blueprints/laurasia/README.md), [blueprints/gondwana/](blueprints/gondwana/README.md) |
 | `make explore-pangaea`, `make explore-laurasia`, `make explore-gondwana` | The same analysis as a web app: every job, step, dataset, program, paragraph and field a page, and a field's values followed across programs on the diagrams | <http://127.0.0.1:1192/> |
 | `make oracle` | Finds, for each program of the specimens, input data that reaches the rules of its decision tables, by running it; replays the batches on those cases | [oracle/pangaea/](oracle/pangaea/README.md), [oracle/laurasia/](oracle/laurasia/README.md), [oracle/gondwana/](oracle/gondwana/README.md) |
+| `make conform-pangaea PROGRAM=TXPOST WITH=bin/txpost` | Runs a replacement for a program, any executable, on the program's recorded cases, and names the first field it gets wrong; `conform-laurasia` and `conform-gondwana` likewise | the terminal |
+| `make conform-demo` | The same on BANKDATE rewritten in Go, which conforms on all its cases | the terminal |
 
 ### Checks
 
@@ -72,7 +74,7 @@ Everything is a make target, and plain `make` lists them. You need GnuCOBOL 3.2 
 | Paragraph | A decision table: each path through its conditions, and the actions it takes |
 | Entity | Who reads, writes and decides on each field across the programs; the state machine of each code field; who owns it |
 | Field | Its trail back to the inputs its values come from, and forward to everything they reach, through programs and job steps |
-| Rule | A recorded case: input data that reaches it, and what the program wrote and returned |
+| Rule | A recorded case: input data that reaches it, and what the program wrote and returned; what a replacement for the program has to match |
 
 [docs/blueprints.md](docs/blueprints.md) explains how to read them. Every fact links to the source line it came from, and no language model is involved.
 
@@ -95,7 +97,8 @@ Everything is a make target, and plain `make` lists them. You need GnuCOBOL 3.2 
 6. Read a blueprint: [TXPOST](blueprints/pangaea/programs/TXPOST.md), its [decision tables](blueprints/pangaea/rules/TXPOST.md), and the [DAILY job](blueprints/pangaea/jobs/DAILY.md).
 7. `make explore-pangaea`: search for `AM-BALANCE`, open it in TXPOST, and follow its values back to the files that come from outside. `make explore-gondwana`: the same, in Japanese, with the Report Writer's lines among the records.
 8. Read an oracle case: [TXPOST's](oracle/pangaea/TXPOST/README.md), rule by rule.
-9. `make ci`.
+9. `make conform-demo`: a rewrite of BANKDATE in Go checked against its cases. Break the rewrite, in `survey/internal/oracle/testdata/rewrites/bankdate/`, and run it again: the report names the field.
+10. `make ci`.
 
 ## Reading more
 
