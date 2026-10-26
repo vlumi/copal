@@ -6,46 +6,51 @@ Copal is a study of one problem: understanding a legacy COBOL batch system well 
 
 ## The parts
 
+Four parts, and three specimens for them to work on.
+
 | Directory | Part | What it is |
 | --- | --- | --- |
-| [survey/](survey/) | **Survey** | The analyzer. Reads a COBOL system and writes its blueprints: record layouts, program structure, data flow, business rules as decision tables, and the job network. Serves the same analysis in the browser, and finds test cases that reach the rules. |
-| [pangaea/](pangaea/) | **The First Bank of Pangaea** | The first specimen: a small working bank in IBM COBOL and JCL. A daily batch, a month-end, and an online day of card and ATM authorizations. |
-| [laurasia/](laurasia/) | **Laurasia Card Services** | The second specimen: a card processor in Micro Focus COBOL, free format, run by shell scripts. It shows where the survey assumed Pangaea. |
-| [gondwana/](gondwana/) | **Gondwana Life Insurance** | The third specimen: a life insurer in Fujitsu NetCOBOL, in Shift_JIS with Japanese names and comments, yen and era dates, run by Windows batch files. It shows where the survey assumed ASCII, cents and the Western calendar. |
+| [survey/](survey/) | **Survey** | The analyzer. Reads a COBOL system and writes its blueprints: record layouts, program structure, data flow, business rules as decision tables, and the job network. Serves the same analysis in the browser, finds test cases that reach the rules, and checks a replacement against them. |
 | [bedrock/](bedrock/) | **Bedrock** | What runs the specimens: compiling and running COBOL programs, jobs and scripts, and keeping datasets and their catalog. |
-| [console/](console/) | **The console** | A web window that runs the bank, watches its online day, and shows each run's jobs as the survey draws them. The one part that knows both the bank and the survey. |
+| [console/](console/) | **The console** | A web window that runs the bank, watches its online day, and shows each run's jobs as the survey draws them. The one part that knows both a specimen and the survey. |
 | [cobolith](https://github.com/vlumi/cobolith) | **Cobolith** | The library everything reads COBOL with: source, copybooks, record layouts and fields, and JCL, in the IBM, Micro Focus, Hitachi and Fujitsu dialects. Written here, now a repository of its own. |
 
 ![The parts of Copal and what imports what](docs/diagrams/architecture.svg)
 
-The dependencies run one way, and `make ci` checks it: the specimens know nothing of the survey, and only the console knows both. All three specimens compile and run with GnuCOBOL, and their outputs are golden files. So are the survey's blueprints of them: a change to the analyzer shows as a diff in what it says about a real system.
+### The specimens
+
+Three working COBOL systems, fiction written for this project, each in another shop's dialect and run the way that shop would run it. They are managed alike: each compiles with GnuCOBOL, runs a fixture whose outputs are golden files, opens on a portfolio generated from a seed and runs day after day in a machine room written in Go, and has an operations guide in its operators' voice. None of them knows the survey. Each came after the one before, to show where the survey had assumed it.
+
+| Directory | Specimen | COBOL | Run by | Why it is there |
+| --- | --- | --- | --- | --- |
+| [pangaea/](pangaea/) | **The First Bank of Pangaea**, a bank: a daily batch, a month-end, and an online day of card and ATM authorizations | IBM, fixed format | JCL | The first: the survey was built on it |
+| [laurasia/](laurasia/) | **Laurasia Card Services**, a card processor: clearing, posting, disputes, settlement and billing | Micro Focus, free format | shell scripts | To show where the survey assumed Pangaea's dialect, format and JCL |
+| [gondwana/](gondwana/) | **Gondwana Life Insurance**, a life insurer: new business, premiums, claims, lapses, reserves and dividends | Fujitsu NetCOBOL, Shift_JIS with Japanese names | Windows batch files | To show where it assumed ASCII, cents and the Western calendar |
+
+The dependencies run one way, and `make ci` checks it: the specimens know nothing of the survey, and only the console knows both. The specimens' outputs are golden files, and so are the survey's blueprints of them: a change to the analyzer shows as a diff in what it says about a real system.
 
 ## What you can run
 
 Everything is a make target, and plain `make` lists them. You need GnuCOBOL 3.2 (`brew install gnucobol`), Go, Node for the Markdown linter, and `golangci-lint` for `make ci`.
 
-### The bank
+### A specimen
+
+Each specimen runs the same two ways: once on its fixture, printing each step's log and every program's report, and as a living system opened on generated data and run day after day, a line a day.
+
+| | The bank | The card processor | The life insurer |
+| --- | --- | --- | --- |
+| Its fixture, once | `make pangaea-daily`: the daily batch | `make laurasia-night`: a night and its billing cycle | `make gondwana-month`: a March, its close and the year-end dividends, transcoded for the terminal |
+| Open a generated system | `make bank-reset`: about 3,000 accounts | `make cards-open`: about 1,000 cards | `make life-open`: about 2,000 policies |
+| Run days | `make bank-days N=5`: business days | `make cards-days N=30`: the night on business days, the billing cycle every day | `make life-days N=261`: the daily run, and the billing, the results, the close and the year end on their days |
+| Its data | `pangaea/run/bank/` | `laurasia/run/processor/data/` | `gondwana/run/insurer/data/` |
+| Rewrite its goldens | `make pangaea-golden` | `make laurasia-golden` | `make gondwana-golden` |
+
+### The console
 
 | Target | What it does | Where to look |
 | --- | --- | --- |
-| `make pangaea-daily` | Runs the daily batch on a small fixture: the job log and every step's report | the terminal |
-| `make bank-reset`, `make bank-days N=5` | Opens a bank of about 3,000 generated accounts and runs business days, one line each | `pangaea/run/bank/` |
 | `make console` | The bank in the browser: accounts, each day's jobs drawn as networks with return codes and record counts, what the days changed | <http://127.0.0.1:4510/> |
 | `make simulate` | Sends card and ATM traffic to the console's online channel | the console's **Online** page |
-
-### The card processor
-
-| Target | What it does | Where to look |
-| --- | --- | --- |
-| `make laurasia-night` | Runs Laurasia's night on its fixture: the clearing file in, matching, pricing, posting, disputes, settlement and the billing cycle, with each step's log and every program's report | the terminal, and `laurasia/run/night/data/` |
-| `make cards-open`, `make cards-days N=30` | Opens a card processor of about 1,000 generated cards and runs days, one line each: the night on business days, the billing cycle every day | `laurasia/run/processor/data/` |
-
-### The life insurer
-
-| Target | What it does | Where to look |
-| --- | --- | --- |
-| `make gondwana-month` | Runs Gondwana's March on its fixture: the system opened, three business days, the premium billing and the collection agent's results, the month-end close and the year-end dividends, with each batch file's log and every program's report, transcoded for the terminal | the terminal, and `gondwana/run/month/data/` |
-| `make life-open`, `make life-days N=261` | Opens a life insurer of about 2,000 generated policies and runs business days, one line each: the daily run, and the billing, the agent's results, the close and the year end on their days | `gondwana/run/insurer/data/` |
 
 ### The survey
 
@@ -62,7 +67,6 @@ Everything is a make target, and plain `make` lists them. You need GnuCOBOL 3.2 
 | Target | What it does |
 | --- | --- |
 | `make ci` | What the hosted build runs: linters, the dependency check, every test and golden file, the oracle's cases replayed |
-| `make pangaea-golden`, `make laurasia-golden`, `make gondwana-golden` | Rewrite a specimen's golden outputs after a deliberate change to it |
 
 ## What the survey writes
 
@@ -107,9 +111,7 @@ Everything is a make target, and plain `make` lists them. You need GnuCOBOL 3.2 
 | [docs/architecture.md](docs/architecture.md) | How the parts fit, the dependency rule, and the golden files |
 | [docs/blueprints.md](docs/blueprints.md) | How to read what the survey writes |
 | [survey/README.md](survey/README.md) | The survey's pipeline, analysis by analysis, and what it does not do |
-| [pangaea/README.md](pangaea/README.md), [pangaea/docs/](pangaea/docs/README.md) | The bank, and its own operations guide in its operators' voice |
-| [laurasia/README.md](laurasia/README.md), [laurasia/docs/](laurasia/docs/operations.md) | The card processor and its night |
-| [gondwana/README.md](gondwana/README.md), [gondwana/docs/](gondwana/docs/operations.md) | The life insurer and its month |
+| [pangaea/](pangaea/README.md), [laurasia/](laurasia/README.md), [gondwana/](gondwana/README.md) | Each specimen, and in its `docs/` its operations guide in its operators' voice |
 | [docs/roadmap.md](docs/roadmap.md), [docs/brief.md](docs/brief.md) | The order the work was done in, and the plan and decisions it started from |
 
 ## The names
