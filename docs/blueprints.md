@@ -90,6 +90,8 @@ Beside the blueprints, `survey oracle` writes the cases it found for each main p
 
 The tests replay every case and the batches, and compare what they reach and write, so a change in a program's behavior, or in the survey's tables, shows as a difference.
 
+The cases are also what a replacement for a program has to match. `survey conform` runs one, any executable, on them the way the oracle ran the program, and reports each case's differences: the return code, each file written, record by record and the fields of the record that differ, and what was displayed. An indexed file reaches the replacement as its records in key order, since no other runtime reads GnuCOBOL's, and what GnuCOBOL's runtime itself displayed, its warnings, is not compared.
+
 ## Diagrams
 
 Every diagram carries its legend. The same engine draws the program flows, the job networks, the console's run networks, and the diagrams in this documentation, deterministically, so a diagram is a golden file like the text around it.

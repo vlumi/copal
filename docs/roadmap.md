@@ -220,6 +220,16 @@ Gondwana Life Insurance, a life insurer on Fujitsu NetCOBOL, run from Windows ba
 
 Done when: the survey's blueprints and cases of Gondwana are as right as the other two's, with no special case for any of the three, and a year of the generated insurer runs from a seed.
 
+## 19. A replacement checked
+
+The oracle's cases are what a rewrite has to match, and nothing ran one against them. A harness runs any executable the way the oracle ran the program, on the recorded cases, and names the first field it gets wrong. The plan is in [plans/conformance.md](plans/conformance.md):
+
+- `survey conform`: a program's recorded cases run against a replacement, with a report of the differences in return code, in each file written, record by record and field by field, and in what was displayed; `make conform-pangaea PROGRAM=NAME WITH=executable` and the same for the other two specimens. BANKDATE rewritten in Go to show it, and a script that gets it wrong to show the report: `make conform-demo` (done).
+- A replacement for one step of a job, run in its batch with the datasets the other steps wrote and read.
+- A replacement that keeps the indexed files, loaded and unloaded as the oracle loads them.
+
+Done when: a replacement for any main program of the three specimens is checked against its cases in one command, and a replaced step runs in its job's batch the same way.
+
 ## Later
 
 Decision rules in sentences written from their conditions and the level-88 names in the code, with no model: reproducible, golden, and what a model's prose would later stand beside.

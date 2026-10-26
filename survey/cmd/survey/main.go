@@ -1,10 +1,11 @@
 // Command survey reads a COBOL system and writes its blueprints, serves
-// its explorer, or searches for cases that reach the rules of its
-// programs.
+// its explorer, searches for cases that reach the rules of its programs,
+// or checks a replacement for one of them against the cases.
 //
 //	survey blueprints -copybooks dir -out dir [-dialect ibm|mf|fujitsu] [-annotations dir] [-title name] program.cbl... [job.jcl...]
 //	survey explore -copybooks dir [-dialect ibm|mf|fujitsu] [-annotations dir] [-addr host:port] [-title name] [-cases dir] program.cbl... [job.jcl...]
 //	survey oracle -copybooks dir [-dialect ibm|mf|fujitsu] [-out dir -rules dir] [-title name] [-program name] [-jobs JOB,...] program.cbl... [job.jcl...]
+//	survey conform -copybooks dir [-dialect ibm|mf|fujitsu] -cases dir -program name -with executable program.cbl... [job.jcl...]
 package main
 
 import (
@@ -27,10 +28,11 @@ const usage = `usage:
   survey blueprints -copybooks dir -out dir [-dialect ibm|mf|fujitsu] [-annotations dir] [-title name] program.cbl... [job.jcl...]
   survey explore -copybooks dir [-dialect ibm|mf|fujitsu] [-annotations dir] [-addr host:port] [-title name] [-cases dir] program.cbl... [job.jcl...]
   survey oracle -copybooks dir [-dialect ibm|mf|fujitsu] [-out dir -rules dir] [-title name] [-program name] [-jobs JOB,...] program.cbl... [job.jcl...]
+  survey conform -copybooks dir [-dialect ibm|mf|fujitsu] -cases dir -program name -with executable program.cbl... [job.jcl...]
 `
 
 func main() {
-	commands := map[string]func([]string) error{"blueprints": writeBlueprints, "explore": serveExplorer, "oracle": searchCases}
+	commands := map[string]func([]string) error{"blueprints": writeBlueprints, "explore": serveExplorer, "oracle": searchCases, "conform": checkReplacement}
 	if len(os.Args) < 2 || commands[os.Args[1]] == nil {
 		fmt.Fprint(os.Stderr, usage)
 		os.Exit(2)
@@ -169,6 +171,47 @@ func searchCases(args []string) error {
 		}
 	}
 	return os.WriteFile(filepath.Join(*out, "README.md"), oracle.Index(*title, results, batches), 0o644)
+}
+
+// checkReplacement runs a replacement for a program on the cases the
+// oracle recorded for it, prints how it conforms, and fails if it does not
+// on every case.
+func checkReplacement(args []string) error {
+	flags := flag.NewFlagSet("conform", flag.ExitOnError)
+	copybooks := flags.String("copybooks", "", "directory of the copybooks")
+	dialect := flags.String("dialect", cobol.IBM.Name, "the dialect the system is written in, ibm, mf or fujitsu")
+	cases := flags.String("cases", "", "directory of the system's cases, as the oracle wrote them")
+	name := flags.String("program", "", "the program replaced")
+	with := flags.String("with", "", "the replacement, an executable")
+	_ = flags.Parse(args)
+	if *copybooks == "" || *cases == "" || *name == "" || *with == "" || flags.NArg() == 0 {
+		fmt.Fprint(os.Stderr, usage)
+		os.Exit(2)
+	}
+	system, err := analyzeSystem(flags.Args(), *copybooks, *dialect)
+	if err != nil {
+		return err
+	}
+	i := slices.IndexFunc(system.Programs, func(p blueprint.Program) bool { return p.Name == *name })
+	if i < 0 {
+		return fmt.Errorf("no program %s", *name)
+	}
+	scratch, err := os.MkdirTemp("", "survey-conform-")
+	if err != nil {
+		return err
+	}
+	defer func() { _ = os.RemoveAll(scratch) }()
+	c, err := oracle.Conform(system, &system.Programs[i], *copybooks, filepath.Join(*cases, *name), scratch, *with)
+	if err != nil {
+		return err
+	}
+	if _, err := os.Stdout.Write(c.Markdown()); err != nil {
+		return err
+	}
+	if !c.Conforms() {
+		return fmt.Errorf("%s does not conform to %s on every case", *with, *name)
+	}
+	return nil
 }
 
 // analyzeSystem reads the programs, jobs and copybooks of a system written

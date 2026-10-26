@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/vlumi/cobolith/cobol"
+	"github.com/vlumi/cobolith/layout"
 	"github.com/vlumi/copal/bedrock/run"
 	"github.com/vlumi/copal/survey/blueprint"
 	"github.com/vlumi/copal/survey/internal/coverage"
@@ -147,11 +148,13 @@ func (r *runner) read(f blueprint.File, path, unloaded string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return asLines(data, f.Organization == "LINE SEQUENTIAL", r.recordLength(f)), nil
+	return asLines(data, f.Organization == "LINE SEQUENTIAL", recordLength(r.program.records, f)), nil
 }
 
-func (r *runner) recordLength(f blueprint.File) int {
-	if root := fileRecord(r.program.records, f.Name); root != nil {
+// recordLength is the length of a file's records, or 0 for a file whose
+// record is not laid out.
+func recordLength(records *layout.ProgramRecords, f blueprint.File) int {
+	if root := fileRecord(records, f.Name); root != nil {
 		return root.Size()
 	}
 	return 0
