@@ -52,7 +52,7 @@ The bank has an online day too: `make simulate` sends card and ATM traffic to it
 | Target | What it does | Where to look |
 | --- | --- | --- |
 | `make blueprints` | Regenerates the survey of the three specimens | [blueprints/pangaea/](blueprints/pangaea/README.md), [blueprints/laurasia/](blueprints/laurasia/README.md), [blueprints/gondwana/](blueprints/gondwana/README.md) |
-| `make explore-pangaea`, `make explore-laurasia`, `make explore-gondwana` | The same analysis as a web app: every job, step, dataset, program, paragraph and field a page, and a field's values followed across programs on the diagrams | <http://127.0.0.1:1192/> |
+| `make explore-pangaea`, `make explore-laurasia`, `make explore-gondwana` | The same analysis as a web app: every job, step, dataset, program, paragraph and field a page, a field's values followed across programs on the diagrams, and each day the running system ran a job, drawn with its steps' outcomes | <http://127.0.0.1:1192/> |
 | `make oracle` | Finds, for each program of the specimens, input data that reaches the rules of its decision tables, by running it; replays the batches on those cases | [oracle/pangaea/](oracle/pangaea/README.md), [oracle/laurasia/](oracle/laurasia/README.md), [oracle/gondwana/](oracle/gondwana/README.md) |
 | `make conform-pangaea PROGRAM=TXPOST WITH=bin/txpost` | Runs a replacement for a program, any executable, on the program's recorded cases, and names the first field it gets wrong; `conform-laurasia` and `conform-gondwana` likewise | the terminal |
 | `make conform-demo` | The same on BANKDATE rewritten in Go, which conforms on all its cases | the terminal |
