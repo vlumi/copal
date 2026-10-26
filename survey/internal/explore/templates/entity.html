@@ -40,9 +40,9 @@
 <h2>Control totals</h2>
 <p class="note">Fields of its records the programs check against what they add up from its other records.</p>
 <table class="dates">
-  <thead><tr><th>Field</th><th>Is</th><th>Over the records of type</th><th>Checked by</th></tr></thead>
+  <thead><tr><th>Field</th><th>Is</th><th>Over the records of type</th><th>Where</th><th>Checked by</th></tr></thead>
   <tbody>
-  {{range .}}<tr><td><a href="{{entityField $e.Record .Field}}">{{.Field}}</a></td><td>{{with .Sum}}the sum of <a href="{{entityField $e.Record .}}">{{.}}</a>{{else}}their count{{end}}</td><td>{{.Type}}</td>
+  {{range .}}<tr><td><a href="{{entityField $e.Record .Field}}">{{.Field}}</a></td><td>{{with .Sum}}the sum of <a href="{{entityField $e.Record .}}">{{.}}</a>{{else}}their count{{end}}</td><td>{{.Type}}</td><td>{{with .When}}<code>{{.}}</code>{{end}}</td>
     <td>{{range $i, $p := .Programs}}{{if $i}}, {{end}}<a href="{{program $p}}">{{$p}}</a>{{end}}</td></tr>
   {{end}}
   </tbody>

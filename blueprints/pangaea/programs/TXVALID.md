@@ -394,13 +394,13 @@ Fields of one input the program relies on to find or match the records of anothe
 
 ## Control totals
 
-Fields of an input the program checks against what it adds up from the input's other records.
+Fields of an input the program checks against what it adds up from the input's other records: those of a type, and of them, those where a condition on their fields holds, if it adds up only those.
 
-| Field | Of | Is | Over the records of type | Source |
-| --- | --- | --- | --- | --- |
-| TT-DETAIL-COUNT | TRAN-IN | their count | TR-DETAIL | [TXVALID.cbl:253](../../../pangaea/programs/TXVALID.cbl#L253) |
-| TT-AMOUNT-TOTAL | TRAN-IN | the sum of TD-AMOUNT | TR-DETAIL | [TXVALID.cbl:253](../../../pangaea/programs/TXVALID.cbl#L253) |
-| TT-ACCT-HASH | TRAN-IN | the sum of TD-ACCT-NO | TR-DETAIL | [TXVALID.cbl:253](../../../pangaea/programs/TXVALID.cbl#L253) |
+| Field | Of | Is | Over the records of type | Where | Source |
+| --- | --- | --- | --- | --- | --- |
+| TT-DETAIL-COUNT | TRAN-IN | their count | TR-DETAIL | | [TXVALID.cbl:253](../../../pangaea/programs/TXVALID.cbl#L253) |
+| TT-AMOUNT-TOTAL | TRAN-IN | the sum of TD-AMOUNT | TR-DETAIL | `TD-AMOUNT IS NUMERIC` | [TXVALID.cbl:253](../../../pangaea/programs/TXVALID.cbl#L253) |
+| TT-ACCT-HASH | TRAN-IN | the sum of TD-ACCT-NO | TR-DETAIL | `TD-ACCT-NO IS NUMERIC` | [TXVALID.cbl:253](../../../pangaea/programs/TXVALID.cbl#L253) |
 
 ## Records
 

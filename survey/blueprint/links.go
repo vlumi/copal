@@ -32,15 +32,35 @@ type FileField struct {
 // Total is a control total a program checks: a field of an input that it
 // compares with an item it adds a field of the same input's records up
 // into, Sum, or 1 for each of them, with no Sum; over the records of a
-// type, if it adds up only those.
+// type, if it adds up only those, and of them, those that meet a
+// condition on their fields, When, if the program adds up only those.
 type Total struct {
 	File   string `json:"file"`
 	Field  string `json:"field"`
 	Sum    string `json:"sum,omitempty"`
 	Type   string `json:"type,omitempty"`
+	When   string `json:"when,omitempty"`
 	Source string `json:"source"`
+	// Guards are When's conditions and their outcomes, for a tool that
+	// adds the records up as the program does.
+	Guards []Guard `json:"-"`
 	// added is the paragraph that adds up the total.
 	added string
+}
+
+// Guard is a condition and the outcome a statement runs under.
+type Guard struct {
+	Condition *cobol.Condition
+	Outcome   bool
+}
+
+// String writes the guard in COBOL, its condition or the condition's
+// negation.
+func (g Guard) String() string {
+	if g.Outcome {
+		return g.Condition.String()
+	}
+	return (&cobol.Condition{Op: "NOT", Parts: []*cobol.Condition{g.Condition}}).String()
 }
 
 // inputLinks finds the links a program relies on: each field of an
@@ -247,9 +267,9 @@ func programTotals(p Program, source *cobol.Program, flow dataflow.Flow) []Total
 	var totals []Total
 	for _, c := range conditions(source) {
 		for _, pair := range equalities(c.condition) {
-			t, ok := totalOf(p, flow, pair[0], pair[1])
+			t, ok := totalOf(p, source, flow, pair[0], pair[1])
 			if !ok {
-				t, ok = totalOf(p, flow, pair[1], pair[0])
+				t, ok = totalOf(p, source, flow, pair[1], pair[0])
 			}
 			if ok && !slices.ContainsFunc(totals, func(u Total) bool { return u.File == t.File && u.Field == t.Field }) {
 				t.Source = c.pos.String()
@@ -268,7 +288,7 @@ func programTotals(p Program, source *cobol.Program, flow dataflow.Flow) []Total
 	return totals
 }
 
-func totalOf(p Program, flow dataflow.Flow, field, item string) (Total, bool) {
+func totalOf(p Program, source *cobol.Program, flow dataflow.Flow, field, item string) (Total, bool) {
 	r, ok := inputRecord(p, field)
 	if !ok || isInputField(p, item) {
 		return Total{}, false
@@ -277,16 +297,121 @@ func totalOf(p Program, flow dataflow.Flow, field, item string) (Total, bool) {
 		if e.To != item || e.Verb != "ADD" {
 			continue
 		}
+		var t Total
 		switch {
 		case e.FromLiteral && e.From == "1":
-			return Total{File: r.File, Field: field, added: e.Paragraph}, true
+			t = Total{File: r.File, Field: field, added: e.Paragraph}
 		case !e.FromLiteral && e.From != field:
 			if summed, found := inputRecord(p, e.From); found && summed.File == r.File {
-				return Total{File: r.File, Field: field, Sum: e.From, Type: typeHolding(p.Records, r.File, e.From), added: e.Paragraph}, true
+				t = Total{File: r.File, Field: field, Sum: e.From, Type: typeHolding(p.Records, r.File, e.From), added: e.Paragraph}
 			}
 		}
+		if t.File == "" {
+			continue
+		}
+		t.Guards = recordGuards(p, r.File, guardsAt(source, e.Pos))
+		var when []string
+		for _, g := range t.Guards {
+			when = append(when, g.String())
+		}
+		t.When = strings.Join(when, " AND ")
+		return t, true
 	}
 	return Total{}, false
+}
+
+// guardsAt lists the conditions a statement runs under within its
+// paragraph, outermost first: an IF's, true in its THEN and false in its
+// ELSE, and a WHEN's, true.
+func guardsAt(source *cobol.Program, pos cobol.Pos) []Guard {
+	var found []Guard
+	var visit func(statements []cobol.Statement, guards []Guard) bool
+	visit = func(statements []cobol.Statement, guards []Guard) bool {
+		for _, s := range statements {
+			if s.Pos == pos {
+				found = guards
+				return true
+			}
+			for i, b := range s.Branches {
+				inner := slices.Clone(guards)
+				switch {
+				case s.Verb == "IF":
+					inner = append(inner, Guard{Condition: s.Condition, Outcome: i == 0})
+				case b.Condition != nil:
+					inner = append(inner, Guard{Condition: b.Condition, Outcome: true})
+				}
+				if visit(b.Statements, inner) {
+					return true
+				}
+			}
+		}
+		return false
+	}
+	for _, para := range source.Paragraphs {
+		if visit(para.Statements, nil) {
+			break
+		}
+	}
+	return found
+}
+
+// recordGuards keeps the guards whose conditions are on a file's records
+// alone, every data item and condition name they read one of its fields;
+// of an AND found true, or an OR found false, each part holds, so its
+// parts are kept that are.
+func recordGuards(p Program, file string, guards []Guard) []Guard {
+	var kept []Guard
+	for _, g := range split(guards) {
+		refs := g.Condition.Refs()
+		if len(refs) > 0 && !slices.ContainsFunc(refs, func(name string) bool {
+			r, ok := inputRecord(p, name)
+			if !ok {
+				r, ok = conditionRecord(p, name)
+			}
+			return !ok || r.File != file
+		}) {
+			kept = append(kept, g)
+		}
+	}
+	return kept
+}
+
+// split turns each guard that holds only if each of its parts does, an
+// AND found true or an OR found false, into its parts, NOT turned around.
+func split(guards []Guard) []Guard {
+	var parts []Guard
+	for _, g := range guards {
+		c, outcome := g.Condition, g.Outcome
+		for c.Op == "NOT" {
+			c, outcome = c.Parts[0], !outcome
+		}
+		if c.Op == "AND" && outcome || c.Op == "OR" && !outcome {
+			for _, part := range c.Parts {
+				parts = append(parts, split([]Guard{{Condition: part, Outcome: outcome}})...)
+			}
+			continue
+		}
+		parts = append(parts, g)
+	}
+	return parts
+}
+
+// conditionRecord is the record of a file the program reads that a
+// condition name is declared in.
+func conditionRecord(p Program, name string) (Record, bool) {
+	for _, r := range p.Records {
+		if r.File == "" {
+			continue
+		}
+		found := false
+		walk(r.Field, func(f Field) {
+			found = found || slices.ContainsFunc(f.Conditions, func(c Condition) bool { return c.Name == name })
+		})
+		if found {
+			return r, true
+		}
+	}
+	return Record{}, false
 }
 
 // inputRecord is the record of a file the program reads that a field is
@@ -410,14 +535,19 @@ func writeRelations(b *strings.Builder, dir string, p Program) {
 		}
 	}
 	if len(p.Totals) > 0 {
-		b.WriteString("\n## Control totals\n\nFields of an input the program checks against what it adds up from the input's other records.\n\n" +
-			"| Field | Of | Is | Over the records of type | Source |\n| --- | --- | --- | --- | --- |\n")
+		b.WriteString("\n## Control totals\n\nFields of an input the program checks against what it adds up from the input's other records: " +
+			"those of a type, and of them, those where a condition on their fields holds, if it adds up only those.\n\n" +
+			"| Field | Of | Is | Over the records of type | Where | Source |\n| --- | --- | --- | --- | --- | --- |\n")
 		for _, t := range p.Totals {
 			is := "their count"
 			if t.Sum != "" {
 				is = "the sum of " + t.Sum
 			}
-			b.WriteString(row(t.Field, t.File, is, t.Type, sourceLink(dir, t.Source, true)))
+			where := ""
+			if t.When != "" {
+				where = "`" + t.When + "`"
+			}
+			b.WriteString(row(t.Field, t.File, is, t.Type, where, sourceLink(dir, t.Source, true)))
 		}
 	}
 	if len(p.Parameters) > 0 {
