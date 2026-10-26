@@ -71,7 +71,7 @@ Everything is a make target, and plain `make` lists them. You need GnuCOBOL 3.2 
 | Program | Its own header comment; files; the flow of its paragraphs, drawn; what each paragraph reads and writes; where every value comes from; its records field by field |
 | Copybook | Its records, with each field's kind, and the programs that use it |
 | Job | Its steps and the datasets between them, drawn; each step's DD statements bound to the program's files; findings where the job and its programs disagree |
-| Paragraph | A decision table: each path through its conditions, and the actions it takes |
+| Paragraph | A decision table: each path through its conditions, and the actions it takes, and each path as a sentence |
 | Entity | Who reads, writes and decides on each field across the programs; the state machine of each code field; who owns it |
 | Field | Its trail back to the inputs its values come from, and forward to everything they reach, through programs and job steps |
 | Rule | A recorded case: input data that reaches it, and what the program wrote and returned; what a replacement for the program has to match |

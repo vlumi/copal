@@ -193,7 +193,7 @@ The facts hold on three specimens; a model could write what they cannot say, on 
 
 - Annotations kept apart from the facts, each with a hash of the facts it was written from, checked before it is kept, and shown marked as a model's; built first with no model at all (done).
 - What each paragraph and section is for, and a name that says it.
-- Decision rules in sentences.
+- Decision rules in sentences, beside those milestone 20 writes from the tables.
 - Programs, entities, fields and states.
 - A reading of the prose against the code.
 
@@ -230,6 +230,8 @@ The oracle's cases are what a rewrite has to match, and nothing ran one against 
 
 Done when: a replacement for any main program of the three specimens is checked against its cases in one command, and a replaced step runs in its job's batch the same way.
 
-## Later
+## 20. Rules in sentences (done)
 
-Decision rules in sentences written from their conditions and the level-88 names in the code, with no model: reproducible, golden, and what a model's prose would later stand beside.
+Each rule of a decision table as a sentence, written from its conditions and statements and the condition names' fields and values, with no model: reproducible, golden, and what a model's prose of milestone 16 would stand beside. Under every table of the blueprints, as `sentence` in their JSON, and on the explorer's paragraph pages.
+
+Done when: every rule of the three specimens has its sentence, and a statement the sentences have no words for is quoted, not guessed.

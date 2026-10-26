@@ -36,7 +36,7 @@ Not code, not a translation, and not a guess at an intent the facts do not suppo
 
    As built: `blueprint` gives a paragraph's facts as text with its hash, checks an annotation's names against them, reads and writes `annotations/<specimen>/`, a file a program, and shows the prose on the program's page, and in the explorer on the paragraph's, marked as a model's, or that it is stale. `annotate.Paragraphs` keeps what is current and has a writer write the rest, rejecting what names anything its facts do not; it is tested with a writer that needs no model. The golden tests and `make blueprints` read the annotations; none exist yet, so no blueprint changed. A name the check takes as the code's is one in backquotes or in capitals with a hyphen, as COBOL's are; the prompt of part 2 asks for backquotes.
 2. **The model and the paragraphs.** The client, the prompt, and `make annotate`, on the paragraphs and sections of the three specimens; the first annotations checked in and read against the source.
-3. **Decision rules in prose.**
+3. **Decision rules in prose.** The tables already have each rule as a sentence written from its conditions and statements, milestone 20; the model's prose says what a rule is for, in the business's words, and stands beside that sentence rather than in place of it.
 4. **Programs, entities, fields and states.**
 5. **Reading it against the code.** A sample of each kind read by hand against the source, what is wrong written down, the prompts adjusted, and the prose of each specimen checked for words that belong to another.
 
