@@ -59,6 +59,13 @@ cards-open: laurasia-build  ## Open the running card processor on a generated po
 cards-days: laurasia-build  ## Run the card processor's next N days
 	go run ./laurasia/cmd/laurasia days -n $(N)
 
+# 4649 yoroshiku, "I leave it in your hands".
+CARDS_ADDR ?= 127.0.0.1:4649
+
+.PHONY: cards-console
+cards-console: laurasia-build  ## Serve the card processor's console in the browser (CARDS_ADDR)
+	go run ./laurasia/cmd/console -addr $(CARDS_ADDR)
+
 # Compiles Laurasia's programs for the targets that run the processor; not listed.
 .PHONY: laurasia-build
 laurasia-build:

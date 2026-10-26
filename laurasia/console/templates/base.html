@@ -1,0 +1,43 @@
+{{define "base"}}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{template "title" .}} · Laurasia Card Services</title>
+<link rel="stylesheet" href="/static/console.css">
+<script src="/static/console.js" defer></script>
+</head>
+<body>
+<header>
+  <a class="name" href="/">Laurasia Card Services</a>
+  <nav>
+    <a href="/cards">Cards</a>
+  </nav>
+  {{if .History.Seed}}<span class="today">Next day <strong>{{.History.Next}}</strong> · seed {{.History.Seed}}</span>{{end}}
+</header>
+<main>
+{{template "content" .}}
+</main>
+</body>
+</html>
+{{end}}
+
+{{define "open"}}
+<form method="post" action="/open" class="action" data-busy="Opening…">
+  <label>Seed <input name="seed" type="number" min="0" value="{{.}}" required></label>
+  <label>Cards <input name="cards" type="number" min="10" max="100000" value="1000" required></label>
+  <button>Open a processor</button>
+</form>
+{{end}}
+
+{{define "rc"}}<span class="rc{{if ge . 8}}8{{else if ge . 4}}4{{end}}">RC={{printf "%04d" .}}</span>{{end}}
+
+{{define "steps"}}
+<table>
+  <thead><tr><th>Step</th><th>Program</th><th>Outcome</th></tr></thead>
+  <tbody>
+  {{range .}}<tr><td>{{.Name}}</td><td>{{.Program}}</td><td>{{template "rc" .RC}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{end}}

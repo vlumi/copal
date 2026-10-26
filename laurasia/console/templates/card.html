@@ -1,0 +1,31 @@
+{{define "title"}}Card {{.View.Card.No}}{{end}}
+{{define "content"}}
+{{with .View}}
+<h1>Card {{.Card.No}}</h1>
+<dl class="facts">
+  <div><dt>Account</dt><dd>{{.Card.Account}}</dd></div>
+  <div><dt>Product</dt><dd>{{.Card.ProductName}}</dd></div>
+  <div><dt>Status</dt><dd>{{.Card.StatusName}}</dd></div>
+  <div><dt>Limit</dt><dd>{{money .Card.Limit}}</dd></div>
+  <div><dt>Balance</dt><dd>{{money .Card.Balance}}</dd></div>
+</dl>
+<h2>The account record</h2>
+<table>
+  <thead><tr><th>Field</th><th class="num">At</th><th class="num">Length</th><th>Bytes</th><th>Value</th></tr></thead>
+  <tbody>
+  {{range .Fields}}<tr><td>{{.Field.Name}}</td><td class="num">{{.Field.Start}}</td><td class="num">{{.Field.Length}}</td><td><code class="raw">{{.Raw}}</code></td><td>{{.Value}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+<h2>Postings ({{count (len .Postings)}})</h2>
+{{if .Postings}}
+<table>
+  <thead><tr><th>Date</th><th>Kind</th><th class="num">Amount</th><th>Reference</th></tr></thead>
+  <tbody>
+  {{range .Postings}}<tr><td>{{.Date}}</td><td>{{.Kind}}</td><td class="num{{if lt .Amount 0}} debit{{end}}">{{money .Amount}}</td><td>{{.Reference}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{else}}<p>None.</p>{{end}}
+{{end}}
+{{end}}
