@@ -1,6 +1,7 @@
 package generate
 
 import (
+	"slices"
 	"testing"
 	"time"
 )
@@ -58,5 +59,29 @@ func TestCalendar(t *testing.T) {
 	}
 	if d, err := DateFromNumber(20260230); err == nil {
 		t.Errorf("20260230 read as %s", d)
+	}
+}
+
+// The holidays of the fiscal year the insurer runs: those of a fixed
+// day, of a Monday, the equinoxes, the Wednesday kept for a Sunday's
+// Constitution Day, the Tuesday between two holidays, and the year's end.
+func TestHolidays(t *testing.T) {
+	var got []string
+	for d := NewDate(2026, time.April, 1); d.Before(NewDate(2027, time.April, 1)); d = d.AddDays(1) {
+		if d.Holiday() && d.Weekday() != time.Saturday && d.Weekday() != time.Sunday {
+			got = append(got, d.String())
+		}
+	}
+	want := []string{"2026-04-29", "2026-05-04", "2026-05-05", "2026-05-06", "2026-07-20", "2026-08-11",
+		"2026-09-21", "2026-09-22", "2026-09-23", "2026-10-12", "2026-11-03", "2026-11-23", "2026-12-31",
+		"2027-01-01", "2027-01-11", "2027-02-11", "2027-02-23", "2027-03-22"}
+	if !slices.Equal(got, want) {
+		t.Errorf("holidays on weekdays\n%q\nwant\n%q", got, want)
+	}
+	if next := NewDate(2026, time.December, 30).NextBusinessDay(); next.String() != "2027-01-04" {
+		t.Errorf("the business day after December 30 is %s", next)
+	}
+	if !NewDate(2026, time.December, 30).LastBusinessDayOfMonth() {
+		t.Error("the last business day of December 2026 is the 30th")
 	}
 }

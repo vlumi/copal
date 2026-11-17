@@ -133,10 +133,11 @@ func DaysBetween(d, e Date) int {
 	return int(e.t.Sub(d.t).Hours() / 24)
 }
 
-// BusinessDay reports whether the insurer runs on d: Monday to Friday.
+// BusinessDay reports whether the insurer runs on d: Monday to Friday,
+// holidays apart.
 func (d Date) BusinessDay() bool {
 	w := d.t.Weekday()
-	return w != time.Saturday && w != time.Sunday
+	return w != time.Saturday && w != time.Sunday && !d.Holiday()
 }
 
 // NextBusinessDay is the first business day after d.
