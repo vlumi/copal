@@ -62,8 +62,8 @@ func analyzeScript(path, encoding string, programs []Program) (Job, error) {
 // testOperators write the test command's operators as relations.
 var testOperators = map[string]string{"-eq": "=", "-ne": "!=", "-lt": "<", "-le": "<=", "-gt": ">", "-ge": ">="}
 
-// bindScriptStep binds the files of a step's program to the DD_ variables
-// exported before it, and its standard output to the file it is
+// bindScriptStep binds the files of a step's program, and of the programs
+// it calls, to the DD_ variables exported before it, and its standard output to the file it is
 // redirected to, which the step writes whether the program displays
 // anything or not, and reports a program not analyzed and a file no DD_
 // variable binds.
@@ -74,19 +74,17 @@ func bindScriptStep(step *Step, s script.Step, programs []Program) []string {
 	}
 	p := programs[i]
 	var findings []string
-	for _, f := range p.Files {
+	for _, f := range filesOpened(p, programs) {
 		if f.Kind == "SD" {
 			continue
 		}
 		path, ok := s.Bindings[f.Assign]
 		if !ok {
-			findings = append(findings, fmt.Sprintf("Step %s exports no DD_%s for %s's file %s.", step.Name, f.Assign, p.Name, f.Name))
+			findings = append(findings, fmt.Sprintf("Step %s exports no DD_%s for %s's file %s.", step.Name, f.Assign, f.by.Name, f.Name))
 			continue
 		}
-		dd := DD{Name: f.Assign, Datasets: []string{path}, File: f.Name, Copybook: fileCopybook(p, f), Source: step.Source}
-		for _, mode := range f.Opened {
-			dd.Uses = append(dd.Uses, uses[mode])
-		}
+		dd := DD{Name: f.Assign, Datasets: []string{path}, Source: step.Source}
+		dd.assign(f, p.Name)
 		dd.Indexed = f.Organization == "INDEXED"
 		step.DDs = append(step.DDs, dd)
 	}

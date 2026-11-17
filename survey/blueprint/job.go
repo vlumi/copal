@@ -57,8 +57,9 @@ type Step struct {
 }
 
 // DD is a DD statement: the datasets it binds, as the job names them, or
-// the job's output, or nothing; and the program's file assigned to it with
-// how the program uses it.
+// the job's output, or nothing; and the file assigned to it with how the
+// program uses it: a file of the step's program, or of a program it
+// calls, the Callee.
 type DD struct {
 	Name     string   `json:"dd"`
 	Datasets []string `json:"datasets,omitempty"`
@@ -68,6 +69,7 @@ type DD struct {
 	Dummy    bool     `json:"dummy,omitempty"`
 	InStream bool     `json:"inStream,omitempty"` // DD *
 	File     string   `json:"file,omitempty"`
+	Callee   string   `json:"callee,omitempty"`
 	Uses     []string `json:"uses,omitempty"`
 	// Copybook is the copybook of the record the program declares for the
 	// file, when it declares it with one.
@@ -115,12 +117,12 @@ func analyzeJob(path string, programs []Program) (Job, error) {
 		for _, d := range s.DDs {
 			dd := newDD(path, d)
 			if i >= 0 {
-				job.Findings = append(job.Findings, bind(&dd, s.Name, programs[i])...)
+				job.Findings = append(job.Findings, bind(&dd, s.Name, programs[i], programs)...)
 			}
 			step.DDs = append(step.DDs, dd)
 		}
 		if i >= 0 {
-			job.Findings = append(job.Findings, unbound(step, programs[i])...)
+			job.Findings = append(job.Findings, unbound(step, programs[i], programs)...)
 		}
 		job.Steps = append(job.Steps, step)
 	}
@@ -260,24 +262,71 @@ func datasetName(d jcl.DD) string {
 	return d.DSN
 }
 
-// bind finds the program's file assigned to the DD and how the program
-// uses it, and reports a DD no file is assigned to, a use its disposition
-// does not allow, and a new dataset organized otherwise than the file.
-func bind(dd *DD, step string, p Program) []string {
+// openedFile is a file a run of a program opens, with the program that
+// declares it: the program run, or one it calls.
+type openedFile struct {
+	File
+	by Program
+}
+
+// filesOpened lists the files a run of a program opens: its own, then
+// those of the programs it calls, at any depth, each program once. A file
+// assigned a name an earlier one has is the same dataset, and is left to
+// the earlier.
+func filesOpened(p Program, programs []Program) []openedFile {
+	var files []openedFile
+	seen := map[string]bool{}
+	var add func(p Program)
+	add = func(p Program) {
+		if seen[p.Name] {
+			return
+		}
+		seen[p.Name] = true
+		for _, f := range p.Files {
+			if !slices.ContainsFunc(files, func(o openedFile) bool { return o.Assign == f.Assign }) {
+				files = append(files, openedFile{File: f, by: p})
+			}
+		}
+		for _, c := range p.Calls {
+			if i := slices.IndexFunc(programs, func(q Program) bool { return q.Name == c.Program }); i >= 0 {
+				add(programs[i])
+			}
+		}
+	}
+	add(p)
+	return files
+}
+
+// assign gives a DD the file assigned to it, the program called that
+// declares it when it is not the step's own, the copybook of its record
+// and how the program uses it.
+func (dd *DD) assign(f openedFile, program string) {
+	dd.File = f.Name
+	if f.by.Name != program {
+		dd.Callee = f.by.Name
+	}
+	dd.Copybook = fileCopybook(f.by, f.File)
+	for _, mode := range f.Opened {
+		dd.Uses = append(dd.Uses, uses[mode])
+	}
+}
+
+// bind finds the file assigned to the DD, of the step's program or of one
+// it calls, and how the program uses it, and reports a DD no file is
+// assigned to, a use its disposition does not allow, and a new dataset
+// organized otherwise than the file.
+func bind(dd *DD, step string, p Program, programs []Program) []string {
 	if dd.Name == "SYSIN" && p.ReadsSysin {
 		dd.Uses = []string{useRead}
 		return nil
 	}
-	i := slices.IndexFunc(p.Files, func(f File) bool { return f.Assign == dd.Name })
+	files := filesOpened(p, programs)
+	i := slices.IndexFunc(files, func(f openedFile) bool { return f.Assign == dd.Name })
 	if i < 0 {
 		return []string{fmt.Sprintf("Step %s binds DD %s, which %s assigns no file to.", step, dd.Name, p.Name)}
 	}
-	f := p.Files[i]
-	dd.File = f.Name
-	dd.Copybook = fileCopybook(p, f)
-	for _, mode := range f.Opened {
-		dd.Uses = append(dd.Uses, uses[mode])
-	}
+	f := files[i]
+	dd.assign(f, p.Name)
 	if len(dd.Datasets) == 0 {
 		return nil
 	}
@@ -287,15 +336,15 @@ func bind(dd *DD, step string, p Program) []string {
 			organization = "an indexed dataset, RECORG=KS"
 		}
 		return []string{fmt.Sprintf("Step %s: %s's file %s is %s, but DD %s creates %s.",
-			step, p.Name, f.Name, f.Organization, dd.Name, organization)}
+			step, f.by.Name, f.Name, f.Organization, dd.Name, organization)}
 	}
 	switch {
 	case dd.writes() && (dd.Disp == "SHR" || dd.Disp == ""):
-		return []string{fmt.Sprintf("Step %s: %s writes DD %s, a dataset it shares with DISP=SHR.", step, p.Name, dd.Name)}
+		return []string{fmt.Sprintf("Step %s: %s writes DD %s, a dataset it shares with DISP=SHR.", step, f.by.Name, dd.Name)}
 	case dd.reads() && !dd.writes() && (dd.Disp == "NEW" || dd.Disp == "MOD"):
-		return []string{fmt.Sprintf("Step %s: %s only reads DD %s, which it creates with DISP=%s.", step, p.Name, dd.Name, dd.Disp)}
+		return []string{fmt.Sprintf("Step %s: %s only reads DD %s, which it creates with DISP=%s.", step, f.by.Name, dd.Name, dd.Disp)}
 	case slices.Contains(dd.Uses, useAppend) && dd.Disp != "MOD":
-		return []string{fmt.Sprintf("Step %s: %s appends to DD %s, which is not DISP=MOD.", step, p.Name, dd.Name)}
+		return []string{fmt.Sprintf("Step %s: %s appends to DD %s, which is not DISP=MOD.", step, f.by.Name, dd.Name)}
 	}
 	return nil
 }
@@ -329,16 +378,16 @@ func fileCopybook(p Program, f File) string {
 	return ""
 }
 
-// unbound reports the program's files that the step binds no DD to, and
-// a SYSIN it binds none to for a program that ACCEPTs. A sort's work file
-// needs none.
-func unbound(step Step, p Program) []string {
+// unbound reports the files of the program, and of those it calls, that
+// the step binds no DD to, and a SYSIN it binds none to for a program
+// that ACCEPTs. A sort's work file needs none.
+func unbound(step Step, p Program, programs []Program) []string {
 	var findings []string
-	for _, f := range p.Files {
+	for _, f := range filesOpened(p, programs) {
 		if f.Kind == "SD" || slices.ContainsFunc(step.DDs, func(dd DD) bool { return dd.Name == f.Assign }) {
 			continue
 		}
-		findings = append(findings, fmt.Sprintf("Step %s binds no DD %s for %s's file %s.", step.Name, f.Assign, p.Name, f.Name))
+		findings = append(findings, fmt.Sprintf("Step %s binds no DD %s for %s's file %s.", step.Name, f.Assign, f.by.Name, f.Name))
 	}
 	if p.ReadsSysin && !slices.ContainsFunc(step.DDs, func(dd DD) bool { return dd.Name == "SYSIN" }) {
 		findings = append(findings, fmt.Sprintf("Step %s binds no DD SYSIN for what %s ACCEPTs.", step.Name, p.Name))
@@ -659,11 +708,15 @@ func jobMarkdown(dir string, job Job) string {
 			case dd.Indexed:
 				datasets += " (indexed)"
 			}
+			file := dd.File
+			if dd.Callee != "" {
+				file += fmt.Sprintf(" of [%s](../programs/%s.md)", dd.Callee, dd.Callee)
+			}
 			if job.Kind == KindScript {
-				b.WriteString(row(dd.Name, datasets, dd.File, copybookLink(dd.Copybook), strings.Join(dd.Uses, ", ")))
+				b.WriteString(row(dd.Name, datasets, file, copybookLink(dd.Copybook), strings.Join(dd.Uses, ", ")))
 				continue
 			}
-			b.WriteString(row(dd.Name, datasets, dd.Disp, dd.File, copybookLink(dd.Copybook), strings.Join(dd.Uses, ", ")))
+			b.WriteString(row(dd.Name, datasets, dd.Disp, file, copybookLink(dd.Copybook), strings.Join(dd.Uses, ", ")))
 		}
 	}
 	b.WriteString("\n## Datasets\n\nEach dataset the job names, the copybook that describes its records, " +
