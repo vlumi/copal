@@ -24,6 +24,7 @@
       * 2001-07-02 MS   GL-0271 満期保険金に配当累計を加える。
       * 2012-09-03 YN   GL-0561 貸付利息の繰り入れ、貸付超過失効。
       * 2026-10-05 YN   GL-0815 前回業務日付からの応当日。
+      * 2026-11-16 YN   GL-0823 半年払の更新保険料。
       *----------------------------------------------------------------
        IDENTIFICATION DIVISION.
        PROGRAM-ID. GLD020.
@@ -423,11 +424,14 @@
                COMPUTE WS-ﾈﾝﾚｲ-ｿｴｼﾞ = WS-ﾈﾝﾚｲ + 1
                COMPUTE WS-ｹﾞﾂｶﾞｸ = PM-ﾎｹﾝｷﾝｶﾞｸ / 1000
                    * WS-ﾘｮｳﾘﾂ(WS-ｼｮｳﾋﾝ-IX, PM-ｾｲﾍﾞﾂ, WS-ﾈﾝﾚｲ-ｿｴｼﾞ)
-               IF PM-ﾈﾝﾊﾞﾗｲ
-                   COMPUTE PM-ﾎｹﾝﾘｮｳ = WS-ｹﾞﾂｶﾞｸ * 12 * 0.95
-               ELSE
-                   MOVE WS-ｹﾞﾂｶﾞｸ TO PM-ﾎｹﾝﾘｮｳ
-               END-IF
+               EVALUATE TRUE
+                   WHEN PM-ﾈﾝﾊﾞﾗｲ
+                       COMPUTE PM-ﾎｹﾝﾘｮｳ = WS-ｹﾞﾂｶﾞｸ * 12 * 0.95
+                   WHEN PM-ﾊﾝﾄｼﾊﾞﾗｲ
+                       COMPUTE PM-ﾎｹﾝﾘｮｳ = WS-ｹﾞﾂｶﾞｸ * 6 * 0.97
+                   WHEN OTHER
+                       MOVE WS-ｹﾞﾂｶﾞｸ TO PM-ﾎｹﾝﾘｮｳ
+               END-EVALUATE
                MOVE WS-ｵｳﾄｳﾋﾞ TO WS-ﾏﾝｷﾋﾞ
                ADD PM-ﾎｹﾝｷｶﾝ TO WS-ﾏﾝｷ-YYYY
                MOVE "W" TO WS-ﾎｳｺｳ

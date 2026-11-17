@@ -156,8 +156,11 @@ func (g *Generator) Changes(date Date, policies []Policy) ([][]byte, error) {
 // short of them once in a while.
 func (g *Generator) counterPayment(r *rand.Rand, p Policy, date Date) int64 {
 	months := int((date.YearMonth()/100-p.PaidTo/100)*12 + date.YearMonth()%100 - p.PaidTo%100)
-	if p.Mode == 2 {
+	switch p.Mode {
+	case 2:
 		months = (months + 11) / 12
+	case 3:
+		months = (months + 5) / 6
 	}
 	arrears := int64(months) * p.Premium
 	switch r.IntN(10) {

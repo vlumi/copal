@@ -3,7 +3,7 @@
   "tables": [
     {
       "paragraph": "ｼｮｷ-RTN",
-      "source": "gondwana/programs/GLD040.cbl:169",
+      "source": "gondwana/programs/GLD040.cbl:170",
       "conditions": [
         "WS-ﾍﾝｶﾝｹｯｶ = 0",
         "WS-GLSCTL-OK"
@@ -106,7 +106,7 @@
     },
     {
       "paragraph": "ｵｰﾌﾟﾝ-ｹﾝｻ-RTN",
-      "source": "gondwana/programs/GLD040.cbl:200",
+      "source": "gondwana/programs/GLD040.cbl:201",
       "conditions": [
         "WS-MNTREQ-OK",
         "WS-ｴﾗｰﾌｧｲﾙ = SPACES",
@@ -277,7 +277,7 @@
     },
     {
       "paragraph": "MNTREQ-ﾖﾐｺﾐ-RTN",
-      "source": "gondwana/programs/GLD040.cbl:230",
+      "source": "gondwana/programs/GLD040.cbl:231",
       "conditions": [
         "WS-MNTREQ-OK",
         "WS-MNTREQ-ｵﾜﾘ"
@@ -336,7 +336,7 @@
     },
     {
       "paragraph": "ｼｮﾘ-RTN",
-      "source": "gondwana/programs/GLD040.cbl:245",
+      "source": "gondwana/programs/GLD040.cbl:246",
       "conditions": [
         "WS-POLMST-ﾅｼ",
         "MR-ｼﾞｭｳｼｮﾍﾝｺｳ",
@@ -1063,7 +1063,7 @@
     },
     {
       "paragraph": "ﾍﾝｺｳ-RTN",
-      "source": "gondwana/programs/GLD040.cbl:294",
+      "source": "gondwana/programs/GLD040.cbl:295",
       "conditions": [
         "MR-ｼﾞｭｳｼｮﾍﾝｺｳ",
         "MR-ｼﾞｭｳｼｮ = SPACES",
@@ -1296,16 +1296,20 @@
     },
     {
       "paragraph": "ﾌｯｶﾂ-RTN",
-      "source": "gondwana/programs/GLD040.cbl:332",
+      "source": "gondwana/programs/GLD040.cbl:333",
       "conditions": [
         "PM-ｼｯｺｳ",
         "PM-ﾈﾝﾊﾞﾗｲ",
+        "PM-ﾊﾝﾄｼﾊﾞﾗｲ",
         "WS-ｹｲｶﾆｯｽｳ \u003e 365",
         "MR-ﾆｭｳｷﾝｶﾞｸ \u003c WS-ﾐﾉｳｶﾞｸ"
       ],
       "conditionRefs": [
         [
           "PM-ｼﾞｮｳﾀｲ"
+        ],
+        [
+          "PM-ﾊﾗｲｺﾐﾎｳﾎｳ"
         ],
         [
           "PM-ﾊﾗｲｺﾐﾎｳﾎｳ"
@@ -1329,12 +1333,14 @@
         "COMPUTE WS-ﾐﾉｳｶﾞｸ = WS-ﾐﾉｳﾂｷｽｳ * PM-ﾎｹﾝﾘｮｳ",
         "SET WS-ﾌｯｶﾂｷｶﾝ-ｹｲｶ TO TRUE",
         "SET WS-ﾐﾉｳｶﾞｸ-ﾌｿｸ TO TRUE",
-        "PERFORM ﾌｯｶﾂ-ﾊﾝｴｲ-RTN"
+        "PERFORM ﾌｯｶﾂ-ﾊﾝｴｲ-RTN",
+        "COMPUTE WS-ﾐﾉｳﾂｷｽｳ = (WS-ﾐﾉｳﾂｷｽｳ + 5) / 6"
       ],
       "rules": [
         {
           "entries": [
             "N",
+            "",
             "",
             "",
             ""
@@ -1348,6 +1354,7 @@
           "entries": [
             "Y",
             "Y",
+            "N",
             "Y",
             ""
           ],
@@ -1361,12 +1368,13 @@
             7,
             8
           ],
-          "sentence": "When `PM-ｼﾞｮｳﾀｲ` is `'3'` (`PM-ｼｯｺｳ`), `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'2'` (`PM-ﾈﾝﾊﾞﾗｲ`), and `WS-ｹｲｶﾆｯｽｳ` is more than 365, it sets `WS-ﾎｳｺｳ` to `'S'`, calls `GLC020`, computes `WS-ｹｲｶﾆｯｽｳ` as `FUNCTION INTEGER-OF-DATE(WS-ｷﾞｮｳﾑﾋﾂﾞｹ) - FUNCTION INTEGER-OF-DATE(WS-ｼｯｺｳﾋﾞ)`, sets `WS-ﾊﾗｲｺﾐｽﾞﾐ-ﾌﾞﾝｶｲ` to `PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ`, computes `WS-ﾐﾉｳﾂｷｽｳ` as `(WS-ｷﾞｮｳﾑ-YYYY - WS-ﾊﾗｲｺﾐ-YYYY) * 12 + WS-ｷﾞｮｳﾑ-MM - WS-ﾊﾗｲｺﾐ-MM`, computes `WS-ﾐﾉｳﾂｷｽｳ` as `(WS-ﾐﾉｳﾂｷｽｳ + 11) / 12`, computes `WS-ﾐﾉｳｶﾞｸ` as `WS-ﾐﾉｳﾂｷｽｳ * PM-ﾎｹﾝﾘｮｳ`, and sets `WS-ﾘﾕｳ` to `WS-ﾌｯｶﾂｷｶﾝ-ｹｲｶ`."
+          "sentence": "When `PM-ｼﾞｮｳﾀｲ` is `'3'` (`PM-ｼｯｺｳ`), `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'2'` (`PM-ﾈﾝﾊﾞﾗｲ`), `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'3'` (not `PM-ﾊﾝﾄｼﾊﾞﾗｲ`), and `WS-ｹｲｶﾆｯｽｳ` is more than 365, it sets `WS-ﾎｳｺｳ` to `'S'`, calls `GLC020`, computes `WS-ｹｲｶﾆｯｽｳ` as `FUNCTION INTEGER-OF-DATE(WS-ｷﾞｮｳﾑﾋﾂﾞｹ) - FUNCTION INTEGER-OF-DATE(WS-ｼｯｺｳﾋﾞ)`, sets `WS-ﾊﾗｲｺﾐｽﾞﾐ-ﾌﾞﾝｶｲ` to `PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ`, computes `WS-ﾐﾉｳﾂｷｽｳ` as `(WS-ｷﾞｮｳﾑ-YYYY - WS-ﾊﾗｲｺﾐ-YYYY) * 12 + WS-ｷﾞｮｳﾑ-MM - WS-ﾊﾗｲｺﾐ-MM`, computes `WS-ﾐﾉｳﾂｷｽｳ` as `(WS-ﾐﾉｳﾂｷｽｳ + 11) / 12`, computes `WS-ﾐﾉｳｶﾞｸ` as `WS-ﾐﾉｳﾂｷｽｳ * PM-ﾎｹﾝﾘｮｳ`, and sets `WS-ﾘﾕｳ` to `WS-ﾌｯｶﾂｷｶﾝ-ｹｲｶ`."
         },
         {
           "entries": [
             "Y",
             "Y",
+            "N",
             "N",
             "Y"
           ],
@@ -1380,12 +1388,13 @@
             7,
             9
           ],
-          "sentence": "When `PM-ｼﾞｮｳﾀｲ` is `'3'` (`PM-ｼｯｺｳ`), `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'2'` (`PM-ﾈﾝﾊﾞﾗｲ`), `WS-ｹｲｶﾆｯｽｳ` is at most 365, and `MR-ﾆｭｳｷﾝｶﾞｸ` is less than `WS-ﾐﾉｳｶﾞｸ`, it sets `WS-ﾎｳｺｳ` to `'S'`, calls `GLC020`, computes `WS-ｹｲｶﾆｯｽｳ` as `FUNCTION INTEGER-OF-DATE(WS-ｷﾞｮｳﾑﾋﾂﾞｹ) - FUNCTION INTEGER-OF-DATE(WS-ｼｯｺｳﾋﾞ)`, sets `WS-ﾊﾗｲｺﾐｽﾞﾐ-ﾌﾞﾝｶｲ` to `PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ`, computes `WS-ﾐﾉｳﾂｷｽｳ` as `(WS-ｷﾞｮｳﾑ-YYYY - WS-ﾊﾗｲｺﾐ-YYYY) * 12 + WS-ｷﾞｮｳﾑ-MM - WS-ﾊﾗｲｺﾐ-MM`, computes `WS-ﾐﾉｳﾂｷｽｳ` as `(WS-ﾐﾉｳﾂｷｽｳ + 11) / 12`, computes `WS-ﾐﾉｳｶﾞｸ` as `WS-ﾐﾉｳﾂｷｽｳ * PM-ﾎｹﾝﾘｮｳ`, and sets `WS-ﾘﾕｳ` to `WS-ﾐﾉｳｶﾞｸ-ﾌｿｸ`."
+          "sentence": "When `PM-ｼﾞｮｳﾀｲ` is `'3'` (`PM-ｼｯｺｳ`), `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'2'` (`PM-ﾈﾝﾊﾞﾗｲ`), `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'3'` (not `PM-ﾊﾝﾄｼﾊﾞﾗｲ`), `WS-ｹｲｶﾆｯｽｳ` is at most 365, and `MR-ﾆｭｳｷﾝｶﾞｸ` is less than `WS-ﾐﾉｳｶﾞｸ`, it sets `WS-ﾎｳｺｳ` to `'S'`, calls `GLC020`, computes `WS-ｹｲｶﾆｯｽｳ` as `FUNCTION INTEGER-OF-DATE(WS-ｷﾞｮｳﾑﾋﾂﾞｹ) - FUNCTION INTEGER-OF-DATE(WS-ｼｯｺｳﾋﾞ)`, sets `WS-ﾊﾗｲｺﾐｽﾞﾐ-ﾌﾞﾝｶｲ` to `PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ`, computes `WS-ﾐﾉｳﾂｷｽｳ` as `(WS-ｷﾞｮｳﾑ-YYYY - WS-ﾊﾗｲｺﾐ-YYYY) * 12 + WS-ｷﾞｮｳﾑ-MM - WS-ﾊﾗｲｺﾐ-MM`, computes `WS-ﾐﾉｳﾂｷｽｳ` as `(WS-ﾐﾉｳﾂｷｽｳ + 11) / 12`, computes `WS-ﾐﾉｳｶﾞｸ` as `WS-ﾐﾉｳﾂｷｽｳ * PM-ﾎｹﾝﾘｮｳ`, and sets `WS-ﾘﾕｳ` to `WS-ﾐﾉｳｶﾞｸ-ﾌｿｸ`."
         },
         {
           "entries": [
             "Y",
             "Y",
+            "N",
             "N",
             "N"
           ],
@@ -1399,11 +1408,72 @@
             7,
             10
           ],
-          "sentence": "When `PM-ｼﾞｮｳﾀｲ` is `'3'` (`PM-ｼｯｺｳ`), `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'2'` (`PM-ﾈﾝﾊﾞﾗｲ`), `WS-ｹｲｶﾆｯｽｳ` is at most 365, and `MR-ﾆｭｳｷﾝｶﾞｸ` is at least `WS-ﾐﾉｳｶﾞｸ`, it sets `WS-ﾎｳｺｳ` to `'S'`, calls `GLC020`, computes `WS-ｹｲｶﾆｯｽｳ` as `FUNCTION INTEGER-OF-DATE(WS-ｷﾞｮｳﾑﾋﾂﾞｹ) - FUNCTION INTEGER-OF-DATE(WS-ｼｯｺｳﾋﾞ)`, sets `WS-ﾊﾗｲｺﾐｽﾞﾐ-ﾌﾞﾝｶｲ` to `PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ`, computes `WS-ﾐﾉｳﾂｷｽｳ` as `(WS-ｷﾞｮｳﾑ-YYYY - WS-ﾊﾗｲｺﾐ-YYYY) * 12 + WS-ｷﾞｮｳﾑ-MM - WS-ﾊﾗｲｺﾐ-MM`, computes `WS-ﾐﾉｳﾂｷｽｳ` as `(WS-ﾐﾉｳﾂｷｽｳ + 11) / 12`, computes `WS-ﾐﾉｳｶﾞｸ` as `WS-ﾐﾉｳﾂｷｽｳ * PM-ﾎｹﾝﾘｮｳ`, and performs `ﾌｯｶﾂ-ﾊﾝｴｲ-RTN`."
+          "sentence": "When `PM-ｼﾞｮｳﾀｲ` is `'3'` (`PM-ｼｯｺｳ`), `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'2'` (`PM-ﾈﾝﾊﾞﾗｲ`), `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'3'` (not `PM-ﾊﾝﾄｼﾊﾞﾗｲ`), `WS-ｹｲｶﾆｯｽｳ` is at most 365, and `MR-ﾆｭｳｷﾝｶﾞｸ` is at least `WS-ﾐﾉｳｶﾞｸ`, it sets `WS-ﾎｳｺｳ` to `'S'`, calls `GLC020`, computes `WS-ｹｲｶﾆｯｽｳ` as `FUNCTION INTEGER-OF-DATE(WS-ｷﾞｮｳﾑﾋﾂﾞｹ) - FUNCTION INTEGER-OF-DATE(WS-ｼｯｺｳﾋﾞ)`, sets `WS-ﾊﾗｲｺﾐｽﾞﾐ-ﾌﾞﾝｶｲ` to `PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ`, computes `WS-ﾐﾉｳﾂｷｽｳ` as `(WS-ｷﾞｮｳﾑ-YYYY - WS-ﾊﾗｲｺﾐ-YYYY) * 12 + WS-ｷﾞｮｳﾑ-MM - WS-ﾊﾗｲｺﾐ-MM`, computes `WS-ﾐﾉｳﾂｷｽｳ` as `(WS-ﾐﾉｳﾂｷｽｳ + 11) / 12`, computes `WS-ﾐﾉｳｶﾞｸ` as `WS-ﾐﾉｳﾂｷｽｳ * PM-ﾎｹﾝﾘｮｳ`, and performs `ﾌｯｶﾂ-ﾊﾝｴｲ-RTN`."
         },
         {
           "entries": [
             "Y",
+            "N",
+            "Y",
+            "Y",
+            ""
+          ],
+          "actions": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            11,
+            7,
+            8
+          ],
+          "sentence": "When `PM-ｼﾞｮｳﾀｲ` is `'3'` (`PM-ｼｯｺｳ`), `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'2'` (not `PM-ﾈﾝﾊﾞﾗｲ`), `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'3'` (`PM-ﾊﾝﾄｼﾊﾞﾗｲ`), and `WS-ｹｲｶﾆｯｽｳ` is more than 365, it sets `WS-ﾎｳｺｳ` to `'S'`, calls `GLC020`, computes `WS-ｹｲｶﾆｯｽｳ` as `FUNCTION INTEGER-OF-DATE(WS-ｷﾞｮｳﾑﾋﾂﾞｹ) - FUNCTION INTEGER-OF-DATE(WS-ｼｯｺｳﾋﾞ)`, sets `WS-ﾊﾗｲｺﾐｽﾞﾐ-ﾌﾞﾝｶｲ` to `PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ`, computes `WS-ﾐﾉｳﾂｷｽｳ` as `(WS-ｷﾞｮｳﾑ-YYYY - WS-ﾊﾗｲｺﾐ-YYYY) * 12 + WS-ｷﾞｮｳﾑ-MM - WS-ﾊﾗｲｺﾐ-MM`, computes `WS-ﾐﾉｳﾂｷｽｳ` as `(WS-ﾐﾉｳﾂｷｽｳ + 5) / 6`, computes `WS-ﾐﾉｳｶﾞｸ` as `WS-ﾐﾉｳﾂｷｽｳ * PM-ﾎｹﾝﾘｮｳ`, and sets `WS-ﾘﾕｳ` to `WS-ﾌｯｶﾂｷｶﾝ-ｹｲｶ`."
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            11,
+            7,
+            9
+          ],
+          "sentence": "When `PM-ｼﾞｮｳﾀｲ` is `'3'` (`PM-ｼｯｺｳ`), `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'2'` (not `PM-ﾈﾝﾊﾞﾗｲ`), `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'3'` (`PM-ﾊﾝﾄｼﾊﾞﾗｲ`), `WS-ｹｲｶﾆｯｽｳ` is at most 365, and `MR-ﾆｭｳｷﾝｶﾞｸ` is less than `WS-ﾐﾉｳｶﾞｸ`, it sets `WS-ﾎｳｺｳ` to `'S'`, calls `GLC020`, computes `WS-ｹｲｶﾆｯｽｳ` as `FUNCTION INTEGER-OF-DATE(WS-ｷﾞｮｳﾑﾋﾂﾞｹ) - FUNCTION INTEGER-OF-DATE(WS-ｼｯｺｳﾋﾞ)`, sets `WS-ﾊﾗｲｺﾐｽﾞﾐ-ﾌﾞﾝｶｲ` to `PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ`, computes `WS-ﾐﾉｳﾂｷｽｳ` as `(WS-ｷﾞｮｳﾑ-YYYY - WS-ﾊﾗｲｺﾐ-YYYY) * 12 + WS-ｷﾞｮｳﾑ-MM - WS-ﾊﾗｲｺﾐ-MM`, computes `WS-ﾐﾉｳﾂｷｽｳ` as `(WS-ﾐﾉｳﾂｷｽｳ + 5) / 6`, computes `WS-ﾐﾉｳｶﾞｸ` as `WS-ﾐﾉｳﾂｷｽｳ * PM-ﾎｹﾝﾘｮｳ`, and sets `WS-ﾘﾕｳ` to `WS-ﾐﾉｳｶﾞｸ-ﾌｿｸ`."
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "N"
+          ],
+          "actions": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            11,
+            7,
+            10
+          ],
+          "sentence": "When `PM-ｼﾞｮｳﾀｲ` is `'3'` (`PM-ｼｯｺｳ`), `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'2'` (not `PM-ﾈﾝﾊﾞﾗｲ`), `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'3'` (`PM-ﾊﾝﾄｼﾊﾞﾗｲ`), `WS-ｹｲｶﾆｯｽｳ` is at most 365, and `MR-ﾆｭｳｷﾝｶﾞｸ` is at least `WS-ﾐﾉｳｶﾞｸ`, it sets `WS-ﾎｳｺｳ` to `'S'`, calls `GLC020`, computes `WS-ｹｲｶﾆｯｽｳ` as `FUNCTION INTEGER-OF-DATE(WS-ｷﾞｮｳﾑﾋﾂﾞｹ) - FUNCTION INTEGER-OF-DATE(WS-ｼｯｺｳﾋﾞ)`, sets `WS-ﾊﾗｲｺﾐｽﾞﾐ-ﾌﾞﾝｶｲ` to `PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ`, computes `WS-ﾐﾉｳﾂｷｽｳ` as `(WS-ｷﾞｮｳﾑ-YYYY - WS-ﾊﾗｲｺﾐ-YYYY) * 12 + WS-ｷﾞｮｳﾑ-MM - WS-ﾊﾗｲｺﾐ-MM`, computes `WS-ﾐﾉｳﾂｷｽｳ` as `(WS-ﾐﾉｳﾂｷｽｳ + 5) / 6`, computes `WS-ﾐﾉｳｶﾞｸ` as `WS-ﾐﾉｳﾂｷｽｳ * PM-ﾎｹﾝﾘｮｳ`, and performs `ﾌｯｶﾂ-ﾊﾝｴｲ-RTN`."
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
             "N",
             "Y",
             ""
@@ -1417,11 +1487,12 @@
             7,
             8
           ],
-          "sentence": "When `PM-ｼﾞｮｳﾀｲ` is `'3'` (`PM-ｼｯｺｳ`), `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'2'` (not `PM-ﾈﾝﾊﾞﾗｲ`), and `WS-ｹｲｶﾆｯｽｳ` is more than 365, it sets `WS-ﾎｳｺｳ` to `'S'`, calls `GLC020`, computes `WS-ｹｲｶﾆｯｽｳ` as `FUNCTION INTEGER-OF-DATE(WS-ｷﾞｮｳﾑﾋﾂﾞｹ) - FUNCTION INTEGER-OF-DATE(WS-ｼｯｺｳﾋﾞ)`, sets `WS-ﾊﾗｲｺﾐｽﾞﾐ-ﾌﾞﾝｶｲ` to `PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ`, computes `WS-ﾐﾉｳﾂｷｽｳ` as `(WS-ｷﾞｮｳﾑ-YYYY - WS-ﾊﾗｲｺﾐ-YYYY) * 12 + WS-ｷﾞｮｳﾑ-MM - WS-ﾊﾗｲｺﾐ-MM`, computes `WS-ﾐﾉｳｶﾞｸ` as `WS-ﾐﾉｳﾂｷｽｳ * PM-ﾎｹﾝﾘｮｳ`, and sets `WS-ﾘﾕｳ` to `WS-ﾌｯｶﾂｷｶﾝ-ｹｲｶ`."
+          "sentence": "When `PM-ｼﾞｮｳﾀｲ` is `'3'` (`PM-ｼｯｺｳ`), `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'2'` (not `PM-ﾈﾝﾊﾞﾗｲ`), `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'3'` (not `PM-ﾊﾝﾄｼﾊﾞﾗｲ`), and `WS-ｹｲｶﾆｯｽｳ` is more than 365, it sets `WS-ﾎｳｺｳ` to `'S'`, calls `GLC020`, computes `WS-ｹｲｶﾆｯｽｳ` as `FUNCTION INTEGER-OF-DATE(WS-ｷﾞｮｳﾑﾋﾂﾞｹ) - FUNCTION INTEGER-OF-DATE(WS-ｼｯｺｳﾋﾞ)`, sets `WS-ﾊﾗｲｺﾐｽﾞﾐ-ﾌﾞﾝｶｲ` to `PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ`, computes `WS-ﾐﾉｳﾂｷｽｳ` as `(WS-ｷﾞｮｳﾑ-YYYY - WS-ﾊﾗｲｺﾐ-YYYY) * 12 + WS-ｷﾞｮｳﾑ-MM - WS-ﾊﾗｲｺﾐ-MM`, computes `WS-ﾐﾉｳｶﾞｸ` as `WS-ﾐﾉｳﾂｷｽｳ * PM-ﾎｹﾝﾘｮｳ`, and sets `WS-ﾘﾕｳ` to `WS-ﾌｯｶﾂｷｶﾝ-ｹｲｶ`."
         },
         {
           "entries": [
             "Y",
+            "N",
             "N",
             "N",
             "Y"
@@ -1435,11 +1506,12 @@
             7,
             9
           ],
-          "sentence": "When `PM-ｼﾞｮｳﾀｲ` is `'3'` (`PM-ｼｯｺｳ`), `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'2'` (not `PM-ﾈﾝﾊﾞﾗｲ`), `WS-ｹｲｶﾆｯｽｳ` is at most 365, and `MR-ﾆｭｳｷﾝｶﾞｸ` is less than `WS-ﾐﾉｳｶﾞｸ`, it sets `WS-ﾎｳｺｳ` to `'S'`, calls `GLC020`, computes `WS-ｹｲｶﾆｯｽｳ` as `FUNCTION INTEGER-OF-DATE(WS-ｷﾞｮｳﾑﾋﾂﾞｹ) - FUNCTION INTEGER-OF-DATE(WS-ｼｯｺｳﾋﾞ)`, sets `WS-ﾊﾗｲｺﾐｽﾞﾐ-ﾌﾞﾝｶｲ` to `PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ`, computes `WS-ﾐﾉｳﾂｷｽｳ` as `(WS-ｷﾞｮｳﾑ-YYYY - WS-ﾊﾗｲｺﾐ-YYYY) * 12 + WS-ｷﾞｮｳﾑ-MM - WS-ﾊﾗｲｺﾐ-MM`, computes `WS-ﾐﾉｳｶﾞｸ` as `WS-ﾐﾉｳﾂｷｽｳ * PM-ﾎｹﾝﾘｮｳ`, and sets `WS-ﾘﾕｳ` to `WS-ﾐﾉｳｶﾞｸ-ﾌｿｸ`."
+          "sentence": "When `PM-ｼﾞｮｳﾀｲ` is `'3'` (`PM-ｼｯｺｳ`), `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'2'` (not `PM-ﾈﾝﾊﾞﾗｲ`), `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'3'` (not `PM-ﾊﾝﾄｼﾊﾞﾗｲ`), `WS-ｹｲｶﾆｯｽｳ` is at most 365, and `MR-ﾆｭｳｷﾝｶﾞｸ` is less than `WS-ﾐﾉｳｶﾞｸ`, it sets `WS-ﾎｳｺｳ` to `'S'`, calls `GLC020`, computes `WS-ｹｲｶﾆｯｽｳ` as `FUNCTION INTEGER-OF-DATE(WS-ｷﾞｮｳﾑﾋﾂﾞｹ) - FUNCTION INTEGER-OF-DATE(WS-ｼｯｺｳﾋﾞ)`, sets `WS-ﾊﾗｲｺﾐｽﾞﾐ-ﾌﾞﾝｶｲ` to `PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ`, computes `WS-ﾐﾉｳﾂｷｽｳ` as `(WS-ｷﾞｮｳﾑ-YYYY - WS-ﾊﾗｲｺﾐ-YYYY) * 12 + WS-ｷﾞｮｳﾑ-MM - WS-ﾊﾗｲｺﾐ-MM`, computes `WS-ﾐﾉｳｶﾞｸ` as `WS-ﾐﾉｳﾂｷｽｳ * PM-ﾎｹﾝﾘｮｳ`, and sets `WS-ﾘﾕｳ` to `WS-ﾐﾉｳｶﾞｸ-ﾌｿｸ`."
         },
         {
           "entries": [
             "Y",
+            "N",
             "N",
             "N",
             "N"
@@ -1453,13 +1525,13 @@
             7,
             10
           ],
-          "sentence": "When `PM-ｼﾞｮｳﾀｲ` is `'3'` (`PM-ｼｯｺｳ`), `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'2'` (not `PM-ﾈﾝﾊﾞﾗｲ`), `WS-ｹｲｶﾆｯｽｳ` is at most 365, and `MR-ﾆｭｳｷﾝｶﾞｸ` is at least `WS-ﾐﾉｳｶﾞｸ`, it sets `WS-ﾎｳｺｳ` to `'S'`, calls `GLC020`, computes `WS-ｹｲｶﾆｯｽｳ` as `FUNCTION INTEGER-OF-DATE(WS-ｷﾞｮｳﾑﾋﾂﾞｹ) - FUNCTION INTEGER-OF-DATE(WS-ｼｯｺｳﾋﾞ)`, sets `WS-ﾊﾗｲｺﾐｽﾞﾐ-ﾌﾞﾝｶｲ` to `PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ`, computes `WS-ﾐﾉｳﾂｷｽｳ` as `(WS-ｷﾞｮｳﾑ-YYYY - WS-ﾊﾗｲｺﾐ-YYYY) * 12 + WS-ｷﾞｮｳﾑ-MM - WS-ﾊﾗｲｺﾐ-MM`, computes `WS-ﾐﾉｳｶﾞｸ` as `WS-ﾐﾉｳﾂｷｽｳ * PM-ﾎｹﾝﾘｮｳ`, and performs `ﾌｯｶﾂ-ﾊﾝｴｲ-RTN`."
+          "sentence": "When `PM-ｼﾞｮｳﾀｲ` is `'3'` (`PM-ｼｯｺｳ`), `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'2'` (not `PM-ﾈﾝﾊﾞﾗｲ`), `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'3'` (not `PM-ﾊﾝﾄｼﾊﾞﾗｲ`), `WS-ｹｲｶﾆｯｽｳ` is at most 365, and `MR-ﾆｭｳｷﾝｶﾞｸ` is at least `WS-ﾐﾉｳｶﾞｸ`, it sets `WS-ﾎｳｺｳ` to `'S'`, calls `GLC020`, computes `WS-ｹｲｶﾆｯｽｳ` as `FUNCTION INTEGER-OF-DATE(WS-ｷﾞｮｳﾑﾋﾂﾞｹ) - FUNCTION INTEGER-OF-DATE(WS-ｼｯｺｳﾋﾞ)`, sets `WS-ﾊﾗｲｺﾐｽﾞﾐ-ﾌﾞﾝｶｲ` to `PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ`, computes `WS-ﾐﾉｳﾂｷｽｳ` as `(WS-ｷﾞｮｳﾑ-YYYY - WS-ﾊﾗｲｺﾐ-YYYY) * 12 + WS-ｷﾞｮｳﾑ-MM - WS-ﾊﾗｲｺﾐ-MM`, computes `WS-ﾐﾉｳｶﾞｸ` as `WS-ﾐﾉｳﾂｷｽｳ * PM-ﾎｹﾝﾘｮｳ`, and performs `ﾌｯｶﾂ-ﾊﾝｴｲ-RTN`."
         }
       ]
     },
     {
       "paragraph": "ｼｭｳﾘｮｳ-RTN",
-      "source": "gondwana/programs/GLD040.cbl:433",
+      "source": "gondwana/programs/GLD040.cbl:437",
       "conditions": [
         "WS-GLSCTL-OK"
       ],

@@ -2,8 +2,8 @@
 
 The run ended with return code 16.
 
-GLSCTL-F is missing, so opening it fails.
+PRMREQ-F's directory is missing, so creating it fails.
 
 The first case to reach:
 
-- [GLM010, ｼｮｷ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLM010.md#ｼｮｷ-rtn)
+- [GLM010, ｼｮｷ-RTN, rule 4](../../../../blueprints/gondwana/rules/GLM010.md#ｼｮｷ-rtn)

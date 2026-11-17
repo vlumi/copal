@@ -106,13 +106,23 @@ func monthlyPremium(sum int64, rate int) int64 {
 }
 
 // premium is the premium a policy pays at a time: the monthly premium,
-// or twelve months less five percent for an annual payer.
+// twelve months less five percent for an annual payer, or six months
+// less three percent for a half-yearly one.
 func premium(sum int64, rate int, mode int) int64 {
 	monthly := monthlyPremium(sum, rate)
-	if mode == 2 {
+	switch mode {
+	case 2:
 		return monthly * 12 * 95 / 100
+	case 3:
+		return monthly * 6 * 97 / 100
 	}
 	return monthly
+}
+
+// aMode draws how a policy pays: monthly for most, annually for one in
+// seven, half-yearly for one in twenty.
+func aMode(r *rand.Rand) int {
+	return 1 + pick(r, []int{80, 15, 5})
 }
 
 // insuranceAge is the age the programs insure at: the age in full years,

@@ -8,7 +8,7 @@ type Policy struct {
 	Product       string
 	Sum           int64
 	Premium       int64
-	Mode          int // 1 monthly, 2 annual
+	Mode          int // 1 monthly, 2 annual, 3 half-yearly
 	Contract      Date
 	Term          int
 	Maturity      Date
