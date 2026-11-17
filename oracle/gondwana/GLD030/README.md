@@ -181,10 +181,10 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | not reached: `PM-ﾈﾝﾊﾞﾗｲ` Y, `PM-ﾕｳｺｳ` N |
-| 2 | not reached: `PM-ﾈﾝﾊﾞﾗｲ` Y, `PM-ﾕｳｺｳ` Y |
-| 3 | not reached: `PM-ﾈﾝﾊﾞﾗｲ` N, `WS-ﾐﾉｳﾂｷｽｳ < 0` Y |
-| 4 | not reached: `PM-ﾈﾝﾊﾞﾗｲ` N, `WS-ﾐﾉｳﾂｷｽｳ < 0` N |
+| 1 | not reached: `PM-ﾂｷﾊﾞﾗｲ` N, `PM-ﾕｳｺｳ` N |
+| 2 | not reached: `PM-ﾂｷﾊﾞﾗｲ` N, `PM-ﾕｳｺｳ` Y |
+| 3 | not reached: `PM-ﾂｷﾊﾞﾗｲ` Y, `WS-ﾐﾉｳﾂｷｽｳ < 0` Y |
+| 4 | not reached: `PM-ﾂｷﾊﾞﾗｲ` Y, `WS-ﾐﾉｳﾂｷｽｳ < 0` N |
 
 ### [ﾘﾚｷ-ｶｷｺﾐ-RTN](../../../blueprints/gondwana/rules/GLD030.md#ﾘﾚｷ-ｶｷｺﾐ-rtn)
 

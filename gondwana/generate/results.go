@@ -8,7 +8,8 @@ import (
 // the request's records back with the banks' names filled in and each
 // debit's result, most paid, a few not for lack of funds, a closed
 // account, the depositor's refusal or a mandate the bank has no record
-// of, and the trailer counting them.
+// of, rarely one the insurer stopped or one for no reason given, and the
+// trailer counting them.
 func (g *Generator) Results(date Date, request [][]byte) ([][]byte, error) {
 	r := g.rng("results", date.Number())
 	l := g.Layouts.Transfer
@@ -34,7 +35,7 @@ func (g *Generator) Results(date Date, request [][]byte) ([][]byte, error) {
 			bankName, branchName := bankNamed(int(bankCode), int(branchCode))
 			result := "0"
 			if chance(r, failureRate(customer)) {
-				result = string("1234"[pick(r, []int{6, 1, 2, 1})])
+				result = string("123489"[pick(r, []int{24, 4, 8, 4, 1, 1})])
 				unpaidCount, unpaidAmount = unpaidCount+1, unpaidAmount+amount
 			} else {
 				paidCount, paidAmount = paidCount+1, paidAmount+amount

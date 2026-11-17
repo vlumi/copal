@@ -1,6 +1,6 @@
 # GLD060: cases
 
-20 cases reach 18 of the 33 rules of GLD060's decision tables, and of the programs it calls, 6 of the 16 of GLC020, 1 of the 5 of GLC040, 14 of the 23 of GLC030. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's. A rule that finds two totals the program adds up itself to differ, items of its own that it only adds to, says so: no input field sets either, so the search has nothing to change to reach it. A rule that finds a write or rewrite by key to fail says so too: the search fails a file only when it is opened or read, and a program that writes keys it made new, or rewrites the record it read, meets that failure only when something else changes the file meanwhile.
+20 cases reach 18 of the 37 rules of GLD060's decision tables, and of the programs it calls, 6 of the 16 of GLC020, 1 of the 5 of GLC040, 14 of the 23 of GLC030. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's. A rule that finds two totals the program adds up itself to differ, items of its own that it only adds to, says so: no input field sets either, so the search has nothing to change to reach it. A rule that finds a write or rewrite by key to fail says so too: the search fails a file only when it is opened or read, and a program that writes keys it made new, or rewrites the record it read, meets that failure only when something else changes the file meanwhile.
 
 ## GLD060
 
@@ -50,11 +50,11 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 16](16/) |
-| 2 | not reached: `PM-ﾈﾝﾊﾞﾗｲ` Y, `WS-CSVTB-OK` Y, `WS-ﾌﾘｶｴ-ｶｲｽｳ > 0` Y, `WS-ｻﾞﾝﾀﾞｶ > WS-ﾍﾝﾚｲｷﾝ` N |
+| 2 | not reached: `PM-ﾂｷﾊﾞﾗｲ` N, `WS-CSVTB-OK` Y, `WS-ﾌﾘｶｴ-ｶｲｽｳ > 0` Y, `WS-ｻﾞﾝﾀﾞｶ > WS-ﾍﾝﾚｲｷﾝ` N |
 | 3 | [case 11](11/) |
 | 4 | [case 08](08/) |
-| 5 | not reached: `PM-ﾈﾝﾊﾞﾗｲ` N, `WS-CSVTB-OK` Y, `WS-ﾌﾘｶｴ-ｶｲｽｳ > 0` Y, `WS-ｻﾞﾝﾀﾞｶ > WS-ﾍﾝﾚｲｷﾝ` N |
-| 6 | not reached: `PM-ﾈﾝﾊﾞﾗｲ` N, `WS-CSVTB-OK` Y, `WS-ﾌﾘｶｴ-ｶｲｽｳ > 0` Y, `WS-ｻﾞﾝﾀﾞｶ > WS-ﾍﾝﾚｲｷﾝ` Y |
+| 5 | not reached: `PM-ﾂｷﾊﾞﾗｲ` Y, `WS-CSVTB-OK` Y, `WS-ﾌﾘｶｴ-ｶｲｽｳ > 0` Y, `WS-ｻﾞﾝﾀﾞｶ > WS-ﾍﾝﾚｲｷﾝ` N |
+| 6 | not reached: `PM-ﾂｷﾊﾞﾗｲ` Y, `WS-CSVTB-OK` Y, `WS-ﾌﾘｶｴ-ｶｲｽｳ > 0` Y, `WS-ｻﾞﾝﾀﾞｶ > WS-ﾍﾝﾚｲｷﾝ` Y |
 | 7 | [case 05](05/) |
 
 ### [ﾌﾘｶｴ-RTN](../../../blueprints/gondwana/rules/GLD060.md#ﾌﾘｶｴ-rtn)
@@ -62,9 +62,13 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | not reached: `WS-ﾘｿｸ > 0` Y, `PM-ﾈﾝﾊﾞﾗｲ` Y |
-| 2 | not reached: `WS-ﾘｿｸ > 0` Y, `PM-ﾈﾝﾊﾞﾗｲ` N |
-| 3 | not reached: `WS-ﾘｿｸ > 0` N, `PM-ﾈﾝﾊﾞﾗｲ` Y |
-| 4 | not reached: `WS-ﾘｿｸ > 0` N, `PM-ﾈﾝﾊﾞﾗｲ` N |
+| 2 | not reached: `WS-ﾘｿｸ > 0` Y, `PM-ﾈﾝﾊﾞﾗｲ` N, `PM-ﾊﾝﾄｼﾊﾞﾗｲ` Y, `WS-ﾊﾗｲｺﾐ-MM > 12` Y |
+| 3 | not reached: `WS-ﾘｿｸ > 0` Y, `PM-ﾈﾝﾊﾞﾗｲ` N, `PM-ﾊﾝﾄｼﾊﾞﾗｲ` Y, `WS-ﾊﾗｲｺﾐ-MM > 12` N |
+| 4 | not reached: `WS-ﾘｿｸ > 0` Y, `PM-ﾈﾝﾊﾞﾗｲ` N, `PM-ﾊﾝﾄｼﾊﾞﾗｲ` N |
+| 5 | not reached: `WS-ﾘｿｸ > 0` N, `PM-ﾈﾝﾊﾞﾗｲ` Y |
+| 6 | not reached: `WS-ﾘｿｸ > 0` N, `PM-ﾈﾝﾊﾞﾗｲ` N, `PM-ﾊﾝﾄｼﾊﾞﾗｲ` Y, `WS-ﾊﾗｲｺﾐ-MM > 12` Y |
+| 7 | not reached: `WS-ﾘｿｸ > 0` N, `PM-ﾈﾝﾊﾞﾗｲ` N, `PM-ﾊﾝﾄｼﾊﾞﾗｲ` Y, `WS-ﾊﾗｲｺﾐ-MM > 12` N |
+| 8 | not reached: `WS-ﾘｿｸ > 0` N, `PM-ﾈﾝﾊﾞﾗｲ` N, `PM-ﾊﾝﾄｼﾊﾞﾗｲ` N |
 
 ### [POLMST-ｶｷﾓﾄﾞｼ-RTN](../../../blueprints/gondwana/rules/GLD060.md#polmst-ｶｷﾓﾄﾞｼ-rtn)
 

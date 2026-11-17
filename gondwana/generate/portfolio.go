@@ -50,9 +50,7 @@ func (g *Generator) policy(r *rand.Rand, opening Date) Policy {
 		Address: addresses[r.IntN(len(addresses))], Beneficiary: relative(r, holder).Kanji(),
 		Account: anAccount(r, holder), Agent: agents[r.IntN(len(agents))].code,
 	}
-	if r.IntN(100) < 15 {
-		p.Mode = 2
-	}
+	p.Mode = aMode(r)
 	if yearsBack > 15 && r.IntN(100) < 4 {
 		p.Agent = closedAgent
 	}
@@ -183,17 +181,22 @@ func (g *Generator) standing(r *rand.Rand, p *Policy, pr product, opening Date) 
 }
 
 // paidTo is the month a policy is paid to after the billing of a month:
-// that month for a monthly payer, and the latest contract month billed
-// for an annual one.
+// that month for a monthly payer, and for an annual or a half-yearly one
+// the latest month billed of those a year or half a year apart from the
+// contract month on.
 func paidTo(p *Policy, billing Date) int64 {
 	if p.Mode == 1 {
 		return max(billing.YearMonth(), p.Contract.YearMonth())
 	}
-	year := billing.Year()
-	if p.Contract.Month() > billing.Month() {
-		year--
+	every := 12
+	if p.Mode == 3 {
+		every = 6
 	}
-	return max(int64(year)*100+int64(p.Contract.Month()), p.Contract.YearMonth())
+	due := p.Contract.MonthStart()
+	for next := due.AddMonths(every); !next.After(billing.MonthStart()); next = next.AddMonths(every) {
+		due = next
+	}
+	return due.YearMonth()
 }
 
 // dividends is what the fiscal years' ends since the contract credited

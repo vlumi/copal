@@ -50,9 +50,7 @@ func (g *Generator) application(r *rand.Rand, date Date, n int) Policy {
 		Address: addresses[r.IntN(len(addresses))], Beneficiary: relative(r, holder).Kanji(),
 		Account: anAccount(r, holder), Agent: agents[r.IntN(len(agents))].code,
 	}
-	if r.IntN(100) < 15 {
-		p.Mode = 2
-	}
+	p.Mode = aMode(r)
 	p.Birth, p.EntryAge = g.birth(r, pr, p.Contract)
 	p.Sum = g.sum(r, pr)
 	return p

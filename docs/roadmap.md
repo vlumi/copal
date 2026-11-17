@@ -257,7 +257,7 @@ Gondwana is convincing as a batch system and thin as a life insurer: a policy is
 - Benefits judged by the event date, with the unpaid premiums deducted and an exclusion period (done).
 - A history of benefits paid: days limited by stay and in total, and a surgery benefit (done).
 - The policyholders' notices and the premium certificates, by the Report Writer.
-- Collection: an annual payer debited again, a half-yearly mode, the agent's other results.
+- Collection: an annual payer debited again, a half-yearly mode, the agent's other results (done).
 - The national holidays and the year-end closure.
 - Riders: a coverage file beside the master.
 - The books: both sides of an entry, reserves by entry age, commissions charged back.
