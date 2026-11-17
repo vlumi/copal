@@ -3,14 +3,15 @@
   "kind": "script",
   "source": "gondwana/scripts/UNLOAD.BAT",
   "description": [
-    "UNLOAD.BAT: 契約マスタのアンロード。日次と月次の最後に呼ばれ、",
-    "下流に渡すファイルを作り、制御レコードの業務日付を進める。",
+    "UNLOAD.BAT: 契約マスタと給付履歴のアンロード。日次と月次の最後に",
+    "呼ばれ、下流に渡すファイルを作り、制御レコードの業務日付を進める。",
     "",
     "使い方: UNLOAD.BAT YYYYMMDD  業務日付",
     "環境: GLS_BIN プログラム、GLS_DATA データ",
     "",
     "変更履歴",
-    "1999-11-08 MS  GL-0233 初版、PC システム移行時。"
+    "1999-11-08 MS  GL-0233 初版、PC システム移行時。",
+    "2026-11-16 YN  GL-0822 給付履歴。"
   ],
   "steps": [
     {
@@ -23,7 +24,7 @@
       "description": [
         "アンロードと制御レコード"
       ],
-      "source": "gondwana/scripts/UNLOAD.BAT:21",
+      "source": "gondwana/scripts/UNLOAD.BAT:24",
       "dds": [
         {
           "dd": "POLMST",
@@ -36,7 +37,7 @@
             "read"
           ],
           "copybook": "POLMST",
-          "source": "gondwana/scripts/UNLOAD.BAT:21"
+          "source": "gondwana/scripts/UNLOAD.BAT:24"
         },
         {
           "dd": "UNLOAD",
@@ -48,7 +49,32 @@
             "write"
           ],
           "copybook": "POLMST",
-          "source": "gondwana/scripts/UNLOAD.BAT:21"
+          "source": "gondwana/scripts/UNLOAD.BAT:24"
+        },
+        {
+          "dd": "BENHST",
+          "datasets": [
+            "$DATA/MASTER/BENHST.IDX"
+          ],
+          "indexed": true,
+          "file": "BENHST-F",
+          "uses": [
+            "read"
+          ],
+          "copybook": "BENHST",
+          "source": "gondwana/scripts/UNLOAD.BAT:24"
+        },
+        {
+          "dd": "HSTUNL",
+          "datasets": [
+            "$DATA/OUT/BENHST.$DATE.TXT"
+          ],
+          "file": "HSTUNL-F",
+          "uses": [
+            "write"
+          ],
+          "copybook": "BENHST",
+          "source": "gondwana/scripts/UNLOAD.BAT:24"
         },
         {
           "dd": "GLSCTL",
@@ -60,7 +86,7 @@
             "update"
           ],
           "copybook": "CTLREC",
-          "source": "gondwana/scripts/UNLOAD.BAT:21"
+          "source": "gondwana/scripts/UNLOAD.BAT:24"
         },
         {
           "dd": "GLD090R",
@@ -71,7 +97,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/UNLOAD.BAT:21"
+          "source": "gondwana/scripts/UNLOAD.BAT:24"
         },
         {
           "dd": "stdout",
@@ -81,7 +107,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/UNLOAD.BAT:21"
+          "source": "gondwana/scripts/UNLOAD.BAT:24"
         }
       ]
     }
@@ -99,6 +125,23 @@
     {
       "dataset": "$DATA/OUT/POLMST.$DATE.TXT",
       "copybook": "POLMST",
+      "kind": "output",
+      "writtenBy": [
+        "GLD090"
+      ]
+    },
+    {
+      "dataset": "$DATA/MASTER/BENHST.IDX",
+      "copybook": "BENHST",
+      "kind": "internal",
+      "indexed": true,
+      "readBy": [
+        "GLD090"
+      ]
+    },
+    {
+      "dataset": "$DATA/OUT/BENHST.$DATE.TXT",
+      "copybook": "BENHST",
       "kind": "output",
       "writtenBy": [
         "GLD090"

@@ -5,6 +5,7 @@
       * アンロードし、下流 (営業システム、経理) に渡す。制御レコード
       * の業務日付を処理した日に進め、件数と有効保険金額を書き戻す。
       * 報告には制御レコードの内容を印字する。
+      * 給付履歴 BENHST も、あれば証券番号・連番順にアンロードする。
       *
       * 復帰コード: 0 処理済、8 日付が日付でない、16 ファイル異常。
       *
@@ -12,6 +13,7 @@
       * 日付       担当 変更
       * 1987-04-01 KT   GL-0001 初版。
       * 1999-11-08 MS   GL-0233 制御レコードの更新。
+      * 2026-11-16 YN   GL-0822 給付履歴のアンロード。
       *----------------------------------------------------------------
        IDENTIFICATION DIVISION.
        PROGRAM-ID. GLD090.
@@ -29,6 +31,14 @@
            SELECT UNLOAD-F ASSIGN TO "UNLOAD"
                ORGANIZATION IS LINE SEQUENTIAL
                FILE STATUS IS WS-UNLOAD-ST.
+           SELECT OPTIONAL BENHST-F ASSIGN TO "BENHST"
+               ORGANIZATION IS INDEXED
+               ACCESS MODE IS SEQUENTIAL
+               RECORD KEY IS BH-ｷｰ
+               FILE STATUS IS WS-BENHST-ST.
+           SELECT HSTUNL-F ASSIGN TO "HSTUNL"
+               ORGANIZATION IS LINE SEQUENTIAL
+               FILE STATUS IS WS-HSTUNL-ST.
            SELECT GLSCTL-F ASSIGN TO "GLSCTL"
                ORGANIZATION IS SEQUENTIAL
                FILE STATUS IS WS-GLSCTL-ST.
@@ -42,6 +52,10 @@
        COPY POLMST.
        FD  UNLOAD-F.
        01  ｱﾝﾛｰﾄﾞ-ﾚｺｰﾄﾞ                PIC X(300).
+       FD  BENHST-F.
+       COPY BENHST.
+       FD  HSTUNL-F.
+       01  ﾘﾚｷ-ｱﾝﾛｰﾄﾞ-ﾚｺｰﾄﾞ            PIC X(60).
        FD  GLSCTL-F
            RECORD CONTAINS 64 CHARACTERS.
        COPY CTLREC.
@@ -55,6 +69,11 @@
                88  WS-POLMST-ｵﾜﾘ               VALUE "10".
            05  WS-UNLOAD-ST            PIC XX.
                88  WS-UNLOAD-OK                VALUE "00".
+           05  WS-BENHST-ST            PIC XX.
+               88  WS-BENHST-OK                VALUE "00" "05".
+               88  WS-BENHST-ｵﾜﾘ               VALUE "10".
+           05  WS-HSTUNL-ST            PIC XX.
+               88  WS-HSTUNL-OK                VALUE "00".
            05  WS-GLSCTL-ST            PIC XX.
                88  WS-GLSCTL-OK                VALUE "00".
            05  WS-REPORT-ST            PIC XX.
@@ -70,6 +89,7 @@
            05  WS-ｿｳｹﾝｽｳ               PIC 9(7) VALUE 0.
            05  WS-ﾕｳｺｳｹﾝｽｳ             PIC 9(7) VALUE 0.
            05  WS-ﾕｳｺｳﾎｹﾝｷﾝｶﾞｸ         PIC 9(15) VALUE 0.
+           05  WS-ﾘﾚｷｹﾝｽｳ              PIC 9(7) VALUE 0.
        01  WS-ﾎｳｺｸ.
            05  WS-ﾋｮｳﾀﾞｲ-ｷﾞｮｳ.
                10  FILLER                  PIC X(28)
@@ -90,6 +110,8 @@
        ﾒｲﾝ-RTN.
            PERFORM ｼｮｷ-RTN
            PERFORM ｱﾝﾛｰﾄﾞ-RTN UNTIL WS-POLMST-ｵﾜﾘ
+           PERFORM BENHST-ﾖﾐｺﾐ-RTN
+           PERFORM ﾘﾚｷ-ｱﾝﾛｰﾄﾞ-RTN UNTIL WS-BENHST-ｵﾜﾘ
            PERFORM ｾｲｷﾞｮ-RTN
            PERFORM ﾎｳｺｸ-RTN
            PERFORM ｼｭｳﾘｮｳ-RTN
@@ -109,10 +131,16 @@
                MOVE 8 TO RETURN-CODE
                STOP RUN
            END-IF
-           OPEN INPUT POLMST-F
+           OPEN INPUT POLMST-F BENHST-F
            OPEN I-O GLSCTL-F
-           OPEN OUTPUT UNLOAD-F REPORT-F
+           OPEN OUTPUT UNLOAD-F HSTUNL-F REPORT-F
            EVALUATE TRUE
+               WHEN NOT WS-BENHST-OK
+                   MOVE "BENHST" TO WS-ｴﾗｰﾌｧｲﾙ
+                   MOVE WS-BENHST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
+               WHEN NOT WS-HSTUNL-OK
+                   MOVE "HSTUNL" TO WS-ｴﾗｰﾌｧｲﾙ
+                   MOVE WS-HSTUNL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
                WHEN NOT WS-POLMST-OK
                    MOVE "POLMST" TO WS-ｴﾗｰﾌｧｲﾙ
                    MOVE WS-POLMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
@@ -168,6 +196,30 @@
            PERFORM POLMST-ﾖﾐｺﾐ-RTN.
 
       *----------------------------------------------------------------
+      * BENHST-ﾖﾐｺﾐ-RTN: 給付履歴の次の1件。
+      *----------------------------------------------------------------
+       BENHST-ﾖﾐｺﾐ-RTN.
+           READ BENHST-F NEXT
+           IF NOT WS-BENHST-OK AND NOT WS-BENHST-ｵﾜﾘ
+               MOVE "BENHST" TO WS-ｴﾗｰﾌｧｲﾙ
+               MOVE WS-BENHST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
+               PERFORM ｲｼﾞｮｳ-RTN
+           END-IF.
+
+      *----------------------------------------------------------------
+      * ﾘﾚｷ-ｱﾝﾛｰﾄﾞ-RTN: 給付履歴1件を書き、数える。
+      *----------------------------------------------------------------
+       ﾘﾚｷ-ｱﾝﾛｰﾄﾞ-RTN.
+           WRITE ﾘﾚｷ-ｱﾝﾛｰﾄﾞ-ﾚｺｰﾄﾞ FROM BH-ﾘﾚｷ-ﾚｺｰﾄﾞ
+           IF NOT WS-HSTUNL-OK
+               MOVE "HSTUNL" TO WS-ｴﾗｰﾌｧｲﾙ
+               MOVE WS-HSTUNL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
+               PERFORM ｲｼﾞｮｳ-RTN
+           END-IF
+           ADD 1 TO WS-ﾘﾚｷｹﾝｽｳ
+           PERFORM BENHST-ﾖﾐｺﾐ-RTN.
+
+      *----------------------------------------------------------------
       * ｾｲｷﾞｮ-RTN: 業務日付と件数を制御レコードに書き戻す。
       *----------------------------------------------------------------
        ｾｲｷﾞｮ-RTN.
@@ -200,6 +252,9 @@
            MOVE "有効保険金額" TO WS-ｹﾝｽｳ-ﾗﾍﾞﾙ
            MOVE WS-ﾕｳｺｳﾎｹﾝｷﾝｶﾞｸ TO WS-ｹﾝｽｳ-ｱﾀｲ
            WRITE ﾎｳｺｸ-ｷﾞｮｳ FROM WS-ｹﾝｽｳ-ｷﾞｮｳ
+           MOVE "給付履歴件数" TO WS-ｹﾝｽｳ-ﾗﾍﾞﾙ
+           MOVE WS-ﾘﾚｷｹﾝｽｳ TO WS-ｹﾝｽｳ-ｱﾀｲ
+           WRITE ﾎｳｺｸ-ｷﾞｮｳ FROM WS-ｹﾝｽｳ-ｷﾞｮｳ
            MOVE SPACES TO ﾎｳｺｸ-ｷﾞｮｳ
            WRITE ﾎｳｺｸ-ｷﾞｮｳ
            MOVE "制御: 業務日付" TO WS-ﾋﾂﾞｹ-ﾗﾍﾞﾙ
@@ -222,7 +277,8 @@
       * ｼｭｳﾘｮｳ-RTN: ファイルを閉じ、件数を表示する。
       *----------------------------------------------------------------
        ｼｭｳﾘｮｳ-RTN.
-           CLOSE POLMST-F UNLOAD-F GLSCTL-F REPORT-F
+           CLOSE POLMST-F BENHST-F UNLOAD-F HSTUNL-F GLSCTL-F
+                 REPORT-F
            DISPLAY "GLD090 アンロード " WS-ｿｳｹﾝｽｳ " 有効 " WS-ﾕｳｺｳｹﾝｽｳ.
 
       *----------------------------------------------------------------

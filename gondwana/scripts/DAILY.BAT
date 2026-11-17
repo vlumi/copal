@@ -11,6 +11,7 @@ rem 1999-11-08 MS  GL-0233 初版、PC システム移行時 (旧 JCL から)。
 rem 2003-10-06 MS  GL-0310 営業システムの新契約ファイル。
 rem 2011-02-14 YN  GL-0520 契約変更に復活。
 rem 2012-09-03 YN  GL-0561 契約者貸付。
+rem 2026-11-16 YN  GL-0822 給付履歴。
 setlocal
 set DATE=%1
 set BIN=%GLS_BIN%
@@ -41,6 +42,7 @@ if errorlevel 8 exit /b %ERRORLEVEL%
 rem STEP GLD030: 給付支払
 set DD_CLMREQ=%DATA%¥IN¥CLMREQ.%DATE%.TXT
 set DD_CLMREJ=%DATA%¥OUT¥CLMREJ.%DATE%.TXT
+set DD_BENHST=%DATA%¥MASTER¥BENHST.IDX
 set DD_GLD030R=%DATA%¥RPT¥GLD030.%DATE%.RPT
 "%BIN%¥GLD030.EXE" %DATE% > "%DATA%¥RPT¥GLD030.%DATE%.OUT" 2>&1
 >>"%LOG%" echo GLD030 GLD030 %ERRORLEVEL%
