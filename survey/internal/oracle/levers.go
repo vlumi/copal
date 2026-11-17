@@ -304,15 +304,19 @@ func (pt part) set(r []byte, root, f *layout.Field, v value) bool {
 	return true
 }
 
-// origins lists the input fields an item's values come from: the fields
-// of the records it is read from, and of SYSIN. A condition name stands
-// for its field.
-func (p *program) origins(item string) []target {
-	if f := conditionField(p.records, item); f != nil {
+// origins lists the input fields an item of the program run has its
+// values from: the fields of the records it is read from, and of SYSIN.
+// A condition name stands for its field.
+func (p *program) origins(item string) []target { return p.originsIn(p.units[0], item) }
+
+// originsIn lists the input fields an item of a unit has its values from
+// within the unit: the fields of the records it reads them from.
+func (p *program) originsIn(u Unit, item string) []target {
+	if f := conditionField(u.records, item); f != nil {
 		item = f.Name
 	}
 	var targets []target
-	for _, o := range p.flow.Origins(item) {
+	for _, o := range u.flow.Origins(item) {
 		name := o.File
 		if o.Stream != "" {
 			name = o.Stream
@@ -508,13 +512,13 @@ func conditionField(records *layout.ProgramRecords, name string) *layout.Field {
 
 // callerOrigins lists the input fields a unit's item's values come from:
 // those of the item of the program run it is, or, for an item of a program
-// called that is no item passed to it, those of the items passed that its
-// values come from.
+// called that is no item passed to it, those of the files the program
+// called reads itself and of the items passed that its values come from.
 func (p *program) callerOrigins(u Unit, item string) []target {
 	if name := p.inCaller(u, item); name != "" || u.blueprint == p.blueprint {
 		return p.origins(name)
 	}
-	var targets []target
+	targets := p.originsIn(u, item)
 	for _, o := range u.flow.Origins(item) {
 		if o.Parameter == 0 {
 			continue

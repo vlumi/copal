@@ -43,7 +43,7 @@ func (p *program) failures() []lever {
 			levers = append(levers, lever{input: in.name(), change: failFile, failure: unreadable})
 		}
 	}
-	for _, f := range p.blueprint.Files {
+	for _, f := range p.files {
 		if writes(f) && !reads(f) {
 			levers = append(levers, lever{input: f.Name, change: failFile, failure: uncreatable})
 		}

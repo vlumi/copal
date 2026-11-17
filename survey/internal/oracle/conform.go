@@ -116,7 +116,7 @@ func readOutputs(dir string) (map[string][]byte, error) {
 // and read back as a sequential file of its records in key order.
 func (p *program) runReplacement(with string, c Case, dir string) (result, error) {
 	dds := map[string]string{}
-	for _, f := range p.blueprint.Files {
+	for _, f := range p.files {
 		path := filepath.Join(dir, f.Name)
 		dds[f.Assign] = path
 		var err error
@@ -144,7 +144,7 @@ func (p *program) runReplacement(with string, c Case, dir string) (result, error
 		return result{}, err
 	}
 	res := result{outcome: outcome, stdout: stdout.Bytes(), outputs: map[string][]byte{}}
-	for _, f := range p.blueprint.Files {
+	for _, f := range p.files {
 		if _, fails := c.failsFile(f.Name); fails || !writes(f) && !slices.Contains(f.Opened, "I-O") {
 			continue
 		}
@@ -152,7 +152,7 @@ func (p *program) runReplacement(with string, c Case, dir string) (result, error
 		if err != nil && !os.IsNotExist(err) {
 			return result{}, err
 		}
-		res.outputs[f.Name] = asLines(data, f.Organization == "LINE SEQUENTIAL", recordLength(p.records, f))
+		res.outputs[f.Name] = asLines(data, f.Organization == "LINE SEQUENTIAL", recordLength(p.recordsOf(f), f))
 	}
 	return res, nil
 }
@@ -161,7 +161,7 @@ func (p *program) runReplacement(with string, c Case, dir string) (result, error
 // holds them, by key, the first of a key kept as the loader keeps it;
 // another file's records stay as the case has them.
 func (p *program) inKeyOrder(f blueprint.File, records [][]byte) [][]byte {
-	root := fileRecord(p.records, f.Name)
+	root := fileRecord(p.recordsOf(f), f.Name)
 	if f.Organization != "INDEXED" || root == nil {
 		return records
 	}
@@ -190,7 +190,7 @@ func (p *program) differences(recorded CaseOutcome, outputs map[string][]byte, g
 	case got.outcome.RC != recorded.ReturnCode:
 		diffs = append(diffs, fmt.Sprintf("return code %d, recorded %d", got.outcome.RC, recorded.ReturnCode))
 	}
-	for _, f := range p.blueprint.Files {
+	for _, f := range p.files {
 		want, recorded := outputs[f.Name]
 		data, written := got.outputs[f.Name]
 		switch {
@@ -265,7 +265,7 @@ func records(n int) string {
 // or nothing when the file's record is not laid out or the difference
 // falls in no named field.
 func (p *program) fieldsDiffer(f blueprint.File, got, want []byte) string {
-	root := fileRecord(p.records, f.Name)
+	root := fileRecord(p.recordsOf(f), f.Name)
 	if root == nil {
 		return ""
 	}

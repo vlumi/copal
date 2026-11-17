@@ -428,11 +428,11 @@ func (sr *scriptRun) reader(steps []scriptStep, path string) (*Result, string, b
 }
 
 func fileAssigned(r *Result, dd string) (blueprint.File, bool) {
-	i := slices.IndexFunc(r.program.blueprint.Files, func(f blueprint.File) bool { return f.Assign == dd })
+	i := slices.IndexFunc(r.program.files, func(f blueprint.File) bool { return f.Assign == dd })
 	if i < 0 {
 		return blueprint.File{}, false
 	}
-	return r.program.blueprint.Files[i], true
+	return r.program.files[i], true
 }
 
 func exists(path string) bool {
