@@ -247,3 +247,19 @@ The console was built for the modernization, the bank and the survey side by sid
 - The runs on the explorer's job drawings: a run record in bedrock, `bedrock/runlog`, a line for every step a machine room ran, which all three keep in `RUNS` beside their data; `survey explore -runs` lists a job's runs and draws each with its steps' outcomes, and `make explore-pangaea` and the others read the running system's (done).
 
 Done when: each specimen has a console of its own that shows what it is doing, none of them imports the survey, and the explorer draws the runs of any of the three.
+
+## 22. A deeper Gondwana
+
+Gondwana is convincing as a batch system and thin as a life insurer: a policy is one product, the loan balance on its master is kept by nothing, and a benefit is judged on the day it is keyed. The plan is in [plans/gondwana-depth.md](plans/gondwana-depth.md):
+
+- The cash value as a called module that reads its own table, and the survey and the oracle following a called program's files (done).
+- Policy loans, their interest, and the automatic premium loan in place of a lapse.
+- Benefits judged by the event date, with the unpaid premiums deducted and an exclusion period.
+- A history of benefits paid: days limited by stay and in total, and a surgery benefit.
+- The policyholders' notices and the premium certificates, by the Report Writer.
+- Collection: an annual payer debited again, a half-yearly mode, the agent's other results.
+- The national holidays and the year-end closure.
+- Riders: a coverage file beside the master.
+- The books: both sides of an entry, reserves by entry age, commissions charged back.
+
+Done when: every program reads or writes what a life insurer's would, no field on the master is kept by nothing, and the survey's blueprints and cases of it are as right as before.
