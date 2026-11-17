@@ -40,7 +40,7 @@ Each specimen runs the same two ways: once on its fixture, printing each step's 
 | --- | --- | --- | --- |
 | Its fixture, once | `make pangaea-fixture`: the daily batch | `make laurasia-fixture`: a night and its billing cycle | `make gondwana-fixture`: a March, its close and the year-end dividends, transcoded for the terminal |
 | Open a generated system | `make pangaea-open`: about 3,000 accounts | `make laurasia-open`: about 1,000 cards | `make gondwana-open`: about 2,000 policies |
-| Run days | `make pangaea-days N=5`: business days | `make laurasia-days N=30`: the night on business days, the billing cycle every day | `make gondwana-days N=261`: the daily run, and the billing, the results, the close and the year end on their days |
+| Run days | `make pangaea-days N=5`: business days | `make laurasia-days N=30`: the night on business days, the billing cycle every day | `make gondwana-days N=243`: the daily run, and the billing, the results, the close and the year end on their days |
 | Its data | `pangaea/run/bank/` | `laurasia/run/processor/data/` | `gondwana/run/insurer/data/` |
 | Rewrite its goldens | `make pangaea-golden` | `make laurasia-golden` | `make gondwana-golden` |
 | Its console | `make pangaea-console`: accounts, each day's jobs with their return codes and records, what the days changed, at <http://127.0.0.1:4510/> | `make laurasia-console`: cards, each night and cycle with its steps and files, at <http://127.0.0.1:4649/> | `make gondwana-console`: policies, each day's batch files with their steps and files, at <http://127.0.0.1:2525/> |
@@ -90,7 +90,7 @@ The bank has an online day too: `make pangaea-simulate` sends card and ATM traff
 
 1. `make toolchain`: check that the tools are there.
 2. `make pangaea-fixture`: the bank in one screen; `make laurasia-fixture`: the card processor's night in one; `make gondwana-fixture`: the life insurer's March, in Japanese.
-3. `make pangaea-open` and `make pangaea-days N=5`: five business days of the generated bank. `make laurasia-open` and `make laurasia-days N=30`: a month of the card processor, weekends included. `make gondwana-open` and `make gondwana-days N=261`: a fiscal year of the life insurer, its dividends on the last day.
+3. `make pangaea-open` and `make pangaea-days N=5`: five business days of the generated bank. `make laurasia-open` and `make laurasia-days N=30`: a month of the card processor, weekends included. `make gondwana-open` and `make gondwana-days N=243`: a fiscal year of the life insurer, its dividends on the last day.
 4. `make pangaea-console`, then open an account, a day's jobs, and **Compare**. `make laurasia-console` and `make gondwana-console` do the same for the card processor and the insurer.
 5. `make pangaea-simulate` from another terminal: the **Online** page fills with authorizations. Run a day from the console: the channel closes for the batch, and the next morning the purchases and withdrawals are in the master.
 6. Read a blueprint: [TXPOST](blueprints/pangaea/programs/TXPOST.md), its [decision tables](blueprints/pangaea/rules/TXPOST.md), and the [DAILY job](blueprints/pangaea/jobs/DAILY.md).
