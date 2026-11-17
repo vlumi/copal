@@ -9,8 +9,8 @@ The system holds the policies in an indexed master, `MASTER\POLMST.IDX`, keyed b
 The batch files are in `scripts\`, and the scheduler starts them with the programs from `%GLS_BIN%`, the other batch files from `%GLS_SCRIPTS%` and the files from `%GLS_DATA%`:
 
 - `OPEN.BAT DATE`, once, when the system opens: loads the policy extract into the master and writes the control record.
-- `DAILY.BAT DATE`, every business day.
-- `BILLING.BAT DATE`, once a month before the debit day, the 27th: the transfer request to the collection agent.
+- `DAILY.BAT DATE`, every business day: Monday to Friday, national holidays and December 31 to January 3 apart. The scheduler keeps the calendar; the programs take the date they are given.
+- `BILLING.BAT DATE`, once a month before the debit day, the 27th or the business day after it: the transfer request to the collection agent.
 - `RESULTS.BAT DATE`, on the day the agent's results arrive, a few business days after the debit, before the daily run.
 - `CLOSE.BAT DATE`, on the last business day of the month, after the daily run.
 - `ANNUAL.BAT DATE`, on March 31, after the close: the fiscal year ends.
