@@ -29,6 +29,7 @@ type Policy struct {
 	Agent         string
 	Loan          int64
 	LoanSince     Date // the day interest was last added to the loan
+	Reinstated    Date // the day the policy was last reinstated
 	Reserve       int64
 	Dividends     int64
 	LastPaidMonth int64
@@ -84,6 +85,7 @@ func (g *Generator) record(p Policy) ([]byte, error) {
 		"PM-ｺｳｻﾞﾊﾞﾝｺﾞｳ": p.Account.number, "PM-ｺｳｻﾞﾒｲｷﾞ": p.Account.holder, "PM-ﾀﾞｲﾘﾃﾝｺｰﾄﾞ": p.Agent,
 		"PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ": p.Loan, "PM-ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ": p.Reserve, "PM-ﾊｲﾄｳﾙｲｹｲ": p.Dividends,
 		"PM-ｻｲｼｭｳﾆｭｳｷﾝﾈﾝｹﾞﾂ": p.LastPaidMonth, "PM-ｻｲｼｭｳﾆｭｳｷﾝｶﾞｸ": p.LastPaid, "PM-ｶｼﾂｹｷｻﾝﾋﾞ": eraOrBlank(p.LoanSince),
+		"PM-ﾌｯｶﾂﾋﾞ": eraOrBlank(p.Reinstated),
 	})
 }
 
@@ -93,7 +95,7 @@ func (g *Generator) ReadPolicies(records [][]byte) ([]Policy, error) {
 	policies := make([]Policy, 0, len(records))
 	for _, r := range records {
 		var p Policy
-		var status, mode, contract, maturity, grace, lapse, statusDate, birth, loanSince string
+		var status, mode, contract, maturity, grace, lapse, statusDate, birth, loanSince, reinstated string
 		if err := get(g.Layouts.Policy, r, map[string]any{
 			"PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ": &p.No, "PM-ｼﾞｮｳﾀｲ": &status, "PM-ｼｮｳﾋﾝ": &p.Product,
 			"PM-ﾎｹﾝｷﾝｶﾞｸ": &p.Sum, "PM-ﾎｹﾝﾘｮｳ": &p.Premium, "PM-ﾊﾗｲｺﾐﾎｳﾎｳ": &mode,
@@ -106,6 +108,7 @@ func (g *Generator) ReadPolicies(records [][]byte) ([]Policy, error) {
 			"PM-ｺｳｻﾞﾊﾞﾝｺﾞｳ": &p.Account.number, "PM-ｺｳｻﾞﾒｲｷﾞ": &p.Account.holder, "PM-ﾀﾞｲﾘﾃﾝｺｰﾄﾞ": &p.Agent,
 			"PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ": &p.Loan, "PM-ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ": &p.Reserve, "PM-ﾊｲﾄｳﾙｲｹｲ": &p.Dividends,
 			"PM-ｻｲｼｭｳﾆｭｳｷﾝﾈﾝｹﾞﾂ": &p.LastPaidMonth, "PM-ｻｲｼｭｳﾆｭｳｷﾝｶﾞｸ": &p.LastPaid, "PM-ｶｼﾂｹｷｻﾝﾋﾞ": &loanSince,
+			"PM-ﾌｯｶﾂﾋﾞ": &reinstated,
 		}); err != nil {
 			return nil, err
 		}
@@ -114,7 +117,7 @@ func (g *Generator) ReadPolicies(records [][]byte) ([]Policy, error) {
 		for _, d := range []struct {
 			target *Date
 			text   string
-		}{{&p.Contract, contract}, {&p.Maturity, maturity}, {&p.GraceStart, grace}, {&p.LapseDate, lapse}, {&p.StatusDate, statusDate}, {&p.Birth, birth}, {&p.LoanSince, loanSince}} {
+		}{{&p.Contract, contract}, {&p.Maturity, maturity}, {&p.GraceStart, grace}, {&p.LapseDate, lapse}, {&p.StatusDate, statusDate}, {&p.Birth, birth}, {&p.LoanSince, loanSince}, {&p.Reinstated, reinstated}} {
 			if *d.target, err = dateOrZero(d.text); err != nil {
 				return nil, err
 			}
