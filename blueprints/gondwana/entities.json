@@ -82,6 +82,264 @@
     ]
   },
   {
+    "record": "BH-ﾘﾚｷ-ﾚｺｰﾄﾞ",
+    "copybook": "BENHST",
+    "datasets": [
+      "$DATA/MASTER/BENHST.IDX",
+      "$DATA/OUT/BENHST.$DATE.TXT"
+    ],
+    "writtenBy": [
+      "GLD030",
+      "GLD090"
+    ],
+    "programs": [
+      "GLD030",
+      "GLD090"
+    ],
+    "fields": [
+      {
+        "name": "BH-ｷｰ",
+        "kind": "group",
+        "layout": "",
+        "uses": [
+          {
+            "program": "GLD030",
+            "field": "BH-ｷｰ",
+            "readBy": [
+              "ﾘﾚｷ-ｹﾝｻ-RTN"
+            ]
+          },
+          {
+            "program": "GLD090",
+            "field": "BH-ｷｰ"
+          }
+        ]
+      },
+      {
+        "name": "BH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+        "kind": "text",
+        "layout": "X(10)",
+        "uses": [
+          {
+            "program": "GLD030",
+            "field": "BH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+            "readBy": [
+              "ﾘﾚｷ-ｹﾝｻ-RTN"
+            ],
+            "writtenBy": [
+              "ﾘﾚｷ-ｹﾝｻ-RTN",
+              "ﾘﾚｷ-ｶｷｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLD090",
+            "field": "BH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ"
+          }
+        ]
+      },
+      {
+        "name": "BH-ﾚﾝﾊﾞﾝ",
+        "kind": "number",
+        "layout": "9(3)",
+        "uses": [
+          {
+            "program": "GLD030",
+            "field": "BH-ﾚﾝﾊﾞﾝ",
+            "readBy": [
+              "ﾘﾚｷ-ｹﾝｻ-RTN"
+            ],
+            "writtenBy": [
+              "ﾘﾚｷ-ｹﾝｻ-RTN",
+              "ﾘﾚｷ-ｶｷｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLD090",
+            "field": "BH-ﾚﾝﾊﾞﾝ"
+          }
+        ]
+      },
+      {
+        "name": "BH-ｼｭﾍﾞﾂ",
+        "kind": "code",
+        "layout": "X",
+        "uses": [
+          {
+            "program": "GLD030",
+            "field": "BH-ｼｭﾍﾞﾂ",
+            "readBy": [
+              "ﾘﾚｷ-ｹﾝｻ-RTN"
+            ],
+            "writtenBy": [
+              "ﾘﾚｷ-ｶｷｺﾐ-RTN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "ﾘﾚｷ-ｹﾝｻ-RTN",
+                "loop": "PERFORM UNTIL NOT WS-BENHST-OK OR BH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ NOT = CR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+                "source": "gondwana/programs/GLD030.cbl:467",
+                "conditions": [
+                  "BH-ﾆｭｳｲﾝ",
+                  "BH-ｼｭﾍﾞﾂ = CR-ｼｭﾍﾞﾂ AND BH-ｼﾞﾕｳﾊｯｾｲﾋﾞ = CR-ｼﾞﾕｳﾊｯｾｲﾋﾞ"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "GLD090",
+            "field": "BH-ｼｭﾍﾞﾂ"
+          }
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "BH-ﾆｭｳｲﾝ",
+              "values": [
+                "'H'"
+              ]
+            },
+            {
+              "name": "BH-ｼｭｼﾞｭﾂ",
+              "values": [
+                "'O'"
+              ]
+            }
+          ],
+          "copies": [
+            {
+              "program": "GLD030",
+              "from": "CR-ｼｭﾍﾞﾂ",
+              "paragraph": "ﾘﾚｷ-ｶｷｺﾐ-RTN",
+              "source": "gondwana/programs/GLD030.cbl:624"
+            }
+          ]
+        }
+      },
+      {
+        "name": "BH-ｼﾞﾕｳﾊｯｾｲﾋﾞ",
+        "kind": "date",
+        "layout": "X(7)",
+        "uses": [
+          {
+            "program": "GLD030",
+            "field": "BH-ｼﾞﾕｳﾊｯｾｲﾋﾞ",
+            "readBy": [
+              "ﾘﾚｷ-ｹﾝｻ-RTN"
+            ],
+            "writtenBy": [
+              "ﾘﾚｷ-ｶｷｺﾐ-RTN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "ﾘﾚｷ-ｹﾝｻ-RTN",
+                "loop": "PERFORM UNTIL NOT WS-BENHST-OK OR BH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ NOT = CR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+                "source": "gondwana/programs/GLD030.cbl:467",
+                "conditions": [
+                  "BH-ｼｭﾍﾞﾂ = CR-ｼｭﾍﾞﾂ AND BH-ｼﾞﾕｳﾊｯｾｲﾋﾞ = CR-ｼﾞﾕｳﾊｯｾｲﾋﾞ"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "GLD090",
+            "field": "BH-ｼﾞﾕｳﾊｯｾｲﾋﾞ"
+          }
+        ]
+      },
+      {
+        "name": "BH-ﾆｯｽｳ",
+        "kind": "number",
+        "layout": "9(3)",
+        "uses": [
+          {
+            "program": "GLD030",
+            "field": "BH-ﾆｯｽｳ",
+            "readBy": [
+              "ﾘﾚｷ-ｹﾝｻ-RTN"
+            ],
+            "writtenBy": [
+              "ﾘﾚｷ-ｶｷｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLD090",
+            "field": "BH-ﾆｯｽｳ"
+          }
+        ]
+      },
+      {
+        "name": "BH-ｷﾝｶﾞｸ",
+        "kind": "amount",
+        "layout": "9(9)",
+        "uses": [
+          {
+            "program": "GLD030",
+            "field": "BH-ｷﾝｶﾞｸ",
+            "writtenBy": [
+              "ﾘﾚｷ-ｶｷｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLD090",
+            "field": "BH-ｷﾝｶﾞｸ"
+          }
+        ]
+      },
+      {
+        "name": "BH-ｼﾊﾗｲﾋﾞ",
+        "kind": "date",
+        "layout": "X(7)",
+        "uses": [
+          {
+            "program": "GLD030",
+            "field": "BH-ｼﾊﾗｲﾋﾞ",
+            "writtenBy": [
+              "ﾘﾚｷ-ｶｷｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLD090",
+            "field": "BH-ｼﾊﾗｲﾋﾞ"
+          }
+        ]
+      },
+      {
+        "name": "BH-ｾｲｷｭｳﾊﾞﾝｺﾞｳ",
+        "kind": "text",
+        "layout": "X(8)",
+        "uses": [
+          {
+            "program": "GLD030",
+            "field": "BH-ｾｲｷｭｳﾊﾞﾝｺﾞｳ",
+            "writtenBy": [
+              "ﾘﾚｷ-ｶｷｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLD090",
+            "field": "BH-ｾｲｷｭｳﾊﾞﾝｺﾞｳ"
+          }
+        ]
+      }
+    ],
+    "links": [
+      {
+        "kind": "key",
+        "from": {
+          "record": "CR-ｾｲｷｭｳ-ﾚｺｰﾄﾞ",
+          "field": "CR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ"
+        },
+        "to": {
+          "record": "BH-ﾘﾚｷ-ﾚｺｰﾄﾞ",
+          "field": "BH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ"
+        },
+        "programs": [
+          "GLD030"
+        ]
+      }
+    ]
+  },
+  {
     "record": "CR-ｾｲｷｭｳ-ﾚｺｰﾄﾞ",
     "copybook": "CLMREQ",
     "datasets": [
@@ -103,6 +361,7 @@
             "program": "GLD030",
             "field": "CR-ｾｲｷｭｳﾊﾞﾝｺﾞｳ",
             "readBy": [
+              "ﾘﾚｷ-ｶｷｺﾐ-RTN",
               "ｼﾊﾗｲ-ｶｷｺﾐ-RTN",
               "ﾒｲｻｲ-RTN"
             ]
@@ -119,6 +378,8 @@
             "field": "CR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
             "readBy": [
               "ｹﾝｻ-RTN",
+              "ﾘﾚｷ-ｹﾝｻ-RTN",
+              "ﾘﾚｷ-ｶｷｺﾐ-RTN",
               "ﾒｲｻｲ-RTN"
             ]
           }
@@ -135,41 +396,70 @@
             "readBy": [
               "ｹﾝｻ-RTN",
               "ｼｮｳﾋﾝ-ｹﾝｻ-RTN",
+              "ﾆｭｳｲﾝ-ｹﾝｻ-RTN",
+              "ﾘﾚｷ-ｹﾝｻ-RTN",
               "ｼﾊﾗｲ-RTN",
+              "ﾘﾚｷ-ｶｷｺﾐ-RTN",
               "ﾊｲﾄｳ-ｶｼﾂｹ-ｼﾜｹ-RTN"
             ],
             "decisions": [
               {
                 "paragraph": "ｹﾝｻ-RTN",
-                "source": "gondwana/programs/GLD030.cbl:310",
+                "source": "gondwana/programs/GLD030.cbl:337",
                 "conditions": [
                   "CR-ｼﾎﾞｳ",
                   "WS-ﾘﾕｳ-ﾅｼ AND NOT CR-ｶｲﾔｸ",
                   "CR-ｶｲﾔｸ AND NOT PM-ﾎｼｮｳﾁｭｳ AND NOT PM-ｼｯｺｳ",
                   "CR-ｶｲﾔｸ",
-                  "CR-ﾆｭｳｲﾝ"
+                  "CR-ﾆｭｳｲﾝ",
+                  "CR-ｼｭｼﾞｭﾂ"
                 ]
               },
               {
                 "paragraph": "ｼｮｳﾋﾝ-ｹﾝｻ-RTN",
-                "source": "gondwana/programs/GLD030.cbl:391",
+                "source": "gondwana/programs/GLD030.cbl:420",
                 "conditions": [
                   "CR-ｼﾎﾞｳ AND WS-ｼｮｳﾋﾝ-ｲﾘｮｳ(WS-ｼｮｳﾋﾝ-IX)",
-                  "CR-ﾆｭｳｲﾝ"
+                  "CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ"
+                ]
+              },
+              {
+                "paragraph": "ﾆｭｳｲﾝ-ｹﾝｻ-RTN",
+                "source": "gondwana/programs/GLD030.cbl:437",
+                "conditions": [
+                  "CR-ﾆｭｳｲﾝ AND CR-ﾆｯｽｳ = 0",
+                  "CR-ｼｭｼﾞｭﾂ AND CR-ﾆｯｽｳ NOT = 10 AND CR-ﾆｯｽｳ NOT = 20 AND CR-ﾆｯｽｳ NOT = 40"
+                ]
+              },
+              {
+                "paragraph": "ﾘﾚｷ-ｹﾝｻ-RTN",
+                "source": "gondwana/programs/GLD030.cbl:459",
+                "conditions": [
+                  "WS-ﾘﾕｳ-ﾅｼ AND CR-ﾆｭｳｲﾝ AND WS-ﾂｳｻﾝﾆｯｽｳ NOT \u003c 1000"
+                ]
+              },
+              {
+                "paragraph": "ﾘﾚｷ-ｹﾝｻ-RTN",
+                "loop": "PERFORM UNTIL NOT WS-BENHST-OK OR BH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ NOT = CR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+                "source": "gondwana/programs/GLD030.cbl:467",
+                "conditions": [
+                  "BH-ｼｭﾍﾞﾂ = CR-ｼｭﾍﾞﾂ AND BH-ｼﾞﾕｳﾊｯｾｲﾋﾞ = CR-ｼﾞﾕｳﾊｯｾｲﾋﾞ"
                 ]
               },
               {
                 "paragraph": "ｼﾊﾗｲ-RTN",
-                "source": "gondwana/programs/GLD030.cbl:422",
+                "source": "gondwana/programs/GLD030.cbl:491",
                 "conditions": [
                   "CR-ｼﾎﾞｳ",
+                  "CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ",
                   "CR-ﾆｭｳｲﾝ",
+                  "CR-ｼｭｼﾞｭﾂ",
                   "CR-ｶｲﾔｸ"
                 ]
               },
               {
                 "paragraph": "ﾊｲﾄｳ-ｶｼﾂｹ-ｼﾜｹ-RTN",
-                "source": "gondwana/programs/GLD030.cbl:609",
+                "source": "gondwana/programs/GLD030.cbl:722",
                 "conditions": [
                   "CR-ｼﾎﾞｳ AND PM-ﾊｲﾄｳﾙｲｹｲ \u003e 0"
                 ]
@@ -196,6 +486,12 @@
               "values": [
                 "'S'"
               ]
+            },
+            {
+              "name": "CR-ｼｭｼﾞｭﾂ",
+              "values": [
+                "'O'"
+              ]
             }
           ]
         }
@@ -209,10 +505,22 @@
             "program": "GLD030",
             "field": "CR-ｼﾞﾕｳﾊｯｾｲﾋﾞ",
             "readBy": [
-              "ｹﾝｻ-RTN"
+              "ｹﾝｻ-RTN",
+              "ﾘﾚｷ-ｹﾝｻ-RTN",
+              "ﾘﾚｷ-ｶｷｺﾐ-RTN"
             ],
             "writtenBy": [
               "ｹﾝｻ-RTN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "ﾘﾚｷ-ｹﾝｻ-RTN",
+                "loop": "PERFORM UNTIL NOT WS-BENHST-OK OR BH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ NOT = CR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+                "source": "gondwana/programs/GLD030.cbl:467",
+                "conditions": [
+                  "BH-ｼｭﾍﾞﾂ = CR-ｼｭﾍﾞﾂ AND BH-ｼﾞﾕｳﾊｯｾｲﾋﾞ = CR-ｼﾞﾕｳﾊｯｾｲﾋﾞ"
+                ]
+              }
             ]
           }
         ]
@@ -227,19 +535,21 @@
             "field": "CR-ﾆｯｽｳ",
             "readBy": [
               "ﾆｭｳｲﾝ-ｹﾝｻ-RTN",
-              "ﾆｭｳｲﾝ-RTN"
+              "ﾆｭｳｲﾝ-RTN",
+              "ｼｭｼﾞｭﾂ-RTN"
             ],
             "decisions": [
               {
                 "paragraph": "ﾆｭｳｲﾝ-ｹﾝｻ-RTN",
-                "source": "gondwana/programs/GLD030.cbl:407",
+                "source": "gondwana/programs/GLD030.cbl:437",
                 "conditions": [
-                  "CR-ﾆｯｽｳ = 0"
+                  "CR-ﾆｭｳｲﾝ AND CR-ﾆｯｽｳ = 0",
+                  "CR-ｼｭｼﾞｭﾂ AND CR-ﾆｯｽｳ NOT = 10 AND CR-ﾆｯｽｳ NOT = 20 AND CR-ﾆｯｽｳ NOT = 40"
                 ]
               },
               {
                 "paragraph": "ﾆｭｳｲﾝ-RTN",
-                "source": "gondwana/programs/GLD030.cbl:546",
+                "source": "gondwana/programs/GLD030.cbl:641",
                 "conditions": [
                   "CR-ﾆｯｽｳ \u003e 120"
                 ]
@@ -287,7 +597,7 @@
             "decisions": [
               {
                 "paragraph": "ﾒﾝｾｷ-ﾊﾝﾃｲ-RTN",
-                "source": "gondwana/programs/GLD030.cbl:483",
+                "source": "gondwana/programs/GLD030.cbl:556",
                 "conditions": [
                   "CR-ｼﾞｻﾂ"
                 ]
@@ -317,6 +627,20 @@
         "to": {
           "record": "PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ",
           "field": "PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ"
+        },
+        "programs": [
+          "GLD030"
+        ]
+      },
+      {
+        "kind": "key",
+        "from": {
+          "record": "CR-ｾｲｷｭｳ-ﾚｺｰﾄﾞ",
+          "field": "CR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ"
+        },
+        "to": {
+          "record": "BH-ﾘﾚｷ-ﾚｺｰﾄﾞ",
+          "field": "BH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ"
         },
         "programs": [
           "GLD030"
@@ -1499,6 +1823,7 @@
               "ｼﾎﾞｳ-RTN",
               "ﾒﾝｾｷ-RTN",
               "ﾆｭｳｲﾝ-RTN",
+              "ｼｭｼﾞｭﾂ-RTN",
               "ｶｲﾔｸ-RTN",
               "ﾘｿｸ-RTN",
               "ﾊｲﾄｳ-ｶｼﾂｹ-ｼﾜｹ-RTN"
@@ -1584,6 +1909,7 @@
               "ｼﾎﾞｳ-RTN",
               "ﾒﾝｾｷ-RTN",
               "ﾆｭｳｲﾝ-RTN",
+              "ｼｭｼﾞｭﾂ-RTN",
               "ｶｲﾔｸ-RTN",
               "ﾘｿｸ-RTN",
               "ﾊｲﾄｳ-ｶｼﾂｹ-ｼﾜｹ-RTN"
@@ -1750,7 +2076,7 @@
               "to": "JR-ｶﾘｶﾀ",
               "program": "GLD030",
               "paragraph": "ｼﾎﾞｳ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:462",
+              "source": "gondwana/programs/GLD030.cbl:535",
               "when": [
                 {
                   "condition": "WS-ﾘﾕｳ-ﾅｼ",
@@ -1771,7 +2097,7 @@
               "to": "JR-ｶｼｶﾀ",
               "program": "GLD030",
               "paragraph": "ｼﾎﾞｳ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:469",
+              "source": "gondwana/programs/GLD030.cbl:542",
               "when": [
                 {
                   "condition": "WS-ﾘﾕｳ-ﾅｼ",
@@ -1796,7 +2122,7 @@
               "to": "JR-ｶﾘｶﾀ",
               "program": "GLD030",
               "paragraph": "ﾒﾝｾｷ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:514",
+              "source": "gondwana/programs/GLD030.cbl:587",
               "when": [
                 {
                   "condition": "WS-ﾘﾕｳ-ﾅｼ",
@@ -1825,7 +2151,7 @@
               "to": "JR-ｶﾘｶﾀ",
               "program": "GLD030",
               "paragraph": "ﾆｭｳｲﾝ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:557",
+              "source": "gondwana/programs/GLD030.cbl:655",
               "when": [
                 {
                   "condition": "WS-ﾘﾕｳ-ﾅｼ",
@@ -1834,6 +2160,10 @@
                 {
                   "condition": "CR-ｼﾎﾞｳ",
                   "holds": false
+                },
+                {
+                  "condition": "CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ",
+                  "holds": true
                 },
                 {
                   "condition": "CR-ﾆｭｳｲﾝ",
@@ -1846,7 +2176,7 @@
               "to": "JR-ｶﾘｶﾀ",
               "program": "GLD030",
               "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:579",
+              "source": "gondwana/programs/GLD030.cbl:692",
               "when": [
                 {
                   "condition": "WS-ﾘﾕｳ-ﾅｼ",
@@ -1857,7 +2187,7 @@
                   "holds": false
                 },
                 {
-                  "condition": "CR-ﾆｭｳｲﾝ",
+                  "condition": "CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ",
                   "holds": false
                 },
                 {
@@ -1879,7 +2209,7 @@
               "to": "JR-ｶｼｶﾀ",
               "program": "GLD030",
               "paragraph": "ﾘｿｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:601",
+              "source": "gondwana/programs/GLD030.cbl:714",
               "when": [
                 {
                   "condition": "WS-ﾘﾕｳ-ﾅｼ",
@@ -1900,7 +2230,7 @@
               "to": "JR-ｶｼｶﾀ",
               "program": "GLD030",
               "paragraph": "ﾘｿｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:601",
+              "source": "gondwana/programs/GLD030.cbl:714",
               "when": [
                 {
                   "condition": "WS-ﾘﾕｳ-ﾅｼ",
@@ -1911,7 +2241,7 @@
                   "holds": false
                 },
                 {
-                  "condition": "CR-ﾆｭｳｲﾝ",
+                  "condition": "CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ",
                   "holds": false
                 },
                 {
@@ -1929,7 +2259,7 @@
               "to": "JR-ｶﾘｶﾀ",
               "program": "GLD030",
               "paragraph": "ﾊｲﾄｳ-ｶｼﾂｹ-ｼﾜｹ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:613",
+              "source": "gondwana/programs/GLD030.cbl:726",
               "when": [
                 {
                   "condition": "WS-ﾘﾕｳ-ﾅｼ",
@@ -1954,7 +2284,7 @@
               "to": "JR-ｶﾘｶﾀ",
               "program": "GLD030",
               "paragraph": "ﾊｲﾄｳ-ｶｼﾂｹ-ｼﾜｹ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:613",
+              "source": "gondwana/programs/GLD030.cbl:726",
               "when": [
                 {
                   "condition": "WS-ﾘﾕｳ-ﾅｼ",
@@ -1987,7 +2317,7 @@
               "to": "JR-ｶﾘｶﾀ",
               "program": "GLD030",
               "paragraph": "ﾊｲﾄｳ-ｶｼﾂｹ-ｼﾜｹ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:613",
+              "source": "gondwana/programs/GLD030.cbl:726",
               "when": [
                 {
                   "condition": "WS-ﾘﾕｳ-ﾅｼ",
@@ -1998,7 +2328,7 @@
                   "holds": false
                 },
                 {
-                  "condition": "CR-ﾆｭｳｲﾝ",
+                  "condition": "CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ",
                   "holds": false
                 },
                 {
@@ -2024,7 +2354,7 @@
               "to": "JR-ｶｼｶﾀ",
               "program": "GLD030",
               "paragraph": "ﾊｲﾄｳ-ｶｼﾂｹ-ｼﾜｹ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:620",
+              "source": "gondwana/programs/GLD030.cbl:733",
               "when": [
                 {
                   "condition": "WS-ﾘﾕｳ-ﾅｼ",
@@ -2049,7 +2379,7 @@
               "to": "JR-ｶｼｶﾀ",
               "program": "GLD030",
               "paragraph": "ﾊｲﾄｳ-ｶｼﾂｹ-ｼﾜｹ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:620",
+              "source": "gondwana/programs/GLD030.cbl:733",
               "when": [
                 {
                   "condition": "WS-ﾘﾕｳ-ﾅｼ",
@@ -2082,7 +2412,7 @@
               "to": "JR-ｶｼｶﾀ",
               "program": "GLD030",
               "paragraph": "ﾊｲﾄｳ-ｶｼﾂｹ-ｼﾜｹ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:620",
+              "source": "gondwana/programs/GLD030.cbl:733",
               "when": [
                 {
                   "condition": "WS-ﾘﾕｳ-ﾅｼ",
@@ -2093,7 +2423,7 @@
                   "holds": false
                 },
                 {
-                  "condition": "CR-ﾆｭｳｲﾝ",
+                  "condition": "CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ",
                   "holds": false
                 },
                 {
@@ -2111,6 +2441,31 @@
                 {
                   "condition": "PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ \u003e 0",
                   "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "JR-ｶﾘｶﾀ",
+              "program": "GLD030",
+              "paragraph": "ｼｭｼﾞｭﾂ-RTN",
+              "source": "gondwana/programs/GLD030.cbl:670",
+              "when": [
+                {
+                  "condition": "WS-ﾘﾕｳ-ﾅｼ",
+                  "holds": true
+                },
+                {
+                  "condition": "CR-ｼﾎﾞｳ",
+                  "holds": false
+                },
+                {
+                  "condition": "CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ",
+                  "holds": true
+                },
+                {
+                  "condition": "CR-ﾆｭｳｲﾝ",
+                  "holds": false
                 }
               ]
             },
@@ -2597,6 +2952,7 @@
               "ｼﾎﾞｳ-RTN",
               "ﾒﾝｾｷ-RTN",
               "ﾆｭｳｲﾝ-RTN",
+              "ｼｭｼﾞｭﾂ-RTN",
               "ｶｲﾔｸ-RTN",
               "ﾘｿｸ-RTN",
               "ﾊｲﾄｳ-ｶｼﾂｹ-ｼﾜｹ-RTN"
@@ -2759,6 +3115,7 @@
               "ｼﾎﾞｳ-RTN",
               "ﾒﾝｾｷ-RTN",
               "ﾆｭｳｲﾝ-RTN",
+              "ｼｭｼﾞｭﾂ-RTN",
               "ｶｲﾔｸ-RTN",
               "ﾘｿｸ-RTN",
               "ﾊｲﾄｳ-ｶｼﾂｹ-ｼﾜｹ-RTN"
@@ -3830,6 +4187,7 @@
             "writtenBy": [
               "ｼﾎﾞｳ-RTN",
               "ﾆｭｳｲﾝ-RTN",
+              "ｼｭｼﾞｭﾂ-RTN",
               "ｶｲﾔｸ-RTN"
             ]
           },
@@ -3872,6 +4230,12 @@
               "values": [
                 "'L'"
               ]
+            },
+            {
+              "name": "PY-ｼｭｼﾞｭﾂ",
+              "values": [
+                "'O'"
+              ]
             }
           ],
           "transitions": [
@@ -3901,7 +4265,7 @@
               "to": "PY-ｼﾎﾞｳ",
               "program": "GLD030",
               "paragraph": "ｼﾎﾞｳ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:477",
+              "source": "gondwana/programs/GLD030.cbl:550",
               "when": [
                 {
                   "condition": "WS-ﾘﾕｳ-ﾅｼ",
@@ -3918,7 +4282,7 @@
               "to": "PY-ﾆｭｳｲﾝ",
               "program": "GLD030",
               "paragraph": "ﾆｭｳｲﾝ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:560",
+              "source": "gondwana/programs/GLD030.cbl:658",
               "when": [
                 {
                   "condition": "WS-ﾘﾕｳ-ﾅｼ",
@@ -3927,6 +4291,10 @@
                 {
                   "condition": "CR-ｼﾎﾞｳ",
                   "holds": false
+                },
+                {
+                  "condition": "CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ",
+                  "holds": true
                 },
                 {
                   "condition": "CR-ﾆｭｳｲﾝ",
@@ -3939,7 +4307,7 @@
               "to": "PY-ｶｲﾔｸ",
               "program": "GLD030",
               "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:589",
+              "source": "gondwana/programs/GLD030.cbl:702",
               "when": [
                 {
                   "condition": "WS-ﾘﾕｳ-ﾅｼ",
@@ -3950,7 +4318,7 @@
                   "holds": false
                 },
                 {
-                  "condition": "CR-ﾆｭｳｲﾝ",
+                  "condition": "CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ",
                   "holds": false
                 },
                 {
@@ -3960,6 +4328,31 @@
                 {
                   "condition": "WS-CSVTB-OK",
                   "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "PY-ｼｭｼﾞｭﾂ",
+              "program": "GLD030",
+              "paragraph": "ｼｭｼﾞｭﾂ-RTN",
+              "source": "gondwana/programs/GLD030.cbl:673",
+              "when": [
+                {
+                  "condition": "WS-ﾘﾕｳ-ﾅｼ",
+                  "holds": true
+                },
+                {
+                  "condition": "CR-ｼﾎﾞｳ",
+                  "holds": false
+                },
+                {
+                  "condition": "CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ",
+                  "holds": true
+                },
+                {
+                  "condition": "CR-ﾆｭｳｲﾝ",
+                  "holds": false
                 }
               ]
             },
@@ -4312,14 +4705,14 @@
             "decisions": [
               {
                 "paragraph": "ｹﾝｻ-RTN",
-                "source": "gondwana/programs/GLD030.cbl:310",
+                "source": "gondwana/programs/GLD030.cbl:337",
                 "conditions": [
                   "CR-ｶｲﾔｸ AND NOT PM-ﾎｼｮｳﾁｭｳ AND NOT PM-ｼｯｺｳ"
                 ]
               },
               {
                 "paragraph": "ﾎｼｮｳ-ｹﾝｻ-RTN",
-                "source": "gondwana/programs/GLD030.cbl:373",
+                "source": "gondwana/programs/GLD030.cbl:402",
                 "conditions": [
                   "PM-ﾎｼｮｳﾁｭｳ",
                   "PM-ｼｯｺｳ"
@@ -4327,7 +4720,7 @@
               },
               {
                 "paragraph": "ﾐﾉｳ-RTN",
-                "source": "gondwana/programs/GLD030.cbl:526",
+                "source": "gondwana/programs/GLD030.cbl:599",
                 "conditions": [
                   "PM-ﾕｳｺｳ"
                 ]
@@ -4435,7 +4828,7 @@
             "decisions": [
               {
                 "paragraph": "ｱﾝﾛｰﾄﾞ-RTN",
-                "source": "gondwana/programs/GLD090.cbl:156",
+                "source": "gondwana/programs/GLD090.cbl:184",
                 "conditions": [
                   "PM-ﾎｼｮｳﾁｭｳ"
                 ]
@@ -4665,7 +5058,7 @@
               "to": "PM-ｼﾊﾗｲｽﾞﾐ",
               "program": "GLD030",
               "paragraph": "ｼﾎﾞｳ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:476",
+              "source": "gondwana/programs/GLD030.cbl:549",
               "when": [
                 {
                   "condition": "WS-ﾘﾕｳ-ﾅｼ",
@@ -4682,7 +5075,7 @@
               "to": "PM-ｶｲﾔｸ",
               "program": "GLD030",
               "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:588",
+              "source": "gondwana/programs/GLD030.cbl:701",
               "when": [
                 {
                   "condition": "WS-ﾘﾕｳ-ﾅｼ",
@@ -4693,7 +5086,7 @@
                   "holds": false
                 },
                 {
-                  "condition": "CR-ﾆｭｳｲﾝ",
+                  "condition": "CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ",
                   "holds": false
                 },
                 {
@@ -4850,7 +5243,7 @@
             "decisions": [
               {
                 "paragraph": "ｼｮｳﾋﾝ-ｹﾝｻ-RTN",
-                "source": "gondwana/programs/GLD030.cbl:391",
+                "source": "gondwana/programs/GLD030.cbl:420",
                 "conditions": [
                   "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ"
                 ]
@@ -4983,13 +5376,13 @@
               "program": "GLD030",
               "from": "GLC030",
               "paragraph": "ﾒﾝｾｷ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:502"
+              "source": "gondwana/programs/GLD030.cbl:575"
             },
             {
               "program": "GLD030",
               "from": "GLC030",
               "paragraph": "ｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD030.cbl:568"
+              "source": "gondwana/programs/GLD030.cbl:681"
             },
             {
               "program": "GLD060",
@@ -5040,6 +5433,7 @@
               "ｼﾎﾞｳ-RTN",
               "ﾒﾝｾｷ-RTN",
               "ﾆｭｳｲﾝ-RTN",
+              "ｼｭｼﾞｭﾂ-RTN",
               "ｶｲﾔｸ-RTN"
             ],
             "writtenBy": [
@@ -5251,7 +5645,7 @@
             "decisions": [
               {
                 "paragraph": "ﾐﾉｳ-RTN",
-                "source": "gondwana/programs/GLD030.cbl:526",
+                "source": "gondwana/programs/GLD030.cbl:599",
                 "conditions": [
                   "PM-ﾈﾝﾊﾞﾗｲ"
                 ]
@@ -7349,7 +7743,7 @@
             "decisions": [
               {
                 "paragraph": "ﾊｲﾄｳ-ｶｼﾂｹ-ｼﾜｹ-RTN",
-                "source": "gondwana/programs/GLD030.cbl:609",
+                "source": "gondwana/programs/GLD030.cbl:722",
                 "conditions": [
                   "PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ \u003e 0"
                 ]
@@ -7546,7 +7940,7 @@
             "decisions": [
               {
                 "paragraph": "ﾊｲﾄｳ-ｶｼﾂｹ-ｼﾜｹ-RTN",
-                "source": "gondwana/programs/GLD030.cbl:609",
+                "source": "gondwana/programs/GLD030.cbl:722",
                 "conditions": [
                   "CR-ｼﾎﾞｳ AND PM-ﾊｲﾄｳﾙｲｹｲ \u003e 0"
                 ]
@@ -7889,7 +8283,7 @@
             "decisions": [
               {
                 "paragraph": "ﾒﾝｾｷ-ﾊﾝﾃｲ-RTN",
-                "source": "gondwana/programs/GLD030.cbl:483",
+                "source": "gondwana/programs/GLD030.cbl:556",
                 "conditions": [
                   "PM-ﾌｯｶﾂﾋﾞ = SPACES"
                 ]
@@ -9029,7 +9423,7 @@
             "decisions": [
               {
                 "paragraph": "ｼｮｳﾋﾝ-ｹﾝｻ-RTN",
-                "source": "gondwana/programs/GLD030.cbl:391",
+                "source": "gondwana/programs/GLD030.cbl:420",
                 "conditions": [
                   "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ"
                 ]
@@ -9170,14 +9564,14 @@
             "decisions": [
               {
                 "paragraph": "ｼｮｳﾋﾝ-ｹﾝｻ-RTN",
-                "source": "gondwana/programs/GLD030.cbl:391",
+                "source": "gondwana/programs/GLD030.cbl:420",
                 "conditions": [
                   "CR-ｼﾎﾞｳ AND WS-ｼｮｳﾋﾝ-ｲﾘｮｳ(WS-ｼｮｳﾋﾝ-IX)"
                 ]
               },
               {
                 "paragraph": "ﾆｭｳｲﾝ-ｹﾝｻ-RTN",
-                "source": "gondwana/programs/GLD030.cbl:407",
+                "source": "gondwana/programs/GLD030.cbl:437",
                 "conditions": [
                   "WS-ｼｮｳﾋﾝ-ｲﾘｮｳ(WS-ｼｮｳﾋﾝ-IX)"
                 ]
@@ -9556,7 +9950,8 @@
             "program": "GLD030",
             "field": "WS-ｼｮｳﾋﾝ-ﾆｭｳｲﾝﾆﾁｶﾞｸﾘﾂ",
             "readBy": [
-              "ﾆｭｳｲﾝ-RTN"
+              "ﾆｭｳｲﾝ-RTN",
+              "ｼｭｼﾞｭﾂ-RTN"
             ],
             "writtenBy": [
               "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
@@ -9609,7 +10004,7 @@
             "decisions": [
               {
                 "paragraph": "ﾆｭｳｲﾝ-ｹﾝｻ-RTN",
-                "source": "gondwana/programs/GLD030.cbl:407",
+                "source": "gondwana/programs/GLD030.cbl:437",
                 "conditions": [
                   "WS-ｹｲｶﾆｯｽｳ \u003c WS-ｼｮｳﾋﾝ-ﾒﾝｾｷﾆｯｽｳ(WS-ｼｮｳﾋﾝ-IX)"
                 ]

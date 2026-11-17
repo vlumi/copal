@@ -21,8 +21,10 @@ func mortality(age int) float64 {
 // Claims makes up the branches' benefit requests of a business day:
 // deaths by the insured's age, of illness, by accident or, one in fifty,
 // by suicide, on policies covered or lapsed, so that some died before
-// the lapse and some after; hospitalizations of the medical policies;
-// surrenders of covered and lapsed policies; and a request a branch
+// the lapse and some after; hospitalizations of the medical policies,
+// one in fifteen keyed twice, and their surgeries, at ten, twenty or
+// forty times the daily benefit; surrenders of covered and lapsed
+// policies; and a request a branch
 // should not have sent now and then: for no policy, of no kind, for an
 // event before the contract or after today, or a hospitalization on a
 // policy that pays none.
@@ -58,7 +60,12 @@ func (g *Generator) Claims(date Date, policies []Policy) ([][]byte, error) {
 			}
 			err = add('D', p, date.AddDays(-1-r.IntN(30)), 0, payee)
 		case p.Covered() && p.Product == "MD" && chance(r, perDay(0.15)):
-			err = add('H', p, date.AddDays(-10-r.IntN(50)), 3+r.IntN(28), p.Kana)
+			event, days := date.AddDays(-10-r.IntN(50)), 3+r.IntN(28)
+			if err = add('H', p, event, days, p.Kana); err == nil && r.IntN(15) == 0 {
+				err = add('H', p, event, days, p.Kana)
+			}
+		case p.Covered() && p.Product == "MD" && chance(r, perDay(0.05)):
+			err = add('O', p, date.AddDays(-5-r.IntN(40)), 10<<r.IntN(3), p.Kana)
 		case p.Covered() && chance(r, perDay(0.04)), p.Lapsed() && chance(r, perDay(0.08)):
 			err = add('S', p, date, 0, p.Kana)
 		case chance(r, perDay(0.004)):

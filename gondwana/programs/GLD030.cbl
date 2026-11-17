@@ -12,9 +12,14 @@
       * 事由の月まで、年払は有効でなければ1回分) を引いた額。支払済
       * とする。契約日または復活日から3年以内の自殺は免責で、
       * 保険金に代えて解約返戻金を支払う。
-      * 入院: 医療保険に限る。日数は 1 以上、120 日まで。契約日から
-      * 免責日数の間の入院は支払わない。日額は保険金額に入院日額率
-      * を掛けて 1,000 で割った額。契約はそのまま。
+      * 入院: 医療保険に限る。日数は 1 以上、1入院 120 日まで、
+      * 通算 1,000 日まで。契約日から免責日数の間の入院は支払わ
+      * ない。日額は保険金額に入院日額率を掛けて 1,000 で割った額。
+      * 契約はそのまま。
+      * 手術: 入院と同じ検査。日数欄の倍率 (10, 20, 40) を日額に
+      * 掛けた額。
+      * 入院と手術は支払うたびに給付履歴 BENHST に残し、同じ事由
+      * 発生日の同じ種別の請求は二重請求として却下する。
       * 解約: 解約返戻金 (GLC030: 商品・加入年齢区分・経過年数の
       * 係数を保険金額 1,000 円あたりに掛けた額) から貸付残高を
       * 引いた額。0 以下なら支払なしで解約とする。
@@ -32,6 +37,7 @@
       * 2012-09-03 YN   GL-0561 解約返戻金を GLC030 から。貸付利息。
       * 2026-11-16 YN   GL-0821 事由発生日時点の保障、未納保険料の
       *                         差引、自殺免責、医療保険の死亡請求。
+      * 2026-11-16 YN   GL-0822 給付履歴、通算日数、手術給付金。
       *----------------------------------------------------------------
        IDENTIFICATION DIVISION.
        PROGRAM-ID. GLD030.
@@ -64,6 +70,11 @@
            SELECT REJECT-F ASSIGN TO "CLMREJ"
                ORGANIZATION IS LINE SEQUENTIAL
                FILE STATUS IS WS-REJECT-ST.
+           SELECT OPTIONAL BENHST-F ASSIGN TO "BENHST"
+               ORGANIZATION IS INDEXED
+               ACCESS MODE IS DYNAMIC
+               RECORD KEY IS BH-ｷｰ
+               FILE STATUS IS WS-BENHST-ST.
            SELECT REPORT-F ASSIGN TO "GLD030R"
                ORGANIZATION IS LINE SEQUENTIAL
                FILE STATUS IS WS-REPORT-ST.
@@ -88,6 +99,8 @@
            05  ｷｬｯｶ-ﾃﾞｰﾀ               PIC X(80).
            05  ｷｬｯｶ-ﾘﾕｳ                PIC 99.
            05  ｷｬｯｶ-ﾒｯｾｰｼﾞ             PIC X(20).
+       FD  BENHST-F.
+       COPY BENHST.
        FD  REPORT-F.
        01  ﾎｳｺｸ-ｷﾞｮｳ                   PIC X(100).
 
@@ -114,6 +127,9 @@
                88  WS-REJECT-OK                VALUE "00".
            05  WS-REPORT-ST            PIC XX.
                88  WS-REPORT-OK                VALUE "00".
+           05  WS-BENHST-ST            PIC XX.
+               88  WS-BENHST-OK                VALUE "00" "05".
+               88  WS-BENHST-ｵﾜﾘ               VALUE "10" "23".
        01  WS-ｺﾏﾝﾄﾞｷﾞｮｳ                PIC X(80).
        01  WS-ｴﾗｰﾌｧｲﾙ                  PIC X(8).
        01  WS-ｴﾗｰｽﾃｰﾀｽ                 PIC XX.
@@ -136,6 +152,8 @@
            05  WS-ﾊﾗｲｺﾐ-MM             PIC 99.
        01  WS-ﾐﾉｳﾂｷｽｳ                  PIC S9(5).
        01  WS-ﾐﾉｳｶﾞｸ                   PIC 9(9).
+       01  WS-ﾂｳｻﾝﾆｯｽｳ                 PIC 9(5).
+       01  WS-ﾘﾚｷ-ﾚﾝﾊﾞﾝ                PIC 9(3).
        01  WS-ｹｲﾔｸﾋﾞ                   PIC 9(8).
        01  WS-ｹｲｶﾆｯｽｳ                  PIC S9(7).
        01  WS-ﾆｯｽｳ                     PIC 9(3).
@@ -162,6 +180,9 @@
            88  WS-ﾒﾝｾｷｷｶﾝ                      VALUE 8.
            88  WS-ｻｷﾋﾂﾞｹ                       VALUE 9.
            88  WS-ｼﾎﾞｳﾎｼｮｳ-ﾅｼ                  VALUE 10.
+           88  WS-ﾊﾞｲﾘﾂ-ﾌｾｲ                    VALUE 11.
+           88  WS-ﾆｼﾞｭｳｾｲｷｭｳ                   VALUE 12.
+           88  WS-ﾂｳｻﾝ-ﾁｮｳｶ                    VALUE 13.
        01  WS-ﾘﾕｳ-ﾒｯｾｰｼﾞ.
            05  FILLER PIC X(20) VALUE "種別不正".
            05  FILLER PIC X(20) VALUE "契約なし".
@@ -173,8 +194,11 @@
            05  FILLER PIC X(20) VALUE "免責期間内".
            05  FILLER PIC X(20) VALUE "事由発生日が先日付".
            05  FILLER PIC X(20) VALUE "死亡保障なし".
+           05  FILLER PIC X(20) VALUE "手術倍率不正".
+           05  FILLER PIC X(20) VALUE "二重請求".
+           05  FILLER PIC X(20) VALUE "通算日数超過".
        01  WS-ﾘﾕｳ-ﾒｯｾｰｼﾞ-TBL REDEFINES WS-ﾘﾕｳ-ﾒｯｾｰｼﾞ.
-           05  WS-ﾒｯｾｰｼﾞ OCCURS 10 TIMES PIC X(20).
+           05  WS-ﾒｯｾｰｼﾞ OCCURS 13 TIMES PIC X(20).
        01  WS-ｼｭﾍﾞﾂﾒｲ                  PIC X(12).
        01  WS-ﾌｯｷｺｰﾄﾞ                  PIC 99 VALUE 0.
        01  WS-ﾎｳｺｸ.
@@ -223,7 +247,7 @@
                STOP RUN
            END-IF
            OPEN INPUT CLMREQ-F PRODTB-F
-           OPEN I-O POLMST-F GLSCTL-F
+           OPEN I-O POLMST-F GLSCTL-F BENHST-F
            OPEN EXTEND PAYOUT-F GLJRNL-F
            OPEN OUTPUT REJECT-F REPORT-F
            PERFORM ｵｰﾌﾟﾝ-ｹﾝｻ-RTN
@@ -267,6 +291,9 @@
                WHEN NOT WS-REJECT-OK
                    MOVE "CLMREJ" TO WS-ｴﾗｰﾌｧｲﾙ
                    MOVE WS-REJECT-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
+               WHEN NOT WS-BENHST-OK
+                   MOVE "BENHST" TO WS-ｴﾗｰﾌｧｲﾙ
+                   MOVE WS-BENHST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
                WHEN NOT WS-REPORT-OK
                    MOVE "GLD030R" TO WS-ｴﾗｰﾌｧｲﾙ
                    MOVE WS-REPORT-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
@@ -317,6 +344,8 @@
                    MOVE "入院給付金" TO WS-ｼｭﾍﾞﾂﾒｲ
                WHEN CR-ｶｲﾔｸ
                    MOVE "解約返戻金" TO WS-ｼｭﾍﾞﾂﾒｲ
+               WHEN CR-ｼｭｼﾞｭﾂ
+                   MOVE "手術給付金" TO WS-ｼｭﾍﾞﾂﾒｲ
                WHEN OTHER
                    MOVE "不明" TO WS-ｼｭﾍﾞﾂﾒｲ
                    SET WS-ｼｭﾍﾞﾂ-ﾌｾｲ TO TRUE
@@ -386,7 +415,7 @@
 
       *----------------------------------------------------------------
       * ｼｮｳﾋﾝ-ｹﾝｻ-RTN: 商品を引き、医療保険の死亡請求は却下、入院
-      * 請求は入院の検査へ。
+      * と手術の請求は入院の検査へ。
       *----------------------------------------------------------------
        ｼｮｳﾋﾝ-ｹﾝｻ-RTN.
            SET WS-ｼｮｳﾋﾝ-IX TO 1
@@ -397,12 +426,13 @@
            EVALUATE TRUE
                WHEN CR-ｼﾎﾞｳ AND WS-ｼｮｳﾋﾝ-ｲﾘｮｳ(WS-ｼｮｳﾋﾝ-IX)
                    SET WS-ｼﾎﾞｳﾎｼｮｳ-ﾅｼ TO TRUE
-               WHEN CR-ﾆｭｳｲﾝ
+               WHEN CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ
                    PERFORM ﾆｭｳｲﾝ-ｹﾝｻ-RTN
            END-EVALUATE.
 
       *----------------------------------------------------------------
-      * ﾆｭｳｲﾝ-ｹﾝｻ-RTN: 医療保険であること、日数、免責期間。
+      * ﾆｭｳｲﾝ-ｹﾝｻ-RTN: 医療保険であること、日数か倍率、免責期間、
+      * 次いで給付履歴。
       *----------------------------------------------------------------
        ﾆｭｳｲﾝ-ｹﾝｻ-RTN.
            COMPUTE WS-ｹｲｶﾆｯｽｳ = FUNCTION INTEGER-OF-DATE(WS-ｼﾞﾕｳﾋﾞ)
@@ -410,11 +440,50 @@
            EVALUATE TRUE
                WHEN NOT WS-ｼｮｳﾋﾝ-ｲﾘｮｳ(WS-ｼｮｳﾋﾝ-IX)
                    SET WS-ﾆｭｳｲﾝ-ﾀｲｼｮｳｶﾞｲ TO TRUE
-               WHEN CR-ﾆｯｽｳ = 0
+               WHEN CR-ﾆｭｳｲﾝ AND CR-ﾆｯｽｳ = 0
                    SET WS-ﾆｯｽｳ-ﾌｾｲ TO TRUE
+               WHEN CR-ｼｭｼﾞｭﾂ AND CR-ﾆｯｽｳ NOT = 10
+                       AND CR-ﾆｯｽｳ NOT = 20 AND CR-ﾆｯｽｳ NOT = 40
+                   SET WS-ﾊﾞｲﾘﾂ-ﾌｾｲ TO TRUE
                WHEN WS-ｹｲｶﾆｯｽｳ < WS-ｼｮｳﾋﾝ-ﾒﾝｾｷﾆｯｽｳ(WS-ｼｮｳﾋﾝ-IX)
                    SET WS-ﾒﾝｾｷｷｶﾝ TO TRUE
+               WHEN OTHER
+                   PERFORM ﾘﾚｷ-ｹﾝｻ-RTN
            END-EVALUATE.
+
+      *----------------------------------------------------------------
+      * ﾘﾚｷ-ｹﾝｻ-RTN: 契約の給付履歴を連番順にたどり、入院の通算
+      * 日数と最後の連番を求める。同じ種別で同じ事由発生日の履歴
+      * があれば二重請求、入院で通算が 1,000 日に達していれば超過。
+      *----------------------------------------------------------------
+       ﾘﾚｷ-ｹﾝｻ-RTN.
+           MOVE 0 TO WS-ﾂｳｻﾝﾆｯｽｳ WS-ﾘﾚｷ-ﾚﾝﾊﾞﾝ
+           MOVE CR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ TO BH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ
+           MOVE 0 TO BH-ﾚﾝﾊﾞﾝ
+           START BENHST-F KEY NOT < BH-ｷｰ
+           IF WS-BENHST-OK
+               READ BENHST-F NEXT
+           END-IF
+           PERFORM UNTIL NOT WS-BENHST-OK
+                   OR BH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ NOT = CR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ
+               MOVE BH-ﾚﾝﾊﾞﾝ TO WS-ﾘﾚｷ-ﾚﾝﾊﾞﾝ
+               IF BH-ﾆｭｳｲﾝ
+                   ADD BH-ﾆｯｽｳ TO WS-ﾂｳｻﾝﾆｯｽｳ
+               END-IF
+               IF BH-ｼｭﾍﾞﾂ = CR-ｼｭﾍﾞﾂ
+                       AND BH-ｼﾞﾕｳﾊｯｾｲﾋﾞ = CR-ｼﾞﾕｳﾊｯｾｲﾋﾞ
+                   SET WS-ﾆｼﾞｭｳｾｲｷｭｳ TO TRUE
+               END-IF
+               READ BENHST-F NEXT
+           END-PERFORM
+           IF NOT WS-BENHST-OK AND NOT WS-BENHST-ｵﾜﾘ
+               MOVE "BENHST" TO WS-ｴﾗｰﾌｧｲﾙ
+               MOVE WS-BENHST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
+               PERFORM ｲｼﾞｮｳ-RTN
+           END-IF
+           IF WS-ﾘﾕｳ-ﾅｼ AND CR-ﾆｭｳｲﾝ AND WS-ﾂｳｻﾝﾆｯｽｳ NOT < 1000
+               SET WS-ﾂｳｻﾝ-ﾁｮｳｶ TO TRUE
+           END-IF.
 
       *----------------------------------------------------------------
       * ｼﾊﾗｲ-RTN: 種別ごとに金額を求め、支払を書き、契約を更新する。
@@ -425,13 +494,17 @@
                    PERFORM ｼﾎﾞｳ-RTN
                WHEN CR-ﾆｭｳｲﾝ
                    PERFORM ﾆｭｳｲﾝ-RTN
+               WHEN CR-ｼｭｼﾞｭﾂ
+                   PERFORM ｼｭｼﾞｭﾂ-RTN
                WHEN CR-ｶｲﾔｸ
                    PERFORM ｶｲﾔｸ-RTN
            END-EVALUATE
            IF WS-ｷﾝｶﾞｸ > 0
                PERFORM ｼﾊﾗｲ-ｶｷｺﾐ-RTN
            END-IF
-           IF NOT CR-ﾆｭｳｲﾝ
+           IF CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ
+               PERFORM ﾘﾚｷ-ｶｷｺﾐ-RTN
+           ELSE
                MOVE WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ TO PM-ｼﾞｮｳﾀｲﾋﾂﾞｹ
            END-IF
            REWRITE PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ
@@ -541,13 +614,38 @@
            COMPUTE WS-ﾐﾉｳｶﾞｸ = PM-ﾎｹﾝﾘｮｳ * WS-ﾐﾉｳﾂｷｽｳ.
 
       *----------------------------------------------------------------
-      * ﾆｭｳｲﾝ-RTN: 日額に日数を掛ける。日数は 120 日まで。
+      * ﾘﾚｷ-ｶｷｺﾐ-RTN: 支払った入院か手術を給付履歴の次の連番に
+      * 書く。
+      *----------------------------------------------------------------
+       ﾘﾚｷ-ｶｷｺﾐ-RTN.
+           MOVE SPACES TO BH-ﾘﾚｷ-ﾚｺｰﾄﾞ
+           MOVE CR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ TO BH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ
+           COMPUTE BH-ﾚﾝﾊﾞﾝ = WS-ﾘﾚｷ-ﾚﾝﾊﾞﾝ + 1
+           MOVE CR-ｼｭﾍﾞﾂ TO BH-ｼｭﾍﾞﾂ
+           MOVE CR-ｼﾞﾕｳﾊｯｾｲﾋﾞ TO BH-ｼﾞﾕｳﾊｯｾｲﾋﾞ
+           MOVE WS-ﾆｯｽｳ TO BH-ﾆｯｽｳ
+           MOVE WS-ｷﾝｶﾞｸ TO BH-ｷﾝｶﾞｸ
+           MOVE WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ TO BH-ｼﾊﾗｲﾋﾞ
+           MOVE CR-ｾｲｷｭｳﾊﾞﾝｺﾞｳ TO BH-ｾｲｷｭｳﾊﾞﾝｺﾞｳ
+           WRITE BH-ﾘﾚｷ-ﾚｺｰﾄﾞ
+           IF NOT WS-BENHST-OK
+               MOVE "BENHST" TO WS-ｴﾗｰﾌｧｲﾙ
+               MOVE WS-BENHST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
+               PERFORM ｲｼﾞｮｳ-RTN
+           END-IF.
+
+      *----------------------------------------------------------------
+      * ﾆｭｳｲﾝ-RTN: 日額に日数を掛ける。日数は1入院 120 日まで、
+      * 通算 1,000 日の残りまで。
       *----------------------------------------------------------------
        ﾆｭｳｲﾝ-RTN.
            IF CR-ﾆｯｽｳ > 120
                MOVE 120 TO WS-ﾆｯｽｳ
            ELSE
                MOVE CR-ﾆｯｽｳ TO WS-ﾆｯｽｳ
+           END-IF
+           IF WS-ﾂｳｻﾝﾆｯｽｳ + WS-ﾆｯｽｳ > 1000
+               COMPUTE WS-ﾆｯｽｳ = 1000 - WS-ﾂｳｻﾝﾆｯｽｳ
            END-IF
            COMPUTE WS-ﾆﾁｶﾞｸ = PM-ﾎｹﾝｷﾝｶﾞｸ
                * WS-ｼｮｳﾋﾝ-ﾆｭｳｲﾝﾆﾁｶﾞｸﾘﾂ(WS-ｼｮｳﾋﾝ-IX) / 1000
@@ -558,6 +656,21 @@
            MOVE "入院給付金" TO JR-ﾃｷﾖｳ
            PERFORM ｼﾜｹ-RTN
            SET PY-ﾆｭｳｲﾝ TO TRUE.
+
+      *----------------------------------------------------------------
+      * ｼｭｼﾞｭﾂ-RTN: 日額に日数欄の倍率を掛ける。
+      *----------------------------------------------------------------
+       ｼｭｼﾞｭﾂ-RTN.
+           MOVE CR-ﾆｯｽｳ TO WS-ﾆｯｽｳ
+           COMPUTE WS-ﾆﾁｶﾞｸ = PM-ﾎｹﾝｷﾝｶﾞｸ
+               * WS-ｼｮｳﾋﾝ-ﾆｭｳｲﾝﾆﾁｶﾞｸﾘﾂ(WS-ｼｮｳﾋﾝ-IX) / 1000
+           COMPUTE WS-ｷﾝｶﾞｸ = WS-ﾆﾁｶﾞｸ * WS-ﾆｯｽｳ
+           MOVE 5120 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
+           MOVE WS-ｷﾝｶﾞｸ TO JR-ｷﾝｶﾞｸ
+           SET JR-ｶﾘｶﾀ TO TRUE
+           MOVE "手術給付金" TO JR-ﾃｷﾖｳ
+           PERFORM ｼﾜｹ-RTN
+           SET PY-ｼｭｼﾞｭﾂ TO TRUE.
 
       *----------------------------------------------------------------
       * ｶｲﾔｸ-RTN: 解約返戻金を GLC030 で求め、貸付残高を引く。0 以下
@@ -704,7 +817,7 @@
                MOVE WS-GLSCTL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
                PERFORM ｲｼﾞｮｳ-RTN
            END-IF
-           CLOSE CLMREQ-F POLMST-F PRODTB-F GLSCTL-F
+           CLOSE CLMREQ-F POLMST-F PRODTB-F GLSCTL-F BENHST-F
                  PAYOUT-F GLJRNL-F REJECT-F REPORT-F
            DISPLAY "GLD030 支払 " WS-ｼﾊﾗｲｹﾝｽｳ
                    " 却下 " WS-ｷｬｯｶｹﾝｽｳ.

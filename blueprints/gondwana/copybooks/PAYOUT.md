@@ -12,6 +12,7 @@ PAYOUT: 支払 レコード (100バイト)
 日付       担当 変更
 1987-04-01 KT   GL-0001 初版。
 2012-09-03 YN   GL-0561 契約者貸付金。
+2026-11-16 YN   GL-0822 手術給付金。
 ```
 
 Copybook [PAYOUT.cpy](../../../gondwana/copybooks/PAYOUT.cpy), used by [GLD020](../programs/GLD020.md), [GLD030](../programs/GLD030.md), [GLD070](../programs/GLD070.md).
@@ -22,17 +23,18 @@ Copybook [PAYOUT.cpy](../../../gondwana/copybooks/PAYOUT.cpy), used by [GLD020](
 
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
-| 01 | PY-ｼﾊﾗｲ-ﾚｺｰﾄﾞ | group | 1 | 100 | | | | [PAYOUT.cpy:14](../../../gondwana/copybooks/PAYOUT.cpy#L14) |
-| 05 | ├ PY-ｼﾊﾗｲﾊﾞﾝｺﾞｳ | number | 1 | 9 | 9(9) | | | [PAYOUT.cpy:15](../../../gondwana/copybooks/PAYOUT.cpy#L15) |
-| 05 | ├ PY-ｼﾊﾗｲﾋﾞ | date | 10 | 7 | X(7) | | | [PAYOUT.cpy:16](../../../gondwana/copybooks/PAYOUT.cpy#L16) |
-| 05 | ├ PY-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ | text | 17 | 10 | X(10) | | | [PAYOUT.cpy:17](../../../gondwana/copybooks/PAYOUT.cpy#L17) |
-| 05 | ├ PY-ｼｭﾍﾞﾂ | code | 27 | 1 | X | | | [PAYOUT.cpy:18](../../../gondwana/copybooks/PAYOUT.cpy#L18) |
-| 88 | │ ├ PY-ｼﾎﾞｳ | | | | | | VALUE 'D' | [PAYOUT.cpy:19](../../../gondwana/copybooks/PAYOUT.cpy#L19) |
-| 88 | │ ├ PY-ﾆｭｳｲﾝ | | | | | | VALUE 'H' | [PAYOUT.cpy:20](../../../gondwana/copybooks/PAYOUT.cpy#L20) |
-| 88 | │ ├ PY-ｶｲﾔｸ | | | | | | VALUE 'S' | [PAYOUT.cpy:21](../../../gondwana/copybooks/PAYOUT.cpy#L21) |
-| 88 | │ ├ PY-ﾏﾝｷ | | | | | | VALUE 'M' | [PAYOUT.cpy:22](../../../gondwana/copybooks/PAYOUT.cpy#L22) |
-| 88 | │ └ PY-ｶｼﾂｹ | | | | | | VALUE 'L' | [PAYOUT.cpy:23](../../../gondwana/copybooks/PAYOUT.cpy#L23) |
-| 05 | ├ PY-ｷﾝｶﾞｸ | amount | 28 | 9 | 9(9) | | | [PAYOUT.cpy:24](../../../gondwana/copybooks/PAYOUT.cpy#L24) |
-| 05 | ├ PY-ｳｹﾄﾘﾆﾝｶﾅ | text | 37 | 30 | X(30) | | | [PAYOUT.cpy:25](../../../gondwana/copybooks/PAYOUT.cpy#L25) |
-| 05 | ├ PY-ｾｲｷｭｳﾊﾞﾝｺﾞｳ | text | 67 | 8 | X(8) | | | [PAYOUT.cpy:26](../../../gondwana/copybooks/PAYOUT.cpy#L26) |
-| 05 | └ FILLER | filler | 75 | 26 | X(26) | | | [PAYOUT.cpy:27](../../../gondwana/copybooks/PAYOUT.cpy#L27) |
+| 01 | PY-ｼﾊﾗｲ-ﾚｺｰﾄﾞ | group | 1 | 100 | | | | [PAYOUT.cpy:15](../../../gondwana/copybooks/PAYOUT.cpy#L15) |
+| 05 | ├ PY-ｼﾊﾗｲﾊﾞﾝｺﾞｳ | number | 1 | 9 | 9(9) | | | [PAYOUT.cpy:16](../../../gondwana/copybooks/PAYOUT.cpy#L16) |
+| 05 | ├ PY-ｼﾊﾗｲﾋﾞ | date | 10 | 7 | X(7) | | | [PAYOUT.cpy:17](../../../gondwana/copybooks/PAYOUT.cpy#L17) |
+| 05 | ├ PY-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ | text | 17 | 10 | X(10) | | | [PAYOUT.cpy:18](../../../gondwana/copybooks/PAYOUT.cpy#L18) |
+| 05 | ├ PY-ｼｭﾍﾞﾂ | code | 27 | 1 | X | | | [PAYOUT.cpy:19](../../../gondwana/copybooks/PAYOUT.cpy#L19) |
+| 88 | │ ├ PY-ｼﾎﾞｳ | | | | | | VALUE 'D' | [PAYOUT.cpy:20](../../../gondwana/copybooks/PAYOUT.cpy#L20) |
+| 88 | │ ├ PY-ﾆｭｳｲﾝ | | | | | | VALUE 'H' | [PAYOUT.cpy:21](../../../gondwana/copybooks/PAYOUT.cpy#L21) |
+| 88 | │ ├ PY-ｶｲﾔｸ | | | | | | VALUE 'S' | [PAYOUT.cpy:22](../../../gondwana/copybooks/PAYOUT.cpy#L22) |
+| 88 | │ ├ PY-ﾏﾝｷ | | | | | | VALUE 'M' | [PAYOUT.cpy:23](../../../gondwana/copybooks/PAYOUT.cpy#L23) |
+| 88 | │ ├ PY-ｶｼﾂｹ | | | | | | VALUE 'L' | [PAYOUT.cpy:24](../../../gondwana/copybooks/PAYOUT.cpy#L24) |
+| 88 | │ └ PY-ｼｭｼﾞｭﾂ | | | | | | VALUE 'O' | [PAYOUT.cpy:25](../../../gondwana/copybooks/PAYOUT.cpy#L25) |
+| 05 | ├ PY-ｷﾝｶﾞｸ | amount | 28 | 9 | 9(9) | | | [PAYOUT.cpy:26](../../../gondwana/copybooks/PAYOUT.cpy#L26) |
+| 05 | ├ PY-ｳｹﾄﾘﾆﾝｶﾅ | text | 37 | 30 | X(30) | | | [PAYOUT.cpy:27](../../../gondwana/copybooks/PAYOUT.cpy#L27) |
+| 05 | ├ PY-ｾｲｷｭｳﾊﾞﾝｺﾞｳ | text | 67 | 8 | X(8) | | | [PAYOUT.cpy:28](../../../gondwana/copybooks/PAYOUT.cpy#L28) |
+| 05 | └ FILLER | filler | 75 | 26 | X(26) | | | [PAYOUT.cpy:29](../../../gondwana/copybooks/PAYOUT.cpy#L29) |
