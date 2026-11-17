@@ -253,7 +253,7 @@ Done when: each specimen has a console of its own that shows what it is doing, n
 Gondwana is convincing as a batch system and thin as a life insurer: a policy is one product, the loan balance on its master is kept by nothing, and a benefit is judged on the day it is keyed. The plan is in [plans/gondwana-depth.md](plans/gondwana-depth.md):
 
 - The cash value as a called module that reads its own table, and the survey and the oracle following a called program's files (done).
-- Policy loans, their interest, and the automatic premium loan in place of a lapse.
+- Policy loans, their interest, and the automatic premium loan in place of a lapse (done).
 - Benefits judged by the event date, with the unpaid premiums deducted and an exclusion period.
 - A history of benefits paid: days limited by stay and in total, and a surgery benefit.
 - The policyholders' notices and the premium certificates, by the Report Writer.
