@@ -255,7 +255,7 @@ Gondwana is convincing as a batch system and thin as a life insurer: a policy is
 - The cash value as a called module that reads its own table, and the survey and the oracle following a called program's files (done).
 - Policy loans, their interest, and the automatic premium loan in place of a lapse (done).
 - Benefits judged by the event date, with the unpaid premiums deducted and an exclusion period (done).
-- A history of benefits paid: days limited by stay and in total, and a surgery benefit.
+- A history of benefits paid: days limited by stay and in total, and a surgery benefit (done).
 - The policyholders' notices and the premium certificates, by the Report Writer.
 - Collection: an annual payer debited again, a half-yearly mode, the agent's other results.
 - The national holidays and the year-end closure.
