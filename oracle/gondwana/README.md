@@ -6,7 +6,7 @@ For each main program, input data that reaches the rules of its decision tables,
 | --- | --: | --: |
 | [GLD010](GLD010/) | 36 of 67 | 21 |
 | [GLD020](GLD020/) | 44 of 105 | 19 |
-| [GLD030](GLD030/) | 29 of 121 | 18 |
+| [GLD030](GLD030/) | 29 of 145 | 18 |
 | [GLD040](GLD040/) | 50 of 73 | 30 |
 | [GLD050](GLD050/) | 50 of 71 | 33 |
 | [GLD060](GLD060/) | 39 of 77 | 20 |

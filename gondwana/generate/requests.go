@@ -3,6 +3,7 @@ package generate
 import (
 	"math"
 	"math/rand/v2"
+	"strconv"
 )
 
 // businessDays is how many business days a year has, for the rates of
@@ -18,18 +19,25 @@ func mortality(age int) float64 {
 }
 
 // Claims makes up the branches' benefit requests of a business day:
-// deaths by the insured's age, hospitalizations of the medical policies,
-// surrenders of covered and lapsed policies, and a request a branch
+// deaths by the insured's age, of illness, by accident or, one in fifty,
+// by suicide, on policies covered or lapsed, so that some died before
+// the lapse and some after; hospitalizations of the medical policies;
+// surrenders of covered and lapsed policies; and a request a branch
 // should not have sent now and then: for no policy, of no kind, for an
-// event before the contract, or a hospitalization on a policy that pays
-// none.
+// event before the contract or after today, or a hospitalization on a
+// policy that pays none.
 func (g *Generator) Claims(date Date, policies []Policy) ([][]byte, error) {
 	r := g.rng("claims", date.Number())
 	var recs [][]byte
 	n := 0
 	add := func(kind byte, p Policy, event Date, days int, payee string) error {
 		n++
+		cause := 1 + r.IntN(2)
+		if kind == 'D' && r.IntN(50) == 0 {
+			cause = 3
+		}
 		rec, err := made(g.Layouts.Claim, map[string]any{
+			"CR-ｼﾞﾕｳｺｰﾄﾞ":    strconv.Itoa(cause),
 			"CR-ｾｲｷｭｳﾊﾞﾝｺﾞｳ": requestNumber('C', date, n), "CR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ": p.No, "CR-ｼｭﾍﾞﾂ": string(kind),
 			"CR-ｼﾞﾕｳﾊｯｾｲﾋﾞ": event.Era(), "CR-ﾆｯｽｳ": days, "CR-ｳｹﾄﾘﾆﾝｶﾅ": payee, "CR-ｼﾃﾝ": branchOf(p.Agent),
 		})
@@ -65,10 +73,12 @@ func (g *Generator) Claims(date Date, policies []Policy) ([][]byte, error) {
 
 // wrongClaim makes up a request the program rejects.
 func (g *Generator) wrongClaim(r *rand.Rand, add func(byte, Policy, Date, int, string) error, p Policy, date Date) error {
-	switch r.IntN(4) {
+	switch r.IntN(5) {
 	case 0:
 		p.No = "9999999999"
 		return add('D', p, date, 0, p.Kana)
+	case 4:
+		return add('D', p, date.AddDays(7), 0, p.Kana)
 	case 1:
 		return add('X', p, date, 0, p.Kana)
 	case 2:

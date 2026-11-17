@@ -8,7 +8,7 @@ The batch file ended with errorlevel 0.
 | --- | --- | --- | --: |
 | GLD010 | [GLD010](../../GLD010/) | RC=0000 | 10 of 67 |
 | GLD020 | [GLD020](../../GLD020/) | RC=0000 | 12 of 105 |
-| GLD030 | [GLD030](../../GLD030/) | RC=0000 | 8 of 121 |
+| GLD030 | [GLD030](../../GLD030/) | RC=0000 | 8 of 145 |
 | GLD040 | [GLD040](../../GLD040/) | RC=0000 | 7 of 73 |
 | GLD060 | [GLD060](../../GLD060/) | RC=0000 | 8 of 77 |
 | GLD070 | [GLD070](../../GLD070/) | RC=0000 | 7 of 102 |
