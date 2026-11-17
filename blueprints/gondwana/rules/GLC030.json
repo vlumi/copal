@@ -1,0 +1,474 @@
+{
+  "program": "GLC030",
+  "tables": [
+    {
+      "paragraph": "ﾒｲﾝ-RTN",
+      "source": "gondwana/programs/GLC030.cbl:65",
+      "conditions": [
+        "WS-ﾖﾐｺﾐｽﾞﾐ",
+        "WS-ﾖﾐｺﾐｽﾞﾐ, again"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ﾖﾐｺﾐ"
+        ],
+        [
+          "WS-ﾖﾐｺﾐ"
+        ]
+      ],
+      "actions": [
+        "SET LK-ﾓﾄﾒﾀ TO TRUE",
+        "MOVE 0 TO LK-ﾍﾝﾚｲｷﾝ",
+        "PERFORM ﾖﾐｺﾐ-RTN",
+        "PERFORM ｹｲｻﾝ-RTN",
+        "GOBACK"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "sentence": "When `WS-ﾖﾐｺﾐ` is not `'Y'` (not `WS-ﾖﾐｺﾐｽﾞﾐ`); and `WS-ﾖﾐｺﾐ` is `'Y'` (`WS-ﾖﾐｺﾐｽﾞﾐ`), tested again, it sets `LK-ｼﾞｮｳﾀｲ` to `LK-ﾓﾄﾒﾀ`, sets `LK-ﾍﾝﾚｲｷﾝ` to 0, performs `ﾖﾐｺﾐ-RTN`, performs `ｹｲｻﾝ-RTN`, and returns to its caller."
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            4
+          ],
+          "sentence": "When `WS-ﾖﾐｺﾐ` is not `'Y'` (not `WS-ﾖﾐｺﾐｽﾞﾐ`); and `WS-ﾖﾐｺﾐ` is not `'Y'` (not `WS-ﾖﾐｺﾐｽﾞﾐ`), tested again, it sets `LK-ｼﾞｮｳﾀｲ` to `LK-ﾓﾄﾒﾀ`, sets `LK-ﾍﾝﾚｲｷﾝ` to 0, performs `ﾖﾐｺﾐ-RTN`, and returns to its caller."
+        },
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            3,
+            4
+          ],
+          "sentence": "When `WS-ﾖﾐｺﾐ` is `'Y'` (`WS-ﾖﾐｺﾐｽﾞﾐ`), it sets `LK-ｼﾞｮｳﾀｲ` to `LK-ﾓﾄﾒﾀ`, sets `LK-ﾍﾝﾚｲｷﾝ` to 0, performs `ｹｲｻﾝ-RTN`, and returns to its caller."
+        }
+      ]
+    },
+    {
+      "paragraph": "ﾖﾐｺﾐ-RTN",
+      "source": "gondwana/programs/GLC030.cbl:79",
+      "conditions": [
+        "WS-CSVTB-OK",
+        "WS-CSVTB-ｵﾜﾘ"
+      ],
+      "conditionRefs": [
+        [
+          "WS-CSVTB-ST"
+        ],
+        [
+          "WS-CSVTB-ST"
+        ]
+      ],
+      "actions": [
+        "MOVE ZEROS TO WS-ｶｲﾔｸ-TBL",
+        "OPEN INPUT CSVTB-F",
+        "READ CSVTB-F",
+        "PERFORM UNTIL NOT WS-CSVTB-OK",
+        "SET WS-ﾖﾐｺﾐｽﾞﾐ TO TRUE",
+        "CLOSE CSVTB-F",
+        "MOVE WS-CSVTB-ST TO LK-ｼﾞｮｳﾀｲ"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "sentence": "When `WS-CSVTB-ST` is `'00'` (`WS-CSVTB-OK`) and `WS-CSVTB-ST` is `'10'` (`WS-CSVTB-ｵﾜﾘ`), it sets `WS-ｶｲﾔｸ-TBL` to zero, opens `CSVTB-F` for input, reads `CSVTB-F`, repeats its loop until `WS-CSVTB-ST` is not `'00'` (not `WS-CSVTB-OK`), sets `WS-ﾖﾐｺﾐ` to `WS-ﾖﾐｺﾐｽﾞﾐ`, and closes `CSVTB-F`."
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            5
+          ],
+          "sentence": "When `WS-CSVTB-ST` is `'00'` (`WS-CSVTB-OK`) and `WS-CSVTB-ST` is not `'10'` (not `WS-CSVTB-ｵﾜﾘ`), it sets `WS-ｶｲﾔｸ-TBL` to zero, opens `CSVTB-F` for input, reads `CSVTB-F`, repeats its loop until `WS-CSVTB-ST` is not `'00'` (not `WS-CSVTB-OK`), sets `LK-ｼﾞｮｳﾀｲ` to `WS-CSVTB-ST`, and closes `CSVTB-F`."
+        },
+        {
+          "entries": [
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            6
+          ],
+          "sentence": "When `WS-CSVTB-ST` is not `'00'` (not `WS-CSVTB-OK`), it sets `WS-ｶｲﾔｸ-TBL` to zero, opens `CSVTB-F` for input, and sets `LK-ｼﾞｮｳﾀｲ` to `WS-CSVTB-ST`."
+        }
+      ]
+    },
+    {
+      "paragraph": "ﾄｳﾛｸ-RTN",
+      "source": "gondwana/programs/GLC030.cbl:102",
+      "conditions": [
+        "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = CV-ｼｮｳﾋﾝ OR WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = ZEROS"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ",
+          "WS-ｼｮｳﾋﾝ-IX",
+          "CV-ｼｮｳﾋﾝ"
+        ]
+      ],
+      "actions": [
+        "SET WS-ｼｮｳﾋﾝ-IX TO 1",
+        "SEARCH WS-ｶｲﾔｸ-ｼｮｳﾋﾝ",
+        "MOVE CV-ｼｮｳﾋﾝ TO WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)",
+        "MOVE CV-ｹｲｽｳ TO WS-ｶｲﾔｸ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX CV-ﾈﾝﾚｲｸﾌﾞﾝ CV-ｹｲｶﾈﾝｽｳ)",
+        "CONTINUE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "sentence": "When `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is `CV-ｼｮｳﾋﾝ` or `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is zero, it sets `WS-ｼｮｳﾋﾝ-IX` to 1, searches `WS-ｶｲﾔｸ-ｼｮｳﾋﾝ`, sets `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` to `CV-ｼｮｳﾋﾝ`, and sets `WS-ｶｲﾔｸ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX CV-ﾈﾝﾚｲｸﾌﾞﾝ CV-ｹｲｶﾈﾝｽｳ)` to `CV-ｹｲｽｳ`."
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            4
+          ],
+          "sentence": "When `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is not `CV-ｼｮｳﾋﾝ` and `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is not zero, it sets `WS-ｼｮｳﾋﾝ-IX` to 1 and searches `WS-ｶｲﾔｸ-ｼｮｳﾋﾝ`."
+        }
+      ]
+    },
+    {
+      "paragraph": "ｹｲｻﾝ-RTN",
+      "source": "gondwana/programs/GLC030.cbl:118",
+      "conditions": [
+        "LK-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
+        "LK-ｹｲｶﾈﾝｽｳ \u003e 40",
+        "WS-ﾈﾝｽｳ \u003e 0",
+        "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = LK-ｼｮｳﾋﾝ",
+        "LK-ｶﾆｭｳﾈﾝﾚｲ \u003c 60"
+      ],
+      "conditionRefs": [
+        [
+          "LK-ｶﾆｭｳﾈﾝﾚｲ"
+        ],
+        [
+          "LK-ｹｲｶﾈﾝｽｳ"
+        ],
+        [
+          "WS-ﾈﾝｽｳ"
+        ],
+        [
+          "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ",
+          "WS-ｼｮｳﾋﾝ-IX",
+          "LK-ｼｮｳﾋﾝ"
+        ],
+        [
+          "LK-ｶﾆｭｳﾈﾝﾚｲ"
+        ]
+      ],
+      "actions": [
+        "MOVE 1 TO WS-ﾈﾝﾚｲｸﾌﾞﾝ",
+        "MOVE 40 TO WS-ﾈﾝｽｳ",
+        "SET WS-ｼｮｳﾋﾝ-IX TO 1",
+        "SEARCH WS-ｶｲﾔｸ-ｼｮｳﾋﾝ",
+        "COMPUTE LK-ﾍﾝﾚｲｷﾝ = LK-ﾎｹﾝｷﾝｶﾞｸ / 1000 * WS-ｶｲﾔｸ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX WS-ﾈﾝﾚｲｸﾌﾞﾝ WS-ﾈﾝｽｳ)",
+        "CONTINUE",
+        "MOVE LK-ｹｲｶﾈﾝｽｳ TO WS-ﾈﾝｽｳ",
+        "COMPUTE WS-ﾈﾝﾚｲｸﾌﾞﾝ = LK-ｶﾆｭｳﾈﾝﾚｲ / 10",
+        "MOVE 6 TO WS-ﾈﾝﾚｲｸﾌﾞﾝ"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "sentence": "When `LK-ｶﾆｭｳﾈﾝﾚｲ` is less than 20, `LK-ｹｲｶﾈﾝｽｳ` is more than 40, `WS-ﾈﾝｽｳ` is more than 0, and `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is `LK-ｼｮｳﾋﾝ`, it sets `WS-ﾈﾝﾚｲｸﾌﾞﾝ` to 1, sets `WS-ﾈﾝｽｳ` to 40, sets `WS-ｼｮｳﾋﾝ-IX` to 1, searches `WS-ｶｲﾔｸ-ｼｮｳﾋﾝ`, and computes `LK-ﾍﾝﾚｲｷﾝ` as `LK-ﾎｹﾝｷﾝｶﾞｸ / 1000 * WS-ｶｲﾔｸ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX WS-ﾈﾝﾚｲｸﾌﾞﾝ WS-ﾈﾝｽｳ)`."
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "sentence": "When `LK-ｶﾆｭｳﾈﾝﾚｲ` is less than 20, `LK-ｹｲｶﾈﾝｽｳ` is more than 40, `WS-ﾈﾝｽｳ` is more than 0, and `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is not `LK-ｼｮｳﾋﾝ`, it sets `WS-ﾈﾝﾚｲｸﾌﾞﾝ` to 1, sets `WS-ﾈﾝｽｳ` to 40, sets `WS-ｼｮｳﾋﾝ-IX` to 1, and searches `WS-ｶｲﾔｸ-ｼｮｳﾋﾝ`."
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            6,
+            2,
+            3,
+            4
+          ],
+          "sentence": "When `LK-ｶﾆｭｳﾈﾝﾚｲ` is less than 20, `LK-ｹｲｶﾈﾝｽｳ` is at most 40, `WS-ﾈﾝｽｳ` is more than 0, and `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is `LK-ｼｮｳﾋﾝ`, it sets `WS-ﾈﾝﾚｲｸﾌﾞﾝ` to 1, sets `WS-ﾈﾝｽｳ` to `LK-ｹｲｶﾈﾝｽｳ`, sets `WS-ｼｮｳﾋﾝ-IX` to 1, searches `WS-ｶｲﾔｸ-ｼｮｳﾋﾝ`, and computes `LK-ﾍﾝﾚｲｷﾝ` as `LK-ﾎｹﾝｷﾝｶﾞｸ / 1000 * WS-ｶｲﾔｸ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX WS-ﾈﾝﾚｲｸﾌﾞﾝ WS-ﾈﾝｽｳ)`."
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            6,
+            2,
+            3,
+            5
+          ],
+          "sentence": "When `LK-ｶﾆｭｳﾈﾝﾚｲ` is less than 20, `LK-ｹｲｶﾈﾝｽｳ` is at most 40, `WS-ﾈﾝｽｳ` is more than 0, and `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is not `LK-ｼｮｳﾋﾝ`, it sets `WS-ﾈﾝﾚｲｸﾌﾞﾝ` to 1, sets `WS-ﾈﾝｽｳ` to `LK-ｹｲｶﾈﾝｽｳ`, sets `WS-ｼｮｳﾋﾝ-IX` to 1, and searches `WS-ｶｲﾔｸ-ｼｮｳﾋﾝ`."
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            6
+          ],
+          "sentence": "When `LK-ｶﾆｭｳﾈﾝﾚｲ` is less than 20, `LK-ｹｲｶﾈﾝｽｳ` is at most 40, and `WS-ﾈﾝｽｳ` is at most 0, it sets `WS-ﾈﾝﾚｲｸﾌﾞﾝ` to 1 and sets `WS-ﾈﾝｽｳ` to `LK-ｹｲｶﾈﾝｽｳ`."
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            7,
+            1,
+            2,
+            3,
+            4
+          ],
+          "sentence": "When `LK-ｶﾆｭｳﾈﾝﾚｲ` is at least 20, `LK-ｹｲｶﾈﾝｽｳ` is more than 40, `WS-ﾈﾝｽｳ` is more than 0, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is `LK-ｼｮｳﾋﾝ`, and `LK-ｶﾆｭｳﾈﾝﾚｲ` is less than 60, it computes `WS-ﾈﾝﾚｲｸﾌﾞﾝ` as `LK-ｶﾆｭｳﾈﾝﾚｲ / 10`, sets `WS-ﾈﾝｽｳ` to 40, sets `WS-ｼｮｳﾋﾝ-IX` to 1, searches `WS-ｶｲﾔｸ-ｼｮｳﾋﾝ`, and computes `LK-ﾍﾝﾚｲｷﾝ` as `LK-ﾎｹﾝｷﾝｶﾞｸ / 1000 * WS-ｶｲﾔｸ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX WS-ﾈﾝﾚｲｸﾌﾞﾝ WS-ﾈﾝｽｳ)`."
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            7,
+            1,
+            2,
+            3,
+            5
+          ],
+          "sentence": "When `LK-ｶﾆｭｳﾈﾝﾚｲ` is at least 20, `LK-ｹｲｶﾈﾝｽｳ` is more than 40, `WS-ﾈﾝｽｳ` is more than 0, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is not `LK-ｼｮｳﾋﾝ`, and `LK-ｶﾆｭｳﾈﾝﾚｲ` is less than 60, it computes `WS-ﾈﾝﾚｲｸﾌﾞﾝ` as `LK-ｶﾆｭｳﾈﾝﾚｲ / 10`, sets `WS-ﾈﾝｽｳ` to 40, sets `WS-ｼｮｳﾋﾝ-IX` to 1, and searches `WS-ｶｲﾔｸ-ｼｮｳﾋﾝ`."
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            7,
+            6,
+            2,
+            3,
+            4
+          ],
+          "sentence": "When `LK-ｶﾆｭｳﾈﾝﾚｲ` is at least 20, `LK-ｹｲｶﾈﾝｽｳ` is at most 40, `WS-ﾈﾝｽｳ` is more than 0, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is `LK-ｼｮｳﾋﾝ`, and `LK-ｶﾆｭｳﾈﾝﾚｲ` is less than 60, it computes `WS-ﾈﾝﾚｲｸﾌﾞﾝ` as `LK-ｶﾆｭｳﾈﾝﾚｲ / 10`, sets `WS-ﾈﾝｽｳ` to `LK-ｹｲｶﾈﾝｽｳ`, sets `WS-ｼｮｳﾋﾝ-IX` to 1, searches `WS-ｶｲﾔｸ-ｼｮｳﾋﾝ`, and computes `LK-ﾍﾝﾚｲｷﾝ` as `LK-ﾎｹﾝｷﾝｶﾞｸ / 1000 * WS-ｶｲﾔｸ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX WS-ﾈﾝﾚｲｸﾌﾞﾝ WS-ﾈﾝｽｳ)`."
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            7,
+            6,
+            2,
+            3,
+            5
+          ],
+          "sentence": "When `LK-ｶﾆｭｳﾈﾝﾚｲ` is at least 20, `LK-ｹｲｶﾈﾝｽｳ` is at most 40, `WS-ﾈﾝｽｳ` is more than 0, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is not `LK-ｼｮｳﾋﾝ`, and `LK-ｶﾆｭｳﾈﾝﾚｲ` is less than 60, it computes `WS-ﾈﾝﾚｲｸﾌﾞﾝ` as `LK-ｶﾆｭｳﾈﾝﾚｲ / 10`, sets `WS-ﾈﾝｽｳ` to `LK-ｹｲｶﾈﾝｽｳ`, sets `WS-ｼｮｳﾋﾝ-IX` to 1, and searches `WS-ｶｲﾔｸ-ｼｮｳﾋﾝ`."
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "",
+            "Y"
+          ],
+          "actions": [
+            7,
+            6
+          ],
+          "sentence": "When `LK-ｶﾆｭｳﾈﾝﾚｲ` is at least 20, `LK-ｹｲｶﾈﾝｽｳ` is at most 40, `WS-ﾈﾝｽｳ` is at most 0, and `LK-ｶﾆｭｳﾈﾝﾚｲ` is less than 60, it computes `WS-ﾈﾝﾚｲｸﾌﾞﾝ` as `LK-ｶﾆｭｳﾈﾝﾚｲ / 10` and sets `WS-ﾈﾝｽｳ` to `LK-ｹｲｶﾈﾝｽｳ`."
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            8,
+            1,
+            2,
+            3,
+            4
+          ],
+          "sentence": "When `LK-ｶﾆｭｳﾈﾝﾚｲ` is at least 20, `LK-ｹｲｶﾈﾝｽｳ` is more than 40, `WS-ﾈﾝｽｳ` is more than 0, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is `LK-ｼｮｳﾋﾝ`, and `LK-ｶﾆｭｳﾈﾝﾚｲ` is at least 60, it sets `WS-ﾈﾝﾚｲｸﾌﾞﾝ` to 6, sets `WS-ﾈﾝｽｳ` to 40, sets `WS-ｼｮｳﾋﾝ-IX` to 1, searches `WS-ｶｲﾔｸ-ｼｮｳﾋﾝ`, and computes `LK-ﾍﾝﾚｲｷﾝ` as `LK-ﾎｹﾝｷﾝｶﾞｸ / 1000 * WS-ｶｲﾔｸ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX WS-ﾈﾝﾚｲｸﾌﾞﾝ WS-ﾈﾝｽｳ)`."
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "N"
+          ],
+          "actions": [
+            8,
+            1,
+            2,
+            3,
+            5
+          ],
+          "sentence": "When `LK-ｶﾆｭｳﾈﾝﾚｲ` is at least 20, `LK-ｹｲｶﾈﾝｽｳ` is more than 40, `WS-ﾈﾝｽｳ` is more than 0, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is not `LK-ｼｮｳﾋﾝ`, and `LK-ｶﾆｭｳﾈﾝﾚｲ` is at least 60, it sets `WS-ﾈﾝﾚｲｸﾌﾞﾝ` to 6, sets `WS-ﾈﾝｽｳ` to 40, sets `WS-ｼｮｳﾋﾝ-IX` to 1, and searches `WS-ｶｲﾔｸ-ｼｮｳﾋﾝ`."
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            8,
+            6,
+            2,
+            3,
+            4
+          ],
+          "sentence": "When `LK-ｶﾆｭｳﾈﾝﾚｲ` is at least 20, `LK-ｹｲｶﾈﾝｽｳ` is at most 40, `WS-ﾈﾝｽｳ` is more than 0, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is `LK-ｼｮｳﾋﾝ`, and `LK-ｶﾆｭｳﾈﾝﾚｲ` is at least 60, it sets `WS-ﾈﾝﾚｲｸﾌﾞﾝ` to 6, sets `WS-ﾈﾝｽｳ` to `LK-ｹｲｶﾈﾝｽｳ`, sets `WS-ｼｮｳﾋﾝ-IX` to 1, searches `WS-ｶｲﾔｸ-ｼｮｳﾋﾝ`, and computes `LK-ﾍﾝﾚｲｷﾝ` as `LK-ﾎｹﾝｷﾝｶﾞｸ / 1000 * WS-ｶｲﾔｸ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX WS-ﾈﾝﾚｲｸﾌﾞﾝ WS-ﾈﾝｽｳ)`."
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "N",
+            "N"
+          ],
+          "actions": [
+            8,
+            6,
+            2,
+            3,
+            5
+          ],
+          "sentence": "When `LK-ｶﾆｭｳﾈﾝﾚｲ` is at least 20, `LK-ｹｲｶﾈﾝｽｳ` is at most 40, `WS-ﾈﾝｽｳ` is more than 0, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is not `LK-ｼｮｳﾋﾝ`, and `LK-ｶﾆｭｳﾈﾝﾚｲ` is at least 60, it sets `WS-ﾈﾝﾚｲｸﾌﾞﾝ` to 6, sets `WS-ﾈﾝｽｳ` to `LK-ｹｲｶﾈﾝｽｳ`, sets `WS-ｼｮｳﾋﾝ-IX` to 1, and searches `WS-ｶｲﾔｸ-ｼｮｳﾋﾝ`."
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "",
+            "N"
+          ],
+          "actions": [
+            8,
+            6
+          ],
+          "sentence": "When `LK-ｶﾆｭｳﾈﾝﾚｲ` is at least 20, `LK-ｹｲｶﾈﾝｽｳ` is at most 40, `WS-ﾈﾝｽｳ` is at most 0, and `LK-ｶﾆｭｳﾈﾝﾚｲ` is at least 60, it sets `WS-ﾈﾝﾚｲｸﾌﾞﾝ` to 6 and sets `WS-ﾈﾝｽｳ` to `LK-ｹｲｶﾈﾝｽｳ`."
+        }
+      ]
+    }
+  ]
+}

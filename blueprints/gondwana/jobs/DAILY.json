@@ -292,18 +292,6 @@
           "source": "gondwana/scripts/DAILY.BAT:43"
         },
         {
-          "dd": "CSVTB",
-          "datasets": [
-            "$DATA/MASTER/CSVTB.TXT"
-          ],
-          "file": "CSVTB-F",
-          "uses": [
-            "read"
-          ],
-          "copybook": "CSVTB",
-          "source": "gondwana/scripts/DAILY.BAT:43"
-        },
-        {
           "dd": "GLSCTL",
           "datasets": [
             "$DATA/MASTER/GLSCTL.BIN"
@@ -359,6 +347,19 @@
           "uses": [
             "write"
           ],
+          "source": "gondwana/scripts/DAILY.BAT:43"
+        },
+        {
+          "dd": "CSVTB",
+          "datasets": [
+            "$DATA/MASTER/CSVTB.TXT"
+          ],
+          "file": "CSVTB-F",
+          "callee": "GLC030",
+          "uses": [
+            "read"
+          ],
+          "copybook": "CSVTB",
           "source": "gondwana/scripts/DAILY.BAT:43"
         },
         {
@@ -660,14 +661,6 @@
       ]
     },
     {
-      "dataset": "$DATA/MASTER/CSVTB.TXT",
-      "copybook": "CSVTB",
-      "kind": "external",
-      "readBy": [
-        "GLD030"
-      ]
-    },
-    {
       "dataset": "$DATA/OUT/CLMREJ.$DATE.TXT",
       "kind": "output",
       "writtenBy": [
@@ -678,6 +671,14 @@
       "dataset": "$DATA/RPT/GLD030.$DATE.RPT",
       "kind": "output",
       "writtenBy": [
+        "GLD030"
+      ]
+    },
+    {
+      "dataset": "$DATA/MASTER/CSVTB.TXT",
+      "copybook": "CSVTB",
+      "kind": "external",
+      "readBy": [
         "GLD030"
       ]
     },

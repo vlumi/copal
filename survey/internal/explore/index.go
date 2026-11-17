@@ -33,8 +33,8 @@ type index struct {
 	names          []Name
 }
 
-// DatasetUse is a job step's DD naming a dataset, and how the step's
-// program uses it.
+// DatasetUse is a job step's DD naming a dataset, and how the program
+// whose file it is uses it: the step's, or one that program calls.
 type DatasetUse struct {
 	blueprint.StepRef
 	Dataset  string // as the job names it, such as ACCT.MASTER(+1)
@@ -94,10 +94,14 @@ func newIndex(s *blueprint.System) *index {
 			x.add("step", step.Name, j.Name, stepLink(ref), "")
 			x.runs[step.Program] = append(x.runs[step.Program], ref)
 			for _, dd := range step.DDs {
+				program := step.Program
+				if dd.Callee != "" {
+					program = dd.Callee
+				}
 				for _, ds := range dd.Datasets {
 					base := datasetBase(ds)
 					x.datasets[base] = append(x.datasets[base], DatasetUse{StepRef: ref, Dataset: ds, DD: dd.Name,
-						Disp: dd.Disp, Program: step.Program, File: dd.File, Copybook: dd.Copybook, Uses: dd.Uses})
+						Disp: dd.Disp, Program: program, File: dd.File, Copybook: dd.Copybook, Uses: dd.Uses})
 				}
 			}
 		}

@@ -57,7 +57,7 @@ type result struct {
 // its trace against the decision tables, recording its outputs if asked.
 func (r *runner) run(c Case, dir string, record bool) (result, error) {
 	dds := map[string]string{}
-	for _, f := range r.program.blueprint.Files {
+	for _, f := range r.program.files {
 		path := filepath.Join(dir, f.Name)
 		dds[f.Assign] = path
 		var err error
@@ -119,7 +119,7 @@ func (r *runner) run(c Case, dir string, record bool) (result, error) {
 // unloader, in key order. A file the case fails holds nothing to read.
 func (r *runner) outputs(c Case, dir string) (map[string][]byte, error) {
 	outputs := map[string][]byte{}
-	for _, f := range r.program.blueprint.Files {
+	for _, f := range r.program.files {
 		if _, fails := c.failsFile(f.Name); fails || !writes(f) && !slices.Contains(f.Opened, "I-O") {
 			continue
 		}
@@ -154,7 +154,7 @@ func (r *runner) read(f blueprint.File, path, unloaded string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return asLines(data, f.Organization == "LINE SEQUENTIAL", recordLength(r.program.records, f)), nil
+	return asLines(data, f.Organization == "LINE SEQUENTIAL", recordLength(r.program.recordsOf(f), f)), nil
 }
 
 // recordLength is the length of a file's records, or 0 for a file whose
@@ -391,11 +391,11 @@ func newRunner(p *program, sources, copybookDir, scratch string) (*runner, error
 	if err := os.MkdirAll(loaderSources, 0o755); err != nil {
 		return nil, err
 	}
-	for _, f := range p.blueprint.Files {
+	for _, f := range p.files {
 		if !keyed(f) {
 			continue
 		}
-		root := fileRecord(p.records, f.Name)
+		root := fileRecord(p.recordsOf(f), f.Name)
 		if root == nil {
 			return nil, fmt.Errorf("%s: no record", f.Name)
 		}

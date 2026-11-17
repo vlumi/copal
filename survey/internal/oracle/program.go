@@ -22,8 +22,10 @@ import (
 // program is a main program prepared for the search: its source, the
 // dialect it is written in, its blueprint, its records laid out, its data
 // flow, its decision tables, the
-// inputs it reads, with the shape of each, by name, and the units whose
-// rules a run of it can reach: itself, and the programs it calls.
+// inputs it reads, with the shape of each, by name, the units whose
+// rules a run of it can reach: itself, and the programs it calls; and the
+// files a run opens, the units' in that order, each with the unit that
+// declares it, by name.
 type program struct {
 	source    *cobol.Program
 	dialect   cobol.Dialect
@@ -35,6 +37,8 @@ type program struct {
 	shapes    map[string]shape
 	allTotals []total
 	units     []Unit
+	files     []blueprint.File
+	declares  map[string]int
 }
 
 // Unit is a program whose decision tables a run reaches: the program run,
@@ -82,13 +86,21 @@ func prepare(system *blueprint.System, bp *blueprint.Program, copybookDir string
 	if err := p.addCallees(system, bp, copybookDir); err != nil {
 		return nil, err
 	}
-	for _, f := range bp.Files {
-		if !reads(f) {
-			continue
-		}
-		if r := fileRecord(records, f.Name); r != nil {
-			r = readInto(flow, records, r)
-			p.inputs = append(p.inputs, input{file: f, root: r, layout: record.New(r, system.Dialect)})
+	p.declares = map[string]int{}
+	for u, unit := range p.units {
+		for _, f := range unit.blueprint.Files {
+			if slices.ContainsFunc(p.files, func(g blueprint.File) bool { return g.Assign == f.Assign || g.Name == f.Name }) {
+				continue
+			}
+			p.files = append(p.files, f)
+			p.declares[f.Name] = u
+			if !reads(f) {
+				continue
+			}
+			if r := fileRecord(unit.records, f.Name); r != nil {
+				r = readInto(unit.flow, unit.records, r)
+				p.inputs = append(p.inputs, input{file: f, root: r, layout: record.New(r, system.Dialect)})
+			}
 		}
 	}
 	for _, stream := range []string{sysin, commandLine} {
@@ -139,6 +151,11 @@ func (p *program) addCallees(system *blueprint.System, bp *blueprint.Program, co
 		}
 	}
 	return nil
+}
+
+// recordsOf are the records of the unit that declares a file.
+func (p *program) recordsOf(f blueprint.File) *layout.ProgramRecords {
+	return p.units[p.declares[f.Name]].records
 }
 
 // reads reports whether a program opens a file to read it.

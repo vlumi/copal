@@ -95,3 +95,34 @@ func TestJobGraphPath(t *testing.T) {
 		}
 	}
 }
+
+// A step's program opens the files of the programs it calls as its own:
+// a DD binds one, naming the program called, and one no DD binds is
+// reported; a file assigned the name of one of the caller's is the
+// caller's, and programs that call each other are each read once.
+func TestFilesThroughCalls(t *testing.T) {
+	programs := []Program{
+		{Name: "MAIN", Files: []File{{Name: "IN-FILE", Kind: "FD", Assign: "IN", Opened: []string{"INPUT"}}},
+			Calls: []Call{{Program: "LOOKUP"}, {Program: "ELSEWHERE", External: true}}},
+		{Name: "LOOKUP", Files: []File{
+			{Name: "TABLE-FILE", Kind: "FD", Assign: "TABLE", Opened: []string{"INPUT"}},
+			{Name: "IN-AGAIN", Kind: "FD", Assign: "IN", Opened: []string{"INPUT"}},
+		}, Calls: []Call{{Program: "MAIN"}}},
+	}
+	table := DD{Name: "TABLE", Datasets: []string{"T"}, Disp: "SHR"}
+	if findings := bind(&table, "STEP", programs[0], programs); len(findings) > 0 {
+		t.Errorf("findings %q", findings)
+	}
+	if table.File != "TABLE-FILE" || table.Callee != "LOOKUP" || !slices.Equal(table.Uses, []string{"read"}) {
+		t.Errorf("the called program's DD %+v", table)
+	}
+	in := DD{Name: "IN", Datasets: []string{"A"}, Disp: "SHR"}
+	bind(&in, "STEP", programs[0], programs)
+	if in.File != "IN-FILE" || in.Callee != "" {
+		t.Errorf("the caller's DD %+v", in)
+	}
+	want := []string{"Step STEP binds no DD TABLE for LOOKUP's file TABLE-FILE."}
+	if got := unbound(Step{Name: "STEP", DDs: []DD{in}}, programs[0], programs); !slices.Equal(got, want) {
+		t.Errorf("unbound %q, want %q", got, want)
+	}
+}

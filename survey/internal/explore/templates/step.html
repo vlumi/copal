@@ -12,7 +12,7 @@
     <td>{{.Name}}</td>
     <td>{{if .Sysout}}job output{{else if .Dummy}}dummy{{else if .InStream}}in-stream data{{else}}{{range $i, $d := .Datasets}}{{if $i}}, {{end}}<a href="{{dataset (base $d)}}">{{$d}}</a>{{end}}{{if .Indexed}} (indexed){{end}}{{end}}</td>
     <td>{{.Disp}}</td>
-    <td>{{.File}}</td>
+    <td>{{.File}}{{with .Callee}} of <a href="{{program .}}">{{.}}</a>{{end}}</td>
     <td>{{with .Copybook}}<a href="{{copybook .}}">{{.}}</a>{{end}}</td>
     <td>{{join .Uses ", "}}</td>
   </tr>{{end}}

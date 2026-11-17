@@ -13,7 +13,7 @@ CSVTB.TXT の1行が商品・加入年齢区分・経過年数ごとの、
 1987-04-01 KT   GL-0001 初版。
 ```
 
-Copybook [CSVTB.cpy](../../../gondwana/copybooks/CSVTB.cpy), used by [GLD030](../programs/GLD030.md).
+Copybook [CSVTB.cpy](../../../gondwana/copybooks/CSVTB.cpy), used by [GLC030](../programs/GLC030.md).
 
 ## CV-ｶｲﾔｸﾍﾝﾚｲｷﾝ-ﾚｺｰﾄﾞ
 

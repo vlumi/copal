@@ -349,12 +349,12 @@ func (b *Batch) unload(job *jcl.Job, dsn, path, dir string) ([]byte, error) {
 			if dsn != dd.DSN && !strings.HasPrefix(dsn, dd.DSN+".G") {
 				continue
 			}
-			i := slices.IndexFunc(result.program.blueprint.Files, func(f blueprint.File) bool { return f.Assign == dd.Name })
-			if i < 0 || result.program.blueprint.Files[i].Organization != "INDEXED" {
+			i := slices.IndexFunc(result.program.files, func(f blueprint.File) bool { return f.Assign == dd.Name })
+			if i < 0 || result.program.files[i].Organization != "INDEXED" {
 				continue
 			}
 			out := filepath.Join(dir, "unloaded")
-			outcome, err := run.Step{Programs: result.runner.loaders, Program: unloaderName(result.program.blueprint.Files[i]),
+			outcome, err := run.Step{Programs: result.runner.loaders, Program: unloaderName(result.program.files[i]),
 				DDs: map[string]string{"UNLOADIN": path, "UNLOADOUT": out}, Stdout: io.Discard, Timeout: loadTimeout}.Run()
 			if err == nil && (outcome.RC != 0 || outcome.Abended) {
 				err = fmt.Errorf("unloading %s: %+v", dsn, outcome)

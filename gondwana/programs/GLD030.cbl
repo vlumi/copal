@@ -11,9 +11,9 @@
       * 入院: 医療保険に限る。日数は 1 以上、120 日まで。契約日から
       * 免責日数の間の入院は支払わない。日額は保険金額に入院日額率
       * を掛けて 1,000 で割った額。契約はそのまま。
-      * 解約: 解約返戻金係数 (商品・加入年齢区分・経過年数) を保険
-      * 金額 1,000 円あたりに掛け、貸付残高を引いた額。0 以下なら
-      * 支払なしで解約とする。
+      * 解約: 解約返戻金 (GLC030: 商品・加入年齢区分・経過年数の
+      * 係数を保険金額 1,000 円あたりに掛けた額) から貸付残高を
+      * 引いた額。0 以下なら支払なしで解約とする。
       * 貸付残高は支払時に回収し、仕訳する。
       *
       * 復帰コード: 0 全件支払、4 却下あり、8 日付が日付でない、
@@ -24,6 +24,7 @@
       * 1987-04-01 KT   GL-0001 初版。
       * 2001-07-02 MS   GL-0271 死亡保険金に配当累計を加える。
       * 2008-06-02 YN   GL-0455 入院給付金、免責期間。
+      * 2012-09-03 YN   GL-0561 解約返戻金を GLC030 から。
       *----------------------------------------------------------------
        IDENTIFICATION DIVISION.
        PROGRAM-ID. GLD030.
@@ -44,9 +45,6 @@
            SELECT PRODTB-F ASSIGN TO "PRODTB"
                ORGANIZATION IS LINE SEQUENTIAL
                FILE STATUS IS WS-PRODTB-ST.
-           SELECT CSVTB-F ASSIGN TO "CSVTB"
-               ORGANIZATION IS LINE SEQUENTIAL
-               FILE STATUS IS WS-CSVTB-ST.
            SELECT GLSCTL-F ASSIGN TO "GLSCTL"
                ORGANIZATION IS SEQUENTIAL
                FILE STATUS IS WS-GLSCTL-ST.
@@ -71,8 +69,6 @@
        COPY POLMST.
        FD  PRODTB-F.
        COPY PRODTB.
-       FD  CSVTB-F.
-       COPY CSVTB.
        FD  GLSCTL-F
            RECORD CONTAINS 64 CHARACTERS.
        COPY CTLREC.
@@ -101,7 +97,6 @@
                88  WS-PRODTB-ｵﾜﾘ               VALUE "10".
            05  WS-CSVTB-ST             PIC XX.
                88  WS-CSVTB-OK                 VALUE "00".
-               88  WS-CSVTB-ｵﾜﾘ                VALUE "10".
            05  WS-GLSCTL-ST            PIC XX.
                88  WS-GLSCTL-OK                VALUE "00".
            05  WS-PAYOUT-ST            PIC XX.
@@ -125,14 +120,9 @@
        01  WS-ﾆｯｽｳ                     PIC 9(3).
        01  WS-ﾆﾁｶﾞｸ                    PIC 9(9).
        01  WS-ｷﾝｶﾞｸ                    PIC S9(11).
-       01  WS-ﾈﾝﾚｲｸﾌﾞﾝ                 PIC 9.
+       01  WS-ﾍﾝﾚｲｷﾝ                   PIC 9(9).
        01  WS-ｼﾊﾗｲｼｭﾍﾞﾂ                PIC X.
        COPY TBLWS.
-       01  WS-ｶｲﾔｸ-TBL.
-           05  WS-ｶｲﾔｸ-ｼｮｳﾋﾝ OCCURS 10 TIMES.
-               10  WS-ｶｲﾔｸ-ｸﾌﾞﾝ OCCURS 6 TIMES.
-                   15  WS-ｶｲﾔｸ-ｹｲｽｳ OCCURS 40 TIMES
-                                           PIC 9(4)V9(3).
        01  WS-ｹﾝｽｳ.
            05  WS-ﾖﾐｺﾐｹﾝｽｳ             PIC 9(7) VALUE 0.
            05  WS-ｼﾊﾗｲｹﾝｽｳ             PIC 9(7) VALUE 0.
@@ -206,14 +196,13 @@
                MOVE 8 TO RETURN-CODE
                STOP RUN
            END-IF
-           OPEN INPUT CLMREQ-F PRODTB-F CSVTB-F
+           OPEN INPUT CLMREQ-F PRODTB-F
            OPEN I-O POLMST-F GLSCTL-F
            OPEN EXTEND PAYOUT-F GLJRNL-F
            OPEN OUTPUT REJECT-F REPORT-F
            PERFORM ｵｰﾌﾟﾝ-ｹﾝｻ-RTN
            MOVE SPACES TO PY-ｼﾊﾗｲ-ﾚｺｰﾄﾞ JR-ｼﾜｹ-ﾚｺｰﾄﾞ
            PERFORM ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN
-           PERFORM ｶｲﾔｸ-ﾖﾐｺﾐ-RTN
            READ GLSCTL-F
            IF NOT WS-GLSCTL-OK
                MOVE "GLSCTL" TO WS-ｴﾗｰﾌｧｲﾙ
@@ -237,9 +226,6 @@
                WHEN NOT WS-PRODTB-OK
                    MOVE "PRODTB" TO WS-ｴﾗｰﾌｧｲﾙ
                    MOVE WS-PRODTB-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
-               WHEN NOT WS-CSVTB-OK
-                   MOVE "CSVTB" TO WS-ｴﾗｰﾌｧｲﾙ
-                   MOVE WS-CSVTB-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
                WHEN NOT WS-POLMST-OK
                    MOVE "POLMST" TO WS-ｴﾗｰﾌｧｲﾙ
                    MOVE WS-POLMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
@@ -262,29 +248,6 @@
                    MOVE SPACES TO WS-ｴﾗｰﾌｧｲﾙ
            END-EVALUATE
            IF WS-ｴﾗｰﾌｧｲﾙ NOT = SPACES
-               PERFORM ｲｼﾞｮｳ-RTN
-           END-IF.
-
-      *----------------------------------------------------------------
-      * ｶｲﾔｸ-ﾖﾐｺﾐ-RTN: 解約返戻金係数を商品・年齢区分・経過年数の
-      * テーブルに読み込む。商品テーブルにない商品は読み飛ばす。
-      *----------------------------------------------------------------
-       ｶｲﾔｸ-ﾖﾐｺﾐ-RTN.
-           MOVE ZEROS TO WS-ｶｲﾔｸ-TBL
-           READ CSVTB-F
-           PERFORM UNTIL NOT WS-CSVTB-OK
-               SET WS-ｼｮｳﾋﾝ-IX TO 1
-               SEARCH WS-ｼｮｳﾋﾝ
-                   WHEN WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = CV-ｼｮｳﾋﾝ
-                       MOVE CV-ｹｲｽｳ TO WS-ｶｲﾔｸ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX,
-                                                    CV-ﾈﾝﾚｲｸﾌﾞﾝ,
-                                                    CV-ｹｲｶﾈﾝｽｳ)
-               END-SEARCH
-               READ CSVTB-F
-           END-PERFORM
-           IF NOT WS-CSVTB-ｵﾜﾘ
-               MOVE "CSVTB" TO WS-ｴﾗｰﾌｧｲﾙ
-               MOVE WS-CSVTB-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
                PERFORM ｲｼﾞｮｳ-RTN
            END-IF.
 
@@ -455,34 +418,21 @@
            SET PY-ﾆｭｳｲﾝ TO TRUE.
 
       *----------------------------------------------------------------
-      * ｶｲﾔｸ-RTN: 係数から解約返戻金を求め、貸付残高を引く。0 以下
+      * ｶｲﾔｸ-RTN: 解約返戻金を GLC030 で求め、貸付残高を引く。0 以下
       * なら支払なし。
       *----------------------------------------------------------------
        ｶｲﾔｸ-RTN.
-           SET WS-ｼｮｳﾋﾝ-IX TO 1
-           SEARCH WS-ｼｮｳﾋﾝ
-               WHEN WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ
-                   CONTINUE
-           END-SEARCH
-           EVALUATE TRUE
-               WHEN PM-ｶﾆｭｳﾈﾝﾚｲ < 20
-                   MOVE 1 TO WS-ﾈﾝﾚｲｸﾌﾞﾝ
-               WHEN PM-ｶﾆｭｳﾈﾝﾚｲ < 60
-                   COMPUTE WS-ﾈﾝﾚｲｸﾌﾞﾝ = PM-ｶﾆｭｳﾈﾝﾚｲ / 10
-               WHEN OTHER
-                   MOVE 6 TO WS-ﾈﾝﾚｲｸﾌﾞﾝ
-           END-EVALUATE
-           IF PM-ｹｲｶﾈﾝｽｳ > 40
-               MOVE 40 TO WS-ﾆｯｽｳ
-           ELSE
-               MOVE PM-ｹｲｶﾈﾝｽｳ TO WS-ﾆｯｽｳ
+           CALL "GLC030" USING PM-ｼｮｳﾋﾝ PM-ｶﾆｭｳﾈﾝﾚｲ PM-ｹｲｶﾈﾝｽｳ
+                               PM-ﾎｹﾝｷﾝｶﾞｸ WS-ﾍﾝﾚｲｷﾝ WS-CSVTB-ST
+           IF NOT WS-CSVTB-OK
+               MOVE "CSVTB" TO WS-ｴﾗｰﾌｧｲﾙ
+               MOVE WS-CSVTB-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
+               PERFORM ｲｼﾞｮｳ-RTN
            END-IF
-           COMPUTE WS-ｷﾝｶﾞｸ = PM-ﾎｹﾝｷﾝｶﾞｸ / 1000
-               * WS-ｶｲﾔｸ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX, WS-ﾈﾝﾚｲｸﾌﾞﾝ, WS-ﾆｯｽｳ)
-               - PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ
+           COMPUTE WS-ｷﾝｶﾞｸ = WS-ﾍﾝﾚｲｷﾝ - PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ
            IF WS-ｷﾝｶﾞｸ > 0
                MOVE 5130 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
-               COMPUTE JR-ｷﾝｶﾞｸ = WS-ｷﾝｶﾞｸ + PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ
+               MOVE WS-ﾍﾝﾚｲｷﾝ TO JR-ｷﾝｶﾞｸ
                SET JR-ｶﾘｶﾀ TO TRUE
                MOVE "解約返戻金" TO JR-ﾃｷﾖｳ
                PERFORM ｼﾜｹ-RTN
@@ -595,7 +545,7 @@
                MOVE WS-GLSCTL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
                PERFORM ｲｼﾞｮｳ-RTN
            END-IF
-           CLOSE CLMREQ-F POLMST-F PRODTB-F CSVTB-F GLSCTL-F
+           CLOSE CLMREQ-F POLMST-F PRODTB-F GLSCTL-F
                  PAYOUT-F GLJRNL-F REJECT-F REPORT-F
            DISPLAY "GLD030 支払 " WS-ｼﾊﾗｲｹﾝｽｳ
                    " 却下 " WS-ｷｬｯｶｹﾝｽｳ.
