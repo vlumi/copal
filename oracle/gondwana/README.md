@@ -5,11 +5,12 @@ For each main program, input data that reaches the rules of its decision tables,
 | Program | Rules reached | Cases |
 | --- | --: | --: |
 | [GLD010](GLD010/) | 36 of 67 | 21 |
-| [GLD020](GLD020/) | 29 of 66 | 12 |
-| [GLD030](GLD030/) | 29 of 114 | 18 |
+| [GLD020](GLD020/) | 44 of 105 | 19 |
+| [GLD030](GLD030/) | 29 of 121 | 18 |
 | [GLD040](GLD040/) | 50 of 73 | 30 |
 | [GLD050](GLD050/) | 50 of 71 | 33 |
-| [GLD060](GLD060/) | 15 of 29 | 5 |
+| [GLD060](GLD060/) | 39 of 77 | 20 |
+| [GLD070](GLD070/) | 61 of 102 | 31 |
 | [GLD090](GLD090/) | 16 of 30 | 8 |
 | [GLM010](GLM010/) | 28 of 46 | 13 |
 | [GLM020](GLM020/) | 34 of 56 | 13 |
@@ -22,7 +23,7 @@ And for each job, a batch: the job run through its steps on inputs from its prog
 | Job | Steps |
 | --- | --- |
 | [OPEN](jobs/OPEN/) | GLO010 RC=0000 |
-| [DAILY](jobs/DAILY/) | GLD010 RC=0000, GLD020 RC=0000, GLD030 RC=0000, GLD040 RC=0000, GLD060 RC=0000, UNLOAD RC=0000, UNLOAD.GLD090 RC=0000 |
+| [DAILY](jobs/DAILY/) | GLD010 RC=0000, GLD020 RC=0000, GLD030 RC=0000, GLD040 RC=0000, GLD060 RC=0000, GLD070 RC=0000, UNLOAD RC=0000, UNLOAD.GLD090 RC=0000 |
 | [BILLING](jobs/BILLING/) | GLM010 RC=0000 |
 | [RESULTS](jobs/RESULTS/) | GLD050 RC=0000 |
 | [CLOSE](jobs/CLOSE/) | GLM020 RC=0001, GLM030 RC=0000, UNLOAD RC=0000, UNLOAD.GLD090 RC=0000 |

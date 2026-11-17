@@ -13,11 +13,12 @@ import (
 )
 
 // Layouts are the insurer's record layouts: a policy of the master, a new
-// policy from the sales system, a branch's change and benefit request,
-// a record of the banks' transfer file, an agent, a product, a premium
+// policy from the sales system, a branch's change, benefit and loan
+// request, a record of the banks' transfer file, an agent, a product, a premium
 // rate, a cash value and a reserve factor, a journal entry and a payment.
 type Layouts struct {
 	Policy, NewPolicy, Change, Claim, Transfer *record.Layout
+	Loan                                       *record.Layout
 	Agent, Product, Rate, CashValue, Reserve   *record.Layout
 	Journal, Payment                           *record.Layout
 }
@@ -34,6 +35,7 @@ func Load(copybookDir string) (*Layouts, error) {
 		{&l.NewPolicy, "NEWPOL", "NP-ｼﾝｹｲﾔｸ-ﾚｺｰﾄﾞ"},
 		{&l.Change, "MNTREQ", "MR-ﾍﾝｺｳ-ﾚｺｰﾄﾞ"},
 		{&l.Claim, "CLMREQ", "CR-ｾｲｷｭｳ-ﾚｺｰﾄﾞ"},
+		{&l.Loan, "LONREQ", "LR-ｶｼﾂｹ-ﾚｺｰﾄﾞ"},
 		{&l.Transfer, "ZENGIN", "ZG-ﾌﾘｶｴ-ﾚｺｰﾄﾞ"},
 		{&l.Agent, "AGTMST", "AG-ﾀﾞｲﾘﾃﾝ-ﾚｺｰﾄﾞ"},
 		{&l.Product, "PRODTB", "PR-ｼｮｳﾋﾝ-ﾚｺｰﾄﾞ"},

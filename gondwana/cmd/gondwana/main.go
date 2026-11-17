@@ -135,7 +135,7 @@ func days(args []string) error {
 		if d.YearEnd {
 			events = append(events, "year end")
 		}
-		fmt.Printf("%s %s  %3d new  %3d benefits  %3d changes  %3d rejects  in force %5d  grace %3d  lapsed %3d  RC=%d  %s\n",
-			d.Date, d.Date.Weekday().String()[:3], d.New, d.Benefits, d.Changes, d.Rejected, d.InForce, d.InGrace, d.Lapsed, d.RC(), strings.Join(events, ", "))
+		fmt.Printf("%s %s  %3d new  %3d benefits  %3d changes  %3d loans  %3d rejects  in force %5d  grace %3d  lapsed %3d  RC=%d  %s\n",
+			d.Date, d.Date.Weekday().String()[:3], d.New, d.Benefits, d.Changes, d.Loans, d.Rejected, d.InForce, d.InGrace, d.Lapsed, d.RC(), strings.Join(events, ", "))
 	})
 }

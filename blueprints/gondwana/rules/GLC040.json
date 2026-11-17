@@ -1,0 +1,103 @@
+{
+  "program": "GLC040",
+  "tables": [
+    {
+      "paragraph": "ﾒｲﾝ-RTN",
+      "source": "gondwana/programs/GLC040.cbl:40",
+      "conditions": [
+        "LK-ｻﾞﾝﾀﾞｶ \u003e 0 AND LK-ｷｻﾝﾋﾞ NOT = SPACES",
+        "WS-ﾍﾝｶﾝｹｯｶ = 0"
+      ],
+      "conditionRefs": [
+        [
+          "LK-ｻﾞﾝﾀﾞｶ",
+          "LK-ｷｻﾝﾋﾞ"
+        ],
+        [
+          "WS-ﾍﾝｶﾝｹｯｶ"
+        ]
+      ],
+      "actions": [
+        "MOVE 0 TO LK-ﾘｿｸ",
+        "CALL 'GLC020' USING WS-ﾎｳｺｳ WS-ｷｻﾝﾋﾞ LK-ｷｻﾝﾋﾞ WS-ﾍﾝｶﾝｹｯｶ",
+        "PERFORM ﾋﾜﾘ-RTN",
+        "GOBACK"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "sentence": "When `LK-ｻﾞﾝﾀﾞｶ` is more than 0 and `LK-ｷｻﾝﾋﾞ` is not spaces; and `WS-ﾍﾝｶﾝｹｯｶ` is 0, it sets `LK-ﾘｿｸ` to 0, calls `GLC020`, performs `ﾋﾜﾘ-RTN`, and returns to its caller."
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            3
+          ],
+          "sentence": "When `LK-ｻﾞﾝﾀﾞｶ` is more than 0 and `LK-ｷｻﾝﾋﾞ` is not spaces; and `WS-ﾍﾝｶﾝｹｯｶ` is not 0, it sets `LK-ﾘｿｸ` to 0, calls `GLC020`, and returns to its caller."
+        },
+        {
+          "entries": [
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            3
+          ],
+          "sentence": "When `LK-ｻﾞﾝﾀﾞｶ` is at most 0 or `LK-ｷｻﾝﾋﾞ` is spaces, it sets `LK-ﾘｿｸ` to 0 and returns to its caller."
+        }
+      ]
+    },
+    {
+      "paragraph": "ﾋﾜﾘ-RTN",
+      "source": "gondwana/programs/GLC040.cbl:54",
+      "conditions": [
+        "WS-ﾆｯｽｳ \u003e 0"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ﾆｯｽｳ"
+        ]
+      ],
+      "actions": [
+        "COMPUTE WS-ﾆｯｽｳ = FUNCTION INTEGER-OF-DATE(LK-ｷｼﾞｭﾝﾋﾞ) - FUNCTION INTEGER-OF-DATE(WS-ｷｻﾝﾋﾞ)",
+        "COMPUTE LK-ﾘｿｸ = LK-ｻﾞﾝﾀﾞｶ * WS-ﾈﾝﾘ * WS-ﾆｯｽｳ / 365"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ],
+          "sentence": "When `WS-ﾆｯｽｳ` is more than 0, it computes `WS-ﾆｯｽｳ` as `FUNCTION INTEGER-OF-DATE(LK-ｷｼﾞｭﾝﾋﾞ) - FUNCTION INTEGER-OF-DATE(WS-ｷｻﾝﾋﾞ)` and computes `LK-ﾘｿｸ` as `LK-ｻﾞﾝﾀﾞｶ * WS-ﾈﾝﾘ * WS-ﾆｯｽｳ / 365`."
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0
+          ],
+          "sentence": "When `WS-ﾆｯｽｳ` is at most 0, it computes `WS-ﾆｯｽｳ` as `FUNCTION INTEGER-OF-DATE(LK-ｷｼﾞｭﾝﾋﾞ) - FUNCTION INTEGER-OF-DATE(WS-ｷｻﾝﾋﾞ)`."
+        }
+      ]
+    }
+  ]
+}

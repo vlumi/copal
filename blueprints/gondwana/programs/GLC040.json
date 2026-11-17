@@ -1,0 +1,383 @@
+{
+  "program": "GLC040",
+  "kind": "called",
+  "source": "gondwana/programs/GLC040.cbl",
+  "description": [
+    "GLC040: 契約者貸付利息",
+    "",
+    "貸付残高、利息起算日 (和暦 GYYMMDD)、基準日 (西暦 YYYYMMDD)、",
+    "利息を受けて呼ばれる。利息は残高に年利 3% を掛け、起算日",
+    "から基準日までの日数を 365 日で日割りした額で、円未満は",
+    "切り捨てる。残高が 0 のとき、起算日が空白か日付でないとき、",
+    "基準日が起算日以前のときは利息なし。",
+    "呼ぶ側は利息を残高に繰り入れ、起算日を基準日に改める。",
+    "",
+    "変更履歴",
+    "日付       担当 変更",
+    "2012-09-03 YN   GL-0561 初版。",
+    "2016-04-01 YN   GL-0640 年利 3.75% を 3% に。"
+  ],
+  "identification": [
+    {
+      "paragraph": "AUTHOR",
+      "text": "ゴンドワナ生命 システム部."
+    },
+    {
+      "paragraph": "DATE-WRITTEN",
+      "text": "2012-09-03."
+    }
+  ],
+  "files": null,
+  "records": [
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ﾈﾝﾘ",
+      "start": 1,
+      "length": 4,
+      "picture": "V9(4)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "amount",
+      "digits": 4,
+      "scale": 4,
+      "values": [
+        "0.0300"
+      ],
+      "source": "gondwana/programs/GLC040.cbl:23"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ﾎｳｺｳ",
+      "start": 1,
+      "length": 1,
+      "picture": "X",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "text",
+      "values": [
+        "'S'"
+      ],
+      "source": "gondwana/programs/GLC040.cbl:24"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ｷｻﾝﾋﾞ",
+      "start": 1,
+      "length": 8,
+      "picture": "9(8)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "date",
+      "digits": 8,
+      "source": "gondwana/programs/GLC040.cbl:25"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ﾍﾝｶﾝｹｯｶ",
+      "start": 1,
+      "length": 1,
+      "picture": "9",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 1,
+      "source": "gondwana/programs/GLC040.cbl:26"
+    },
+    {
+      "section": "working-storage",
+      "level": 1,
+      "name": "WS-ﾆｯｽｳ",
+      "start": 1,
+      "length": 7,
+      "picture": "S9(7)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "number",
+      "digits": 7,
+      "signed": true,
+      "source": "gondwana/programs/GLC040.cbl:27"
+    },
+    {
+      "section": "linkage",
+      "level": 1,
+      "name": "LK-ｻﾞﾝﾀﾞｶ",
+      "start": 1,
+      "length": 9,
+      "picture": "9(9)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "amount",
+      "digits": 9,
+      "source": "gondwana/programs/GLC040.cbl:30"
+    },
+    {
+      "section": "linkage",
+      "level": 1,
+      "name": "LK-ｷｻﾝﾋﾞ",
+      "start": 1,
+      "length": 7,
+      "picture": "X(7)",
+      "usage": "DISPLAY",
+      "category": "alphanumeric",
+      "kind": "date",
+      "source": "gondwana/programs/GLC040.cbl:31"
+    },
+    {
+      "section": "linkage",
+      "level": 1,
+      "name": "LK-ｷｼﾞｭﾝﾋﾞ",
+      "start": 1,
+      "length": 8,
+      "picture": "9(8)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "date",
+      "digits": 8,
+      "source": "gondwana/programs/GLC040.cbl:32"
+    },
+    {
+      "section": "linkage",
+      "level": 1,
+      "name": "LK-ﾘｿｸ",
+      "start": 1,
+      "length": 9,
+      "picture": "9(9)",
+      "usage": "DISPLAY",
+      "category": "numeric",
+      "kind": "amount",
+      "digits": 9,
+      "source": "gondwana/programs/GLC040.cbl:33"
+    }
+  ],
+  "paragraphs": [
+    {
+      "name": "ﾒｲﾝ-RTN",
+      "description": "ﾒｲﾝ-RTN: 残高と起算日があれば起算日を西暦にして日割りする。",
+      "source": "gondwana/programs/GLC040.cbl:40",
+      "performs": [
+        {
+          "target": "ﾋﾜﾘ-RTN",
+          "source": "gondwana/programs/GLC040.cbl:46"
+        }
+      ],
+      "reads": [
+        "LK-ｻﾞﾝﾀﾞｶ",
+        "LK-ｷｻﾝﾋﾞ",
+        "WS-ﾎｳｺｳ",
+        "WS-ｷｻﾝﾋﾞ",
+        "WS-ﾍﾝｶﾝｹｯｶ"
+      ],
+      "writes": [
+        "LK-ﾘｿｸ",
+        "WS-ﾎｳｺｳ",
+        "WS-ｷｻﾝﾋﾞ",
+        "LK-ｷｻﾝﾋﾞ",
+        "WS-ﾍﾝｶﾝｹｯｶ"
+      ]
+    },
+    {
+      "name": "ﾋﾜﾘ-RTN",
+      "description": "ﾋﾜﾘ-RTN: 起算日の翌日から基準日までの日数分の利息。",
+      "source": "gondwana/programs/GLC040.cbl:54",
+      "performedBy": [
+        "ﾒｲﾝ-RTN"
+      ],
+      "reads": [
+        "LK-ｷｼﾞｭﾝﾋﾞ",
+        "WS-ｷｻﾝﾋﾞ",
+        "WS-ﾆｯｽｳ",
+        "LK-ｻﾞﾝﾀﾞｶ",
+        "WS-ﾈﾝﾘ"
+      ],
+      "writes": [
+        "WS-ﾆｯｽｳ",
+        "LK-ﾘｿｸ"
+      ]
+    }
+  ],
+  "using": [
+    "LK-ｻﾞﾝﾀﾞｶ",
+    "LK-ｷｻﾝﾋﾞ",
+    "LK-ｷｼﾞｭﾝﾋﾞ",
+    "LK-ﾘｿｸ"
+  ],
+  "calls": [
+    {
+      "program": "GLC020",
+      "using": [
+        "WS-ﾎｳｺｳ",
+        "WS-ｷｻﾝﾋﾞ",
+        "LK-ｷｻﾝﾋﾞ",
+        "WS-ﾍﾝｶﾝｹｯｶ"
+      ],
+      "paragraph": "ﾒｲﾝ-RTN",
+      "source": "gondwana/programs/GLC040.cbl:43"
+    }
+  ],
+  "calledBy": [
+    "GLD020",
+    "GLD030",
+    "GLD060",
+    "GLD070"
+  ],
+  "lineage": [
+    {
+      "from": "0",
+      "to": "LK-ﾘｿｸ",
+      "fromLiteral": true,
+      "paragraph": "ﾒｲﾝ-RTN",
+      "verb": "MOVE",
+      "source": "gondwana/programs/GLC040.cbl:41"
+    },
+    {
+      "from": "WS-ﾎｳｺｳ",
+      "to": "GLC020",
+      "toCall": true,
+      "arg": 1,
+      "paragraph": "ﾒｲﾝ-RTN",
+      "verb": "CALL",
+      "source": "gondwana/programs/GLC040.cbl:43"
+    },
+    {
+      "from": "GLC020",
+      "to": "WS-ﾎｳｺｳ",
+      "fromCall": true,
+      "arg": 1,
+      "paragraph": "ﾒｲﾝ-RTN",
+      "verb": "CALL",
+      "source": "gondwana/programs/GLC040.cbl:43"
+    },
+    {
+      "from": "WS-ｷｻﾝﾋﾞ",
+      "to": "GLC020",
+      "toCall": true,
+      "arg": 2,
+      "paragraph": "ﾒｲﾝ-RTN",
+      "verb": "CALL",
+      "source": "gondwana/programs/GLC040.cbl:43"
+    },
+    {
+      "from": "GLC020",
+      "to": "WS-ｷｻﾝﾋﾞ",
+      "fromCall": true,
+      "arg": 2,
+      "paragraph": "ﾒｲﾝ-RTN",
+      "verb": "CALL",
+      "source": "gondwana/programs/GLC040.cbl:43"
+    },
+    {
+      "from": "LK-ｷｻﾝﾋﾞ",
+      "to": "GLC020",
+      "toCall": true,
+      "arg": 3,
+      "paragraph": "ﾒｲﾝ-RTN",
+      "verb": "CALL",
+      "source": "gondwana/programs/GLC040.cbl:43"
+    },
+    {
+      "from": "GLC020",
+      "to": "LK-ｷｻﾝﾋﾞ",
+      "fromCall": true,
+      "arg": 3,
+      "paragraph": "ﾒｲﾝ-RTN",
+      "verb": "CALL",
+      "source": "gondwana/programs/GLC040.cbl:43"
+    },
+    {
+      "from": "WS-ﾍﾝｶﾝｹｯｶ",
+      "to": "GLC020",
+      "toCall": true,
+      "arg": 4,
+      "paragraph": "ﾒｲﾝ-RTN",
+      "verb": "CALL",
+      "source": "gondwana/programs/GLC040.cbl:43"
+    },
+    {
+      "from": "GLC020",
+      "to": "WS-ﾍﾝｶﾝｹｯｶ",
+      "fromCall": true,
+      "arg": 4,
+      "paragraph": "ﾒｲﾝ-RTN",
+      "verb": "CALL",
+      "source": "gondwana/programs/GLC040.cbl:43"
+    },
+    {
+      "from": "LK-ｷｼﾞｭﾝﾋﾞ",
+      "to": "WS-ﾆｯｽｳ",
+      "paragraph": "ﾋﾜﾘ-RTN",
+      "verb": "COMPUTE",
+      "source": "gondwana/programs/GLC040.cbl:55"
+    },
+    {
+      "from": "WS-ｷｻﾝﾋﾞ",
+      "to": "WS-ﾆｯｽｳ",
+      "paragraph": "ﾋﾜﾘ-RTN",
+      "verb": "COMPUTE",
+      "source": "gondwana/programs/GLC040.cbl:55"
+    },
+    {
+      "from": "LK-ｻﾞﾝﾀﾞｶ",
+      "to": "LK-ﾘｿｸ",
+      "paragraph": "ﾋﾜﾘ-RTN",
+      "verb": "COMPUTE",
+      "source": "gondwana/programs/GLC040.cbl:58"
+    },
+    {
+      "from": "WS-ﾈﾝﾘ",
+      "to": "LK-ﾘｿｸ",
+      "paragraph": "ﾋﾜﾘ-RTN",
+      "verb": "COMPUTE",
+      "source": "gondwana/programs/GLC040.cbl:58"
+    },
+    {
+      "from": "WS-ﾆｯｽｳ",
+      "to": "LK-ﾘｿｸ",
+      "paragraph": "ﾋﾜﾘ-RTN",
+      "verb": "COMPUTE",
+      "source": "gondwana/programs/GLC040.cbl:58"
+    }
+  ],
+  "parameters": [
+    {
+      "item": "LK-ｻﾞﾝﾀﾞｶ",
+      "fields": [
+        {
+          "name": "LK-ｻﾞﾝﾀﾞｶ",
+          "reads": true
+        }
+      ]
+    },
+    {
+      "item": "LK-ｷｻﾝﾋﾞ",
+      "fields": [
+        {
+          "name": "LK-ｷｻﾝﾋﾞ",
+          "reads": true,
+          "writes": true
+        }
+      ]
+    },
+    {
+      "item": "LK-ｷｼﾞｭﾝﾋﾞ",
+      "fields": [
+        {
+          "name": "LK-ｷｼﾞｭﾝﾋﾞ",
+          "reads": true
+        }
+      ]
+    },
+    {
+      "item": "LK-ﾘｿｸ",
+      "fields": [
+        {
+          "name": "LK-ﾘｿｸ",
+          "writes": true
+        }
+      ]
+    }
+  ]
+}

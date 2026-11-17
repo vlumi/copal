@@ -151,3 +151,70 @@ func (g *Generator) counterPayment(r *rand.Rand, p Policy, date Date) int64 {
 	}
 	return arrears
 }
+
+// loanLimit is the share of a policy's cash value the insurer lends
+// against, in percent.
+const loanLimit = 80
+
+// Loans makes up the branches' loan requests of a business day: a
+// policyholder borrowing against a policy in force, in ten thousands of
+// yen within what the limit leaves, a borrower repaying the balance as
+// the last unload had it or a part of it, and a request a branch should
+// not have sent now and then: more than the limit leaves, more than is
+// owed, for no policy or of no kind.
+func (g *Generator) Loans(date Date, policies []Policy) ([][]byte, error) {
+	r := g.rng("loans", date.Number())
+	var recs [][]byte
+	n := 0
+	add := func(kind byte, p Policy, amount int64) error {
+		n++
+		rec, err := made(g.Layouts.Loan, map[string]any{
+			"LR-ｲﾗｲﾊﾞﾝｺﾞｳ": requestNumber('L', date, n), "LR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ": p.No, "LR-ｼｭﾍﾞﾂ": string(kind),
+			"LR-ｷﾝｶﾞｸ": amount, "LR-ｼﾃﾝ": branchOf(p.Agent),
+		})
+		recs = append(recs, rec)
+		return err
+	}
+	for _, p := range policies {
+		if p.Status > 3 {
+			continue
+		}
+		room := (p.cashValue()*loanLimit/100 - p.Loan) / 10_000
+		var err error
+		switch {
+		case p.Status == 1 && room >= 10 && chance(r, perDay(0.05)):
+			err = add('L', p, (1+r.Int64N(room*6/10))*10_000)
+		case p.Covered() && p.Loan > 0 && chance(r, perDay(0.4)):
+			err = add('P', p, repayment(r, p.Loan))
+		case chance(r, perDay(0.003)):
+			err = g.wrongLoan(r, add, p)
+		}
+		if err != nil {
+			return nil, err
+		}
+	}
+	return recs, nil
+}
+
+// repayment is what a borrower pays back: the balance, or a half, a
+// third or a quarter of it in thousands of yen.
+func repayment(r *rand.Rand, balance int64) int64 {
+	if part := balance / int64(1+r.IntN(4)) / 1000 * 1000; part > 0 {
+		return part
+	}
+	return balance
+}
+
+// wrongLoan makes up a request the program rejects.
+func (g *Generator) wrongLoan(r *rand.Rand, add func(byte, Policy, int64) error, p Policy) error {
+	switch r.IntN(4) {
+	case 0:
+		p.No = "7777777777"
+		return add('L', p, 100_000)
+	case 1:
+		return add('X', p, 100_000)
+	case 2:
+		return add('P', p, p.Loan+1_000_000)
+	}
+	return add('L', p, p.Sum)
+}
