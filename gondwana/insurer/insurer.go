@@ -1,7 +1,7 @@
 // Package insurer runs Gondwana Life Insurance business day after
 // business day: it opens the system on a generated portfolio, and for
 // each day writes what the sales system sold and what the branches
-// requested, runs the daily batch, and around it the month's billing,
+// requested, loans among it, runs the daily batch, and around it the month's billing,
 // the collection agent's results, the month-end close and the year-end
 // dividends on their days, and backs a day out whole when it fails.
 package insurer
@@ -58,8 +58,9 @@ type Day struct {
 	Date       generate.Date
 	Batches    []Batch
 	New        int // policies registered
-	Benefits   int // payments made
+	Benefits   int // benefits paid
 	Changes    int // changes applied
+	Loans      int // loans lent and repayments taken
 	Rejected   int // records rejected by any step
 	Billed     int // debits requested, on a billing day
 	Collected  int // debits that went through, on a results day
@@ -267,8 +268,8 @@ func (in Insurer) generateResults(g *generate.Generator, date generate.Date, req
 }
 
 // generateDaily writes the daily run's inbound files: the sales system's
-// new policies and the branches' benefit and change requests, from the
-// policies as the last unload has them.
+// new policies and the branches' benefit, change and loan requests, from
+// the policies as the last unload has them.
 func (in Insurer) generateDaily(g *generate.Generator, date generate.Date) error {
 	policies, err := in.policies(g, date)
 	if err != nil {
@@ -277,7 +278,7 @@ func (in Insurer) generateDaily(g *generate.Generator, date generate.Date) error
 	for _, f := range []struct {
 		name     string
 		generate func(generate.Date, []generate.Policy) ([][]byte, error)
-	}{{"NEWPOL", g.NewBusiness}, {"CLMREQ", g.Claims}, {"MNTREQ", g.Changes}} {
+	}{{"NEWPOL", g.NewBusiness}, {"CLMREQ", g.Claims}, {"MNTREQ", g.Changes}, {"LONREQ", g.Loans}} {
 		recs, err := f.generate(date, policies)
 		if err != nil {
 			return err
@@ -330,7 +331,7 @@ func (in Insurer) count(g *generate.Generator, day *Day) error {
 		return strings.Count(string(content), "\n"), err
 	}
 	rejects := map[string]int{}
-	for _, name := range []string{"NEWREJ", "CLMREJ", "MNTREJ", "RESREJ"} {
+	for _, name := range []string{"NEWREJ", "CLMREJ", "MNTREJ", "LONREJ", "RESREJ"} {
 		n, err := lines("OUT", name)
 		if err != nil {
 			return err
@@ -338,19 +339,19 @@ func (in Insurer) count(g *generate.Generator, day *Day) error {
 		rejects[name] = n
 		day.Rejected += n
 	}
-	var err error
-	if day.Benefits, err = lines("OUT", "PAYOUT"); err != nil {
+	requests := map[string]int{}
+	for _, name := range []string{"NEWPOL", "MNTREQ", "LONREQ"} {
+		n, err := lines("IN", name)
+		if err != nil {
+			return err
+		}
+		requests[name] = n
+	}
+	day.New, day.Changes = requests["NEWPOL"]-rejects["NEWREJ"], requests["MNTREQ"]-rejects["MNTREJ"]
+	day.Loans = requests["LONREQ"] - rejects["LONREJ"]
+	if err := in.countBenefits(g, day); err != nil {
 		return err
 	}
-	applications, err := lines("IN", "NEWPOL")
-	if err != nil {
-		return err
-	}
-	changes, err := lines("IN", "MNTREQ")
-	if err != nil {
-		return err
-	}
-	day.New, day.Changes = applications-rejects["NEWREJ"], changes-rejects["MNTREJ"]
 	if err := in.countTransfers(g, day); err != nil {
 		return err
 	}
@@ -372,6 +373,24 @@ func (in Insurer) count(g *generate.Generator, day *Day) error {
 			day.Lapsed++
 		default:
 			day.Ended++
+		}
+	}
+	return nil
+}
+
+// countBenefits counts the benefits the day paid: its payments but the
+// loans lent.
+func (in Insurer) countBenefits(g *generate.Generator, day *Day) error {
+	l := g.Layouts.Payment
+	payments, err := in.readFile(l, in.data("OUT", "PAYOUT."+day.Date.Stamp()+".TXT"))
+	if errors.Is(err, os.ErrNotExist) {
+		return nil
+	} else if err != nil {
+		return err
+	}
+	for _, payment := range payments {
+		if kind, _ := l.Text(payment, "PY-ｼｭﾍﾞﾂ"); kind != "L" {
+			day.Benefits++
 		}
 	}
 	return nil

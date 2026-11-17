@@ -28,6 +28,7 @@ type Policy struct {
 	Account       account
 	Agent         string
 	Loan          int64
+	LoanSince     Date // the day interest was last added to the loan
 	Reserve       int64
 	Dividends     int64
 	LastPaidMonth int64
@@ -37,6 +38,17 @@ type Policy struct {
 // Covered reports whether the policy is in force or in grace: insured,
 // and paying premiums.
 func (p Policy) Covered() bool { return p.Status == 1 || p.Status == 2 }
+
+// cashValue is what the policy would pay on surrender before any loan is
+// taken off it, as the cash value table has it.
+func (p Policy) cashValue() int64 {
+	for _, pr := range products {
+		if pr.code == p.Product && p.Year > 0 {
+			return p.Sum / 1000 * int64(pr.cashValue(ageBand(p.EntryAge), min(p.Year, 40))) / 1000
+		}
+	}
+	return 0
+}
 
 // Lapsed reports whether the policy has lapsed and may be reinstated.
 func (p Policy) Lapsed() bool { return p.Status == 3 }
@@ -71,7 +83,7 @@ func (g *Generator) record(p Policy) ([]byte, error) {
 		"PM-ｷﾞﾝｺｳｺｰﾄﾞ": p.Account.bank, "PM-ｼﾃﾝｺｰﾄﾞ": p.Account.branch, "PM-ﾖｷﾝｼｭﾓｸ": p.Account.kind,
 		"PM-ｺｳｻﾞﾊﾞﾝｺﾞｳ": p.Account.number, "PM-ｺｳｻﾞﾒｲｷﾞ": p.Account.holder, "PM-ﾀﾞｲﾘﾃﾝｺｰﾄﾞ": p.Agent,
 		"PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ": p.Loan, "PM-ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ": p.Reserve, "PM-ﾊｲﾄｳﾙｲｹｲ": p.Dividends,
-		"PM-ｻｲｼｭｳﾆｭｳｷﾝﾈﾝｹﾞﾂ": p.LastPaidMonth, "PM-ｻｲｼｭｳﾆｭｳｷﾝｶﾞｸ": p.LastPaid,
+		"PM-ｻｲｼｭｳﾆｭｳｷﾝﾈﾝｹﾞﾂ": p.LastPaidMonth, "PM-ｻｲｼｭｳﾆｭｳｷﾝｶﾞｸ": p.LastPaid, "PM-ｶｼﾂｹｷｻﾝﾋﾞ": eraOrBlank(p.LoanSince),
 	})
 }
 
@@ -81,7 +93,7 @@ func (g *Generator) ReadPolicies(records [][]byte) ([]Policy, error) {
 	policies := make([]Policy, 0, len(records))
 	for _, r := range records {
 		var p Policy
-		var status, mode, contract, maturity, grace, lapse, statusDate, birth string
+		var status, mode, contract, maturity, grace, lapse, statusDate, birth, loanSince string
 		if err := get(g.Layouts.Policy, r, map[string]any{
 			"PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ": &p.No, "PM-ｼﾞｮｳﾀｲ": &status, "PM-ｼｮｳﾋﾝ": &p.Product,
 			"PM-ﾎｹﾝｷﾝｶﾞｸ": &p.Sum, "PM-ﾎｹﾝﾘｮｳ": &p.Premium, "PM-ﾊﾗｲｺﾐﾎｳﾎｳ": &mode,
@@ -93,7 +105,7 @@ func (g *Generator) ReadPolicies(records [][]byte) ([]Policy, error) {
 			"PM-ｷﾞﾝｺｳｺｰﾄﾞ": &p.Account.bank, "PM-ｼﾃﾝｺｰﾄﾞ": &p.Account.branch, "PM-ﾖｷﾝｼｭﾓｸ": &p.Account.kind,
 			"PM-ｺｳｻﾞﾊﾞﾝｺﾞｳ": &p.Account.number, "PM-ｺｳｻﾞﾒｲｷﾞ": &p.Account.holder, "PM-ﾀﾞｲﾘﾃﾝｺｰﾄﾞ": &p.Agent,
 			"PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ": &p.Loan, "PM-ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ": &p.Reserve, "PM-ﾊｲﾄｳﾙｲｹｲ": &p.Dividends,
-			"PM-ｻｲｼｭｳﾆｭｳｷﾝﾈﾝｹﾞﾂ": &p.LastPaidMonth, "PM-ｻｲｼｭｳﾆｭｳｷﾝｶﾞｸ": &p.LastPaid,
+			"PM-ｻｲｼｭｳﾆｭｳｷﾝﾈﾝｹﾞﾂ": &p.LastPaidMonth, "PM-ｻｲｼｭｳﾆｭｳｷﾝｶﾞｸ": &p.LastPaid, "PM-ｶｼﾂｹｷｻﾝﾋﾞ": &loanSince,
 		}); err != nil {
 			return nil, err
 		}
@@ -102,7 +114,7 @@ func (g *Generator) ReadPolicies(records [][]byte) ([]Policy, error) {
 		for _, d := range []struct {
 			target *Date
 			text   string
-		}{{&p.Contract, contract}, {&p.Maturity, maturity}, {&p.GraceStart, grace}, {&p.LapseDate, lapse}, {&p.StatusDate, statusDate}, {&p.Birth, birth}} {
+		}{{&p.Contract, contract}, {&p.Maturity, maturity}, {&p.GraceStart, grace}, {&p.LapseDate, lapse}, {&p.StatusDate, statusDate}, {&p.Birth, birth}, {&p.LoanSince, loanSince}} {
 			if *d.target, err = dateOrZero(d.text); err != nil {
 				return nil, err
 			}

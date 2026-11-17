@@ -18,11 +18,11 @@
 {{if .Days}}
 <p class="note">The daily run every business day; the collection agent's results before it on theirs, the billing on the 10th or the business day after, the close on the month's last business day, and the year end after March's.</p>
 <table>
-  <thead><tr><th>Day</th><th></th><th>Batch files</th><th class="num">New</th><th class="num">Benefits</th><th class="num">Changes</th><th class="num">Rejected</th><th class="num">Billed</th><th class="num">Collected, unpaid</th><th class="num">In force</th><th class="num">In grace</th><th class="num">Lapsed</th><th>Worst</th></tr></thead>
+  <thead><tr><th>Day</th><th></th><th>Batch files</th><th class="num">New</th><th class="num">Benefits</th><th class="num">Changes</th><th class="num">Loans</th><th class="num">Rejected</th><th class="num">Billed</th><th class="num">Collected, unpaid</th><th class="num">In force</th><th class="num">In grace</th><th class="num">Lapsed</th><th>Worst</th></tr></thead>
   <tbody>
   {{range .Days}}<tr><td><a href="/days/{{.Date}}">{{.Date}}</a></td><td>{{slice .Date.Weekday.String 0 3}}</td>
     <td>{{range $i, $b := .Batches}}{{if $i}}, {{end}}{{$b.Name}}{{end}}</td>
-    <td class="num">{{count .New}}</td><td class="num">{{count .Benefits}}</td><td class="num">{{count .Changes}}</td><td class="num">{{count .Rejected}}</td>
+    <td class="num">{{count .New}}</td><td class="num">{{count .Benefits}}</td><td class="num">{{count .Changes}}</td><td class="num">{{count .Loans}}</td><td class="num">{{count .Rejected}}</td>
     <td class="num">{{if .Billed}}{{count .Billed}}{{end}}</td><td class="num">{{if or .Collected .Unpaid}}{{count .Collected}}, {{count .Unpaid}}{{end}}</td>
     <td class="num">{{count .InForce}}</td><td class="num">{{count .InGrace}}</td><td class="num">{{count .Lapsed}}</td><td>{{template "rc" .RC}}</td></tr>
   {{end}}

@@ -24,7 +24,7 @@ Three working COBOL systems, fiction written for this project, each in another s
 | --- | --- | --- | --- | --- |
 | [pangaea/](pangaea/) | **The First Bank of Pangaea**, a bank: a daily batch, a month-end, and an online day of card and ATM authorizations | IBM, fixed format | JCL | The first: the survey was built on it |
 | [laurasia/](laurasia/) | **Laurasia Card Services**, a card processor: clearing, posting, disputes, settlement and billing | Micro Focus, free format | shell scripts | To show where the survey assumed Pangaea's dialect, format and JCL |
-| [gondwana/](gondwana/) | **Gondwana Life Insurance**, a life insurer: new business, premiums, claims, lapses, reserves and dividends | Fujitsu NetCOBOL, Shift_JIS with Japanese names | Windows batch files | To show where it assumed ASCII, cents and the Western calendar |
+| [gondwana/](gondwana/) | **Gondwana Life Insurance**, a life insurer: new business, premiums, claims, lapses, policy loans, reserves and dividends | Fujitsu NetCOBOL, Shift_JIS with Japanese names | Windows batch files | To show where it assumed ASCII, cents and the Western calendar |
 
 The dependencies run one way, and `make ci` checks it: the specimens know nothing of the survey, nor the survey of them; its tests read them as data. The specimens' outputs are golden files, and so are the survey's blueprints of them: a change to the analyzer shows as a diff in what it says about a real system.
 

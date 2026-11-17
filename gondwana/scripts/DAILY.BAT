@@ -1,6 +1,7 @@
 @echo off
 rem DAILY.BAT: 日次処理。新契約の登録、契約応当日、給付支払、契約変更、
-rem 失効、そしてアンロード。営業日ごとにスケジューラが起動する。
+rem 失効、契約者貸付、そしてアンロード。営業日ごとにスケジューラが
+rem 起動する。
 rem
 rem 使い方: DAILY.BAT YYYYMMDD  業務日付
 rem 環境: GLS_BIN プログラム、GLS_SCRIPTS バッチファイル、GLS_DATA データ
@@ -9,6 +10,7 @@ rem 変更履歴
 rem 1999-11-08 MS  GL-0233 初版、PC システム移行時 (旧 JCL から)。
 rem 2003-10-06 MS  GL-0310 営業システムの新契約ファイル。
 rem 2011-02-14 YN  GL-0520 契約変更に復活。
+rem 2012-09-03 YN  GL-0561 契約者貸付。
 setlocal
 set DATE=%1
 set BIN=%GLS_BIN%
@@ -56,6 +58,14 @@ rem STEP GLD060: 失効処理
 set DD_GLD060R=%DATA%¥RPT¥GLD060.%DATE%.RPT
 "%BIN%¥GLD060.EXE" %DATE% > "%DATA%¥RPT¥GLD060.%DATE%.OUT" 2>&1
 >>"%LOG%" echo GLD060 GLD060 %ERRORLEVEL%
+if errorlevel 8 exit /b %ERRORLEVEL%
+
+rem STEP GLD070: 契約者貸付
+set DD_LONREQ=%DATA%¥IN¥LONREQ.%DATE%.TXT
+set DD_LONREJ=%DATA%¥OUT¥LONREJ.%DATE%.TXT
+set DD_GLD070R=%DATA%¥RPT¥GLD070.%DATE%.RPT
+"%BIN%¥GLD070.EXE" %DATE% > "%DATA%¥RPT¥GLD070.%DATE%.OUT" 2>&1
+>>"%LOG%" echo GLD070 GLD070 %ERRORLEVEL%
 if errorlevel 8 exit /b %ERRORLEVEL%
 
 rem STEP UNLOAD: 契約マスタのアンロードと制御レコードの更新

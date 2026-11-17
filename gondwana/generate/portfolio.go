@@ -151,7 +151,8 @@ func debitDay(inMonth Date) Date {
 }
 
 // standing fills in what a policy's state implies: its paid-to month and
-// arrears, its reserve, dividends and loan, and the last premium it paid.
+// arrears, its reserve, dividends and loan, with interest added up to its
+// last anniversary, and the last premium it paid.
 func (g *Generator) standing(r *rand.Rand, p *Policy, pr product, opening Date) {
 	lastBilling := opening.AddMonths(-1)
 	switch p.Status {
@@ -177,6 +178,7 @@ func (g *Generator) standing(r *rand.Rand, p *Policy, pr product, opening Date) 
 	}
 	if cashValue := pr.cashValue(ageBand(p.EntryAge), min(p.Year, 40)); p.Status <= 3 && cashValue > 0 && p.Year >= 5 && r.IntN(100) < 8 {
 		p.Loan = p.Sum / 1000 * int64(cashValue) / 1000 * 3 / 10 / 10000 * 10000
+		p.LoanSince = p.Contract.AddYears(p.Year - 1)
 	}
 }
 

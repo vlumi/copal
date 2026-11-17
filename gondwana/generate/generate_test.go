@@ -109,7 +109,7 @@ func TestDays(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	newBusiness, claims, changes := 0, 0, 0
+	newBusiness, claims, changes, loans := 0, 0, 0, 0
 	for date := opening; date.Before(opening.AddDays(60)); date = date.NextBusinessDay() {
 		n, err := g.NewBusiness(date, policies)
 		if err != nil {
@@ -123,15 +123,19 @@ func TestDays(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		newBusiness, claims, changes = newBusiness+len(n), claims+len(c), changes+len(m)
-		for _, rec := range append(append(n, c...), m...) {
+		l, err := g.Loans(date, policies)
+		if err != nil {
+			t.Fatal(err)
+		}
+		newBusiness, claims, changes, loans = newBusiness+len(n), claims+len(c), changes+len(m), loans+len(l)
+		for _, rec := range slices.Concat(n, c, m, l) {
 			if len(rec) == 0 {
 				t.Errorf("%s: an empty record", date)
 			}
 		}
 	}
-	if newBusiness < 20 || claims < 10 || changes < 10 {
-		t.Errorf("in two months: %d new policies, %d benefit requests, %d changes", newBusiness, claims, changes)
+	if newBusiness < 20 || claims < 10 || changes < 10 || loans < 5 {
+		t.Errorf("in two months: %d new policies, %d benefit requests, %d changes, %d loan requests", newBusiness, claims, changes, loans)
 	}
 }
 

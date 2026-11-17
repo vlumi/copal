@@ -2,7 +2,8 @@
 
 ```text
 DAILY.BAT: 日次処理。新契約の登録、契約応当日、給付支払、契約変更、
-失効、そしてアンロード。営業日ごとにスケジューラが起動する。
+失効、契約者貸付、そしてアンロード。営業日ごとにスケジューラが
+起動する。
 
 使い方: DAILY.BAT YYYYMMDD  業務日付
 環境: GLS_BIN プログラム、GLS_SCRIPTS バッチファイル、GLS_DATA データ
@@ -11,9 +12,10 @@ DAILY.BAT: 日次処理。新契約の登録、契約応当日、給付支払、
 1999-11-08 MS  GL-0233 初版、PC システム移行時 (旧 JCL から)。
 2003-10-06 MS  GL-0310 営業システムの新契約ファイル。
 2011-02-14 YN  GL-0520 契約変更に復活。
+2012-09-03 YN  GL-0561 契約者貸付。
 ```
 
-Script [DAILY.BAT](../../../gondwana/scripts/DAILY.BAT): 6 steps.
+Script [DAILY.BAT](../../../gondwana/scripts/DAILY.BAT): 7 steps.
 
 ## Contents
 
@@ -24,6 +26,7 @@ Script [DAILY.BAT](../../../gondwana/scripts/DAILY.BAT): 6 steps.
   - [GLD030](#gld030)
   - [GLD040](#gld040)
   - [GLD060](#gld060)
+  - [GLD070](#gld070)
 - [Datasets](#datasets)
 - [Findings](#findings)
 
@@ -35,12 +38,13 @@ Script [DAILY.BAT](../../../gondwana/scripts/DAILY.BAT): 6 steps.
 
 | Step | Program | Reads | Writes | Stops the script if | Description | Source |
 | --- | --- | --- | --- | --- | --- | --- |
-| GLD010 | [GLD010](../programs/GLD010.md), with $DATE | $DATA/IN/NEWPOL.$DATE.TXT, $DATA/MASTER/POLMST.IDX, $DATA/MASTER/PRODTB.TXT, $DATA/MASTER/RATETB.TXT, $DATA/MASTER/GLSCTL.BIN | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/GLSCTL.BIN, $DATA/OUT/GLJRNL.$DATE.TXT, $DATA/OUT/NEWREJ.$DATE.TXT, $DATA/RPT/GLD010.$DATE.RPT, $DATA/RPT/GLD010.$DATE.OUT | RC >= 8 | 新契約登録 | [DAILY.BAT:29](../../../gondwana/scripts/DAILY.BAT#L29) |
-| GLD020 | [GLD020](../programs/GLD020.md), with $DATE | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/PRODTB.TXT, $DATA/MASTER/RATETB.TXT, $DATA/MASTER/GLSCTL.BIN | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/GLSCTL.BIN, $DATA/OUT/PAYOUT.$DATE.TXT, $DATA/OUT/GLJRNL.$DATE.TXT, $DATA/RPT/GLD020.$DATE.RPT, $DATA/RPT/GLD020.$DATE.OUT | RC >= 8 | 契約応当日処理 | [DAILY.BAT:35](../../../gondwana/scripts/DAILY.BAT#L35) |
-| GLD030 | [GLD030](../programs/GLD030.md), with $DATE | $DATA/IN/CLMREQ.$DATE.TXT, $DATA/MASTER/POLMST.IDX, $DATA/MASTER/PRODTB.TXT, $DATA/MASTER/GLSCTL.BIN, $DATA/MASTER/CSVTB.TXT | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/GLSCTL.BIN, $DATA/OUT/PAYOUT.$DATE.TXT, $DATA/OUT/GLJRNL.$DATE.TXT, $DATA/OUT/CLMREJ.$DATE.TXT, $DATA/RPT/GLD030.$DATE.RPT, $DATA/RPT/GLD030.$DATE.OUT | RC >= 8 | 給付支払 | [DAILY.BAT:43](../../../gondwana/scripts/DAILY.BAT#L43) |
-| GLD040 | [GLD040](../programs/GLD040.md), with $DATE | $DATA/IN/MNTREQ.$DATE.TXT, $DATA/MASTER/POLMST.IDX, $DATA/MASTER/GLSCTL.BIN | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/GLSCTL.BIN, $DATA/OUT/GLJRNL.$DATE.TXT, $DATA/OUT/MNTREJ.$DATE.TXT, $DATA/RPT/GLD040.$DATE.RPT, $DATA/RPT/GLD040.$DATE.OUT | RC >= 8 | 契約変更 | [DAILY.BAT:51](../../../gondwana/scripts/DAILY.BAT#L51) |
-| GLD060 | [GLD060](../programs/GLD060.md), with $DATE | $DATA/MASTER/POLMST.IDX | $DATA/MASTER/POLMST.IDX, $DATA/RPT/GLD060.$DATE.RPT, $DATA/RPT/GLD060.$DATE.OUT | RC >= 8 | 失効処理 | [DAILY.BAT:57](../../../gondwana/scripts/DAILY.BAT#L57) |
-| UNLOAD | script [UNLOAD](UNLOAD.md), with $DATE | | | RC >= 8 | 契約マスタのアンロードと制御レコードの更新 | [DAILY.BAT:62](../../../gondwana/scripts/DAILY.BAT#L62) |
+| GLD010 | [GLD010](../programs/GLD010.md), with $DATE | $DATA/IN/NEWPOL.$DATE.TXT, $DATA/MASTER/POLMST.IDX, $DATA/MASTER/PRODTB.TXT, $DATA/MASTER/RATETB.TXT, $DATA/MASTER/GLSCTL.BIN | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/GLSCTL.BIN, $DATA/OUT/GLJRNL.$DATE.TXT, $DATA/OUT/NEWREJ.$DATE.TXT, $DATA/RPT/GLD010.$DATE.RPT, $DATA/RPT/GLD010.$DATE.OUT | RC >= 8 | 新契約登録 | [DAILY.BAT:31](../../../gondwana/scripts/DAILY.BAT#L31) |
+| GLD020 | [GLD020](../programs/GLD020.md), with $DATE | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/PRODTB.TXT, $DATA/MASTER/RATETB.TXT, $DATA/MASTER/GLSCTL.BIN, $DATA/MASTER/CSVTB.TXT | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/GLSCTL.BIN, $DATA/OUT/PAYOUT.$DATE.TXT, $DATA/OUT/GLJRNL.$DATE.TXT, $DATA/RPT/GLD020.$DATE.RPT, $DATA/RPT/GLD020.$DATE.OUT | RC >= 8 | 契約応当日処理 | [DAILY.BAT:37](../../../gondwana/scripts/DAILY.BAT#L37) |
+| GLD030 | [GLD030](../programs/GLD030.md), with $DATE | $DATA/IN/CLMREQ.$DATE.TXT, $DATA/MASTER/POLMST.IDX, $DATA/MASTER/PRODTB.TXT, $DATA/MASTER/GLSCTL.BIN, $DATA/MASTER/CSVTB.TXT | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/GLSCTL.BIN, $DATA/OUT/PAYOUT.$DATE.TXT, $DATA/OUT/GLJRNL.$DATE.TXT, $DATA/OUT/CLMREJ.$DATE.TXT, $DATA/RPT/GLD030.$DATE.RPT, $DATA/RPT/GLD030.$DATE.OUT | RC >= 8 | 給付支払 | [DAILY.BAT:45](../../../gondwana/scripts/DAILY.BAT#L45) |
+| GLD040 | [GLD040](../programs/GLD040.md), with $DATE | $DATA/IN/MNTREQ.$DATE.TXT, $DATA/MASTER/POLMST.IDX, $DATA/MASTER/GLSCTL.BIN | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/GLSCTL.BIN, $DATA/OUT/GLJRNL.$DATE.TXT, $DATA/OUT/MNTREJ.$DATE.TXT, $DATA/RPT/GLD040.$DATE.RPT, $DATA/RPT/GLD040.$DATE.OUT | RC >= 8 | 契約変更 | [DAILY.BAT:53](../../../gondwana/scripts/DAILY.BAT#L53) |
+| GLD060 | [GLD060](../programs/GLD060.md), with $DATE | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/GLSCTL.BIN, $DATA/MASTER/CSVTB.TXT | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/GLSCTL.BIN, $DATA/OUT/GLJRNL.$DATE.TXT, $DATA/RPT/GLD060.$DATE.RPT, $DATA/RPT/GLD060.$DATE.OUT | RC >= 8 | 失効処理 | [DAILY.BAT:59](../../../gondwana/scripts/DAILY.BAT#L59) |
+| GLD070 | [GLD070](../programs/GLD070.md), with $DATE | $DATA/IN/LONREQ.$DATE.TXT, $DATA/MASTER/POLMST.IDX, $DATA/MASTER/GLSCTL.BIN, $DATA/MASTER/CSVTB.TXT | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/GLSCTL.BIN, $DATA/OUT/PAYOUT.$DATE.TXT, $DATA/OUT/GLJRNL.$DATE.TXT, $DATA/OUT/LONREJ.$DATE.TXT, $DATA/RPT/GLD070.$DATE.RPT, $DATA/RPT/GLD070.$DATE.OUT | RC >= 8 | 契約者貸付 | [DAILY.BAT:67](../../../gondwana/scripts/DAILY.BAT#L67) |
+| UNLOAD | script [UNLOAD](UNLOAD.md), with $DATE | | | RC >= 8 | 契約マスタのアンロードと制御レコードの更新 | [DAILY.BAT:72](../../../gondwana/scripts/DAILY.BAT#L72) |
 
 ### GLD010
 
@@ -67,6 +71,7 @@ Script [DAILY.BAT](../../../gondwana/scripts/DAILY.BAT): 6 steps.
 | PAYOUT | $DATA/OUT/PAYOUT.$DATE.TXT | PAYOUT-F | [PAYOUT](../copybooks/PAYOUT.md) | append |
 | GLJRNL | $DATA/OUT/GLJRNL.$DATE.TXT | GLJRNL-F | [GLJRNL](../copybooks/GLJRNL.md) | append |
 | GLD020R | $DATA/RPT/GLD020.$DATE.RPT | REPORT-F | | write |
+| CSVTB | $DATA/MASTER/CSVTB.TXT | CSVTB-F of [GLC030](../programs/GLC030.md) | [CSVTB](../copybooks/CSVTB.md) | read |
 | stdout | $DATA/RPT/GLD020.$DATE.OUT | | | write |
 
 ### GLD030
@@ -101,8 +106,25 @@ Script [DAILY.BAT](../../../gondwana/scripts/DAILY.BAT): 6 steps.
 | Name | File | File in the program | Copybook | Use |
 | --- | --- | --- | --- | --- |
 | POLMST | $DATA/MASTER/POLMST.IDX (indexed) | POLMST-F | [POLMST](../copybooks/POLMST.md) | update |
+| GLSCTL | $DATA/MASTER/GLSCTL.BIN | GLSCTL-F | [CTLREC](../copybooks/CTLREC.md) | update |
+| GLJRNL | $DATA/OUT/GLJRNL.$DATE.TXT | GLJRNL-F | [GLJRNL](../copybooks/GLJRNL.md) | append |
 | GLD060R | $DATA/RPT/GLD060.$DATE.RPT | REPORT-F | | write |
+| CSVTB | $DATA/MASTER/CSVTB.TXT | CSVTB-F of [GLC030](../programs/GLC030.md) | [CSVTB](../copybooks/CSVTB.md) | read |
 | stdout | $DATA/RPT/GLD060.$DATE.OUT | | | write |
+
+### GLD070
+
+| Name | File | File in the program | Copybook | Use |
+| --- | --- | --- | --- | --- |
+| LONREQ | $DATA/IN/LONREQ.$DATE.TXT | LONREQ-F | [LONREQ](../copybooks/LONREQ.md) | read |
+| POLMST | $DATA/MASTER/POLMST.IDX (indexed) | POLMST-F | [POLMST](../copybooks/POLMST.md) | update |
+| GLSCTL | $DATA/MASTER/GLSCTL.BIN | GLSCTL-F | [CTLREC](../copybooks/CTLREC.md) | update |
+| PAYOUT | $DATA/OUT/PAYOUT.$DATE.TXT | PAYOUT-F | [PAYOUT](../copybooks/PAYOUT.md) | append |
+| GLJRNL | $DATA/OUT/GLJRNL.$DATE.TXT | GLJRNL-F | [GLJRNL](../copybooks/GLJRNL.md) | append |
+| LONREJ | $DATA/OUT/LONREJ.$DATE.TXT | REJECT-F | | write |
+| GLD070R | $DATA/RPT/GLD070.$DATE.RPT | REPORT-F | | write |
+| CSVTB | $DATA/MASTER/CSVTB.TXT | CSVTB-F of [GLC030](../programs/GLC030.md) | [CSVTB](../copybooks/CSVTB.md) | read |
+| stdout | $DATA/RPT/GLD070.$DATE.OUT | | | write |
 
 ## Datasets
 
@@ -111,21 +133,21 @@ Each dataset the job names, the copybook that describes its records, from the pr
 | Dataset | Copybook | Written by | Read by |
 | --- | --- | --- | --- |
 | $DATA/IN/NEWPOL.$DATE.TXT | [NEWPOL](../copybooks/NEWPOL.md) | | GLD010 |
-| $DATA/MASTER/POLMST.IDX | [POLMST](../copybooks/POLMST.md) | GLD010, GLD020, GLD030, GLD040, GLD060 | GLD010, GLD020, GLD030, GLD040, GLD060 |
+| $DATA/MASTER/POLMST.IDX | [POLMST](../copybooks/POLMST.md) | GLD010, GLD020, GLD030, GLD040, GLD060, GLD070 | GLD010, GLD020, GLD030, GLD040, GLD060, GLD070 |
 | $DATA/MASTER/PRODTB.TXT | [PRODTB](../copybooks/PRODTB.md) | | GLD010, GLD020, GLD030 |
 | $DATA/MASTER/RATETB.TXT | [RATETB](../copybooks/RATETB.md) | | GLD010, GLD020 |
-| $DATA/MASTER/GLSCTL.BIN | [CTLREC](../copybooks/CTLREC.md) | GLD010, GLD020, GLD030, GLD040 | GLD010, GLD020, GLD030, GLD040 |
-| $DATA/OUT/GLJRNL.$DATE.TXT | [GLJRNL](../copybooks/GLJRNL.md) | GLD010, GLD020, GLD030, GLD040 | |
+| $DATA/MASTER/GLSCTL.BIN | [CTLREC](../copybooks/CTLREC.md) | GLD010, GLD020, GLD030, GLD040, GLD060, GLD070 | GLD010, GLD020, GLD030, GLD040, GLD060, GLD070 |
+| $DATA/OUT/GLJRNL.$DATE.TXT | [GLJRNL](../copybooks/GLJRNL.md) | GLD010, GLD020, GLD030, GLD040, GLD060, GLD070 | |
 | $DATA/OUT/NEWREJ.$DATE.TXT | | GLD010 | |
 | $DATA/RPT/GLD010.$DATE.RPT | | GLD010 | |
 | $DATA/RPT/GLD010.$DATE.OUT | | GLD010 | |
-| $DATA/OUT/PAYOUT.$DATE.TXT | [PAYOUT](../copybooks/PAYOUT.md) | GLD020, GLD030 | |
+| $DATA/OUT/PAYOUT.$DATE.TXT | [PAYOUT](../copybooks/PAYOUT.md) | GLD020, GLD030, GLD070 | |
 | $DATA/RPT/GLD020.$DATE.RPT | | GLD020 | |
+| $DATA/MASTER/CSVTB.TXT | [CSVTB](../copybooks/CSVTB.md) | | GLD020, GLD030, GLD060, GLD070 |
 | $DATA/RPT/GLD020.$DATE.OUT | | GLD020 | |
 | $DATA/IN/CLMREQ.$DATE.TXT | [CLMREQ](../copybooks/CLMREQ.md) | | GLD030 |
 | $DATA/OUT/CLMREJ.$DATE.TXT | | GLD030 | |
 | $DATA/RPT/GLD030.$DATE.RPT | | GLD030 | |
-| $DATA/MASTER/CSVTB.TXT | [CSVTB](../copybooks/CSVTB.md) | | GLD030 |
 | $DATA/RPT/GLD030.$DATE.OUT | | GLD030 | |
 | $DATA/IN/MNTREQ.$DATE.TXT | [MNTREQ](../copybooks/MNTREQ.md) | | GLD040 |
 | $DATA/OUT/MNTREJ.$DATE.TXT | | GLD040 | |
@@ -133,6 +155,10 @@ Each dataset the job names, the copybook that describes its records, from the pr
 | $DATA/RPT/GLD040.$DATE.OUT | | GLD040 | |
 | $DATA/RPT/GLD060.$DATE.RPT | | GLD060 | |
 | $DATA/RPT/GLD060.$DATE.OUT | | GLD060 | |
+| $DATA/IN/LONREQ.$DATE.TXT | [LONREQ](../copybooks/LONREQ.md) | | GLD070 |
+| $DATA/OUT/LONREJ.$DATE.TXT | | GLD070 | |
+| $DATA/RPT/GLD070.$DATE.RPT | | GLD070 | |
+| $DATA/RPT/GLD070.$DATE.OUT | | GLD070 | |
 
 ## Findings
 

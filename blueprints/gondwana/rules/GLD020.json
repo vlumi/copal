@@ -3,7 +3,7 @@
   "tables": [
     {
       "paragraph": "ｼｮｷ-RTN",
-      "source": "gondwana/programs/GLD020.cbl:166",
+      "source": "gondwana/programs/GLD020.cbl:177",
       "conditions": [
         "WS-ﾍﾝｶﾝｹｯｶ = 0",
         "WS-GLSCTL-OK"
@@ -115,7 +115,7 @@
     },
     {
       "paragraph": "ｵｰﾌﾟﾝ-ｹﾝｻ-RTN",
-      "source": "gondwana/programs/GLD020.cbl:200",
+      "source": "gondwana/programs/GLD020.cbl:211",
       "conditions": [
         "WS-PRODTB-OK",
         "WS-ｴﾗｰﾌｧｲﾙ = SPACES",
@@ -317,7 +317,7 @@
     },
     {
       "paragraph": "POLMST-ﾖﾐｺﾐ-RTN",
-      "source": "gondwana/programs/GLD020.cbl:233",
+      "source": "gondwana/programs/GLD020.cbl:244",
       "conditions": [
         "NOT WS-POLMST-OK AND NOT WS-POLMST-ｵﾜﾘ"
       ],
@@ -358,7 +358,7 @@
     },
     {
       "paragraph": "ｼｮﾘ-RTN",
-      "source": "gondwana/programs/GLD020.cbl:245",
+      "source": "gondwana/programs/GLD020.cbl:256",
       "conditions": [
         "PM-ﾎｼｮｳﾁｭｳ",
         "WS-ｵｳﾄｳ-ｱﾘ",
@@ -442,7 +442,7 @@
     },
     {
       "paragraph": "ｵｳﾄｳﾋﾞ-RTN",
-      "source": "gondwana/programs/GLD020.cbl:266",
+      "source": "gondwana/programs/GLD020.cbl:277",
       "conditions": [
         "WS-ｵｳﾄｳﾋﾞ \u003e WS-ｷﾞｮｳﾑﾋﾂﾞｹ",
         "WS-ｵｳﾄｳﾋﾞ \u003e WS-ｹｲﾔｸﾋﾞ AND (WS-ｵｳﾄｳﾋﾞ \u003e CT-ｷﾞｮｳﾑﾋﾂﾞｹ OR WS-ｵｳﾄｳﾋﾞ = WS-ｷﾞｮｳﾑﾋﾂﾞｹ)"
@@ -537,12 +537,17 @@
     },
     {
       "paragraph": "ｵｳﾄｳ-RTN",
-      "source": "gondwana/programs/GLD020.cbl:290",
+      "source": "gondwana/programs/GLD020.cbl:302",
       "conditions": [
+        "PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ \u003e 0",
         "PM-ﾖｳﾛｳ AND PM-ﾏﾝｷﾋﾞ = WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ",
-        "PM-ﾃｲｷ AND PM-ﾏﾝｷﾋﾞ = WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ"
+        "PM-ﾃｲｷ AND PM-ﾏﾝｷﾋﾞ = WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ",
+        "PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ \u003e 0, again"
       ],
       "conditionRefs": [
+        [
+          "PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ"
+        ],
         [
           "PM-ｼｮｳﾋﾝ",
           "PM-ﾏﾝｷﾋﾞ",
@@ -552,6 +557,9 @@
           "PM-ｼｮｳﾋﾝ",
           "PM-ﾏﾝｷﾋﾞ",
           "WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ"
+        ],
+        [
+          "PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ"
         ]
       ],
       "actions": [
@@ -559,13 +567,35 @@
         "ADD 1 TO PM-ｹｲｶﾈﾝｽｳ",
         "MOVE 0 TO WS-ﾒｲｻｲ-ｷﾝｶﾞｸ",
         "MOVE '年度更新' TO WS-ﾒｲｻｲ-ｹｯｶ",
+        "PERFORM ﾘｿｸ-RTN",
         "PERFORM ﾏﾝｷ-RTN",
         "PERFORM ﾒｲｻｲ-RTN",
-        "PERFORM ｺｳｼﾝ-RTN"
+        "PERFORM ｺｳｼﾝ-RTN",
+        "PERFORM ﾁｮｳｶ-RTN"
       ],
       "rules": [
         {
           "entries": [
+            "Y",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "sentence": "When `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ` is more than 0; and `PM-ｼｮｳﾋﾝ` is `'EN'` (`PM-ﾖｳﾛｳ`) and `PM-ﾏﾝｷﾋﾞ` is `WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ`, it adds 1 to `WS-ｵｳﾄｳｹﾝｽｳ`, adds 1 to `PM-ｹｲｶﾈﾝｽｳ`, sets `WS-ﾒｲｻｲ-ｷﾝｶﾞｸ` to 0, sets `WS-ﾒｲｻｲ-ｹｯｶ` to `'年度更新'`, performs `ﾘｿｸ-RTN`, performs `ﾏﾝｷ-RTN`, and performs `ﾒｲｻｲ-RTN`."
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
             "Y",
             ""
           ],
@@ -575,12 +605,15 @@
             2,
             3,
             4,
-            5
+            7,
+            6
           ],
-          "sentence": "When `PM-ｼｮｳﾋﾝ` is `'EN'` (`PM-ﾖｳﾛｳ`) and `PM-ﾏﾝｷﾋﾞ` is `WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ`, it adds 1 to `WS-ｵｳﾄｳｹﾝｽｳ`, adds 1 to `PM-ｹｲｶﾈﾝｽｳ`, sets `WS-ﾒｲｻｲ-ｷﾝｶﾞｸ` to 0, sets `WS-ﾒｲｻｲ-ｹｯｶ` to `'年度更新'`, performs `ﾏﾝｷ-RTN`, and performs `ﾒｲｻｲ-RTN`."
+          "sentence": "When `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ` is more than 0; `PM-ｼｮｳﾋﾝ` is not `'EN'` (not `PM-ﾖｳﾛｳ`) or `PM-ﾏﾝｷﾋﾞ` is not `WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ`; and `PM-ｼｮｳﾋﾝ` is `'TM'` (`PM-ﾃｲｷ`) and `PM-ﾏﾝｷﾋﾞ` is `WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ`, it adds 1 to `WS-ｵｳﾄｳｹﾝｽｳ`, adds 1 to `PM-ｹｲｶﾈﾝｽｳ`, sets `WS-ﾒｲｻｲ-ｷﾝｶﾞｸ` to 0, sets `WS-ﾒｲｻｲ-ｹｯｶ` to `'年度更新'`, performs `ﾘｿｸ-RTN`, performs `ｺｳｼﾝ-RTN`, and performs `ﾒｲｻｲ-RTN`."
         },
         {
           "entries": [
+            "Y",
+            "N",
             "N",
             "Y"
           ],
@@ -589,13 +622,16 @@
             1,
             2,
             3,
-            6,
-            5
+            4,
+            8,
+            6
           ],
-          "sentence": "When `PM-ｼｮｳﾋﾝ` is not `'EN'` (not `PM-ﾖｳﾛｳ`) or `PM-ﾏﾝｷﾋﾞ` is not `WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ`; and `PM-ｼｮｳﾋﾝ` is `'TM'` (`PM-ﾃｲｷ`) and `PM-ﾏﾝｷﾋﾞ` is `WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ`, it adds 1 to `WS-ｵｳﾄｳｹﾝｽｳ`, adds 1 to `PM-ｹｲｶﾈﾝｽｳ`, sets `WS-ﾒｲｻｲ-ｷﾝｶﾞｸ` to 0, sets `WS-ﾒｲｻｲ-ｹｯｶ` to `'年度更新'`, performs `ｺｳｼﾝ-RTN`, and performs `ﾒｲｻｲ-RTN`."
+          "sentence": "When `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ` is more than 0; `PM-ｼｮｳﾋﾝ` is not `'EN'` (not `PM-ﾖｳﾛｳ`) or `PM-ﾏﾝｷﾋﾞ` is not `WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ`; `PM-ｼｮｳﾋﾝ` is not `'TM'` (not `PM-ﾃｲｷ`) or `PM-ﾏﾝｷﾋﾞ` is not `WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ`; and `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ` is more than 0, tested again, it adds 1 to `WS-ｵｳﾄｳｹﾝｽｳ`, adds 1 to `PM-ｹｲｶﾈﾝｽｳ`, sets `WS-ﾒｲｻｲ-ｷﾝｶﾞｸ` to 0, sets `WS-ﾒｲｻｲ-ｹｯｶ` to `'年度更新'`, performs `ﾘｿｸ-RTN`, performs `ﾁｮｳｶ-RTN`, and performs `ﾒｲｻｲ-RTN`."
         },
         {
           "entries": [
+            "Y",
+            "N",
             "N",
             "N"
           ],
@@ -604,21 +640,198 @@
             1,
             2,
             3,
-            5
+            4,
+            6
           ],
-          "sentence": "When `PM-ｼｮｳﾋﾝ` is not `'EN'` (not `PM-ﾖｳﾛｳ`) or `PM-ﾏﾝｷﾋﾞ` is not `WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ`; and `PM-ｼｮｳﾋﾝ` is not `'TM'` (not `PM-ﾃｲｷ`) or `PM-ﾏﾝｷﾋﾞ` is not `WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ`, it adds 1 to `WS-ｵｳﾄｳｹﾝｽｳ`, adds 1 to `PM-ｹｲｶﾈﾝｽｳ`, sets `WS-ﾒｲｻｲ-ｷﾝｶﾞｸ` to 0, sets `WS-ﾒｲｻｲ-ｹｯｶ` to `'年度更新'`, and performs `ﾒｲｻｲ-RTN`."
+          "sentence": "When `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ` is more than 0; `PM-ｼｮｳﾋﾝ` is not `'EN'` (not `PM-ﾖｳﾛｳ`) or `PM-ﾏﾝｷﾋﾞ` is not `WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ`; `PM-ｼｮｳﾋﾝ` is not `'TM'` (not `PM-ﾃｲｷ`) or `PM-ﾏﾝｷﾋﾞ` is not `WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ`; and `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ` is at most 0, tested again, it adds 1 to `WS-ｵｳﾄｳｹﾝｽｳ`, adds 1 to `PM-ｹｲｶﾈﾝｽｳ`, sets `WS-ﾒｲｻｲ-ｷﾝｶﾞｸ` to 0, sets `WS-ﾒｲｻｲ-ｹｯｶ` to `'年度更新'`, performs `ﾘｿｸ-RTN`, and performs `ﾒｲｻｲ-RTN`."
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            6
+          ],
+          "sentence": "When `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ` is at most 0; and `PM-ｼｮｳﾋﾝ` is `'EN'` (`PM-ﾖｳﾛｳ`) and `PM-ﾏﾝｷﾋﾞ` is `WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ`, it adds 1 to `WS-ｵｳﾄｳｹﾝｽｳ`, adds 1 to `PM-ｹｲｶﾈﾝｽｳ`, sets `WS-ﾒｲｻｲ-ｷﾝｶﾞｸ` to 0, sets `WS-ﾒｲｻｲ-ｹｯｶ` to `'年度更新'`, performs `ﾏﾝｷ-RTN`, and performs `ﾒｲｻｲ-RTN`."
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            7,
+            6
+          ],
+          "sentence": "When `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ` is at most 0; `PM-ｼｮｳﾋﾝ` is not `'EN'` (not `PM-ﾖｳﾛｳ`) or `PM-ﾏﾝｷﾋﾞ` is not `WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ`; and `PM-ｼｮｳﾋﾝ` is `'TM'` (`PM-ﾃｲｷ`) and `PM-ﾏﾝｷﾋﾞ` is `WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ`, it adds 1 to `WS-ｵｳﾄｳｹﾝｽｳ`, adds 1 to `PM-ｹｲｶﾈﾝｽｳ`, sets `WS-ﾒｲｻｲ-ｷﾝｶﾞｸ` to 0, sets `WS-ﾒｲｻｲ-ｹｯｶ` to `'年度更新'`, performs `ｺｳｼﾝ-RTN`, and performs `ﾒｲｻｲ-RTN`."
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            6
+          ],
+          "sentence": "When `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ` is at most 0; `PM-ｼｮｳﾋﾝ` is not `'EN'` (not `PM-ﾖｳﾛｳ`) or `PM-ﾏﾝｷﾋﾞ` is not `WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ`; and `PM-ｼｮｳﾋﾝ` is not `'TM'` (not `PM-ﾃｲｷ`) or `PM-ﾏﾝｷﾋﾞ` is not `WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ`, it adds 1 to `WS-ｵｳﾄｳｹﾝｽｳ`, adds 1 to `PM-ｹｲｶﾈﾝｽｳ`, sets `WS-ﾒｲｻｲ-ｷﾝｶﾞｸ` to 0, sets `WS-ﾒｲｻｲ-ｹｯｶ` to `'年度更新'`, and performs `ﾒｲｻｲ-RTN`."
+        }
+      ]
+    },
+    {
+      "paragraph": "ﾘｿｸ-RTN",
+      "source": "gondwana/programs/GLD020.cbl:324",
+      "conditions": [
+        "WS-ﾘｿｸ \u003e 0"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ﾘｿｸ"
+        ]
+      ],
+      "actions": [
+        "CALL 'GLC040' USING PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ PM-ｶｼﾂｹｷｻﾝﾋﾞ WS-ｵｳﾄｳﾋﾞ WS-ﾘｿｸ",
+        "ADD WS-ﾘｿｸ TO PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ WS-ﾘｿｸｷﾝｶﾞｸ",
+        "MOVE 4310 TO JR-ｶﾝｼﾞｮｳｶﾓｸ",
+        "SET JR-ｶｼｶﾀ TO TRUE",
+        "MOVE WS-ﾘｿｸ TO JR-ｷﾝｶﾞｸ",
+        "MOVE '貸付金利息' TO JR-ﾃｷﾖｳ",
+        "PERFORM ｼﾜｹ-RTN",
+        "MOVE WS-ﾘｿｸ TO WS-ﾒｲｻｲ-ｷﾝｶﾞｸ",
+        "MOVE '利息繰入' TO WS-ﾒｲｻｲ-ｹｯｶ",
+        "MOVE WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ TO PM-ｶｼﾂｹｷｻﾝﾋﾞ"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "sentence": "When `WS-ﾘｿｸ` is more than 0, it calls `GLC040`; adds `WS-ﾘｿｸ` to `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ` and `WS-ﾘｿｸｷﾝｶﾞｸ`; sets `JR-ｶﾝｼﾞｮｳｶﾓｸ` to 4310; sets `JR-ﾀｲｼｬｸ` to `JR-ｶｼｶﾀ`; sets `JR-ｷﾝｶﾞｸ` to `WS-ﾘｿｸ`; sets `JR-ﾃｷﾖｳ` to `'貸付金利息'`; performs `ｼﾜｹ-RTN`; sets `WS-ﾒｲｻｲ-ｷﾝｶﾞｸ` to `WS-ﾘｿｸ`; sets `WS-ﾒｲｻｲ-ｹｯｶ` to `'利息繰入'`; and sets `PM-ｶｼﾂｹｷｻﾝﾋﾞ` to `WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ`."
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            9
+          ],
+          "sentence": "When `WS-ﾘｿｸ` is at most 0, it calls `GLC040` and sets `PM-ｶｼﾂｹｷｻﾝﾋﾞ` to `WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ`."
+        }
+      ]
+    },
+    {
+      "paragraph": "ﾁｮｳｶ-RTN",
+      "source": "gondwana/programs/GLD020.cbl:342",
+      "conditions": [
+        "WS-CSVTB-OK",
+        "PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ \u003e WS-ﾍﾝﾚｲｷﾝ"
+      ],
+      "conditionRefs": [
+        [
+          "WS-CSVTB-ST"
+        ],
+        [
+          "PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ",
+          "WS-ﾍﾝﾚｲｷﾝ"
+        ]
+      ],
+      "actions": [
+        "CALL 'GLC030' USING PM-ｼｮｳﾋﾝ PM-ｶﾆｭｳﾈﾝﾚｲ PM-ｹｲｶﾈﾝｽｳ PM-ﾎｹﾝｷﾝｶﾞｸ WS-ﾍﾝﾚｲｷﾝ WS-CSVTB-ST",
+        "MOVE 'CSVTB' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-CSVTB-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "PERFORM ｲｼﾞｮｳ-RTN",
+        "ADD 1 TO WS-ﾁｮｳｶｹﾝｽｳ",
+        "SET PM-ｼｯｺｳ TO TRUE",
+        "MOVE WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ TO PM-ｼｯｺｳﾋﾞ PM-ｼﾞｮｳﾀｲﾋﾂﾞｹ",
+        "MOVE PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ TO WS-ﾒｲｻｲ-ｷﾝｶﾞｸ",
+        "MOVE '貸付超過失効' TO WS-ﾒｲｻｲ-ｹｯｶ"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "sentence": "When `WS-CSVTB-ST` is not `'00'` (not `WS-CSVTB-OK`), it calls `GLC030`, sets `WS-ｴﾗｰﾌｧｲﾙ` to `'CSVTB'`, sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-CSVTB-ST`, and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            4,
+            5,
+            6,
+            7,
+            8
+          ],
+          "sentence": "When `WS-CSVTB-ST` is `'00'` (`WS-CSVTB-OK`) and `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ` is more than `WS-ﾍﾝﾚｲｷﾝ`, it calls `GLC030`; adds 1 to `WS-ﾁｮｳｶｹﾝｽｳ`; sets `PM-ｼﾞｮｳﾀｲ` to `PM-ｼｯｺｳ`; sets `PM-ｼｯｺｳﾋﾞ` and `PM-ｼﾞｮｳﾀｲﾋﾂﾞｹ` to `WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ`; sets `WS-ﾒｲｻｲ-ｷﾝｶﾞｸ` to `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ`; and sets `WS-ﾒｲｻｲ-ｹｯｶ` to `'貸付超過失効'`."
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0
+          ],
+          "sentence": "When `WS-CSVTB-ST` is `'00'` (`WS-CSVTB-OK`) and `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ` is at most `WS-ﾍﾝﾚｲｷﾝ`, it calls `GLC030`."
         }
       ]
     },
     {
       "paragraph": "ﾏﾝｷ-RTN",
-      "source": "gondwana/programs/GLD020.cbl:306",
+      "source": "gondwana/programs/GLD020.cbl:362",
       "conditions": [
-        "PM-ﾊｲﾄｳﾙｲｹｲ \u003e 0"
+        "PM-ﾊｲﾄｳﾙｲｹｲ \u003e 0",
+        "PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ \u003e 0"
       ],
       "conditionRefs": [
         [
           "PM-ﾊｲﾄｳﾙｲｹｲ"
+        ],
+        [
+          "PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ"
         ]
       ],
       "actions": [
@@ -628,20 +841,26 @@
         "MOVE WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ TO PY-ｼﾊﾗｲﾋﾞ",
         "MOVE PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ TO PY-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
         "SET PY-ﾏﾝｷ TO TRUE",
-        "COMPUTE PY-ｷﾝｶﾞｸ = PM-ﾎｹﾝｷﾝｶﾞｸ + PM-ﾊｲﾄｳﾙｲｹｲ",
+        "COMPUTE PY-ｷﾝｶﾞｸ = PM-ﾎｹﾝｷﾝｶﾞｸ + PM-ﾊｲﾄｳﾙｲｹｲ - PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ",
         "MOVE PM-ｺｳｻﾞﾒｲｷﾞ TO PY-ｳｹﾄﾘﾆﾝｶﾅ",
         "MOVE SPACES TO PY-ｾｲｷｭｳﾊﾞﾝｺﾞｳ",
         "WRITE PY-ｼﾊﾗｲ-ﾚｺｰﾄﾞ",
         "MOVE 5140 TO JR-ｶﾝｼﾞｮｳｶﾓｸ",
+        "SET JR-ｶﾘｶﾀ TO TRUE",
         "MOVE PM-ﾎｹﾝｷﾝｶﾞｸ TO JR-ｷﾝｶﾞｸ",
         "MOVE '満期保険金' TO JR-ﾃｷﾖｳ",
         "PERFORM ｼﾜｹ-RTN",
         "MOVE 2310 TO JR-ｶﾝｼﾞｮｳｶﾓｸ",
         "MOVE PM-ﾊｲﾄｳﾙｲｹｲ TO JR-ｷﾝｶﾞｸ",
         "MOVE '配当金支払' TO JR-ﾃｷﾖｳ",
+        "MOVE 1210 TO JR-ｶﾝｼﾞｮｳｶﾓｸ",
+        "SET JR-ｶｼｶﾀ TO TRUE",
+        "MOVE PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ TO JR-ｷﾝｶﾞｸ",
+        "MOVE '貸付金回収' TO JR-ﾃｷﾖｳ",
         "ADD PY-ｷﾝｶﾞｸ TO WS-ﾏﾝｷｷﾝｶﾞｸ",
         "MOVE PY-ｷﾝｶﾞｸ TO WS-ﾒｲｻｲ-ｷﾝｶﾞｸ",
-        "MOVE 0 TO PM-ﾊｲﾄｳﾙｲｹｲ",
+        "MOVE 0 TO PM-ﾊｲﾄｳﾙｲｹｲ PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ",
+        "MOVE SPACES TO PM-ｶｼﾂｹｷｻﾝﾋﾞ",
         "SET PM-ﾏﾝｷ TO TRUE",
         "MOVE WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ TO PM-ｼﾞｮｳﾀｲﾋﾂﾞｹ",
         "MOVE '満期' TO WS-ﾒｲｻｲ-ｹｯｶ"
@@ -649,6 +868,7 @@
       "rules": [
         {
           "entries": [
+            "Y",
             "Y"
           ],
           "actions": [
@@ -668,19 +888,28 @@
             13,
             14,
             15,
+            11,
             16,
-            13,
             17,
+            14,
             18,
             19,
             20,
             21,
-            22
+            14,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28
           ],
-          "sentence": "When `PM-ﾊｲﾄｳﾙｲｹｲ` is more than 0, it adds 1 to `WS-ﾏﾝｷｹﾝｽｳ`, sets `PY-ｼﾊﾗｲﾊﾞﾝｺﾞｳ` to `CT-ｼﾞｶｲｼﾊﾗｲﾊﾞﾝｺﾞｳ`, adds 1 to `CT-ｼﾞｶｲｼﾊﾗｲﾊﾞﾝｺﾞｳ`, sets `PY-ｼﾊﾗｲﾋﾞ` to `WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ`, sets `PY-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`, sets `PY-ｼｭﾍﾞﾂ` to `PY-ﾏﾝｷ`, computes `PY-ｷﾝｶﾞｸ` as `PM-ﾎｹﾝｷﾝｶﾞｸ + PM-ﾊｲﾄｳﾙｲｹｲ`, sets `PY-ｳｹﾄﾘﾆﾝｶﾅ` to `PM-ｺｳｻﾞﾒｲｷﾞ`, sets `PY-ｾｲｷｭｳﾊﾞﾝｺﾞｳ` to spaces, writes `PY-ｼﾊﾗｲ-ﾚｺｰﾄﾞ`, sets `JR-ｶﾝｼﾞｮｳｶﾓｸ` to 5140, sets `JR-ｷﾝｶﾞｸ` to `PM-ﾎｹﾝｷﾝｶﾞｸ`, sets `JR-ﾃｷﾖｳ` to `'満期保険金'`, performs `ｼﾜｹ-RTN`, sets `JR-ｶﾝｼﾞｮｳｶﾓｸ` to 2310, sets `JR-ｷﾝｶﾞｸ` to `PM-ﾊｲﾄｳﾙｲｹｲ`, sets `JR-ﾃｷﾖｳ` to `'配当金支払'`, performs `ｼﾜｹ-RTN`, adds `PY-ｷﾝｶﾞｸ` to `WS-ﾏﾝｷｷﾝｶﾞｸ`, sets `WS-ﾒｲｻｲ-ｷﾝｶﾞｸ` to `PY-ｷﾝｶﾞｸ`, sets `PM-ﾊｲﾄｳﾙｲｹｲ` to 0, sets `PM-ｼﾞｮｳﾀｲ` to `PM-ﾏﾝｷ`, sets `PM-ｼﾞｮｳﾀｲﾋﾂﾞｹ` to `WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ`, and sets `WS-ﾒｲｻｲ-ｹｯｶ` to `'満期'`."
+          "sentence": "When `PM-ﾊｲﾄｳﾙｲｹｲ` is more than 0 and `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ` is more than 0, it adds 1 to `WS-ﾏﾝｷｹﾝｽｳ`; sets `PY-ｼﾊﾗｲﾊﾞﾝｺﾞｳ` to `CT-ｼﾞｶｲｼﾊﾗｲﾊﾞﾝｺﾞｳ`; adds 1 to `CT-ｼﾞｶｲｼﾊﾗｲﾊﾞﾝｺﾞｳ`; sets `PY-ｼﾊﾗｲﾋﾞ` to `WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ`; sets `PY-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; sets `PY-ｼｭﾍﾞﾂ` to `PY-ﾏﾝｷ`; computes `PY-ｷﾝｶﾞｸ` as `PM-ﾎｹﾝｷﾝｶﾞｸ + PM-ﾊｲﾄｳﾙｲｹｲ - PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ`; sets `PY-ｳｹﾄﾘﾆﾝｶﾅ` to `PM-ｺｳｻﾞﾒｲｷﾞ`; sets `PY-ｾｲｷｭｳﾊﾞﾝｺﾞｳ` to spaces; writes `PY-ｼﾊﾗｲ-ﾚｺｰﾄﾞ`; sets `JR-ｶﾝｼﾞｮｳｶﾓｸ` to 5140; sets `JR-ﾀｲｼｬｸ` to `JR-ｶﾘｶﾀ`; sets `JR-ｷﾝｶﾞｸ` to `PM-ﾎｹﾝｷﾝｶﾞｸ`; sets `JR-ﾃｷﾖｳ` to `'満期保険金'`; performs `ｼﾜｹ-RTN`; sets `JR-ｶﾝｼﾞｮｳｶﾓｸ` to 2310; sets `JR-ﾀｲｼｬｸ` to `JR-ｶﾘｶﾀ`; sets `JR-ｷﾝｶﾞｸ` to `PM-ﾊｲﾄｳﾙｲｹｲ`; sets `JR-ﾃｷﾖｳ` to `'配当金支払'`; performs `ｼﾜｹ-RTN`; sets `JR-ｶﾝｼﾞｮｳｶﾓｸ` to 1210; sets `JR-ﾀｲｼｬｸ` to `JR-ｶｼｶﾀ`; sets `JR-ｷﾝｶﾞｸ` to `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ`; sets `JR-ﾃｷﾖｳ` to `'貸付金回収'`; performs `ｼﾜｹ-RTN`; adds `PY-ｷﾝｶﾞｸ` to `WS-ﾏﾝｷｷﾝｶﾞｸ`; sets `WS-ﾒｲｻｲ-ｷﾝｶﾞｸ` to `PY-ｷﾝｶﾞｸ`; sets `PM-ﾊｲﾄｳﾙｲｹｲ` and `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ` to 0; sets `PM-ｶｼﾂｹｷｻﾝﾋﾞ` to spaces; sets `PM-ｼﾞｮｳﾀｲ` to `PM-ﾏﾝｷ`; sets `PM-ｼﾞｮｳﾀｲﾋﾂﾞｹ` to `WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ`; and sets `WS-ﾒｲｻｲ-ｹｯｶ` to `'満期'`."
         },
         {
           "entries": [
+            "Y",
             "N"
           ],
           "actions": [
@@ -698,20 +927,94 @@
             11,
             12,
             13,
+            14,
+            15,
+            11,
+            16,
             17,
+            14,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28
+          ],
+          "sentence": "When `PM-ﾊｲﾄｳﾙｲｹｲ` is more than 0 and `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ` is at most 0, it adds 1 to `WS-ﾏﾝｷｹﾝｽｳ`; sets `PY-ｼﾊﾗｲﾊﾞﾝｺﾞｳ` to `CT-ｼﾞｶｲｼﾊﾗｲﾊﾞﾝｺﾞｳ`; adds 1 to `CT-ｼﾞｶｲｼﾊﾗｲﾊﾞﾝｺﾞｳ`; sets `PY-ｼﾊﾗｲﾋﾞ` to `WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ`; sets `PY-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; sets `PY-ｼｭﾍﾞﾂ` to `PY-ﾏﾝｷ`; computes `PY-ｷﾝｶﾞｸ` as `PM-ﾎｹﾝｷﾝｶﾞｸ + PM-ﾊｲﾄｳﾙｲｹｲ - PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ`; sets `PY-ｳｹﾄﾘﾆﾝｶﾅ` to `PM-ｺｳｻﾞﾒｲｷﾞ`; sets `PY-ｾｲｷｭｳﾊﾞﾝｺﾞｳ` to spaces; writes `PY-ｼﾊﾗｲ-ﾚｺｰﾄﾞ`; sets `JR-ｶﾝｼﾞｮｳｶﾓｸ` to 5140; sets `JR-ﾀｲｼｬｸ` to `JR-ｶﾘｶﾀ`; sets `JR-ｷﾝｶﾞｸ` to `PM-ﾎｹﾝｷﾝｶﾞｸ`; sets `JR-ﾃｷﾖｳ` to `'満期保険金'`; performs `ｼﾜｹ-RTN`; sets `JR-ｶﾝｼﾞｮｳｶﾓｸ` to 2310; sets `JR-ﾀｲｼｬｸ` to `JR-ｶﾘｶﾀ`; sets `JR-ｷﾝｶﾞｸ` to `PM-ﾊｲﾄｳﾙｲｹｲ`; sets `JR-ﾃｷﾖｳ` to `'配当金支払'`; performs `ｼﾜｹ-RTN`; adds `PY-ｷﾝｶﾞｸ` to `WS-ﾏﾝｷｷﾝｶﾞｸ`; sets `WS-ﾒｲｻｲ-ｷﾝｶﾞｸ` to `PY-ｷﾝｶﾞｸ`; sets `PM-ﾊｲﾄｳﾙｲｹｲ` and `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ` to 0; sets `PM-ｶｼﾂｹｷｻﾝﾋﾞ` to spaces; sets `PM-ｼﾞｮｳﾀｲ` to `PM-ﾏﾝｷ`; sets `PM-ｼﾞｮｳﾀｲﾋﾂﾞｹ` to `WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ`; and sets `WS-ﾒｲｻｲ-ｹｯｶ` to `'満期'`."
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
             18,
             19,
             20,
             21,
-            22
+            14,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28
           ],
-          "sentence": "When `PM-ﾊｲﾄｳﾙｲｹｲ` is at most 0, it adds 1 to `WS-ﾏﾝｷｹﾝｽｳ`, sets `PY-ｼﾊﾗｲﾊﾞﾝｺﾞｳ` to `CT-ｼﾞｶｲｼﾊﾗｲﾊﾞﾝｺﾞｳ`, adds 1 to `CT-ｼﾞｶｲｼﾊﾗｲﾊﾞﾝｺﾞｳ`, sets `PY-ｼﾊﾗｲﾋﾞ` to `WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ`, sets `PY-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`, sets `PY-ｼｭﾍﾞﾂ` to `PY-ﾏﾝｷ`, computes `PY-ｷﾝｶﾞｸ` as `PM-ﾎｹﾝｷﾝｶﾞｸ + PM-ﾊｲﾄｳﾙｲｹｲ`, sets `PY-ｳｹﾄﾘﾆﾝｶﾅ` to `PM-ｺｳｻﾞﾒｲｷﾞ`, sets `PY-ｾｲｷｭｳﾊﾞﾝｺﾞｳ` to spaces, writes `PY-ｼﾊﾗｲ-ﾚｺｰﾄﾞ`, sets `JR-ｶﾝｼﾞｮｳｶﾓｸ` to 5140, sets `JR-ｷﾝｶﾞｸ` to `PM-ﾎｹﾝｷﾝｶﾞｸ`, sets `JR-ﾃｷﾖｳ` to `'満期保険金'`, performs `ｼﾜｹ-RTN`, adds `PY-ｷﾝｶﾞｸ` to `WS-ﾏﾝｷｷﾝｶﾞｸ`, sets `WS-ﾒｲｻｲ-ｷﾝｶﾞｸ` to `PY-ｷﾝｶﾞｸ`, sets `PM-ﾊｲﾄｳﾙｲｹｲ` to 0, sets `PM-ｼﾞｮｳﾀｲ` to `PM-ﾏﾝｷ`, sets `PM-ｼﾞｮｳﾀｲﾋﾂﾞｹ` to `WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ`, and sets `WS-ﾒｲｻｲ-ｹｯｶ` to `'満期'`."
+          "sentence": "When `PM-ﾊｲﾄｳﾙｲｹｲ` is at most 0 and `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ` is more than 0, it adds 1 to `WS-ﾏﾝｷｹﾝｽｳ`; sets `PY-ｼﾊﾗｲﾊﾞﾝｺﾞｳ` to `CT-ｼﾞｶｲｼﾊﾗｲﾊﾞﾝｺﾞｳ`; adds 1 to `CT-ｼﾞｶｲｼﾊﾗｲﾊﾞﾝｺﾞｳ`; sets `PY-ｼﾊﾗｲﾋﾞ` to `WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ`; sets `PY-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; sets `PY-ｼｭﾍﾞﾂ` to `PY-ﾏﾝｷ`; computes `PY-ｷﾝｶﾞｸ` as `PM-ﾎｹﾝｷﾝｶﾞｸ + PM-ﾊｲﾄｳﾙｲｹｲ - PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ`; sets `PY-ｳｹﾄﾘﾆﾝｶﾅ` to `PM-ｺｳｻﾞﾒｲｷﾞ`; sets `PY-ｾｲｷｭｳﾊﾞﾝｺﾞｳ` to spaces; writes `PY-ｼﾊﾗｲ-ﾚｺｰﾄﾞ`; sets `JR-ｶﾝｼﾞｮｳｶﾓｸ` to 5140; sets `JR-ﾀｲｼｬｸ` to `JR-ｶﾘｶﾀ`; sets `JR-ｷﾝｶﾞｸ` to `PM-ﾎｹﾝｷﾝｶﾞｸ`; sets `JR-ﾃｷﾖｳ` to `'満期保険金'`; performs `ｼﾜｹ-RTN`; sets `JR-ｶﾝｼﾞｮｳｶﾓｸ` to 1210; sets `JR-ﾀｲｼｬｸ` to `JR-ｶｼｶﾀ`; sets `JR-ｷﾝｶﾞｸ` to `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ`; sets `JR-ﾃｷﾖｳ` to `'貸付金回収'`; performs `ｼﾜｹ-RTN`; adds `PY-ｷﾝｶﾞｸ` to `WS-ﾏﾝｷｷﾝｶﾞｸ`; sets `WS-ﾒｲｻｲ-ｷﾝｶﾞｸ` to `PY-ｷﾝｶﾞｸ`; sets `PM-ﾊｲﾄｳﾙｲｹｲ` and `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ` to 0; sets `PM-ｶｼﾂｹｷｻﾝﾋﾞ` to spaces; sets `PM-ｼﾞｮｳﾀｲ` to `PM-ﾏﾝｷ`; sets `PM-ｼﾞｮｳﾀｲﾋﾂﾞｹ` to `WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ`; and sets `WS-ﾒｲｻｲ-ｹｯｶ` to `'満期'`."
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28
+          ],
+          "sentence": "When `PM-ﾊｲﾄｳﾙｲｹｲ` is at most 0 and `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ` is at most 0, it adds 1 to `WS-ﾏﾝｷｹﾝｽｳ`; sets `PY-ｼﾊﾗｲﾊﾞﾝｺﾞｳ` to `CT-ｼﾞｶｲｼﾊﾗｲﾊﾞﾝｺﾞｳ`; adds 1 to `CT-ｼﾞｶｲｼﾊﾗｲﾊﾞﾝｺﾞｳ`; sets `PY-ｼﾊﾗｲﾋﾞ` to `WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ`; sets `PY-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; sets `PY-ｼｭﾍﾞﾂ` to `PY-ﾏﾝｷ`; computes `PY-ｷﾝｶﾞｸ` as `PM-ﾎｹﾝｷﾝｶﾞｸ + PM-ﾊｲﾄｳﾙｲｹｲ - PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ`; sets `PY-ｳｹﾄﾘﾆﾝｶﾅ` to `PM-ｺｳｻﾞﾒｲｷﾞ`; sets `PY-ｾｲｷｭｳﾊﾞﾝｺﾞｳ` to spaces; writes `PY-ｼﾊﾗｲ-ﾚｺｰﾄﾞ`; sets `JR-ｶﾝｼﾞｮｳｶﾓｸ` to 5140; sets `JR-ﾀｲｼｬｸ` to `JR-ｶﾘｶﾀ`; sets `JR-ｷﾝｶﾞｸ` to `PM-ﾎｹﾝｷﾝｶﾞｸ`; sets `JR-ﾃｷﾖｳ` to `'満期保険金'`; performs `ｼﾜｹ-RTN`; adds `PY-ｷﾝｶﾞｸ` to `WS-ﾏﾝｷｷﾝｶﾞｸ`; sets `WS-ﾒｲｻｲ-ｷﾝｶﾞｸ` to `PY-ｷﾝｶﾞｸ`; sets `PM-ﾊｲﾄｳﾙｲｹｲ` and `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ` to 0; sets `PM-ｶｼﾂｹｷｻﾝﾋﾞ` to spaces; sets `PM-ｼﾞｮｳﾀｲ` to `PM-ﾏﾝｷ`; sets `PM-ｼﾞｮｳﾀｲﾋﾂﾞｹ` to `WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ`; and sets `WS-ﾒｲｻｲ-ｹｯｶ` to `'満期'`."
         }
       ]
     },
     {
       "paragraph": "ｺｳｼﾝ-RTN",
-      "source": "gondwana/programs/GLD020.cbl:339",
+      "source": "gondwana/programs/GLD020.cbl:406",
       "conditions": [
         "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
         "WS-ﾈﾝﾚｲ \u003e WS-ｼｮｳﾋﾝ-ｻｲｺｳﾈﾝﾚｲ(WS-ｼｮｳﾋﾝ-IX)",
@@ -906,7 +1209,7 @@
     },
     {
       "paragraph": "ｼﾜｹ-RTN",
-      "source": "gondwana/programs/GLD020.cbl:377",
+      "source": "gondwana/programs/GLD020.cbl:444",
       "conditions": [
         "WS-GLJRNL-OK"
       ],
@@ -920,7 +1223,6 @@
         "ADD 1 TO CT-ｼﾞｶｲｼﾜｹﾊﾞﾝｺﾞｳ",
         "MOVE WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ TO JR-ﾋﾂﾞｹ",
         "MOVE 'GLD020' TO JR-ﾌﾟﾛｸﾞﾗﾑ",
-        "SET JR-ｶﾘｶﾀ TO TRUE",
         "MOVE PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ TO JR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
         "WRITE JR-ｼﾜｹ-ﾚｺｰﾄﾞ",
         "MOVE 'GLJRNL' TO WS-ｴﾗｰﾌｧｲﾙ",
@@ -941,10 +1243,9 @@
             5,
             6,
             7,
-            8,
-            9
+            8
           ],
-          "sentence": "When `WS-GLJRNL-ST` is neither `'00'` nor `'05'` (not `WS-GLJRNL-OK`), it sets `JR-ｼﾜｹﾊﾞﾝｺﾞｳ` to `CT-ｼﾞｶｲｼﾜｹﾊﾞﾝｺﾞｳ`, adds 1 to `CT-ｼﾞｶｲｼﾜｹﾊﾞﾝｺﾞｳ`, sets `JR-ﾋﾂﾞｹ` to `WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ`, sets `JR-ﾌﾟﾛｸﾞﾗﾑ` to `'GLD020'`, sets `JR-ﾀｲｼｬｸ` to `JR-ｶﾘｶﾀ`, sets `JR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`, writes `JR-ｼﾜｹ-ﾚｺｰﾄﾞ`, sets `WS-ｴﾗｰﾌｧｲﾙ` to `'GLJRNL'`, sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-GLJRNL-ST`, and performs `ｲｼﾞｮｳ-RTN`."
+          "sentence": "When `WS-GLJRNL-ST` is neither `'00'` nor `'05'` (not `WS-GLJRNL-OK`), it sets `JR-ｼﾜｹﾊﾞﾝｺﾞｳ` to `CT-ｼﾞｶｲｼﾜｹﾊﾞﾝｺﾞｳ`, adds 1 to `CT-ｼﾞｶｲｼﾜｹﾊﾞﾝｺﾞｳ`, sets `JR-ﾋﾂﾞｹ` to `WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ`, sets `JR-ﾌﾟﾛｸﾞﾗﾑ` to `'GLD020'`, sets `JR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`, writes `JR-ｼﾜｹ-ﾚｺｰﾄﾞ`, sets `WS-ｴﾗｰﾌｧｲﾙ` to `'GLJRNL'`, sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-GLJRNL-ST`, and performs `ｲｼﾞｮｳ-RTN`."
         },
         {
           "entries": [
@@ -956,16 +1257,15 @@
             2,
             3,
             4,
-            5,
-            6
+            5
           ],
-          "sentence": "When `WS-GLJRNL-ST` is `'00'` or `'05'` (`WS-GLJRNL-OK`), it sets `JR-ｼﾜｹﾊﾞﾝｺﾞｳ` to `CT-ｼﾞｶｲｼﾜｹﾊﾞﾝｺﾞｳ`, adds 1 to `CT-ｼﾞｶｲｼﾜｹﾊﾞﾝｺﾞｳ`, sets `JR-ﾋﾂﾞｹ` to `WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ`, sets `JR-ﾌﾟﾛｸﾞﾗﾑ` to `'GLD020'`, sets `JR-ﾀｲｼｬｸ` to `JR-ｶﾘｶﾀ`, sets `JR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`, and writes `JR-ｼﾜｹ-ﾚｺｰﾄﾞ`."
+          "sentence": "When `WS-GLJRNL-ST` is `'00'` or `'05'` (`WS-GLJRNL-OK`), it sets `JR-ｼﾜｹﾊﾞﾝｺﾞｳ` to `CT-ｼﾞｶｲｼﾜｹﾊﾞﾝｺﾞｳ`, adds 1 to `CT-ｼﾞｶｲｼﾜｹﾊﾞﾝｺﾞｳ`, sets `JR-ﾋﾂﾞｹ` to `WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ`, sets `JR-ﾌﾟﾛｸﾞﾗﾑ` to `'GLD020'`, sets `JR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`, and writes `JR-ｼﾜｹ-ﾚｺｰﾄﾞ`."
         }
       ]
     },
     {
       "paragraph": "ｼｭｳﾘｮｳ-RTN",
-      "source": "gondwana/programs/GLD020.cbl:426",
+      "source": "gondwana/programs/GLD020.cbl:498",
       "conditions": [
         "WS-GLSCTL-OK"
       ],
