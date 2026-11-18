@@ -4,13 +4,14 @@
   "source": "gondwana/scripts/ANNUAL.BAT",
   "description": [
     "ANNUAL.BAT: 年次処理。年度末 (3月31日) の月次締めの後に、契約者",
-    "配当の割り当て。",
+    "配当の割り当てと、ご契約内容のお知らせ。",
     "",
     "使い方: ANNUAL.BAT YYYYMMDD  年度末の業務日付",
     "環境: GLS_BIN プログラム、GLS_DATA データ",
     "",
     "変更履歴",
-    "1999-11-08 MS  GL-0233 初版、PC システム移行時 (旧 JCL から)。"
+    "1999-11-08 MS  GL-0233 初版、PC システム移行時 (旧 JCL から)。",
+    "2026-11-19 YN  GL-0827 ご契約内容のお知らせ。"
   ],
   "steps": [
     {
@@ -23,7 +24,7 @@
       "description": [
         "契約者配当"
       ],
-      "source": "gondwana/scripts/ANNUAL.BAT:22",
+      "source": "gondwana/scripts/ANNUAL.BAT:23",
       "dds": [
         {
           "dd": "POLMST",
@@ -36,7 +37,7 @@
             "update"
           ],
           "copybook": "POLMST",
-          "source": "gondwana/scripts/ANNUAL.BAT:22"
+          "source": "gondwana/scripts/ANNUAL.BAT:23"
         },
         {
           "dd": "PRODTB",
@@ -48,7 +49,7 @@
             "read"
           ],
           "copybook": "PRODTB",
-          "source": "gondwana/scripts/ANNUAL.BAT:22"
+          "source": "gondwana/scripts/ANNUAL.BAT:23"
         },
         {
           "dd": "GLSCTL",
@@ -60,7 +61,7 @@
             "update"
           ],
           "copybook": "CTLREC",
-          "source": "gondwana/scripts/ANNUAL.BAT:22"
+          "source": "gondwana/scripts/ANNUAL.BAT:23"
         },
         {
           "dd": "GLJRNL",
@@ -72,7 +73,7 @@
             "append"
           ],
           "copybook": "GLJRNL",
-          "source": "gondwana/scripts/ANNUAL.BAT:22"
+          "source": "gondwana/scripts/ANNUAL.BAT:23"
         },
         {
           "dd": "GLY010R",
@@ -83,7 +84,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/ANNUAL.BAT:22"
+          "source": "gondwana/scripts/ANNUAL.BAT:23"
         },
         {
           "dd": "stdout",
@@ -93,7 +94,93 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/ANNUAL.BAT:22"
+          "source": "gondwana/scripts/ANNUAL.BAT:23"
+        }
+      ]
+    },
+    {
+      "step": "GLY020",
+      "program": "GLY020",
+      "arguments": [
+        "$DATE"
+      ],
+      "stopsIf": "RC \u003e= 8",
+      "description": [
+        "ご契約内容のお知らせ"
+      ],
+      "source": "gondwana/scripts/ANNUAL.BAT:31",
+      "dds": [
+        {
+          "dd": "POLMST",
+          "datasets": [
+            "$DATA/MASTER/POLMST.IDX"
+          ],
+          "indexed": true,
+          "file": "POLMST-F",
+          "uses": [
+            "read"
+          ],
+          "copybook": "POLMST",
+          "source": "gondwana/scripts/ANNUAL.BAT:31"
+        },
+        {
+          "dd": "COVMST",
+          "datasets": [
+            "$DATA/MASTER/COVMST.IDX"
+          ],
+          "indexed": true,
+          "file": "COVMST-F",
+          "uses": [
+            "read"
+          ],
+          "copybook": "COVMST",
+          "source": "gondwana/scripts/ANNUAL.BAT:31"
+        },
+        {
+          "dd": "PRODTB",
+          "datasets": [
+            "$DATA/MASTER/PRODTB.TXT"
+          ],
+          "file": "PRODTB-F",
+          "uses": [
+            "read"
+          ],
+          "copybook": "PRODTB",
+          "source": "gondwana/scripts/ANNUAL.BAT:31"
+        },
+        {
+          "dd": "NOTICE",
+          "datasets": [
+            "$DATA/OUT/NOTICE.$DATE.TXT"
+          ],
+          "file": "NOTICE-F",
+          "uses": [
+            "write"
+          ],
+          "source": "gondwana/scripts/ANNUAL.BAT:31"
+        },
+        {
+          "dd": "CSVTB",
+          "datasets": [
+            "$DATA/MASTER/CSVTB.TXT"
+          ],
+          "file": "CSVTB-F",
+          "callee": "GLC030",
+          "uses": [
+            "read"
+          ],
+          "copybook": "CSVTB",
+          "source": "gondwana/scripts/ANNUAL.BAT:31"
+        },
+        {
+          "dd": "stdout",
+          "datasets": [
+            "$DATA/RPT/GLY020.$DATE.OUT"
+          ],
+          "uses": [
+            "write"
+          ],
+          "source": "gondwana/scripts/ANNUAL.BAT:31"
         }
       ]
     }
@@ -108,7 +195,8 @@
         "GLY010"
       ],
       "readBy": [
-        "GLY010"
+        "GLY010",
+        "GLY020"
       ]
     },
     {
@@ -116,7 +204,8 @@
       "copybook": "PRODTB",
       "kind": "external",
       "readBy": [
-        "GLY010"
+        "GLY010",
+        "GLY020"
       ]
     },
     {
@@ -150,6 +239,37 @@
       "kind": "output",
       "writtenBy": [
         "GLY010"
+      ]
+    },
+    {
+      "dataset": "$DATA/MASTER/COVMST.IDX",
+      "copybook": "COVMST",
+      "kind": "internal",
+      "indexed": true,
+      "readBy": [
+        "GLY020"
+      ]
+    },
+    {
+      "dataset": "$DATA/OUT/NOTICE.$DATE.TXT",
+      "kind": "output",
+      "writtenBy": [
+        "GLY020"
+      ]
+    },
+    {
+      "dataset": "$DATA/MASTER/CSVTB.TXT",
+      "copybook": "CSVTB",
+      "kind": "external",
+      "readBy": [
+        "GLY020"
+      ]
+    },
+    {
+      "dataset": "$DATA/RPT/GLY020.$DATE.OUT",
+      "kind": "output",
+      "writtenBy": [
+        "GLY020"
       ]
     }
   ]

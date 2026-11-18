@@ -1,0 +1,324 @@
+{
+  "program": "GLC050",
+  "tables": [
+    {
+      "paragraph": "ﾒｲﾝ-RTN",
+      "source": "gondwana/programs/GLC050.cbl:66",
+      "conditions": [
+        "LK-ｶｷｺﾐ",
+        "LK-ｸﾛｰｽﾞ AND WS-ｵｰﾌﾟﾝｽﾞﾐ"
+      ],
+      "conditionRefs": [
+        [
+          "LK-ｷﾉｳ"
+        ],
+        [
+          "LK-ｷﾉｳ",
+          "WS-ｵｰﾌﾟﾝ"
+        ]
+      ],
+      "actions": [
+        "SET LK-ｾｲｼﾞｮｳ TO TRUE",
+        "PERFORM ｶｷｺﾐ-RTN",
+        "GOBACK",
+        "CLOSE PRMHST-F",
+        "SET WS-ｵｰﾌﾟﾝﾏｴ TO TRUE"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ],
+          "sentence": "When `LK-ｷﾉｳ` is `'W'` (`LK-ｶｷｺﾐ`), it sets `LK-ｼﾞｮｳﾀｲ` to `LK-ｾｲｼﾞｮｳ`, performs `ｶｷｺﾐ-RTN`, and returns to its caller."
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            3,
+            4,
+            2
+          ],
+          "sentence": "When `LK-ｷﾉｳ` is not `'W'` (not `LK-ｶｷｺﾐ`); and `LK-ｷﾉｳ` is `'C'` (`LK-ｸﾛｰｽﾞ`) and `WS-ｵｰﾌﾟﾝ` is `'Y'` (`WS-ｵｰﾌﾟﾝｽﾞﾐ`), it sets `LK-ｼﾞｮｳﾀｲ` to `LK-ｾｲｼﾞｮｳ`, closes `PRMHST-F`, sets `WS-ｵｰﾌﾟﾝ` to `WS-ｵｰﾌﾟﾝﾏｴ`, and returns to its caller."
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            2
+          ],
+          "sentence": "When `LK-ｷﾉｳ` is not `'W'` (not `LK-ｶｷｺﾐ`); and `LK-ｷﾉｳ` is not `'C'` (not `LK-ｸﾛｰｽﾞ`) or `WS-ｵｰﾌﾟﾝ` is not `'Y'` (not `WS-ｵｰﾌﾟﾝｽﾞﾐ`), it sets `LK-ｼﾞｮｳﾀｲ` to `LK-ｾｲｼﾞｮｳ` and returns to its caller."
+        }
+      ]
+    },
+    {
+      "paragraph": "ｶｷｺﾐ-RTN",
+      "source": "gondwana/programs/GLC050.cbl:81",
+      "conditions": [
+        "WS-ｵｰﾌﾟﾝﾏｴ",
+        "WS-PRMHST-OK",
+        "WS-ｵｰﾌﾟﾝｽﾞﾐ",
+        "WS-ｵｰﾌﾟﾝｽﾞﾐ AND (WS-PRMHST-OK OR WS-PRMHST-ｵﾜﾘ)",
+        "WS-PRMHST-OK, again"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ｵｰﾌﾟﾝ"
+        ],
+        [
+          "WS-PRMHST-ST"
+        ],
+        [
+          "WS-ｵｰﾌﾟﾝ"
+        ],
+        [
+          "WS-ｵｰﾌﾟﾝ",
+          "WS-PRMHST-ST"
+        ],
+        [
+          "WS-PRMHST-ST"
+        ]
+      ],
+      "actions": [
+        "OPEN I-O PRMHST-F",
+        "SET WS-ｵｰﾌﾟﾝｽﾞﾐ TO TRUE",
+        "PERFORM ﾚﾝﾊﾞﾝ-RTN",
+        "MOVE SPACES TO SH-ｼｭｳﾉｳ-ﾚｺｰﾄﾞ",
+        "MOVE LK-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ TO SH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+        "COMPUTE SH-ﾚﾝﾊﾞﾝ = WS-ﾚﾝﾊﾞﾝ + 1",
+        "MOVE LK-ｼｭｳﾉｳﾋﾞ TO SH-ｼｭｳﾉｳﾋﾞ",
+        "MOVE LK-ｼｭﾍﾞﾂ TO SH-ｼｭﾍﾞﾂ",
+        "MOVE LK-ｷﾝｶﾞｸ TO SH-ｷﾝｶﾞｸ",
+        "MOVE LK-ｶｲｽｳ TO SH-ｶｲｽｳ",
+        "MOVE LK-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ TO SH-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ",
+        "WRITE SH-ｼｭｳﾉｳ-ﾚｺｰﾄﾞ",
+        "MOVE WS-PRMHST-ST TO LK-ｼﾞｮｳﾀｲ"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "sentence": "When `WS-ｵｰﾌﾟﾝ` is `'N'` (`WS-ｵｰﾌﾟﾝﾏｴ`); `WS-PRMHST-ST` is `'00'` or `'05'` (`WS-PRMHST-OK`); `WS-ｵｰﾌﾟﾝ` is `'Y'` (`WS-ｵｰﾌﾟﾝｽﾞﾐ`); `WS-ｵｰﾌﾟﾝ` is `'Y'` (`WS-ｵｰﾌﾟﾝｽﾞﾐ`) and either `WS-PRMHST-ST` is `'00'` or `'05'` (`WS-PRMHST-OK`) or `WS-PRMHST-ST` is `'10'` or `'23'` (`WS-PRMHST-ｵﾜﾘ`); and `WS-PRMHST-ST` is neither `'00'` nor `'05'` (not `WS-PRMHST-OK`), tested again, it opens `PRMHST-F` to update, sets `WS-ｵｰﾌﾟﾝ` to `WS-ｵｰﾌﾟﾝｽﾞﾐ`, performs `ﾚﾝﾊﾞﾝ-RTN`, sets `SH-ｼｭｳﾉｳ-ﾚｺｰﾄﾞ` to spaces, sets `SH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `LK-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`, computes `SH-ﾚﾝﾊﾞﾝ` as `WS-ﾚﾝﾊﾞﾝ + 1`, sets `SH-ｼｭｳﾉｳﾋﾞ` to `LK-ｼｭｳﾉｳﾋﾞ`, sets `SH-ｼｭﾍﾞﾂ` to `LK-ｼｭﾍﾞﾂ`, sets `SH-ｷﾝｶﾞｸ` to `LK-ｷﾝｶﾞｸ`, sets `SH-ｶｲｽｳ` to `LK-ｶｲｽｳ`, sets `SH-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ` to `LK-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ`, writes `SH-ｼｭｳﾉｳ-ﾚｺｰﾄﾞ`, and sets `LK-ｼﾞｮｳﾀｲ` to `WS-PRMHST-ST`."
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "sentence": "When `WS-ｵｰﾌﾟﾝ` is `'N'` (`WS-ｵｰﾌﾟﾝﾏｴ`); `WS-PRMHST-ST` is `'00'` or `'05'` (`WS-PRMHST-OK`); `WS-ｵｰﾌﾟﾝ` is `'Y'` (`WS-ｵｰﾌﾟﾝｽﾞﾐ`); `WS-ｵｰﾌﾟﾝ` is `'Y'` (`WS-ｵｰﾌﾟﾝｽﾞﾐ`) and either `WS-PRMHST-ST` is `'00'` or `'05'` (`WS-PRMHST-OK`) or `WS-PRMHST-ST` is `'10'` or `'23'` (`WS-PRMHST-ｵﾜﾘ`); and `WS-PRMHST-ST` is `'00'` or `'05'` (`WS-PRMHST-OK`), tested again, it opens `PRMHST-F` to update, sets `WS-ｵｰﾌﾟﾝ` to `WS-ｵｰﾌﾟﾝｽﾞﾐ`, performs `ﾚﾝﾊﾞﾝ-RTN`, sets `SH-ｼｭｳﾉｳ-ﾚｺｰﾄﾞ` to spaces, sets `SH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `LK-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`, computes `SH-ﾚﾝﾊﾞﾝ` as `WS-ﾚﾝﾊﾞﾝ + 1`, sets `SH-ｼｭｳﾉｳﾋﾞ` to `LK-ｼｭｳﾉｳﾋﾞ`, sets `SH-ｼｭﾍﾞﾂ` to `LK-ｼｭﾍﾞﾂ`, sets `SH-ｷﾝｶﾞｸ` to `LK-ｷﾝｶﾞｸ`, sets `SH-ｶｲｽｳ` to `LK-ｶｲｽｳ`, sets `SH-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ` to `LK-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ`, and writes `SH-ｼｭｳﾉｳ-ﾚｺｰﾄﾞ`."
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            12
+          ],
+          "sentence": "When `WS-ｵｰﾌﾟﾝ` is `'N'` (`WS-ｵｰﾌﾟﾝﾏｴ`); `WS-PRMHST-ST` is `'00'` or `'05'` (`WS-PRMHST-OK`); `WS-ｵｰﾌﾟﾝ` is `'Y'` (`WS-ｵｰﾌﾟﾝｽﾞﾐ`); `WS-ｵｰﾌﾟﾝ` is not `'Y'` (not `WS-ｵｰﾌﾟﾝｽﾞﾐ`) or both `WS-PRMHST-ST` is neither `'00'` nor `'05'` (not `WS-PRMHST-OK`) and `WS-PRMHST-ST` is neither `'10'` nor `'23'` (not `WS-PRMHST-ｵﾜﾘ`); and `WS-PRMHST-ST` is neither `'00'` nor `'05'` (not `WS-PRMHST-OK`), tested again, it opens `PRMHST-F` to update, sets `WS-ｵｰﾌﾟﾝ` to `WS-ｵｰﾌﾟﾝｽﾞﾐ`, performs `ﾚﾝﾊﾞﾝ-RTN`, and sets `LK-ｼﾞｮｳﾀｲ` to `WS-PRMHST-ST`."
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            12
+          ],
+          "sentence": "When `WS-ｵｰﾌﾟﾝ` is `'N'` (`WS-ｵｰﾌﾟﾝﾏｴ`); `WS-PRMHST-ST` is neither `'00'` nor `'05'` (not `WS-PRMHST-OK`); `WS-ｵｰﾌﾟﾝ` is not `'Y'` (not `WS-ｵｰﾌﾟﾝｽﾞﾐ`); and `WS-ｵｰﾌﾟﾝ` is not `'Y'` (not `WS-ｵｰﾌﾟﾝｽﾞﾐ`) or both `WS-PRMHST-ST` is neither `'00'` nor `'05'` (not `WS-PRMHST-OK`) and `WS-PRMHST-ST` is neither `'10'` nor `'23'` (not `WS-PRMHST-ｵﾜﾘ`), it opens `PRMHST-F` to update and sets `LK-ｼﾞｮｳﾀｲ` to `WS-PRMHST-ST`."
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "Y",
+            ""
+          ],
+          "actions": [
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "sentence": "When `WS-ｵｰﾌﾟﾝ` is not `'N'` (not `WS-ｵｰﾌﾟﾝﾏｴ`); `WS-PRMHST-ST` is neither `'00'` nor `'05'` (not `WS-PRMHST-OK`); `WS-ｵｰﾌﾟﾝ` is `'Y'` (`WS-ｵｰﾌﾟﾝｽﾞﾐ`); and `WS-ｵｰﾌﾟﾝ` is `'Y'` (`WS-ｵｰﾌﾟﾝｽﾞﾐ`) and either `WS-PRMHST-ST` is `'00'` or `'05'` (`WS-PRMHST-OK`) or `WS-PRMHST-ST` is `'10'` or `'23'` (`WS-PRMHST-ｵﾜﾘ`), it performs `ﾚﾝﾊﾞﾝ-RTN`, sets `SH-ｼｭｳﾉｳ-ﾚｺｰﾄﾞ` to spaces, sets `SH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `LK-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`, computes `SH-ﾚﾝﾊﾞﾝ` as `WS-ﾚﾝﾊﾞﾝ + 1`, sets `SH-ｼｭｳﾉｳﾋﾞ` to `LK-ｼｭｳﾉｳﾋﾞ`, sets `SH-ｼｭﾍﾞﾂ` to `LK-ｼｭﾍﾞﾂ`, sets `SH-ｷﾝｶﾞｸ` to `LK-ｷﾝｶﾞｸ`, sets `SH-ｶｲｽｳ` to `LK-ｶｲｽｳ`, sets `SH-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ` to `LK-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ`, writes `SH-ｼｭｳﾉｳ-ﾚｺｰﾄﾞ`, and sets `LK-ｼﾞｮｳﾀｲ` to `WS-PRMHST-ST`."
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "Y",
+            ""
+          ],
+          "actions": [
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "sentence": "When `WS-ｵｰﾌﾟﾝ` is not `'N'` (not `WS-ｵｰﾌﾟﾝﾏｴ`); `WS-PRMHST-ST` is `'00'` or `'05'` (`WS-PRMHST-OK`); `WS-ｵｰﾌﾟﾝ` is `'Y'` (`WS-ｵｰﾌﾟﾝｽﾞﾐ`); and `WS-ｵｰﾌﾟﾝ` is `'Y'` (`WS-ｵｰﾌﾟﾝｽﾞﾐ`) and either `WS-PRMHST-ST` is `'00'` or `'05'` (`WS-PRMHST-OK`) or `WS-PRMHST-ST` is `'10'` or `'23'` (`WS-PRMHST-ｵﾜﾘ`), it performs `ﾚﾝﾊﾞﾝ-RTN`, sets `SH-ｼｭｳﾉｳ-ﾚｺｰﾄﾞ` to spaces, sets `SH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `LK-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`, computes `SH-ﾚﾝﾊﾞﾝ` as `WS-ﾚﾝﾊﾞﾝ + 1`, sets `SH-ｼｭｳﾉｳﾋﾞ` to `LK-ｼｭｳﾉｳﾋﾞ`, sets `SH-ｼｭﾍﾞﾂ` to `LK-ｼｭﾍﾞﾂ`, sets `SH-ｷﾝｶﾞｸ` to `LK-ｷﾝｶﾞｸ`, sets `SH-ｶｲｽｳ` to `LK-ｶｲｽｳ`, sets `SH-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ` to `LK-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ`, and writes `SH-ｼｭｳﾉｳ-ﾚｺｰﾄﾞ`."
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y",
+            "N",
+            ""
+          ],
+          "actions": [
+            2,
+            12
+          ],
+          "sentence": "When `WS-ｵｰﾌﾟﾝ` is not `'N'` (not `WS-ｵｰﾌﾟﾝﾏｴ`); `WS-PRMHST-ST` is neither `'00'` nor `'05'` (not `WS-PRMHST-OK`); `WS-ｵｰﾌﾟﾝ` is `'Y'` (`WS-ｵｰﾌﾟﾝｽﾞﾐ`); and `WS-ｵｰﾌﾟﾝ` is not `'Y'` (not `WS-ｵｰﾌﾟﾝｽﾞﾐ`) or both `WS-PRMHST-ST` is neither `'00'` nor `'05'` (not `WS-PRMHST-OK`) and `WS-PRMHST-ST` is neither `'10'` nor `'23'` (not `WS-PRMHST-ｵﾜﾘ`), it performs `ﾚﾝﾊﾞﾝ-RTN` and sets `LK-ｼﾞｮｳﾀｲ` to `WS-PRMHST-ST`."
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N",
+            "N",
+            ""
+          ],
+          "actions": [
+            12
+          ],
+          "sentence": "When `WS-ｵｰﾌﾟﾝ` is not `'N'` (not `WS-ｵｰﾌﾟﾝﾏｴ`); `WS-PRMHST-ST` is neither `'00'` nor `'05'` (not `WS-PRMHST-OK`); `WS-ｵｰﾌﾟﾝ` is not `'Y'` (not `WS-ｵｰﾌﾟﾝｽﾞﾐ`); and `WS-ｵｰﾌﾟﾝ` is not `'Y'` (not `WS-ｵｰﾌﾟﾝｽﾞﾐ`) or both `WS-PRMHST-ST` is neither `'00'` nor `'05'` (not `WS-PRMHST-OK`) and `WS-PRMHST-ST` is neither `'10'` nor `'23'` (not `WS-PRMHST-ｵﾜﾘ`), it sets `LK-ｼﾞｮｳﾀｲ` to `WS-PRMHST-ST`."
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N",
+            "N",
+            ""
+          ],
+          "actions": null,
+          "sentence": "When `WS-ｵｰﾌﾟﾝ` is not `'N'` (not `WS-ｵｰﾌﾟﾝﾏｴ`); `WS-PRMHST-ST` is `'00'` or `'05'` (`WS-PRMHST-OK`); `WS-ｵｰﾌﾟﾝ` is not `'Y'` (not `WS-ｵｰﾌﾟﾝｽﾞﾐ`); and `WS-ｵｰﾌﾟﾝ` is not `'Y'` (not `WS-ｵｰﾌﾟﾝｽﾞﾐ`) or both `WS-PRMHST-ST` is neither `'00'` nor `'05'` (not `WS-PRMHST-OK`) and `WS-PRMHST-ST` is neither `'10'` nor `'23'` (not `WS-PRMHST-ｵﾜﾘ`), it does nothing more."
+        }
+      ]
+    },
+    {
+      "paragraph": "ﾚﾝﾊﾞﾝ-RTN",
+      "source": "gondwana/programs/GLC050.cbl:110",
+      "conditions": [
+        "WS-PRMHST-OK"
+      ],
+      "conditionRefs": [
+        [
+          "WS-PRMHST-ST"
+        ]
+      ],
+      "actions": [
+        "MOVE 0 TO WS-ﾚﾝﾊﾞﾝ",
+        "MOVE LK-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ TO SH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+        "MOVE 0 TO SH-ﾚﾝﾊﾞﾝ",
+        "START PRMHST-F KEY NOT \u003c SH-ｷｰ",
+        "READ PRMHST-F NEXT",
+        "PERFORM UNTIL NOT WS-PRMHST-OK OR SH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ NOT = LK-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "sentence": "When `WS-PRMHST-ST` is `'00'` or `'05'` (`WS-PRMHST-OK`), it sets `WS-ﾚﾝﾊﾞﾝ` to 0; sets `SH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `LK-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; sets `SH-ﾚﾝﾊﾞﾝ` to 0; runs `START PRMHST-F KEY NOT \u003c SH-ｷｰ`; reads `PRMHST-F`; and repeats its loop until `WS-PRMHST-ST` is neither `'00'` nor `'05'` (not `WS-PRMHST-OK`) or `SH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` is not `LK-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`."
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "sentence": "When `WS-PRMHST-ST` is neither `'00'` nor `'05'` (not `WS-PRMHST-OK`), it sets `WS-ﾚﾝﾊﾞﾝ` to 0; sets `SH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `LK-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; sets `SH-ﾚﾝﾊﾞﾝ` to 0; runs `START PRMHST-F KEY NOT \u003c SH-ｷｰ`; and repeats its loop until `WS-PRMHST-ST` is neither `'00'` nor `'05'` (not `WS-PRMHST-OK`) or `SH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` is not `LK-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`."
+        }
+      ]
+    }
+  ]
+}

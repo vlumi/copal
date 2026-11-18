@@ -1,6 +1,6 @@
 # Gondwana Life Insurance
 
-A small COBOL life insurer, the survey's third specimen: policies that run for decades, each a main contract and its riders, a daily run of new business, anniversaries, benefits, changes, lapses and policy loans, a monthly premium collection through the banks' transfer file, a month-end close of reserves and commissions, and a yearly dividend. Fiction written for this project. Pangaea split into Laurasia and Gondwana; Gondwana is written in a Japanese shop's COBOL, Fujitsu NetCOBOL, in Shift_JIS, with its names and comments in Japanese, its amounts in whole yen and its dates in the Japanese eras, and it is run by Windows batch files. It knows nothing of the survey.
+A small COBOL life insurer, the survey's third specimen: policies that run for decades, each a main contract and its riders, a daily run of new business, anniversaries, benefits, changes, lapses and policy loans, a monthly premium collection through the banks' transfer file, a month-end close of reserves and commissions, a yearly dividend, and the notices and premium certificates it sends its policyholders. Fiction written for this project. Pangaea split into Laurasia and Gondwana; Gondwana is written in a Japanese shop's COBOL, Fujitsu NetCOBOL, in Shift_JIS, with its names and comments in Japanese, its amounts in whole yen and its dates in the Japanese eras, and it is run by Windows batch files. It knows nothing of the survey.
 
 ## Layout
 
@@ -17,7 +17,7 @@ The Go is the insurer's machine room, and small: [batch/](batch/) compiles the p
 
 ## The month
 
-The fixture is March 2027, the ninth year of Reiwa, with policies from Showa, Heisei and Reiwa in one master. The system opens on March 1 from the extract, and the month runs three business days, the billing on the 10th for the debit on the 27th, the collection agent's results on the 30th, the close on the 31st and, March being the end of the fiscal year, the dividends. What happens in it is in the [operations guide](docs/operations.md).
+The fixture is March 2027, the ninth year of Reiwa, with policies from Showa, Heisei and Reiwa in one master. The system opens on March 1 from the extract, and the month runs three business days, the billing on the 10th for the debit on the 27th, the collection agent's results on the 30th, the close on the 31st and, March being the end of the fiscal year, the dividends and the policyholders' notices; the premium certificates, October's run, are run on the 31st too, out of season, to have them under test. What happens in it is in the [operations guide](docs/operations.md).
 
 ## The running insurer
 

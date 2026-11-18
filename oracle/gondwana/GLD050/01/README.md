@@ -9,6 +9,8 @@ The first case to reach:
 - [GLD050, ｵｰﾌﾟﾝ-ｹﾝｻ-RTN, rule 7](../../../../blueprints/gondwana/rules/GLD050.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)
 - [GLD050, ﾖﾐｺﾐ-RTN, rule 4](../../../../blueprints/gondwana/rules/GLD050.md#ﾖﾐｺﾐ-rtn)
 - [GLD050, ｼｭｳﾘｮｳ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLD050.md#ｼｭｳﾘｮｳ-rtn)
+- [GLD050, ｼｭｳﾉｳ-ﾖﾋﾞﾀﾞｼ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLD050.md#ｼｭｳﾉｳ-ﾖﾋﾞﾀﾞｼ-rtn)
 - [GLC020, ﾒｲﾝ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLC020.md#ﾒｲﾝ-rtn)
 - [GLC020, ﾜﾚｷ-ﾍﾝｶﾝ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLC020.md#ﾜﾚｷ-ﾍﾝｶﾝ-rtn)
 - [GLC020, ﾜﾚｷ-ﾍﾝｶﾝ-RTN, in its loop, rule 1](../../../../blueprints/gondwana/rules/GLC020.md#ﾜﾚｷ-ﾍﾝｶﾝ-rtn-in-its-loop)
+- [GLC050, ﾒｲﾝ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLC050.md#ﾒｲﾝ-rtn)

@@ -25,6 +25,7 @@
       * 2003-10-06 MS   GL-0310 初版、口座振替の開始。
       * 2026-11-16 YN   GL-0823 半年払。振替結果 8 委託者都合。
       * 2026-11-19 YN   GL-0826 振替額を請求時の保険料と照らす。
+      * 2026-11-19 YN   GL-0827 収納を収納履歴に残す。
       *----------------------------------------------------------------
        IDENTIFICATION DIVISION.
        PROGRAM-ID. GLD050.
@@ -91,6 +92,7 @@
                88  WS-REJECT-OK                VALUE "00".
            05  WS-REPORT-ST            PIC XX.
                88  WS-REPORT-OK                VALUE "00".
+       COPY PRMCAL.
        01  WS-ｺﾏﾝﾄﾞｷﾞｮｳ                PIC X(80).
        01  WS-ｴﾗｰﾌｧｲﾙ                  PIC X(8).
        01  WS-ｴﾗｰｽﾃｰﾀｽ                 PIC XX.
@@ -399,6 +401,10 @@
            WRITE JR-ｼﾜｹ-ﾚｺｰﾄﾞ
            ADD 1 TO WS-ｽﾞﾐｹﾝｽｳ
            ADD ZG-D-ｷﾝｶﾞｸ TO WS-ｽﾞﾐｷﾝｶﾞｸ
+           SET WS-ｼｭｳﾉｳ-ﾌﾘｶｴ TO TRUE
+           MOVE ZG-D-ｷﾝｶﾞｸ TO WS-ｼｭｳﾉｳ-ｷﾝｶﾞｸ
+           MOVE WS-ｶｲｽｳ TO WS-ｼｭｳﾉｳ-ｶｲｽｳ
+           PERFORM ｼｭｳﾉｳ-ｷﾛｸ-RTN
            MOVE "振替済" TO WS-ﾒｲｻｲ-ｹｯｶ.
 
       *----------------------------------------------------------------
@@ -484,6 +490,7 @@
                MOVE WS-GLSCTL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
                PERFORM ｲｼﾞｮｳ-RTN
            END-IF
+           PERFORM ｼｭｳﾉｳ-ｸﾛｰｽﾞ-RTN
            CLOSE PRMRES-F POLMST-F GLSCTL-F GLJRNL-F REJECT-F
                  REPORT-F
            DISPLAY "GLD050 振替済 " WS-ｽﾞﾐｹﾝｽｳ " 不能 " WS-ﾌﾉｳｹﾝｽｳ
@@ -497,3 +504,5 @@
                    " 状態 " WS-ｴﾗｰｽﾃｰﾀｽ
            MOVE 16 TO RETURN-CODE
            STOP RUN.
+
+       COPY PRMLOG.

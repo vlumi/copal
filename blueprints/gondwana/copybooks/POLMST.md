@@ -34,7 +34,7 @@ POLMST: 契約マスタ レコード (300バイト)
 2026-11-19 YN   GL-0826 請求回数、請求保険料 (予備から)。
 ```
 
-Copybook [POLMST.cpy](../../../gondwana/copybooks/POLMST.cpy), used by [GLD010](../programs/GLD010.md), [GLD020](../programs/GLD020.md), [GLD030](../programs/GLD030.md), [GLD040](../programs/GLD040.md), [GLD050](../programs/GLD050.md), [GLD060](../programs/GLD060.md), [GLD070](../programs/GLD070.md), [GLD090](../programs/GLD090.md), [GLM010](../programs/GLM010.md), [GLM020](../programs/GLM020.md), [GLM030](../programs/GLM030.md), [GLO010](../programs/GLO010.md), [GLY010](../programs/GLY010.md).
+Copybook [POLMST.cpy](../../../gondwana/copybooks/POLMST.cpy), used by [GLD010](../programs/GLD010.md), [GLD020](../programs/GLD020.md), [GLD030](../programs/GLD030.md), [GLD040](../programs/GLD040.md), [GLD050](../programs/GLD050.md), [GLD060](../programs/GLD060.md), [GLD070](../programs/GLD070.md), [GLD090](../programs/GLD090.md), [GLM010](../programs/GLM010.md), [GLM020](../programs/GLM020.md), [GLM030](../programs/GLM030.md), [GLO010](../programs/GLO010.md), [GLY010](../programs/GLY010.md), [GLY020](../programs/GLY020.md), [GLY030](../programs/GLY030.md).
 
 ## PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ
 

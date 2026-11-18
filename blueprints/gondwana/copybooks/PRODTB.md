@@ -16,7 +16,7 @@ PRODTB.TXT の1行が1商品: 商品の種類、加入できる年齢、
 2026-11-18 YN   GL-0825 区分 (予備から): 特約。
 ```
 
-Copybook [PRODTB.cpy](../../../gondwana/copybooks/PRODTB.cpy), used by [GLD010](../programs/GLD010.md), [GLD020](../programs/GLD020.md), [GLD030](../programs/GLD030.md), [GLM020](../programs/GLM020.md), [GLY010](../programs/GLY010.md).
+Copybook [PRODTB.cpy](../../../gondwana/copybooks/PRODTB.cpy), used by [GLD010](../programs/GLD010.md), [GLD020](../programs/GLD020.md), [GLD030](../programs/GLD030.md), [GLM020](../programs/GLM020.md), [GLY010](../programs/GLY010.md), [GLY020](../programs/GLY020.md), [GLY030](../programs/GLY030.md).
 
 ## PR-ｼｮｳﾋﾝ-ﾚｺｰﾄﾞ
 

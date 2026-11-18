@@ -14,6 +14,6 @@ PROCEDURE DIVISION に COPY する。PRODTB-F を開いた後に
 2026-11-18 YN   GL-0825 区分。
 ```
 
-Copybook [PRDLOD.cpy](../../../gondwana/copybooks/PRDLOD.cpy), used by [GLD010](../programs/GLD010.md), [GLD020](../programs/GLD020.md), [GLD030](../programs/GLD030.md), [GLM020](../programs/GLM020.md), [GLY010](../programs/GLY010.md).
+Copybook [PRDLOD.cpy](../../../gondwana/copybooks/PRDLOD.cpy), used by [GLD010](../programs/GLD010.md), [GLD020](../programs/GLD020.md), [GLD030](../programs/GLD030.md), [GLM020](../programs/GLM020.md), [GLY010](../programs/GLY010.md), [GLY020](../programs/GLY020.md), [GLY030](../programs/GLY030.md).
 
 A copybook of procedure: its paragraphs, ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN, are copied into the procedure division of each program that uses it, and are in each program's blueprint.

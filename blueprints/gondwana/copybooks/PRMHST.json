@@ -1,0 +1,168 @@
+{
+  "copybook": "PRMHST",
+  "source": "gondwana/copybooks/PRMHST.cpy",
+  "description": [
+    "PRMHST: 収納履歴 レコード (60バイト)",
+    "",
+    "収納した保険料1件につき1レコード。キーは証券番号と契約内の",
+    "連番。第1回保険料、口座振替、復活時の窓口収納、自動振替貸付",
+    "による充当を残す。書き込みは GLC050 が行う。",
+    "収納日は西暦 YYYYMMDD: 保険料控除証明書が暦年で集計する。",
+    "回数は充当した保険料の回数、払込済年月は収納後のもの。",
+    "",
+    "変更履歴",
+    "日付       担当 変更",
+    "2026-11-19 YN   GL-0827 初版、保険料控除証明書のため。"
+  ],
+  "records": [
+    {
+      "level": 1,
+      "name": "SH-ｼｭｳﾉｳ-ﾚｺｰﾄﾞ",
+      "start": 1,
+      "length": 60,
+      "category": "group",
+      "kind": "group",
+      "source": "gondwana/copybooks/PRMHST.cpy:14",
+      "fields": [
+        {
+          "level": 5,
+          "name": "SH-ｷｰ",
+          "start": 1,
+          "length": 14,
+          "category": "group",
+          "kind": "group",
+          "source": "gondwana/copybooks/PRMHST.cpy:15",
+          "fields": [
+            {
+              "level": 10,
+              "name": "SH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+              "start": 1,
+              "length": 10,
+              "picture": "X(10)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "text",
+              "source": "gondwana/copybooks/PRMHST.cpy:16"
+            },
+            {
+              "level": 10,
+              "name": "SH-ﾚﾝﾊﾞﾝ",
+              "start": 11,
+              "length": 4,
+              "picture": "9(4)",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "number",
+              "digits": 4,
+              "source": "gondwana/copybooks/PRMHST.cpy:17"
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "name": "SH-ｼｭｳﾉｳﾋﾞ",
+          "start": 15,
+          "length": 8,
+          "picture": "9(8)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "date",
+          "digits": 8,
+          "source": "gondwana/copybooks/PRMHST.cpy:18"
+        },
+        {
+          "level": 5,
+          "name": "SH-ｼｭﾍﾞﾂ",
+          "start": 23,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "SH-ｼｮｶｲ",
+              "values": [
+                "'1'"
+              ],
+              "source": "gondwana/copybooks/PRMHST.cpy:20"
+            },
+            {
+              "name": "SH-ﾌﾘｶｴ",
+              "values": [
+                "'2'"
+              ],
+              "source": "gondwana/copybooks/PRMHST.cpy:21"
+            },
+            {
+              "name": "SH-ﾏﾄﾞｸﾞﾁ",
+              "values": [
+                "'3'"
+              ],
+              "source": "gondwana/copybooks/PRMHST.cpy:22"
+            },
+            {
+              "name": "SH-ｶｼﾂｹ",
+              "values": [
+                "'4'"
+              ],
+              "source": "gondwana/copybooks/PRMHST.cpy:23"
+            }
+          ],
+          "source": "gondwana/copybooks/PRMHST.cpy:19"
+        },
+        {
+          "level": 5,
+          "name": "SH-ｷﾝｶﾞｸ",
+          "start": 24,
+          "length": 9,
+          "picture": "9(9)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "source": "gondwana/copybooks/PRMHST.cpy:24"
+        },
+        {
+          "level": 5,
+          "name": "SH-ｶｲｽｳ",
+          "start": 33,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 2,
+          "source": "gondwana/copybooks/PRMHST.cpy:25"
+        },
+        {
+          "level": 5,
+          "name": "SH-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ",
+          "start": 35,
+          "length": 6,
+          "picture": "9(6)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "date",
+          "digits": 6,
+          "source": "gondwana/copybooks/PRMHST.cpy:26"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 41,
+          "length": 20,
+          "picture": "X(20)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "filler",
+          "source": "gondwana/copybooks/PRMHST.cpy:27"
+        }
+      ]
+    }
+  ],
+  "usedBy": [
+    "GLC050",
+    "GLY030"
+  ]
+}

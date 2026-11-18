@@ -10,7 +10,8 @@
     "環境: GLS_BIN プログラム、GLS_DATA データ",
     "",
     "変更履歴",
-    "2003-10-06 MS  GL-0310 初版、口座振替の開始。"
+    "2003-10-06 MS  GL-0310 初版、口座振替の開始。",
+    "2026-11-19 YN  GL-0827 収納履歴。"
   ],
   "steps": [
     {
@@ -23,7 +24,7 @@
       "description": [
         "振替結果の反映"
       ],
-      "source": "gondwana/scripts/RESULTS.BAT:23",
+      "source": "gondwana/scripts/RESULTS.BAT:25",
       "dds": [
         {
           "dd": "PRMRES",
@@ -35,7 +36,7 @@
             "read"
           ],
           "copybook": "ZENGIN",
-          "source": "gondwana/scripts/RESULTS.BAT:23"
+          "source": "gondwana/scripts/RESULTS.BAT:25"
         },
         {
           "dd": "POLMST",
@@ -48,7 +49,7 @@
             "update"
           ],
           "copybook": "POLMST",
-          "source": "gondwana/scripts/RESULTS.BAT:23"
+          "source": "gondwana/scripts/RESULTS.BAT:25"
         },
         {
           "dd": "GLSCTL",
@@ -60,7 +61,7 @@
             "update"
           ],
           "copybook": "CTLREC",
-          "source": "gondwana/scripts/RESULTS.BAT:23"
+          "source": "gondwana/scripts/RESULTS.BAT:25"
         },
         {
           "dd": "GLJRNL",
@@ -72,7 +73,7 @@
             "append"
           ],
           "copybook": "GLJRNL",
-          "source": "gondwana/scripts/RESULTS.BAT:23"
+          "source": "gondwana/scripts/RESULTS.BAT:25"
         },
         {
           "dd": "RESREJ",
@@ -83,7 +84,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/RESULTS.BAT:23"
+          "source": "gondwana/scripts/RESULTS.BAT:25"
         },
         {
           "dd": "GLD050R",
@@ -94,7 +95,21 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/RESULTS.BAT:23"
+          "source": "gondwana/scripts/RESULTS.BAT:25"
+        },
+        {
+          "dd": "PRMHST",
+          "datasets": [
+            "$DATA/MASTER/PRMHST.IDX"
+          ],
+          "indexed": true,
+          "file": "PRMHST-F",
+          "callee": "GLC050",
+          "uses": [
+            "update"
+          ],
+          "copybook": "PRMHST",
+          "source": "gondwana/scripts/RESULTS.BAT:25"
         },
         {
           "dd": "stdout",
@@ -104,7 +119,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/RESULTS.BAT:23"
+          "source": "gondwana/scripts/RESULTS.BAT:25"
         }
       ]
     }
@@ -160,6 +175,18 @@
       "dataset": "$DATA/RPT/GLD050.$DATE.RPT",
       "kind": "output",
       "writtenBy": [
+        "GLD050"
+      ]
+    },
+    {
+      "dataset": "$DATA/MASTER/PRMHST.IDX",
+      "copybook": "PRMHST",
+      "kind": "internal",
+      "indexed": true,
+      "writtenBy": [
+        "GLD050"
+      ],
+      "readBy": [
         "GLD050"
       ]
     },

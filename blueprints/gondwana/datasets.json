@@ -138,6 +138,10 @@
     ],
     "readBy": [
       {
+        "job": "ANNUAL",
+        "step": "GLY020"
+      },
+      {
         "job": "DAILY",
         "step": "GLD010"
       },
@@ -164,6 +168,10 @@
     "copybook": "CSVTB",
     "kind": "external",
     "readBy": [
+      {
+        "job": "ANNUAL",
+        "step": "GLY020"
+      },
       {
         "job": "DAILY",
         "step": "GLD020"
@@ -348,8 +356,16 @@
         "step": "GLY010"
       },
       {
+        "job": "ANNUAL",
+        "step": "GLY020"
+      },
+      {
         "job": "BILLING",
         "step": "GLM010"
+      },
+      {
+        "job": "CERT",
+        "step": "GLY030"
       },
       {
         "job": "CLOSE",
@@ -398,6 +414,52 @@
     ]
   },
   {
+    "dataset": "$DATA/MASTER/PRMHST.IDX",
+    "copybook": "PRMHST",
+    "indexed": true,
+    "kind": "internal",
+    "writtenBy": [
+      {
+        "job": "DAILY",
+        "step": "GLD010"
+      },
+      {
+        "job": "DAILY",
+        "step": "GLD040"
+      },
+      {
+        "job": "DAILY",
+        "step": "GLD060"
+      },
+      {
+        "job": "RESULTS",
+        "step": "GLD050"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "CERT",
+        "step": "GLY030"
+      },
+      {
+        "job": "DAILY",
+        "step": "GLD010"
+      },
+      {
+        "job": "DAILY",
+        "step": "GLD040"
+      },
+      {
+        "job": "DAILY",
+        "step": "GLD060"
+      },
+      {
+        "job": "RESULTS",
+        "step": "GLD050"
+      }
+    ]
+  },
+  {
     "dataset": "$DATA/MASTER/PRODTB.TXT",
     "copybook": "PRODTB",
     "kind": "external",
@@ -405,6 +467,14 @@
       {
         "job": "ANNUAL",
         "step": "GLY010"
+      },
+      {
+        "job": "ANNUAL",
+        "step": "GLY020"
+      },
+      {
+        "job": "CERT",
+        "step": "GLY030"
       },
       {
         "job": "CLOSE",
@@ -570,6 +640,16 @@
     ]
   },
   {
+    "dataset": "$DATA/OUT/NOTICE.$DATE.TXT",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "ANNUAL",
+        "step": "GLY020"
+      }
+    ]
+  },
+  {
     "dataset": "$DATA/OUT/PAYOUT.$DATE.TXT",
     "copybook": "PAYOUT",
     "kind": "output",
@@ -596,6 +676,17 @@
       {
         "job": "UNLOAD",
         "step": "GLD090"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/OUT/PRMCERT.$DATE.TXT",
+    "copybook": "PRMCERT",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "CERT",
+        "step": "GLY030"
       }
     ]
   },
@@ -877,6 +968,36 @@
       {
         "job": "ANNUAL",
         "step": "GLY010"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/RPT/GLY020.$DATE.OUT",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "ANNUAL",
+        "step": "GLY020"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/RPT/GLY030.$DATE.OUT",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "CERT",
+        "step": "GLY030"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/RPT/GLY030.$DATE.RPT",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "CERT",
+        "step": "GLY030"
       }
     ]
   }

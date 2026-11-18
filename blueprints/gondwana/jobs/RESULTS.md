@@ -9,6 +9,7 @@ RESULTS.BAT: 口座振替結果処理。収納代行から結果ファイルが�
 
 変更履歴
 2003-10-06 MS  GL-0310 初版、口座振替の開始。
+2026-11-19 YN  GL-0827 収納履歴。
 ```
 
 Script [RESULTS.BAT](../../../gondwana/scripts/RESULTS.BAT): 1 steps.
@@ -29,7 +30,7 @@ Script [RESULTS.BAT](../../../gondwana/scripts/RESULTS.BAT): 1 steps.
 
 | Step | Program | Reads | Writes | Stops the script if | Description | Source |
 | --- | --- | --- | --- | --- | --- | --- |
-| GLD050 | [GLD050](../programs/GLD050.md), with $DATE | $DATA/IN/PRMRES.$DATE.DAT, $DATA/MASTER/POLMST.IDX, $DATA/MASTER/GLSCTL.BIN | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/GLSCTL.BIN, $DATA/OUT/GLJRNL.$DATE.TXT, $DATA/OUT/RESREJ.$DATE.TXT, $DATA/RPT/GLD050.$DATE.RPT, $DATA/RPT/GLD050.$DATE.OUT | RC >= 8 | 振替結果の反映 | [RESULTS.BAT:23](../../../gondwana/scripts/RESULTS.BAT#L23) |
+| GLD050 | [GLD050](../programs/GLD050.md), with $DATE | $DATA/IN/PRMRES.$DATE.DAT, $DATA/MASTER/POLMST.IDX, $DATA/MASTER/GLSCTL.BIN, $DATA/MASTER/PRMHST.IDX | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/GLSCTL.BIN, $DATA/OUT/GLJRNL.$DATE.TXT, $DATA/OUT/RESREJ.$DATE.TXT, $DATA/RPT/GLD050.$DATE.RPT, $DATA/MASTER/PRMHST.IDX, $DATA/RPT/GLD050.$DATE.OUT | RC >= 8 | 振替結果の反映 | [RESULTS.BAT:25](../../../gondwana/scripts/RESULTS.BAT#L25) |
 
 ### GLD050
 
@@ -41,6 +42,7 @@ Script [RESULTS.BAT](../../../gondwana/scripts/RESULTS.BAT): 1 steps.
 | GLJRNL | $DATA/OUT/GLJRNL.$DATE.TXT | GLJRNL-F | [GLJRNL](../copybooks/GLJRNL.md) | append |
 | RESREJ | $DATA/OUT/RESREJ.$DATE.TXT | REJECT-F | | write |
 | GLD050R | $DATA/RPT/GLD050.$DATE.RPT | REPORT-F | | write |
+| PRMHST | $DATA/MASTER/PRMHST.IDX (indexed) | PRMHST-F of [GLC050](../programs/GLC050.md) | [PRMHST](../copybooks/PRMHST.md) | update |
 | stdout | $DATA/RPT/GLD050.$DATE.OUT | | | write |
 
 ## Datasets
@@ -55,6 +57,7 @@ Each dataset the job names, the copybook that describes its records, from the pr
 | $DATA/OUT/GLJRNL.$DATE.TXT | [GLJRNL](../copybooks/GLJRNL.md) | GLD050 | |
 | $DATA/OUT/RESREJ.$DATE.TXT | | GLD050 | |
 | $DATA/RPT/GLD050.$DATE.RPT | | GLD050 | |
+| $DATA/MASTER/PRMHST.IDX | [PRMHST](../copybooks/PRMHST.md) | GLD050 | GLD050 |
 | $DATA/RPT/GLD050.$DATE.OUT | | GLD050 | |
 
 ## Findings
