@@ -12,7 +12,7 @@ PRODTB と RATETB を読み込む先。商品の並びが料率の第1添字で�
 2026-11-18 YN   GL-0825 商品の区分: 特約。
 ```
 
-Copybook [TBLWS.cpy](../../../gondwana/copybooks/TBLWS.cpy), used by [GLD010](../programs/GLD010.md), [GLD020](../programs/GLD020.md), [GLD030](../programs/GLD030.md), [GLM020](../programs/GLM020.md), [GLY010](../programs/GLY010.md).
+Copybook [TBLWS.cpy](../../../gondwana/copybooks/TBLWS.cpy), used by [GLD010](../programs/GLD010.md), [GLD020](../programs/GLD020.md), [GLD030](../programs/GLD030.md), [GLM020](../programs/GLM020.md), [GLY010](../programs/GLY010.md), [GLY020](../programs/GLY020.md), [GLY030](../programs/GLY030.md).
 
 ## Contents
 

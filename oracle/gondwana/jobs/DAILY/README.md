@@ -6,11 +6,11 @@ The batch file ended with errorlevel 0.
 
 | Step | Program | Outcome | Rules reached |
 | --- | --- | --- | --: |
-| GLD010 | [GLD010](../../GLD010/) | RC=0000 | 10 of 80 |
+| GLD010 | [GLD010](../../GLD010/) | RC=0000 | 12 of 96 |
 | GLD020 | [GLD020](../../GLD020/) | RC=0000 | 12 of 132 |
 | GLD030 | [GLD030](../../GLD030/) | RC=0000 | 8 of 197 |
-| GLD040 | [GLD040](../../GLD040/) | RC=0000 | 7 of 89 |
-| GLD060 | [GLD060](../../GLD060/) | RC=0001 | 9 of 81 |
+| GLD040 | [GLD040](../../GLD040/) | RC=0000 | 9 of 105 |
+| GLD060 | [GLD060](../../GLD060/) | RC=0001 | 9 of 97 |
 | GLD070 | [GLD070](../../GLD070/) | RC=0000 | 7 of 102 |
 | UNLOAD | UNLOAD | RC=0000 | |
 | UNLOAD.GLD090 | [GLD090](../../GLD090/) | RC=0000 | 11 of 42 |

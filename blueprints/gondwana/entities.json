@@ -689,13 +689,17 @@
       "GLD090",
       "GLO010"
     ],
+    "readBy": [
+      "GLY020"
+    ],
     "programs": [
       "GLD010",
       "GLD020",
       "GLD030",
       "GLD040",
       "GLD090",
-      "GLO010"
+      "GLO010",
+      "GLY020"
     ],
     "fields": [
       {
@@ -733,6 +737,13 @@
           {
             "program": "GLO010",
             "field": "HS-ｷｰ"
+          },
+          {
+            "program": "GLY020",
+            "field": "HS-ｷｰ",
+            "readBy": [
+              "ﾎｼｮｳ-ｿｳｻ-RTN"
+            ]
           }
         ]
       },
@@ -788,6 +799,16 @@
             "readBy": [
               "ﾎｼｮｳ-ﾄｳﾛｸ-RTN"
             ]
+          },
+          {
+            "program": "GLY020",
+            "field": "HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+            "readBy": [
+              "ﾎｼｮｳ-ｿｳｻ-RTN"
+            ],
+            "writtenBy": [
+              "ﾎｼｮｳ-ｿｳｻ-RTN"
+            ]
           }
         ]
       },
@@ -831,7 +852,7 @@
             "decisions": [
               {
                 "paragraph": "ﾄｸﾔｸｶｲﾔｸ-RTN",
-                "source": "gondwana/programs/GLD040.cbl:420",
+                "source": "gondwana/programs/GLD040.cbl:426",
                 "conditions": [
                   "HS-ｼｭｹｲﾔｸ OR NOT HS-ﾕｳｺｳ"
                 ]
@@ -845,6 +866,17 @@
           {
             "program": "GLO010",
             "field": "HS-ﾎｼｮｳﾊﾞﾝｺﾞｳ"
+          },
+          {
+            "program": "GLY020",
+            "field": "HS-ﾎｼｮｳﾊﾞﾝｺﾞｳ",
+            "readBy": [
+              "ﾒｲﾝ-RTN",
+              "ﾒｲｻｲ-RTN"
+            ],
+            "writtenBy": [
+              "ﾎｼｮｳ-ｿｳｻ-RTN"
+            ]
           }
         ],
         "states": {
@@ -897,13 +929,13 @@
               "program": "GLD010",
               "from": "WS-N",
               "paragraph": "ﾎｼｮｳ-ﾄｳﾛｸ-RTN",
-              "source": "gondwana/programs/GLD010.cbl:520"
+              "source": "gondwana/programs/GLD010.cbl:526"
             },
             {
               "program": "GLD040",
               "from": "MR-ﾎｼｮｳﾊﾞﾝｺﾞｳ",
               "paragraph": "ﾄｸﾔｸｶｲﾔｸ-RTN",
-              "source": "gondwana/programs/GLD040.cbl:425"
+              "source": "gondwana/programs/GLD040.cbl:431"
             }
           ]
         }
@@ -964,6 +996,23 @@
           {
             "program": "GLO010",
             "field": "HS-ｼｮｳﾋﾝ"
+          },
+          {
+            "program": "GLY020",
+            "field": "HS-ｼｮｳﾋﾝ",
+            "readBy": [
+              "ﾒｲﾝ-RTN",
+              "ﾒｲｻｲ-RTN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "ﾒｲｻｲ-RTN",
+                "source": "gondwana/programs/GLY020.cbl:258",
+                "conditions": [
+                  "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = HS-ｼｮｳﾋﾝ"
+                ]
+              }
+            ]
           }
         ]
       },
@@ -1065,7 +1114,7 @@
             "decisions": [
               {
                 "paragraph": "ﾄｸﾔｸｶｲﾔｸ-RTN",
-                "source": "gondwana/programs/GLD040.cbl:420",
+                "source": "gondwana/programs/GLD040.cbl:426",
                 "conditions": [
                   "HS-ｼｭｹｲﾔｸ OR NOT HS-ﾕｳｺｳ"
                 ]
@@ -1079,6 +1128,23 @@
           {
             "program": "GLO010",
             "field": "HS-ｼﾞｮｳﾀｲ"
+          },
+          {
+            "program": "GLY020",
+            "field": "HS-ｼﾞｮｳﾀｲ",
+            "readBy": [
+              "ﾎｼｮｳ-ｿｳｻ-RTN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "ﾎｼｮｳ-ｿｳｻ-RTN",
+                "loop": "PERFORM UNTIL NOT WS-COVMST-OK OR HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ NOT = PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+                "source": "gondwana/programs/GLY020.cbl:242",
+                "conditions": [
+                  "HS-ﾕｳｺｳ"
+                ]
+              }
+            ]
           }
         ],
         "states": {
@@ -1114,7 +1180,7 @@
               "to": "HS-ﾕｳｺｳ",
               "program": "GLD010",
               "paragraph": "ﾎｼｮｳ-ﾄｳﾛｸ-RTN",
-              "source": "gondwana/programs/GLD010.cbl:522",
+              "source": "gondwana/programs/GLD010.cbl:528",
               "when": [
                 {
                   "condition": "WS-ﾘﾕｳ-ﾅｼ",
@@ -1295,7 +1361,7 @@
               "to": "HS-ｶｲﾔｸ",
               "program": "GLD040",
               "paragraph": "ﾄｸﾔｸｶｲﾔｸ-ﾊﾝｴｲ-RTN",
-              "source": "gondwana/programs/GLD040.cbl:445",
+              "source": "gondwana/programs/GLD040.cbl:451",
               "when": [
                 {
                   "condition": "WS-POLMST-ﾅｼ",
@@ -1383,6 +1449,14 @@
           {
             "program": "GLO010",
             "field": "HS-ﾎｹﾝｷﾝｶﾞｸ"
+          },
+          {
+            "program": "GLY020",
+            "field": "HS-ﾎｹﾝｷﾝｶﾞｸ",
+            "readBy": [
+              "ﾒｲﾝ-RTN",
+              "ﾒｲｻｲ-RTN"
+            ]
           }
         ]
       },
@@ -1429,6 +1503,14 @@
           {
             "program": "GLO010",
             "field": "HS-ﾎｹﾝﾘｮｳ"
+          },
+          {
+            "program": "GLY020",
+            "field": "HS-ﾎｹﾝﾘｮｳ",
+            "readBy": [
+              "ﾒｲﾝ-RTN",
+              "ﾒｲｻｲ-RTN"
+            ]
           }
         ]
       },
@@ -1468,6 +1550,10 @@
           },
           {
             "program": "GLO010",
+            "field": "HS-ｹｲﾔｸﾋﾞ"
+          },
+          {
+            "program": "GLY020",
             "field": "HS-ｹｲﾔｸﾋﾞ"
           }
         ],
@@ -1511,6 +1597,10 @@
           },
           {
             "program": "GLO010",
+            "field": "HS-ﾎｹﾝｷｶﾝ"
+          },
+          {
+            "program": "GLY020",
             "field": "HS-ﾎｹﾝｷｶﾝ"
           }
         ]
@@ -1562,6 +1652,14 @@
           {
             "program": "GLO010",
             "field": "HS-ﾏﾝｷﾋﾞ"
+          },
+          {
+            "program": "GLY020",
+            "field": "HS-ﾏﾝｷﾋﾞ",
+            "readBy": [
+              "ﾒｲﾝ-RTN",
+              "ﾒｲｻｲ-RTN"
+            ]
           }
         ],
         "datesFrom": [
@@ -1604,6 +1702,10 @@
           },
           {
             "program": "GLO010",
+            "field": "HS-ｶﾆｭｳﾈﾝﾚｲ"
+          },
+          {
+            "program": "GLY020",
             "field": "HS-ｶﾆｭｳﾈﾝﾚｲ"
           }
         ]
@@ -1651,6 +1753,10 @@
           {
             "program": "GLO010",
             "field": "HS-ｼｮｳﾒﾂﾋﾞ"
+          },
+          {
+            "program": "GLY020",
+            "field": "HS-ｼｮｳﾒﾂﾋﾞ"
           }
         ]
       }
@@ -1681,7 +1787,8 @@
           "field": "HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ"
         },
         "programs": [
-          "GLD020"
+          "GLD020",
+          "GLY020"
         ]
       },
       {
@@ -1696,7 +1803,8 @@
         },
         "programs": [
           "GLD020",
-          "GLD030"
+          "GLD030",
+          "GLY020"
         ]
       },
       {
@@ -1767,7 +1875,8 @@
       "GLD020",
       "GLD030",
       "GLD060",
-      "GLD070"
+      "GLD070",
+      "GLY020"
     ],
     "programs": [
       "GLC030"
@@ -3097,7 +3206,7 @@
               "to": "JR-ｶｼｶﾀ",
               "program": "GLD010",
               "paragraph": "ｼﾜｹ-RTN",
-              "source": "gondwana/programs/GLD010.cbl:580",
+              "source": "gondwana/programs/GLD010.cbl:586",
               "when": [
                 {
                   "condition": "WS-ﾘﾕｳ-ﾅｼ",
@@ -3599,7 +3708,7 @@
               "to": "JR-ｶｼｶﾀ",
               "program": "GLD040",
               "paragraph": "ﾌｯｶﾂ-ﾊﾝｴｲ-RTN",
-              "source": "gondwana/programs/GLD040.cbl:407",
+              "source": "gondwana/programs/GLD040.cbl:409",
               "when": [
                 {
                   "condition": "WS-POLMST-ﾅｼ",
@@ -3648,7 +3757,7 @@
               "to": "JR-ｶｼｶﾀ",
               "program": "GLD040",
               "paragraph": "ﾌｯｶﾂ-ﾊﾝｴｲ-RTN",
-              "source": "gondwana/programs/GLD040.cbl:407",
+              "source": "gondwana/programs/GLD040.cbl:409",
               "when": [
                 {
                   "condition": "WS-POLMST-ﾅｼ",
@@ -3701,7 +3810,7 @@
               "to": "JR-ｶｼｶﾀ",
               "program": "GLD050",
               "paragraph": "ﾌﾘｶｴｽﾞﾐ-RTN",
-              "source": "gondwana/programs/GLD050.cbl:395",
+              "source": "gondwana/programs/GLD050.cbl:397",
               "when": [
                 {
                   "condition": "WS-ﾌｧｲﾙ-ｶﾝﾘｮｳ",
@@ -3730,7 +3839,7 @@
               "to": "JR-ｶｼｶﾀ",
               "program": "GLD060",
               "paragraph": "ﾌﾘｶｴ-RTN",
-              "source": "gondwana/programs/GLD060.cbl:288",
+              "source": "gondwana/programs/GLD060.cbl:290",
               "when": [
                 {
                   "condition": "PM-ﾕｳﾖﾁｭｳ",
@@ -3751,7 +3860,7 @@
               "to": "JR-ｶﾘｶﾀ",
               "program": "GLD060",
               "paragraph": "ﾌﾘｶｴ-RTN",
-              "source": "gondwana/programs/GLD060.cbl:294",
+              "source": "gondwana/programs/GLD060.cbl:296",
               "when": [
                 {
                   "condition": "PM-ﾕｳﾖﾁｭｳ",
@@ -4592,7 +4701,7 @@
             "decisions": [
               {
                 "paragraph": "ｼｮﾘ-RTN",
-                "source": "gondwana/programs/GLD040.cbl:268",
+                "source": "gondwana/programs/GLD040.cbl:270",
                 "conditions": [
                   "MR-ｼﾞｭｳｼｮﾍﾝｺｳ",
                   "MR-ｺｳｻﾞﾍﾝｺｳ",
@@ -4604,7 +4713,7 @@
               },
               {
                 "paragraph": "ﾍﾝｺｳ-RTN",
-                "source": "gondwana/programs/GLD040.cbl:319",
+                "source": "gondwana/programs/GLD040.cbl:321",
                 "conditions": [
                   "MR-ｼﾞｭｳｼｮﾍﾝｺｳ",
                   "MR-ｺｳｻﾞﾍﾝｺｳ",
@@ -4672,7 +4781,7 @@
             "decisions": [
               {
                 "paragraph": "ﾍﾝｺｳ-RTN",
-                "source": "gondwana/programs/GLD040.cbl:319",
+                "source": "gondwana/programs/GLD040.cbl:321",
                 "conditions": [
                   "MR-ｼﾞｭｳｼｮ = SPACES"
                 ]
@@ -4709,7 +4818,7 @@
             "decisions": [
               {
                 "paragraph": "ﾍﾝｺｳ-RTN",
-                "source": "gondwana/programs/GLD040.cbl:319",
+                "source": "gondwana/programs/GLD040.cbl:321",
                 "conditions": [
                   "MR-ｷﾞﾝｺｳｺｰﾄﾞ = 0 OR MR-ｺｳｻﾞﾊﾞﾝｺﾞｳ = 0 OR MR-ｺｳｻﾞﾒｲｷﾞ = SPACES"
                 ]
@@ -4754,7 +4863,7 @@
             "decisions": [
               {
                 "paragraph": "ﾍﾝｺｳ-RTN",
-                "source": "gondwana/programs/GLD040.cbl:319",
+                "source": "gondwana/programs/GLD040.cbl:321",
                 "conditions": [
                   "MR-ｷﾞﾝｺｳｺｰﾄﾞ = 0 OR MR-ｺｳｻﾞﾊﾞﾝｺﾞｳ = 0 OR MR-ｺｳｻﾞﾒｲｷﾞ = SPACES"
                 ]
@@ -4777,7 +4886,7 @@
             "decisions": [
               {
                 "paragraph": "ﾍﾝｺｳ-RTN",
-                "source": "gondwana/programs/GLD040.cbl:319",
+                "source": "gondwana/programs/GLD040.cbl:321",
                 "conditions": [
                   "MR-ｷﾞﾝｺｳｺｰﾄﾞ = 0 OR MR-ｺｳｻﾞﾊﾞﾝｺﾞｳ = 0 OR MR-ｺｳｻﾞﾒｲｷﾞ = SPACES"
                 ]
@@ -4800,7 +4909,7 @@
             "decisions": [
               {
                 "paragraph": "ﾍﾝｺｳ-RTN",
-                "source": "gondwana/programs/GLD040.cbl:319",
+                "source": "gondwana/programs/GLD040.cbl:321",
                 "conditions": [
                   "MR-ｼﾒｲ = SPACES OR MR-ｼﾒｲｶﾅ = SPACES"
                 ]
@@ -4823,7 +4932,7 @@
             "decisions": [
               {
                 "paragraph": "ﾍﾝｺｳ-RTN",
-                "source": "gondwana/programs/GLD040.cbl:319",
+                "source": "gondwana/programs/GLD040.cbl:321",
                 "conditions": [
                   "MR-ｼﾒｲ = SPACES OR MR-ｼﾒｲｶﾅ = SPACES"
                 ]
@@ -4846,7 +4955,7 @@
             "decisions": [
               {
                 "paragraph": "ﾍﾝｺｳ-RTN",
-                "source": "gondwana/programs/GLD040.cbl:319",
+                "source": "gondwana/programs/GLD040.cbl:321",
                 "conditions": [
                   "MR-ｳｹﾄﾘﾆﾝ = SPACES"
                 ]
@@ -4870,7 +4979,7 @@
             "decisions": [
               {
                 "paragraph": "ﾌｯｶﾂ-RTN",
-                "source": "gondwana/programs/GLD040.cbl:359",
+                "source": "gondwana/programs/GLD040.cbl:361",
                 "conditions": [
                   "MR-ﾆｭｳｷﾝｶﾞｸ \u003c WS-ﾐﾉｳｶﾞｸ"
                 ]
@@ -4985,7 +5094,7 @@
             "decisions": [
               {
                 "paragraph": "ｹﾝｻ-RTN",
-                "source": "gondwana/programs/GLD010.cbl:332",
+                "source": "gondwana/programs/GLD010.cbl:334",
                 "conditions": [
                   "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = NP-ｼｮｳﾋﾝ"
                 ]
@@ -5026,14 +5135,14 @@
             "decisions": [
               {
                 "paragraph": "ｹﾝｻ-RTN",
-                "source": "gondwana/programs/GLD010.cbl:332",
+                "source": "gondwana/programs/GLD010.cbl:334",
                 "conditions": [
                   "WS-ﾘﾕｳ-ﾅｼ AND NP-ﾊﾗｲｺﾐﾎｳﾎｳ NOT = '1' AND NP-ﾊﾗｲｺﾐﾎｳﾎｳ = '2' AND NP-ﾊﾗｲｺﾐﾎｳﾎｳ = '3'"
                 ]
               },
               {
                 "paragraph": "ﾎｹﾝﾘｮｳ-RTN",
-                "source": "gondwana/programs/GLD010.cbl:542",
+                "source": "gondwana/programs/GLD010.cbl:548",
                 "conditions": [
                   "NP-ﾊﾗｲｺﾐﾎｳﾎｳ = '2'",
                   "NP-ﾊﾗｲｺﾐﾎｳﾎｳ = '3'"
@@ -5125,14 +5234,14 @@
             "decisions": [
               {
                 "paragraph": "ｹﾝｻ-RTN",
-                "source": "gondwana/programs/GLD010.cbl:332",
+                "source": "gondwana/programs/GLD010.cbl:334",
                 "conditions": [
                   "WS-ﾘﾕｳ-ﾅｼ AND NP-ｾｲﾍﾞﾂ NOT = 1 AND NP-ｾｲﾍﾞﾂ = 2"
                 ]
               },
               {
                 "paragraph": "ﾈﾝﾚｲ-ｷﾝｶﾞｸ-ｹﾝｻ-RTN",
-                "source": "gondwana/programs/GLD010.cbl:396",
+                "source": "gondwana/programs/GLD010.cbl:398",
                 "conditions": [
                   "WS-ﾘｮｳﾘﾂ(WS-ｼｮｳﾋﾝ-IX NP-ｾｲﾍﾞﾂ WS-ﾈﾝﾚｲ-ｿｴｼﾞ) = 0"
                 ]
@@ -5279,7 +5388,7 @@
             "decisions": [
               {
                 "paragraph": "ﾄｸﾔｸ-ｹﾝｻ-RTN",
-                "source": "gondwana/programs/GLD010.cbl:423",
+                "source": "gondwana/programs/GLD010.cbl:425",
                 "conditions": [
                   "NP-ﾄｸﾔｸ-ｼｮｳﾋﾝ(WS-ﾄｸﾔｸ-N) = SPACES",
                   "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = NP-ﾄｸﾔｸ-ｼｮｳﾋﾝ(WS-ﾄｸﾔｸ-N)"
@@ -5287,7 +5396,7 @@
               },
               {
                 "paragraph": "ﾄｸﾔｸ-ｷｿｸ-RTN",
-                "source": "gondwana/programs/GLD010.cbl:447",
+                "source": "gondwana/programs/GLD010.cbl:449",
                 "conditions": [
                   "NOT WS-ｼｮｳﾋﾝ-ﾄｸﾔｸ(WS-ｼｮｳﾋﾝ-IX) OR WS-ｼｮｳﾋﾝ-ｼｭﾙｲ(WS-ｼｮｳﾋﾝ-IX) = WS-ｼｭｹｲﾔｸ-ｼｭﾙｲ OR (WS-ﾄｸﾔｸ-N = 2 AND NP-ﾄｸﾔｸ-ｼｮｳﾋﾝ(2) = NP-ﾄｸﾔｸ-ｼｮｳﾋﾝ(1))"
                 ]
@@ -5835,7 +5944,9 @@
       "GLY010"
     ],
     "readBy": [
-      "GLM030"
+      "GLM030",
+      "GLY020",
+      "GLY030"
     ],
     "programs": [
       "GLD010",
@@ -5850,7 +5961,9 @@
       "GLM020",
       "GLM030",
       "GLO010",
-      "GLY010"
+      "GLY010",
+      "GLY020",
+      "GLY030"
     ],
     "fields": [
       {
@@ -5862,7 +5975,8 @@
             "program": "GLD010",
             "field": "PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
             "readBy": [
-              "ｼﾜｹ-RTN"
+              "ｼﾜｹ-RTN",
+              "ｼｭｳﾉｳ-ｷﾛｸ-RTN"
             ],
             "writtenBy": [
               "ｹﾝｻ-RTN",
@@ -5895,7 +6009,8 @@
             "program": "GLD040",
             "field": "PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
             "readBy": [
-              "ﾌｯｶﾂ-ﾊﾝｴｲ-RTN"
+              "ﾌｯｶﾂ-ﾊﾝｴｲ-RTN",
+              "ｼｭｳﾉｳ-ｷﾛｸ-RTN"
             ],
             "writtenBy": [
               "ｼｮﾘ-RTN"
@@ -5905,7 +6020,8 @@
             "program": "GLD050",
             "field": "PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
             "readBy": [
-              "ﾌﾘｶｴｽﾞﾐ-RTN"
+              "ﾌﾘｶｴｽﾞﾐ-RTN",
+              "ｼｭｳﾉｳ-ｷﾛｸ-RTN"
             ],
             "writtenBy": [
               "ﾊﾝｴｲ-RTN"
@@ -5916,7 +6032,8 @@
             "field": "PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
             "readBy": [
               "ｼｮﾘ-RTN",
-              "ｼﾜｹ-RTN"
+              "ｼﾜｹ-RTN",
+              "ｼｭｳﾉｳ-ｷﾛｸ-RTN"
             ]
           },
           {
@@ -5968,6 +6085,26 @@
             "field": "PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
             "readBy": [
               "ﾂﾐﾀﾃ-RTN"
+            ]
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+            "readBy": [
+              "ﾒｲﾝ-RTN",
+              "ｹｲﾔｸ-RTN",
+              "ﾎｼｮｳ-ｿｳｻ-RTN",
+              "ﾒｲｻｲ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+            "readBy": [
+              "ｶｷｺﾐ-RTN"
+            ],
+            "writtenBy": [
+              "ｼｮｳﾒｲ-RTN"
             ]
           }
         ]
@@ -6072,14 +6209,14 @@
             "decisions": [
               {
                 "paragraph": "ﾌｯｶﾂ-RTN",
-                "source": "gondwana/programs/GLD040.cbl:359",
+                "source": "gondwana/programs/GLD040.cbl:361",
                 "conditions": [
                   "PM-ｼｯｺｳ"
                 ]
               },
               {
                 "paragraph": "ﾄｸﾔｸｶｲﾔｸ-RTN",
-                "source": "gondwana/programs/GLD040.cbl:420",
+                "source": "gondwana/programs/GLD040.cbl:426",
                 "conditions": [
                   "PM-ﾕｳｺｳ"
                 ]
@@ -6101,21 +6238,21 @@
             "decisions": [
               {
                 "paragraph": "ﾊﾝｴｲ-RTN",
-                "source": "gondwana/programs/GLD050.cbl:314",
+                "source": "gondwana/programs/GLD050.cbl:316",
                 "conditions": [
                   "PM-ﾊﾗｲｺﾐﾁｭｳ"
                 ]
               },
               {
                 "paragraph": "ﾌﾘｶｴｽﾞﾐ-RTN",
-                "source": "gondwana/programs/GLD050.cbl:366",
+                "source": "gondwana/programs/GLD050.cbl:368",
                 "conditions": [
                   "PM-ﾕｳﾖﾁｭｳ"
                 ]
               },
               {
                 "paragraph": "ﾌﾘｶｴﾌﾉｳ-RTN",
-                "source": "gondwana/programs/GLD050.cbl:407",
+                "source": "gondwana/programs/GLD050.cbl:413",
                 "conditions": [
                   "PM-ﾕｳｺｳ"
                 ]
@@ -6135,7 +6272,7 @@
             "decisions": [
               {
                 "paragraph": "ｼｮﾘ-RTN",
-                "source": "gondwana/programs/GLD060.cbl:210",
+                "source": "gondwana/programs/GLD060.cbl:212",
                 "conditions": [
                   "PM-ﾕｳﾖﾁｭｳ"
                 ]
@@ -6245,6 +6382,38 @@
                 ]
               }
             ]
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｼﾞｮｳﾀｲ",
+            "readBy": [
+              "ｹｲﾔｸ-RTN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "ｹｲﾔｸ-RTN",
+                "source": "gondwana/programs/GLY020.cbl:208",
+                "conditions": [
+                  "PM-ﾎｼｮｳﾁｭｳ"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "PM-ｼﾞｮｳﾀｲ",
+            "readBy": [
+              "ﾖﾃｲ-RTN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "ﾖﾃｲ-RTN",
+                "source": "gondwana/programs/GLY030.cbl:243",
+                "conditions": [
+                  "PM-ﾊﾗｲｺﾐﾁｭｳ"
+                ]
+              }
+            ]
           }
         ],
         "states": {
@@ -6306,7 +6475,7 @@
               "to": "PM-ﾕｳｺｳ",
               "program": "GLD010",
               "paragraph": "ﾄｳﾛｸ-RTN",
-              "source": "gondwana/programs/GLD010.cbl:462",
+              "source": "gondwana/programs/GLD010.cbl:464",
               "when": [
                 {
                   "condition": "WS-ﾘﾕｳ-ﾅｼ",
@@ -6553,7 +6722,7 @@
               "to": "PM-ﾕｳｺｳ",
               "program": "GLD040",
               "paragraph": "ﾌｯｶﾂ-ﾊﾝｴｲ-RTN",
-              "source": "gondwana/programs/GLD040.cbl:394",
+              "source": "gondwana/programs/GLD040.cbl:396",
               "when": [
                 {
                   "condition": "WS-ｹｲｶﾆｯｽｳ \u003e 365",
@@ -6570,7 +6739,7 @@
               "to": "PM-ﾕｳｺｳ",
               "program": "GLD040",
               "paragraph": "ﾌｯｶﾂ-ﾊﾝｴｲ-RTN",
-              "source": "gondwana/programs/GLD040.cbl:394",
+              "source": "gondwana/programs/GLD040.cbl:396",
               "when": [
                 {
                   "condition": "PM-ﾈﾝﾊﾞﾗｲ",
@@ -6591,7 +6760,7 @@
               "to": "PM-ﾕｳｺｳ",
               "program": "GLD050",
               "paragraph": "ﾌﾘｶｴｽﾞﾐ-RTN",
-              "source": "gondwana/programs/GLD050.cbl:383",
+              "source": "gondwana/programs/GLD050.cbl:385",
               "when": [
                 {
                   "condition": "PM-ﾈﾝﾊﾞﾗｲ",
@@ -6604,7 +6773,7 @@
               "to": "PM-ﾕｳｺｳ",
               "program": "GLD050",
               "paragraph": "ﾌﾘｶｴｽﾞﾐ-RTN",
-              "source": "gondwana/programs/GLD050.cbl:383",
+              "source": "gondwana/programs/GLD050.cbl:385",
               "when": [
                 {
                   "condition": "PM-ﾈﾝﾊﾞﾗｲ",
@@ -6617,14 +6786,14 @@
               "to": "PM-ﾕｳﾖﾁｭｳ",
               "program": "GLD050",
               "paragraph": "ﾌﾘｶｴﾌﾉｳ-RTN",
-              "source": "gondwana/programs/GLD050.cbl:410"
+              "source": "gondwana/programs/GLD050.cbl:416"
             },
             {
               "from": "PM-ﾕｳﾖﾁｭｳ",
               "to": "PM-ﾕｳｺｳ",
               "program": "GLD060",
               "paragraph": "ﾌﾘｶｴ-RTN",
-              "source": "gondwana/programs/GLD060.cbl:320",
+              "source": "gondwana/programs/GLD060.cbl:322",
               "when": [
                 {
                   "condition": "WS-ｷﾞｮｳﾑ-YYYYMM \u003e WS-ｷｹﾞﾝ-YYYYMM",
@@ -6641,7 +6810,7 @@
               "to": "PM-ｼｯｺｳ",
               "program": "GLD060",
               "paragraph": "ｼｯｺｳ-RTN",
-              "source": "gondwana/programs/GLD060.cbl:333",
+              "source": "gondwana/programs/GLD060.cbl:339",
               "when": [
                 {
                   "condition": "WS-ｷﾞｮｳﾑ-YYYYMM \u003e WS-ｷｹﾞﾝ-YYYYMM",
@@ -6781,6 +6950,32 @@
                 ]
               }
             ]
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｼｮｳﾋﾝ",
+            "readBy": [
+              "ｹｲﾔｸ-RTN"
+            ],
+            "writtenBy": [
+              "ｹｲﾔｸ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "PM-ｼｮｳﾋﾝ",
+            "readBy": [
+              "ｶｷｺﾐ-RTN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "ｶｷｺﾐ-RTN",
+                "source": "gondwana/programs/GLY030.cbl:281",
+                "conditions": [
+                  "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ"
+                ]
+              }
+            ]
           }
         ],
         "states": {
@@ -6815,7 +7010,7 @@
               "program": "GLD010",
               "from": "NP-ｼｮｳﾋﾝ",
               "paragraph": "ﾄｳﾛｸ-RTN",
-              "source": "gondwana/programs/GLD010.cbl:463"
+              "source": "gondwana/programs/GLD010.cbl:465"
             },
             {
               "program": "GLD020",
@@ -6839,13 +7034,19 @@
               "program": "GLD060",
               "from": "GLC030",
               "paragraph": "ﾌﾘｶｴ-ﾊﾝﾃｲ-RTN",
-              "source": "gondwana/programs/GLD060.cbl:263"
+              "source": "gondwana/programs/GLD060.cbl:265"
             },
             {
               "program": "GLD070",
               "from": "GLC030",
               "paragraph": "ｹﾞﾝﾄﾞ-RTN",
               "source": "gondwana/programs/GLD070.cbl:309"
+            },
+            {
+              "program": "GLY020",
+              "from": "GLC030",
+              "paragraph": "ｹｲﾔｸ-RTN",
+              "source": "gondwana/programs/GLY020.cbl:219"
             }
           ]
         }
@@ -6953,6 +7154,20 @@
             "readBy": [
               "ﾊｲﾄｳ-RTN"
             ]
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ﾎｹﾝｷﾝｶﾞｸ",
+            "readBy": [
+              "ｹｲﾔｸ-RTN"
+            ],
+            "writtenBy": [
+              "ｹｲﾔｸ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "PM-ﾎｹﾝｷﾝｶﾞｸ"
           }
         ]
       },
@@ -7042,6 +7257,21 @@
           {
             "program": "GLY010",
             "field": "PM-ﾎｹﾝﾘｮｳ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ﾎｹﾝﾘｮｳ",
+            "readBy": [
+              "ﾒｲﾝ-RTN",
+              "ﾒｲｻｲ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "PM-ﾎｹﾝﾘｮｳ",
+            "readBy": [
+              "ｶｷｺﾐ-RTN"
+            ]
           }
         ]
       },
@@ -7099,7 +7329,7 @@
             "decisions": [
               {
                 "paragraph": "ﾌｯｶﾂ-RTN",
-                "source": "gondwana/programs/GLD040.cbl:359",
+                "source": "gondwana/programs/GLD040.cbl:361",
                 "conditions": [
                   "PM-ﾈﾝﾊﾞﾗｲ",
                   "PM-ﾊﾝﾄｼﾊﾞﾗｲ"
@@ -7116,7 +7346,7 @@
             "decisions": [
               {
                 "paragraph": "ﾌﾘｶｴｽﾞﾐ-RTN",
-                "source": "gondwana/programs/GLD050.cbl:366",
+                "source": "gondwana/programs/GLD050.cbl:368",
                 "conditions": [
                   "PM-ﾈﾝﾊﾞﾗｲ",
                   "PM-ﾊﾝﾄｼﾊﾞﾗｲ"
@@ -7134,14 +7364,14 @@
             "decisions": [
               {
                 "paragraph": "ﾌﾘｶｴ-ﾊﾝﾃｲ-RTN",
-                "source": "gondwana/programs/GLD060.cbl:252",
+                "source": "gondwana/programs/GLD060.cbl:254",
                 "conditions": [
                   "PM-ﾂｷﾊﾞﾗｲ"
                 ]
               },
               {
                 "paragraph": "ﾌﾘｶｴ-RTN",
-                "source": "gondwana/programs/GLD060.cbl:285",
+                "source": "gondwana/programs/GLD060.cbl:287",
                 "conditions": [
                   "PM-ﾈﾝﾊﾞﾗｲ",
                   "PM-ﾊﾝﾄｼﾊﾞﾗｲ"
@@ -7189,6 +7419,41 @@
           {
             "program": "GLY010",
             "field": "PM-ﾊﾗｲｺﾐﾎｳﾎｳ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ﾊﾗｲｺﾐﾎｳﾎｳ",
+            "readBy": [
+              "ｹｲﾔｸ-RTN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "ｹｲﾔｸ-RTN",
+                "source": "gondwana/programs/GLY020.cbl:208",
+                "conditions": [
+                  "PM-ﾈﾝﾊﾞﾗｲ",
+                  "PM-ﾊﾝﾄｼﾊﾞﾗｲ"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "PM-ﾊﾗｲｺﾐﾎｳﾎｳ",
+            "readBy": [
+              "ﾖﾃｲ-RTN",
+              "ｶｷｺﾐ-RTN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "ﾖﾃｲ-RTN",
+                "source": "gondwana/programs/GLY030.cbl:243",
+                "conditions": [
+                  "PM-ﾈﾝﾊﾞﾗｲ",
+                  "PM-ﾊﾝﾄｼﾊﾞﾗｲ"
+                ]
+              }
+            ]
           }
         ],
         "states": {
@@ -7217,7 +7482,7 @@
               "program": "GLD010",
               "from": "NP-ﾊﾗｲｺﾐﾎｳﾎｳ",
               "paragraph": "ﾄｳﾛｸ-RTN",
-              "source": "gondwana/programs/GLD010.cbl:466"
+              "source": "gondwana/programs/GLD010.cbl:468"
             }
           ]
         }
@@ -7293,6 +7558,21 @@
           {
             "program": "GLY010",
             "field": "PM-ｹｲﾔｸﾋﾞ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｹｲﾔｸﾋﾞ",
+            "readBy": [
+              "ﾒｲﾝ-RTN",
+              "ﾒｲｻｲ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "PM-ｹｲﾔｸﾋﾞ",
+            "readBy": [
+              "ｶｷｺﾐ-RTN"
+            ]
           }
         ],
         "datesFrom": [
@@ -7360,6 +7640,14 @@
           },
           {
             "program": "GLY010",
+            "field": "PM-ﾎｹﾝｷｶﾝ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ﾎｹﾝｷｶﾝ"
+          },
+          {
+            "program": "GLY030",
             "field": "PM-ﾎｹﾝｷｶﾝ"
           }
         ]
@@ -7437,6 +7725,14 @@
           },
           {
             "program": "GLY010",
+            "field": "PM-ﾏﾝｷﾋﾞ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ﾏﾝｷﾋﾞ"
+          },
+          {
+            "program": "GLY030",
             "field": "PM-ﾏﾝｷﾋﾞ"
           }
         ],
@@ -7575,6 +7871,20 @@
                 ]
               }
             ]
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｹｲｶﾈﾝｽｳ",
+            "readBy": [
+              "ｹｲﾔｸ-RTN"
+            ],
+            "writtenBy": [
+              "ｹｲﾔｸ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "PM-ｹｲｶﾈﾝｽｳ"
           }
         ]
       },
@@ -7586,6 +7896,9 @@
           {
             "program": "GLD010",
             "field": "PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ",
+            "readBy": [
+              "ｼｭｳﾉｳ-ｷﾛｸ-RTN"
+            ],
             "writtenBy": [
               "ﾄｳﾛｸ-RTN"
             ]
@@ -7605,7 +7918,8 @@
             "program": "GLD040",
             "field": "PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ",
             "readBy": [
-              "ﾌｯｶﾂ-RTN"
+              "ﾌｯｶﾂ-RTN",
+              "ｼｭｳﾉｳ-ｷﾛｸ-RTN"
             ],
             "writtenBy": [
               "ﾌｯｶﾂ-ﾊﾝｴｲ-RTN"
@@ -7615,7 +7929,8 @@
             "program": "GLD050",
             "field": "PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ",
             "readBy": [
-              "ﾌﾘｶｴｽﾞﾐ-RTN"
+              "ﾌﾘｶｴｽﾞﾐ-RTN",
+              "ｼｭｳﾉｳ-ｷﾛｸ-RTN"
             ],
             "writtenBy": [
               "ﾌﾘｶｴｽﾞﾐ-RTN"
@@ -7626,7 +7941,8 @@
             "field": "PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ",
             "readBy": [
               "ﾌﾘｶｴ-ﾊﾝﾃｲ-RTN",
-              "ﾌﾘｶｴ-RTN"
+              "ﾌﾘｶｴ-RTN",
+              "ｼｭｳﾉｳ-ｷﾛｸ-RTN"
             ],
             "writtenBy": [
               "ﾌﾘｶｴ-RTN"
@@ -7671,6 +7987,21 @@
           {
             "program": "GLY010",
             "field": "PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ",
+            "readBy": [
+              "ﾒｲﾝ-RTN",
+              "ﾒｲｻｲ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ",
+            "readBy": [
+              "ﾖﾃｲ-RTN"
+            ]
           }
         ],
         "datesFrom": [
@@ -7752,6 +8083,14 @@
           {
             "program": "GLY010",
             "field": "PM-ﾐﾉｳｶｲｽｳ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ﾐﾉｳｶｲｽｳ"
+          },
+          {
+            "program": "GLY030",
+            "field": "PM-ﾐﾉｳｶｲｽｳ"
           }
         ]
       },
@@ -7825,6 +8164,14 @@
           },
           {
             "program": "GLY010",
+            "field": "PM-ﾕｳﾖｶｲｼﾋﾞ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ﾕｳﾖｶｲｼﾋﾞ"
+          },
+          {
+            "program": "GLY030",
             "field": "PM-ﾕｳﾖｶｲｼﾋﾞ"
           }
         ]
@@ -7903,6 +8250,14 @@
           },
           {
             "program": "GLY010",
+            "field": "PM-ｼｯｺｳﾋﾞ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｼｯｺｳﾋﾞ"
+          },
+          {
+            "program": "GLY030",
             "field": "PM-ｼｯｺｳﾋﾞ"
           }
         ]
@@ -7985,6 +8340,14 @@
           {
             "program": "GLY010",
             "field": "PM-ｼﾞｮｳﾀｲﾋﾂﾞｹ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｼﾞｮｳﾀｲﾋﾂﾞｹ"
+          },
+          {
+            "program": "GLY030",
+            "field": "PM-ｼﾞｮｳﾀｲﾋﾂﾞｹ"
           }
         ]
       },
@@ -8043,6 +8406,14 @@
           },
           {
             "program": "GLY010",
+            "field": "PM-ﾋﾎｹﾝｼｬ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ﾋﾎｹﾝｼｬ"
+          },
+          {
+            "program": "GLY030",
             "field": "PM-ﾋﾎｹﾝｼｬ"
           }
         ]
@@ -8121,6 +8492,21 @@
             "readBy": [
               "ﾂﾐﾀﾃ-RTN"
             ]
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｼﾒｲ",
+            "readBy": [
+              "ﾒｲﾝ-RTN",
+              "ﾒｲｻｲ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "PM-ｼﾒｲ",
+            "readBy": [
+              "ｶｷｺﾐ-RTN"
+            ]
           }
         ]
       },
@@ -8185,6 +8571,14 @@
           },
           {
             "program": "GLY010",
+            "field": "PM-ｼﾒｲｶﾅ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｼﾒｲｶﾅ"
+          },
+          {
+            "program": "GLY030",
             "field": "PM-ｼﾒｲｶﾅ"
           }
         ]
@@ -8253,6 +8647,14 @@
           },
           {
             "program": "GLY010",
+            "field": "PM-ｾｲﾈﾝｶﾞｯﾋﾟ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｾｲﾈﾝｶﾞｯﾋﾟ"
+          },
+          {
+            "program": "GLY030",
             "field": "PM-ｾｲﾈﾝｶﾞｯﾋﾟ"
           }
         ],
@@ -8325,6 +8727,14 @@
           {
             "program": "GLY010",
             "field": "PM-ｾｲﾍﾞﾂ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｾｲﾍﾞﾂ"
+          },
+          {
+            "program": "GLY030",
+            "field": "PM-ｾｲﾍﾞﾂ"
           }
         ],
         "states": {
@@ -8347,7 +8757,7 @@
               "program": "GLD010",
               "from": "NP-ｾｲﾍﾞﾂ",
               "paragraph": "ﾄｳﾛｸ-RTN",
-              "source": "gondwana/programs/GLD010.cbl:479"
+              "source": "gondwana/programs/GLD010.cbl:481"
             }
           ]
         }
@@ -8437,6 +8847,20 @@
           {
             "program": "GLY010",
             "field": "PM-ｶﾆｭｳﾈﾝﾚｲ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｶﾆｭｳﾈﾝﾚｲ",
+            "readBy": [
+              "ｹｲﾔｸ-RTN"
+            ],
+            "writtenBy": [
+              "ｹｲﾔｸ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "PM-ｶﾆｭｳﾈﾝﾚｲ"
           }
         ]
       },
@@ -8495,6 +8919,14 @@
           },
           {
             "program": "GLY010",
+            "field": "PM-ｹｲﾔｸｼｬ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｹｲﾔｸｼｬ"
+          },
+          {
+            "program": "GLY030",
             "field": "PM-ｹｲﾔｸｼｬ"
           }
         ]
@@ -8561,6 +8993,21 @@
           {
             "program": "GLY010",
             "field": "PM-ｼﾞｭｳｼｮ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｼﾞｭｳｼｮ",
+            "readBy": [
+              "ﾒｲﾝ-RTN",
+              "ﾒｲｻｲ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "PM-ｼﾞｭｳｼｮ",
+            "readBy": [
+              "ｶｷｺﾐ-RTN"
+            ]
           }
         ]
       },
@@ -8626,6 +9073,14 @@
           {
             "program": "GLY010",
             "field": "PM-ｳｹﾄﾘﾆﾝ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｳｹﾄﾘﾆﾝ"
+          },
+          {
+            "program": "GLY030",
+            "field": "PM-ｳｹﾄﾘﾆﾝ"
           }
         ]
       },
@@ -8687,6 +9142,14 @@
           },
           {
             "program": "GLY010",
+            "field": "PM-ｺｳｻﾞ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｺｳｻﾞ"
+          },
+          {
+            "program": "GLY030",
             "field": "PM-ｺｳｻﾞ"
           }
         ]
@@ -8753,6 +9216,14 @@
           {
             "program": "GLY010",
             "field": "PM-ｷﾞﾝｺｳｺｰﾄﾞ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｷﾞﾝｺｳｺｰﾄﾞ"
+          },
+          {
+            "program": "GLY030",
+            "field": "PM-ｷﾞﾝｺｳｺｰﾄﾞ"
           }
         ]
       },
@@ -8817,6 +9288,14 @@
           },
           {
             "program": "GLY010",
+            "field": "PM-ｼﾃﾝｺｰﾄﾞ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｼﾃﾝｺｰﾄﾞ"
+          },
+          {
+            "program": "GLY030",
             "field": "PM-ｼﾃﾝｺｰﾄﾞ"
           }
         ]
@@ -8883,6 +9362,14 @@
           {
             "program": "GLY010",
             "field": "PM-ﾖｷﾝｼｭﾓｸ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ﾖｷﾝｼｭﾓｸ"
+          },
+          {
+            "program": "GLY030",
+            "field": "PM-ﾖｷﾝｼｭﾓｸ"
           }
         ]
       },
@@ -8947,6 +9434,14 @@
           },
           {
             "program": "GLY010",
+            "field": "PM-ｺｳｻﾞﾊﾞﾝｺﾞｳ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｺｳｻﾞﾊﾞﾝｺﾞｳ"
+          },
+          {
+            "program": "GLY030",
             "field": "PM-ｺｳｻﾞﾊﾞﾝｺﾞｳ"
           }
         ]
@@ -9019,6 +9514,14 @@
           {
             "program": "GLY010",
             "field": "PM-ｺｳｻﾞﾒｲｷﾞ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｺｳｻﾞﾒｲｷﾞ"
+          },
+          {
+            "program": "GLY030",
+            "field": "PM-ｺｳｻﾞﾒｲｷﾞ"
           }
         ]
       },
@@ -9083,6 +9586,14 @@
           },
           {
             "program": "GLY010",
+            "field": "PM-ﾀﾞｲﾘﾃﾝｺｰﾄﾞ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ﾀﾞｲﾘﾃﾝｺｰﾄﾞ"
+          },
+          {
+            "program": "GLY030",
             "field": "PM-ﾀﾞｲﾘﾃﾝｺｰﾄﾞ"
           }
         ]
@@ -9225,6 +9736,18 @@
           {
             "program": "GLY010",
             "field": "PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ",
+            "readBy": [
+              "ﾒｲﾝ-RTN",
+              "ﾒｲｻｲ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ"
           }
         ]
       },
@@ -9303,6 +9826,14 @@
           },
           {
             "program": "GLY010",
+            "field": "PM-ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ"
+          },
+          {
+            "program": "GLY030",
             "field": "PM-ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ"
           }
         ]
@@ -9404,6 +9935,18 @@
             "writtenBy": [
               "ﾂﾐﾀﾃ-RTN"
             ]
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ﾊｲﾄｳﾙｲｹｲ",
+            "readBy": [
+              "ﾒｲﾝ-RTN",
+              "ﾒｲｻｲ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "PM-ﾊｲﾄｳﾙｲｹｲ"
           }
         ]
       },
@@ -9487,6 +10030,14 @@
           },
           {
             "program": "GLY010",
+            "field": "PM-ｻｲｼｭｳﾆｭｳｷﾝﾈﾝｹﾞﾂ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｻｲｼｭｳﾆｭｳｷﾝﾈﾝｹﾞﾂ"
+          },
+          {
+            "program": "GLY030",
             "field": "PM-ｻｲｼｭｳﾆｭｳｷﾝﾈﾝｹﾞﾂ"
           }
         ],
@@ -9579,6 +10130,14 @@
           {
             "program": "GLY010",
             "field": "PM-ｻｲｼｭｳﾆｭｳｷﾝｶﾞｸ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｻｲｼｭｳﾆｭｳｷﾝｶﾞｸ"
+          },
+          {
+            "program": "GLY030",
+            "field": "PM-ｻｲｼｭｳﾆｭｳｷﾝｶﾞｸ"
           }
         ]
       },
@@ -9667,6 +10226,14 @@
           {
             "program": "GLY010",
             "field": "PM-ｶｼﾂｹｷｻﾝﾋﾞ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｶｼﾂｹｷｻﾝﾋﾞ"
+          },
+          {
+            "program": "GLY030",
+            "field": "PM-ｶｼﾂｹｷｻﾝﾋﾞ"
           }
         ]
       },
@@ -9744,6 +10311,14 @@
           {
             "program": "GLY010",
             "field": "PM-ﾌｯｶﾂﾋﾞ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ﾌｯｶﾂﾋﾞ"
+          },
+          {
+            "program": "GLY030",
+            "field": "PM-ﾌｯｶﾂﾋﾞ"
           }
         ]
       },
@@ -9803,6 +10378,14 @@
           {
             "program": "GLY010",
             "field": "PM-ｾｲｷｭｳ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｾｲｷｭｳ"
+          },
+          {
+            "program": "GLY030",
+            "field": "PM-ｾｲｷｭｳ"
           }
         ]
       },
@@ -9842,7 +10425,7 @@
             "decisions": [
               {
                 "paragraph": "ｷﾝｶﾞｸ-ｹﾝｻ-RTN",
-                "source": "gondwana/programs/GLD050.cbl:353",
+                "source": "gondwana/programs/GLD050.cbl:355",
                 "conditions": [
                   "PM-ｾｲｷｭｳｶｲｽｳ \u003e 0 AND ZG-D-ｷﾝｶﾞｸ = PM-ｾｲｷｭｳﾎｹﾝﾘｮｳ * PM-ｾｲｷｭｳｶｲｽｳ"
                 ]
@@ -9897,6 +10480,14 @@
           },
           {
             "program": "GLY010",
+            "field": "PM-ｾｲｷｭｳｶｲｽｳ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｾｲｷｭｳｶｲｽｳ"
+          },
+          {
+            "program": "GLY030",
             "field": "PM-ｾｲｷｭｳｶｲｽｳ"
           }
         ]
@@ -9937,7 +10528,7 @@
             "decisions": [
               {
                 "paragraph": "ｷﾝｶﾞｸ-ｹﾝｻ-RTN",
-                "source": "gondwana/programs/GLD050.cbl:353",
+                "source": "gondwana/programs/GLD050.cbl:355",
                 "conditions": [
                   "PM-ｾｲｷｭｳｶｲｽｳ \u003e 0 AND ZG-D-ｷﾝｶﾞｸ = PM-ｾｲｷｭｳﾎｹﾝﾘｮｳ * PM-ｾｲｷｭｳｶｲｽｳ"
                 ]
@@ -9993,6 +10584,14 @@
           {
             "program": "GLY010",
             "field": "PM-ｾｲｷｭｳﾎｹﾝﾘｮｳ"
+          },
+          {
+            "program": "GLY020",
+            "field": "PM-ｾｲｷｭｳﾎｹﾝﾘｮｳ"
+          },
+          {
+            "program": "GLY030",
+            "field": "PM-ｾｲｷｭｳﾎｹﾝﾘｮｳ"
           }
         ]
       }
@@ -10023,7 +10622,8 @@
           "field": "HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ"
         },
         "programs": [
-          "GLD020"
+          "GLD020",
+          "GLY020"
         ]
       },
       {
@@ -10094,7 +10694,8 @@
         },
         "programs": [
           "GLM020",
-          "GLY010"
+          "GLY010",
+          "GLY030"
         ]
       },
       {
@@ -10110,6 +10711,883 @@
         "programs": [
           "GLO010"
         ]
+      },
+      {
+        "kind": "key",
+        "from": {
+          "record": "SH-ｼｭｳﾉｳ-ﾚｺｰﾄﾞ",
+          "field": "SH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ"
+        },
+        "to": {
+          "record": "PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ",
+          "field": "PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ"
+        },
+        "programs": [
+          "GLY030"
+        ]
+      }
+    ]
+  },
+  {
+    "record": "WS-ｼｭｳﾉｳ-ｷﾉｳ",
+    "copybook": "PRMCAL",
+    "programs": [
+      "GLD010",
+      "GLD040",
+      "GLD050",
+      "GLD060"
+    ],
+    "fields": null
+  },
+  {
+    "record": "WS-ｼｭｳﾉｳ",
+    "copybook": "PRMCAL",
+    "programs": [
+      "GLD010",
+      "GLD040",
+      "GLD050",
+      "GLD060"
+    ],
+    "fields": [
+      {
+        "name": "WS-ｼｭｳﾉｳ-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+        "kind": "text",
+        "layout": "X(10)",
+        "uses": [
+          {
+            "program": "GLD010",
+            "field": "WS-ｼｭｳﾉｳ-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+            "writtenBy": [
+              "ｼｭｳﾉｳ-ｷﾛｸ-RTN"
+            ]
+          },
+          {
+            "program": "GLD040",
+            "field": "WS-ｼｭｳﾉｳ-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+            "writtenBy": [
+              "ｼｭｳﾉｳ-ｷﾛｸ-RTN"
+            ]
+          },
+          {
+            "program": "GLD050",
+            "field": "WS-ｼｭｳﾉｳ-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+            "writtenBy": [
+              "ｼｭｳﾉｳ-ｷﾛｸ-RTN"
+            ]
+          },
+          {
+            "program": "GLD060",
+            "field": "WS-ｼｭｳﾉｳ-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+            "writtenBy": [
+              "ｼｭｳﾉｳ-ｷﾛｸ-RTN"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "WS-ｼｭｳﾉｳ-ﾋﾂﾞｹ",
+        "kind": "date",
+        "layout": "9(8)",
+        "uses": [
+          {
+            "program": "GLD010",
+            "field": "WS-ｼｭｳﾉｳ-ﾋﾂﾞｹ",
+            "writtenBy": [
+              "ｼｭｳﾉｳ-ｷﾛｸ-RTN"
+            ]
+          },
+          {
+            "program": "GLD040",
+            "field": "WS-ｼｭｳﾉｳ-ﾋﾂﾞｹ",
+            "writtenBy": [
+              "ｼｭｳﾉｳ-ｷﾛｸ-RTN"
+            ]
+          },
+          {
+            "program": "GLD050",
+            "field": "WS-ｼｭｳﾉｳ-ﾋﾂﾞｹ",
+            "writtenBy": [
+              "ｼｭｳﾉｳ-ｷﾛｸ-RTN"
+            ]
+          },
+          {
+            "program": "GLD060",
+            "field": "WS-ｼｭｳﾉｳ-ﾋﾂﾞｹ",
+            "writtenBy": [
+              "ｼｭｳﾉｳ-ｷﾛｸ-RTN"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "WS-ｼｭｳﾉｳ-ｼｭﾍﾞﾂ",
+        "kind": "code",
+        "layout": "X",
+        "uses": [
+          {
+            "program": "GLD010",
+            "field": "WS-ｼｭｳﾉｳ-ｼｭﾍﾞﾂ",
+            "writtenBy": [
+              "ﾄｳﾛｸ-RTN"
+            ]
+          },
+          {
+            "program": "GLD040",
+            "field": "WS-ｼｭｳﾉｳ-ｼｭﾍﾞﾂ",
+            "writtenBy": [
+              "ﾌｯｶﾂ-ﾊﾝｴｲ-RTN"
+            ]
+          },
+          {
+            "program": "GLD050",
+            "field": "WS-ｼｭｳﾉｳ-ｼｭﾍﾞﾂ",
+            "writtenBy": [
+              "ﾌﾘｶｴｽﾞﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLD060",
+            "field": "WS-ｼｭｳﾉｳ-ｼｭﾍﾞﾂ",
+            "writtenBy": [
+              "ﾌﾘｶｴ-RTN"
+            ]
+          }
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "WS-ｼｭｳﾉｳ-ｼｮｶｲ",
+              "values": [
+                "'1'"
+              ]
+            },
+            {
+              "name": "WS-ｼｭｳﾉｳ-ﾌﾘｶｴ",
+              "values": [
+                "'2'"
+              ]
+            },
+            {
+              "name": "WS-ｼｭｳﾉｳ-ﾏﾄﾞｸﾞﾁ",
+              "values": [
+                "'3'"
+              ]
+            },
+            {
+              "name": "WS-ｼｭｳﾉｳ-ｶｼﾂｹ",
+              "values": [
+                "'4'"
+              ]
+            }
+          ],
+          "transitions": [
+            {
+              "from": "any",
+              "to": "WS-ｼｭｳﾉｳ-ｼｮｶｲ",
+              "program": "GLD010",
+              "paragraph": "ﾄｳﾛｸ-RTN",
+              "source": "gondwana/programs/GLD010.cbl:504",
+              "when": [
+                {
+                  "condition": "WS-ﾘﾕｳ-ﾅｼ",
+                  "holds": true
+                },
+                {
+                  "condition": "WS-POLMST-OK",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "WS-ｼｭｳﾉｳ-ﾏﾄﾞｸﾞﾁ",
+              "program": "GLD040",
+              "paragraph": "ﾌｯｶﾂ-ﾊﾝｴｲ-RTN",
+              "source": "gondwana/programs/GLD040.cbl:417",
+              "when": [
+                {
+                  "condition": "WS-POLMST-ﾅｼ",
+                  "holds": false
+                },
+                {
+                  "condition": "WS-POLMST-OK",
+                  "holds": true
+                },
+                {
+                  "condition": "MR-ｼﾞｭｳｼｮﾍﾝｺｳ",
+                  "holds": false
+                },
+                {
+                  "condition": "MR-ｺｳｻﾞﾍﾝｺｳ",
+                  "holds": false
+                },
+                {
+                  "condition": "MR-ｼﾒｲﾍﾝｺｳ",
+                  "holds": false
+                },
+                {
+                  "condition": "MR-ｳｹﾄﾘﾆﾝﾍﾝｺｳ",
+                  "holds": false
+                },
+                {
+                  "condition": "MR-ﾌｯｶﾂ",
+                  "holds": true
+                },
+                {
+                  "condition": "PM-ｼｯｺｳ",
+                  "holds": true
+                },
+                {
+                  "condition": "WS-ｹｲｶﾆｯｽｳ \u003e 365",
+                  "holds": false
+                },
+                {
+                  "condition": "MR-ﾆｭｳｷﾝｶﾞｸ \u003c WS-ﾐﾉｳｶﾞｸ",
+                  "holds": false
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "WS-ｼｭｳﾉｳ-ﾏﾄﾞｸﾞﾁ",
+              "program": "GLD040",
+              "paragraph": "ﾌｯｶﾂ-ﾊﾝｴｲ-RTN",
+              "source": "gondwana/programs/GLD040.cbl:417",
+              "when": [
+                {
+                  "condition": "WS-POLMST-ﾅｼ",
+                  "holds": false
+                },
+                {
+                  "condition": "WS-POLMST-OK",
+                  "holds": true
+                },
+                {
+                  "condition": "MR-ｼﾞｭｳｼｮﾍﾝｺｳ",
+                  "holds": false
+                },
+                {
+                  "condition": "MR-ｺｳｻﾞﾍﾝｺｳ",
+                  "holds": false
+                },
+                {
+                  "condition": "MR-ｼﾒｲﾍﾝｺｳ",
+                  "holds": false
+                },
+                {
+                  "condition": "MR-ｳｹﾄﾘﾆﾝﾍﾝｺｳ",
+                  "holds": false
+                },
+                {
+                  "condition": "MR-ﾌｯｶﾂ",
+                  "holds": true
+                },
+                {
+                  "condition": "PM-ｼｯｺｳ",
+                  "holds": true
+                },
+                {
+                  "condition": "PM-ﾈﾝﾊﾞﾗｲ",
+                  "holds": false
+                },
+                {
+                  "condition": "WS-ｹｲｶﾆｯｽｳ \u003e 365",
+                  "holds": false
+                },
+                {
+                  "condition": "MR-ﾆｭｳｷﾝｶﾞｸ \u003c WS-ﾐﾉｳｶﾞｸ",
+                  "holds": false
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "WS-ｼｭｳﾉｳ-ﾌﾘｶｴ",
+              "program": "GLD050",
+              "paragraph": "ﾌﾘｶｴｽﾞﾐ-RTN",
+              "source": "gondwana/programs/GLD050.cbl:404",
+              "when": [
+                {
+                  "condition": "WS-ﾌｧｲﾙ-ｶﾝﾘｮｳ",
+                  "holds": true
+                },
+                {
+                  "condition": "WS-POLMST-ﾅｼ",
+                  "holds": false
+                },
+                {
+                  "condition": "WS-ﾘﾕｳ-ﾅｼ",
+                  "holds": true
+                },
+                {
+                  "condition": "WS-POLMST-OK",
+                  "holds": true
+                },
+                {
+                  "condition": "ZG-D-ﾌﾘｶｴｽﾞﾐ",
+                  "holds": true
+                }
+              ]
+            },
+            {
+              "from": "any",
+              "to": "WS-ｼｭｳﾉｳ-ｶｼﾂｹ",
+              "program": "GLD060",
+              "paragraph": "ﾌﾘｶｴ-RTN",
+              "source": "gondwana/programs/GLD060.cbl:325",
+              "when": [
+                {
+                  "condition": "PM-ﾕｳﾖﾁｭｳ",
+                  "holds": true
+                },
+                {
+                  "condition": "WS-ｷﾞｮｳﾑ-YYYYMM \u003e WS-ｷｹﾞﾝ-YYYYMM",
+                  "holds": true
+                },
+                {
+                  "condition": "WS-ﾌﾘｶｴ-ｶ",
+                  "holds": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "name": "WS-ｼｭｳﾉｳ-ｷﾝｶﾞｸ",
+        "kind": "amount",
+        "layout": "9(9)",
+        "uses": [
+          {
+            "program": "GLD010",
+            "field": "WS-ｼｭｳﾉｳ-ｷﾝｶﾞｸ",
+            "writtenBy": [
+              "ﾄｳﾛｸ-RTN"
+            ]
+          },
+          {
+            "program": "GLD040",
+            "field": "WS-ｼｭｳﾉｳ-ｷﾝｶﾞｸ",
+            "writtenBy": [
+              "ﾌｯｶﾂ-ﾊﾝｴｲ-RTN"
+            ]
+          },
+          {
+            "program": "GLD050",
+            "field": "WS-ｼｭｳﾉｳ-ｷﾝｶﾞｸ",
+            "writtenBy": [
+              "ﾌﾘｶｴｽﾞﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLD060",
+            "field": "WS-ｼｭｳﾉｳ-ｷﾝｶﾞｸ",
+            "writtenBy": [
+              "ﾌﾘｶｴ-RTN"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "WS-ｼｭｳﾉｳ-ｶｲｽｳ",
+        "kind": "number",
+        "layout": "99",
+        "uses": [
+          {
+            "program": "GLD010",
+            "field": "WS-ｼｭｳﾉｳ-ｶｲｽｳ",
+            "writtenBy": [
+              "ﾄｳﾛｸ-RTN"
+            ]
+          },
+          {
+            "program": "GLD040",
+            "field": "WS-ｼｭｳﾉｳ-ｶｲｽｳ",
+            "writtenBy": [
+              "ﾌｯｶﾂ-ﾊﾝｴｲ-RTN"
+            ]
+          },
+          {
+            "program": "GLD050",
+            "field": "WS-ｼｭｳﾉｳ-ｶｲｽｳ",
+            "writtenBy": [
+              "ﾌﾘｶｴｽﾞﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLD060",
+            "field": "WS-ｼｭｳﾉｳ-ｶｲｽｳ",
+            "writtenBy": [
+              "ﾌﾘｶｴ-RTN"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "WS-ｼｭｳﾉｳ-ﾈﾝｹﾞﾂ",
+        "kind": "date",
+        "layout": "9(6)",
+        "uses": [
+          {
+            "program": "GLD010",
+            "field": "WS-ｼｭｳﾉｳ-ﾈﾝｹﾞﾂ",
+            "writtenBy": [
+              "ｼｭｳﾉｳ-ｷﾛｸ-RTN"
+            ]
+          },
+          {
+            "program": "GLD040",
+            "field": "WS-ｼｭｳﾉｳ-ﾈﾝｹﾞﾂ",
+            "writtenBy": [
+              "ｼｭｳﾉｳ-ｷﾛｸ-RTN"
+            ]
+          },
+          {
+            "program": "GLD050",
+            "field": "WS-ｼｭｳﾉｳ-ﾈﾝｹﾞﾂ",
+            "writtenBy": [
+              "ｼｭｳﾉｳ-ｷﾛｸ-RTN"
+            ]
+          },
+          {
+            "program": "GLD060",
+            "field": "WS-ｼｭｳﾉｳ-ﾈﾝｹﾞﾂ",
+            "writtenBy": [
+              "ｼｭｳﾉｳ-ｷﾛｸ-RTN"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "record": "WS-PRMHST-ST",
+    "copybook": "PRMCAL",
+    "programs": [
+      "GLD010",
+      "GLD040",
+      "GLD050",
+      "GLD060"
+    ],
+    "fields": null
+  },
+  {
+    "record": "SM-ｼｮｳﾒｲ-ﾚｺｰﾄﾞ",
+    "copybook": "PRMCERT",
+    "datasets": [
+      "$DATA/OUT/PRMCERT.$DATE.TXT"
+    ],
+    "writtenBy": [
+      "GLY030"
+    ],
+    "programs": [
+      "GLY030"
+    ],
+    "fields": [
+      {
+        "name": "SM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+        "kind": "text",
+        "layout": "X(10)",
+        "uses": [
+          {
+            "program": "GLY030",
+            "field": "SM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+            "writtenBy": [
+              "ｶｷｺﾐ-RTN"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "SM-ﾈﾝﾌﾞﾝ",
+        "kind": "number",
+        "layout": "9(4)",
+        "uses": [
+          {
+            "program": "GLY030",
+            "field": "SM-ﾈﾝﾌﾞﾝ",
+            "writtenBy": [
+              "ｶｷｺﾐ-RTN"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "SM-ﾊｯｺｳﾋﾞ",
+        "kind": "date",
+        "layout": "X(7)",
+        "uses": [
+          {
+            "program": "GLY030",
+            "field": "SM-ﾊｯｺｳﾋﾞ",
+            "writtenBy": [
+              "ｶｷｺﾐ-RTN"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "SM-ｼﾒｲ",
+        "kind": "text",
+        "layout": "X(20)",
+        "uses": [
+          {
+            "program": "GLY030",
+            "field": "SM-ｼﾒｲ",
+            "writtenBy": [
+              "ｶｷｺﾐ-RTN"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "SM-ｼﾞｭｳｼｮ",
+        "kind": "text",
+        "layout": "X(40)",
+        "uses": [
+          {
+            "program": "GLY030",
+            "field": "SM-ｼﾞｭｳｼｮ",
+            "writtenBy": [
+              "ｶｷｺﾐ-RTN"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "SM-ｼｮｳﾋﾝ",
+        "kind": "text",
+        "layout": "X(2)",
+        "uses": [
+          {
+            "program": "GLY030",
+            "field": "SM-ｼｮｳﾋﾝ",
+            "writtenBy": [
+              "ｶｷｺﾐ-RTN"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "SM-ｼｮｳﾋﾝﾒｲ",
+        "kind": "text",
+        "layout": "X(20)",
+        "uses": [
+          {
+            "program": "GLY030",
+            "field": "SM-ｼｮｳﾋﾝﾒｲ",
+            "writtenBy": [
+              "ｶｷｺﾐ-RTN"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "SM-ｹｲﾔｸﾋﾞ",
+        "kind": "date",
+        "layout": "X(7)",
+        "uses": [
+          {
+            "program": "GLY030",
+            "field": "SM-ｹｲﾔｸﾋﾞ",
+            "writtenBy": [
+              "ｶｷｺﾐ-RTN"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "SM-ﾊﾗｲｺﾐﾎｳﾎｳ",
+        "kind": "text",
+        "layout": "X",
+        "uses": [
+          {
+            "program": "GLY030",
+            "field": "SM-ﾊﾗｲｺﾐﾎｳﾎｳ",
+            "writtenBy": [
+              "ｶｷｺﾐ-RTN"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "SM-ｼｮｳﾒｲｶﾞｸ",
+        "kind": "amount",
+        "layout": "9(9)",
+        "uses": [
+          {
+            "program": "GLY030",
+            "field": "SM-ｼｮｳﾒｲｶﾞｸ",
+            "readBy": [
+              "ｶｷｺﾐ-RTN"
+            ],
+            "writtenBy": [
+              "ｶｷｺﾐ-RTN"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "SM-ﾖﾃｲｶﾞｸ",
+        "kind": "amount",
+        "layout": "9(9)",
+        "uses": [
+          {
+            "program": "GLY030",
+            "field": "SM-ﾖﾃｲｶﾞｸ",
+            "readBy": [
+              "ｶｷｺﾐ-RTN"
+            ],
+            "writtenBy": [
+              "ｶｷｺﾐ-RTN"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "record": "SH-ｼｭｳﾉｳ-ﾚｺｰﾄﾞ",
+    "copybook": "PRMHST",
+    "datasets": [
+      "$DATA/MASTER/PRMHST.IDX"
+    ],
+    "writtenBy": [
+      "GLD010",
+      "GLD040",
+      "GLD050",
+      "GLD060"
+    ],
+    "readBy": [
+      "GLY030"
+    ],
+    "programs": [
+      "GLC050",
+      "GLY030"
+    ],
+    "fields": [
+      {
+        "name": "SH-ｷｰ",
+        "kind": "group",
+        "layout": "",
+        "uses": [
+          {
+            "program": "GLC050",
+            "field": "SH-ｷｰ",
+            "readBy": [
+              "ﾚﾝﾊﾞﾝ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "SH-ｷｰ"
+          }
+        ]
+      },
+      {
+        "name": "SH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+        "kind": "text",
+        "layout": "X(10)",
+        "uses": [
+          {
+            "program": "GLC050",
+            "field": "SH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+            "readBy": [
+              "ﾚﾝﾊﾞﾝ-RTN"
+            ],
+            "writtenBy": [
+              "ｶｷｺﾐ-RTN",
+              "ﾚﾝﾊﾞﾝ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "SH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+            "readBy": [
+              "ｹｲﾔｸ-RTN"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "SH-ﾚﾝﾊﾞﾝ",
+        "kind": "number",
+        "layout": "9(4)",
+        "uses": [
+          {
+            "program": "GLC050",
+            "field": "SH-ﾚﾝﾊﾞﾝ",
+            "readBy": [
+              "ﾚﾝﾊﾞﾝ-RTN"
+            ],
+            "writtenBy": [
+              "ｶｷｺﾐ-RTN",
+              "ﾚﾝﾊﾞﾝ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "SH-ﾚﾝﾊﾞﾝ"
+          }
+        ]
+      },
+      {
+        "name": "SH-ｼｭｳﾉｳﾋﾞ",
+        "kind": "date",
+        "layout": "9(8)",
+        "uses": [
+          {
+            "program": "GLC050",
+            "field": "SH-ｼｭｳﾉｳﾋﾞ",
+            "writtenBy": [
+              "ｶｷｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "SH-ｼｭｳﾉｳﾋﾞ",
+            "readBy": [
+              "ｹｲﾔｸ-RTN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "ｹｲﾔｸ-RTN",
+                "loop": "PERFORM UNTIL WS-PRMHST-ｵﾜﾘ OR SH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ NOT = WS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+                "source": "gondwana/programs/GLY030.cbl:207",
+                "conditions": [
+                  "SH-ｼｭｳﾉｳﾋﾞ NOT \u003c WS-ﾈﾝｼｮ AND SH-ｼｭｳﾉｳﾋﾞ NOT \u003e WS-ｷﾞｮｳﾑﾋﾂﾞｹ"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "SH-ｼｭﾍﾞﾂ",
+        "kind": "code",
+        "layout": "X",
+        "uses": [
+          {
+            "program": "GLC050",
+            "field": "SH-ｼｭﾍﾞﾂ",
+            "writtenBy": [
+              "ｶｷｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "SH-ｼｭﾍﾞﾂ"
+          }
+        ],
+        "states": {
+          "states": [
+            {
+              "name": "SH-ｼｮｶｲ",
+              "values": [
+                "'1'"
+              ]
+            },
+            {
+              "name": "SH-ﾌﾘｶｴ",
+              "values": [
+                "'2'"
+              ]
+            },
+            {
+              "name": "SH-ﾏﾄﾞｸﾞﾁ",
+              "values": [
+                "'3'"
+              ]
+            },
+            {
+              "name": "SH-ｶｼﾂｹ",
+              "values": [
+                "'4'"
+              ]
+            }
+          ],
+          "copies": [
+            {
+              "program": "GLC050",
+              "from": "LK-ｼｭﾍﾞﾂ",
+              "paragraph": "ｶｷｺﾐ-RTN",
+              "source": "gondwana/programs/GLC050.cbl:96"
+            }
+          ]
+        }
+      },
+      {
+        "name": "SH-ｷﾝｶﾞｸ",
+        "kind": "amount",
+        "layout": "9(9)",
+        "uses": [
+          {
+            "program": "GLC050",
+            "field": "SH-ｷﾝｶﾞｸ",
+            "writtenBy": [
+              "ｶｷｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "SH-ｷﾝｶﾞｸ",
+            "readBy": [
+              "ｹｲﾔｸ-RTN"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "SH-ｶｲｽｳ",
+        "kind": "number",
+        "layout": "99",
+        "uses": [
+          {
+            "program": "GLC050",
+            "field": "SH-ｶｲｽｳ",
+            "writtenBy": [
+              "ｶｷｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "SH-ｶｲｽｳ"
+          }
+        ]
+      },
+      {
+        "name": "SH-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ",
+        "kind": "date",
+        "layout": "9(6)",
+        "uses": [
+          {
+            "program": "GLC050",
+            "field": "SH-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ",
+            "writtenBy": [
+              "ｶｷｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "SH-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ"
+          }
+        ]
+      }
+    ],
+    "links": [
+      {
+        "kind": "key",
+        "from": {
+          "record": "SH-ｼｭｳﾉｳ-ﾚｺｰﾄﾞ",
+          "field": "SH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ"
+        },
+        "to": {
+          "record": "PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ",
+          "field": "PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ"
+        },
+        "programs": [
+          "GLY030"
+        ]
       }
     ]
   },
@@ -10124,14 +11602,18 @@
       "GLD020",
       "GLD030",
       "GLM020",
-      "GLY010"
+      "GLY010",
+      "GLY020",
+      "GLY030"
     ],
     "programs": [
       "GLD010",
       "GLD020",
       "GLD030",
       "GLM020",
-      "GLY010"
+      "GLY010",
+      "GLY020",
+      "GLY030"
     ],
     "fields": [
       {
@@ -10169,6 +11651,20 @@
           },
           {
             "program": "GLY010",
+            "field": "PR-ｺｰﾄﾞ",
+            "readBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY020",
+            "field": "PR-ｺｰﾄﾞ",
+            "readBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
             "field": "PR-ｺｰﾄﾞ",
             "readBy": [
               "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
@@ -10215,6 +11711,20 @@
             "readBy": [
               "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
             ]
+          },
+          {
+            "program": "GLY020",
+            "field": "PR-ﾒｲｼｮｳ",
+            "readBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "PR-ﾒｲｼｮｳ",
+            "readBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
           }
         ]
       },
@@ -10253,6 +11763,20 @@
           },
           {
             "program": "GLY010",
+            "field": "PR-ｼｭﾙｲ",
+            "readBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY020",
+            "field": "PR-ｼｭﾙｲ",
+            "readBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
             "field": "PR-ｼｭﾙｲ",
             "readBy": [
               "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
@@ -10327,6 +11851,20 @@
             "readBy": [
               "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
             ]
+          },
+          {
+            "program": "GLY020",
+            "field": "PR-ｻｲﾃｲﾈﾝﾚｲ",
+            "readBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "PR-ｻｲﾃｲﾈﾝﾚｲ",
+            "readBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
           }
         ]
       },
@@ -10365,6 +11903,20 @@
           },
           {
             "program": "GLY010",
+            "field": "PR-ｻｲｺｳﾈﾝﾚｲ",
+            "readBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY020",
+            "field": "PR-ｻｲｺｳﾈﾝﾚｲ",
+            "readBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
             "field": "PR-ｻｲｺｳﾈﾝﾚｲ",
             "readBy": [
               "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
@@ -10411,6 +11963,20 @@
             "readBy": [
               "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
             ]
+          },
+          {
+            "program": "GLY020",
+            "field": "PR-ﾎｹﾝｷｶﾝ",
+            "readBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "PR-ﾎｹﾝｷｶﾝ",
+            "readBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
           }
         ]
       },
@@ -10449,6 +12015,20 @@
           },
           {
             "program": "GLY010",
+            "field": "PR-ｻｲﾃｲﾎｹﾝｷﾝｶﾞｸ",
+            "readBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY020",
+            "field": "PR-ｻｲﾃｲﾎｹﾝｷﾝｶﾞｸ",
+            "readBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
             "field": "PR-ｻｲﾃｲﾎｹﾝｷﾝｶﾞｸ",
             "readBy": [
               "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
@@ -10495,6 +12075,20 @@
             "readBy": [
               "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
             ]
+          },
+          {
+            "program": "GLY020",
+            "field": "PR-ｻｲｺｳﾎｹﾝｷﾝｶﾞｸ",
+            "readBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "PR-ｻｲｺｳﾎｹﾝｷﾝｶﾞｸ",
+            "readBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
           }
         ]
       },
@@ -10533,6 +12127,20 @@
           },
           {
             "program": "GLY010",
+            "field": "PR-ﾆｭｳｲﾝﾆﾁｶﾞｸﾘﾂ",
+            "readBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY020",
+            "field": "PR-ﾆｭｳｲﾝﾆﾁｶﾞｸﾘﾂ",
+            "readBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
             "field": "PR-ﾆｭｳｲﾝﾆﾁｶﾞｸﾘﾂ",
             "readBy": [
               "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
@@ -10579,6 +12187,20 @@
             "readBy": [
               "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
             ]
+          },
+          {
+            "program": "GLY020",
+            "field": "PR-ﾒﾝｾｷﾆｯｽｳ",
+            "readBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "PR-ﾒﾝｾｷﾆｯｽｳ",
+            "readBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
           }
         ]
       },
@@ -10621,6 +12243,20 @@
             "readBy": [
               "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
             ]
+          },
+          {
+            "program": "GLY020",
+            "field": "PR-ﾊｲﾄｳﾘﾂ",
+            "readBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "PR-ﾊｲﾄｳﾘﾂ",
+            "readBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
           }
         ]
       },
@@ -10659,6 +12295,20 @@
           },
           {
             "program": "GLY010",
+            "field": "PR-ｸﾌﾞﾝ",
+            "readBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY020",
+            "field": "PR-ｸﾌﾞﾝ",
+            "readBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
             "field": "PR-ｸﾌﾞﾝ",
             "readBy": [
               "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
@@ -10733,7 +12383,8 @@
         },
         "programs": [
           "GLD020",
-          "GLD030"
+          "GLD030",
+          "GLY020"
         ]
       },
       {
@@ -10762,7 +12413,8 @@
         },
         "programs": [
           "GLM020",
-          "GLY010"
+          "GLY010",
+          "GLY030"
         ]
       }
     ]
@@ -10996,7 +12648,9 @@
       "GLD020",
       "GLD030",
       "GLM020",
-      "GLY010"
+      "GLY010",
+      "GLY020",
+      "GLY030"
     ],
     "fields": [
       {
@@ -11053,6 +12707,26 @@
             "writtenBy": [
               "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
             ]
+          },
+          {
+            "program": "GLY020",
+            "field": "WS-ｼｮｳﾋﾝｹﾝｽｳ",
+            "readBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ],
+            "writtenBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "WS-ｼｮｳﾋﾝｹﾝｽｳ",
+            "readBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ],
+            "writtenBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
           }
         ]
       },
@@ -11100,6 +12774,20 @@
             "readBy": [
               "ﾊｲﾄｳ-RTN"
             ]
+          },
+          {
+            "program": "GLY020",
+            "field": "WS-ｼｮｳﾋﾝ",
+            "readBy": [
+              "ﾒｲｻｲ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "WS-ｼｮｳﾋﾝ",
+            "readBy": [
+              "ｶｷｺﾐ-RTN"
+            ]
           }
         ]
       },
@@ -11124,14 +12812,14 @@
             "decisions": [
               {
                 "paragraph": "ｹﾝｻ-RTN",
-                "source": "gondwana/programs/GLD010.cbl:332",
+                "source": "gondwana/programs/GLD010.cbl:334",
                 "conditions": [
                   "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = NP-ｼｮｳﾋﾝ"
                 ]
               },
               {
                 "paragraph": "ﾄｸﾔｸ-ｹﾝｻ-RTN",
-                "source": "gondwana/programs/GLD010.cbl:423",
+                "source": "gondwana/programs/GLD010.cbl:425",
                 "conditions": [
                   "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = NP-ﾄｸﾔｸ-ｼｮｳﾋﾝ(WS-ﾄｸﾔｸ-N)"
                 ]
@@ -11247,6 +12935,44 @@
                 ]
               }
             ]
+          },
+          {
+            "program": "GLY020",
+            "field": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ",
+            "readBy": [
+              "ﾒｲｻｲ-RTN"
+            ],
+            "writtenBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "ﾒｲｻｲ-RTN",
+                "source": "gondwana/programs/GLY020.cbl:258",
+                "conditions": [
+                  "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = HS-ｼｮｳﾋﾝ"
+                ]
+              }
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ",
+            "readBy": [
+              "ｶｷｺﾐ-RTN"
+            ],
+            "writtenBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ],
+            "decisions": [
+              {
+                "paragraph": "ｶｷｺﾐ-RTN",
+                "source": "gondwana/programs/GLY030.cbl:281",
+                "conditions": [
+                  "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ"
+                ]
+              }
+            ]
           }
         ]
       },
@@ -11295,6 +13021,26 @@
             "writtenBy": [
               "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
             ]
+          },
+          {
+            "program": "GLY020",
+            "field": "WS-ｼｮｳﾋﾝ-ﾒｲｼｮｳ",
+            "readBy": [
+              "ﾒｲｻｲ-RTN"
+            ],
+            "writtenBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "WS-ｼｮｳﾋﾝ-ﾒｲｼｮｳ",
+            "readBy": [
+              "ｶｷｺﾐ-RTN"
+            ],
+            "writtenBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
           }
         ]
       },
@@ -11316,7 +13062,7 @@
             "decisions": [
               {
                 "paragraph": "ﾄｸﾔｸ-ｷｿｸ-RTN",
-                "source": "gondwana/programs/GLD010.cbl:447",
+                "source": "gondwana/programs/GLD010.cbl:449",
                 "conditions": [
                   "NOT WS-ｼｮｳﾋﾝ-ﾄｸﾔｸ(WS-ｼｮｳﾋﾝ-IX) OR WS-ｼｮｳﾋﾝ-ｼｭﾙｲ(WS-ｼｮｳﾋﾝ-IX) = WS-ｼｭｹｲﾔｸ-ｼｭﾙｲ OR (WS-ﾄｸﾔｸ-N = 2 AND NP-ﾄｸﾔｸ-ｼｮｳﾋﾝ(2) = NP-ﾄｸﾔｸ-ｼｮｳﾋﾝ(1))"
                 ]
@@ -11358,6 +13104,20 @@
           },
           {
             "program": "GLY010",
+            "field": "WS-ｼｮｳﾋﾝ-ｼｭﾙｲ",
+            "writtenBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY020",
+            "field": "WS-ｼｮｳﾋﾝ-ｼｭﾙｲ",
+            "writtenBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
             "field": "WS-ｼｮｳﾋﾝ-ｼｭﾙｲ",
             "writtenBy": [
               "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
@@ -11421,6 +13181,18 @@
               "from": "PR-ｼｭﾙｲ",
               "paragraph": "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN",
               "source": "gondwana/copybooks/PRDLOD.cpy:24"
+            },
+            {
+              "program": "GLY020",
+              "from": "PR-ｼｭﾙｲ",
+              "paragraph": "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN",
+              "source": "gondwana/copybooks/PRDLOD.cpy:24"
+            },
+            {
+              "program": "GLY030",
+              "from": "PR-ｼｭﾙｲ",
+              "paragraph": "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN",
+              "source": "gondwana/copybooks/PRDLOD.cpy:24"
             }
           ]
         }
@@ -11442,7 +13214,7 @@
             "decisions": [
               {
                 "paragraph": "ﾈﾝﾚｲ-ｷﾝｶﾞｸ-ｹﾝｻ-RTN",
-                "source": "gondwana/programs/GLD010.cbl:396",
+                "source": "gondwana/programs/GLD010.cbl:398",
                 "conditions": [
                   "WS-ﾈﾝﾚｲ \u003c WS-ｼｮｳﾋﾝ-ｻｲﾃｲﾈﾝﾚｲ(WS-ｼｮｳﾋﾝ-IX) OR WS-ﾈﾝﾚｲ \u003e WS-ｼｮｳﾋﾝ-ｻｲｺｳﾈﾝﾚｲ(WS-ｼｮｳﾋﾝ-IX)"
                 ]
@@ -11476,6 +13248,20 @@
             "writtenBy": [
               "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
             ]
+          },
+          {
+            "program": "GLY020",
+            "field": "WS-ｼｮｳﾋﾝ-ｻｲﾃｲﾈﾝﾚｲ",
+            "writtenBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "WS-ｼｮｳﾋﾝ-ｻｲﾃｲﾈﾝﾚｲ",
+            "writtenBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
           }
         ]
       },
@@ -11496,7 +13282,7 @@
             "decisions": [
               {
                 "paragraph": "ﾈﾝﾚｲ-ｷﾝｶﾞｸ-ｹﾝｻ-RTN",
-                "source": "gondwana/programs/GLD010.cbl:396",
+                "source": "gondwana/programs/GLD010.cbl:398",
                 "conditions": [
                   "WS-ﾈﾝﾚｲ \u003c WS-ｼｮｳﾋﾝ-ｻｲﾃｲﾈﾝﾚｲ(WS-ｼｮｳﾋﾝ-IX) OR WS-ﾈﾝﾚｲ \u003e WS-ｼｮｳﾋﾝ-ｻｲｺｳﾈﾝﾚｲ(WS-ｼｮｳﾋﾝ-IX)"
                 ]
@@ -11542,6 +13328,20 @@
             "writtenBy": [
               "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
             ]
+          },
+          {
+            "program": "GLY020",
+            "field": "WS-ｼｮｳﾋﾝ-ｻｲｺｳﾈﾝﾚｲ",
+            "writtenBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "WS-ｼｮｳﾋﾝ-ｻｲｺｳﾈﾝﾚｲ",
+            "writtenBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
           }
         ]
       },
@@ -11564,7 +13364,7 @@
             "decisions": [
               {
                 "paragraph": "ﾏﾝｷﾋﾞ-RTN",
-                "source": "gondwana/programs/GLD010.cbl:560",
+                "source": "gondwana/programs/GLD010.cbl:566",
                 "conditions": [
                   "WS-ｼｮｳﾋﾝ-ﾎｹﾝｷｶﾝ(WS-ｼｮｳﾋﾝ-IX) = 0"
                 ]
@@ -11598,6 +13398,20 @@
             "writtenBy": [
               "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
             ]
+          },
+          {
+            "program": "GLY020",
+            "field": "WS-ｼｮｳﾋﾝ-ﾎｹﾝｷｶﾝ",
+            "writtenBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "WS-ｼｮｳﾋﾝ-ﾎｹﾝｷｶﾝ",
+            "writtenBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
           }
         ]
       },
@@ -11618,7 +13432,7 @@
             "decisions": [
               {
                 "paragraph": "ﾈﾝﾚｲ-ｷﾝｶﾞｸ-ｹﾝｻ-RTN",
-                "source": "gondwana/programs/GLD010.cbl:396",
+                "source": "gondwana/programs/GLD010.cbl:398",
                 "conditions": [
                   "WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(WS-N) \u003c WS-ｼｮｳﾋﾝ-ｻｲﾃｲｷﾝｶﾞｸ(WS-ｼｮｳﾋﾝ-IX) OR WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(WS-N) \u003e WS-ｼｮｳﾋﾝ-ｻｲｺｳｷﾝｶﾞｸ(WS-ｼｮｳﾋﾝ-IX)"
                 ]
@@ -11648,6 +13462,20 @@
           },
           {
             "program": "GLY010",
+            "field": "WS-ｼｮｳﾋﾝ-ｻｲﾃｲｷﾝｶﾞｸ",
+            "writtenBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY020",
+            "field": "WS-ｼｮｳﾋﾝ-ｻｲﾃｲｷﾝｶﾞｸ",
+            "writtenBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
             "field": "WS-ｼｮｳﾋﾝ-ｻｲﾃｲｷﾝｶﾞｸ",
             "writtenBy": [
               "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
@@ -11672,7 +13500,7 @@
             "decisions": [
               {
                 "paragraph": "ﾈﾝﾚｲ-ｷﾝｶﾞｸ-ｹﾝｻ-RTN",
-                "source": "gondwana/programs/GLD010.cbl:396",
+                "source": "gondwana/programs/GLD010.cbl:398",
                 "conditions": [
                   "WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(WS-N) \u003c WS-ｼｮｳﾋﾝ-ｻｲﾃｲｷﾝｶﾞｸ(WS-ｼｮｳﾋﾝ-IX) OR WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(WS-N) \u003e WS-ｼｮｳﾋﾝ-ｻｲｺｳｷﾝｶﾞｸ(WS-ｼｮｳﾋﾝ-IX)"
                 ]
@@ -11702,6 +13530,20 @@
           },
           {
             "program": "GLY010",
+            "field": "WS-ｼｮｳﾋﾝ-ｻｲｺｳｷﾝｶﾞｸ",
+            "writtenBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY020",
+            "field": "WS-ｼｮｳﾋﾝ-ｻｲｺｳｷﾝｶﾞｸ",
+            "writtenBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
             "field": "WS-ｼｮｳﾋﾝ-ｻｲｺｳｷﾝｶﾞｸ",
             "writtenBy": [
               "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
@@ -11748,6 +13590,20 @@
           },
           {
             "program": "GLY010",
+            "field": "WS-ｼｮｳﾋﾝ-ﾆｭｳｲﾝﾆﾁｶﾞｸﾘﾂ",
+            "writtenBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY020",
+            "field": "WS-ｼｮｳﾋﾝ-ﾆｭｳｲﾝﾆﾁｶﾞｸﾘﾂ",
+            "writtenBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
             "field": "WS-ｼｮｳﾋﾝ-ﾆｭｳｲﾝﾆﾁｶﾞｸﾘﾂ",
             "writtenBy": [
               "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
@@ -11806,6 +13662,20 @@
             "writtenBy": [
               "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
             ]
+          },
+          {
+            "program": "GLY020",
+            "field": "WS-ｼｮｳﾋﾝ-ﾒﾝｾｷﾆｯｽｳ",
+            "writtenBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "WS-ｼｮｳﾋﾝ-ﾒﾝｾｷﾆｯｽｳ",
+            "writtenBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
           }
         ]
       },
@@ -11851,6 +13721,20 @@
             "writtenBy": [
               "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
             ]
+          },
+          {
+            "program": "GLY020",
+            "field": "WS-ｼｮｳﾋﾝ-ﾊｲﾄｳﾘﾂ",
+            "writtenBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
+            "field": "WS-ｼｮｳﾋﾝ-ﾊｲﾄｳﾘﾂ",
+            "writtenBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
           }
         ]
       },
@@ -11872,14 +13756,14 @@
             "decisions": [
               {
                 "paragraph": "ｹﾝｻ-RTN",
-                "source": "gondwana/programs/GLD010.cbl:332",
+                "source": "gondwana/programs/GLD010.cbl:334",
                 "conditions": [
                   "WS-ｼｮｳﾋﾝ-ﾄｸﾔｸ(WS-ｼｮｳﾋﾝ-IX)"
                 ]
               },
               {
                 "paragraph": "ﾄｸﾔｸ-ｷｿｸ-RTN",
-                "source": "gondwana/programs/GLD010.cbl:447",
+                "source": "gondwana/programs/GLD010.cbl:449",
                 "conditions": [
                   "NOT WS-ｼｮｳﾋﾝ-ﾄｸﾔｸ(WS-ｼｮｳﾋﾝ-IX) OR WS-ｼｮｳﾋﾝ-ｼｭﾙｲ(WS-ｼｮｳﾋﾝ-IX) = WS-ｼｭｹｲﾔｸ-ｼｭﾙｲ OR (WS-ﾄｸﾔｸ-N = 2 AND NP-ﾄｸﾔｸ-ｼｮｳﾋﾝ(2) = NP-ﾄｸﾔｸ-ｼｮｳﾋﾝ(1))"
                 ]
@@ -11909,6 +13793,20 @@
           },
           {
             "program": "GLY010",
+            "field": "WS-ｼｮｳﾋﾝ-ｸﾌﾞﾝ",
+            "writtenBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY020",
+            "field": "WS-ｼｮｳﾋﾝ-ｸﾌﾞﾝ",
+            "writtenBy": [
+              "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
+            ]
+          },
+          {
+            "program": "GLY030",
             "field": "WS-ｼｮｳﾋﾝ-ｸﾌﾞﾝ",
             "writtenBy": [
               "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN"
@@ -11954,6 +13852,18 @@
               "from": "PR-ｸﾌﾞﾝ",
               "paragraph": "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN",
               "source": "gondwana/copybooks/PRDLOD.cpy:36"
+            },
+            {
+              "program": "GLY020",
+              "from": "PR-ｸﾌﾞﾝ",
+              "paragraph": "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN",
+              "source": "gondwana/copybooks/PRDLOD.cpy:36"
+            },
+            {
+              "program": "GLY030",
+              "from": "PR-ｸﾌﾞﾝ",
+              "paragraph": "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN",
+              "source": "gondwana/copybooks/PRDLOD.cpy:36"
             }
           ]
         }
@@ -11968,7 +13878,9 @@
       "GLD020",
       "GLD030",
       "GLM020",
-      "GLY010"
+      "GLY010",
+      "GLY020",
+      "GLY030"
     ],
     "fields": [
       {
@@ -11994,6 +13906,14 @@
           },
           {
             "program": "GLY010",
+            "field": "WS-ﾘｮｳﾘﾂ-ｼｮｳﾋﾝ"
+          },
+          {
+            "program": "GLY020",
+            "field": "WS-ﾘｮｳﾘﾂ-ｼｮｳﾋﾝ"
+          },
+          {
+            "program": "GLY030",
             "field": "WS-ﾘｮｳﾘﾂ-ｼｮｳﾋﾝ"
           }
         ]
@@ -12022,6 +13942,14 @@
           {
             "program": "GLY010",
             "field": "WS-ﾘｮｳﾘﾂ-ｾｲﾍﾞﾂ"
+          },
+          {
+            "program": "GLY020",
+            "field": "WS-ﾘｮｳﾘﾂ-ｾｲﾍﾞﾂ"
+          },
+          {
+            "program": "GLY030",
+            "field": "WS-ﾘｮｳﾘﾂ-ｾｲﾍﾞﾂ"
           }
         ]
       },
@@ -12043,7 +13971,7 @@
             "decisions": [
               {
                 "paragraph": "ﾈﾝﾚｲ-ｷﾝｶﾞｸ-ｹﾝｻ-RTN",
-                "source": "gondwana/programs/GLD010.cbl:396",
+                "source": "gondwana/programs/GLD010.cbl:398",
                 "conditions": [
                   "WS-ﾘｮｳﾘﾂ(WS-ｼｮｳﾋﾝ-IX NP-ｾｲﾍﾞﾂ WS-ﾈﾝﾚｲ-ｿｴｼﾞ) = 0"
                 ]
@@ -12071,6 +13999,14 @@
           {
             "program": "GLY010",
             "field": "WS-ﾘｮｳﾘﾂ"
+          },
+          {
+            "program": "GLY020",
+            "field": "WS-ﾘｮｳﾘﾂ"
+          },
+          {
+            "program": "GLY030",
+            "field": "WS-ﾘｮｳﾘﾂ"
           }
         ]
       }
@@ -12084,7 +14020,9 @@
       "GLD020",
       "GLD030",
       "GLM020",
-      "GLY010"
+      "GLY010",
+      "GLY020",
+      "GLY030"
     ],
     "fields": null
   },
@@ -12120,7 +14058,7 @@
             "decisions": [
               {
                 "paragraph": "ﾖﾐｺﾐ-RTN",
-                "source": "gondwana/programs/GLD050.cbl:248",
+                "source": "gondwana/programs/GLD050.cbl:250",
                 "conditions": [
                   "WS-ﾍｯﾀﾞ-ﾏﾁ AND ZG-ﾍｯﾀﾞ AND ZG-H-ｼｭﾍﾞﾂｺｰﾄﾞ = 91",
                   "WS-ﾃﾞｰﾀ-ﾏﾁ AND ZG-ﾃﾞｰﾀ",
@@ -12241,7 +14179,7 @@
             "decisions": [
               {
                 "paragraph": "ﾖﾐｺﾐ-RTN",
-                "source": "gondwana/programs/GLD050.cbl:248",
+                "source": "gondwana/programs/GLD050.cbl:250",
                 "conditions": [
                   "WS-ﾍｯﾀﾞ-ﾏﾁ AND ZG-ﾍｯﾀﾞ AND ZG-H-ｼｭﾍﾞﾂｺｰﾄﾞ = 91"
                 ]
@@ -12593,7 +14531,7 @@
             "decisions": [
               {
                 "paragraph": "ｷﾝｶﾞｸ-ｹﾝｻ-RTN",
-                "source": "gondwana/programs/GLD050.cbl:353",
+                "source": "gondwana/programs/GLD050.cbl:355",
                 "conditions": [
                   "PM-ｾｲｷｭｳｶｲｽｳ \u003e 0 AND ZG-D-ｷﾝｶﾞｸ = PM-ｾｲｷｭｳﾎｹﾝﾘｮｳ * PM-ｾｲｷｭｳｶｲｽｳ"
                 ]
@@ -12665,21 +14603,21 @@
             "decisions": [
               {
                 "paragraph": "ﾀﾒﾙ-RTN",
-                "source": "gondwana/programs/GLD050.cbl:277",
+                "source": "gondwana/programs/GLD050.cbl:279",
                 "conditions": [
                   "ZG-D-ﾌﾘｶｴｽﾞﾐ"
                 ]
               },
               {
                 "paragraph": "ﾊﾝｴｲ-RTN",
-                "source": "gondwana/programs/GLD050.cbl:314",
+                "source": "gondwana/programs/GLD050.cbl:316",
                 "conditions": [
                   "ZG-D-ﾌﾘｶｴｽﾞﾐ"
                 ]
               },
               {
                 "paragraph": "ﾌﾘｶｴﾌﾉｳ-RTN",
-                "source": "gondwana/programs/GLD050.cbl:407",
+                "source": "gondwana/programs/GLD050.cbl:413",
                 "conditions": [
                   "ZG-D-ｼｷﾝﾌｿｸ",
                   "ZG-D-ﾄﾘﾋｷﾅｼ",
@@ -12802,7 +14740,7 @@
             "decisions": [
               {
                 "paragraph": "ｹﾝｻﾝ-RTN",
-                "source": "gondwana/programs/GLD050.cbl:293",
+                "source": "gondwana/programs/GLD050.cbl:295",
                 "conditions": [
                   "ZG-T-ｺﾞｳｹｲｹﾝｽｳ NOT = WS-ｹﾝｻ-ｹﾝｽｳ OR ZG-T-ｺﾞｳｹｲｷﾝｶﾞｸ NOT = WS-ｹﾝｻ-ｷﾝｶﾞｸ"
                 ]
@@ -12832,7 +14770,7 @@
             "decisions": [
               {
                 "paragraph": "ｹﾝｻﾝ-RTN",
-                "source": "gondwana/programs/GLD050.cbl:293",
+                "source": "gondwana/programs/GLD050.cbl:295",
                 "conditions": [
                   "ZG-T-ｺﾞｳｹｲｹﾝｽｳ NOT = WS-ｹﾝｻ-ｹﾝｽｳ OR ZG-T-ｺﾞｳｹｲｷﾝｶﾞｸ NOT = WS-ｹﾝｻ-ｷﾝｶﾞｸ"
                 ]
@@ -12862,7 +14800,7 @@
             "decisions": [
               {
                 "paragraph": "ｹﾝｻﾝ-RTN",
-                "source": "gondwana/programs/GLD050.cbl:293",
+                "source": "gondwana/programs/GLD050.cbl:295",
                 "conditions": [
                   "ZG-T-ﾌﾘｶｴｽﾞﾐｹﾝｽｳ NOT = WS-ｹﾝｻ-ｽﾞﾐｹﾝｽｳ OR ZG-T-ﾌﾘｶｴｽﾞﾐｷﾝｶﾞｸ NOT = WS-ｹﾝｻ-ｽﾞﾐｷﾝｶﾞｸ"
                 ]
@@ -12892,7 +14830,7 @@
             "decisions": [
               {
                 "paragraph": "ｹﾝｻﾝ-RTN",
-                "source": "gondwana/programs/GLD050.cbl:293",
+                "source": "gondwana/programs/GLD050.cbl:295",
                 "conditions": [
                   "ZG-T-ﾌﾘｶｴｽﾞﾐｹﾝｽｳ NOT = WS-ｹﾝｻ-ｽﾞﾐｹﾝｽｳ OR ZG-T-ﾌﾘｶｴｽﾞﾐｷﾝｶﾞｸ NOT = WS-ｹﾝｻ-ｽﾞﾐｷﾝｶﾞｸ"
                 ]
@@ -12922,7 +14860,7 @@
             "decisions": [
               {
                 "paragraph": "ｹﾝｻﾝ-RTN",
-                "source": "gondwana/programs/GLD050.cbl:293",
+                "source": "gondwana/programs/GLD050.cbl:295",
                 "conditions": [
                   "ZG-T-ﾌﾘｶｴﾌﾉｳｹﾝｽｳ NOT = WS-ｹﾝｻ-ﾌﾉｳｹﾝｽｳ OR ZG-T-ﾌﾘｶｴﾌﾉｳｷﾝｶﾞｸ NOT = WS-ｹﾝｻ-ﾌﾉｳｷﾝｶﾞｸ"
                 ]
@@ -12952,7 +14890,7 @@
             "decisions": [
               {
                 "paragraph": "ｹﾝｻﾝ-RTN",
-                "source": "gondwana/programs/GLD050.cbl:293",
+                "source": "gondwana/programs/GLD050.cbl:295",
                 "conditions": [
                   "ZG-T-ﾌﾘｶｴﾌﾉｳｹﾝｽｳ NOT = WS-ｹﾝｻ-ﾌﾉｳｹﾝｽｳ OR ZG-T-ﾌﾘｶｴﾌﾉｳｷﾝｶﾞｸ NOT = WS-ｹﾝｻ-ﾌﾉｳｷﾝｶﾞｸ"
                 ]

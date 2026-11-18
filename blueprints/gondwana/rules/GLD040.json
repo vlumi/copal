@@ -3,7 +3,7 @@
   "tables": [
     {
       "paragraph": "ｼｮｷ-RTN",
-      "source": "gondwana/programs/GLD040.cbl:189",
+      "source": "gondwana/programs/GLD040.cbl:191",
       "conditions": [
         "WS-ﾍﾝｶﾝｹｯｶ = 0",
         "WS-GLSCTL-OK"
@@ -106,7 +106,7 @@
     },
     {
       "paragraph": "ｵｰﾌﾟﾝ-ｹﾝｻ-RTN",
-      "source": "gondwana/programs/GLD040.cbl:220",
+      "source": "gondwana/programs/GLD040.cbl:222",
       "conditions": [
         "WS-MNTREQ-OK",
         "WS-ｴﾗｰﾌｧｲﾙ = SPACES",
@@ -308,7 +308,7 @@
     },
     {
       "paragraph": "MNTREQ-ﾖﾐｺﾐ-RTN",
-      "source": "gondwana/programs/GLD040.cbl:253",
+      "source": "gondwana/programs/GLD040.cbl:255",
       "conditions": [
         "WS-MNTREQ-OK",
         "WS-MNTREQ-ｵﾜﾘ"
@@ -367,7 +367,7 @@
     },
     {
       "paragraph": "ｼｮﾘ-RTN",
-      "source": "gondwana/programs/GLD040.cbl:268",
+      "source": "gondwana/programs/GLD040.cbl:270",
       "conditions": [
         "WS-POLMST-ﾅｼ",
         "MR-ｼﾞｭｳｼｮﾍﾝｺｳ",
@@ -1233,7 +1233,7 @@
     },
     {
       "paragraph": "ﾍﾝｺｳ-RTN",
-      "source": "gondwana/programs/GLD040.cbl:319",
+      "source": "gondwana/programs/GLD040.cbl:321",
       "conditions": [
         "MR-ｼﾞｭｳｼｮﾍﾝｺｳ",
         "MR-ｼﾞｭｳｼｮ = SPACES",
@@ -1499,7 +1499,7 @@
     },
     {
       "paragraph": "ﾌｯｶﾂ-RTN",
-      "source": "gondwana/programs/GLD040.cbl:359",
+      "source": "gondwana/programs/GLD040.cbl:361",
       "conditions": [
         "PM-ｼｯｺｳ",
         "PM-ﾈﾝﾊﾞﾗｲ",
@@ -1734,7 +1734,7 @@
     },
     {
       "paragraph": "ﾄｸﾔｸｶｲﾔｸ-RTN",
-      "source": "gondwana/programs/GLD040.cbl:420",
+      "source": "gondwana/programs/GLD040.cbl:426",
       "conditions": [
         "PM-ﾕｳｺｳ",
         "WS-COVMST-ﾅｼ",
@@ -1846,7 +1846,7 @@
     },
     {
       "paragraph": "ﾄｸﾔｸｶｲﾔｸ-ﾊﾝｴｲ-RTN",
-      "source": "gondwana/programs/GLD040.cbl:444",
+      "source": "gondwana/programs/GLD040.cbl:450",
       "conditions": [
         "WS-COVMST-OK"
       ],
@@ -1899,7 +1899,7 @@
     },
     {
       "paragraph": "ｼｭｳﾘｮｳ-RTN",
-      "source": "gondwana/programs/GLD040.cbl:507",
+      "source": "gondwana/programs/GLD040.cbl:513",
       "conditions": [
         "WS-GLSCTL-OK"
       ],
@@ -1913,6 +1913,7 @@
         "MOVE 'GLSCTL' TO WS-ｴﾗｰﾌｧｲﾙ",
         "MOVE WS-GLSCTL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
         "PERFORM ｲｼﾞｮｳ-RTN",
+        "PERFORM ｼｭｳﾉｳ-ｸﾛｰｽﾞ-RTN",
         "CLOSE MNTREQ-F POLMST-F COVMST-F GLSCTL-F GLJRNL-F REJECT-F REPORT-F",
         "DISPLAY 'GLD040 反映 ' WS-ﾊﾝｴｲｹﾝｽｳ ' 却下 ' WS-ｷｬｯｶｹﾝｽｳ"
       ],
@@ -1936,9 +1937,51 @@
           "actions": [
             0,
             4,
-            5
+            5,
+            6
           ],
-          "sentence": "When `WS-GLSCTL-ST` is `'00'` (`WS-GLSCTL-OK`), it rewrites `CT-ｾｲｷﾞｮ-ﾚｺｰﾄﾞ`; closes `MNTREQ-F`, `POLMST-F`, `COVMST-F`, `GLSCTL-F`, `GLJRNL-F`, `REJECT-F`, and `REPORT-F`; and displays `'GLD040 反映 '` `WS-ﾊﾝｴｲｹﾝｽｳ` `' 却下 '` `WS-ｷｬｯｶｹﾝｽｳ`."
+          "sentence": "When `WS-GLSCTL-ST` is `'00'` (`WS-GLSCTL-OK`), it rewrites `CT-ｾｲｷﾞｮ-ﾚｺｰﾄﾞ`; performs `ｼｭｳﾉｳ-ｸﾛｰｽﾞ-RTN`; closes `MNTREQ-F`, `POLMST-F`, `COVMST-F`, `GLSCTL-F`, `GLJRNL-F`, `REJECT-F`, and `REPORT-F`; and displays `'GLD040 反映 '` `WS-ﾊﾝｴｲｹﾝｽｳ` `' 却下 '` `WS-ｷｬｯｶｹﾝｽｳ`."
+        }
+      ]
+    },
+    {
+      "paragraph": "ｼｭｳﾉｳ-ﾖﾋﾞﾀﾞｼ-RTN",
+      "source": "gondwana/copybooks/PRMLOG.cpy:25",
+      "conditions": [
+        "WS-PRMHST-OK"
+      ],
+      "conditionRefs": [
+        [
+          "WS-PRMHST-ST"
+        ]
+      ],
+      "actions": [
+        "CALL 'GLC050' USING WS-ｼｭｳﾉｳ-ｷﾉｳ WS-ｼｭｳﾉｳ WS-PRMHST-ST",
+        "MOVE 'PRMHST' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-PRMHST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "PERFORM ｲｼﾞｮｳ-RTN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "sentence": "When `WS-PRMHST-ST` is not `'00'` (not `WS-PRMHST-OK`), it calls `GLC050`, sets `WS-ｴﾗｰﾌｧｲﾙ` to `'PRMHST'`, sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-PRMHST-ST`, and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0
+          ],
+          "sentence": "When `WS-PRMHST-ST` is `'00'` (`WS-PRMHST-OK`), it calls `GLC050`."
         }
       ]
     }

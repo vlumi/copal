@@ -12,3 +12,5 @@ The first case to reach:
 - [GLD010, ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLD010.md#ｼｮｳﾋﾝ-ﾖﾐｺﾐ-rtn)
 - [GLD010, ﾘｮｳﾘﾂ-ﾖﾐｺﾐ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLD010.md#ﾘｮｳﾘﾂ-ﾖﾐｺﾐ-rtn)
 - [GLD010, ﾘｮｳﾘﾂ-ﾖﾐｺﾐ-RTN, in its loop, rule 2](../../../../blueprints/gondwana/rules/GLD010.md#ﾘｮｳﾘﾂ-ﾖﾐｺﾐ-rtn-in-its-loop)
+- [GLD010, ｼｭｳﾉｳ-ﾖﾋﾞﾀﾞｼ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLD010.md#ｼｭｳﾉｳ-ﾖﾋﾞﾀﾞｼ-rtn)
+- [GLC050, ﾒｲﾝ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLC050.md#ﾒｲﾝ-rtn)

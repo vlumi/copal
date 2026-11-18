@@ -123,7 +123,7 @@ explore-gondwana:  ## Explore Gondwana's analysis in the browser, with the runni
 oracle:  ## Search the specimens' programs again for cases that reach their rules, and rewrite oracle/
 	go run ./survey/cmd/survey oracle -copybooks pangaea/copybooks -out oracle/pangaea -rules ../../blueprints/pangaea/rules -title pangaea -jobs START,ONLINE,DAILY,MONTHLY pangaea/programs/*.cbl pangaea/jobs/*.jcl
 	go run ./survey/cmd/survey oracle -dialect mf -copybooks laurasia/copybooks -out oracle/laurasia -rules ../../blueprints/laurasia/rules -title laurasia -jobs open,nightly,cycle laurasia/programs/*.cbl laurasia/scripts/*.sh
-	go run ./survey/cmd/survey oracle -dialect fujitsu -copybooks gondwana/copybooks -out oracle/gondwana -rules ../../blueprints/gondwana/rules -title gondwana -jobs OPEN,DAILY,BILLING,RESULTS,CLOSE,ANNUAL gondwana/programs/*.cbl gondwana/scripts/*.BAT
+	go run ./survey/cmd/survey oracle -dialect fujitsu -copybooks gondwana/copybooks -out oracle/gondwana -rules ../../blueprints/gondwana/rules -title gondwana -jobs OPEN,DAILY,BILLING,RESULTS,CLOSE,ANNUAL,CERT gondwana/programs/*.cbl gondwana/scripts/*.BAT
 
 .PHONY: conform-pangaea
 conform-pangaea:  ## Run a replacement for one of Pangaea's programs on its recorded cases (PROGRAM, WITH)

@@ -71,6 +71,7 @@ type Day struct {
 	Ended      int // surrendered, matured or paid out
 	MonthClose bool
 	YearEnd    bool
+	Certified  bool // the year's premium certificates were made
 }
 
 // RC is the highest errorlevel of the day's steps.
@@ -183,8 +184,9 @@ func (in Insurer) runDay(g *generate.Generator, date generate.Date) (Day, error)
 
 // tryDay runs a business day in the order the operations guide gives:
 // the agent's results when they arrive, the daily run, the billing on
-// its day, the close on the month's last business day and the annual
-// run after the close of March.
+// its day, the premium certificates on October's first business day,
+// the close on the month's last business day and the annual run after
+// the close of March.
 func (in Insurer) tryDay(g *generate.Generator, date generate.Date) (Day, error) {
 	day := Day{Date: date}
 	run := func(file string) error {
@@ -213,6 +215,12 @@ func (in Insurer) tryDay(g *generate.Generator, date generate.Date) (Day, error)
 	}
 	if date == billingDay(date) {
 		if err := run("BILLING.BAT"); err != nil {
+			return day, err
+		}
+	}
+	if date == generate.NewDate(date.Year(), time.October, 1).BusinessDayOnOrAfter() {
+		day.Certified = true
+		if err := run("CERT.BAT"); err != nil {
 			return day, err
 		}
 	}

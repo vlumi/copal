@@ -27,6 +27,7 @@
       * 2008-06-02 YN   GL-0455 医療保険。
       * 2026-11-18 YN   GL-0825 特約、保障マスタ。
       * 2026-11-19 YN   GL-0826 請求回数と請求保険料の初期値。
+      * 2026-11-19 YN   GL-0827 収納を収納履歴に残す。
       *----------------------------------------------------------------
        IDENTIFICATION DIVISION.
        PROGRAM-ID. GLD010.
@@ -117,6 +118,7 @@
                88  WS-REJECT-OK                VALUE "00".
            05  WS-REPORT-ST            PIC XX.
                88  WS-REPORT-OK                VALUE "00".
+       COPY PRMCAL.
        01  WS-ｺﾏﾝﾄﾞｷﾞｮｳ                PIC X(80).
        01  WS-ｴﾗｰﾌｧｲﾙ                  PIC X(8).
        01  WS-ｴﾗｰｽﾃｰﾀｽ                 PIC XX.
@@ -499,6 +501,10 @@
                PERFORM ｲｼﾞｮｳ-RTN
            END-IF
            PERFORM ｼﾜｹ-RTN
+           SET WS-ｼｭｳﾉｳ-ｼｮｶｲ TO TRUE
+           MOVE PM-ﾎｹﾝﾘｮｳ TO WS-ｼｭｳﾉｳ-ｷﾝｶﾞｸ
+           MOVE 1 TO WS-ｼｭｳﾉｳ-ｶｲｽｳ
+           PERFORM ｼｭｳﾉｳ-ｷﾛｸ-RTN
            ADD 1 TO WS-ﾄｳﾛｸｹﾝｽｳ
            ADD PM-ﾎｹﾝｷﾝｶﾞｸ TO WS-ﾄｳﾛｸｷﾝｶﾞｸ
            ADD PM-ﾎｹﾝﾘｮｳ TO WS-ﾄｳﾛｸﾎｹﾝﾘｮｳ
@@ -652,6 +658,7 @@
                MOVE WS-GLSCTL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
                PERFORM ｲｼﾞｮｳ-RTN
            END-IF
+           PERFORM ｼｭｳﾉｳ-ｸﾛｰｽﾞ-RTN
            CLOSE NEWPOL-F POLMST-F COVMST-F PRODTB-F RATETB-F
                  GLSCTL-F GLJRNL-F REJECT-F REPORT-F
            DISPLAY "GLD010 登録 " WS-ﾄｳﾛｸｹﾝｽｳ
@@ -669,3 +676,5 @@
        COPY PRDLOD.
 
        COPY RATLOD.
+
+       COPY PRMLOG.

@@ -20,6 +20,7 @@
       * 2003-10-06 MS   GL-0310 猶予開始日を振替不能日から。
       * 2014-04-07 YN   GL-0598 自動振替貸付。
       * 2026-11-16 YN   GL-0823 半年払。
+      * 2026-11-19 YN   GL-0827 収納を収納履歴に残す。
       *----------------------------------------------------------------
        IDENTIFICATION DIVISION.
        PROGRAM-ID. GLD060.
@@ -69,6 +70,7 @@
                88  WS-REPORT-OK                VALUE "00".
            05  WS-CSVTB-ST             PIC XX.
                88  WS-CSVTB-OK                 VALUE "00".
+       COPY PRMCAL.
        01  WS-ｺﾏﾝﾄﾞｷﾞｮｳ                PIC X(80).
        01  WS-ｴﾗｰﾌｧｲﾙ                  PIC X(8).
        01  WS-ｴﾗｰｽﾃｰﾀｽ                 PIC XX.
@@ -320,6 +322,10 @@
            SET PM-ﾕｳｺｳ TO TRUE
            MOVE WS-ｷﾞｮｳﾑ-YYYYMM TO PM-ｻｲｼｭｳﾆｭｳｷﾝﾈﾝｹﾞﾂ
            MOVE WS-ﾌﾘｶｴ-ｶﾞｸ TO PM-ｻｲｼｭｳﾆｭｳｷﾝｶﾞｸ
+           SET WS-ｼｭｳﾉｳ-ｶｼﾂｹ TO TRUE
+           MOVE WS-ﾌﾘｶｴ-ｶﾞｸ TO WS-ｼｭｳﾉｳ-ｷﾝｶﾞｸ
+           MOVE WS-ﾌﾘｶｴ-ｶｲｽｳ TO WS-ｼｭｳﾉｳ-ｶｲｽｳ
+           PERFORM ｼｭｳﾉｳ-ｷﾛｸ-RTN
            PERFORM POLMST-ｶｷﾓﾄﾞｼ-RTN
            ADD 1 TO WS-ﾌﾘｶｴｹﾝｽｳ
            ADD WS-ﾌﾘｶｴ-ｶﾞｸ TO WS-ﾌﾘｶｴｷﾝｶﾞｸ
@@ -397,6 +403,7 @@
                MOVE WS-GLSCTL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
                PERFORM ｲｼﾞｮｳ-RTN
            END-IF
+           PERFORM ｼｭｳﾉｳ-ｸﾛｰｽﾞ-RTN
            CLOSE POLMST-F GLSCTL-F GLJRNL-F REPORT-F
            DISPLAY "GLD060 猶予中 " WS-ﾕｳﾖｹﾝｽｳ " 失効 " WS-ｼｯｺｳｹﾝｽｳ
                    " 振替貸付 " WS-ﾌﾘｶｴｹﾝｽｳ.
@@ -409,3 +416,5 @@
                    " 状態 " WS-ｴﾗｰｽﾃｰﾀｽ
            MOVE 16 TO RETURN-CODE
            STOP RUN.
+
+       COPY PRMLOG.

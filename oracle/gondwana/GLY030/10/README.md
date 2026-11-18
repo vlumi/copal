@@ -1,0 +1,8 @@
+# GLY030: case 10
+
+The run ended with return code 0.
+
+The first case to reach:
+
+- [GLY030, ﾖﾃｲ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLY030.md#ﾖﾃｲ-rtn)
+- [GLY030, ｷｹﾞﾂ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLY030.md#ｷｹﾞﾂ-rtn)

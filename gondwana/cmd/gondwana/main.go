@@ -129,6 +129,9 @@ func days(args []string) error {
 		if d.Collected+d.Unpaid > 0 {
 			events = append(events, fmt.Sprintf("collected %d, unpaid %d", d.Collected, d.Unpaid))
 		}
+		if d.Certified {
+			events = append(events, "premium certificates")
+		}
 		if d.MonthClose {
 			events = append(events, "close")
 		}

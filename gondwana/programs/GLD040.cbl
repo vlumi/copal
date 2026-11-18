@@ -23,6 +23,7 @@
       * 2026-11-16 YN   GL-0821 復活日を残す。
       * 2026-11-16 YN   GL-0823 半年払の未納保険料。
       * 2026-11-18 YN   GL-0825 特約解約。
+      * 2026-11-19 YN   GL-0827 収納を収納履歴に残す。
       *----------------------------------------------------------------
        IDENTIFICATION DIVISION.
        PROGRAM-ID. GLD040.
@@ -98,6 +99,7 @@
                88  WS-REJECT-OK                VALUE "00".
            05  WS-REPORT-ST            PIC XX.
                88  WS-REPORT-OK                VALUE "00".
+       COPY PRMCAL.
        01  WS-ｺﾏﾝﾄﾞｷﾞｮｳ                PIC X(80).
        01  WS-ｴﾗｰﾌｧｲﾙ                  PIC X(8).
        01  WS-ｴﾗｰｽﾃｰﾀｽ                 PIC XX.
@@ -411,7 +413,11 @@
            WRITE JR-ｼﾜｹ-ﾚｺｰﾄﾞ
            ADD 1 TO WS-ﾌｯｶﾂｹﾝｽｳ
            ADD MR-ﾆｭｳｷﾝｶﾞｸ TO WS-ﾌｯｶﾂｷﾝｶﾞｸ
-           MOVE MR-ﾆｭｳｷﾝｶﾞｸ TO WS-ﾒｲｻｲ-ｷﾝｶﾞｸ.
+           MOVE MR-ﾆｭｳｷﾝｶﾞｸ TO WS-ﾒｲｻｲ-ｷﾝｶﾞｸ
+           SET WS-ｼｭｳﾉｳ-ﾏﾄﾞｸﾞﾁ TO TRUE
+           MOVE MR-ﾆｭｳｷﾝｶﾞｸ TO WS-ｼｭｳﾉｳ-ｷﾝｶﾞｸ
+           MOVE WS-ﾐﾉｳﾂｷｽｳ TO WS-ｼｭｳﾉｳ-ｶｲｽｳ
+           PERFORM ｼｭｳﾉｳ-ｷﾛｸ-RTN.
 
       *----------------------------------------------------------------
       * ﾄｸﾔｸｶｲﾔｸ-RTN: 契約が有効で、保障番号の特約が有効なら解約と
@@ -511,6 +517,7 @@
                MOVE WS-GLSCTL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
                PERFORM ｲｼﾞｮｳ-RTN
            END-IF
+           PERFORM ｼｭｳﾉｳ-ｸﾛｰｽﾞ-RTN
            CLOSE MNTREQ-F POLMST-F COVMST-F GLSCTL-F GLJRNL-F
                  REJECT-F REPORT-F
            DISPLAY "GLD040 反映 " WS-ﾊﾝｴｲｹﾝｽｳ
@@ -524,3 +531,5 @@
                    " 状態 " WS-ｴﾗｰｽﾃｰﾀｽ
            MOVE 16 TO RETURN-CODE
            STOP RUN.
+
+       COPY PRMLOG.

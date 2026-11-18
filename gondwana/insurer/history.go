@@ -55,7 +55,7 @@ func (in Insurer) History() (History, error) {
 
 // daysBatches are the batch files a day may run, in the order it runs
 // them.
-var daysBatches = []string{"RESULTS", "DAILY", "BILLING", "CLOSE", "ANNUAL"}
+var daysBatches = []string{"RESULTS", "DAILY", "BILLING", "CERT", "CLOSE", "ANNUAL"}
 
 // day reads back a day the insurer ran: the batch files whose logs it
 // wrote, and what it amounted to from its files.
@@ -72,6 +72,7 @@ func (in Insurer) day(g *generate.Generator, date generate.Date) (Day, error) {
 		day.Batches = append(day.Batches, batches...)
 		day.MonthClose = day.MonthClose || name == "CLOSE"
 		day.YearEnd = day.YearEnd || name == "ANNUAL"
+		day.Certified = day.Certified || name == "CERT"
 	}
 	return day, in.count(g, &day)
 }

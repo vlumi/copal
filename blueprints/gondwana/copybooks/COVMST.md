@@ -22,7 +22,7 @@ COVMST: 保障マスタ レコード (80バイト)
 2026-11-18 YN   GL-0825 初版、特約の導入。
 ```
 
-Copybook [COVMST.cpy](../../../gondwana/copybooks/COVMST.cpy), used by [GLD010](../programs/GLD010.md), [GLD020](../programs/GLD020.md), [GLD030](../programs/GLD030.md), [GLD040](../programs/GLD040.md), [GLD090](../programs/GLD090.md), [GLO010](../programs/GLO010.md).
+Copybook [COVMST.cpy](../../../gondwana/copybooks/COVMST.cpy), used by [GLD010](../programs/GLD010.md), [GLD020](../programs/GLD020.md), [GLD030](../programs/GLD030.md), [GLD040](../programs/GLD040.md), [GLD090](../programs/GLD090.md), [GLO010](../programs/GLO010.md), [GLY020](../programs/GLY020.md).
 
 ## HS-ﾎｼｮｳ-ﾚｺｰﾄﾞ
 

@@ -48,7 +48,7 @@ func TestGondwana(t *testing.T) {
 		byName[p.Name] = result
 	}
 	var jobs []*blueprint.Job
-	for _, name := range []string{"OPEN", "DAILY", "BILLING", "RESULTS", "CLOSE", "ANNUAL"} {
+	for _, name := range []string{"OPEN", "DAILY", "BILLING", "RESULTS", "CLOSE", "ANNUAL", "CERT"} {
 		jobs = append(jobs, &system.Jobs[slices.IndexFunc(system.Jobs, func(j blueprint.Job) bool { return j.Name == name })])
 	}
 	batches, err := RunBatch(system, jobs, byName, scratch)

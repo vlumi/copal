@@ -1,0 +1,843 @@
+{
+  "program": "GLY030",
+  "tables": [
+    {
+      "paragraph": "ｼｮｷ-RTN",
+      "source": "gondwana/programs/GLY030.cbl:140",
+      "conditions": [
+        "WS-ﾍﾝｶﾝｹｯｶ = 0",
+        "WS-PRMHST-OK",
+        "WS-ｴﾗｰﾌｧｲﾙ = SPACES",
+        "WS-POLMST-OK",
+        "WS-PRODTB-OK",
+        "WS-PRMCERT-OK",
+        "WS-REPORT-OK"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ﾍﾝｶﾝｹｯｶ"
+        ],
+        [
+          "WS-PRMHST-ST"
+        ],
+        [
+          "WS-ｴﾗｰﾌｧｲﾙ"
+        ],
+        [
+          "WS-POLMST-ST"
+        ],
+        [
+          "WS-PRODTB-ST"
+        ],
+        [
+          "WS-PRMCERT-ST"
+        ],
+        [
+          "WS-REPORT-ST"
+        ]
+      ],
+      "actions": [
+        "ACCEPT WS-ｺﾏﾝﾄﾞｷﾞｮｳ FROM COMMAND-LINE",
+        "MOVE WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8) TO WS-ｷﾞｮｳﾑﾋﾂﾞｹ",
+        "MOVE 'W' TO WS-ﾎｳｺｳ",
+        "CALL 'GLC020' USING WS-ﾎｳｺｳ WS-ｷﾞｮｳﾑﾋﾂﾞｹ WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ WS-ﾍﾝｶﾝｹｯｶ",
+        "DISPLAY 'GLY030 日付不正: ' WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)",
+        "MOVE 8 TO RETURN-CODE",
+        "STOP RUN",
+        "COMPUTE WS-ﾈﾝｼｮ = WS-ｷﾞｮｳﾑ-YYYY * 10000 + 101",
+        "COMPUTE WS-ﾈﾝﾏﾂ = WS-ｷﾞｮｳﾑ-YYYY * 100 + 12",
+        "OPEN INPUT PRMHST-F POLMST-F PRODTB-F",
+        "OPEN OUTPUT PRMCERT-F REPORT-F",
+        "MOVE 'PRMHST' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-PRMHST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "PERFORM ｲｼﾞｮｳ-RTN",
+        "MOVE 'POLMST' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-POLMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "MOVE 'PRODTB' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-PRODTB-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "MOVE 'PRMCERT' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-PRMCERT-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "MOVE 'GLY030R' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-REPORT-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "MOVE SPACES TO WS-ｴﾗｰﾌｧｲﾙ",
+        "PERFORM ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN",
+        "MOVE WS-ｷﾞｮｳﾑ-YYYY TO WS-ﾋｮｳﾀﾞｲ-ﾈﾝ",
+        "MOVE WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ TO WS-ﾋｮｳﾀﾞｲ-ﾋﾂﾞｹ",
+        "WRITE ﾎｳｺｸ-ｷﾞｮｳ FROM WS-ﾋｮｳﾀﾞｲ-ｷﾞｮｳ",
+        "MOVE SPACES TO ﾎｳｺｸ-ｷﾞｮｳ",
+        "WRITE ﾎｳｺｸ-ｷﾞｮｳ",
+        "PERFORM PRMHST-ﾖﾐｺﾐ-RTN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is not 0, it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line, sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`, sets `WS-ﾎｳｺｳ` to `'W'`, calls `GLC020`, displays `'GLY030 日付不正: '` `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`, sets `RETURN-CODE` to 8, and stops the run."
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ],
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0, `WS-PRMHST-ST` is neither `'00'` nor `'05'` (not `WS-PRMHST-OK`), and `WS-ｴﾗｰﾌｧｲﾙ` is not spaces, it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; sets `WS-ﾎｳｺｳ` to `'W'`; calls `GLC020`; computes `WS-ﾈﾝｼｮ` as `WS-ｷﾞｮｳﾑ-YYYY * 10000 + 101`; computes `WS-ﾈﾝﾏﾂ` as `WS-ｷﾞｮｳﾑ-YYYY * 100 + 12`; opens `PRMHST-F`, `POLMST-F`, and `PRODTB-F` for input; opens `PRMCERT-F` and `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'PRMHST'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-PRMHST-ST`; and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "N",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            7,
+            8,
+            9,
+            10,
+            14,
+            15,
+            13
+          ],
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-PRMHST-ST` is `'00'` or `'05'` (`WS-PRMHST-OK`); `WS-ｴﾗｰﾌｧｲﾙ` is not spaces; and `WS-POLMST-ST` is not `'00'` (not `WS-POLMST-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; sets `WS-ﾎｳｺｳ` to `'W'`; calls `GLC020`; computes `WS-ﾈﾝｼｮ` as `WS-ｷﾞｮｳﾑ-YYYY * 10000 + 101`; computes `WS-ﾈﾝﾏﾂ` as `WS-ｷﾞｮｳﾑ-YYYY * 100 + 12`; opens `PRMHST-F`, `POLMST-F`, and `PRODTB-F` for input; opens `PRMCERT-F` and `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'POLMST'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-POLMST-ST`; and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            7,
+            8,
+            9,
+            10,
+            16,
+            17,
+            13
+          ],
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-PRMHST-ST` is `'00'` or `'05'` (`WS-PRMHST-OK`); `WS-ｴﾗｰﾌｧｲﾙ` is not spaces; `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`); and `WS-PRODTB-ST` is not `'00'` (not `WS-PRODTB-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; sets `WS-ﾎｳｺｳ` to `'W'`; calls `GLC020`; computes `WS-ﾈﾝｼｮ` as `WS-ｷﾞｮｳﾑ-YYYY * 10000 + 101`; computes `WS-ﾈﾝﾏﾂ` as `WS-ｷﾞｮｳﾑ-YYYY * 100 + 12`; opens `PRMHST-F`, `POLMST-F`, and `PRODTB-F` for input; opens `PRMCERT-F` and `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'PRODTB'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-PRODTB-ST`; and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            7,
+            8,
+            9,
+            10,
+            18,
+            19,
+            13
+          ],
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-PRMHST-ST` is `'00'` or `'05'` (`WS-PRMHST-OK`); `WS-ｴﾗｰﾌｧｲﾙ` is not spaces; `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`); `WS-PRODTB-ST` is `'00'` (`WS-PRODTB-OK`); and `WS-PRMCERT-ST` is not `'00'` (not `WS-PRMCERT-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; sets `WS-ﾎｳｺｳ` to `'W'`; calls `GLC020`; computes `WS-ﾈﾝｼｮ` as `WS-ｷﾞｮｳﾑ-YYYY * 10000 + 101`; computes `WS-ﾈﾝﾏﾂ` as `WS-ｷﾞｮｳﾑ-YYYY * 100 + 12`; opens `PRMHST-F`, `POLMST-F`, and `PRODTB-F` for input; opens `PRMCERT-F` and `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'PRMCERT'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-PRMCERT-ST`; and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            7,
+            8,
+            9,
+            10,
+            20,
+            21,
+            13
+          ],
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-PRMHST-ST` is `'00'` or `'05'` (`WS-PRMHST-OK`); `WS-ｴﾗｰﾌｧｲﾙ` is not spaces; `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`); `WS-PRODTB-ST` is `'00'` (`WS-PRODTB-OK`); `WS-PRMCERT-ST` is `'00'` (`WS-PRMCERT-OK`); and `WS-REPORT-ST` is not `'00'` (not `WS-REPORT-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; sets `WS-ﾎｳｺｳ` to `'W'`; calls `GLC020`; computes `WS-ﾈﾝｼｮ` as `WS-ｷﾞｮｳﾑ-YYYY * 10000 + 101`; computes `WS-ﾈﾝﾏﾂ` as `WS-ｷﾞｮｳﾑ-YYYY * 100 + 12`; opens `PRMHST-F`, `POLMST-F`, and `PRODTB-F` for input; opens `PRMCERT-F` and `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'GLY030R'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-REPORT-ST`; and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            7,
+            8,
+            9,
+            10,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29
+          ],
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-PRMHST-ST` is `'00'` or `'05'` (`WS-PRMHST-OK`); `WS-ｴﾗｰﾌｧｲﾙ` is spaces; `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`); `WS-PRODTB-ST` is `'00'` (`WS-PRODTB-OK`); `WS-PRMCERT-ST` is `'00'` (`WS-PRMCERT-OK`); and `WS-REPORT-ST` is `'00'` (`WS-REPORT-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; sets `WS-ﾎｳｺｳ` to `'W'`; calls `GLC020`; computes `WS-ﾈﾝｼｮ` as `WS-ｷﾞｮｳﾑ-YYYY * 10000 + 101`; computes `WS-ﾈﾝﾏﾂ` as `WS-ｷﾞｮｳﾑ-YYYY * 100 + 12`; opens `PRMHST-F`, `POLMST-F`, and `PRODTB-F` for input; opens `PRMCERT-F` and `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to spaces; performs `ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN`; sets `WS-ﾋｮｳﾀﾞｲ-ﾈﾝ` to `WS-ｷﾞｮｳﾑ-YYYY`; sets `WS-ﾋｮｳﾀﾞｲ-ﾋﾂﾞｹ` to `WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ`; writes `ﾎｳｺｸ-ｷﾞｮｳ` from `WS-ﾋｮｳﾀﾞｲ-ｷﾞｮｳ`; sets `ﾎｳｺｸ-ｷﾞｮｳ` to spaces; writes `ﾎｳｺｸ-ｷﾞｮｳ`; and performs `PRMHST-ﾖﾐｺﾐ-RTN`."
+        }
+      ]
+    },
+    {
+      "paragraph": "PRMHST-ﾖﾐｺﾐ-RTN",
+      "source": "gondwana/programs/GLY030.cbl:188",
+      "conditions": [
+        "WS-PRMHST-OK",
+        "WS-PRMHST-ｵﾜﾘ"
+      ],
+      "conditionRefs": [
+        [
+          "WS-PRMHST-ST"
+        ],
+        [
+          "WS-PRMHST-ST"
+        ]
+      ],
+      "actions": [
+        "READ PRMHST-F NEXT",
+        "ADD 1 TO WS-ﾘﾚｷｹﾝｽｳ",
+        "MOVE 'PRMHST' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-PRMHST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "PERFORM ｲｼﾞｮｳ-RTN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1
+          ],
+          "sentence": "When `WS-PRMHST-ST` is `'00'` or `'05'` (`WS-PRMHST-OK`), it reads `PRMHST-F` and adds 1 to `WS-ﾘﾚｷｹﾝｽｳ`."
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            4
+          ],
+          "sentence": "When `WS-PRMHST-ST` is neither `'00'` nor `'05'` (not `WS-PRMHST-OK`) and `WS-PRMHST-ST` is not `'10'` (not `WS-PRMHST-ｵﾜﾘ`), it reads `PRMHST-F`, sets `WS-ｴﾗｰﾌｧｲﾙ` to `'PRMHST'`, sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-PRMHST-ST`, and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0
+          ],
+          "sentence": "When `WS-PRMHST-ST` is neither `'00'` nor `'05'` (not `WS-PRMHST-OK`) and `WS-PRMHST-ST` is `'10'` (`WS-PRMHST-ｵﾜﾘ`), it reads `PRMHST-F`."
+        }
+      ]
+    },
+    {
+      "paragraph": "ｹｲﾔｸ-RTN",
+      "source": "gondwana/programs/GLY030.cbl:204",
+      "conditions": [
+        "WS-ｼｮｳﾒｲｶﾞｸ \u003e 0"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ｼｮｳﾒｲｶﾞｸ"
+        ]
+      ],
+      "actions": [
+        "MOVE SH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ TO WS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+        "MOVE 0 TO WS-ｼｮｳﾒｲｶﾞｸ",
+        "PERFORM UNTIL WS-PRMHST-ｵﾜﾘ OR SH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ NOT = WS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+        "PERFORM ｼｮｳﾒｲ-RTN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "sentence": "When `WS-ｼｮｳﾒｲｶﾞｸ` is more than 0, it sets `WS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `SH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; sets `WS-ｼｮｳﾒｲｶﾞｸ` to 0; repeats its loop until `WS-PRMHST-ST` is `'10'` (`WS-PRMHST-ｵﾜﾘ`) or `SH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` is not `WS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; and performs `ｼｮｳﾒｲ-RTN`."
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ],
+          "sentence": "When `WS-ｼｮｳﾒｲｶﾞｸ` is at most 0, it sets `WS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `SH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; sets `WS-ｼｮｳﾒｲｶﾞｸ` to 0; and repeats its loop until `WS-PRMHST-ST` is `'10'` (`WS-PRMHST-ｵﾜﾘ`) or `SH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` is not `WS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`."
+        }
+      ]
+    },
+    {
+      "paragraph": "ｹｲﾔｸ-RTN",
+      "loop": "PERFORM UNTIL WS-PRMHST-ｵﾜﾘ OR SH-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ NOT = WS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+      "source": "gondwana/programs/GLY030.cbl:207",
+      "conditions": [
+        "SH-ｼｭｳﾉｳﾋﾞ NOT \u003c WS-ﾈﾝｼｮ AND SH-ｼｭｳﾉｳﾋﾞ NOT \u003e WS-ｷﾞｮｳﾑﾋﾂﾞｹ"
+      ],
+      "conditionRefs": [
+        [
+          "SH-ｼｭｳﾉｳﾋﾞ",
+          "WS-ﾈﾝｼｮ",
+          "WS-ｷﾞｮｳﾑﾋﾂﾞｹ"
+        ]
+      ],
+      "actions": [
+        "ADD SH-ｷﾝｶﾞｸ TO WS-ｼｮｳﾒｲｶﾞｸ",
+        "PERFORM PRMHST-ﾖﾐｺﾐ-RTN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ],
+          "sentence": "When `SH-ｼｭｳﾉｳﾋﾞ` is at least `WS-ﾈﾝｼｮ` and `SH-ｼｭｳﾉｳﾋﾞ` is at most `WS-ｷﾞｮｳﾑﾋﾂﾞｹ`, it adds `SH-ｷﾝｶﾞｸ` to `WS-ｼｮｳﾒｲｶﾞｸ` and performs `PRMHST-ﾖﾐｺﾐ-RTN`."
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            1
+          ],
+          "sentence": "When `SH-ｼｭｳﾉｳﾋﾞ` is less than `WS-ﾈﾝｼｮ` or `SH-ｼｭｳﾉｳﾋﾞ` is more than `WS-ｷﾞｮｳﾑﾋﾂﾞｹ`, it performs `PRMHST-ﾖﾐｺﾐ-RTN`."
+        }
+      ]
+    },
+    {
+      "paragraph": "ｼｮｳﾒｲ-RTN",
+      "source": "gondwana/programs/GLY030.cbl:222",
+      "conditions": [
+        "WS-POLMST-ﾅｼ",
+        "WS-POLMST-OK"
+      ],
+      "conditionRefs": [
+        [
+          "WS-POLMST-ST"
+        ],
+        [
+          "WS-POLMST-ST"
+        ]
+      ],
+      "actions": [
+        "MOVE WS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ TO PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+        "READ POLMST-F",
+        "ADD 1 TO WS-ｹｲﾔｸﾅｼｹﾝｽｳ",
+        "MOVE 4 TO WS-ﾌｯｷｺｰﾄﾞ",
+        "MOVE 'POLMST' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-POLMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "PERFORM ｲｼﾞｮｳ-RTN",
+        "PERFORM ﾖﾃｲ-RTN",
+        "PERFORM ｶｷｺﾐ-RTN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "sentence": "When `WS-POLMST-ST` is `'23'` (`WS-POLMST-ﾅｼ`), it sets `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `WS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`, reads `POLMST-F`, adds 1 to `WS-ｹｲﾔｸﾅｼｹﾝｽｳ`, and sets `WS-ﾌｯｷｺｰﾄﾞ` to 4."
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            4,
+            5,
+            6
+          ],
+          "sentence": "When `WS-POLMST-ST` is not `'23'` (not `WS-POLMST-ﾅｼ`) and `WS-POLMST-ST` is not `'00'` (not `WS-POLMST-OK`), it sets `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `WS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`, reads `POLMST-F`, sets `WS-ｴﾗｰﾌｧｲﾙ` to `'POLMST'`, sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-POLMST-ST`, and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            7,
+            8
+          ],
+          "sentence": "When `WS-POLMST-ST` is not `'23'` (not `WS-POLMST-ﾅｼ`) and `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`), it sets `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `WS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`, reads `POLMST-F`, performs `ﾖﾃｲ-RTN`, and performs `ｶｷｺﾐ-RTN`."
+        }
+      ]
+    },
+    {
+      "paragraph": "ﾖﾃｲ-RTN",
+      "source": "gondwana/programs/GLY030.cbl:243",
+      "conditions": [
+        "PM-ﾊﾗｲｺﾐﾁｭｳ",
+        "PM-ﾈﾝﾊﾞﾗｲ",
+        "PM-ﾊﾝﾄｼﾊﾞﾗｲ",
+        "WS-ﾖﾃｲｶｲｽｳ \u003c 0"
+      ],
+      "conditionRefs": [
+        [
+          "PM-ｼﾞｮｳﾀｲ"
+        ],
+        [
+          "PM-ﾊﾗｲｺﾐﾎｳﾎｳ"
+        ],
+        [
+          "PM-ﾊﾗｲｺﾐﾎｳﾎｳ"
+        ],
+        [
+          "WS-ﾖﾃｲｶｲｽｳ"
+        ]
+      ],
+      "actions": [
+        "MOVE 0 TO WS-ﾖﾃｲｶｲｽｳ",
+        "MOVE PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ TO WS-ﾊﾗｲｺﾐｽﾞﾐ",
+        "ADD 1 TO WS-ﾊﾗｲｺﾐ-YYYY",
+        "PERFORM ｷｹﾞﾂ-RTN",
+        "PERFORM 2 TIMES",
+        "COMPUTE WS-ﾖﾃｲｶｲｽｳ = (WS-ｷﾞｮｳﾑ-YYYY - WS-ﾊﾗｲｺﾐ-YYYY) * 12 + 12 - WS-ﾊﾗｲｺﾐ-MM"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "sentence": "When `PM-ｼﾞｮｳﾀｲ` is `'1'` or `'2'` (`PM-ﾊﾗｲｺﾐﾁｭｳ`); and `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'2'` (`PM-ﾈﾝﾊﾞﾗｲ`), it sets `WS-ﾖﾃｲｶｲｽｳ` to 0, sets `WS-ﾊﾗｲｺﾐｽﾞﾐ` to `PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ`, adds 1 to `WS-ﾊﾗｲｺﾐ-YYYY`, and performs `ｷｹﾞﾂ-RTN`."
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            4
+          ],
+          "sentence": "When `PM-ｼﾞｮｳﾀｲ` is `'1'` or `'2'` (`PM-ﾊﾗｲｺﾐﾁｭｳ`); `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'2'` (not `PM-ﾈﾝﾊﾞﾗｲ`); and `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'3'` (`PM-ﾊﾝﾄｼﾊﾞﾗｲ`), it sets `WS-ﾖﾃｲｶｲｽｳ` to 0; sets `WS-ﾊﾗｲｺﾐｽﾞﾐ` to `PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ`; and repeats its loop, `2 TIMES`."
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            5,
+            0
+          ],
+          "sentence": "When `PM-ｼﾞｮｳﾀｲ` is `'1'` or `'2'` (`PM-ﾊﾗｲｺﾐﾁｭｳ`); `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'2'` (not `PM-ﾈﾝﾊﾞﾗｲ`); `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'3'` (not `PM-ﾊﾝﾄｼﾊﾞﾗｲ`); and `WS-ﾖﾃｲｶｲｽｳ` is less than 0, it sets `WS-ﾖﾃｲｶｲｽｳ` to 0, sets `WS-ﾊﾗｲｺﾐｽﾞﾐ` to `PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ`, computes `WS-ﾖﾃｲｶｲｽｳ` as `(WS-ｷﾞｮｳﾑ-YYYY - WS-ﾊﾗｲｺﾐ-YYYY) * 12 + 12 - WS-ﾊﾗｲｺﾐ-MM`, and sets `WS-ﾖﾃｲｶｲｽｳ` to 0."
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            5
+          ],
+          "sentence": "When `PM-ｼﾞｮｳﾀｲ` is `'1'` or `'2'` (`PM-ﾊﾗｲｺﾐﾁｭｳ`); `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'2'` (not `PM-ﾈﾝﾊﾞﾗｲ`); `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'3'` (not `PM-ﾊﾝﾄｼﾊﾞﾗｲ`); and `WS-ﾖﾃｲｶｲｽｳ` is at least 0, it sets `WS-ﾖﾃｲｶｲｽｳ` to 0, sets `WS-ﾊﾗｲｺﾐｽﾞﾐ` to `PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ`, and computes `WS-ﾖﾃｲｶｲｽｳ` as `(WS-ｷﾞｮｳﾑ-YYYY - WS-ﾊﾗｲｺﾐ-YYYY) * 12 + 12 - WS-ﾊﾗｲｺﾐ-MM`."
+        },
+        {
+          "entries": [
+            "N",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1
+          ],
+          "sentence": "When `PM-ｼﾞｮｳﾀｲ` is neither `'1'` nor `'2'` (not `PM-ﾊﾗｲｺﾐﾁｭｳ`), it sets `WS-ﾖﾃｲｶｲｽｳ` to 0 and sets `WS-ﾊﾗｲｺﾐｽﾞﾐ` to `PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ`."
+        }
+      ]
+    },
+    {
+      "paragraph": "ｷｹﾞﾂ-RTN",
+      "source": "gondwana/programs/GLY030.cbl:269",
+      "conditions": [
+        "WS-ﾊﾗｲｺﾐ-MM \u003e 12",
+        "WS-ﾊﾗｲｺﾐ-YYYYMM \u003e WS-ﾈﾝﾏﾂ"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ﾊﾗｲｺﾐ-MM"
+        ],
+        [
+          "WS-ﾊﾗｲｺﾐ-YYYYMM",
+          "WS-ﾈﾝﾏﾂ"
+        ]
+      ],
+      "actions": [
+        "SUBTRACT 12 FROM WS-ﾊﾗｲｺﾐ-MM",
+        "ADD 1 TO WS-ﾊﾗｲｺﾐ-YYYY",
+        "ADD 1 TO WS-ﾖﾃｲｶｲｽｳ"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ],
+          "sentence": "When `WS-ﾊﾗｲｺﾐ-MM` is more than 12 and `WS-ﾊﾗｲｺﾐ-YYYYMM` is at most `WS-ﾈﾝﾏﾂ`, it subtracts 12 from `WS-ﾊﾗｲｺﾐ-MM`, adds 1 to `WS-ﾊﾗｲｺﾐ-YYYY`, and adds 1 to `WS-ﾖﾃｲｶｲｽｳ`."
+        },
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ],
+          "sentence": "When `WS-ﾊﾗｲｺﾐ-MM` is more than 12 and `WS-ﾊﾗｲｺﾐ-YYYYMM` is more than `WS-ﾈﾝﾏﾂ`, it subtracts 12 from `WS-ﾊﾗｲｺﾐ-MM` and adds 1 to `WS-ﾊﾗｲｺﾐ-YYYY`."
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            2
+          ],
+          "sentence": "When `WS-ﾊﾗｲｺﾐ-MM` is at most 12 and `WS-ﾊﾗｲｺﾐ-YYYYMM` is at most `WS-ﾈﾝﾏﾂ`, it adds 1 to `WS-ﾖﾃｲｶｲｽｳ`."
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": null,
+          "sentence": "When `WS-ﾊﾗｲｺﾐ-MM` is at most 12 and `WS-ﾊﾗｲｺﾐ-YYYYMM` is more than `WS-ﾈﾝﾏﾂ`, it does nothing more."
+        }
+      ]
+    },
+    {
+      "paragraph": "ｶｷｺﾐ-RTN",
+      "source": "gondwana/programs/GLY030.cbl:281",
+      "conditions": [
+        "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
+        "WS-PRMCERT-OK"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ",
+          "WS-ｼｮｳﾋﾝ-IX",
+          "PM-ｼｮｳﾋﾝ"
+        ],
+        [
+          "WS-PRMCERT-ST"
+        ]
+      ],
+      "actions": [
+        "MOVE SPACES TO SM-ｼｮｳﾒｲ-ﾚｺｰﾄﾞ",
+        "MOVE PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ TO SM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+        "MOVE WS-ｷﾞｮｳﾑ-YYYY TO SM-ﾈﾝﾌﾞﾝ",
+        "MOVE WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ TO SM-ﾊｯｺｳﾋﾞ",
+        "MOVE PM-ｼﾒｲ TO SM-ｼﾒｲ",
+        "MOVE PM-ｼﾞｭｳｼｮ TO SM-ｼﾞｭｳｼｮ",
+        "MOVE PM-ｼｮｳﾋﾝ TO SM-ｼｮｳﾋﾝ",
+        "SET WS-ｼｮｳﾋﾝ-IX TO 1",
+        "SEARCH WS-ｼｮｳﾋﾝ",
+        "MOVE WS-ｼｮｳﾋﾝ-ﾒｲｼｮｳ(WS-ｼｮｳﾋﾝ-IX) TO SM-ｼｮｳﾋﾝﾒｲ",
+        "MOVE PM-ｹｲﾔｸﾋﾞ TO SM-ｹｲﾔｸﾋﾞ",
+        "MOVE PM-ﾊﾗｲｺﾐﾎｳﾎｳ TO SM-ﾊﾗｲｺﾐﾎｳﾎｳ",
+        "MOVE WS-ｼｮｳﾒｲｶﾞｸ TO SM-ｼｮｳﾒｲｶﾞｸ",
+        "COMPUTE SM-ﾖﾃｲｶﾞｸ = WS-ｼｮｳﾒｲｶﾞｸ + PM-ﾎｹﾝﾘｮｳ * WS-ﾖﾃｲｶｲｽｳ",
+        "WRITE SM-ｼｮｳﾒｲ-ﾚｺｰﾄﾞ",
+        "MOVE 'PRMCERT' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-PRMCERT-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "PERFORM ｲｼﾞｮｳ-RTN",
+        "ADD 1 TO WS-ｼｮｳﾒｲｹﾝｽｳ",
+        "ADD SM-ｼｮｳﾒｲｶﾞｸ TO WS-ｼｮｳﾒｲｺﾞｳｹｲ",
+        "ADD SM-ﾖﾃｲｶﾞｸ TO WS-ﾖﾃｲｺﾞｳｹｲ",
+        "MOVE PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ TO WS-ﾒｲｻｲ-ｼｮｳｹﾝ",
+        "MOVE PM-ｼｮｳﾋﾝ TO WS-ﾒｲｻｲ-ｼｮｳﾋﾝ",
+        "MOVE PM-ｼﾒｲ TO WS-ﾒｲｻｲ-ｼﾒｲ",
+        "MOVE SM-ｼｮｳﾒｲｶﾞｸ TO WS-ﾒｲｻｲ-ｼｮｳﾒｲｶﾞｸ",
+        "MOVE SM-ﾖﾃｲｶﾞｸ TO WS-ﾒｲｻｲ-ﾖﾃｲｶﾞｸ",
+        "WRITE ﾎｳｺｸ-ｷﾞｮｳ FROM WS-ﾒｲｻｲ-ｷﾞｮｳ"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "sentence": "When `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is `PM-ｼｮｳﾋﾝ` and `WS-PRMCERT-ST` is not `'00'` (not `WS-PRMCERT-OK`), it sets `SM-ｼｮｳﾒｲ-ﾚｺｰﾄﾞ` to spaces, sets `SM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`, sets `SM-ﾈﾝﾌﾞﾝ` to `WS-ｷﾞｮｳﾑ-YYYY`, sets `SM-ﾊｯｺｳﾋﾞ` to `WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ`, sets `SM-ｼﾒｲ` to `PM-ｼﾒｲ`, sets `SM-ｼﾞｭｳｼｮ` to `PM-ｼﾞｭｳｼｮ`, sets `SM-ｼｮｳﾋﾝ` to `PM-ｼｮｳﾋﾝ`, sets `WS-ｼｮｳﾋﾝ-IX` to 1, searches `WS-ｼｮｳﾋﾝ`, sets `SM-ｼｮｳﾋﾝﾒｲ` to `WS-ｼｮｳﾋﾝ-ﾒｲｼｮｳ(WS-ｼｮｳﾋﾝ-IX)`, sets `SM-ｹｲﾔｸﾋﾞ` to `PM-ｹｲﾔｸﾋﾞ`, sets `SM-ﾊﾗｲｺﾐﾎｳﾎｳ` to `PM-ﾊﾗｲｺﾐﾎｳﾎｳ`, sets `SM-ｼｮｳﾒｲｶﾞｸ` to `WS-ｼｮｳﾒｲｶﾞｸ`, computes `SM-ﾖﾃｲｶﾞｸ` as `WS-ｼｮｳﾒｲｶﾞｸ + PM-ﾎｹﾝﾘｮｳ * WS-ﾖﾃｲｶｲｽｳ`, writes `SM-ｼｮｳﾒｲ-ﾚｺｰﾄﾞ`, sets `WS-ｴﾗｰﾌｧｲﾙ` to `'PRMCERT'`, sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-PRMCERT-ST`, and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26
+          ],
+          "sentence": "When `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is `PM-ｼｮｳﾋﾝ` and `WS-PRMCERT-ST` is `'00'` (`WS-PRMCERT-OK`), it sets `SM-ｼｮｳﾒｲ-ﾚｺｰﾄﾞ` to spaces, sets `SM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`, sets `SM-ﾈﾝﾌﾞﾝ` to `WS-ｷﾞｮｳﾑ-YYYY`, sets `SM-ﾊｯｺｳﾋﾞ` to `WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ`, sets `SM-ｼﾒｲ` to `PM-ｼﾒｲ`, sets `SM-ｼﾞｭｳｼｮ` to `PM-ｼﾞｭｳｼｮ`, sets `SM-ｼｮｳﾋﾝ` to `PM-ｼｮｳﾋﾝ`, sets `WS-ｼｮｳﾋﾝ-IX` to 1, searches `WS-ｼｮｳﾋﾝ`, sets `SM-ｼｮｳﾋﾝﾒｲ` to `WS-ｼｮｳﾋﾝ-ﾒｲｼｮｳ(WS-ｼｮｳﾋﾝ-IX)`, sets `SM-ｹｲﾔｸﾋﾞ` to `PM-ｹｲﾔｸﾋﾞ`, sets `SM-ﾊﾗｲｺﾐﾎｳﾎｳ` to `PM-ﾊﾗｲｺﾐﾎｳﾎｳ`, sets `SM-ｼｮｳﾒｲｶﾞｸ` to `WS-ｼｮｳﾒｲｶﾞｸ`, computes `SM-ﾖﾃｲｶﾞｸ` as `WS-ｼｮｳﾒｲｶﾞｸ + PM-ﾎｹﾝﾘｮｳ * WS-ﾖﾃｲｶｲｽｳ`, writes `SM-ｼｮｳﾒｲ-ﾚｺｰﾄﾞ`, adds 1 to `WS-ｼｮｳﾒｲｹﾝｽｳ`, adds `SM-ｼｮｳﾒｲｶﾞｸ` to `WS-ｼｮｳﾒｲｺﾞｳｹｲ`, adds `SM-ﾖﾃｲｶﾞｸ` to `WS-ﾖﾃｲｺﾞｳｹｲ`, sets `WS-ﾒｲｻｲ-ｼｮｳｹﾝ` to `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`, sets `WS-ﾒｲｻｲ-ｼｮｳﾋﾝ` to `PM-ｼｮｳﾋﾝ`, sets `WS-ﾒｲｻｲ-ｼﾒｲ` to `PM-ｼﾒｲ`, sets `WS-ﾒｲｻｲ-ｼｮｳﾒｲｶﾞｸ` to `SM-ｼｮｳﾒｲｶﾞｸ`, sets `WS-ﾒｲｻｲ-ﾖﾃｲｶﾞｸ` to `SM-ﾖﾃｲｶﾞｸ`, and writes `ﾎｳｺｸ-ｷﾞｮｳ` from `WS-ﾒｲｻｲ-ｷﾞｮｳ`."
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "sentence": "When `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is not `PM-ｼｮｳﾋﾝ` and `WS-PRMCERT-ST` is not `'00'` (not `WS-PRMCERT-OK`), it sets `SM-ｼｮｳﾒｲ-ﾚｺｰﾄﾞ` to spaces, sets `SM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`, sets `SM-ﾈﾝﾌﾞﾝ` to `WS-ｷﾞｮｳﾑ-YYYY`, sets `SM-ﾊｯｺｳﾋﾞ` to `WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ`, sets `SM-ｼﾒｲ` to `PM-ｼﾒｲ`, sets `SM-ｼﾞｭｳｼｮ` to `PM-ｼﾞｭｳｼｮ`, sets `SM-ｼｮｳﾋﾝ` to `PM-ｼｮｳﾋﾝ`, sets `WS-ｼｮｳﾋﾝ-IX` to 1, searches `WS-ｼｮｳﾋﾝ`, sets `SM-ｹｲﾔｸﾋﾞ` to `PM-ｹｲﾔｸﾋﾞ`, sets `SM-ﾊﾗｲｺﾐﾎｳﾎｳ` to `PM-ﾊﾗｲｺﾐﾎｳﾎｳ`, sets `SM-ｼｮｳﾒｲｶﾞｸ` to `WS-ｼｮｳﾒｲｶﾞｸ`, computes `SM-ﾖﾃｲｶﾞｸ` as `WS-ｼｮｳﾒｲｶﾞｸ + PM-ﾎｹﾝﾘｮｳ * WS-ﾖﾃｲｶｲｽｳ`, writes `SM-ｼｮｳﾒｲ-ﾚｺｰﾄﾞ`, sets `WS-ｴﾗｰﾌｧｲﾙ` to `'PRMCERT'`, sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-PRMCERT-ST`, and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            10,
+            11,
+            12,
+            13,
+            14,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26
+          ],
+          "sentence": "When `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is not `PM-ｼｮｳﾋﾝ` and `WS-PRMCERT-ST` is `'00'` (`WS-PRMCERT-OK`), it sets `SM-ｼｮｳﾒｲ-ﾚｺｰﾄﾞ` to spaces, sets `SM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`, sets `SM-ﾈﾝﾌﾞﾝ` to `WS-ｷﾞｮｳﾑ-YYYY`, sets `SM-ﾊｯｺｳﾋﾞ` to `WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ`, sets `SM-ｼﾒｲ` to `PM-ｼﾒｲ`, sets `SM-ｼﾞｭｳｼｮ` to `PM-ｼﾞｭｳｼｮ`, sets `SM-ｼｮｳﾋﾝ` to `PM-ｼｮｳﾋﾝ`, sets `WS-ｼｮｳﾋﾝ-IX` to 1, searches `WS-ｼｮｳﾋﾝ`, sets `SM-ｹｲﾔｸﾋﾞ` to `PM-ｹｲﾔｸﾋﾞ`, sets `SM-ﾊﾗｲｺﾐﾎｳﾎｳ` to `PM-ﾊﾗｲｺﾐﾎｳﾎｳ`, sets `SM-ｼｮｳﾒｲｶﾞｸ` to `WS-ｼｮｳﾒｲｶﾞｸ`, computes `SM-ﾖﾃｲｶﾞｸ` as `WS-ｼｮｳﾒｲｶﾞｸ + PM-ﾎｹﾝﾘｮｳ * WS-ﾖﾃｲｶｲｽｳ`, writes `SM-ｼｮｳﾒｲ-ﾚｺｰﾄﾞ`, adds 1 to `WS-ｼｮｳﾒｲｹﾝｽｳ`, adds `SM-ｼｮｳﾒｲｶﾞｸ` to `WS-ｼｮｳﾒｲｺﾞｳｹｲ`, adds `SM-ﾖﾃｲｶﾞｸ` to `WS-ﾖﾃｲｺﾞｳｹｲ`, sets `WS-ﾒｲｻｲ-ｼｮｳｹﾝ` to `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`, sets `WS-ﾒｲｻｲ-ｼｮｳﾋﾝ` to `PM-ｼｮｳﾋﾝ`, sets `WS-ﾒｲｻｲ-ｼﾒｲ` to `PM-ｼﾒｲ`, sets `WS-ﾒｲｻｲ-ｼｮｳﾒｲｶﾞｸ` to `SM-ｼｮｳﾒｲｶﾞｸ`, sets `WS-ﾒｲｻｲ-ﾖﾃｲｶﾞｸ` to `SM-ﾖﾃｲｶﾞｸ`, and writes `ﾎｳｺｸ-ｷﾞｮｳ` from `WS-ﾒｲｻｲ-ｷﾞｮｳ`."
+        }
+      ]
+    },
+    {
+      "paragraph": "ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN",
+      "source": "gondwana/copybooks/PRDLOD.cpy:17",
+      "conditions": [
+        "WS-PRODTB-ｵﾜﾘ"
+      ],
+      "conditionRefs": [
+        [
+          "WS-PRODTB-ST"
+        ]
+      ],
+      "actions": [
+        "READ PRODTB-F",
+        "PERFORM UNTIL NOT WS-PRODTB-OK",
+        "MOVE 'PRODTB' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-PRODTB-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "PERFORM ｲｼﾞｮｳ-RTN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "sentence": "When `WS-PRODTB-ST` is not `'10'` (not `WS-PRODTB-ｵﾜﾘ`), it reads `PRODTB-F`, repeats its loop until `WS-PRODTB-ST` is not `'00'` (not `WS-PRODTB-OK`), sets `WS-ｴﾗｰﾌｧｲﾙ` to `'PRODTB'`, sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-PRODTB-ST`, and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ],
+          "sentence": "When `WS-PRODTB-ST` is `'10'` (`WS-PRODTB-ｵﾜﾘ`), it reads `PRODTB-F` and repeats its loop until `WS-PRODTB-ST` is not `'00'` (not `WS-PRODTB-OK`)."
+        }
+      ]
+    }
+  ]
+}
