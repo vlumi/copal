@@ -2,6 +2,8 @@ package oracle
 
 import (
 	"bytes"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"os"
@@ -9,6 +11,7 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/vlumi/cobolith/cobol"
@@ -36,11 +39,15 @@ const timeout = 10 * time.Second
 const loadTimeout = time.Minute
 
 // runner runs a program on cases: the system's programs compiled with
-// trace code, and the loaders of the indexed files it reads.
+// trace code, and the loaders of the indexed files it reads. It keeps
+// each indexed file it has loaded, by its records, since most cases of a
+// search share most of their files and a copy is cheaper than a load.
 type runner struct {
 	program  *program
 	programs string
 	loaders  string
+	loaded   string
+	loading  sync.Map // the file's name and records, hashed, to its *sync.Once
 }
 
 // result is what a run reached, and how it ended; and, for a run that
@@ -240,11 +247,31 @@ func keyed(f blueprint.File) bool {
 	return f.Organization == "INDEXED" || f.Organization == "RELATIVE"
 }
 
-// load writes an indexed or relative file through its loader, which reads
-// the records from a sequential file.
+// load writes an indexed or relative file with the records: a copy of
+// the file its loader made of the same records before, or of the one it
+// makes now.
 func (r *runner) load(f blueprint.File, records [][]byte, path string) error {
+	data := bytes.Join(records, nil)
+	sum := sha256.Sum256(append([]byte(f.Name+"\x00"), data...))
+	kept := filepath.Join(r.loaded, hex.EncodeToString(sum[:]))
+	once, _ := r.loading.LoadOrStore(kept, &sync.Once{})
+	var err error
+	once.(*sync.Once).Do(func() { err = r.loadInto(f, data, kept) })
+	if err != nil {
+		return err
+	}
+	loaded, err := os.ReadFile(kept)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(path, loaded, 0o644)
+}
+
+// loadInto writes an indexed or relative file through its loader, which
+// reads the records from a sequential file.
+func (r *runner) loadInto(f blueprint.File, data []byte, path string) error {
 	in := path + ".load"
-	if err := os.WriteFile(in, bytes.Join(records, nil), 0o644); err != nil {
+	if err := os.WriteFile(in, data, 0o644); err != nil {
 		return err
 	}
 	outcome, err := run.Step{Programs: r.loaders, Program: loaderName(f), DDs: map[string]string{"LOADIN": in, "LOADOUT": path},
@@ -381,7 +408,10 @@ func loaderSource(f blueprint.File, length, keyStart, keyLength int) string {
 // file the program uses, a loader and an unloader.
 func newRunner(p *program, sources, copybookDir, scratch string) (*runner, error) {
 	dir := filepath.Join(scratch, p.blueprint.Name)
-	r := &runner{program: p, programs: filepath.Join(scratch, "programs"), loaders: filepath.Join(dir, "loaders")}
+	r := &runner{program: p, programs: filepath.Join(scratch, "programs"), loaders: filepath.Join(dir, "loaders"), loaded: filepath.Join(dir, "loaded")}
+	if err := os.MkdirAll(r.loaded, 0o755); err != nil {
+		return nil, err
+	}
 	if _, err := os.Stat(r.programs); os.IsNotExist(err) {
 		if _, err := (run.Build{Dialect: p.dialect, Sources: sources, Copybooks: copybookDir, Out: r.programs, Trace: true}).Programs(); err != nil {
 			return nil, err
