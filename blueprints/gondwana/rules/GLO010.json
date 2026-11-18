@@ -3,7 +3,7 @@
   "tables": [
     {
       "paragraph": "ｼｮｷ-RTN",
-      "source": "gondwana/programs/GLO010.cbl:137",
+      "source": "gondwana/programs/GLO010.cbl:139",
       "conditions": [
         "WS-ﾍﾝｶﾝｹｯｶ = 0",
         "WS-ﾁｭｳｼｭﾂ-OK",
@@ -175,7 +175,7 @@
     },
     {
       "paragraph": "ﾁｭｳｼｭﾂ-ﾖﾐｺﾐ-RTN",
-      "source": "gondwana/programs/GLO010.cbl:176",
+      "source": "gondwana/programs/GLO010.cbl:178",
       "conditions": [
         "WS-ﾁｭｳｼｭﾂ-OK",
         "WS-ﾁｭｳｼｭﾂ-ｵﾜﾘ"
@@ -234,15 +234,21 @@
     },
     {
       "paragraph": "ﾄｳﾛｸ-RTN",
-      "source": "gondwana/programs/GLO010.cbl:191",
+      "source": "gondwana/programs/GLO010.cbl:193",
       "conditions": [
+        "PM-ｾｲｷｭｳｶｲｽｳ IS NOT NUMERIC OR PM-ｾｲｷｭｳﾎｹﾝﾘｮｳ IS NOT NUMERIC",
         "WRITE PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ INVALID KEY"
       ],
       "conditionRefs": [
+        [
+          "PM-ｾｲｷｭｳｶｲｽｳ",
+          "PM-ｾｲｷｭｳﾎｹﾝﾘｮｳ"
+        ],
         null
       ],
       "actions": [
         "MOVE ﾁｭｳｼｭﾂ-ﾚｺｰﾄﾞ TO PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ",
+        "MOVE 0 TO PM-ｾｲｷｭｳｶｲｽｳ PM-ｾｲｷｭｳﾎｹﾝﾘｮｳ",
         "WRITE PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ",
         "ADD 1 TO WS-ﾁｮｳﾌｸｹﾝｽｳ",
         "MOVE 4 TO WS-ﾌｯｷｺｰﾄﾞ",
@@ -253,6 +259,7 @@
       "rules": [
         {
           "entries": [
+            "Y",
             "Y"
           ],
           "actions": [
@@ -260,28 +267,59 @@
             1,
             2,
             3,
-            4
+            4,
+            5
           ],
-          "sentence": "When writing `PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ` fails on its key, it sets `PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ` to `ﾁｭｳｼｭﾂ-ﾚｺｰﾄﾞ`, writes `PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ`, adds 1 to `WS-ﾁｮｳﾌｸｹﾝｽｳ`, sets `WS-ﾌｯｷｺｰﾄﾞ` to 4, and performs `ﾁｭｳｼｭﾂ-ﾖﾐｺﾐ-RTN`."
+          "sentence": "When `PM-ｾｲｷｭｳｶｲｽｳ` is not numeric or `PM-ｾｲｷｭｳﾎｹﾝﾘｮｳ` is not numeric; and writing `PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ` fails on its key, it sets `PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ` to `ﾁｭｳｼｭﾂ-ﾚｺｰﾄﾞ`; sets `PM-ｾｲｷｭｳｶｲｽｳ` and `PM-ｾｲｷｭｳﾎｹﾝﾘｮｳ` to 0; writes `PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ`; adds 1 to `WS-ﾁｮｳﾌｸｹﾝｽｳ`; sets `WS-ﾌｯｷｺｰﾄﾞ` to 4; and performs `ﾁｭｳｼｭﾂ-ﾖﾐｺﾐ-RTN`."
         },
         {
           "entries": [
+            "Y",
             "N"
           ],
           "actions": [
             0,
             1,
-            5,
+            2,
             6,
-            4
+            7,
+            5
           ],
-          "sentence": "When writing `PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ` succeeds by its key, it sets `PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ` to `ﾁｭｳｼｭﾂ-ﾚｺｰﾄﾞ`, writes `PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ`, adds 1 to `WS-ﾄｳﾛｸｹﾝｽｳ`, performs `ｼｭｳｹｲ-RTN`, and performs `ﾁｭｳｼｭﾂ-ﾖﾐｺﾐ-RTN`."
+          "sentence": "When `PM-ｾｲｷｭｳｶｲｽｳ` is not numeric or `PM-ｾｲｷｭｳﾎｹﾝﾘｮｳ` is not numeric; and writing `PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ` succeeds by its key, it sets `PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ` to `ﾁｭｳｼｭﾂ-ﾚｺｰﾄﾞ`; sets `PM-ｾｲｷｭｳｶｲｽｳ` and `PM-ｾｲｷｭｳﾎｹﾝﾘｮｳ` to 0; writes `PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ`; adds 1 to `WS-ﾄｳﾛｸｹﾝｽｳ`; performs `ｼｭｳｹｲ-RTN`; and performs `ﾁｭｳｼｭﾂ-ﾖﾐｺﾐ-RTN`."
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "sentence": "When `PM-ｾｲｷｭｳｶｲｽｳ` is numeric and `PM-ｾｲｷｭｳﾎｹﾝﾘｮｳ` is numeric; and writing `PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ` fails on its key, it sets `PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ` to `ﾁｭｳｼｭﾂ-ﾚｺｰﾄﾞ`, writes `PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ`, adds 1 to `WS-ﾁｮｳﾌｸｹﾝｽｳ`, sets `WS-ﾌｯｷｺｰﾄﾞ` to 4, and performs `ﾁｭｳｼｭﾂ-ﾖﾐｺﾐ-RTN`."
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            2,
+            6,
+            7,
+            5
+          ],
+          "sentence": "When `PM-ｾｲｷｭｳｶｲｽｳ` is numeric and `PM-ｾｲｷｭｳﾎｹﾝﾘｮｳ` is numeric; and writing `PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ` succeeds by its key, it sets `PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ` to `ﾁｭｳｼｭﾂ-ﾚｺｰﾄﾞ`, writes `PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ`, adds 1 to `WS-ﾄｳﾛｸｹﾝｽｳ`, performs `ｼｭｳｹｲ-RTN`, and performs `ﾁｭｳｼｭﾂ-ﾖﾐｺﾐ-RTN`."
         }
       ]
     },
     {
       "paragraph": "ｼｭｳｹｲ-RTN",
-      "source": "gondwana/programs/GLO010.cbl:206",
+      "source": "gondwana/programs/GLO010.cbl:212",
       "conditions": [
         "PM-ﾕｳｺｳ",
         "PM-ﾕｳﾖﾁｭｳ",
@@ -356,7 +394,7 @@
     },
     {
       "paragraph": "ﾎｼｮｳ-ｼﾞｭﾝﾋﾞ-RTN",
-      "source": "gondwana/programs/GLO010.cbl:224",
+      "source": "gondwana/programs/GLO010.cbl:230",
       "conditions": [
         "WS-ｹｲﾔｸ-OK",
         "WS-ﾎｼｮｳﾁｭｳｼｭﾂ-OK",
@@ -455,7 +493,7 @@
     },
     {
       "paragraph": "ﾎｼｮｳﾁｭｳｼｭﾂ-ﾖﾐｺﾐ-RTN",
-      "source": "gondwana/programs/GLO010.cbl:249",
+      "source": "gondwana/programs/GLO010.cbl:255",
       "conditions": [
         "WS-ﾎｼｮｳﾁｭｳｼｭﾂ-OK",
         "WS-ﾎｼｮｳﾁｭｳｼｭﾂ-ｵﾜﾘ"
@@ -514,7 +552,7 @@
     },
     {
       "paragraph": "ﾎｼｮｳ-ﾄｳﾛｸ-RTN",
-      "source": "gondwana/programs/GLO010.cbl:265",
+      "source": "gondwana/programs/GLO010.cbl:271",
       "conditions": [
         "READ POLMST-F INVALID KEY",
         "WRITE HS-ﾎｼｮｳ-ﾚｺｰﾄﾞ INVALID KEY"
@@ -585,7 +623,7 @@
     },
     {
       "paragraph": "ｾｲｷﾞｮ-RTN",
-      "source": "gondwana/programs/GLO010.cbl:286",
+      "source": "gondwana/programs/GLO010.cbl:292",
       "conditions": [
         "WS-ｾｲｷﾞｮ-OK"
       ],

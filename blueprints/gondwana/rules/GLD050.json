@@ -3,7 +3,7 @@
   "tables": [
     {
       "paragraph": "ﾒｲﾝ-RTN",
-      "source": "gondwana/programs/GLD050.cbl:165",
+      "source": "gondwana/programs/GLD050.cbl:168",
       "conditions": [
         "WS-ﾌｧｲﾙ-ｶﾝﾘｮｳ"
       ],
@@ -59,7 +59,7 @@
     },
     {
       "paragraph": "ｼｮｷ-RTN",
-      "source": "gondwana/programs/GLD050.cbl:183",
+      "source": "gondwana/programs/GLD050.cbl:186",
       "conditions": [
         "WS-ﾍﾝｶﾝｹｯｶ = 0",
         "WS-GLSCTL-OK"
@@ -162,7 +162,7 @@
     },
     {
       "paragraph": "ｵｰﾌﾟﾝ-ｹﾝｻ-RTN",
-      "source": "gondwana/programs/GLD050.cbl:214",
+      "source": "gondwana/programs/GLD050.cbl:217",
       "conditions": [
         "WS-PRMRES-OK",
         "WS-ｴﾗｰﾌｧｲﾙ = SPACES",
@@ -333,7 +333,7 @@
     },
     {
       "paragraph": "ﾖﾐｺﾐ-RTN",
-      "source": "gondwana/programs/GLD050.cbl:245",
+      "source": "gondwana/programs/GLD050.cbl:248",
       "conditions": [
         "WS-PRMRES-ｵﾜﾘ",
         "WS-PRMRES-OK",
@@ -523,7 +523,7 @@
     },
     {
       "paragraph": "ﾀﾒﾙ-RTN",
-      "source": "gondwana/programs/GLD050.cbl:274",
+      "source": "gondwana/programs/GLD050.cbl:277",
       "conditions": [
         "ZG-D-ﾌﾘｶｴｽﾞﾐ"
       ],
@@ -575,7 +575,7 @@
     },
     {
       "paragraph": "ｹﾝｻﾝ-RTN",
-      "source": "gondwana/programs/GLD050.cbl:290",
+      "source": "gondwana/programs/GLD050.cbl:293",
       "conditions": [
         "ZG-T-ｺﾞｳｹｲｹﾝｽｳ NOT = WS-ｹﾝｻ-ｹﾝｽｳ OR ZG-T-ｺﾞｳｹｲｷﾝｶﾞｸ NOT = WS-ｹﾝｻ-ｷﾝｶﾞｸ",
         "ZG-T-ﾌﾘｶｴｽﾞﾐｹﾝｽｳ NOT = WS-ｹﾝｻ-ｽﾞﾐｹﾝｽｳ OR ZG-T-ﾌﾘｶｴｽﾞﾐｷﾝｶﾞｸ NOT = WS-ｹﾝｻ-ｽﾞﾐｷﾝｶﾞｸ",
@@ -660,7 +660,7 @@
     },
     {
       "paragraph": "ﾊﾝｴｲ-RTN",
-      "source": "gondwana/programs/GLD050.cbl:311",
+      "source": "gondwana/programs/GLD050.cbl:314",
       "conditions": [
         "WS-POLMST-ﾅｼ",
         "WS-ﾘﾕｳ-ﾅｼ",
@@ -882,63 +882,47 @@
     },
     {
       "paragraph": "ｷﾝｶﾞｸ-ｹﾝｻ-RTN",
-      "source": "gondwana/programs/GLD050.cbl:350",
+      "source": "gondwana/programs/GLD050.cbl:353",
       "conditions": [
-        "ZG-D-ｷﾝｶﾞｸ = PM-ﾎｹﾝﾘｮｳ",
-        "PM-ﾂｷﾊﾞﾗｲ AND ZG-D-ｷﾝｶﾞｸ = PM-ﾎｹﾝﾘｮｳ * 2"
+        "PM-ｾｲｷｭｳｶｲｽｳ \u003e 0 AND ZG-D-ｷﾝｶﾞｸ = PM-ｾｲｷｭｳﾎｹﾝﾘｮｳ * PM-ｾｲｷｭｳｶｲｽｳ"
       ],
       "conditionRefs": [
         [
+          "PM-ｾｲｷｭｳｶｲｽｳ",
           "ZG-D-ｷﾝｶﾞｸ",
-          "PM-ﾎｹﾝﾘｮｳ"
-        ],
-        [
-          "PM-ﾊﾗｲｺﾐﾎｳﾎｳ",
-          "ZG-D-ｷﾝｶﾞｸ",
-          "PM-ﾎｹﾝﾘｮｳ"
+          "PM-ｾｲｷｭｳﾎｹﾝﾘｮｳ"
         ]
       ],
       "actions": [
-        "MOVE 1 TO WS-ｶｲｽｳ",
-        "MOVE 2 TO WS-ｶｲｽｳ",
+        "MOVE PM-ｾｲｷｭｳｶｲｽｳ TO WS-ｶｲｽｳ",
+        "MOVE 0 TO PM-ｾｲｷｭｳｶｲｽｳ PM-ｾｲｷｭｳﾎｹﾝﾘｮｳ",
         "SET WS-ｷﾝｶﾞｸ-ｿｳｲ TO TRUE"
       ],
       "rules": [
         {
           "entries": [
-            "Y",
-            ""
-          ],
-          "actions": [
-            0
-          ],
-          "sentence": "When `ZG-D-ｷﾝｶﾞｸ` is `PM-ﾎｹﾝﾘｮｳ`, it sets `WS-ｶｲｽｳ` to 1."
-        },
-        {
-          "entries": [
-            "N",
             "Y"
           ],
           "actions": [
+            0,
             1
           ],
-          "sentence": "When `ZG-D-ｷﾝｶﾞｸ` is not `PM-ﾎｹﾝﾘｮｳ`; and `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'1'` (`PM-ﾂｷﾊﾞﾗｲ`) and `ZG-D-ｷﾝｶﾞｸ` is `PM-ﾎｹﾝﾘｮｳ * 2`, it sets `WS-ｶｲｽｳ` to 2."
+          "sentence": "When `PM-ｾｲｷｭｳｶｲｽｳ` is more than 0 and `ZG-D-ｷﾝｶﾞｸ` is `PM-ｾｲｷｭｳﾎｹﾝﾘｮｳ * PM-ｾｲｷｭｳｶｲｽｳ`, it sets `WS-ｶｲｽｳ` to `PM-ｾｲｷｭｳｶｲｽｳ`; and sets `PM-ｾｲｷｭｳｶｲｽｳ` and `PM-ｾｲｷｭｳﾎｹﾝﾘｮｳ` to 0."
         },
         {
           "entries": [
-            "N",
             "N"
           ],
           "actions": [
             2
           ],
-          "sentence": "When `ZG-D-ｷﾝｶﾞｸ` is not `PM-ﾎｹﾝﾘｮｳ`; and `PM-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'1'` (not `PM-ﾂｷﾊﾞﾗｲ`) or `ZG-D-ｷﾝｶﾞｸ` is not `PM-ﾎｹﾝﾘｮｳ * 2`, it sets `WS-ﾘﾕｳ` to `WS-ｷﾝｶﾞｸ-ｿｳｲ`."
+          "sentence": "When `PM-ｾｲｷｭｳｶｲｽｳ` is at most 0 or `ZG-D-ｷﾝｶﾞｸ` is not `PM-ｾｲｷｭｳﾎｹﾝﾘｮｳ * PM-ｾｲｷｭｳｶｲｽｳ`, it sets `WS-ﾘﾕｳ` to `WS-ｷﾝｶﾞｸ-ｿｳｲ`."
         }
       ]
     },
     {
       "paragraph": "ﾌﾘｶｴｽﾞﾐ-RTN",
-      "source": "gondwana/programs/GLD050.cbl:364",
+      "source": "gondwana/programs/GLD050.cbl:366",
       "conditions": [
         "PM-ﾈﾝﾊﾞﾗｲ",
         "WS-ﾊﾗｲｺﾐ-MM \u003e 12",
@@ -1394,7 +1378,7 @@
     },
     {
       "paragraph": "ﾌﾘｶｴﾌﾉｳ-RTN",
-      "source": "gondwana/programs/GLD050.cbl:405",
+      "source": "gondwana/programs/GLD050.cbl:407",
       "conditions": [
         "PM-ﾕｳｺｳ",
         "ZG-D-ｼｷﾝﾌｿｸ",
@@ -1664,7 +1648,7 @@
     },
     {
       "paragraph": "ｼｭｳﾘｮｳ-RTN",
-      "source": "gondwana/programs/GLD050.cbl:478",
+      "source": "gondwana/programs/GLD050.cbl:480",
       "conditions": [
         "WS-GLSCTL-OK"
       ],
