@@ -1,5 +1,5 @@
 @echo off
-rem UNLOAD.BAT: 契約マスタと給付履歴のアンロード。日次と月次の最後に
+rem UNLOAD.BAT: 契約マスタ、給付履歴、保障マスタのアンロード。日次と月次の最後に
 rem 呼ばれ、下流に渡すファイルを作り、制御レコードの業務日付を進める。
 rem
 rem 使い方: UNLOAD.BAT YYYYMMDD  業務日付
@@ -8,6 +8,7 @@ rem
 rem 変更履歴
 rem 1999-11-08 MS  GL-0233 初版、PC システム移行時。
 rem 2026-11-16 YN  GL-0822 給付履歴。
+rem 2026-11-18 YN  GL-0825 保障マスタ。
 setlocal
 set DATE=%1
 set BIN=%GLS_BIN%
@@ -20,6 +21,8 @@ set DD_GLSCTL=%DATA%¥MASTER¥GLSCTL.BIN
 set DD_UNLOAD=%DATA%¥OUT¥POLMST.%DATE%.TXT
 set DD_BENHST=%DATA%¥MASTER¥BENHST.IDX
 set DD_HSTUNL=%DATA%¥OUT¥BENHST.%DATE%.TXT
+set DD_COVMST=%DATA%¥MASTER¥COVMST.IDX
+set DD_COVUNL=%DATA%¥OUT¥COVMST.%DATE%.TXT
 set DD_GLD090R=%DATA%¥RPT¥GLD090.%DATE%.RPT
 "%BIN%¥GLD090.EXE" %DATE% > "%DATA%¥RPT¥GLD090.%DATE%.OUT" 2>&1
 >>"%LOG%" echo GLD090 GLD090 %ERRORLEVEL%

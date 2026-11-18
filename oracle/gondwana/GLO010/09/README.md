@@ -2,8 +2,8 @@
 
 The run ended with return code 16.
 
-GLSCTL-F's directory is missing, so creating it fails.
+EXTRACT-F is missing, so opening it fails.
 
 The first case to reach:
 
-- [GLO010, ｼｮｷ-RTN, rule 4](../../../../blueprints/gondwana/rules/GLO010.md#ｼｮｷ-rtn)
+- [GLO010, ｼｮｷ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLO010.md#ｼｮｷ-rtn)

@@ -11,11 +11,12 @@ import (
 // firstYear is the year the oldest policies in the extract date from.
 const firstYear = 1976
 
-// Extract makes up the extract of about n policies the system opens
-// with on the opening date: policies from the three eras and the four
-// products, most in force, some in grace, lapsed, surrendered, matured or
-// paid out, each as its history would have left it in the old system.
-func (g *Generator) Extract(n int, opening Date) ([][]byte, error) {
+// Extract makes up the extracts of about n policies and of their
+// coverages the system opens with on the opening date: policies from the
+// three eras and the four products, some with riders, most in force, some
+// in grace, lapsed, surrendered, matured or paid out, each as its history
+// would have left it in the old system.
+func (g *Generator) Extract(n int, opening Date) (policyRecords, coverageRecords [][]byte, err error) {
 	r := g.rng("extract", int64(n))
 	issued := map[int]int{}
 	policies := make([]Policy, 0, n)
@@ -26,15 +27,19 @@ func (g *Generator) Extract(n int, opening Date) ([][]byte, error) {
 		policies = append(policies, p)
 	}
 	slices.SortFunc(policies, func(a, b Policy) int { return strings.Compare(a.No, b.No) })
-	var recs [][]byte
 	for _, p := range policies {
 		rec, err := g.record(p)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
-		recs = append(recs, rec)
+		policyRecords = append(policyRecords, rec)
+		recs, err := g.coverageRecords(p)
+		if err != nil {
+			return nil, nil, err
+		}
+		coverageRecords = append(coverageRecords, recs...)
 	}
-	return recs, nil
+	return policyRecords, coverageRecords, nil
 }
 
 // policy makes up one policy as the old system holds it on the opening
@@ -56,18 +61,90 @@ func (g *Generator) policy(r *rand.Rand, opening Date) Policy {
 	}
 	p.Birth, p.EntryAge = g.birth(r, pr, contract)
 	p.Sum = g.sum(r, pr)
-	p.Premium = premium(p.Sum, pr.rate(p.Sex, p.EntryAge), p.Mode)
 	p.Year = 1
 	for p.Contract.AddYears(p.Year).Before(opening) {
 		p.Year++
 	}
 	p.Status, p.StatusDate = 1, contract
-	g.termAndMaturity(&p, pr, opening)
+	main := coverage(1, pr, p, p.Sum, opening)
+	p.Term, p.Maturity = main.Term, main.Maturity
+	if !main.InForce() {
+		p.Status, p.StatusDate = 5, main.Ended
+	}
 	if p.Status == 1 {
 		g.fate(r, &p, opening)
 	}
+	until := opening
+	if p.Status > 3 {
+		until = p.StatusDate
+	}
+	p.Coverages = append([]Coverage{main}, g.riders(r, p, pr, until)...)
+	settle(&p)
 	g.standing(r, &p, pr, opening)
 	return p
+}
+
+// coverage makes up a coverage of a policy as its history left it by a
+// day: issued with the policy, an endowment's matured at its term's end,
+// and any other with a term renewed at each term's end at the attained
+// age, or expired when that age passed the product's maximum.
+func coverage(no int, pr product, p Policy, amount int64, until Date) Coverage {
+	c := Coverage{No: no, Product: pr.code, Status: 1, Amount: amount, Contract: p.Contract, Term: pr.term, RatedAge: p.EntryAge}
+	c.Premium = premium(amount, pr.rate(p.Sex, p.EntryAge), p.Mode)
+	if pr.term == 0 {
+		return c
+	}
+	c.Maturity = p.Contract.AddYears(pr.term)
+	for c.Maturity.Before(until) {
+		age := insuranceAge(p.Birth, c.Maturity)
+		if pr.kind == 3 || age > pr.maxAge {
+			c.Status, c.Ended = 2, c.Maturity
+			return c
+		}
+		c.Premium, c.RatedAge = premium(amount, pr.rate(p.Sex, age), p.Mode), age
+		c.Maturity = c.Maturity.AddYears(pr.term)
+	}
+	return c
+}
+
+// riders makes up the riders a policy was sold with: a hospitalization
+// rider on about a third of the policies and a term rider on a fifth,
+// where the rider is not of the main contract's kind and the entry age
+// allows it, each as its history left it by a day.
+func (g *Generator) riders(r *rand.Rand, p Policy, main product, until Date) []Coverage {
+	var riders []Coverage
+	for _, sold := range []struct {
+		code  string
+		share float64
+	}{{"HR", 0.35}, {"TR", 0.2}} {
+		pr := productOf(sold.code)
+		if !chance(r, sold.share) || pr.kind == main.kind || p.EntryAge < pr.minAge || p.EntryAge > pr.maxAge {
+			continue
+		}
+		riders = append(riders, coverage(len(riders)+2, pr, p, g.sum(r, pr), until))
+	}
+	return riders
+}
+
+// settle gives a policy the premium of its coverages, and ends those
+// still in force of a policy that has ended, the way it ended: cancelled
+// with a surrender, expired with a maturity, ended by a death.
+func settle(p *Policy) {
+	p.Premium = 0
+	for _, c := range p.Coverages {
+		if c.InForce() || c.No == 1 {
+			p.Premium += c.Premium
+		}
+	}
+	ended, ok := map[int]int{4: 3, 5: 2, 6: 4}[p.Status]
+	if !ok {
+		return
+	}
+	for i := range p.Coverages {
+		if c := &p.Coverages[i]; c.InForce() {
+			c.Status, c.Ended = ended, p.StatusDate
+		}
+	}
 }
 
 // birth makes up a birth date giving an entry age within the product's
@@ -86,35 +163,10 @@ func (g *Generator) birth(r *rand.Rand, pr product, contract Date) (Date, int) {
 // sum makes up a sum insured within the product's range, in the units a
 // policy of it is usually sold in, smaller sums more often.
 func (g *Generator) sum(r *rand.Rand, pr product) int64 {
-	unit := map[string]int64{"WL": 1_000_000, "TM": 5_000_000, "EN": 500_000, "MD": 1_000_000}[pr.code]
+	unit := map[string]int64{"WL": 1_000_000, "TM": 5_000_000, "EN": 500_000, "MD": 1_000_000, "TR": 1_000_000, "HR": 1_000_000}[pr.code]
 	steps := int((pr.maxSum - pr.minSum) / unit)
 	n := int(float64(steps+1) * r.Float64() * r.Float64() * r.Float64())
 	return min(pr.minSum+int64(n)*unit, pr.maxSum)
-}
-
-// termAndMaturity gives a policy with a term its maturity date, and its
-// history: an endowment past its maturity matured, a term policy renewed
-// at each ten years at the attained age, or ended when that age passed
-// the product's maximum.
-func (g *Generator) termAndMaturity(p *Policy, pr product, opening Date) {
-	switch pr.kind {
-	case 3:
-		p.Maturity = p.Contract.AddYears(pr.term)
-		if p.Maturity.Before(opening) {
-			p.Status, p.StatusDate = 5, p.Maturity
-		}
-	case 2:
-		p.Maturity = p.Contract.AddYears(pr.term)
-		for p.Maturity.Before(opening) {
-			age := insuranceAge(p.Birth, p.Maturity)
-			if age > pr.maxAge {
-				p.Status, p.StatusDate = 5, p.Maturity
-				return
-			}
-			p.Premium = premium(p.Sum, pr.rate(p.Sex, age), p.Mode)
-			p.Maturity = p.Maturity.AddYears(pr.term)
-		}
-	}
 }
 
 // fate draws what became of a covered policy before the opening: most are

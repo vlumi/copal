@@ -8,6 +8,9 @@
       * (払込済年月の翌月から業務月までの月数に保険料を掛けた額)
       * 以上であること。復活した契約は有効に戻り、払込済年月を業務
       * 月とし、収納額を保険料収入に仕訳する。
+      * 特約解約は契約が有効で、保障番号の特約が保障マスタ COVMST
+      * にあって有効であること。特約を解約とし、その保険料を契約の
+      * 保険料から引く。主契約 (保障番号 01) は解約できない。
       *
       * 復帰コード: 0 全件反映、4 却下あり、8 日付が日付でない、
       *             16 ファイル異常。
@@ -19,6 +22,7 @@
       * 2011-02-14 YN   GL-0520 窓口からの復活。
       * 2026-11-16 YN   GL-0821 復活日を残す。
       * 2026-11-16 YN   GL-0823 半年払の未納保険料。
+      * 2026-11-18 YN   GL-0825 特約解約。
       *----------------------------------------------------------------
        IDENTIFICATION DIVISION.
        PROGRAM-ID. GLD040.
@@ -36,6 +40,11 @@
                ACCESS MODE IS RANDOM
                RECORD KEY IS PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ
                FILE STATUS IS WS-POLMST-ST.
+           SELECT COVMST-F ASSIGN TO "COVMST"
+               ORGANIZATION IS INDEXED
+               ACCESS MODE IS RANDOM
+               RECORD KEY IS HS-ｷｰ
+               FILE STATUS IS WS-COVMST-ST.
            SELECT GLSCTL-F ASSIGN TO "GLSCTL"
                ORGANIZATION IS SEQUENTIAL
                FILE STATUS IS WS-GLSCTL-ST.
@@ -55,6 +64,8 @@
        COPY MNTREQ.
        FD  POLMST-F.
        COPY POLMST.
+       FD  COVMST-F.
+       COPY COVMST.
        FD  GLSCTL-F
            RECORD CONTAINS 64 CHARACTERS.
        COPY CTLREC.
@@ -76,6 +87,9 @@
            05  WS-POLMST-ST            PIC XX.
                88  WS-POLMST-OK                VALUE "00".
                88  WS-POLMST-ﾅｼ                VALUE "23".
+           05  WS-COVMST-ST            PIC XX.
+               88  WS-COVMST-OK                VALUE "00".
+               88  WS-COVMST-ﾅｼ                VALUE "23".
            05  WS-GLSCTL-ST            PIC XX.
                88  WS-GLSCTL-OK                VALUE "00".
            05  WS-GLJRNL-ST            PIC XX.
@@ -108,6 +122,7 @@
            05  WS-ｷｬｯｶｹﾝｽｳ             PIC 9(7) VALUE 0.
            05  WS-ﾌｯｶﾂｹﾝｽｳ             PIC 9(7) VALUE 0.
            05  WS-ﾌｯｶﾂｷﾝｶﾞｸ            PIC 9(13) VALUE 0.
+           05  WS-ﾄｸﾔｸｶｲﾔｸｹﾝｽｳ         PIC 9(7) VALUE 0.
        01  WS-ﾘﾕｳ                      PIC 99.
            88  WS-ﾘﾕｳ-ﾅｼ                       VALUE 0.
            88  WS-ｹｲﾔｸ-ﾅｼ                      VALUE 1.
@@ -119,6 +134,8 @@
            88  WS-ﾌｯｶﾂｷｶﾝ-ｹｲｶ                  VALUE 7.
            88  WS-ﾐﾉｳｶﾞｸ-ﾌｿｸ                   VALUE 8.
            88  WS-ｼｭﾍﾞﾂ-ﾌｾｲ                    VALUE 9.
+           88  WS-ﾕｳｺｳ-ﾃﾞﾅｲ                    VALUE 10.
+           88  WS-ﾄｸﾔｸ-ﾅｼ                      VALUE 11.
        01  WS-ﾘﾕｳ-ﾒｯｾｰｼﾞ.
            05  FILLER PIC X(20) VALUE "契約なし".
            05  FILLER PIC X(20) VALUE "住所なし".
@@ -129,8 +146,10 @@
            05  FILLER PIC X(20) VALUE "復活期間経過".
            05  FILLER PIC X(20) VALUE "未納額不足".
            05  FILLER PIC X(20) VALUE "種別不正".
+           05  FILLER PIC X(20) VALUE "有効でない".
+           05  FILLER PIC X(20) VALUE "特約なし".
        01  WS-ﾘﾕｳ-ﾒｯｾｰｼﾞ-TBL REDEFINES WS-ﾘﾕｳ-ﾒｯｾｰｼﾞ.
-           05  WS-ﾒｯｾｰｼﾞ OCCURS 9 TIMES PIC X(20).
+           05  WS-ﾒｯｾｰｼﾞ OCCURS 11 TIMES PIC X(20).
        01  WS-ｼｭﾍﾞﾂﾒｲ                  PIC X(12).
        01  WS-ﾌｯｷｺｰﾄﾞ                  PIC 99 VALUE 0.
        01  WS-ﾎｳｺｸ.
@@ -179,7 +198,7 @@
                STOP RUN
            END-IF
            OPEN INPUT MNTREQ-F
-           OPEN I-O POLMST-F GLSCTL-F
+           OPEN I-O POLMST-F COVMST-F GLSCTL-F
            OPEN EXTEND GLJRNL-F
            OPEN OUTPUT REJECT-F REPORT-F
            PERFORM ｵｰﾌﾟﾝ-ｹﾝｻ-RTN
@@ -206,6 +225,9 @@
                WHEN NOT WS-POLMST-OK
                    MOVE "POLMST" TO WS-ｴﾗｰﾌｧｲﾙ
                    MOVE WS-POLMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
+               WHEN NOT WS-COVMST-OK
+                   MOVE "COVMST" TO WS-ｴﾗｰﾌｧｲﾙ
+                   MOVE WS-COVMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
                WHEN NOT WS-GLSCTL-OK
                    MOVE "GLSCTL" TO WS-ｴﾗｰﾌｧｲﾙ
                    MOVE WS-GLSCTL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
@@ -268,6 +290,8 @@
                    MOVE "受取人変更" TO WS-ｼｭﾍﾞﾂﾒｲ
                WHEN MR-ﾌｯｶﾂ
                    MOVE "復活" TO WS-ｼｭﾍﾞﾂﾒｲ
+               WHEN MR-ﾄｸﾔｸｶｲﾔｸ
+                   MOVE "特約解約" TO WS-ｼｭﾍﾞﾂﾒｲ
                WHEN OTHER
                    MOVE "不明" TO WS-ｼｭﾍﾞﾂﾒｲ
            END-EVALUATE
@@ -322,6 +346,8 @@
                    END-IF
                WHEN MR-ﾌｯｶﾂ
                    PERFORM ﾌｯｶﾂ-RTN
+               WHEN MR-ﾄｸﾔｸｶｲﾔｸ
+                   PERFORM ﾄｸﾔｸｶｲﾔｸ-RTN
                WHEN OTHER
                    SET WS-ｼｭﾍﾞﾂ-ﾌｾｲ TO TRUE
            END-EVALUATE.
@@ -388,6 +414,47 @@
            MOVE MR-ﾆｭｳｷﾝｶﾞｸ TO WS-ﾒｲｻｲ-ｷﾝｶﾞｸ.
 
       *----------------------------------------------------------------
+      * ﾄｸﾔｸｶｲﾔｸ-RTN: 契約が有効で、保障番号の特約が有効なら解約と
+      * し、その保険料を契約の保険料から引く。
+      *----------------------------------------------------------------
+       ﾄｸﾔｸｶｲﾔｸ-RTN.
+           IF NOT PM-ﾕｳｺｳ
+               SET WS-ﾕｳｺｳ-ﾃﾞﾅｲ TO TRUE
+           ELSE
+               MOVE MR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ TO HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ
+               MOVE MR-ﾎｼｮｳﾊﾞﾝｺﾞｳ TO HS-ﾎｼｮｳﾊﾞﾝｺﾞｳ
+               READ COVMST-F
+               EVALUATE TRUE
+                   WHEN WS-COVMST-ﾅｼ
+                       SET WS-ﾄｸﾔｸ-ﾅｼ TO TRUE
+                   WHEN NOT WS-COVMST-OK
+                       MOVE "COVMST" TO WS-ｴﾗｰﾌｧｲﾙ
+                       MOVE WS-COVMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
+                       PERFORM ｲｼﾞｮｳ-RTN
+                   WHEN HS-ｼｭｹｲﾔｸ OR NOT HS-ﾕｳｺｳ
+                       SET WS-ﾄｸﾔｸ-ﾅｼ TO TRUE
+                   WHEN OTHER
+                       PERFORM ﾄｸﾔｸｶｲﾔｸ-ﾊﾝｴｲ-RTN
+               END-EVALUATE
+           END-IF.
+
+      *----------------------------------------------------------------
+      * ﾄｸﾔｸｶｲﾔｸ-ﾊﾝｴｲ-RTN: 特約を解約として書き戻し、保険料を引く。
+      *----------------------------------------------------------------
+       ﾄｸﾔｸｶｲﾔｸ-ﾊﾝｴｲ-RTN.
+           SET HS-ｶｲﾔｸ TO TRUE
+           MOVE WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ TO HS-ｼｮｳﾒﾂﾋﾞ
+           REWRITE HS-ﾎｼｮｳ-ﾚｺｰﾄﾞ
+           IF NOT WS-COVMST-OK
+               MOVE "COVMST" TO WS-ｴﾗｰﾌｧｲﾙ
+               MOVE WS-COVMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
+               PERFORM ｲｼﾞｮｳ-RTN
+           END-IF
+           SUBTRACT HS-ﾎｹﾝﾘｮｳ FROM PM-ﾎｹﾝﾘｮｳ
+           ADD 1 TO WS-ﾄｸﾔｸｶｲﾔｸｹﾝｽｳ
+           MOVE HS-ﾎｹﾝﾘｮｳ TO WS-ﾒｲｻｲ-ｷﾝｶﾞｸ.
+
+      *----------------------------------------------------------------
       * ｷｬｯｶ-RTN: 却下ファイルに理由を付けて書き、明細を報告する。
       *----------------------------------------------------------------
        ｷｬｯｶ-RTN.
@@ -429,6 +496,9 @@
            WRITE ﾎｳｺｸ-ｷﾞｮｳ FROM WS-ｹﾝｽｳ-ｷﾞｮｳ
            MOVE "復活時収納額" TO WS-ｹﾝｽｳ-ﾗﾍﾞﾙ
            MOVE WS-ﾌｯｶﾂｷﾝｶﾞｸ TO WS-ｹﾝｽｳ-ｱﾀｲ
+           WRITE ﾎｳｺｸ-ｷﾞｮｳ FROM WS-ｹﾝｽｳ-ｷﾞｮｳ
+           MOVE "特約解約件数" TO WS-ｹﾝｽｳ-ﾗﾍﾞﾙ
+           MOVE WS-ﾄｸﾔｸｶｲﾔｸｹﾝｽｳ TO WS-ｹﾝｽｳ-ｱﾀｲ
            WRITE ﾎｳｺｸ-ｷﾞｮｳ FROM WS-ｹﾝｽｳ-ｷﾞｮｳ.
 
       *----------------------------------------------------------------
@@ -441,8 +511,8 @@
                MOVE WS-GLSCTL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
                PERFORM ｲｼﾞｮｳ-RTN
            END-IF
-           CLOSE MNTREQ-F POLMST-F GLSCTL-F GLJRNL-F REJECT-F
-                 REPORT-F
+           CLOSE MNTREQ-F POLMST-F COVMST-F GLSCTL-F GLJRNL-F
+                 REJECT-F REPORT-F
            DISPLAY "GLD040 反映 " WS-ﾊﾝｴｲｹﾝｽｳ
                    " 却下 " WS-ｷｬｯｶｹﾝｽｳ.
 

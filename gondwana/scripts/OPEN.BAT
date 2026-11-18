@@ -1,12 +1,14 @@
 @echo off
-rem OPEN.BAT: システム開設。契約抽出ファイルから契約マスタの索引
-rem ファイルと制御レコードを作る。一度だけ実行する。
+rem OPEN.BAT: システム開設。契約抽出ファイルと保障抽出ファイルから
+rem 契約マスタと保障マスタの索引ファイル、制御レコードを作る。一度
+rem だけ実行する。
 rem
 rem 使い方: OPEN.BAT YYYYMMDD  業務日付
 rem 環境: GLS_BIN プログラム、GLS_SCRIPTS バッチファイル、GLS_DATA データ
 rem
 rem 変更履歴
 rem 1999-11-08 MS  GL-0233 初版、PC システム移行時。
+rem 2026-11-18 YN  GL-0825 保障マスタ。
 setlocal
 set DATE=%1
 set BIN=%GLS_BIN%
@@ -20,6 +22,8 @@ if not exist "%DATA%¥LOG" mkdir "%DATA%¥LOG"
 rem STEP GLO010: 契約マスタの初期登録と制御レコード
 set DD_EXTRACT=%DATA%¥IN¥EXTRACT.TXT
 set DD_POLMST=%DATA%¥MASTER¥POLMST.IDX
+set DD_COVEXT=%DATA%¥IN¥COVEXT.TXT
+set DD_COVMST=%DATA%¥MASTER¥COVMST.IDX
 set DD_GLSCTL=%DATA%¥MASTER¥GLSCTL.BIN
 set DD_GLO010R=%DATA%¥RPT¥GLO010.%DATE%.RPT
 "%BIN%¥GLO010.EXE" %DATE% > "%DATA%¥RPT¥GLO010.%DATE%.OUT" 2>&1

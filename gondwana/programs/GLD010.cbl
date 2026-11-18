@@ -11,6 +11,11 @@
       * に収納済みのため、払込済年月は契約月とし、保険料収入を
       * 仕訳する。満期日は契約日に保険期間を足した日 (終身・医療は
       * なし)。却下は理由コードを付けて却下ファイルへ。
+      * 特約は2件まで。特約として売る商品で、主契約と種類が違い、
+      * 2件が同じ商品でないこと。年齢、保険金額、料率は主契約と
+      * 同じく検査し、1件でも通らなければ申込ごと却下する。
+      * 主契約と特約は保障マスタ COVMST に保障番号 01 からの保障
+      * として登録し、それぞれの保険料の合計が契約の保険料となる。
       *
       * 復帰コード: 0 全件登録、4 却下あり、8 日付が日付でない、
       *             16 ファイル異常。
@@ -20,6 +25,7 @@
       * 1987-04-01 KT   GL-0001 初版、申込書のパンチ入力から。
       * 2003-10-06 MS   GL-0310 営業システムのファイルから。
       * 2008-06-02 YN   GL-0455 医療保険。
+      * 2026-11-18 YN   GL-0825 特約、保障マスタ。
       *----------------------------------------------------------------
        IDENTIFICATION DIVISION.
        PROGRAM-ID. GLD010.
@@ -37,6 +43,11 @@
                ACCESS MODE IS RANDOM
                RECORD KEY IS PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ
                FILE STATUS IS WS-POLMST-ST.
+           SELECT COVMST-F ASSIGN TO "COVMST"
+               ORGANIZATION IS INDEXED
+               ACCESS MODE IS RANDOM
+               RECORD KEY IS HS-ｷｰ
+               FILE STATUS IS WS-COVMST-ST.
            SELECT PRODTB-F ASSIGN TO "PRODTB"
                ORGANIZATION IS LINE SEQUENTIAL
                FILE STATUS IS WS-PRODTB-ST.
@@ -62,6 +73,8 @@
        COPY NEWPOL.
        FD  POLMST-F.
        COPY POLMST.
+       FD  COVMST-F.
+       COPY COVMST.
        FD  PRODTB-F.
        COPY PRODTB.
        FD  RATETB-F.
@@ -73,7 +86,7 @@
        COPY GLJRNL.
        FD  REJECT-F.
        01  ｷｬｯｶ-ﾚｺｰﾄﾞ.
-           05  ｷｬｯｶ-ﾃﾞｰﾀ               PIC X(200).
+           05  ｷｬｯｶ-ﾃﾞｰﾀ               PIC X(220).
            05  ｷｬｯｶ-ﾘﾕｳ                PIC 99.
            05  ｷｬｯｶ-ﾒｯｾｰｼﾞ             PIC X(20).
        FD  REPORT-F.
@@ -87,6 +100,8 @@
            05  WS-POLMST-ST            PIC XX.
                88  WS-POLMST-OK                VALUE "00".
                88  WS-POLMST-ﾅｼ                VALUE "23".
+           05  WS-COVMST-ST            PIC XX.
+               88  WS-COVMST-OK                VALUE "00".
            05  WS-PRODTB-ST            PIC XX.
                88  WS-PRODTB-OK                VALUE "00".
                88  WS-PRODTB-ｵﾜﾘ               VALUE "10".
@@ -117,6 +132,15 @@
        01  WS-ﾏﾝｷﾋﾞ-ﾜﾚｷ                PIC X(7).
        01  WS-ﾈﾝﾚｲ                     PIC 99.
        01  WS-ｹﾞﾂｶﾞｸ                   PIC 9(9).
+       01  WS-ﾎｼｮｳ-TBL.
+           05  WS-ﾎｼｮｳｽｳ               PIC 9.
+           05  WS-ﾎｼｮｳ OCCURS 3 TIMES.
+               10  WS-ﾎｼｮｳ-ｿｴｼﾞ            PIC 99.
+               10  WS-ﾎｼｮｳ-ｷﾝｶﾞｸ           PIC 9(9).
+               10  WS-ﾎｼｮｳ-ﾎｹﾝﾘｮｳ          PIC 9(7).
+       01  WS-N                        PIC 9.
+       01  WS-ﾄｸﾔｸ-N                   PIC 9.
+       01  WS-ｼｭｹｲﾔｸ-ｼｭﾙｲ              PIC 9.
        COPY TBLWS.
        01  WS-ｹﾝｽｳ.
            05  WS-ﾖﾐｺﾐｹﾝｽｳ             PIC 9(7) VALUE 0.
@@ -135,6 +159,9 @@
            88  WS-ﾈﾝﾚｲ-ﾊﾝｲｶﾞｲ                  VALUE 7.
            88  WS-ｷﾝｶﾞｸ-ﾊﾝｲｶﾞｲ                 VALUE 8.
            88  WS-ﾘｮｳﾘﾂ-ﾅｼ                     VALUE 9.
+           88  WS-ﾄｸﾔｸ-ﾌｾｲ                     VALUE 10.
+           88  WS-ﾄｸﾔｸﾈﾝﾚｲ-ﾊﾝｲｶﾞｲ              VALUE 11.
+           88  WS-ﾄｸﾔｸｷﾝｶﾞｸ-ﾊﾝｲｶﾞｲ             VALUE 12.
        01  WS-ﾘﾕｳ-ﾒｯｾｰｼﾞ.
            05  FILLER PIC X(20) VALUE "商品なし".
            05  FILLER PIC X(20) VALUE "証券番号重複".
@@ -145,8 +172,11 @@
            05  FILLER PIC X(20) VALUE "年齢範囲外".
            05  FILLER PIC X(20) VALUE "保険金額範囲外".
            05  FILLER PIC X(20) VALUE "料率なし".
+           05  FILLER PIC X(20) VALUE "特約不正".
+           05  FILLER PIC X(20) VALUE "特約年齢範囲外".
+           05  FILLER PIC X(20) VALUE "特約保険金額範囲外".
        01  WS-ﾘﾕｳ-ﾒｯｾｰｼﾞ-TBL REDEFINES WS-ﾘﾕｳ-ﾒｯｾｰｼﾞ.
-           05  WS-ﾒｯｾｰｼﾞ OCCURS 9 TIMES PIC X(20).
+           05  WS-ﾒｯｾｰｼﾞ OCCURS 12 TIMES PIC X(20).
        01  WS-ﾌｯｷｺｰﾄﾞ                  PIC 99 VALUE 0.
        01  WS-ﾎｳｺｸ.
            05  WS-ﾋｮｳﾀﾞｲ-ｷﾞｮｳ.
@@ -168,6 +198,17 @@
                10  WS-ﾒｲｻｲ-ﾎｹﾝﾘｮｳ          PIC Z,ZZZ,ZZ9.
                10  FILLER                  PIC X(2) VALUE SPACES.
                10  WS-ﾒｲｻｲ-ｹｯｶ             PIC X(20).
+           05  WS-ﾄｸﾔｸ-ｷﾞｮｳ.
+               10  FILLER                  PIC X(12) VALUE SPACES.
+               10  WS-ﾄｸﾔｸ-ｼｮｳﾋﾝ           PIC X(2).
+               10  FILLER                  PIC X(2) VALUE SPACES.
+               10  WS-ﾄｸﾔｸ-ﾒｲｼｮｳ           PIC X(20).
+               10  FILLER                  PIC X(6) VALUE SPACES.
+               10  WS-ﾄｸﾔｸ-ｷﾝｶﾞｸ           PIC ZZZ,ZZZ,ZZ9.
+               10  FILLER                  PIC X(2) VALUE SPACES.
+               10  WS-ﾄｸﾔｸ-ﾎｹﾝﾘｮｳ          PIC Z,ZZZ,ZZ9.
+               10  FILLER                  PIC X(2) VALUE SPACES.
+               10  FILLER                  PIC X(4) VALUE "特約".
            05  WS-ｹﾝｽｳ-ｷﾞｮｳ.
                10  WS-ｹﾝｽｳ-ﾗﾍﾞﾙ            PIC X(16).
                10  WS-ｹﾝｽｳ-ｱﾀｲ             PIC ZZZ,ZZZ,ZZ9.
@@ -199,7 +240,7 @@
                STOP RUN
            END-IF
            OPEN INPUT NEWPOL-F PRODTB-F RATETB-F
-           OPEN I-O POLMST-F GLSCTL-F
+           OPEN I-O POLMST-F COVMST-F GLSCTL-F
            OPEN EXTEND GLJRNL-F
            OPEN OUTPUT REJECT-F REPORT-F
            PERFORM ｵｰﾌﾟﾝ-ｹﾝｻ-RTN
@@ -234,6 +275,9 @@
                WHEN NOT WS-POLMST-OK
                    MOVE "POLMST" TO WS-ｴﾗｰﾌｧｲﾙ
                    MOVE WS-POLMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
+               WHEN NOT WS-COVMST-OK
+                   MOVE "COVMST" TO WS-ｴﾗｰﾌｧｲﾙ
+                   MOVE WS-COVMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
                WHEN NOT WS-GLSCTL-OK
                    MOVE "GLSCTL" TO WS-ｴﾗｰﾌｧｲﾙ
                    MOVE WS-GLSCTL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
@@ -282,15 +326,24 @@
 
       *----------------------------------------------------------------
       * ｹﾝｻ-RTN: 検査を順に行い、最初に引っかかった理由を残す。
+      * 主契約は保障表の1番目、通った特約はその後に入る。
       *----------------------------------------------------------------
        ｹﾝｻ-RTN.
            SET WS-ﾘﾕｳ-ﾅｼ TO TRUE
+           MOVE 1 TO WS-ﾎｼｮｳｽｳ
+           MOVE NP-ﾎｹﾝｷﾝｶﾞｸ TO WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(1)
            SET WS-ｼｮｳﾋﾝ-IX TO 1
            SEARCH WS-ｼｮｳﾋﾝ
                AT END
                    SET WS-ｼｮｳﾋﾝ-ﾅｼ TO TRUE
                WHEN WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = NP-ｼｮｳﾋﾝ
-                   CONTINUE
+                   IF WS-ｼｮｳﾋﾝ-ﾄｸﾔｸ(WS-ｼｮｳﾋﾝ-IX)
+                       SET WS-ｼｮｳﾋﾝ-ﾅｼ TO TRUE
+                   ELSE
+                       SET WS-ﾎｼｮｳ-ｿｴｼﾞ(1) TO WS-ｼｮｳﾋﾝ-IX
+                       MOVE WS-ｼｮｳﾋﾝ-ｼｭﾙｲ(WS-ｼｮｳﾋﾝ-IX)
+                           TO WS-ｼｭｹｲﾔｸ-ｼｭﾙｲ
+                   END-IF
            END-SEARCH
            IF WS-ﾘﾕｳ-ﾅｼ
                MOVE NP-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ TO PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ
@@ -327,33 +380,80 @@
                SET WS-ｾｲﾍﾞﾂ-ﾌｾｲ TO TRUE
            END-IF
            IF WS-ﾘﾕｳ-ﾅｼ
+               CALL "GLC010" USING NP-ｾｲﾈﾝｶﾞｯﾋﾟ NP-ｹｲﾔｸﾋﾞ WS-ﾈﾝﾚｲ
+               COMPUTE WS-ﾈﾝﾚｲ-ｿｴｼﾞ = WS-ﾈﾝﾚｲ + 1
+               MOVE 1 TO WS-N
                PERFORM ﾈﾝﾚｲ-ｷﾝｶﾞｸ-ｹﾝｻ-RTN
-           END-IF.
+           END-IF
+           PERFORM ﾄｸﾔｸ-ｹﾝｻ-RTN VARYING WS-ﾄｸﾔｸ-N FROM 1 BY 1
+               UNTIL WS-ﾄｸﾔｸ-N > 2 OR NOT WS-ﾘﾕｳ-ﾅｼ.
 
       *----------------------------------------------------------------
-      * ﾈﾝﾚｲ-ｷﾝｶﾞｸ-ｹﾝｻ-RTN: 契約日時点の保険年齢と保険金額が商品の
-      * 範囲内で、料率があること。
+      * ﾈﾝﾚｲ-ｷﾝｶﾞｸ-ｹﾝｻ-RTN: 保障表の WS-N 番目について、契約日時点
+      * の保険年齢と保険金額が商品の範囲内で、料率があること。
       *----------------------------------------------------------------
        ﾈﾝﾚｲ-ｷﾝｶﾞｸ-ｹﾝｻ-RTN.
-           CALL "GLC010" USING NP-ｾｲﾈﾝｶﾞｯﾋﾟ NP-ｹｲﾔｸﾋﾞ WS-ﾈﾝﾚｲ
+           SET WS-ｼｮｳﾋﾝ-IX TO WS-ﾎｼｮｳ-ｿｴｼﾞ(WS-N)
            EVALUATE TRUE
                WHEN WS-ﾈﾝﾚｲ < WS-ｼｮｳﾋﾝ-ｻｲﾃｲﾈﾝﾚｲ(WS-ｼｮｳﾋﾝ-IX)
                  OR WS-ﾈﾝﾚｲ > WS-ｼｮｳﾋﾝ-ｻｲｺｳﾈﾝﾚｲ(WS-ｼｮｳﾋﾝ-IX)
-                   SET WS-ﾈﾝﾚｲ-ﾊﾝｲｶﾞｲ TO TRUE
-               WHEN NP-ﾎｹﾝｷﾝｶﾞｸ < WS-ｼｮｳﾋﾝ-ｻｲﾃｲｷﾝｶﾞｸ(WS-ｼｮｳﾋﾝ-IX)
-                 OR NP-ﾎｹﾝｷﾝｶﾞｸ > WS-ｼｮｳﾋﾝ-ｻｲｺｳｷﾝｶﾞｸ(WS-ｼｮｳﾋﾝ-IX)
-                   SET WS-ｷﾝｶﾞｸ-ﾊﾝｲｶﾞｲ TO TRUE
-               WHEN OTHER
-                   COMPUTE WS-ﾈﾝﾚｲ-ｿｴｼﾞ = WS-ﾈﾝﾚｲ + 1
-                   IF WS-ﾘｮｳﾘﾂ(WS-ｼｮｳﾋﾝ-IX, NP-ｾｲﾍﾞﾂ, WS-ﾈﾝﾚｲ-ｿｴｼﾞ)
-                           = 0
-                       SET WS-ﾘｮｳﾘﾂ-ﾅｼ TO TRUE
+                   IF WS-N = 1
+                       SET WS-ﾈﾝﾚｲ-ﾊﾝｲｶﾞｲ TO TRUE
+                   ELSE
+                       SET WS-ﾄｸﾔｸﾈﾝﾚｲ-ﾊﾝｲｶﾞｲ TO TRUE
                    END-IF
+               WHEN WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(WS-N)
+                       < WS-ｼｮｳﾋﾝ-ｻｲﾃｲｷﾝｶﾞｸ(WS-ｼｮｳﾋﾝ-IX)
+                 OR WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(WS-N)
+                       > WS-ｼｮｳﾋﾝ-ｻｲｺｳｷﾝｶﾞｸ(WS-ｼｮｳﾋﾝ-IX)
+                   IF WS-N = 1
+                       SET WS-ｷﾝｶﾞｸ-ﾊﾝｲｶﾞｲ TO TRUE
+                   ELSE
+                       SET WS-ﾄｸﾔｸｷﾝｶﾞｸ-ﾊﾝｲｶﾞｲ TO TRUE
+                   END-IF
+               WHEN WS-ﾘｮｳﾘﾂ(WS-ｼｮｳﾋﾝ-IX, NP-ｾｲﾍﾞﾂ, WS-ﾈﾝﾚｲ-ｿｴｼﾞ) = 0
+                   SET WS-ﾘｮｳﾘﾂ-ﾅｼ TO TRUE
            END-EVALUATE.
 
       *----------------------------------------------------------------
-      * ﾄｳﾛｸ-RTN: マスタレコードを組み立てて書き、第1回保険料を
-      * 仕訳し、明細を報告する。
+      * ﾄｸﾔｸ-ｹﾝｻ-RTN: 申込の WS-ﾄｸﾔｸ-N 番目の特約。商品があれば
+      * 規則を検査して保障表に加え、年齢、保険金額、料率を検査する。
+      *----------------------------------------------------------------
+       ﾄｸﾔｸ-ｹﾝｻ-RTN.
+           IF NP-ﾄｸﾔｸ-ｼｮｳﾋﾝ(WS-ﾄｸﾔｸ-N) NOT = SPACES
+               SET WS-ｼｮｳﾋﾝ-IX TO 1
+               SEARCH WS-ｼｮｳﾋﾝ
+                   AT END
+                       SET WS-ﾄｸﾔｸ-ﾌｾｲ TO TRUE
+                   WHEN WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)
+                           = NP-ﾄｸﾔｸ-ｼｮｳﾋﾝ(WS-ﾄｸﾔｸ-N)
+                       PERFORM ﾄｸﾔｸ-ｷｿｸ-RTN
+               END-SEARCH
+               IF WS-ﾘﾕｳ-ﾅｼ
+                   ADD 1 TO WS-ﾎｼｮｳｽｳ
+                   MOVE WS-ﾎｼｮｳｽｳ TO WS-N
+                   SET WS-ﾎｼｮｳ-ｿｴｼﾞ(WS-N) TO WS-ｼｮｳﾋﾝ-IX
+                   MOVE NP-ﾄｸﾔｸ-ｷﾝｶﾞｸ(WS-ﾄｸﾔｸ-N)
+                       TO WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(WS-N)
+                   PERFORM ﾈﾝﾚｲ-ｷﾝｶﾞｸ-ｹﾝｻ-RTN
+               END-IF
+           END-IF.
+
+      *----------------------------------------------------------------
+      * ﾄｸﾔｸ-ｷｿｸ-RTN: 特約として売る商品で、主契約と種類が違い、
+      * 1番目の特約と同じ商品でないこと。
+      *----------------------------------------------------------------
+       ﾄｸﾔｸ-ｷｿｸ-RTN.
+           IF NOT WS-ｼｮｳﾋﾝ-ﾄｸﾔｸ(WS-ｼｮｳﾋﾝ-IX)
+                   OR WS-ｼｮｳﾋﾝ-ｼｭﾙｲ(WS-ｼｮｳﾋﾝ-IX) = WS-ｼｭｹｲﾔｸ-ｼｭﾙｲ
+                   OR (WS-ﾄｸﾔｸ-N = 2
+                       AND NP-ﾄｸﾔｸ-ｼｮｳﾋﾝ(2) = NP-ﾄｸﾔｸ-ｼｮｳﾋﾝ(1))
+               SET WS-ﾄｸﾔｸ-ﾌｾｲ TO TRUE
+           END-IF.
+
+      *----------------------------------------------------------------
+      * ﾄｳﾛｸ-RTN: マスタレコードを組み立て、保障を登録して保険料を
+      * 合計し、マスタを書き、第1回保険料を仕訳し、明細を報告する。
       *----------------------------------------------------------------
        ﾄｳﾛｸ-RTN.
            MOVE SPACES TO PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ
@@ -361,11 +461,13 @@
            SET PM-ﾕｳｺｳ TO TRUE
            MOVE NP-ｼｮｳﾋﾝ TO PM-ｼｮｳﾋﾝ
            MOVE NP-ﾎｹﾝｷﾝｶﾞｸ TO PM-ﾎｹﾝｷﾝｶﾞｸ
-           PERFORM ﾎｹﾝﾘｮｳ-RTN
+           MOVE 0 TO PM-ﾎｹﾝﾘｮｳ
            MOVE NP-ﾊﾗｲｺﾐﾎｳﾎｳ TO PM-ﾊﾗｲｺﾐﾎｳﾎｳ
            MOVE WS-ｹｲﾔｸﾋﾞ-ﾜﾚｷ TO PM-ｹｲﾔｸﾋﾞ
+           SET WS-ｼｮｳﾋﾝ-IX TO WS-ﾎｼｮｳ-ｿｴｼﾞ(1)
            MOVE WS-ｼｮｳﾋﾝ-ﾎｹﾝｷｶﾝ(WS-ｼｮｳﾋﾝ-IX) TO PM-ﾎｹﾝｷｶﾝ
            PERFORM ﾏﾝｷﾋﾞ-RTN
+           MOVE WS-ﾏﾝｷﾋﾞ-ﾜﾚｷ TO PM-ﾏﾝｷﾋﾞ
            MOVE 1 TO PM-ｹｲｶﾈﾝｽｳ
            MOVE NP-ｹｲﾔｸﾋﾞ(1:6) TO PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ
            MOVE 0 TO PM-ﾐﾉｳｶｲｽｳ
@@ -385,6 +487,8 @@
            MOVE NP-ﾀﾞｲﾘﾃﾝｺｰﾄﾞ TO PM-ﾀﾞｲﾘﾃﾝｺｰﾄﾞ
            MOVE 0 TO PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ PM-ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ PM-ﾊｲﾄｳﾙｲｹｲ
            MOVE NP-ｹｲﾔｸﾋﾞ(1:6) TO PM-ｻｲｼｭｳﾆｭｳｷﾝﾈﾝｹﾞﾂ
+           PERFORM ﾎｼｮｳ-ﾄｳﾛｸ-RTN VARYING WS-N FROM 1 BY 1
+               UNTIL WS-N > WS-ﾎｼｮｳｽｳ
            MOVE PM-ﾎｹﾝﾘｮｳ TO PM-ｻｲｼｭｳﾆｭｳｷﾝｶﾞｸ
            WRITE PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ
            IF NOT WS-POLMST-OK
@@ -397,37 +501,68 @@
            ADD PM-ﾎｹﾝｷﾝｶﾞｸ TO WS-ﾄｳﾛｸｷﾝｶﾞｸ
            ADD PM-ﾎｹﾝﾘｮｳ TO WS-ﾄｳﾛｸﾎｹﾝﾘｮｳ
            MOVE "登録" TO WS-ﾒｲｻｲ-ｹｯｶ
-           PERFORM ﾒｲｻｲ-RTN.
+           PERFORM ﾒｲｻｲ-RTN
+           PERFORM ﾄｸﾔｸ-ﾒｲｻｲ-RTN VARYING WS-N FROM 2 BY 1
+               UNTIL WS-N > WS-ﾎｼｮｳｽｳ.
 
       *----------------------------------------------------------------
-      * ﾎｹﾝﾘｮｳ-RTN: 保険金額1,000円あたりの月払料率から、円未満
-      * 切捨て。年払は12か月分の5%引き、半年払は6か月分の3%引き。
+      * ﾎｼｮｳ-ﾄｳﾛｸ-RTN: 保障表の WS-N 番目を保障マスタに書き、その
+      * 保険料を契約の保険料に加える。
+      *----------------------------------------------------------------
+       ﾎｼｮｳ-ﾄｳﾛｸ-RTN.
+           SET WS-ｼｮｳﾋﾝ-IX TO WS-ﾎｼｮｳ-ｿｴｼﾞ(WS-N)
+           PERFORM ﾎｹﾝﾘｮｳ-RTN
+           PERFORM ﾏﾝｷﾋﾞ-RTN
+           MOVE SPACES TO HS-ﾎｼｮｳ-ﾚｺｰﾄﾞ
+           MOVE NP-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ TO HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ
+           MOVE WS-N TO HS-ﾎｼｮｳﾊﾞﾝｺﾞｳ
+           MOVE WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) TO HS-ｼｮｳﾋﾝ
+           SET HS-ﾕｳｺｳ TO TRUE
+           MOVE WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(WS-N) TO HS-ﾎｹﾝｷﾝｶﾞｸ
+           MOVE WS-ﾎｼｮｳ-ﾎｹﾝﾘｮｳ(WS-N) TO HS-ﾎｹﾝﾘｮｳ
+           MOVE WS-ｹｲﾔｸﾋﾞ-ﾜﾚｷ TO HS-ｹｲﾔｸﾋﾞ
+           MOVE WS-ｼｮｳﾋﾝ-ﾎｹﾝｷｶﾝ(WS-ｼｮｳﾋﾝ-IX) TO HS-ﾎｹﾝｷｶﾝ
+           MOVE WS-ﾏﾝｷﾋﾞ-ﾜﾚｷ TO HS-ﾏﾝｷﾋﾞ
+           MOVE WS-ﾈﾝﾚｲ TO HS-ｶﾆｭｳﾈﾝﾚｲ
+           WRITE HS-ﾎｼｮｳ-ﾚｺｰﾄﾞ
+           IF NOT WS-COVMST-OK
+               MOVE "COVMST" TO WS-ｴﾗｰﾌｧｲﾙ
+               MOVE WS-COVMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
+               PERFORM ｲｼﾞｮｳ-RTN
+           END-IF
+           ADD WS-ﾎｼｮｳ-ﾎｹﾝﾘｮｳ(WS-N) TO PM-ﾎｹﾝﾘｮｳ.
+
+      *----------------------------------------------------------------
+      * ﾎｹﾝﾘｮｳ-RTN: 保障表の WS-N 番目の保険料。保険金額1,000円
+      * あたりの月払料率から、円未満切捨て。年払は12か月分の5%引き、
+      * 半年払は6か月分の3%引き。
       *----------------------------------------------------------------
        ﾎｹﾝﾘｮｳ-RTN.
-           COMPUTE WS-ｹﾞﾂｶﾞｸ = NP-ﾎｹﾝｷﾝｶﾞｸ / 1000
+           COMPUTE WS-ｹﾞﾂｶﾞｸ = WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(WS-N) / 1000
                * WS-ﾘｮｳﾘﾂ(WS-ｼｮｳﾋﾝ-IX, NP-ｾｲﾍﾞﾂ, WS-ﾈﾝﾚｲ-ｿｴｼﾞ)
            EVALUATE NP-ﾊﾗｲｺﾐﾎｳﾎｳ
                WHEN "2"
-                   COMPUTE PM-ﾎｹﾝﾘｮｳ = WS-ｹﾞﾂｶﾞｸ * 12 * 0.95
+                   COMPUTE WS-ﾎｼｮｳ-ﾎｹﾝﾘｮｳ(WS-N)
+                       = WS-ｹﾞﾂｶﾞｸ * 12 * 0.95
                WHEN "3"
-                   COMPUTE PM-ﾎｹﾝﾘｮｳ = WS-ｹﾞﾂｶﾞｸ * 6 * 0.97
+                   COMPUTE WS-ﾎｼｮｳ-ﾎｹﾝﾘｮｳ(WS-N)
+                       = WS-ｹﾞﾂｶﾞｸ * 6 * 0.97
                WHEN OTHER
-                   MOVE WS-ｹﾞﾂｶﾞｸ TO PM-ﾎｹﾝﾘｮｳ
+                   MOVE WS-ｹﾞﾂｶﾞｸ TO WS-ﾎｼｮｳ-ﾎｹﾝﾘｮｳ(WS-N)
            END-EVALUATE.
 
       *----------------------------------------------------------------
-      * ﾏﾝｷﾋﾞ-RTN: 契約日に保険期間を足した日を和暦で。期間のない
-      * 商品 (終身、医療) は空白。
+      * ﾏﾝｷﾋﾞ-RTN: 契約日に商品の保険期間を足した日を和暦で。期間
+      * のない商品 (終身、医療) は空白。
       *----------------------------------------------------------------
        ﾏﾝｷﾋﾞ-RTN.
-           IF PM-ﾎｹﾝｷｶﾝ = 0
-               MOVE SPACES TO PM-ﾏﾝｷﾋﾞ
+           IF WS-ｼｮｳﾋﾝ-ﾎｹﾝｷｶﾝ(WS-ｼｮｳﾋﾝ-IX) = 0
+               MOVE SPACES TO WS-ﾏﾝｷﾋﾞ-ﾜﾚｷ
            ELSE
                MOVE NP-ｹｲﾔｸﾋﾞ TO WS-ﾏﾝｷﾋﾞ
-               ADD PM-ﾎｹﾝｷｶﾝ TO WS-ﾏﾝｷ-YYYY
+               ADD WS-ｼｮｳﾋﾝ-ﾎｹﾝｷｶﾝ(WS-ｼｮｳﾋﾝ-IX) TO WS-ﾏﾝｷ-YYYY
                CALL "GLC020" USING WS-ﾎｳｺｳ WS-ﾏﾝｷﾋﾞ
                                    WS-ﾏﾝｷﾋﾞ-ﾜﾚｷ WS-ﾍﾝｶﾝｹｯｶ
-               MOVE WS-ﾏﾝｷﾋﾞ-ﾜﾚｷ TO PM-ﾏﾝｷﾋﾞ
            END-IF.
 
       *----------------------------------------------------------------
@@ -473,6 +608,17 @@
            WRITE ﾎｳｺｸ-ｷﾞｮｳ FROM WS-ﾒｲｻｲ-ｷﾞｮｳ.
 
       *----------------------------------------------------------------
+      * ﾄｸﾔｸ-ﾒｲｻｲ-RTN: 登録した特約1件の明細行。
+      *----------------------------------------------------------------
+       ﾄｸﾔｸ-ﾒｲｻｲ-RTN.
+           SET WS-ｼｮｳﾋﾝ-IX TO WS-ﾎｼｮｳ-ｿｴｼﾞ(WS-N)
+           MOVE WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) TO WS-ﾄｸﾔｸ-ｼｮｳﾋﾝ
+           MOVE WS-ｼｮｳﾋﾝ-ﾒｲｼｮｳ(WS-ｼｮｳﾋﾝ-IX) TO WS-ﾄｸﾔｸ-ﾒｲｼｮｳ
+           MOVE WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(WS-N) TO WS-ﾄｸﾔｸ-ｷﾝｶﾞｸ
+           MOVE WS-ﾎｼｮｳ-ﾎｹﾝﾘｮｳ(WS-N) TO WS-ﾄｸﾔｸ-ﾎｹﾝﾘｮｳ
+           WRITE ﾎｳｺｸ-ｷﾞｮｳ FROM WS-ﾄｸﾔｸ-ｷﾞｮｳ.
+
+      *----------------------------------------------------------------
       * ﾎｳｺｸ-RTN: 件数と合計。
       *----------------------------------------------------------------
        ﾎｳｺｸ-RTN.
@@ -504,8 +650,8 @@
                MOVE WS-GLSCTL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
                PERFORM ｲｼﾞｮｳ-RTN
            END-IF
-           CLOSE NEWPOL-F POLMST-F PRODTB-F RATETB-F GLSCTL-F
-                 GLJRNL-F REJECT-F REPORT-F
+           CLOSE NEWPOL-F POLMST-F COVMST-F PRODTB-F RATETB-F
+                 GLSCTL-F GLJRNL-F REJECT-F REPORT-F
            DISPLAY "GLD010 登録 " WS-ﾄｳﾛｸｹﾝｽｳ
                    " 却下 " WS-ｷｬｯｶｹﾝｽｳ.
 

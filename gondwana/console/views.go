@@ -31,8 +31,11 @@ func (p Policy) StatusName() string { return statuses[p.Status] }
 
 // ModeName is how the policy's premium is paid, in words.
 func (p Policy) ModeName() string {
-	if p.Mode == 2 {
+	switch p.Mode {
+	case 2:
 		return "annual"
+	case 3:
+		return "half-yearly"
 	}
 	return "monthly"
 }
@@ -85,16 +88,24 @@ func (s *Server) overview(h insurer.History, _ *http.Request) (any, error) {
 	return o, nil
 }
 
-// readPolicies reads the policy master as the last unload left it, the
-// names in UTF-8.
+// readPolicies reads the policy master and the coverage file as the
+// last unload left them, the names in UTF-8.
 func (s *Server) readPolicies() ([]Policy, error) {
 	content, err := s.insurer.Policies()
 	if err != nil {
 		return nil, err
 	}
+	g := &generate.Generator{Layouts: s.layouts}
 	records := generate.Records(s.layouts.Policy, content)
-	read, err := (&generate.Generator{Layouts: s.layouts}).ReadPolicies(records)
+	read, err := g.ReadPolicies(records)
 	if err != nil {
+		return nil, err
+	}
+	coverages, err := s.insurer.Coverages()
+	if err != nil {
+		return nil, err
+	}
+	if err := g.ReadCoverages(read, generate.Records(s.layouts.Coverage, coverages)); err != nil {
 		return nil, err
 	}
 	policies := make([]Policy, len(read))
@@ -131,10 +142,25 @@ func (s *Server) policies(_ insurer.History, r *http.Request) (any, error) {
 	return PolicyList{Query: query, Found: len(found), Total: len(policies), Policies: found[:min(len(found), shown)]}, nil
 }
 
-// PolicyPage is a policy's master record field by field.
+// PolicyPage is a policy with its coverages, and its master record field
+// by field.
 type PolicyPage struct {
 	Policy Policy
 	Fields []FieldValue
+}
+
+// coverageStatuses are a coverage's states by their codes.
+var coverageStatuses = map[int]string{1: "in force", 2: "expired", 3: "cancelled", 4: "ended by a death"}
+
+// coverageStatus is a coverage's state in words.
+func coverageStatus(c generate.Coverage) string { return coverageStatuses[c.Status] }
+
+// dateOrNone is a date, or nothing for one a record leaves blank.
+func dateOrNone(d generate.Date) string {
+	if d.IsZero() {
+		return ""
+	}
+	return d.String()
 }
 
 // FieldValue is a field of a record: its bytes, and what they mean, in

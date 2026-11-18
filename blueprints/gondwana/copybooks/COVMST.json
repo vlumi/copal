@@ -1,0 +1,233 @@
+{
+  "copybook": "COVMST",
+  "source": "gondwana/copybooks/COVMST.cpy",
+  "description": [
+    "COVMST: 保障マスタ レコード (80バイト)",
+    "",
+    "契約の保障1件につき1レコード。キーは証券番号と保障番号で、",
+    "保障番号 01 が主契約、02 以降が特約。主契約はどの契約にも",
+    "あり、その商品・保険金額・保険期間・満期日は契約マスタと同じ。",
+    "保険金額は、入院特約と医療保険では入院日額の基になる額。",
+    "保険料は契約の払込方法での1回分で、有効な保障の保険料の合計",
+    "が契約マスタの保険料である。",
+    "状態は保障自身のもの: 契約が失効しても保障は有効のままで、",
+    "契約の状態が先に立つ。満了は保険期間の終わり、解約は特約の",
+    "解約か契約の解約、消滅は死亡保険金の支払による。",
+    "加入年齢は保険料を決めた年齢で、更新のたびにその時点の",
+    "保険年齢になる。",
+    "日付は和暦 GYYMMDD。消滅日は有効でなくなった日で、有効な",
+    "間は空白。",
+    "",
+    "変更履歴",
+    "日付       担当 変更",
+    "2026-11-18 YN   GL-0825 初版、特約の導入。"
+  ],
+  "records": [
+    {
+      "level": 1,
+      "name": "HS-ﾎｼｮｳ-ﾚｺｰﾄﾞ",
+      "start": 1,
+      "length": 80,
+      "category": "group",
+      "kind": "group",
+      "source": "gondwana/copybooks/COVMST.cpy:22",
+      "fields": [
+        {
+          "level": 5,
+          "name": "HS-ｷｰ",
+          "start": 1,
+          "length": 12,
+          "category": "group",
+          "kind": "group",
+          "source": "gondwana/copybooks/COVMST.cpy:23",
+          "fields": [
+            {
+              "level": 10,
+              "name": "HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+              "start": 1,
+              "length": 10,
+              "picture": "X(10)",
+              "usage": "DISPLAY",
+              "category": "alphanumeric",
+              "kind": "text",
+              "source": "gondwana/copybooks/COVMST.cpy:24"
+            },
+            {
+              "level": 10,
+              "name": "HS-ﾎｼｮｳﾊﾞﾝｺﾞｳ",
+              "start": 11,
+              "length": 2,
+              "picture": "99",
+              "usage": "DISPLAY",
+              "category": "numeric",
+              "kind": "code",
+              "digits": 2,
+              "conditions": [
+                {
+                  "name": "HS-ｼｭｹｲﾔｸ",
+                  "values": [
+                    "1"
+                  ],
+                  "source": "gondwana/copybooks/COVMST.cpy:26"
+                }
+              ],
+              "source": "gondwana/copybooks/COVMST.cpy:25"
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "name": "HS-ｼｮｳﾋﾝ",
+          "start": 13,
+          "length": 2,
+          "picture": "X(2)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "text",
+          "source": "gondwana/copybooks/COVMST.cpy:27"
+        },
+        {
+          "level": 5,
+          "name": "HS-ｼﾞｮｳﾀｲ",
+          "start": 15,
+          "length": 1,
+          "picture": "X",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "HS-ﾕｳｺｳ",
+              "values": [
+                "'1'"
+              ],
+              "source": "gondwana/copybooks/COVMST.cpy:29"
+            },
+            {
+              "name": "HS-ﾏﾝﾘｮｳ",
+              "values": [
+                "'2'"
+              ],
+              "source": "gondwana/copybooks/COVMST.cpy:30"
+            },
+            {
+              "name": "HS-ｶｲﾔｸ",
+              "values": [
+                "'3'"
+              ],
+              "source": "gondwana/copybooks/COVMST.cpy:31"
+            },
+            {
+              "name": "HS-ｼｮｳﾒﾂ",
+              "values": [
+                "'4'"
+              ],
+              "source": "gondwana/copybooks/COVMST.cpy:32"
+            }
+          ],
+          "source": "gondwana/copybooks/COVMST.cpy:28"
+        },
+        {
+          "level": 5,
+          "name": "HS-ﾎｹﾝｷﾝｶﾞｸ",
+          "start": 16,
+          "length": 9,
+          "picture": "9(9)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 9,
+          "source": "gondwana/copybooks/COVMST.cpy:33"
+        },
+        {
+          "level": 5,
+          "name": "HS-ﾎｹﾝﾘｮｳ",
+          "start": 25,
+          "length": 7,
+          "picture": "9(7)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "amount",
+          "digits": 7,
+          "source": "gondwana/copybooks/COVMST.cpy:34"
+        },
+        {
+          "level": 5,
+          "name": "HS-ｹｲﾔｸﾋﾞ",
+          "start": 32,
+          "length": 7,
+          "picture": "X(7)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "date",
+          "source": "gondwana/copybooks/COVMST.cpy:35"
+        },
+        {
+          "level": 5,
+          "name": "HS-ﾎｹﾝｷｶﾝ",
+          "start": 39,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 2,
+          "source": "gondwana/copybooks/COVMST.cpy:36"
+        },
+        {
+          "level": 5,
+          "name": "HS-ﾏﾝｷﾋﾞ",
+          "start": 41,
+          "length": 7,
+          "picture": "X(7)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "date",
+          "source": "gondwana/copybooks/COVMST.cpy:37"
+        },
+        {
+          "level": 5,
+          "name": "HS-ｶﾆｭｳﾈﾝﾚｲ",
+          "start": 48,
+          "length": 2,
+          "picture": "99",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 2,
+          "source": "gondwana/copybooks/COVMST.cpy:38"
+        },
+        {
+          "level": 5,
+          "name": "HS-ｼｮｳﾒﾂﾋﾞ",
+          "start": 50,
+          "length": 7,
+          "picture": "X(7)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "date",
+          "source": "gondwana/copybooks/COVMST.cpy:39"
+        },
+        {
+          "level": 5,
+          "name": "FILLER",
+          "start": 57,
+          "length": 24,
+          "picture": "X(24)",
+          "usage": "DISPLAY",
+          "category": "alphanumeric",
+          "kind": "filler",
+          "source": "gondwana/copybooks/COVMST.cpy:40"
+        }
+      ]
+    }
+  ],
+  "usedBy": [
+    "GLD010",
+    "GLD020",
+    "GLD030",
+    "GLD040",
+    "GLD090",
+    "GLO010"
+  ]
+}

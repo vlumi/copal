@@ -2,8 +2,8 @@
 
 The run ended with return code 16.
 
-REPORT-F's directory is missing, so creating it fails.
+COVEXT-F is missing, so opening it fails.
 
 The first case to reach:
 
-- [GLO010, ｼｮｷ-RTN, rule 5](../../../../blueprints/gondwana/rules/GLO010.md#ｼｮｷ-rtn)
+- [GLO010, ﾎｼｮｳ-ｼﾞｭﾝﾋﾞ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLO010.md#ﾎｼｮｳ-ｼﾞｭﾝﾋﾞ-rtn)

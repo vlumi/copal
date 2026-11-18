@@ -6,4 +6,4 @@ The batch file ended with errorlevel 0.
 
 | Step | Program | Outcome | Rules reached |
 | --- | --- | --- | --: |
-| GLO010 | [GLO010](../../GLO010/) | RC=0000 | 7 of 33 |
+| GLO010 | [GLO010](../../GLO010/) | RC=0000 | 8 of 43 |

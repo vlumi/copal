@@ -4,18 +4,18 @@ For each main program, input data that reaches the rules of its decision tables,
 
 | Program | Rules reached | Cases |
 | --- | --: | --: |
-| [GLD010](GLD010/) | 36 of 68 | 21 |
-| [GLD020](GLD020/) | 44 of 107 | 19 |
-| [GLD030](GLD030/) | 31 of 172 | 20 |
-| [GLD040](GLD040/) | 52 of 76 | 32 |
+| [GLD010](GLD010/) | 37 of 80 | 22 |
+| [GLD020](GLD020/) | 49 of 132 | 21 |
+| [GLD030](GLD030/) | 32 of 197 | 21 |
+| [GLD040](GLD040/) | 58 of 89 | 35 |
 | [GLD050](GLD050/) | 56 of 79 | 39 |
 | [GLD060](GLD060/) | 39 of 81 | 20 |
 | [GLD070](GLD070/) | 61 of 102 | 31 |
-| [GLD090](GLD090/) | 19 of 36 | 9 |
+| [GLD090](GLD090/) | 23 of 42 | 11 |
 | [GLM010](GLM010/) | 31 of 50 | 14 |
 | [GLM020](GLM020/) | 34 of 56 | 13 |
 | [GLM030](GLM030/) | 19 of 51 | 9 |
-| [GLO010](GLO010/) | 18 of 33 | 10 |
+| [GLO010](GLO010/) | 23 of 43 | 13 |
 | [GLY010](GLY010/) | 20 of 38 | 10 |
 
 And for each job, a batch: the job run through its steps on inputs from its programs' cleanest cases, with the datasets it wrote and its output.
@@ -23,7 +23,7 @@ And for each job, a batch: the job run through its steps on inputs from its prog
 | Job | Steps |
 | --- | --- |
 | [OPEN](jobs/OPEN/) | GLO010 RC=0000 |
-| [DAILY](jobs/DAILY/) | GLD010 RC=0000, GLD020 RC=0000, GLD030 RC=0000, GLD040 RC=0000, GLD060 RC=0000, GLD070 RC=0000, UNLOAD RC=0000, UNLOAD.GLD090 RC=0000 |
+| [DAILY](jobs/DAILY/) | GLD010 RC=0000, GLD020 RC=0000, GLD030 RC=0000, GLD040 RC=0000, GLD060 RC=0001, GLD070 RC=0000, UNLOAD RC=0000, UNLOAD.GLD090 RC=0000 |
 | [BILLING](jobs/BILLING/) | GLM010 RC=0000 |
 | [RESULTS](jobs/RESULTS/) | GLD050 RC=0000 |
 | [CLOSE](jobs/CLOSE/) | GLM020 RC=0001, GLM030 RC=0000, UNLOAD RC=0000, UNLOAD.GLD090 RC=0000 |

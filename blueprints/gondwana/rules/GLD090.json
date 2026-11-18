@@ -3,11 +3,13 @@
   "tables": [
     {
       "paragraph": "ｼｮｷ-RTN",
-      "source": "gondwana/programs/GLD090.cbl:124",
+      "source": "gondwana/programs/GLD090.cbl:146",
       "conditions": [
         "WS-ﾍﾝｶﾝｹｯｶ = 0",
-        "WS-BENHST-OK",
+        "WS-COVMST-OK",
         "WS-ｴﾗｰﾌｧｲﾙ = SPACES",
+        "WS-COVUNL-OK",
+        "WS-BENHST-OK",
         "WS-HSTUNL-OK",
         "WS-POLMST-OK",
         "WS-GLSCTL-OK",
@@ -20,10 +22,16 @@
           "WS-ﾍﾝｶﾝｹｯｶ"
         ],
         [
-          "WS-BENHST-ST"
+          "WS-COVMST-ST"
         ],
         [
           "WS-ｴﾗｰﾌｧｲﾙ"
+        ],
+        [
+          "WS-COVUNL-ST"
+        ],
+        [
+          "WS-BENHST-ST"
         ],
         [
           "WS-HSTUNL-ST"
@@ -51,12 +59,16 @@
         "DISPLAY 'GLD090 日付不正: ' WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)",
         "MOVE 8 TO RETURN-CODE",
         "STOP RUN",
-        "OPEN INPUT POLMST-F BENHST-F",
+        "OPEN INPUT POLMST-F BENHST-F COVMST-F",
         "OPEN I-O GLSCTL-F",
-        "OPEN OUTPUT UNLOAD-F HSTUNL-F REPORT-F",
+        "OPEN OUTPUT UNLOAD-F HSTUNL-F COVUNL-F REPORT-F",
+        "MOVE 'COVMST' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-COVMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "PERFORM ｲｼﾞｮｳ-RTN",
+        "MOVE 'COVUNL' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-COVUNL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
         "MOVE 'BENHST' TO WS-ｴﾗｰﾌｧｲﾙ",
         "MOVE WS-BENHST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
-        "PERFORM ｲｼﾞｮｳ-RTN",
         "MOVE 'HSTUNL' TO WS-ｴﾗｰﾌｧｲﾙ",
         "MOVE WS-HSTUNL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
         "MOVE 'POLMST' TO WS-ｴﾗｰﾌｧｲﾙ",
@@ -75,6 +87,8 @@
         {
           "entries": [
             "N",
+            "",
+            "",
             "",
             "",
             "",
@@ -104,6 +118,8 @@
             "",
             "",
             "",
+            "",
+            "",
             ""
           ],
           "actions": [
@@ -117,7 +133,7 @@
             10,
             11
           ],
-          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0, `WS-BENHST-ST` is neither `'00'` nor `'05'` (not `WS-BENHST-OK`), and `WS-ｴﾗｰﾌｧｲﾙ` is not spaces, it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `POLMST-F` and `BENHST-F` for input; opens `GLSCTL-F` to update; opens `UNLOAD-F`, `HSTUNL-F`, and `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'BENHST'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-BENHST-ST`; and performs `ｲｼﾞｮｳ-RTN`."
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0, `WS-COVMST-ST` is not `'00'` (not `WS-COVMST-OK`), and `WS-ｴﾗｰﾌｧｲﾙ` is not spaces, it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `POLMST-F`, `BENHST-F`, and `COVMST-F` for input; opens `GLSCTL-F` to update; opens `UNLOAD-F`, `HSTUNL-F`, `COVUNL-F`, and `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'COVMST'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-COVMST-ST`; and performs `ｲｼﾞｮｳ-RTN`."
         },
         {
           "entries": [
@@ -125,6 +141,8 @@
             "Y",
             "N",
             "N",
+            "",
+            "",
             "",
             "",
             "",
@@ -142,7 +160,7 @@
             13,
             11
           ],
-          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-BENHST-ST` is `'00'` or `'05'` (`WS-BENHST-OK`); `WS-ｴﾗｰﾌｧｲﾙ` is not spaces; and `WS-HSTUNL-ST` is not `'00'` (not `WS-HSTUNL-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `POLMST-F` and `BENHST-F` for input; opens `GLSCTL-F` to update; opens `UNLOAD-F`, `HSTUNL-F`, and `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'HSTUNL'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-HSTUNL-ST`; and performs `ｲｼﾞｮｳ-RTN`."
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0, `WS-COVMST-ST` is `'00'` (`WS-COVMST-OK`), `WS-ｴﾗｰﾌｧｲﾙ` is not spaces, and `WS-COVUNL-ST` is not `'00'` (not `WS-COVUNL-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `POLMST-F`, `BENHST-F`, and `COVMST-F` for input; opens `GLSCTL-F` to update; opens `UNLOAD-F`, `HSTUNL-F`, `COVUNL-F`, and `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'COVUNL'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-COVUNL-ST`; and performs `ｲｼﾞｮｳ-RTN`."
         },
         {
           "entries": [
@@ -151,6 +169,8 @@
             "N",
             "Y",
             "N",
+            "",
+            "",
             "",
             "",
             "",
@@ -167,7 +187,7 @@
             15,
             11
           ],
-          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-BENHST-ST` is `'00'` or `'05'` (`WS-BENHST-OK`); `WS-ｴﾗｰﾌｧｲﾙ` is not spaces; `WS-HSTUNL-ST` is `'00'` (`WS-HSTUNL-OK`); and `WS-POLMST-ST` is not `'00'` (not `WS-POLMST-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `POLMST-F` and `BENHST-F` for input; opens `GLSCTL-F` to update; opens `UNLOAD-F`, `HSTUNL-F`, and `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'POLMST'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-POLMST-ST`; and performs `ｲｼﾞｮｳ-RTN`."
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0, `WS-COVMST-ST` is `'00'` (`WS-COVMST-OK`), `WS-ｴﾗｰﾌｧｲﾙ` is not spaces, `WS-COVUNL-ST` is `'00'` (`WS-COVUNL-OK`), and `WS-BENHST-ST` is neither `'00'` nor `'05'` (not `WS-BENHST-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `POLMST-F`, `BENHST-F`, and `COVMST-F` for input; opens `GLSCTL-F` to update; opens `UNLOAD-F`, `HSTUNL-F`, `COVUNL-F`, and `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'BENHST'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-BENHST-ST`; and performs `ｲｼﾞｮｳ-RTN`."
         },
         {
           "entries": [
@@ -177,6 +197,8 @@
             "Y",
             "Y",
             "N",
+            "",
+            "",
             "",
             "",
             ""
@@ -192,7 +214,7 @@
             17,
             11
           ],
-          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-BENHST-ST` is `'00'` or `'05'` (`WS-BENHST-OK`); `WS-ｴﾗｰﾌｧｲﾙ` is not spaces; `WS-HSTUNL-ST` is `'00'` (`WS-HSTUNL-OK`); `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`); and `WS-GLSCTL-ST` is not `'00'` (not `WS-GLSCTL-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `POLMST-F` and `BENHST-F` for input; opens `GLSCTL-F` to update; opens `UNLOAD-F`, `HSTUNL-F`, and `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'GLSCTL'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-GLSCTL-ST`; and performs `ｲｼﾞｮｳ-RTN`."
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-COVMST-ST` is `'00'` (`WS-COVMST-OK`); `WS-ｴﾗｰﾌｧｲﾙ` is not spaces; `WS-COVUNL-ST` is `'00'` (`WS-COVUNL-OK`); `WS-BENHST-ST` is `'00'` or `'05'` (`WS-BENHST-OK`); and `WS-HSTUNL-ST` is not `'00'` (not `WS-HSTUNL-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `POLMST-F`, `BENHST-F`, and `COVMST-F` for input; opens `GLSCTL-F` to update; opens `UNLOAD-F`, `HSTUNL-F`, `COVUNL-F`, and `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'HSTUNL'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-HSTUNL-ST`; and performs `ｲｼﾞｮｳ-RTN`."
         },
         {
           "entries": [
@@ -203,6 +225,8 @@
             "Y",
             "Y",
             "N",
+            "",
+            "",
             "",
             ""
           ],
@@ -217,13 +241,69 @@
             19,
             11
           ],
-          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-BENHST-ST` is `'00'` or `'05'` (`WS-BENHST-OK`); `WS-ｴﾗｰﾌｧｲﾙ` is not spaces; `WS-HSTUNL-ST` is `'00'` (`WS-HSTUNL-OK`); `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`); `WS-GLSCTL-ST` is `'00'` (`WS-GLSCTL-OK`); and `WS-UNLOAD-ST` is not `'00'` (not `WS-UNLOAD-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `POLMST-F` and `BENHST-F` for input; opens `GLSCTL-F` to update; opens `UNLOAD-F`, `HSTUNL-F`, and `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'UNLOAD'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-UNLOAD-ST`; and performs `ｲｼﾞｮｳ-RTN`."
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-COVMST-ST` is `'00'` (`WS-COVMST-OK`); `WS-ｴﾗｰﾌｧｲﾙ` is not spaces; `WS-COVUNL-ST` is `'00'` (`WS-COVUNL-OK`); `WS-BENHST-ST` is `'00'` or `'05'` (`WS-BENHST-OK`); `WS-HSTUNL-ST` is `'00'` (`WS-HSTUNL-OK`); and `WS-POLMST-ST` is not `'00'` (not `WS-POLMST-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `POLMST-F`, `BENHST-F`, and `COVMST-F` for input; opens `GLSCTL-F` to update; opens `UNLOAD-F`, `HSTUNL-F`, `COVUNL-F`, and `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'POLMST'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-POLMST-ST`; and performs `ｲｼﾞｮｳ-RTN`."
         },
         {
           "entries": [
             "Y",
             "Y",
             "N",
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            6,
+            7,
+            8,
+            20,
+            21,
+            11
+          ],
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-COVMST-ST` is `'00'` (`WS-COVMST-OK`); `WS-ｴﾗｰﾌｧｲﾙ` is not spaces; `WS-COVUNL-ST` is `'00'` (`WS-COVUNL-OK`); `WS-BENHST-ST` is `'00'` or `'05'` (`WS-BENHST-OK`); `WS-HSTUNL-ST` is `'00'` (`WS-HSTUNL-OK`); `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`); and `WS-GLSCTL-ST` is not `'00'` (not `WS-GLSCTL-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `POLMST-F`, `BENHST-F`, and `COVMST-F` for input; opens `GLSCTL-F` to update; opens `UNLOAD-F`, `HSTUNL-F`, `COVUNL-F`, and `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'GLSCTL'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-GLSCTL-ST`; and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            6,
+            7,
+            8,
+            22,
+            23,
+            11
+          ],
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-COVMST-ST` is `'00'` (`WS-COVMST-OK`); `WS-ｴﾗｰﾌｧｲﾙ` is not spaces; `WS-COVUNL-ST` is `'00'` (`WS-COVUNL-OK`); `WS-BENHST-ST` is `'00'` or `'05'` (`WS-BENHST-OK`); `WS-HSTUNL-ST` is `'00'` (`WS-HSTUNL-OK`); `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`); `WS-GLSCTL-ST` is `'00'` (`WS-GLSCTL-OK`); and `WS-UNLOAD-ST` is not `'00'` (not `WS-UNLOAD-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `POLMST-F`, `BENHST-F`, and `COVMST-F` for input; opens `GLSCTL-F` to update; opens `UNLOAD-F`, `HSTUNL-F`, `COVUNL-F`, and `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'UNLOAD'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-UNLOAD-ST`; and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "Y",
+            "Y",
             "Y",
             "Y",
             "Y",
@@ -238,14 +318,16 @@
             6,
             7,
             8,
-            20,
-            21,
+            24,
+            25,
             11
           ],
-          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-BENHST-ST` is `'00'` or `'05'` (`WS-BENHST-OK`); `WS-ｴﾗｰﾌｧｲﾙ` is not spaces; `WS-HSTUNL-ST` is `'00'` (`WS-HSTUNL-OK`); `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`); `WS-GLSCTL-ST` is `'00'` (`WS-GLSCTL-OK`); `WS-UNLOAD-ST` is `'00'` (`WS-UNLOAD-OK`); and `WS-REPORT-ST` is not `'00'` (not `WS-REPORT-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `POLMST-F` and `BENHST-F` for input; opens `GLSCTL-F` to update; opens `UNLOAD-F`, `HSTUNL-F`, and `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'GLD090R'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-REPORT-ST`; and performs `ｲｼﾞｮｳ-RTN`."
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-COVMST-ST` is `'00'` (`WS-COVMST-OK`); `WS-ｴﾗｰﾌｧｲﾙ` is not spaces; `WS-COVUNL-ST` is `'00'` (`WS-COVUNL-OK`); `WS-BENHST-ST` is `'00'` or `'05'` (`WS-BENHST-OK`); `WS-HSTUNL-ST` is `'00'` (`WS-HSTUNL-OK`); `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`); `WS-GLSCTL-ST` is `'00'` (`WS-GLSCTL-OK`); `WS-UNLOAD-ST` is `'00'` (`WS-UNLOAD-OK`); and `WS-REPORT-ST` is not `'00'` (not `WS-REPORT-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `POLMST-F`, `BENHST-F`, and `COVMST-F` for input; opens `GLSCTL-F` to update; opens `UNLOAD-F`, `HSTUNL-F`, `COVUNL-F`, and `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'GLD090R'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-REPORT-ST`; and performs `ｲｼﾞｮｳ-RTN`."
         },
         {
           "entries": [
+            "Y",
+            "Y",
             "Y",
             "Y",
             "Y",
@@ -263,16 +345,18 @@
             6,
             7,
             8,
-            22,
-            23,
-            16,
-            17,
+            26,
+            27,
+            20,
+            21,
             11
           ],
-          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-BENHST-ST` is `'00'` or `'05'` (`WS-BENHST-OK`); `WS-ｴﾗｰﾌｧｲﾙ` is spaces; `WS-HSTUNL-ST` is `'00'` (`WS-HSTUNL-OK`); `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`); `WS-GLSCTL-ST` is `'00'` (`WS-GLSCTL-OK`); `WS-UNLOAD-ST` is `'00'` (`WS-UNLOAD-OK`); `WS-REPORT-ST` is `'00'` (`WS-REPORT-OK`); and `WS-GLSCTL-ST` is not `'00'` (not `WS-GLSCTL-OK`), tested again, it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `POLMST-F` and `BENHST-F` for input; opens `GLSCTL-F` to update; opens `UNLOAD-F`, `HSTUNL-F`, and `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to spaces; reads `GLSCTL-F`; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'GLSCTL'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-GLSCTL-ST`; and performs `ｲｼﾞｮｳ-RTN`."
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-COVMST-ST` is `'00'` (`WS-COVMST-OK`); `WS-ｴﾗｰﾌｧｲﾙ` is spaces; `WS-COVUNL-ST` is `'00'` (`WS-COVUNL-OK`); `WS-BENHST-ST` is `'00'` or `'05'` (`WS-BENHST-OK`); `WS-HSTUNL-ST` is `'00'` (`WS-HSTUNL-OK`); `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`); `WS-GLSCTL-ST` is `'00'` (`WS-GLSCTL-OK`); `WS-UNLOAD-ST` is `'00'` (`WS-UNLOAD-OK`); `WS-REPORT-ST` is `'00'` (`WS-REPORT-OK`); and `WS-GLSCTL-ST` is not `'00'` (not `WS-GLSCTL-OK`), tested again, it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `POLMST-F`, `BENHST-F`, and `COVMST-F` for input; opens `GLSCTL-F` to update; opens `UNLOAD-F`, `HSTUNL-F`, `COVUNL-F`, and `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to spaces; reads `GLSCTL-F`; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'GLSCTL'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-GLSCTL-ST`; and performs `ｲｼﾞｮｳ-RTN`."
         },
         {
           "entries": [
+            "Y",
+            "Y",
             "Y",
             "Y",
             "Y",
@@ -290,17 +374,17 @@
             6,
             7,
             8,
-            22,
-            23,
-            24
+            26,
+            27,
+            28
           ],
-          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-BENHST-ST` is `'00'` or `'05'` (`WS-BENHST-OK`); `WS-ｴﾗｰﾌｧｲﾙ` is spaces; `WS-HSTUNL-ST` is `'00'` (`WS-HSTUNL-OK`); `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`); `WS-GLSCTL-ST` is `'00'` (`WS-GLSCTL-OK`); `WS-UNLOAD-ST` is `'00'` (`WS-UNLOAD-OK`); `WS-REPORT-ST` is `'00'` (`WS-REPORT-OK`); and `WS-GLSCTL-ST` is `'00'` (`WS-GLSCTL-OK`), tested again, it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `POLMST-F` and `BENHST-F` for input; opens `GLSCTL-F` to update; opens `UNLOAD-F`, `HSTUNL-F`, and `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to spaces; reads `GLSCTL-F`; and performs `POLMST-ﾖﾐｺﾐ-RTN`."
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-COVMST-ST` is `'00'` (`WS-COVMST-OK`); `WS-ｴﾗｰﾌｧｲﾙ` is spaces; `WS-COVUNL-ST` is `'00'` (`WS-COVUNL-OK`); `WS-BENHST-ST` is `'00'` or `'05'` (`WS-BENHST-OK`); `WS-HSTUNL-ST` is `'00'` (`WS-HSTUNL-OK`); `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`); `WS-GLSCTL-ST` is `'00'` (`WS-GLSCTL-OK`); `WS-UNLOAD-ST` is `'00'` (`WS-UNLOAD-OK`); `WS-REPORT-ST` is `'00'` (`WS-REPORT-OK`); and `WS-GLSCTL-ST` is `'00'` (`WS-GLSCTL-OK`), tested again, it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `POLMST-F`, `BENHST-F`, and `COVMST-F` for input; opens `GLSCTL-F` to update; opens `UNLOAD-F`, `HSTUNL-F`, `COVUNL-F`, and `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to spaces; reads `GLSCTL-F`; and performs `POLMST-ﾖﾐｺﾐ-RTN`."
         }
       ]
     },
     {
       "paragraph": "POLMST-ﾖﾐｺﾐ-RTN",
-      "source": "gondwana/programs/GLD090.cbl:173",
+      "source": "gondwana/programs/GLD090.cbl:201",
       "conditions": [
         "NOT WS-POLMST-OK AND NOT WS-POLMST-ｵﾜﾘ"
       ],
@@ -341,7 +425,7 @@
     },
     {
       "paragraph": "ｱﾝﾛｰﾄﾞ-RTN",
-      "source": "gondwana/programs/GLD090.cbl:184",
+      "source": "gondwana/programs/GLD090.cbl:212",
       "conditions": [
         "WS-UNLOAD-OK",
         "PM-ﾎｼｮｳﾁｭｳ"
@@ -408,7 +492,7 @@
     },
     {
       "paragraph": "BENHST-ﾖﾐｺﾐ-RTN",
-      "source": "gondwana/programs/GLD090.cbl:201",
+      "source": "gondwana/programs/GLD090.cbl:229",
       "conditions": [
         "NOT WS-BENHST-OK AND NOT WS-BENHST-ｵﾜﾘ"
       ],
@@ -449,7 +533,7 @@
     },
     {
       "paragraph": "ﾘﾚｷ-ｱﾝﾛｰﾄﾞ-RTN",
-      "source": "gondwana/programs/GLD090.cbl:212",
+      "source": "gondwana/programs/GLD090.cbl:240",
       "conditions": [
         "WS-HSTUNL-OK"
       ],
@@ -493,8 +577,94 @@
       ]
     },
     {
+      "paragraph": "COVMST-ﾖﾐｺﾐ-RTN",
+      "source": "gondwana/programs/GLD090.cbl:253",
+      "conditions": [
+        "NOT WS-COVMST-OK AND NOT WS-COVMST-ｵﾜﾘ"
+      ],
+      "conditionRefs": [
+        [
+          "WS-COVMST-ST"
+        ]
+      ],
+      "actions": [
+        "READ COVMST-F NEXT",
+        "MOVE 'COVMST' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-COVMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "PERFORM ｲｼﾞｮｳ-RTN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "sentence": "When `WS-COVMST-ST` is not `'00'` (not `WS-COVMST-OK`) and `WS-COVMST-ST` is not `'10'` (not `WS-COVMST-ｵﾜﾘ`), it reads `COVMST-F`, sets `WS-ｴﾗｰﾌｧｲﾙ` to `'COVMST'`, sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-COVMST-ST`, and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0
+          ],
+          "sentence": "When `WS-COVMST-ST` is `'00'` (`WS-COVMST-OK`) or `WS-COVMST-ST` is `'10'` (`WS-COVMST-ｵﾜﾘ`), it reads `COVMST-F`."
+        }
+      ]
+    },
+    {
+      "paragraph": "ﾎｼｮｳ-ｱﾝﾛｰﾄﾞ-RTN",
+      "source": "gondwana/programs/GLD090.cbl:264",
+      "conditions": [
+        "WS-COVUNL-OK"
+      ],
+      "conditionRefs": [
+        [
+          "WS-COVUNL-ST"
+        ]
+      ],
+      "actions": [
+        "WRITE ﾎｼｮｳ-ｱﾝﾛｰﾄﾞ-ﾚｺｰﾄﾞ FROM HS-ﾎｼｮｳ-ﾚｺｰﾄﾞ",
+        "MOVE 'COVUNL' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-COVUNL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "PERFORM ｲｼﾞｮｳ-RTN",
+        "ADD 1 TO WS-ﾎｼｮｳｹﾝｽｳ",
+        "PERFORM COVMST-ﾖﾐｺﾐ-RTN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "sentence": "When `WS-COVUNL-ST` is not `'00'` (not `WS-COVUNL-OK`), it writes `ﾎｼｮｳ-ｱﾝﾛｰﾄﾞ-ﾚｺｰﾄﾞ` from `HS-ﾎｼｮｳ-ﾚｺｰﾄﾞ`, sets `WS-ｴﾗｰﾌｧｲﾙ` to `'COVUNL'`, sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-COVUNL-ST`, and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            4,
+            5
+          ],
+          "sentence": "When `WS-COVUNL-ST` is `'00'` (`WS-COVUNL-OK`), it writes `ﾎｼｮｳ-ｱﾝﾛｰﾄﾞ-ﾚｺｰﾄﾞ` from `HS-ﾎｼｮｳ-ﾚｺｰﾄﾞ`, adds 1 to `WS-ﾎｼｮｳｹﾝｽｳ`, and performs `COVMST-ﾖﾐｺﾐ-RTN`."
+        }
+      ]
+    },
+    {
       "paragraph": "ｾｲｷﾞｮ-RTN",
-      "source": "gondwana/programs/GLD090.cbl:225",
+      "source": "gondwana/programs/GLD090.cbl:277",
       "conditions": [
         "WS-GLSCTL-OK"
       ],

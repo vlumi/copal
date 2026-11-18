@@ -1,6 +1,6 @@
 # GLO010: case 03
 
-The run ended with return code 0.
+The run ended with return code 4.
 
 The first case to reach:
 

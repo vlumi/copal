@@ -2,7 +2,7 @@
 
 The run ended with return code 16.
 
-GLJRNL-F's directory is missing, so creating it fails.
+GLSCTL-F is missing, so opening it fails.
 
 The first case to reach:
 

@@ -121,12 +121,24 @@ func (in Insurer) ReadFile(path string) ([]byte, error) {
 // Policies reads the policy master as the last day's unload left it, or
 // the extract the insurer opened with before any day.
 func (in Insurer) Policies() ([]byte, error) {
-	unloads, err := filepath.Glob(in.data("OUT", "POLMST.*.TXT"))
+	return in.lastUnload("POLMST", "EXTRACT.TXT")
+}
+
+// Coverages reads the coverage file as the last day's unload left it, or
+// the extract the insurer opened with before any day.
+func (in Insurer) Coverages() ([]byte, error) {
+	return in.lastUnload("COVMST", "COVEXT.TXT")
+}
+
+// lastUnload reads the last day's unload of a file, or its extract when
+// no day has run.
+func (in Insurer) lastUnload(file, extract string) ([]byte, error) {
+	unloads, err := filepath.Glob(in.data("OUT", file+".*.TXT"))
 	if err != nil {
 		return nil, err
 	}
 	if len(unloads) == 0 {
-		return os.ReadFile(in.data("IN", "EXTRACT.TXT"))
+		return os.ReadFile(in.data("IN", extract))
 	}
 	slices.Sort(unloads)
 	return os.ReadFile(unloads[len(unloads)-1])

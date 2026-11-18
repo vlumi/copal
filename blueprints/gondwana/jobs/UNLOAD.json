@@ -3,7 +3,7 @@
   "kind": "script",
   "source": "gondwana/scripts/UNLOAD.BAT",
   "description": [
-    "UNLOAD.BAT: 契約マスタと給付履歴のアンロード。日次と月次の最後に",
+    "UNLOAD.BAT: 契約マスタ、給付履歴、保障マスタのアンロード。日次と月次の最後に",
     "呼ばれ、下流に渡すファイルを作り、制御レコードの業務日付を進める。",
     "",
     "使い方: UNLOAD.BAT YYYYMMDD  業務日付",
@@ -11,7 +11,8 @@
     "",
     "変更履歴",
     "1999-11-08 MS  GL-0233 初版、PC システム移行時。",
-    "2026-11-16 YN  GL-0822 給付履歴。"
+    "2026-11-16 YN  GL-0822 給付履歴。",
+    "2026-11-18 YN  GL-0825 保障マスタ。"
   ],
   "steps": [
     {
@@ -24,7 +25,7 @@
       "description": [
         "アンロードと制御レコード"
       ],
-      "source": "gondwana/scripts/UNLOAD.BAT:24",
+      "source": "gondwana/scripts/UNLOAD.BAT:27",
       "dds": [
         {
           "dd": "POLMST",
@@ -37,7 +38,7 @@
             "read"
           ],
           "copybook": "POLMST",
-          "source": "gondwana/scripts/UNLOAD.BAT:24"
+          "source": "gondwana/scripts/UNLOAD.BAT:27"
         },
         {
           "dd": "UNLOAD",
@@ -49,7 +50,7 @@
             "write"
           ],
           "copybook": "POLMST",
-          "source": "gondwana/scripts/UNLOAD.BAT:24"
+          "source": "gondwana/scripts/UNLOAD.BAT:27"
         },
         {
           "dd": "BENHST",
@@ -62,7 +63,7 @@
             "read"
           ],
           "copybook": "BENHST",
-          "source": "gondwana/scripts/UNLOAD.BAT:24"
+          "source": "gondwana/scripts/UNLOAD.BAT:27"
         },
         {
           "dd": "HSTUNL",
@@ -74,7 +75,32 @@
             "write"
           ],
           "copybook": "BENHST",
-          "source": "gondwana/scripts/UNLOAD.BAT:24"
+          "source": "gondwana/scripts/UNLOAD.BAT:27"
+        },
+        {
+          "dd": "COVMST",
+          "datasets": [
+            "$DATA/MASTER/COVMST.IDX"
+          ],
+          "indexed": true,
+          "file": "COVMST-F",
+          "uses": [
+            "read"
+          ],
+          "copybook": "COVMST",
+          "source": "gondwana/scripts/UNLOAD.BAT:27"
+        },
+        {
+          "dd": "COVUNL",
+          "datasets": [
+            "$DATA/OUT/COVMST.$DATE.TXT"
+          ],
+          "file": "COVUNL-F",
+          "uses": [
+            "write"
+          ],
+          "copybook": "COVMST",
+          "source": "gondwana/scripts/UNLOAD.BAT:27"
         },
         {
           "dd": "GLSCTL",
@@ -86,7 +112,7 @@
             "update"
           ],
           "copybook": "CTLREC",
-          "source": "gondwana/scripts/UNLOAD.BAT:24"
+          "source": "gondwana/scripts/UNLOAD.BAT:27"
         },
         {
           "dd": "GLD090R",
@@ -97,7 +123,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/UNLOAD.BAT:24"
+          "source": "gondwana/scripts/UNLOAD.BAT:27"
         },
         {
           "dd": "stdout",
@@ -107,7 +133,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/UNLOAD.BAT:24"
+          "source": "gondwana/scripts/UNLOAD.BAT:27"
         }
       ]
     }
@@ -142,6 +168,23 @@
     {
       "dataset": "$DATA/OUT/BENHST.$DATE.TXT",
       "copybook": "BENHST",
+      "kind": "output",
+      "writtenBy": [
+        "GLD090"
+      ]
+    },
+    {
+      "dataset": "$DATA/MASTER/COVMST.IDX",
+      "copybook": "COVMST",
+      "kind": "internal",
+      "indexed": true,
+      "readBy": [
+        "GLD090"
+      ]
+    },
+    {
+      "dataset": "$DATA/OUT/COVMST.$DATE.TXT",
+      "copybook": "COVMST",
       "kind": "output",
       "writtenBy": [
         "GLD090"

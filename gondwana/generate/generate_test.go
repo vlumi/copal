@@ -21,22 +21,26 @@ var opening = NewDate(2026, time.April, 1)
 
 func TestExtract(t *testing.T) {
 	g := generator(t)
-	recs, err := g.Extract(500, opening)
+	recs, coverages, err := g.Extract(500, opening)
 	if err != nil {
 		t.Fatal(err)
 	}
-	again, _ := g.Extract(500, opening)
-	if !slices.EqualFunc(recs, again, slices.Equal) {
+	again, coveragesAgain, _ := g.Extract(500, opening)
+	if !slices.EqualFunc(recs, again, slices.Equal) || !slices.EqualFunc(coverages, coveragesAgain, slices.Equal) {
 		t.Error("two extracts from the same seed differ")
 	}
 	policies, err := g.ReadPolicies(recs)
 	if err != nil {
 		t.Fatal(err)
 	}
+	if err := g.ReadCoverages(policies, coverages); err != nil {
+		t.Fatal(err)
+	}
 	if len(policies) != 500 {
 		t.Fatalf("%d policies, want 500", len(policies))
 	}
 	eras, products, statuses, modes := map[byte]int{}, map[string]int{}, map[int]int{}, map[int]int{}
+	riders, ended := map[string]int{}, 0
 	numbers := map[string]bool{}
 	for _, p := range policies {
 		eras[p.Contract.Era()[0]]++
@@ -59,12 +63,53 @@ func TestExtract(t *testing.T) {
 		if got := insuranceAge(p.Birth, p.Contract); got != p.EntryAge {
 			t.Errorf("policy %s: entry age %d, but %d from the dates", p.No, p.EntryAge, got)
 		}
+		checkCoverages(t, p)
+		for _, c := range p.Coverages[1:] {
+			riders[c.Product]++
+			if !c.InForce() {
+				ended++
+			}
+		}
+	}
+	if riders["HR"] == 0 || riders["TR"] == 0 || ended == 0 {
+		t.Errorf("riders %v, %d of them ended", riders, ended)
 	}
 	if eras['S'] == 0 || eras['H'] == 0 || eras['R'] == 0 || len(products) != 4 || modes[2] == 0 {
 		t.Errorf("eras %v, products %v, modes %v", eras, products, modes)
 	}
 	if statuses[1] < 350 || statuses[2] == 0 || statuses[3] == 0 || statuses[4] == 0 || statuses[5] == 0 || statuses[6] == 0 {
 		t.Errorf("statuses %v", statuses)
+	}
+}
+
+// checkCoverages checks that a policy's coverages agree with it: the
+// main contract first and the master's repeat of it, the premium the
+// total of the coverages that pay one, none in force on a policy that
+// has ended, and no rider of the main contract's kind.
+func checkCoverages(t *testing.T, p Policy) {
+	t.Helper()
+	if len(p.Coverages) == 0 {
+		t.Errorf("policy %s has no coverage", p.No)
+		return
+	}
+	main := p.Coverages[0]
+	if main.No != 1 || main.Product != p.Product || main.Amount != p.Sum || main.Maturity != p.Maturity {
+		t.Errorf("policy %s of %s, %d, maturing %s: main contract %+v", p.No, p.Product, p.Sum, p.Maturity, main)
+	}
+	var premium int64
+	for i, c := range p.Coverages {
+		if c.InForce() || c.No == 1 || !c.Ended.Before(p.StatusDate) && p.Status > 3 {
+			premium += c.Premium
+		}
+		if c.No != i+1 || c.InForce() != c.Ended.IsZero() || c.InForce() && p.Status > 3 {
+			t.Errorf("policy %s in status %d: coverage %+v", p.No, p.Status, c)
+		}
+		if i > 0 && productOf(c.Product).kind == productOf(p.Product).kind {
+			t.Errorf("policy %s of %s has a rider %s", p.No, p.Product, c.Product)
+		}
+	}
+	if premium != p.Premium {
+		t.Errorf("policy %s: premium %d, its coverages' %d", p.No, p.Premium, premium)
 	}
 }
 
@@ -75,7 +120,7 @@ func TestTables(t *testing.T) {
 		table func() ([][]byte, error)
 		lines int
 	}{
-		{"products", g.Products, 4}, {"rates", g.Rates, 648}, {"cash values", g.CashValues, 960}, {"reserves", g.Reserves, 200}, {"agents", g.Agents, 10},
+		{"products", g.Products, 6}, {"rates", g.Rates, 972}, {"cash values", g.CashValues, 960}, {"reserves", g.Reserves, 200}, {"agents", g.Agents, 10},
 	} {
 		recs, err := c.table()
 		if err != nil {
@@ -84,6 +129,13 @@ func TestTables(t *testing.T) {
 		if len(recs) != c.lines {
 			t.Errorf("%d %s, want %d", len(recs), c.name, c.lines)
 		}
+	}
+	table, err := g.Products()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if daily, _ := g.Layouts.Product.Text(table[3], "PR-ﾆｭｳｲﾝﾆﾁｶﾞｸﾘﾂ"); daily != "1000" {
+		t.Errorf("the medical policy's daily benefit per 1,000 yen is written %q, want 1000, a yen", daily)
 	}
 	if r := products[0].rate(1, 40); r != 400 {
 		t.Errorf("a man of 40 pays %d hundredths per 1,000 yen of whole life, want 400", r)
@@ -101,12 +153,15 @@ func TestTables(t *testing.T) {
 
 func TestDays(t *testing.T) {
 	g := generator(t)
-	extract, err := g.Extract(2000, opening)
+	extract, coverages, err := g.Extract(2000, opening)
 	if err != nil {
 		t.Fatal(err)
 	}
 	policies, err := g.ReadPolicies(extract)
 	if err != nil {
+		t.Fatal(err)
+	}
+	if err := g.ReadCoverages(policies, coverages); err != nil {
 		t.Fatal(err)
 	}
 	newBusiness, claims, changes, loans := 0, 0, 0, 0

@@ -15,7 +15,8 @@
     "2003-10-06 MS  GL-0310 営業システムの新契約ファイル。",
     "2011-02-14 YN  GL-0520 契約変更に復活。",
     "2012-09-03 YN  GL-0561 契約者貸付。",
-    "2026-11-16 YN  GL-0822 給付履歴。"
+    "2026-11-16 YN  GL-0822 給付履歴。",
+    "2026-11-18 YN  GL-0825 保障マスタ。"
   ],
   "steps": [
     {
@@ -28,7 +29,7 @@
       "description": [
         "新契約登録"
       ],
-      "source": "gondwana/scripts/DAILY.BAT:32",
+      "source": "gondwana/scripts/DAILY.BAT:34",
       "dds": [
         {
           "dd": "NEWPOL",
@@ -40,7 +41,7 @@
             "read"
           ],
           "copybook": "NEWPOL",
-          "source": "gondwana/scripts/DAILY.BAT:32"
+          "source": "gondwana/scripts/DAILY.BAT:34"
         },
         {
           "dd": "POLMST",
@@ -53,7 +54,20 @@
             "update"
           ],
           "copybook": "POLMST",
-          "source": "gondwana/scripts/DAILY.BAT:32"
+          "source": "gondwana/scripts/DAILY.BAT:34"
+        },
+        {
+          "dd": "COVMST",
+          "datasets": [
+            "$DATA/MASTER/COVMST.IDX"
+          ],
+          "indexed": true,
+          "file": "COVMST-F",
+          "uses": [
+            "update"
+          ],
+          "copybook": "COVMST",
+          "source": "gondwana/scripts/DAILY.BAT:34"
         },
         {
           "dd": "PRODTB",
@@ -65,7 +79,7 @@
             "read"
           ],
           "copybook": "PRODTB",
-          "source": "gondwana/scripts/DAILY.BAT:32"
+          "source": "gondwana/scripts/DAILY.BAT:34"
         },
         {
           "dd": "RATETB",
@@ -77,7 +91,7 @@
             "read"
           ],
           "copybook": "RATETB",
-          "source": "gondwana/scripts/DAILY.BAT:32"
+          "source": "gondwana/scripts/DAILY.BAT:34"
         },
         {
           "dd": "GLSCTL",
@@ -89,7 +103,7 @@
             "update"
           ],
           "copybook": "CTLREC",
-          "source": "gondwana/scripts/DAILY.BAT:32"
+          "source": "gondwana/scripts/DAILY.BAT:34"
         },
         {
           "dd": "GLJRNL",
@@ -101,7 +115,7 @@
             "append"
           ],
           "copybook": "GLJRNL",
-          "source": "gondwana/scripts/DAILY.BAT:32"
+          "source": "gondwana/scripts/DAILY.BAT:34"
         },
         {
           "dd": "NEWREJ",
@@ -112,7 +126,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/DAILY.BAT:32"
+          "source": "gondwana/scripts/DAILY.BAT:34"
         },
         {
           "dd": "GLD010R",
@@ -123,7 +137,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/DAILY.BAT:32"
+          "source": "gondwana/scripts/DAILY.BAT:34"
         },
         {
           "dd": "stdout",
@@ -133,7 +147,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/DAILY.BAT:32"
+          "source": "gondwana/scripts/DAILY.BAT:34"
         }
       ]
     },
@@ -147,7 +161,7 @@
       "description": [
         "契約応当日処理"
       ],
-      "source": "gondwana/scripts/DAILY.BAT:38",
+      "source": "gondwana/scripts/DAILY.BAT:40",
       "dds": [
         {
           "dd": "POLMST",
@@ -160,7 +174,20 @@
             "update"
           ],
           "copybook": "POLMST",
-          "source": "gondwana/scripts/DAILY.BAT:38"
+          "source": "gondwana/scripts/DAILY.BAT:40"
+        },
+        {
+          "dd": "COVMST",
+          "datasets": [
+            "$DATA/MASTER/COVMST.IDX"
+          ],
+          "indexed": true,
+          "file": "COVMST-F",
+          "uses": [
+            "update"
+          ],
+          "copybook": "COVMST",
+          "source": "gondwana/scripts/DAILY.BAT:40"
         },
         {
           "dd": "PRODTB",
@@ -172,7 +199,7 @@
             "read"
           ],
           "copybook": "PRODTB",
-          "source": "gondwana/scripts/DAILY.BAT:38"
+          "source": "gondwana/scripts/DAILY.BAT:40"
         },
         {
           "dd": "RATETB",
@@ -184,7 +211,7 @@
             "read"
           ],
           "copybook": "RATETB",
-          "source": "gondwana/scripts/DAILY.BAT:38"
+          "source": "gondwana/scripts/DAILY.BAT:40"
         },
         {
           "dd": "GLSCTL",
@@ -196,7 +223,7 @@
             "update"
           ],
           "copybook": "CTLREC",
-          "source": "gondwana/scripts/DAILY.BAT:38"
+          "source": "gondwana/scripts/DAILY.BAT:40"
         },
         {
           "dd": "PAYOUT",
@@ -208,7 +235,7 @@
             "append"
           ],
           "copybook": "PAYOUT",
-          "source": "gondwana/scripts/DAILY.BAT:38"
+          "source": "gondwana/scripts/DAILY.BAT:40"
         },
         {
           "dd": "GLJRNL",
@@ -220,7 +247,7 @@
             "append"
           ],
           "copybook": "GLJRNL",
-          "source": "gondwana/scripts/DAILY.BAT:38"
+          "source": "gondwana/scripts/DAILY.BAT:40"
         },
         {
           "dd": "GLD020R",
@@ -231,7 +258,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/DAILY.BAT:38"
+          "source": "gondwana/scripts/DAILY.BAT:40"
         },
         {
           "dd": "CSVTB",
@@ -244,7 +271,7 @@
             "read"
           ],
           "copybook": "CSVTB",
-          "source": "gondwana/scripts/DAILY.BAT:38"
+          "source": "gondwana/scripts/DAILY.BAT:40"
         },
         {
           "dd": "stdout",
@@ -254,7 +281,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/DAILY.BAT:38"
+          "source": "gondwana/scripts/DAILY.BAT:40"
         }
       ]
     },
@@ -268,7 +295,7 @@
       "description": [
         "給付支払"
       ],
-      "source": "gondwana/scripts/DAILY.BAT:47",
+      "source": "gondwana/scripts/DAILY.BAT:49",
       "dds": [
         {
           "dd": "CLMREQ",
@@ -280,7 +307,7 @@
             "read"
           ],
           "copybook": "CLMREQ",
-          "source": "gondwana/scripts/DAILY.BAT:47"
+          "source": "gondwana/scripts/DAILY.BAT:49"
         },
         {
           "dd": "POLMST",
@@ -293,7 +320,20 @@
             "update"
           ],
           "copybook": "POLMST",
-          "source": "gondwana/scripts/DAILY.BAT:47"
+          "source": "gondwana/scripts/DAILY.BAT:49"
+        },
+        {
+          "dd": "COVMST",
+          "datasets": [
+            "$DATA/MASTER/COVMST.IDX"
+          ],
+          "indexed": true,
+          "file": "COVMST-F",
+          "uses": [
+            "update"
+          ],
+          "copybook": "COVMST",
+          "source": "gondwana/scripts/DAILY.BAT:49"
         },
         {
           "dd": "PRODTB",
@@ -305,7 +345,7 @@
             "read"
           ],
           "copybook": "PRODTB",
-          "source": "gondwana/scripts/DAILY.BAT:47"
+          "source": "gondwana/scripts/DAILY.BAT:49"
         },
         {
           "dd": "GLSCTL",
@@ -317,7 +357,7 @@
             "update"
           ],
           "copybook": "CTLREC",
-          "source": "gondwana/scripts/DAILY.BAT:47"
+          "source": "gondwana/scripts/DAILY.BAT:49"
         },
         {
           "dd": "PAYOUT",
@@ -329,7 +369,7 @@
             "append"
           ],
           "copybook": "PAYOUT",
-          "source": "gondwana/scripts/DAILY.BAT:47"
+          "source": "gondwana/scripts/DAILY.BAT:49"
         },
         {
           "dd": "GLJRNL",
@@ -341,7 +381,7 @@
             "append"
           ],
           "copybook": "GLJRNL",
-          "source": "gondwana/scripts/DAILY.BAT:47"
+          "source": "gondwana/scripts/DAILY.BAT:49"
         },
         {
           "dd": "CLMREJ",
@@ -352,7 +392,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/DAILY.BAT:47"
+          "source": "gondwana/scripts/DAILY.BAT:49"
         },
         {
           "dd": "BENHST",
@@ -365,7 +405,7 @@
             "update"
           ],
           "copybook": "BENHST",
-          "source": "gondwana/scripts/DAILY.BAT:47"
+          "source": "gondwana/scripts/DAILY.BAT:49"
         },
         {
           "dd": "GLD030R",
@@ -376,7 +416,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/DAILY.BAT:47"
+          "source": "gondwana/scripts/DAILY.BAT:49"
         },
         {
           "dd": "CSVTB",
@@ -389,7 +429,7 @@
             "read"
           ],
           "copybook": "CSVTB",
-          "source": "gondwana/scripts/DAILY.BAT:47"
+          "source": "gondwana/scripts/DAILY.BAT:49"
         },
         {
           "dd": "stdout",
@@ -399,7 +439,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/DAILY.BAT:47"
+          "source": "gondwana/scripts/DAILY.BAT:49"
         }
       ]
     },
@@ -413,7 +453,7 @@
       "description": [
         "契約変更"
       ],
-      "source": "gondwana/scripts/DAILY.BAT:55",
+      "source": "gondwana/scripts/DAILY.BAT:57",
       "dds": [
         {
           "dd": "MNTREQ",
@@ -425,7 +465,7 @@
             "read"
           ],
           "copybook": "MNTREQ",
-          "source": "gondwana/scripts/DAILY.BAT:55"
+          "source": "gondwana/scripts/DAILY.BAT:57"
         },
         {
           "dd": "POLMST",
@@ -438,7 +478,20 @@
             "update"
           ],
           "copybook": "POLMST",
-          "source": "gondwana/scripts/DAILY.BAT:55"
+          "source": "gondwana/scripts/DAILY.BAT:57"
+        },
+        {
+          "dd": "COVMST",
+          "datasets": [
+            "$DATA/MASTER/COVMST.IDX"
+          ],
+          "indexed": true,
+          "file": "COVMST-F",
+          "uses": [
+            "update"
+          ],
+          "copybook": "COVMST",
+          "source": "gondwana/scripts/DAILY.BAT:57"
         },
         {
           "dd": "GLSCTL",
@@ -450,7 +503,7 @@
             "update"
           ],
           "copybook": "CTLREC",
-          "source": "gondwana/scripts/DAILY.BAT:55"
+          "source": "gondwana/scripts/DAILY.BAT:57"
         },
         {
           "dd": "GLJRNL",
@@ -462,7 +515,7 @@
             "append"
           ],
           "copybook": "GLJRNL",
-          "source": "gondwana/scripts/DAILY.BAT:55"
+          "source": "gondwana/scripts/DAILY.BAT:57"
         },
         {
           "dd": "MNTREJ",
@@ -473,7 +526,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/DAILY.BAT:55"
+          "source": "gondwana/scripts/DAILY.BAT:57"
         },
         {
           "dd": "GLD040R",
@@ -484,7 +537,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/DAILY.BAT:55"
+          "source": "gondwana/scripts/DAILY.BAT:57"
         },
         {
           "dd": "stdout",
@@ -494,7 +547,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/DAILY.BAT:55"
+          "source": "gondwana/scripts/DAILY.BAT:57"
         }
       ]
     },
@@ -508,7 +561,7 @@
       "description": [
         "失効処理"
       ],
-      "source": "gondwana/scripts/DAILY.BAT:61",
+      "source": "gondwana/scripts/DAILY.BAT:63",
       "dds": [
         {
           "dd": "POLMST",
@@ -521,7 +574,7 @@
             "update"
           ],
           "copybook": "POLMST",
-          "source": "gondwana/scripts/DAILY.BAT:61"
+          "source": "gondwana/scripts/DAILY.BAT:63"
         },
         {
           "dd": "GLSCTL",
@@ -533,7 +586,7 @@
             "update"
           ],
           "copybook": "CTLREC",
-          "source": "gondwana/scripts/DAILY.BAT:61"
+          "source": "gondwana/scripts/DAILY.BAT:63"
         },
         {
           "dd": "GLJRNL",
@@ -545,7 +598,7 @@
             "append"
           ],
           "copybook": "GLJRNL",
-          "source": "gondwana/scripts/DAILY.BAT:61"
+          "source": "gondwana/scripts/DAILY.BAT:63"
         },
         {
           "dd": "GLD060R",
@@ -556,7 +609,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/DAILY.BAT:61"
+          "source": "gondwana/scripts/DAILY.BAT:63"
         },
         {
           "dd": "CSVTB",
@@ -569,7 +622,7 @@
             "read"
           ],
           "copybook": "CSVTB",
-          "source": "gondwana/scripts/DAILY.BAT:61"
+          "source": "gondwana/scripts/DAILY.BAT:63"
         },
         {
           "dd": "stdout",
@@ -579,7 +632,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/DAILY.BAT:61"
+          "source": "gondwana/scripts/DAILY.BAT:63"
         }
       ]
     },
@@ -593,7 +646,7 @@
       "description": [
         "契約者貸付"
       ],
-      "source": "gondwana/scripts/DAILY.BAT:69",
+      "source": "gondwana/scripts/DAILY.BAT:71",
       "dds": [
         {
           "dd": "LONREQ",
@@ -605,7 +658,7 @@
             "read"
           ],
           "copybook": "LONREQ",
-          "source": "gondwana/scripts/DAILY.BAT:69"
+          "source": "gondwana/scripts/DAILY.BAT:71"
         },
         {
           "dd": "POLMST",
@@ -618,7 +671,7 @@
             "update"
           ],
           "copybook": "POLMST",
-          "source": "gondwana/scripts/DAILY.BAT:69"
+          "source": "gondwana/scripts/DAILY.BAT:71"
         },
         {
           "dd": "GLSCTL",
@@ -630,7 +683,7 @@
             "update"
           ],
           "copybook": "CTLREC",
-          "source": "gondwana/scripts/DAILY.BAT:69"
+          "source": "gondwana/scripts/DAILY.BAT:71"
         },
         {
           "dd": "PAYOUT",
@@ -642,7 +695,7 @@
             "append"
           ],
           "copybook": "PAYOUT",
-          "source": "gondwana/scripts/DAILY.BAT:69"
+          "source": "gondwana/scripts/DAILY.BAT:71"
         },
         {
           "dd": "GLJRNL",
@@ -654,7 +707,7 @@
             "append"
           ],
           "copybook": "GLJRNL",
-          "source": "gondwana/scripts/DAILY.BAT:69"
+          "source": "gondwana/scripts/DAILY.BAT:71"
         },
         {
           "dd": "LONREJ",
@@ -665,7 +718,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/DAILY.BAT:69"
+          "source": "gondwana/scripts/DAILY.BAT:71"
         },
         {
           "dd": "GLD070R",
@@ -676,7 +729,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/DAILY.BAT:69"
+          "source": "gondwana/scripts/DAILY.BAT:71"
         },
         {
           "dd": "CSVTB",
@@ -689,7 +742,7 @@
             "read"
           ],
           "copybook": "CSVTB",
-          "source": "gondwana/scripts/DAILY.BAT:69"
+          "source": "gondwana/scripts/DAILY.BAT:71"
         },
         {
           "dd": "stdout",
@@ -699,7 +752,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/DAILY.BAT:69"
+          "source": "gondwana/scripts/DAILY.BAT:71"
         }
       ]
     },
@@ -714,7 +767,7 @@
       "description": [
         "契約マスタのアンロードと制御レコードの更新"
       ],
-      "source": "gondwana/scripts/DAILY.BAT:74",
+      "source": "gondwana/scripts/DAILY.BAT:76",
       "dds": null
     }
   ],
@@ -747,6 +800,24 @@
         "GLD040",
         "GLD060",
         "GLD070"
+      ]
+    },
+    {
+      "dataset": "$DATA/MASTER/COVMST.IDX",
+      "copybook": "COVMST",
+      "kind": "internal",
+      "indexed": true,
+      "writtenBy": [
+        "GLD010",
+        "GLD020",
+        "GLD030",
+        "GLD040"
+      ],
+      "readBy": [
+        "GLD010",
+        "GLD020",
+        "GLD030",
+        "GLD040"
       ]
     },
     {

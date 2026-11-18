@@ -42,7 +42,7 @@ func New(in insurer.Insurer) (*Server, error) {
 		return nil, err
 	}
 	s := &Server{insurer: in, layouts: layouts, pages: map[string]*template.Template{}}
-	funcs := template.FuncMap{"yen": yen, "count": count, "size": size}
+	funcs := template.FuncMap{"yen": yen, "count": count, "size": size, "coverageStatus": coverageStatus, "dateOrNone": dateOrNone}
 	for _, page := range []string{"overview", "noinsurer", "policies", "policy", "day", "error"} {
 		t, err := template.New("").Funcs(funcs).ParseFS(files, "templates/base.html", "templates/"+page+".html")
 		if err != nil {

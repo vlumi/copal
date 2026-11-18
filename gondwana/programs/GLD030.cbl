@@ -7,14 +7,18 @@
       * 日以後で業務日付以前であること、契約の状態。死亡・入院は
       * 事由発生日に保障中であったこと: いま保障中 (有効・猶予中)
       * か、失効中でも事由が失効日より前。解約は失効中でもよい。
-      * 死亡: 医療保険には死亡保障がない。保険金額に配当累計を
+      * 保障は保障マスタ COVMST から: 事由発生日に有効であった
+      * 保障、つまりいま有効か、消滅日が事由より後の保障による。
+      * 死亡: 医療以外の保障 (主契約と定期特約) の保険金額の合計。
+      * そのような保障のない契約には死亡保障がない。これに配当累計を
       * 加え、貸付残高と未納保険料 (月払は払込済年月の翌月から
       * 事由の月まで、年払は有効でなければ1回分) を引いた額。支払済
       * とする。契約日または復活日から3年以内の自殺は免責で、
       * 保険金に代えて解約返戻金を支払う。
-      * 入院: 医療保険に限る。日数は 1 以上、1入院 120 日まで、
-      * 通算 1,000 日まで。契約日から免責日数の間の入院は支払わ
-      * ない。日額は保険金額に入院日額率を掛けて 1,000 で割った額。
+      * 入院: 医療の保障 (医療保険の主契約か入院特約) のある契約に
+      * 限る。日数は 1 以上、1入院 120 日まで、通算 1,000 日まで。
+      * その保障の契約日から免責日数の間の入院は支払わない。日額は
+      * その保障の保険金額に入院日額率を掛けて 1,000 で割った額。
       * 契約はそのまま。
       * 手術: 入院と同じ検査。日数欄の倍率 (10, 20, 40) を日額に
       * 掛けた額。
@@ -22,7 +26,9 @@
       * 発生日の同じ種別の請求は二重請求として却下する。
       * 解約: 解約返戻金 (GLC030: 商品・加入年齢区分・経過年数の
       * 係数を保険金額 1,000 円あたりに掛けた額) から貸付残高を
-      * 引いた額。0 以下なら支払なしで解約とする。
+      * 引いた額。0 以下なら支払なしで解約とする。特約に返戻金は
+      * ない。
+      * 死亡と解約では、契約の有効な保障をすべて消滅か解約とする。
       * 貸付残高は業務日付までの利息 (GLC040) を繰り入れた上で、
       * 支払時に回収し、仕訳する。
       *
@@ -38,6 +44,7 @@
       * 2026-11-16 YN   GL-0821 事由発生日時点の保障、未納保険料の
       *                         差引、自殺免責、医療保険の死亡請求。
       * 2026-11-16 YN   GL-0822 給付履歴、通算日数、手術給付金。
+      * 2026-11-18 YN   GL-0825 保障マスタ: 特約の死亡保障と入院。
       *----------------------------------------------------------------
        IDENTIFICATION DIVISION.
        PROGRAM-ID. GLD030.
@@ -55,6 +62,11 @@
                ACCESS MODE IS RANDOM
                RECORD KEY IS PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ
                FILE STATUS IS WS-POLMST-ST.
+           SELECT COVMST-F ASSIGN TO "COVMST"
+               ORGANIZATION IS INDEXED
+               ACCESS MODE IS DYNAMIC
+               RECORD KEY IS HS-ｷｰ
+               FILE STATUS IS WS-COVMST-ST.
            SELECT PRODTB-F ASSIGN TO "PRODTB"
                ORGANIZATION IS LINE SEQUENTIAL
                FILE STATUS IS WS-PRODTB-ST.
@@ -85,6 +97,8 @@
        COPY CLMREQ.
        FD  POLMST-F.
        COPY POLMST.
+       FD  COVMST-F.
+       COPY COVMST.
        FD  PRODTB-F.
        COPY PRODTB.
        FD  GLSCTL-F
@@ -112,6 +126,9 @@
            05  WS-POLMST-ST            PIC XX.
                88  WS-POLMST-OK                VALUE "00".
                88  WS-POLMST-ﾅｼ                VALUE "23".
+           05  WS-COVMST-ST            PIC XX.
+               88  WS-COVMST-OK                VALUE "00".
+               88  WS-COVMST-ｵﾜﾘ               VALUE "10" "23".
            05  WS-PRODTB-ST            PIC XX.
                88  WS-PRODTB-OK                VALUE "00".
                88  WS-PRODTB-ｵﾜﾘ               VALUE "10".
@@ -161,7 +178,18 @@
        01  WS-ｷﾝｶﾞｸ                    PIC S9(11).
        01  WS-ﾍﾝﾚｲｷﾝ                   PIC 9(9).
        01  WS-ﾘｿｸ                      PIC 9(9).
-       01  WS-ｼﾊﾗｲｼｭﾍﾞﾂ                PIC X.
+       01  WS-ｼﾎﾞｳｷﾝｶﾞｸ                PIC 9(11).
+       01  WS-ｼｮｳﾒﾂﾋﾞ                  PIC 9(8).
+       01  WS-ﾎｼｮｳ-ﾊﾝﾃｲ                PIC X.
+           88  WS-ﾎｼｮｳ-ｱﾘ                      VALUE "Y".
+           88  WS-ﾎｼｮｳ-ﾅｼ                      VALUE "N".
+       01  WS-ﾆｭｳｲﾝﾎｼｮｳ.
+           05  WS-ﾆｭｳｲﾝﾎｼｮｳ-ﾊﾝﾃｲ       PIC X.
+               88  WS-ﾆｭｳｲﾝﾎｼｮｳ-ｱﾘ             VALUE "Y".
+               88  WS-ﾆｭｳｲﾝﾎｼｮｳ-ﾅｼ             VALUE "N".
+           05  WS-ﾆｭｳｲﾝﾎｼｮｳ-ｷﾝｶﾞｸ      PIC 9(9).
+           05  WS-ﾆｭｳｲﾝﾎｼｮｳ-ｹｲﾔｸﾋﾞ     PIC 9(8).
+           05  WS-ﾆｭｳｲﾝﾎｼｮｳ-ｿｴｼﾞ       PIC 99.
        COPY TBLWS.
        01  WS-ｹﾝｽｳ.
            05  WS-ﾖﾐｺﾐｹﾝｽｳ             PIC 9(7) VALUE 0.
@@ -247,7 +275,7 @@
                STOP RUN
            END-IF
            OPEN INPUT CLMREQ-F PRODTB-F
-           OPEN I-O POLMST-F GLSCTL-F BENHST-F
+           OPEN I-O POLMST-F COVMST-F GLSCTL-F BENHST-F
            OPEN EXTEND PAYOUT-F GLJRNL-F
            OPEN OUTPUT REJECT-F REPORT-F
            PERFORM ｵｰﾌﾟﾝ-ｹﾝｻ-RTN
@@ -279,6 +307,9 @@
                WHEN NOT WS-POLMST-OK
                    MOVE "POLMST" TO WS-ｴﾗｰﾌｧｲﾙ
                    MOVE WS-POLMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
+               WHEN NOT WS-COVMST-OK
+                   MOVE "COVMST" TO WS-ｴﾗｰﾌｧｲﾙ
+                   MOVE WS-COVMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
                WHEN NOT WS-GLSCTL-OK
                    MOVE "GLSCTL" TO WS-ｴﾗｰﾌｧｲﾙ
                    MOVE WS-GLSCTL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
@@ -392,7 +423,7 @@
                END-EVALUATE
            END-IF
            IF WS-ﾘﾕｳ-ﾅｼ AND NOT CR-ｶｲﾔｸ
-               PERFORM ｼｮｳﾋﾝ-ｹﾝｻ-RTN
+               PERFORM ﾎｼｮｳ-ｿｳｻ-RTN
            END-IF.
 
       *----------------------------------------------------------------
@@ -414,42 +445,94 @@
            END-EVALUATE.
 
       *----------------------------------------------------------------
-      * ｼｮｳﾋﾝ-ｹﾝｻ-RTN: 商品を引き、医療保険の死亡請求は却下、入院
-      * と手術の請求は入院の検査へ。
+      * ﾎｼｮｳ-ｿｳｻ-RTN: 契約の保障を保障番号順にたどり、事由発生日に
+      * 有効であった保障から死亡保険金額の合計と入院の保障を求める。
+      * 死亡保障のない契約の死亡請求は却下、入院と手術の請求は入院
+      * の検査へ。
       *----------------------------------------------------------------
-       ｼｮｳﾋﾝ-ｹﾝｻ-RTN.
-           SET WS-ｼｮｳﾋﾝ-IX TO 1
-           SEARCH WS-ｼｮｳﾋﾝ
-               WHEN WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ
-                   CONTINUE
-           END-SEARCH
+       ﾎｼｮｳ-ｿｳｻ-RTN.
+           MOVE 0 TO WS-ｼﾎﾞｳｷﾝｶﾞｸ
+           SET WS-ﾆｭｳｲﾝﾎｼｮｳ-ﾅｼ TO TRUE
+           MOVE CR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ TO HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ
+           MOVE 0 TO HS-ﾎｼｮｳﾊﾞﾝｺﾞｳ
+           START COVMST-F KEY NOT < HS-ｷｰ
+           IF WS-COVMST-OK
+               READ COVMST-F NEXT
+           END-IF
+           PERFORM UNTIL NOT WS-COVMST-OK
+                   OR HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ NOT = CR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ
+               PERFORM ﾎｼｮｳ-ﾊﾝﾃｲ-RTN
+               READ COVMST-F NEXT
+           END-PERFORM
+           IF NOT WS-COVMST-OK AND NOT WS-COVMST-ｵﾜﾘ
+               MOVE "COVMST" TO WS-ｴﾗｰﾌｧｲﾙ
+               MOVE WS-COVMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
+               PERFORM ｲｼﾞｮｳ-RTN
+           END-IF
            EVALUATE TRUE
-               WHEN CR-ｼﾎﾞｳ AND WS-ｼｮｳﾋﾝ-ｲﾘｮｳ(WS-ｼｮｳﾋﾝ-IX)
+               WHEN CR-ｼﾎﾞｳ AND WS-ｼﾎﾞｳｷﾝｶﾞｸ = 0
                    SET WS-ｼﾎﾞｳﾎｼｮｳ-ﾅｼ TO TRUE
                WHEN CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ
                    PERFORM ﾆｭｳｲﾝ-ｹﾝｻ-RTN
            END-EVALUATE.
 
       *----------------------------------------------------------------
-      * ﾆｭｳｲﾝ-ｹﾝｻ-RTN: 医療保険であること、日数か倍率、免責期間、
-      * 次いで給付履歴。
+      * ﾎｼｮｳ-ﾊﾝﾃｲ-RTN: 保障1件。事由発生日に有効であったなら、医療
+      * の保障は最初の1件を入院の保障とし、ほかは保険金額を死亡
+      * 保険金額に加える。
+      *----------------------------------------------------------------
+       ﾎｼｮｳ-ﾊﾝﾃｲ-RTN.
+           SET WS-ﾎｼｮｳ-ｱﾘ TO TRUE
+           IF NOT HS-ﾕｳｺｳ
+               CALL "GLC020" USING WS-ﾎｳｺｳ WS-ｼｮｳﾒﾂﾋﾞ
+                                   HS-ｼｮｳﾒﾂﾋﾞ WS-ﾍﾝｶﾝｹｯｶ
+               IF WS-ｼﾞﾕｳﾋﾞ NOT < WS-ｼｮｳﾒﾂﾋﾞ
+                   SET WS-ﾎｼｮｳ-ﾅｼ TO TRUE
+               END-IF
+           END-IF
+           IF WS-ﾎｼｮｳ-ｱﾘ
+               SET WS-ｼｮｳﾋﾝ-IX TO 1
+               SEARCH WS-ｼｮｳﾋﾝ
+                   WHEN WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = HS-ｼｮｳﾋﾝ
+                       CONTINUE
+               END-SEARCH
+               EVALUATE TRUE
+                   WHEN NOT WS-ｼｮｳﾋﾝ-ｲﾘｮｳ(WS-ｼｮｳﾋﾝ-IX)
+                       ADD HS-ﾎｹﾝｷﾝｶﾞｸ TO WS-ｼﾎﾞｳｷﾝｶﾞｸ
+                   WHEN WS-ﾆｭｳｲﾝﾎｼｮｳ-ﾅｼ
+                       SET WS-ﾆｭｳｲﾝﾎｼｮｳ-ｱﾘ TO TRUE
+                       MOVE HS-ﾎｹﾝｷﾝｶﾞｸ TO WS-ﾆｭｳｲﾝﾎｼｮｳ-ｷﾝｶﾞｸ
+                       SET WS-ﾆｭｳｲﾝﾎｼｮｳ-ｿｴｼﾞ TO WS-ｼｮｳﾋﾝ-IX
+                       CALL "GLC020" USING WS-ﾎｳｺｳ
+                                           WS-ﾆｭｳｲﾝﾎｼｮｳ-ｹｲﾔｸﾋﾞ
+                                           HS-ｹｲﾔｸﾋﾞ WS-ﾍﾝｶﾝｹｯｶ
+               END-EVALUATE
+           END-IF.
+
+      *----------------------------------------------------------------
+      * ﾆｭｳｲﾝ-ｹﾝｻ-RTN: 入院の保障があること、日数か倍率、その保障の
+      * 免責期間、次いで給付履歴。
       *----------------------------------------------------------------
        ﾆｭｳｲﾝ-ｹﾝｻ-RTN.
-           COMPUTE WS-ｹｲｶﾆｯｽｳ = FUNCTION INTEGER-OF-DATE(WS-ｼﾞﾕｳﾋﾞ)
-                             - FUNCTION INTEGER-OF-DATE(WS-ｹｲﾔｸﾋﾞ)
-           EVALUATE TRUE
-               WHEN NOT WS-ｼｮｳﾋﾝ-ｲﾘｮｳ(WS-ｼｮｳﾋﾝ-IX)
-                   SET WS-ﾆｭｳｲﾝ-ﾀｲｼｮｳｶﾞｲ TO TRUE
-               WHEN CR-ﾆｭｳｲﾝ AND CR-ﾆｯｽｳ = 0
-                   SET WS-ﾆｯｽｳ-ﾌｾｲ TO TRUE
-               WHEN CR-ｼｭｼﾞｭﾂ AND CR-ﾆｯｽｳ NOT = 10
-                       AND CR-ﾆｯｽｳ NOT = 20 AND CR-ﾆｯｽｳ NOT = 40
-                   SET WS-ﾊﾞｲﾘﾂ-ﾌｾｲ TO TRUE
-               WHEN WS-ｹｲｶﾆｯｽｳ < WS-ｼｮｳﾋﾝ-ﾒﾝｾｷﾆｯｽｳ(WS-ｼｮｳﾋﾝ-IX)
-                   SET WS-ﾒﾝｾｷｷｶﾝ TO TRUE
-               WHEN OTHER
-                   PERFORM ﾘﾚｷ-ｹﾝｻ-RTN
-           END-EVALUATE.
+           IF WS-ﾆｭｳｲﾝﾎｼｮｳ-ﾅｼ
+               SET WS-ﾆｭｳｲﾝ-ﾀｲｼｮｳｶﾞｲ TO TRUE
+           ELSE
+               COMPUTE WS-ｹｲｶﾆｯｽｳ
+                   = FUNCTION INTEGER-OF-DATE(WS-ｼﾞﾕｳﾋﾞ)
+                   - FUNCTION INTEGER-OF-DATE(WS-ﾆｭｳｲﾝﾎｼｮｳ-ｹｲﾔｸﾋﾞ)
+               EVALUATE TRUE
+                   WHEN CR-ﾆｭｳｲﾝ AND CR-ﾆｯｽｳ = 0
+                       SET WS-ﾆｯｽｳ-ﾌｾｲ TO TRUE
+                   WHEN CR-ｼｭｼﾞｭﾂ AND CR-ﾆｯｽｳ NOT = 10
+                           AND CR-ﾆｯｽｳ NOT = 20 AND CR-ﾆｯｽｳ NOT = 40
+                       SET WS-ﾊﾞｲﾘﾂ-ﾌｾｲ TO TRUE
+                   WHEN WS-ｹｲｶﾆｯｽｳ
+                           < WS-ｼｮｳﾋﾝ-ﾒﾝｾｷﾆｯｽｳ(WS-ﾆｭｳｲﾝﾎｼｮｳ-ｿｴｼﾞ)
+                       SET WS-ﾒﾝｾｷｷｶﾝ TO TRUE
+                   WHEN OTHER
+                       PERFORM ﾘﾚｷ-ｹﾝｻ-RTN
+               END-EVALUATE
+           END-IF.
 
       *----------------------------------------------------------------
       * ﾘﾚｷ-ｹﾝｻ-RTN: 契約の給付履歴を連番順にたどり、入院の通算
@@ -506,6 +589,7 @@
                PERFORM ﾘﾚｷ-ｶｷｺﾐ-RTN
            ELSE
                MOVE WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ TO PM-ｼﾞｮｳﾀｲﾋﾂﾞｹ
+               PERFORM ﾎｼｮｳ-ｼｭｳﾘｮｳ-RTN
            END-IF
            REWRITE PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ
            IF NOT WS-POLMST-OK
@@ -518,8 +602,8 @@
            PERFORM ﾒｲｻｲ-RTN.
 
       *----------------------------------------------------------------
-      * ｼﾎﾞｳ-RTN: 免責でなければ、保険金額に配当累計を加え、貸付
-      * 残高と未納保険料を引く。
+      * ｼﾎﾞｳ-RTN: 免責でなければ、死亡保険金額に配当累計を加え、
+      * 貸付残高と未納保険料を引く。
       *----------------------------------------------------------------
        ｼﾎﾞｳ-RTN.
            PERFORM ﾘｿｸ-RTN
@@ -528,10 +612,10 @@
                PERFORM ﾒﾝｾｷ-RTN
            ELSE
                PERFORM ﾐﾉｳ-RTN
-               COMPUTE WS-ｷﾝｶﾞｸ = PM-ﾎｹﾝｷﾝｶﾞｸ + PM-ﾊｲﾄｳﾙｲｹｲ
+               COMPUTE WS-ｷﾝｶﾞｸ = WS-ｼﾎﾞｳｷﾝｶﾞｸ + PM-ﾊｲﾄｳﾙｲｹｲ
                                - PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ - WS-ﾐﾉｳｶﾞｸ
                MOVE 5110 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
-               MOVE PM-ﾎｹﾝｷﾝｶﾞｸ TO JR-ｷﾝｶﾞｸ
+               MOVE WS-ｼﾎﾞｳｷﾝｶﾞｸ TO JR-ｷﾝｶﾞｸ
                SET JR-ｶﾘｶﾀ TO TRUE
                MOVE "死亡保険金" TO JR-ﾃｷﾖｳ
                PERFORM ｼﾜｹ-RTN
@@ -647,8 +731,8 @@
            IF WS-ﾂｳｻﾝﾆｯｽｳ + WS-ﾆｯｽｳ > 1000
                COMPUTE WS-ﾆｯｽｳ = 1000 - WS-ﾂｳｻﾝﾆｯｽｳ
            END-IF
-           COMPUTE WS-ﾆﾁｶﾞｸ = PM-ﾎｹﾝｷﾝｶﾞｸ
-               * WS-ｼｮｳﾋﾝ-ﾆｭｳｲﾝﾆﾁｶﾞｸﾘﾂ(WS-ｼｮｳﾋﾝ-IX) / 1000
+           COMPUTE WS-ﾆﾁｶﾞｸ = WS-ﾆｭｳｲﾝﾎｼｮｳ-ｷﾝｶﾞｸ
+               * WS-ｼｮｳﾋﾝ-ﾆｭｳｲﾝﾆﾁｶﾞｸﾘﾂ(WS-ﾆｭｳｲﾝﾎｼｮｳ-ｿｴｼﾞ) / 1000
            COMPUTE WS-ｷﾝｶﾞｸ = WS-ﾆﾁｶﾞｸ * WS-ﾆｯｽｳ
            MOVE 5120 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
            MOVE WS-ｷﾝｶﾞｸ TO JR-ｷﾝｶﾞｸ
@@ -662,8 +746,8 @@
       *----------------------------------------------------------------
        ｼｭｼﾞｭﾂ-RTN.
            MOVE CR-ﾆｯｽｳ TO WS-ﾆｯｽｳ
-           COMPUTE WS-ﾆﾁｶﾞｸ = PM-ﾎｹﾝｷﾝｶﾞｸ
-               * WS-ｼｮｳﾋﾝ-ﾆｭｳｲﾝﾆﾁｶﾞｸﾘﾂ(WS-ｼｮｳﾋﾝ-IX) / 1000
+           COMPUTE WS-ﾆﾁｶﾞｸ = WS-ﾆｭｳｲﾝﾎｼｮｳ-ｷﾝｶﾞｸ
+               * WS-ｼｮｳﾋﾝ-ﾆｭｳｲﾝﾆﾁｶﾞｸﾘﾂ(WS-ﾆｭｳｲﾝﾎｼｮｳ-ｿｴｼﾞ) / 1000
            COMPUTE WS-ｷﾝｶﾞｸ = WS-ﾆﾁｶﾞｸ * WS-ﾆｯｽｳ
            MOVE 5120 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
            MOVE WS-ｷﾝｶﾞｸ TO JR-ｷﾝｶﾞｸ
@@ -700,6 +784,38 @@
            MOVE SPACES TO PM-ｶｼﾂｹｷｻﾝﾋﾞ
            SET PM-ｶｲﾔｸ TO TRUE
            SET PY-ｶｲﾔｸ TO TRUE.
+
+      *----------------------------------------------------------------
+      * ﾎｼｮｳ-ｼｭｳﾘｮｳ-RTN: 死亡か解約で終わった契約の有効な保障を、
+      * 死亡なら消滅、解約なら解約とする。
+      *----------------------------------------------------------------
+       ﾎｼｮｳ-ｼｭｳﾘｮｳ-RTN.
+           MOVE CR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ TO HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ
+           MOVE 0 TO HS-ﾎｼｮｳﾊﾞﾝｺﾞｳ
+           START COVMST-F KEY NOT < HS-ｷｰ
+           IF WS-COVMST-OK
+               READ COVMST-F NEXT
+           END-IF
+           PERFORM UNTIL NOT WS-COVMST-OK
+                   OR HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ NOT = CR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ
+               IF HS-ﾕｳｺｳ
+                   IF CR-ｼﾎﾞｳ
+                       SET HS-ｼｮｳﾒﾂ TO TRUE
+                   ELSE
+                       SET HS-ｶｲﾔｸ TO TRUE
+                   END-IF
+                   MOVE WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ TO HS-ｼｮｳﾒﾂﾋﾞ
+                   REWRITE HS-ﾎｼｮｳ-ﾚｺｰﾄﾞ
+               END-IF
+               IF WS-COVMST-OK
+                   READ COVMST-F NEXT
+               END-IF
+           END-PERFORM
+           IF NOT WS-COVMST-OK AND NOT WS-COVMST-ｵﾜﾘ
+               MOVE "COVMST" TO WS-ｴﾗｰﾌｧｲﾙ
+               MOVE WS-COVMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
+               PERFORM ｲｼﾞｮｳ-RTN
+           END-IF.
 
       *----------------------------------------------------------------
       * ﾘｿｸ-RTN: 業務日付までの貸付利息を残高に繰り入れる。
@@ -817,8 +933,8 @@
                MOVE WS-GLSCTL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
                PERFORM ｲｼﾞｮｳ-RTN
            END-IF
-           CLOSE CLMREQ-F POLMST-F PRODTB-F GLSCTL-F BENHST-F
-                 PAYOUT-F GLJRNL-F REJECT-F REPORT-F
+           CLOSE CLMREQ-F POLMST-F COVMST-F PRODTB-F GLSCTL-F
+                 BENHST-F PAYOUT-F GLJRNL-F REJECT-F REPORT-F
            DISPLAY "GLD030 支払 " WS-ｼﾊﾗｲｹﾝｽｳ
                    " 却下 " WS-ｷｬｯｶｹﾝｽｳ.
 
