@@ -1,9 +1,7 @@
 # GLO010: case 09
 
-The run ended with return code 16.
-
-EXTRACT-F is missing, so opening it fails.
+The run ended with return code 0.
 
 The first case to reach:
 
-- [GLO010, ｼｮｷ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLO010.md#ｼｮｷ-rtn)
+- [GLO010, ﾎｼｮｳﾁｭｳｼｭﾂ-ﾖﾐｺﾐ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLO010.md#ﾎｼｮｳﾁｭｳｼｭﾂ-ﾖﾐｺﾐ-rtn)

@@ -29,13 +29,13 @@ Script [BILLING.BAT](../../../gondwana/scripts/BILLING.BAT): 1 steps.
 
 | Step | Program | Reads | Writes | Stops the script if | Description | Source |
 | --- | --- | --- | --- | --- | --- | --- |
-| GLM010 | [GLM010](../programs/GLM010.md), with $DATE | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/GLSCTL.BIN | $DATA/OUT/PRMREQ.$DATE.DAT, $DATA/MASTER/GLSCTL.BIN, $DATA/RPT/GLM010.$DATE.RPT, $DATA/RPT/GLM010.$DATE.OUT | RC >= 8 | 口座振替依頼ファイルの作成 | [BILLING.BAT:21](../../../gondwana/scripts/BILLING.BAT#L21) |
+| GLM010 | [GLM010](../programs/GLM010.md), with $DATE | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/GLSCTL.BIN | $DATA/MASTER/POLMST.IDX, $DATA/OUT/PRMREQ.$DATE.DAT, $DATA/MASTER/GLSCTL.BIN, $DATA/RPT/GLM010.$DATE.RPT, $DATA/RPT/GLM010.$DATE.OUT | RC >= 8 | 口座振替依頼ファイルの作成 | [BILLING.BAT:21](../../../gondwana/scripts/BILLING.BAT#L21) |
 
 ### GLM010
 
 | Name | File | File in the program | Copybook | Use |
 | --- | --- | --- | --- | --- |
-| POLMST | $DATA/MASTER/POLMST.IDX (indexed) | POLMST-F | [POLMST](../copybooks/POLMST.md) | read |
+| POLMST | $DATA/MASTER/POLMST.IDX (indexed) | POLMST-F | [POLMST](../copybooks/POLMST.md) | update |
 | PRMREQ | $DATA/OUT/PRMREQ.$DATE.DAT | PRMREQ-F | [ZENGIN](../copybooks/ZENGIN.md) | write |
 | GLSCTL | $DATA/MASTER/GLSCTL.BIN | GLSCTL-F | [CTLREC](../copybooks/CTLREC.md) | update |
 | GLM010R | $DATA/RPT/GLM010.$DATE.RPT | REPORT-F | | write |
@@ -47,7 +47,7 @@ Each dataset the job names, the copybook that describes its records, from the pr
 
 | Dataset | Copybook | Written by | Read by |
 | --- | --- | --- | --- |
-| $DATA/MASTER/POLMST.IDX | [POLMST](../copybooks/POLMST.md) | | GLM010 |
+| $DATA/MASTER/POLMST.IDX | [POLMST](../copybooks/POLMST.md) | GLM010 | GLM010 |
 | $DATA/OUT/PRMREQ.$DATE.DAT | [ZENGIN](../copybooks/ZENGIN.md) | GLM010 | |
 | $DATA/MASTER/GLSCTL.BIN | [CTLREC](../copybooks/CTLREC.md) | GLM010 | GLM010 |
 | $DATA/RPT/GLM010.$DATE.RPT | | GLM010 | |
