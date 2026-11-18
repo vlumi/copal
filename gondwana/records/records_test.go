@@ -21,7 +21,8 @@ func TestLoad(t *testing.T) {
 		text   string
 	}{
 		{l.Policy, 300, "PM-ｼﾒｲ", "name"},
-		{l.NewPolicy, 200, "NP-ｹｲﾔｸﾋﾞ", "20260401"},
+		{l.Coverage, 80, "HS-ｼｮｳﾋﾝ", "HR"},
+		{l.NewPolicy, 220, "NP-ｹｲﾔｸﾋﾞ", "20260401"},
 		{l.Change, 180, "MR-ｼｭﾍﾞﾂ", "R"},
 		{l.Claim, 80, "CR-ｼﾞﾕｳﾊｯｾｲﾋﾞ", "R080401"},
 		{l.Transfer, 120, "ZG-D-ｺｷｬｸﾊﾞﾝｺﾞｳ", "2026091001"},

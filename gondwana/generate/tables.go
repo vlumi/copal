@@ -5,7 +5,8 @@ import "math/rand/v2"
 // product is a product the insurer sells, as the product table has it:
 // its kind, the ages it is sold at, its term, the sums it insures, the
 // daily hospitalization benefit per 1,000 yen and the waiting days of a
-// medical policy, and the dividend rate of a participating one.
+// medical policy, the dividend rate of a participating one, and whether
+// it is sold as a rider on another product's policy and not on its own.
 type product struct {
 	code       string
 	name       string
@@ -22,16 +23,29 @@ type product struct {
 	baseRate   int // the monthly premium per 1,000 yen, in hundredths, at the base age
 	baseAge    int
 	ratePerAge int // how much the rate grows a year of entry age, in hundredths
+	rider      bool
 }
 
 var products = []product{
-	{"WL", sjis("終身保険"), 1, 15, 70, 0, 1_000_000, 100_000_000, 0, 0, 20, 45, 260, 20, 7},
-	{"TM", sjis("定期保険"), 2, 20, 60, 10, 1_000_000, 300_000_000, 0, 0, 0, 20, 80, 20, 3},
-	{"EN", sjis("養老保険"), 3, 0, 55, 20, 500_000, 50_000_000, 0, 0, 15, 20, 380, 0, 2},
-	{"MD", sjis("医療保険"), 4, 15, 75, 0, 1_000_000, 20_000_000, 1, 90, 0, 15, 90, 20, 2},
+	{"WL", sjis("終身保険"), 1, 15, 70, 0, 1_000_000, 100_000_000, 0, 0, 20, 45, 260, 20, 7, false},
+	{"TM", sjis("定期保険"), 2, 20, 60, 10, 1_000_000, 300_000_000, 0, 0, 0, 20, 80, 20, 3, false},
+	{"EN", sjis("養老保険"), 3, 0, 55, 20, 500_000, 50_000_000, 0, 0, 15, 20, 380, 0, 2, false},
+	{"MD", sjis("医療保険"), 4, 15, 75, 0, 1_000_000, 20_000_000, 1, 90, 0, 15, 90, 20, 2, false},
+	{"TR", sjis("定期特約"), 2, 20, 60, 10, 1_000_000, 50_000_000, 0, 0, 0, 0, 75, 20, 3, true},
+	{"HR", sjis("入院特約"), 4, 15, 70, 10, 1_000_000, 10_000_000, 1, 90, 0, 0, 85, 20, 2, true},
 }
 
-// aProduct draws a product by its share of the business.
+// productOf finds a product by its code.
+func productOf(code string) product {
+	for _, p := range products {
+		if p.code == code {
+			return p
+		}
+	}
+	return product{}
+}
+
+// aProduct draws a product sold on its own, by its share of the business.
 func aProduct(r *rand.Rand) product {
 	weights := make([]int, len(products))
 	for i, p := range products {
@@ -144,6 +158,7 @@ func (g *Generator) Products() ([][]byte, error) {
 			"PR-ｺｰﾄﾞ": p.code, "PR-ﾒｲｼｮｳ": p.name, "PR-ｼｭﾙｲ": p.kind, "PR-ｻｲﾃｲﾈﾝﾚｲ": p.minAge, "PR-ｻｲｺｳﾈﾝﾚｲ": p.maxAge,
 			"PR-ﾎｹﾝｷｶﾝ": p.term, "PR-ｻｲﾃｲﾎｹﾝｷﾝｶﾞｸ": p.minSum, "PR-ｻｲｺｳﾎｹﾝｷﾝｶﾞｸ": p.maxSum,
 			"PR-ﾆｭｳｲﾝﾆﾁｶﾞｸﾘﾂ": p.dailyRate, "PR-ﾒﾝｾｷﾆｯｽｳ": p.waiting, "PR-ﾊｲﾄｳﾘﾂ": p.dividend,
+			"PR-ｸﾌﾞﾝ": riderMark(p),
 		})
 		if err != nil {
 			return nil, err
@@ -151,6 +166,14 @@ func (g *Generator) Products() ([][]byte, error) {
 		recs = append(recs, rec)
 	}
 	return recs, nil
+}
+
+// riderMark is the product table's mark of a rider.
+func riderMark(p product) string {
+	if p.rider {
+		return "T"
+	}
+	return ""
 }
 
 // Rates writes the premium rate table: a line for each product, sex and
@@ -171,11 +194,15 @@ func (g *Generator) Rates() ([][]byte, error) {
 	return recs, nil
 }
 
-// CashValues writes the surrender value table: a line for each product,
-// entry age band and policy year to 40.
+// CashValues writes the surrender value table: a line for each product
+// sold on its own, entry age band and policy year to 40. A rider has no
+// surrender value.
 func (g *Generator) CashValues() ([][]byte, error) {
 	var recs [][]byte
 	for _, p := range products {
+		if p.rider {
+			continue
+		}
 		for band := 1; band <= 6; band++ {
 			for year := 1; year <= 40; year++ {
 				rec, err := made(g.Layouts.CashValue, map[string]any{"CV-ｼｮｳﾋﾝ": p.code, "CV-ﾈﾝﾚｲｸﾌﾞﾝ": band, "CV-ｹｲｶﾈﾝｽｳ": year, "CV-ｹｲｽｳ": p.cashValue(band, year)})
@@ -189,11 +216,14 @@ func (g *Generator) CashValues() ([][]byte, error) {
 	return recs, nil
 }
 
-// Reserves writes the reserve factor table: a line for each product and
-// policy year to 50.
+// Reserves writes the reserve factor table: a line for each product sold
+// on its own and policy year to 50. The reserve is the main contract's.
 func (g *Generator) Reserves() ([][]byte, error) {
 	var recs [][]byte
 	for _, p := range products {
+		if p.rider {
+			continue
+		}
 		for year := 1; year <= 50; year++ {
 			rec, err := made(g.Layouts.Reserve, map[string]any{"RS-ｼｮｳﾋﾝ": p.code, "RS-ｹｲｶﾈﾝｽｳ": year, "RS-ｹｲｽｳ": p.reserve(year)})
 			if err != nil {

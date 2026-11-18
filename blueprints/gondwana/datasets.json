@@ -11,6 +11,17 @@
     ]
   },
   {
+    "dataset": "$DATA/IN/COVEXT.TXT",
+    "copybook": "COVMST",
+    "kind": "external",
+    "readBy": [
+      {
+        "job": "OPEN",
+        "step": "GLO010"
+      }
+    ]
+  },
+  {
     "dataset": "$DATA/IN/EXTRACT.TXT",
     "copybook": "POLMST",
     "kind": "external",
@@ -91,6 +102,56 @@
       {
         "job": "DAILY",
         "step": "GLD030"
+      },
+      {
+        "job": "UNLOAD",
+        "step": "GLD090"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/MASTER/COVMST.IDX",
+    "copybook": "COVMST",
+    "indexed": true,
+    "kind": "internal",
+    "writtenBy": [
+      {
+        "job": "DAILY",
+        "step": "GLD010"
+      },
+      {
+        "job": "DAILY",
+        "step": "GLD020"
+      },
+      {
+        "job": "DAILY",
+        "step": "GLD030"
+      },
+      {
+        "job": "DAILY",
+        "step": "GLD040"
+      },
+      {
+        "job": "OPEN",
+        "step": "GLO010"
+      }
+    ],
+    "readBy": [
+      {
+        "job": "DAILY",
+        "step": "GLD010"
+      },
+      {
+        "job": "DAILY",
+        "step": "GLD020"
+      },
+      {
+        "job": "DAILY",
+        "step": "GLD030"
+      },
+      {
+        "job": "DAILY",
+        "step": "GLD040"
       },
       {
         "job": "UNLOAD",
@@ -319,6 +380,10 @@
         "step": "GLD070"
       },
       {
+        "job": "OPEN",
+        "step": "GLO010"
+      },
+      {
         "job": "RESULTS",
         "step": "GLD050"
       },
@@ -409,6 +474,17 @@
       {
         "job": "CLOSE",
         "step": "GLM030"
+      }
+    ]
+  },
+  {
+    "dataset": "$DATA/OUT/COVMST.$DATE.TXT",
+    "copybook": "COVMST",
+    "kind": "output",
+    "writtenBy": [
+      {
+        "job": "UNLOAD",
+        "step": "GLD090"
       }
     ]
   },

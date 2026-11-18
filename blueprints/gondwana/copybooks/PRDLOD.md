@@ -11,6 +11,7 @@ PROCEDURE DIVISION に COPY する。PRODTB-F を開いた後に
 日付       担当 変更
 1987-04-01 KT   GL-0001 初版。
 2008-06-02 YN   GL-0455 医療保険の項目。
+2026-11-18 YN   GL-0825 区分。
 ```
 
 Copybook [PRDLOD.cpy](../../../gondwana/copybooks/PRDLOD.cpy), used by [GLD010](../programs/GLD010.md), [GLD020](../programs/GLD020.md), [GLD030](../programs/GLD030.md), [GLM020](../programs/GLM020.md), [GLY010](../programs/GLY010.md).

@@ -1,7 +1,7 @@
 # GLD030: case 15
 
-The run ended with return code 0.
+The run ended with return code 4.
 
 The first case to reach:
 
-- [GLD030, CLMREQ-ﾖﾐｺﾐ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLD030.md#clmreq-ﾖﾐｺﾐ-rtn)
+- [GLD030, ｹﾝｻ-RTN, rule 29](../../../../blueprints/gondwana/rules/GLD030.md#ｹﾝｻ-rtn)

@@ -21,9 +21,10 @@ func mortality(age int) float64 {
 // Claims makes up the branches' benefit requests of a business day:
 // deaths by the insured's age, of illness, by accident or, one in fifty,
 // by suicide, on policies covered or lapsed, so that some died before
-// the lapse and some after; hospitalizations of the medical policies,
-// one in fifteen keyed twice, and their surgeries, at ten, twenty or
-// forty times the daily benefit; surrenders of covered and lapsed
+// the lapse and some after; hospitalizations of the policies with a
+// coverage that pays them, a medical policy or a rider, one in fifteen
+// keyed twice, and their surgeries, at ten, twenty or forty times the
+// daily benefit; surrenders of covered and lapsed
 // policies; and a request a branch
 // should not have sent now and then: for no policy, of no kind, for an
 // event before the contract or after today, or a hospitalization on a
@@ -59,12 +60,12 @@ func (g *Generator) Claims(date Date, policies []Policy) ([][]byte, error) {
 				payee = p.Kana
 			}
 			err = add('D', p, date.AddDays(-1-r.IntN(30)), 0, payee)
-		case p.Covered() && p.Product == "MD" && chance(r, perDay(0.15)):
+		case p.Covered() && p.Hospital() && chance(r, perDay(0.15)):
 			event, days := date.AddDays(-10-r.IntN(50)), 3+r.IntN(28)
 			if err = add('H', p, event, days, p.Kana); err == nil && r.IntN(15) == 0 {
 				err = add('H', p, event, days, p.Kana)
 			}
-		case p.Covered() && p.Product == "MD" && chance(r, perDay(0.05)):
+		case p.Covered() && p.Hospital() && chance(r, perDay(0.05)):
 			err = add('O', p, date.AddDays(-5-r.IntN(40)), 10<<r.IntN(3), p.Kana)
 		case p.Covered() && chance(r, perDay(0.04)), p.Lapsed() && chance(r, perDay(0.08)):
 			err = add('S', p, date, 0, p.Kana)
@@ -95,9 +96,10 @@ func (g *Generator) wrongClaim(r *rand.Rand, add func(byte, Policy, Date, int, s
 }
 
 // Changes makes up the branches' change requests of a business day: an
-// address, a bank account, a name, a beneficiary, or the reinstatement
-// of a lapsed policy with the arrears paid at the counter, usually in
-// full; and a request a branch got wrong now and then.
+// address, a bank account, a name, a beneficiary, the reinstatement of
+// a lapsed policy with the arrears paid at the counter, usually in full,
+// or the cancellation of a rider; and a request a branch got wrong now
+// and then.
 func (g *Generator) Changes(date Date, policies []Policy) ([][]byte, error) {
 	r := g.rng("changes", date.Number())
 	var recs [][]byte
@@ -105,7 +107,7 @@ func (g *Generator) Changes(date Date, policies []Policy) ([][]byte, error) {
 	add := func(kind byte, p Policy, fields map[string]any) error {
 		n++
 		all := map[string]any{"MR-ｲﾗｲﾊﾞﾝｺﾞｳ": requestNumber('M', date, n), "MR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ": p.No, "MR-ｼｭﾍﾞﾂ": string(kind),
-			"MR-ｷﾞﾝｺｳｺｰﾄﾞ": 0, "MR-ｼﾃﾝｺｰﾄﾞ": 0, "MR-ﾖｷﾝｼｭﾓｸ": 0, "MR-ｺｳｻﾞﾊﾞﾝｺﾞｳ": 0, "MR-ﾆｭｳｷﾝｶﾞｸ": 0}
+			"MR-ｷﾞﾝｺｳｺｰﾄﾞ": 0, "MR-ｼﾃﾝｺｰﾄﾞ": 0, "MR-ﾖｷﾝｼｭﾓｸ": 0, "MR-ｺｳｻﾞﾊﾞﾝｺﾞｳ": 0, "MR-ﾆｭｳｷﾝｶﾞｸ": 0, "MR-ﾎｼｮｳﾊﾞﾝｺﾞｳ": 0}
 		for k, v := range fields {
 			all[k] = v
 		}
@@ -121,6 +123,9 @@ func (g *Generator) Changes(date Date, policies []Policy) ([][]byte, error) {
 		switch {
 		case p.Lapsed() && DaysBetween(p.LapseDate, date) <= 365 && chance(r, perDay(0.15)):
 			err = add('R', p, map[string]any{"MR-ﾆｭｳｷﾝｶﾞｸ": g.counterPayment(r, p, date)})
+		case p.Status == 1 && len(p.Riders()) > 0 && chance(r, perDay(0.03)):
+			riders := p.Riders()
+			err = add('T', p, map[string]any{"MR-ﾎｼｮｳﾊﾞﾝｺﾞｳ": riders[r.IntN(len(riders))].No})
 		case chance(r, perDay(0.06)):
 			err = add('A', p, map[string]any{"MR-ｼﾞｭｳｼｮ": addresses[r.IntN(len(addresses))]})
 		case chance(r, perDay(0.03)):
@@ -133,10 +138,12 @@ func (g *Generator) Changes(date Date, policies []Policy) ([][]byte, error) {
 		case chance(r, perDay(0.015)):
 			err = add('K', p, map[string]any{"MR-ｳｹﾄﾘﾆﾝ": somebody(r).Kanji()})
 		case chance(r, perDay(0.003)):
-			switch r.IntN(3) {
+			switch r.IntN(4) {
 			case 0:
 				p.No = "8888888888"
 				err = add('A', p, map[string]any{"MR-ｼﾞｭｳｼｮ": addresses[0]})
+			case 2:
+				err = add('T', p, map[string]any{"MR-ﾎｼｮｳﾊﾞﾝｺﾞｳ": 1})
 			case 1:
 				err = add('Z', p, nil)
 			default:

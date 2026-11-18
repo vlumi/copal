@@ -9,6 +9,10 @@
       * 時点の保険年齢で保険料を引き直し、満期日を保険期間分
       * 先に送る。保険年齢が商品の最高年齢を超えていれば更新せず
       * 期間満了とする (支払なし)。終身・医療は経過年数のみ。
+      * 特約 (保障マスタ COVMST の保障番号 02 以降) も、応当日が
+      * その満期日なら同じく更新するか満了とする。満了した特約の
+      * 保険料は契約の保険料から外れ、契約は続く。主契約が満期か
+      * 期間満了になれば、特約もともに満了とする。
       * 貸付残高のある契約は、応当日までの利息 (GLC040) を残高に
       * 繰り入れる。満期保険金からは残高を差し引いて回収する。
       * 繰り入れ後の残高が解約返戻金 (GLC030) を超えた契約は失効
@@ -25,6 +29,7 @@
       * 2012-09-03 YN   GL-0561 貸付利息の繰り入れ、貸付超過失効。
       * 2026-10-05 YN   GL-0815 前回業務日付からの応当日。
       * 2026-11-16 YN   GL-0823 半年払の更新保険料。
+      * 2026-11-18 YN   GL-0825 保障マスタ、特約の更新と満了。
       *----------------------------------------------------------------
        IDENTIFICATION DIVISION.
        PROGRAM-ID. GLD020.
@@ -39,6 +44,11 @@
                ACCESS MODE IS DYNAMIC
                RECORD KEY IS PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ
                FILE STATUS IS WS-POLMST-ST.
+           SELECT COVMST-F ASSIGN TO "COVMST"
+               ORGANIZATION IS INDEXED
+               ACCESS MODE IS DYNAMIC
+               RECORD KEY IS HS-ｷｰ
+               FILE STATUS IS WS-COVMST-ST.
            SELECT PRODTB-F ASSIGN TO "PRODTB"
                ORGANIZATION IS LINE SEQUENTIAL
                FILE STATUS IS WS-PRODTB-ST.
@@ -62,6 +72,8 @@
        FILE SECTION.
        FD  POLMST-F.
        COPY POLMST.
+       FD  COVMST-F.
+       COPY COVMST.
        FD  PRODTB-F.
        COPY PRODTB.
        FD  RATETB-F.
@@ -81,6 +93,9 @@
            05  WS-POLMST-ST            PIC XX.
                88  WS-POLMST-OK                VALUE "00".
                88  WS-POLMST-ｵﾜﾘ               VALUE "10".
+           05  WS-COVMST-ST            PIC XX.
+               88  WS-COVMST-OK                VALUE "00".
+               88  WS-COVMST-ｵﾜﾘ               VALUE "10" "23".
            05  WS-PRODTB-ST            PIC XX.
                88  WS-PRODTB-OK                VALUE "00".
                88  WS-PRODTB-ｵﾜﾘ               VALUE "10".
@@ -111,6 +126,7 @@
        01  WS-ﾈﾝﾚｲ                     PIC 99.
        01  WS-ｹﾞﾂｶﾞｸ                   PIC 9(9).
        01  WS-ﾘｿｸ                      PIC 9(9).
+       01  WS-ｺﾞｳｹｲﾎｹﾝﾘｮｳ              PIC 9(9).
        01  WS-ﾍﾝﾚｲｷﾝ                   PIC 9(9).
        01  WS-ﾏﾝｷﾋﾞ                    PIC 9(8).
        01  WS-ﾏﾝｷﾋﾞ-ﾌﾞﾝｶｲ REDEFINES WS-ﾏﾝｷﾋﾞ.
@@ -138,6 +154,8 @@
            05  WS-ﾏﾝｷｷﾝｶﾞｸ             PIC 9(13) VALUE 0.
            05  WS-ﾘｿｸｷﾝｶﾞｸ             PIC 9(13) VALUE 0.
            05  WS-ﾁｮｳｶｹﾝｽｳ             PIC 9(7) VALUE 0.
+           05  WS-ﾄｸﾔｸｺｳｼﾝｹﾝｽｳ         PIC 9(7) VALUE 0.
+           05  WS-ﾄｸﾔｸﾏﾝﾘｮｳｹﾝｽｳ        PIC 9(7) VALUE 0.
        01  WS-ﾎｳｺｸ.
            05  WS-ﾋｮｳﾀﾞｲ-ｷﾞｮｳ.
                10  FILLER                  PIC X(30)
@@ -187,7 +205,7 @@
                STOP RUN
            END-IF
            OPEN INPUT PRODTB-F RATETB-F
-           OPEN I-O POLMST-F GLSCTL-F
+           OPEN I-O POLMST-F COVMST-F GLSCTL-F
            OPEN EXTEND PAYOUT-F GLJRNL-F
            OPEN OUTPUT REPORT-F
            PERFORM ｵｰﾌﾟﾝ-ｹﾝｻ-RTN
@@ -220,6 +238,9 @@
                WHEN NOT WS-POLMST-OK
                    MOVE "POLMST" TO WS-ｴﾗｰﾌｧｲﾙ
                    MOVE WS-POLMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
+               WHEN NOT WS-COVMST-OK
+                   MOVE "COVMST" TO WS-ｴﾗｰﾌｧｲﾙ
+                   MOVE WS-COVMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
                WHEN NOT WS-GLSCTL-OK
                    MOVE "GLSCTL" TO WS-ｴﾗｰﾌｧｲﾙ
                    MOVE WS-GLSCTL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
@@ -297,26 +318,141 @@
 
       *----------------------------------------------------------------
       * ｵｳﾄｳ-RTN: 経過年数を進め、貸付残高があれば利息を繰り入れ、
-      * 応当日が満期日なら商品により満期か更新。そうでなく貸付残高
-      * があれば解約返戻金と比べる。
+      * 主契約、次いで特約を処理する。まだ保障中で貸付残高があれば
+      * 解約返戻金と比べる。保険料は有効な保障の保険料の合計に直す。
       *----------------------------------------------------------------
        ｵｳﾄｳ-RTN.
            ADD 1 TO WS-ｵｳﾄｳｹﾝｽｳ
            ADD 1 TO PM-ｹｲｶﾈﾝｽｳ
-           MOVE 0 TO WS-ﾒｲｻｲ-ｷﾝｶﾞｸ
+           MOVE 0 TO WS-ﾒｲｻｲ-ｷﾝｶﾞｸ WS-ｺﾞｳｹｲﾎｹﾝﾘｮｳ
            MOVE "年度更新" TO WS-ﾒｲｻｲ-ｹｯｶ
            IF PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ > 0
                PERFORM ﾘｿｸ-RTN
            END-IF
+           PERFORM ｼｭｹｲﾔｸ-RTN
+           IF PM-ﾎｼｮｳﾁｭｳ AND PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ > 0
+               PERFORM ﾁｮｳｶ-RTN
+           END-IF
+           PERFORM ﾒｲｻｲ-RTN
+           PERFORM ﾄｸﾔｸ-ｿｳｻ-RTN
+           IF NOT PM-ﾏﾝｷ
+               MOVE WS-ｺﾞｳｹｲﾎｹﾝﾘｮｳ TO PM-ﾎｹﾝﾘｮｳ
+           END-IF.
+
+      *----------------------------------------------------------------
+      * ｼｭｹｲﾔｸ-RTN: 主契約の保障を読み、応当日が満期日なら養老保険
+      * は満期、ほかは更新か期間満了。
+      *----------------------------------------------------------------
+       ｼｭｹｲﾔｸ-RTN.
+           MOVE PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ TO HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ
+           MOVE 1 TO HS-ﾎｼｮｳﾊﾞﾝｺﾞｳ
+           READ COVMST-F
+           IF NOT WS-COVMST-OK
+               MOVE "COVMST" TO WS-ｴﾗｰﾌｧｲﾙ
+               MOVE WS-COVMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
+               PERFORM ｲｼﾞｮｳ-RTN
+           END-IF
            EVALUATE TRUE
-               WHEN PM-ﾖｳﾛｳ AND PM-ﾏﾝｷﾋﾞ = WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ
+               WHEN PM-ﾏﾝｷﾋﾞ NOT = WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ
+                   CONTINUE
+               WHEN PM-ﾖｳﾛｳ
                    PERFORM ﾏﾝｷ-RTN
-               WHEN PM-ﾃｲｷ AND PM-ﾏﾝｷﾋﾞ = WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ
+                   SET HS-ﾏﾝﾘｮｳ TO TRUE
+                   MOVE WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ TO HS-ｼｮｳﾒﾂﾋﾞ
+                   PERFORM ﾎｼｮｳ-ｶｷﾓﾄﾞｼ-RTN
+               WHEN OTHER
                    PERFORM ｺｳｼﾝ-RTN
-               WHEN PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ > 0
-                   PERFORM ﾁｮｳｶ-RTN
+                   PERFORM ｼｭｹｲﾔｸ-ｺｳｼﾝ-RTN
+                   PERFORM ﾎｼｮｳ-ｶｷﾓﾄﾞｼ-RTN
            END-EVALUATE
-           PERFORM ﾒｲｻｲ-RTN.
+           IF HS-ﾕｳｺｳ
+               ADD HS-ﾎｹﾝﾘｮｳ TO WS-ｺﾞｳｹｲﾎｹﾝﾘｮｳ
+           END-IF.
+
+      *----------------------------------------------------------------
+      * ｼｭｹｲﾔｸ-ｺｳｼﾝ-RTN: 主契約の更新か期間満了を契約に映す。
+      *----------------------------------------------------------------
+       ｼｭｹｲﾔｸ-ｺｳｼﾝ-RTN.
+           IF HS-ﾕｳｺｳ
+               ADD 1 TO WS-ｺｳｼﾝｹﾝｽｳ
+               MOVE HS-ﾏﾝｷﾋﾞ TO PM-ﾏﾝｷﾋﾞ
+               MOVE HS-ﾎｹﾝﾘｮｳ TO WS-ﾒｲｻｲ-ｷﾝｶﾞｸ
+               MOVE "更新" TO WS-ﾒｲｻｲ-ｹｯｶ
+           ELSE
+               ADD 1 TO WS-ﾏﾝﾘｮｳｹﾝｽｳ
+               SET PM-ﾏﾝｷ TO TRUE
+               MOVE WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ TO PM-ｼﾞｮｳﾀｲﾋﾂﾞｹ
+               MOVE "期間満了" TO WS-ﾒｲｻｲ-ｹｯｶ
+           END-IF.
+
+      *----------------------------------------------------------------
+      * ﾄｸﾔｸ-ｿｳｻ-RTN: 契約の特約を保障番号順にたどる。
+      *----------------------------------------------------------------
+       ﾄｸﾔｸ-ｿｳｻ-RTN.
+           MOVE PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ TO HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ
+           MOVE 1 TO HS-ﾎｼｮｳﾊﾞﾝｺﾞｳ
+           START COVMST-F KEY > HS-ｷｰ
+           IF WS-COVMST-OK
+               READ COVMST-F NEXT
+           END-IF
+           PERFORM UNTIL NOT WS-COVMST-OK
+                   OR HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ NOT = PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ
+               PERFORM ﾄｸﾔｸ-RTN
+               READ COVMST-F NEXT
+           END-PERFORM
+           IF NOT WS-COVMST-OK AND NOT WS-COVMST-ｵﾜﾘ
+               MOVE "COVMST" TO WS-ｴﾗｰﾌｧｲﾙ
+               MOVE WS-COVMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
+               PERFORM ｲｼﾞｮｳ-RTN
+           END-IF.
+
+      *----------------------------------------------------------------
+      * ﾄｸﾔｸ-RTN: 有効な特約1件。主契約が終わっていればともに満了、
+      * 応当日が特約の満期日なら更新か満了。
+      *----------------------------------------------------------------
+       ﾄｸﾔｸ-RTN.
+           IF HS-ﾕｳｺｳ
+               EVALUATE TRUE
+                   WHEN PM-ﾏﾝｷ
+                       SET HS-ﾏﾝﾘｮｳ TO TRUE
+                       MOVE WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ TO HS-ｼｮｳﾒﾂﾋﾞ
+                       PERFORM ﾎｼｮｳ-ｶｷﾓﾄﾞｼ-RTN
+                   WHEN HS-ﾏﾝｷﾋﾞ = WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ
+                       PERFORM ｺｳｼﾝ-RTN
+                       PERFORM ﾄｸﾔｸ-ﾒｲｻｲ-RTN
+                       PERFORM ﾎｼｮｳ-ｶｷﾓﾄﾞｼ-RTN
+               END-EVALUATE
+           END-IF
+           IF HS-ﾕｳｺｳ
+               ADD HS-ﾎｹﾝﾘｮｳ TO WS-ｺﾞｳｹｲﾎｹﾝﾘｮｳ
+           END-IF.
+
+      *----------------------------------------------------------------
+      * ﾄｸﾔｸ-ﾒｲｻｲ-RTN: 更新か満了した特約を数え、明細行を書く。
+      *----------------------------------------------------------------
+       ﾄｸﾔｸ-ﾒｲｻｲ-RTN.
+           MOVE HS-ｼｮｳﾋﾝ TO WS-ﾒｲｻｲ-ｼｮｳﾋﾝ
+           IF HS-ﾕｳｺｳ
+               ADD 1 TO WS-ﾄｸﾔｸｺｳｼﾝｹﾝｽｳ
+               MOVE HS-ﾎｹﾝﾘｮｳ TO WS-ﾒｲｻｲ-ｷﾝｶﾞｸ
+               MOVE "特約更新" TO WS-ﾒｲｻｲ-ｹｯｶ
+           ELSE
+               ADD 1 TO WS-ﾄｸﾔｸﾏﾝﾘｮｳｹﾝｽｳ
+               MOVE 0 TO WS-ﾒｲｻｲ-ｷﾝｶﾞｸ
+               MOVE "特約満了" TO WS-ﾒｲｻｲ-ｹｯｶ
+           END-IF
+           WRITE ﾎｳｺｸ-ｷﾞｮｳ FROM WS-ﾒｲｻｲ-ｷﾞｮｳ.
+
+      *----------------------------------------------------------------
+      * ﾎｼｮｳ-ｶｷﾓﾄﾞｼ-RTN: 変えた保障を書き戻す。
+      *----------------------------------------------------------------
+       ﾎｼｮｳ-ｶｷﾓﾄﾞｼ-RTN.
+           REWRITE HS-ﾎｼｮｳ-ﾚｺｰﾄﾞ
+           IF NOT WS-COVMST-OK
+               MOVE "COVMST" TO WS-ｴﾗｰﾌｧｲﾙ
+               MOVE WS-COVMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
+               PERFORM ｲｼﾞｮｳ-RTN
+           END-IF.
 
       *----------------------------------------------------------------
       * ﾘｿｸ-RTN: 応当日までの貸付利息を残高に繰り入れ、起算日を
@@ -400,9 +536,9 @@
            MOVE "満期" TO WS-ﾒｲｻｲ-ｹｯｶ.
 
       *----------------------------------------------------------------
-      * ｺｳｼﾝ-RTN: 定期保険の更新。応当日時点の保険年齢が商品の最高
-      * 年齢以内なら保険料を引き直して応当日から期間を延ばし、超えて
-      * いれば期間満了。
+      * ｺｳｼﾝ-RTN: 満期日に達した保障の更新。応当日時点の保険年齢が
+      * 商品の最高年齢以内なら保険料を引き直して応当日から期間を
+      * 延ばし、超えていれば満了とする。
       *----------------------------------------------------------------
        ｺｳｼﾝ-RTN.
            MOVE "S" TO WS-ﾎｳｺｳ
@@ -411,35 +547,31 @@
            CALL "GLC010" USING WS-ｾｲﾈﾝｶﾞｯﾋﾟ WS-ｵｳﾄｳﾋﾞ WS-ﾈﾝﾚｲ
            SET WS-ｼｮｳﾋﾝ-IX TO 1
            SEARCH WS-ｼｮｳﾋﾝ
-               WHEN WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ
+               WHEN WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = HS-ｼｮｳﾋﾝ
                    CONTINUE
            END-SEARCH
            IF WS-ﾈﾝﾚｲ > WS-ｼｮｳﾋﾝ-ｻｲｺｳﾈﾝﾚｲ(WS-ｼｮｳﾋﾝ-IX)
-               ADD 1 TO WS-ﾏﾝﾘｮｳｹﾝｽｳ
-               SET PM-ﾏﾝｷ TO TRUE
-               MOVE WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ TO PM-ｼﾞｮｳﾀｲﾋﾂﾞｹ
-               MOVE "期間満了" TO WS-ﾒｲｻｲ-ｹｯｶ
+               SET HS-ﾏﾝﾘｮｳ TO TRUE
+               MOVE WS-ｵｳﾄｳﾋﾞ-ﾜﾚｷ TO HS-ｼｮｳﾒﾂﾋﾞ
            ELSE
-               ADD 1 TO WS-ｺｳｼﾝｹﾝｽｳ
                COMPUTE WS-ﾈﾝﾚｲ-ｿｴｼﾞ = WS-ﾈﾝﾚｲ + 1
-               COMPUTE WS-ｹﾞﾂｶﾞｸ = PM-ﾎｹﾝｷﾝｶﾞｸ / 1000
+               COMPUTE WS-ｹﾞﾂｶﾞｸ = HS-ﾎｹﾝｷﾝｶﾞｸ / 1000
                    * WS-ﾘｮｳﾘﾂ(WS-ｼｮｳﾋﾝ-IX, PM-ｾｲﾍﾞﾂ, WS-ﾈﾝﾚｲ-ｿｴｼﾞ)
                EVALUATE TRUE
                    WHEN PM-ﾈﾝﾊﾞﾗｲ
-                       COMPUTE PM-ﾎｹﾝﾘｮｳ = WS-ｹﾞﾂｶﾞｸ * 12 * 0.95
+                       COMPUTE HS-ﾎｹﾝﾘｮｳ = WS-ｹﾞﾂｶﾞｸ * 12 * 0.95
                    WHEN PM-ﾊﾝﾄｼﾊﾞﾗｲ
-                       COMPUTE PM-ﾎｹﾝﾘｮｳ = WS-ｹﾞﾂｶﾞｸ * 6 * 0.97
+                       COMPUTE HS-ﾎｹﾝﾘｮｳ = WS-ｹﾞﾂｶﾞｸ * 6 * 0.97
                    WHEN OTHER
-                       MOVE WS-ｹﾞﾂｶﾞｸ TO PM-ﾎｹﾝﾘｮｳ
+                       MOVE WS-ｹﾞﾂｶﾞｸ TO HS-ﾎｹﾝﾘｮｳ
                END-EVALUATE
+               MOVE WS-ﾈﾝﾚｲ TO HS-ｶﾆｭｳﾈﾝﾚｲ
                MOVE WS-ｵｳﾄｳﾋﾞ TO WS-ﾏﾝｷﾋﾞ
-               ADD PM-ﾎｹﾝｷｶﾝ TO WS-ﾏﾝｷ-YYYY
+               ADD HS-ﾎｹﾝｷｶﾝ TO WS-ﾏﾝｷ-YYYY
                MOVE "W" TO WS-ﾎｳｺｳ
                CALL "GLC020" USING WS-ﾎｳｺｳ WS-ﾏﾝｷﾋﾞ
                                    WS-ﾏﾝｷﾋﾞ-ﾜﾚｷ WS-ﾍﾝｶﾝｹｯｶ
-               MOVE WS-ﾏﾝｷﾋﾞ-ﾜﾚｷ TO PM-ﾏﾝｷﾋﾞ
-               MOVE PM-ﾎｹﾝﾘｮｳ TO WS-ﾒｲｻｲ-ｷﾝｶﾞｸ
-               MOVE "更新" TO WS-ﾒｲｻｲ-ｹｯｶ
+               MOVE WS-ﾏﾝｷﾋﾞ-ﾜﾚｷ TO HS-ﾏﾝｷﾋﾞ
            END-IF.
 
       *----------------------------------------------------------------
@@ -494,6 +626,12 @@
            WRITE ﾎｳｺｸ-ｷﾞｮｳ FROM WS-ｹﾝｽｳ-ｷﾞｮｳ
            MOVE "貸付超過失効" TO WS-ｹﾝｽｳ-ﾗﾍﾞﾙ
            MOVE WS-ﾁｮｳｶｹﾝｽｳ TO WS-ｹﾝｽｳ-ｱﾀｲ
+           WRITE ﾎｳｺｸ-ｷﾞｮｳ FROM WS-ｹﾝｽｳ-ｷﾞｮｳ
+           MOVE "特約更新件数" TO WS-ｹﾝｽｳ-ﾗﾍﾞﾙ
+           MOVE WS-ﾄｸﾔｸｺｳｼﾝｹﾝｽｳ TO WS-ｹﾝｽｳ-ｱﾀｲ
+           WRITE ﾎｳｺｸ-ｷﾞｮｳ FROM WS-ｹﾝｽｳ-ｷﾞｮｳ
+           MOVE "特約満了件数" TO WS-ｹﾝｽｳ-ﾗﾍﾞﾙ
+           MOVE WS-ﾄｸﾔｸﾏﾝﾘｮｳｹﾝｽｳ TO WS-ｹﾝｽｳ-ｱﾀｲ
            WRITE ﾎｳｺｸ-ｷﾞｮｳ FROM WS-ｹﾝｽｳ-ｷﾞｮｳ.
 
       *----------------------------------------------------------------
@@ -506,8 +644,8 @@
                MOVE WS-GLSCTL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
                PERFORM ｲｼﾞｮｳ-RTN
            END-IF
-           CLOSE POLMST-F PRODTB-F RATETB-F GLSCTL-F PAYOUT-F
-                 GLJRNL-F REPORT-F
+           CLOSE POLMST-F COVMST-F PRODTB-F RATETB-F GLSCTL-F
+                 PAYOUT-F GLJRNL-F REPORT-F
            DISPLAY "GLD020 応当 " WS-ｵｳﾄｳｹﾝｽｳ " 更新 " WS-ｺｳｼﾝｹﾝｽｳ
                    " 満期 " WS-ﾏﾝｷｹﾝｽｳ.
 

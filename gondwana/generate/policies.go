@@ -1,7 +1,8 @@
 package generate
 
 // Policy is what the generator knows of a policy: its record in the
-// master, as the extract or the daily unload has it.
+// master, as the extract or the daily unload has it, and its coverages,
+// the main contract first.
 type Policy struct {
 	No            string
 	Status        int // 1 in force, 2 in grace, 3 lapsed, 4 surrendered, 5 matured, 6 paid out
@@ -34,6 +35,48 @@ type Policy struct {
 	Dividends     int64
 	LastPaidMonth int64
 	LastPaid      int64
+	Coverages     []Coverage
+}
+
+// Coverage is a coverage of a policy, as the coverage file has it: the
+// main contract, numbered 1, or a rider.
+type Coverage struct {
+	No       int
+	Product  string
+	Status   int // 1 in force, 2 expired, 3 cancelled, 4 ended by a death
+	Amount   int64
+	Premium  int64
+	Contract Date
+	Term     int
+	Maturity Date
+	RatedAge int // the age its premium is rated at: the entry age, or the age at its last renewal
+	Ended    Date
+}
+
+// InForce reports whether the coverage has not ended. A lapsed policy's
+// coverages stay in force: the policy's state comes first.
+func (c Coverage) InForce() bool { return c.Status == 1 }
+
+// Riders are the policy's riders in force.
+func (p Policy) Riders() []Coverage {
+	var riders []Coverage
+	for _, c := range p.Coverages {
+		if c.No > 1 && c.InForce() {
+			riders = append(riders, c)
+		}
+	}
+	return riders
+}
+
+// Hospital reports whether a coverage in force pays hospitalizations: a
+// medical policy's main contract, or a hospitalization rider.
+func (p Policy) Hospital() bool {
+	for _, c := range p.Coverages {
+		if c.InForce() && productOf(c.Product).kind == 4 {
+			return true
+		}
+	}
+	return false
 }
 
 // Covered reports whether the policy is in force or in grace: insured,
@@ -87,6 +130,58 @@ func (g *Generator) record(p Policy) ([]byte, error) {
 		"PM-ｻｲｼｭｳﾆｭｳｷﾝﾈﾝｹﾞﾂ": p.LastPaidMonth, "PM-ｻｲｼｭｳﾆｭｳｷﾝｶﾞｸ": p.LastPaid, "PM-ｶｼﾂｹｷｻﾝﾋﾞ": eraOrBlank(p.LoanSince),
 		"PM-ﾌｯｶﾂﾋﾞ": eraOrBlank(p.Reinstated),
 	})
+}
+
+// coverageRecords writes a policy's coverages as records of the coverage
+// file.
+func (g *Generator) coverageRecords(p Policy) ([][]byte, error) {
+	var recs [][]byte
+	for _, c := range p.Coverages {
+		rec, err := made(g.Layouts.Coverage, map[string]any{
+			"HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ": p.No, "HS-ﾎｼｮｳﾊﾞﾝｺﾞｳ": c.No, "HS-ｼｮｳﾋﾝ": c.Product, "HS-ｼﾞｮｳﾀｲ": string(rune('0' + c.Status)),
+			"HS-ﾎｹﾝｷﾝｶﾞｸ": c.Amount, "HS-ﾎｹﾝﾘｮｳ": c.Premium, "HS-ｹｲﾔｸﾋﾞ": c.Contract.Era(), "HS-ﾎｹﾝｷｶﾝ": c.Term,
+			"HS-ﾏﾝｷﾋﾞ": eraOrBlank(c.Maturity), "HS-ｶﾆｭｳﾈﾝﾚｲ": c.RatedAge, "HS-ｼｮｳﾒﾂﾋﾞ": eraOrBlank(c.Ended),
+		})
+		if err != nil {
+			return nil, err
+		}
+		recs = append(recs, rec)
+	}
+	return recs, nil
+}
+
+// ReadCoverages gives policies their coverages from records of the
+// coverage file, as the extract or the daily unload has them.
+func (g *Generator) ReadCoverages(policies []Policy, records [][]byte) error {
+	byNo := make(map[string]*Policy, len(policies))
+	for i := range policies {
+		byNo[policies[i].No] = &policies[i]
+	}
+	for _, r := range records {
+		var c Coverage
+		var no, status, contract, maturity, ended string
+		if err := get(g.Layouts.Coverage, r, map[string]any{
+			"HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ": &no, "HS-ﾎｼｮｳﾊﾞﾝｺﾞｳ": &c.No, "HS-ｼｮｳﾋﾝ": &c.Product, "HS-ｼﾞｮｳﾀｲ": &status,
+			"HS-ﾎｹﾝｷﾝｶﾞｸ": &c.Amount, "HS-ﾎｹﾝﾘｮｳ": &c.Premium, "HS-ｹｲﾔｸﾋﾞ": &contract, "HS-ﾎｹﾝｷｶﾝ": &c.Term,
+			"HS-ﾏﾝｷﾋﾞ": &maturity, "HS-ｶﾆｭｳﾈﾝﾚｲ": &c.RatedAge, "HS-ｼｮｳﾒﾂﾋﾞ": &ended,
+		}); err != nil {
+			return err
+		}
+		c.Status = int(status[0] - '0')
+		var err error
+		for _, d := range []struct {
+			target *Date
+			text   string
+		}{{&c.Contract, contract}, {&c.Maturity, maturity}, {&c.Ended, ended}} {
+			if *d.target, err = dateOrZero(d.text); err != nil {
+				return err
+			}
+		}
+		if p, ok := byNo[no]; ok {
+			p.Coverages = append(p.Coverages, c)
+		}
+	}
+	return nil
 }
 
 // ReadPolicies reads policies from master records, as the extract or the

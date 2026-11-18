@@ -3,7 +3,7 @@
   "tables": [
     {
       "paragraph": "ｼｮｷ-RTN",
-      "source": "gondwana/programs/GLO010.cbl:109",
+      "source": "gondwana/programs/GLO010.cbl:137",
       "conditions": [
         "WS-ﾍﾝｶﾝｹｯｶ = 0",
         "WS-ﾁｭｳｼｭﾂ-OK",
@@ -175,7 +175,7 @@
     },
     {
       "paragraph": "ﾁｭｳｼｭﾂ-ﾖﾐｺﾐ-RTN",
-      "source": "gondwana/programs/GLO010.cbl:148",
+      "source": "gondwana/programs/GLO010.cbl:176",
       "conditions": [
         "WS-ﾁｭｳｼｭﾂ-OK",
         "WS-ﾁｭｳｼｭﾂ-ｵﾜﾘ"
@@ -234,7 +234,7 @@
     },
     {
       "paragraph": "ﾄｳﾛｸ-RTN",
-      "source": "gondwana/programs/GLO010.cbl:163",
+      "source": "gondwana/programs/GLO010.cbl:191",
       "conditions": [
         "WRITE PM-ｹｲﾔｸ-ﾚｺｰﾄﾞ INVALID KEY"
       ],
@@ -281,7 +281,7 @@
     },
     {
       "paragraph": "ｼｭｳｹｲ-RTN",
-      "source": "gondwana/programs/GLO010.cbl:178",
+      "source": "gondwana/programs/GLO010.cbl:206",
       "conditions": [
         "PM-ﾕｳｺｳ",
         "PM-ﾕｳﾖﾁｭｳ",
@@ -355,8 +355,237 @@
       ]
     },
     {
+      "paragraph": "ﾎｼｮｳ-ｼﾞｭﾝﾋﾞ-RTN",
+      "source": "gondwana/programs/GLO010.cbl:224",
+      "conditions": [
+        "WS-ｹｲﾔｸ-OK",
+        "WS-ﾎｼｮｳﾁｭｳｼｭﾂ-OK",
+        "WS-ﾎｼｮｳ-OK"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ｹｲﾔｸ-ST"
+        ],
+        [
+          "WS-ﾎｼｮｳﾁｭｳｼｭﾂ-ST"
+        ],
+        [
+          "WS-ﾎｼｮｳ-ST"
+        ]
+      ],
+      "actions": [
+        "CLOSE POLMST-F",
+        "OPEN INPUT POLMST-F",
+        "MOVE 'POLMST' TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ",
+        "MOVE WS-ｹｲﾔｸ-ST TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ(9:2)",
+        "PERFORM ｲｼﾞｮｳ-RTN",
+        "OPEN INPUT COVEXT-F",
+        "MOVE 'COVEXT' TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ",
+        "MOVE WS-ﾎｼｮｳﾁｭｳｼｭﾂ-ST TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ(9:2)",
+        "OPEN OUTPUT COVMST-F",
+        "MOVE 'COVMST' TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ",
+        "MOVE WS-ﾎｼｮｳ-ST TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ(9:2)",
+        "PERFORM ﾎｼｮｳﾁｭｳｼｭﾂ-ﾖﾐｺﾐ-RTN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "sentence": "When `WS-ｹｲﾔｸ-ST` is not `'00'` (not `WS-ｹｲﾔｸ-OK`), it closes `POLMST-F`, opens `POLMST-F` for input, sets `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` to `'POLMST'`, sets `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(9:2)` to `WS-ｹｲﾔｸ-ST`, and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            5,
+            6,
+            7,
+            4
+          ],
+          "sentence": "When `WS-ｹｲﾔｸ-ST` is `'00'` (`WS-ｹｲﾔｸ-OK`) and `WS-ﾎｼｮｳﾁｭｳｼｭﾂ-ST` is not `'00'` (not `WS-ﾎｼｮｳﾁｭｳｼｭﾂ-OK`), it closes `POLMST-F`, opens `POLMST-F` for input, opens `COVEXT-F` for input, sets `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` to `'COVEXT'`, sets `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(9:2)` to `WS-ﾎｼｮｳﾁｭｳｼｭﾂ-ST`, and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            5,
+            8,
+            9,
+            10,
+            4
+          ],
+          "sentence": "When `WS-ｹｲﾔｸ-ST` is `'00'` (`WS-ｹｲﾔｸ-OK`), `WS-ﾎｼｮｳﾁｭｳｼｭﾂ-ST` is `'00'` (`WS-ﾎｼｮｳﾁｭｳｼｭﾂ-OK`), and `WS-ﾎｼｮｳ-ST` is not `'00'` (not `WS-ﾎｼｮｳ-OK`), it closes `POLMST-F`, opens `POLMST-F` for input, opens `COVEXT-F` for input, opens `COVMST-F` for output, sets `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` to `'COVMST'`, sets `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(9:2)` to `WS-ﾎｼｮｳ-ST`, and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            5,
+            8,
+            11
+          ],
+          "sentence": "When `WS-ｹｲﾔｸ-ST` is `'00'` (`WS-ｹｲﾔｸ-OK`), `WS-ﾎｼｮｳﾁｭｳｼｭﾂ-ST` is `'00'` (`WS-ﾎｼｮｳﾁｭｳｼｭﾂ-OK`), and `WS-ﾎｼｮｳ-ST` is `'00'` (`WS-ﾎｼｮｳ-OK`), it closes `POLMST-F`, opens `POLMST-F` for input, opens `COVEXT-F` for input, opens `COVMST-F` for output, and performs `ﾎｼｮｳﾁｭｳｼｭﾂ-ﾖﾐｺﾐ-RTN`."
+        }
+      ]
+    },
+    {
+      "paragraph": "ﾎｼｮｳﾁｭｳｼｭﾂ-ﾖﾐｺﾐ-RTN",
+      "source": "gondwana/programs/GLO010.cbl:249",
+      "conditions": [
+        "WS-ﾎｼｮｳﾁｭｳｼｭﾂ-OK",
+        "WS-ﾎｼｮｳﾁｭｳｼｭﾂ-ｵﾜﾘ"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ﾎｼｮｳﾁｭｳｼｭﾂ-ST"
+        ],
+        [
+          "WS-ﾎｼｮｳﾁｭｳｼｭﾂ-ST"
+        ]
+      ],
+      "actions": [
+        "READ COVEXT-F",
+        "ADD 1 TO WS-ﾎｼｮｳﾖﾐｺﾐｹﾝｽｳ",
+        "MOVE 'COVEXT' TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ",
+        "MOVE WS-ﾎｼｮｳﾁｭｳｼｭﾂ-ST TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ(9:2)",
+        "PERFORM ｲｼﾞｮｳ-RTN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1
+          ],
+          "sentence": "When `WS-ﾎｼｮｳﾁｭｳｼｭﾂ-ST` is `'00'` (`WS-ﾎｼｮｳﾁｭｳｼｭﾂ-OK`), it reads `COVEXT-F` and adds 1 to `WS-ﾎｼｮｳﾖﾐｺﾐｹﾝｽｳ`."
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            2,
+            3,
+            4
+          ],
+          "sentence": "When `WS-ﾎｼｮｳﾁｭｳｼｭﾂ-ST` is not `'00'` (not `WS-ﾎｼｮｳﾁｭｳｼｭﾂ-OK`) and `WS-ﾎｼｮｳﾁｭｳｼｭﾂ-ST` is not `'10'` (not `WS-ﾎｼｮｳﾁｭｳｼｭﾂ-ｵﾜﾘ`), it reads `COVEXT-F`, sets `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` to `'COVEXT'`, sets `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(9:2)` to `WS-ﾎｼｮｳﾁｭｳｼｭﾂ-ST`, and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0
+          ],
+          "sentence": "When `WS-ﾎｼｮｳﾁｭｳｼｭﾂ-ST` is not `'00'` (not `WS-ﾎｼｮｳﾁｭｳｼｭﾂ-OK`) and `WS-ﾎｼｮｳﾁｭｳｼｭﾂ-ST` is `'10'` (`WS-ﾎｼｮｳﾁｭｳｼｭﾂ-ｵﾜﾘ`), it reads `COVEXT-F`."
+        }
+      ]
+    },
+    {
+      "paragraph": "ﾎｼｮｳ-ﾄｳﾛｸ-RTN",
+      "source": "gondwana/programs/GLO010.cbl:265",
+      "conditions": [
+        "READ POLMST-F INVALID KEY",
+        "WRITE HS-ﾎｼｮｳ-ﾚｺｰﾄﾞ INVALID KEY"
+      ],
+      "conditionRefs": [
+        null,
+        null
+      ],
+      "actions": [
+        "MOVE ﾎｼｮｳﾁｭｳｼｭﾂ-ﾚｺｰﾄﾞ TO HS-ﾎｼｮｳ-ﾚｺｰﾄﾞ",
+        "MOVE HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ TO PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+        "READ POLMST-F",
+        "ADD 1 TO WS-ｹｲﾔｸﾅｼｹﾝｽｳ",
+        "MOVE 4 TO WS-ﾌｯｷｺｰﾄﾞ",
+        "PERFORM ﾎｼｮｳﾁｭｳｼｭﾂ-ﾖﾐｺﾐ-RTN",
+        "WRITE HS-ﾎｼｮｳ-ﾚｺｰﾄﾞ",
+        "ADD 1 TO WS-ﾎｼｮｳﾁｮｳﾌｸｹﾝｽｳ",
+        "ADD 1 TO WS-ﾎｼｮｳﾄｳﾛｸｹﾝｽｳ"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "sentence": "When reading `POLMST-F` fails on its key, it sets `HS-ﾎｼｮｳ-ﾚｺｰﾄﾞ` to `ﾎｼｮｳﾁｭｳｼｭﾂ-ﾚｺｰﾄﾞ`, sets `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`, reads `POLMST-F`, adds 1 to `WS-ｹｲﾔｸﾅｼｹﾝｽｳ`, sets `WS-ﾌｯｷｺｰﾄﾞ` to 4, and performs `ﾎｼｮｳﾁｭｳｼｭﾂ-ﾖﾐｺﾐ-RTN`."
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            6,
+            7,
+            4,
+            5
+          ],
+          "sentence": "When reading `POLMST-F` succeeds by its key and writing `HS-ﾎｼｮｳ-ﾚｺｰﾄﾞ` fails on its key, it sets `HS-ﾎｼｮｳ-ﾚｺｰﾄﾞ` to `ﾎｼｮｳﾁｭｳｼｭﾂ-ﾚｺｰﾄﾞ`, sets `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`, reads `POLMST-F`, writes `HS-ﾎｼｮｳ-ﾚｺｰﾄﾞ`, adds 1 to `WS-ﾎｼｮｳﾁｮｳﾌｸｹﾝｽｳ`, sets `WS-ﾌｯｷｺｰﾄﾞ` to 4, and performs `ﾎｼｮｳﾁｭｳｼｭﾂ-ﾖﾐｺﾐ-RTN`."
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            6,
+            8,
+            5
+          ],
+          "sentence": "When reading `POLMST-F` succeeds by its key and writing `HS-ﾎｼｮｳ-ﾚｺｰﾄﾞ` succeeds by its key, it sets `HS-ﾎｼｮｳ-ﾚｺｰﾄﾞ` to `ﾎｼｮｳﾁｭｳｼｭﾂ-ﾚｺｰﾄﾞ`, sets `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`, reads `POLMST-F`, writes `HS-ﾎｼｮｳ-ﾚｺｰﾄﾞ`, adds 1 to `WS-ﾎｼｮｳﾄｳﾛｸｹﾝｽｳ`, and performs `ﾎｼｮｳﾁｭｳｼｭﾂ-ﾖﾐｺﾐ-RTN`."
+        }
+      ]
+    },
+    {
       "paragraph": "ｾｲｷﾞｮ-RTN",
-      "source": "gondwana/programs/GLO010.cbl:195",
+      "source": "gondwana/programs/GLO010.cbl:286",
       "conditions": [
         "WS-ｾｲｷﾞｮ-OK"
       ],

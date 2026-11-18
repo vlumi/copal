@@ -9,6 +9,7 @@ PRODTB と RATETB を読み込む先。商品の並びが料率の第1添字で�
 変更履歴
 日付       担当 変更
 1987-04-01 KT   GL-0001 初版。
+2026-11-18 YN   GL-0825 商品の区分: 特約。
 ```
 
 Copybook [TBLWS.cpy](../../../gondwana/copybooks/TBLWS.cpy), used by [GLD010](../programs/GLD010.md), [GLD020](../programs/GLD020.md), [GLD030](../programs/GLD030.md), [GLM020](../programs/GLM020.md), [GLY010](../programs/GLY010.md).
@@ -21,28 +22,30 @@ Copybook [TBLWS.cpy](../../../gondwana/copybooks/TBLWS.cpy), used by [GLD010](..
 
 ## WS-ｼｮｳﾋﾝ-TBL
 
-592 bytes.
+602 bytes.
 
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-ｼｮｳﾋﾝ-TBL | group | 1 | 592 | | | | [TBLWS.cpy:11](../../../gondwana/copybooks/TBLWS.cpy#L11) |
-| 05 | ├ WS-ｼｮｳﾋﾝｹﾝｽｳ | number | 1 | 2 | 99 | | VALUE 0 | [TBLWS.cpy:12](../../../gondwana/copybooks/TBLWS.cpy#L12) |
-| 05 | └ WS-ｼｮｳﾋﾝ | group | 3 | 59 | | | OCCURS 10; INDEXED BY WS-ｼｮｳﾋﾝ-IX | [TBLWS.cpy:13](../../../gondwana/copybooks/TBLWS.cpy#L13) |
-| 10 |   ├ WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ | text | 3 | 2 | X(2) | | | [TBLWS.cpy:14](../../../gondwana/copybooks/TBLWS.cpy#L14) |
-| 10 |   ├ WS-ｼｮｳﾋﾝ-ﾒｲｼｮｳ | text | 5 | 20 | X(20) | | | [TBLWS.cpy:15](../../../gondwana/copybooks/TBLWS.cpy#L15) |
-| 10 |   ├ WS-ｼｮｳﾋﾝ-ｼｭﾙｲ | code | 25 | 1 | 9 | | | [TBLWS.cpy:16](../../../gondwana/copybooks/TBLWS.cpy#L16) |
-| 88 |   │ ├ WS-ｼｮｳﾋﾝ-ｼｭｳｼﾝ | | | | | | VALUE 1 | [TBLWS.cpy:17](../../../gondwana/copybooks/TBLWS.cpy#L17) |
-| 88 |   │ ├ WS-ｼｮｳﾋﾝ-ｺｳｼﾝﾃｲｷ | | | | | | VALUE 2 | [TBLWS.cpy:18](../../../gondwana/copybooks/TBLWS.cpy#L18) |
-| 88 |   │ ├ WS-ｼｮｳﾋﾝ-ﾖｳﾛｳ | | | | | | VALUE 3 | [TBLWS.cpy:19](../../../gondwana/copybooks/TBLWS.cpy#L19) |
-| 88 |   │ └ WS-ｼｮｳﾋﾝ-ｲﾘｮｳ | | | | | | VALUE 4 | [TBLWS.cpy:20](../../../gondwana/copybooks/TBLWS.cpy#L20) |
-| 10 |   ├ WS-ｼｮｳﾋﾝ-ｻｲﾃｲﾈﾝﾚｲ | number | 26 | 2 | 99 | | | [TBLWS.cpy:21](../../../gondwana/copybooks/TBLWS.cpy#L21) |
-| 10 |   ├ WS-ｼｮｳﾋﾝ-ｻｲｺｳﾈﾝﾚｲ | number | 28 | 2 | 99 | | | [TBLWS.cpy:22](../../../gondwana/copybooks/TBLWS.cpy#L22) |
-| 10 |   ├ WS-ｼｮｳﾋﾝ-ﾎｹﾝｷｶﾝ | number | 30 | 2 | 99 | | | [TBLWS.cpy:23](../../../gondwana/copybooks/TBLWS.cpy#L23) |
-| 10 |   ├ WS-ｼｮｳﾋﾝ-ｻｲﾃｲｷﾝｶﾞｸ | amount | 32 | 9 | 9(9) | | | [TBLWS.cpy:24](../../../gondwana/copybooks/TBLWS.cpy#L24) |
-| 10 |   ├ WS-ｼｮｳﾋﾝ-ｻｲｺｳｷﾝｶﾞｸ | amount | 41 | 9 | 9(9) | | | [TBLWS.cpy:25](../../../gondwana/copybooks/TBLWS.cpy#L25) |
-| 10 |   ├ WS-ｼｮｳﾋﾝ-ﾆｭｳｲﾝﾆﾁｶﾞｸﾘﾂ | rate | 50 | 4 | 9V999 | | | [TBLWS.cpy:26](../../../gondwana/copybooks/TBLWS.cpy#L26) |
-| 10 |   ├ WS-ｼｮｳﾋﾝ-ﾒﾝｾｷﾆｯｽｳ | number | 54 | 3 | 9(3) | | | [TBLWS.cpy:27](../../../gondwana/copybooks/TBLWS.cpy#L27) |
-| 10 |   └ WS-ｼｮｳﾋﾝ-ﾊｲﾄｳﾘﾂ | rate | 57 | 5 | 9V9(4) | | | [TBLWS.cpy:28](../../../gondwana/copybooks/TBLWS.cpy#L28) |
+| 01 | WS-ｼｮｳﾋﾝ-TBL | group | 1 | 602 | | | | [TBLWS.cpy:12](../../../gondwana/copybooks/TBLWS.cpy#L12) |
+| 05 | ├ WS-ｼｮｳﾋﾝｹﾝｽｳ | number | 1 | 2 | 99 | | VALUE 0 | [TBLWS.cpy:13](../../../gondwana/copybooks/TBLWS.cpy#L13) |
+| 05 | └ WS-ｼｮｳﾋﾝ | group | 3 | 60 | | | OCCURS 10; INDEXED BY WS-ｼｮｳﾋﾝ-IX | [TBLWS.cpy:14](../../../gondwana/copybooks/TBLWS.cpy#L14) |
+| 10 |   ├ WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ | text | 3 | 2 | X(2) | | | [TBLWS.cpy:15](../../../gondwana/copybooks/TBLWS.cpy#L15) |
+| 10 |   ├ WS-ｼｮｳﾋﾝ-ﾒｲｼｮｳ | text | 5 | 20 | X(20) | | | [TBLWS.cpy:16](../../../gondwana/copybooks/TBLWS.cpy#L16) |
+| 10 |   ├ WS-ｼｮｳﾋﾝ-ｼｭﾙｲ | code | 25 | 1 | 9 | | | [TBLWS.cpy:17](../../../gondwana/copybooks/TBLWS.cpy#L17) |
+| 88 |   │ ├ WS-ｼｮｳﾋﾝ-ｼｭｳｼﾝ | | | | | | VALUE 1 | [TBLWS.cpy:18](../../../gondwana/copybooks/TBLWS.cpy#L18) |
+| 88 |   │ ├ WS-ｼｮｳﾋﾝ-ｺｳｼﾝﾃｲｷ | | | | | | VALUE 2 | [TBLWS.cpy:19](../../../gondwana/copybooks/TBLWS.cpy#L19) |
+| 88 |   │ ├ WS-ｼｮｳﾋﾝ-ﾖｳﾛｳ | | | | | | VALUE 3 | [TBLWS.cpy:20](../../../gondwana/copybooks/TBLWS.cpy#L20) |
+| 88 |   │ └ WS-ｼｮｳﾋﾝ-ｲﾘｮｳ | | | | | | VALUE 4 | [TBLWS.cpy:21](../../../gondwana/copybooks/TBLWS.cpy#L21) |
+| 10 |   ├ WS-ｼｮｳﾋﾝ-ｻｲﾃｲﾈﾝﾚｲ | number | 26 | 2 | 99 | | | [TBLWS.cpy:22](../../../gondwana/copybooks/TBLWS.cpy#L22) |
+| 10 |   ├ WS-ｼｮｳﾋﾝ-ｻｲｺｳﾈﾝﾚｲ | number | 28 | 2 | 99 | | | [TBLWS.cpy:23](../../../gondwana/copybooks/TBLWS.cpy#L23) |
+| 10 |   ├ WS-ｼｮｳﾋﾝ-ﾎｹﾝｷｶﾝ | number | 30 | 2 | 99 | | | [TBLWS.cpy:24](../../../gondwana/copybooks/TBLWS.cpy#L24) |
+| 10 |   ├ WS-ｼｮｳﾋﾝ-ｻｲﾃｲｷﾝｶﾞｸ | amount | 32 | 9 | 9(9) | | | [TBLWS.cpy:25](../../../gondwana/copybooks/TBLWS.cpy#L25) |
+| 10 |   ├ WS-ｼｮｳﾋﾝ-ｻｲｺｳｷﾝｶﾞｸ | amount | 41 | 9 | 9(9) | | | [TBLWS.cpy:26](../../../gondwana/copybooks/TBLWS.cpy#L26) |
+| 10 |   ├ WS-ｼｮｳﾋﾝ-ﾆｭｳｲﾝﾆﾁｶﾞｸﾘﾂ | rate | 50 | 4 | 9V999 | | | [TBLWS.cpy:27](../../../gondwana/copybooks/TBLWS.cpy#L27) |
+| 10 |   ├ WS-ｼｮｳﾋﾝ-ﾒﾝｾｷﾆｯｽｳ | number | 54 | 3 | 9(3) | | | [TBLWS.cpy:28](../../../gondwana/copybooks/TBLWS.cpy#L28) |
+| 10 |   ├ WS-ｼｮｳﾋﾝ-ﾊｲﾄｳﾘﾂ | rate | 57 | 5 | 9V9(4) | | | [TBLWS.cpy:29](../../../gondwana/copybooks/TBLWS.cpy#L29) |
+| 10 |   └ WS-ｼｮｳﾋﾝ-ｸﾌﾞﾝ | code | 62 | 1 | X | | | [TBLWS.cpy:30](../../../gondwana/copybooks/TBLWS.cpy#L30) |
+| 88 |     └ WS-ｼｮｳﾋﾝ-ﾄｸﾔｸ | | | | | | VALUE 'T' | [TBLWS.cpy:31](../../../gondwana/copybooks/TBLWS.cpy#L31) |
 
 ## WS-ﾘｮｳﾘﾂ-TBL
 
@@ -50,10 +53,10 @@ Copybook [TBLWS.cpy](../../../gondwana/copybooks/TBLWS.cpy), used by [GLD010](..
 
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-ﾘｮｳﾘﾂ-TBL | group | 1 | 8100 | | | | [TBLWS.cpy:29](../../../gondwana/copybooks/TBLWS.cpy#L29) |
-| 05 | └ WS-ﾘｮｳﾘﾂ-ｼｮｳﾋﾝ | group | 1 | 810 | | | OCCURS 10 | [TBLWS.cpy:30](../../../gondwana/copybooks/TBLWS.cpy#L30) |
-| 10 |   └ WS-ﾘｮｳﾘﾂ-ｾｲﾍﾞﾂ | group | 1 | 405 | | | OCCURS 2 | [TBLWS.cpy:31](../../../gondwana/copybooks/TBLWS.cpy#L31) |
-| 15 |     └ WS-ﾘｮｳﾘﾂ | rate | 1 | 5 | 9(3)V99 | | OCCURS 81 | [TBLWS.cpy:32](../../../gondwana/copybooks/TBLWS.cpy#L32) |
+| 01 | WS-ﾘｮｳﾘﾂ-TBL | group | 1 | 8100 | | | | [TBLWS.cpy:32](../../../gondwana/copybooks/TBLWS.cpy#L32) |
+| 05 | └ WS-ﾘｮｳﾘﾂ-ｼｮｳﾋﾝ | group | 1 | 810 | | | OCCURS 10 | [TBLWS.cpy:33](../../../gondwana/copybooks/TBLWS.cpy#L33) |
+| 10 |   └ WS-ﾘｮｳﾘﾂ-ｾｲﾍﾞﾂ | group | 1 | 405 | | | OCCURS 2 | [TBLWS.cpy:34](../../../gondwana/copybooks/TBLWS.cpy#L34) |
+| 15 |     └ WS-ﾘｮｳﾘﾂ | rate | 1 | 5 | 9(3)V99 | | OCCURS 81 | [TBLWS.cpy:35](../../../gondwana/copybooks/TBLWS.cpy#L35) |
 
 ## WS-ﾈﾝﾚｲ-ｿｴｼﾞ
 
@@ -61,4 +64,4 @@ Copybook [TBLWS.cpy](../../../gondwana/copybooks/TBLWS.cpy), used by [GLD010](..
 
 | Level | Field | Kind | Start | Length | Picture | Usage | Notes | Source |
 | --: | --- | --- | --: | --: | --- | --- | --- | --- |
-| 01 | WS-ﾈﾝﾚｲ-ｿｴｼﾞ | number | 1 | 2 | 99 | | | [TBLWS.cpy:34](../../../gondwana/copybooks/TBLWS.cpy#L34) |
+| 01 | WS-ﾈﾝﾚｲ-ｿｴｼﾞ | number | 1 | 2 | 99 | | | [TBLWS.cpy:37](../../../gondwana/copybooks/TBLWS.cpy#L37) |

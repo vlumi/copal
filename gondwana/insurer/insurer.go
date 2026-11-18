@@ -100,11 +100,14 @@ func (in Insurer) Open(seed uint64, policies int) error {
 	if err != nil {
 		return err
 	}
-	extract, err := g.Extract(policies, StartDate)
+	extract, coverages, err := g.Extract(policies, StartDate)
 	if err != nil {
 		return err
 	}
 	if err := in.write("IN/EXTRACT.TXT", generate.File(extract)); err != nil {
+		return err
+	}
+	if err := in.write("IN/COVEXT.TXT", generate.File(coverages)); err != nil {
 		return err
 	}
 	for _, t := range []struct {
@@ -290,24 +293,33 @@ func (in Insurer) generateDaily(g *generate.Generator, date generate.Date) error
 	return nil
 }
 
-// policies reads the policies as the last unload before the date left
-// them, or as the extract had them in an insurer just opened.
+// policies reads the policies and their coverages as the last unload
+// before the date left them, or as the extracts had them in an insurer
+// just opened.
 func (in Insurer) policies(g *generate.Generator, date generate.Date) ([]generate.Policy, error) {
 	unloads, err := filepath.Glob(in.data("OUT", "POLMST.*.TXT"))
 	if err != nil {
 		return nil, err
 	}
-	latest, latestStamp := in.data("IN", "EXTRACT.TXT"), ""
+	latest, coverages, latestStamp := in.data("IN", "EXTRACT.TXT"), in.data("IN", "COVEXT.TXT"), ""
 	for _, unload := range unloads {
 		if stamp := stampOf(unload); stamp < date.Stamp() && stamp > latestStamp {
-			latest, latestStamp = unload, stamp
+			latest, coverages, latestStamp = unload, in.data("OUT", "COVMST."+stamp+".TXT"), stamp
 		}
 	}
 	recs, err := in.readFile(g.Layouts.Policy, latest)
 	if err != nil {
 		return nil, err
 	}
-	return g.ReadPolicies(recs)
+	policies, err := g.ReadPolicies(recs)
+	if err != nil {
+		return nil, err
+	}
+	recs, err = in.readFile(g.Layouts.Coverage, coverages)
+	if err != nil {
+		return nil, err
+	}
+	return policies, g.ReadCoverages(policies, recs)
 }
 
 // stampOf is the date in a file's name, NAME.yyyymmdd.EXT.

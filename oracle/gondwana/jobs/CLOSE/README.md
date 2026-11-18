@@ -9,4 +9,4 @@ The batch file ended with errorlevel 0.
 | GLM020 | [GLM020](../../GLM020/) | RC=0001 | 7 of 56 |
 | GLM030 | [GLM030](../../GLM030/) | RC=0000 | 15 of 51 |
 | UNLOAD | UNLOAD | RC=0000 | |
-| UNLOAD.GLD090 | [GLD090](../../GLD090/) | RC=0000 | 9 of 36 |
+| UNLOAD.GLD090 | [GLD090](../../GLD090/) | RC=0000 | 11 of 42 |

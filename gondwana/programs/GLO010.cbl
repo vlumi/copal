@@ -6,13 +6,18 @@
       * 証券番号をキーとする索引マスタに登録する。次に制御レコード
       * を、両暦の日付、採番カウンタ 1、登録した件数で書く。
       * 抽出に二重にある証券番号は1件だけ登録し、数える。
+      * 続いて保障抽出ファイル (1行1保障レコード) を、証券番号と
+      * 保障番号をキーとする保障マスタに登録する。契約マスタにない
+      * 契約の保障は登録せず、二重にある保障は1件だけ登録し、
+      * どちらも数える。
       *
-      * 復帰コード: 0 登録済、4 抽出に重複あり、
+      * 復帰コード: 0 登録済、4 抽出に重複か契約のない保障あり、
       *             8 日付が日付でない、16 ファイル異常。
       *
       * 変更履歴
       * 日付       担当 変更
       * 1999-11-08 MS   GL-0233 初版、PC システム移行時。
+      * 2026-11-18 YN   GL-0825 保障マスタの初期登録。
       *----------------------------------------------------------------
        IDENTIFICATION DIVISION.
        PROGRAM-ID. GLO010.
@@ -30,6 +35,14 @@
                ACCESS MODE IS RANDOM
                RECORD KEY IS PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ
                FILE STATUS IS WS-ｹｲﾔｸ-ST.
+           SELECT COVEXT-F ASSIGN TO "COVEXT"
+               ORGANIZATION IS LINE SEQUENTIAL
+               FILE STATUS IS WS-ﾎｼｮｳﾁｭｳｼｭﾂ-ST.
+           SELECT COVMST-F ASSIGN TO "COVMST"
+               ORGANIZATION IS INDEXED
+               ACCESS MODE IS RANDOM
+               RECORD KEY IS HS-ｷｰ
+               FILE STATUS IS WS-ﾎｼｮｳ-ST.
            SELECT GLSCTL-F ASSIGN TO "GLSCTL"
                ORGANIZATION IS SEQUENTIAL
                FILE STATUS IS WS-ｾｲｷﾞｮ-ST.
@@ -43,6 +56,10 @@
        01  ﾁｭｳｼｭﾂ-ﾚｺｰﾄﾞ                PIC X(300).
        FD  POLMST-F.
        COPY POLMST.
+       FD  COVEXT-F.
+       01  ﾎｼｮｳﾁｭｳｼｭﾂ-ﾚｺｰﾄﾞ            PIC X(80).
+       FD  COVMST-F.
+       COPY COVMST.
        FD  GLSCTL-F
            RECORD CONTAINS 64 CHARACTERS.
        COPY CTLREC.
@@ -56,6 +73,11 @@
                88  WS-ﾁｭｳｼｭﾂ-ｵﾜﾘ               VALUE "10".
            05  WS-ｹｲﾔｸ-ST              PIC XX.
                88  WS-ｹｲﾔｸ-OK                  VALUE "00".
+           05  WS-ﾎｼｮｳﾁｭｳｼｭﾂ-ST        PIC XX.
+               88  WS-ﾎｼｮｳﾁｭｳｼｭﾂ-OK            VALUE "00".
+               88  WS-ﾎｼｮｳﾁｭｳｼｭﾂ-ｵﾜﾘ           VALUE "10".
+           05  WS-ﾎｼｮｳ-ST              PIC XX.
+               88  WS-ﾎｼｮｳ-OK                  VALUE "00".
            05  WS-ｾｲｷﾞｮ-ST             PIC XX.
                88  WS-ｾｲｷﾞｮ-OK                 VALUE "00".
            05  WS-ﾎｳｺｸ-ST              PIC XX.
@@ -74,6 +96,10 @@
            05  WS-ｼｯｺｳｹﾝｽｳ             PIC 9(7) VALUE 0.
            05  WS-ｼｮｳﾒﾂｹﾝｽｳ            PIC 9(7) VALUE 0.
            05  WS-ﾕｳｺｳﾎｹﾝｷﾝｶﾞｸ         PIC 9(15) VALUE 0.
+           05  WS-ﾎｼｮｳﾖﾐｺﾐｹﾝｽｳ         PIC 9(7) VALUE 0.
+           05  WS-ﾎｼｮｳﾄｳﾛｸｹﾝｽｳ         PIC 9(7) VALUE 0.
+           05  WS-ﾎｼｮｳﾁｮｳﾌｸｹﾝｽｳ        PIC 9(7) VALUE 0.
+           05  WS-ｹｲﾔｸﾅｼｹﾝｽｳ           PIC 9(7) VALUE 0.
        01  WS-ﾌｯｷｺｰﾄﾞ                  PIC 99 VALUE 0.
        01  WS-ﾎｳｺｸ.
            05  WS-ﾋｮｳﾀﾞｲ-ｷﾞｮｳ.
@@ -92,11 +118,13 @@
 
        PROCEDURE DIVISION.
       *----------------------------------------------------------------
-      * ﾒｲﾝ-RTN: 日付、登録、制御レコード、報告。
+      * ﾒｲﾝ-RTN: 日付、契約の登録、保障の登録、制御レコード、報告。
       *----------------------------------------------------------------
        ﾒｲﾝ-RTN.
            PERFORM ｼｮｷ-RTN
            PERFORM ﾄｳﾛｸ-RTN UNTIL WS-ﾁｭｳｼｭﾂ-ｵﾜﾘ
+           PERFORM ﾎｼｮｳ-ｼﾞｭﾝﾋﾞ-RTN
+           PERFORM ﾎｼｮｳ-ﾄｳﾛｸ-RTN UNTIL WS-ﾎｼｮｳﾁｭｳｼｭﾂ-ｵﾜﾘ
            PERFORM ｾｲｷﾞｮ-RTN
            PERFORM ﾎｳｺｸ-RTN
            PERFORM ｼｭｳﾘｮｳ-RTN
@@ -190,6 +218,69 @@
            END-EVALUATE.
 
       *----------------------------------------------------------------
+      * ﾎｼｮｳ-ｼﾞｭﾝﾋﾞ-RTN: 契約マスタを読めるように開き直し、保障
+      * 抽出ファイルと保障マスタを開く。
+      *----------------------------------------------------------------
+       ﾎｼｮｳ-ｼﾞｭﾝﾋﾞ-RTN.
+           CLOSE POLMST-F
+           OPEN INPUT POLMST-F
+           IF NOT WS-ｹｲﾔｸ-OK
+               MOVE "POLMST" TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ
+               MOVE WS-ｹｲﾔｸ-ST TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ(9:2)
+               PERFORM ｲｼﾞｮｳ-RTN
+           END-IF
+           OPEN INPUT COVEXT-F
+           IF NOT WS-ﾎｼｮｳﾁｭｳｼｭﾂ-OK
+               MOVE "COVEXT" TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ
+               MOVE WS-ﾎｼｮｳﾁｭｳｼｭﾂ-ST TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ(9:2)
+               PERFORM ｲｼﾞｮｳ-RTN
+           END-IF
+           OPEN OUTPUT COVMST-F
+           IF NOT WS-ﾎｼｮｳ-OK
+               MOVE "COVMST" TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ
+               MOVE WS-ﾎｼｮｳ-ST TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ(9:2)
+               PERFORM ｲｼﾞｮｳ-RTN
+           END-IF
+           PERFORM ﾎｼｮｳﾁｭｳｼｭﾂ-ﾖﾐｺﾐ-RTN.
+
+      *----------------------------------------------------------------
+      * ﾎｼｮｳﾁｭｳｼｭﾂ-ﾖﾐｺﾐ-RTN: 保障抽出ファイルの次の行。
+      *----------------------------------------------------------------
+       ﾎｼｮｳﾁｭｳｼｭﾂ-ﾖﾐｺﾐ-RTN.
+           READ COVEXT-F
+           IF WS-ﾎｼｮｳﾁｭｳｼｭﾂ-OK
+               ADD 1 TO WS-ﾎｼｮｳﾖﾐｺﾐｹﾝｽｳ
+           ELSE
+               IF NOT WS-ﾎｼｮｳﾁｭｳｼｭﾂ-ｵﾜﾘ
+                   MOVE "COVEXT" TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ
+                   MOVE WS-ﾎｼｮｳﾁｭｳｼｭﾂ-ST TO WS-ｺﾏﾝﾄﾞｷﾞｮｳ(9:2)
+                   PERFORM ｲｼﾞｮｳ-RTN
+               END-IF
+           END-IF.
+
+      *----------------------------------------------------------------
+      * ﾎｼｮｳ-ﾄｳﾛｸ-RTN: 保障1件を、その契約がマスタにあれば保障
+      * マスタに登録する。
+      *----------------------------------------------------------------
+       ﾎｼｮｳ-ﾄｳﾛｸ-RTN.
+           MOVE ﾎｼｮｳﾁｭｳｼｭﾂ-ﾚｺｰﾄﾞ TO HS-ﾎｼｮｳ-ﾚｺｰﾄﾞ
+           MOVE HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ TO PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ
+           READ POLMST-F
+               INVALID KEY
+                   ADD 1 TO WS-ｹｲﾔｸﾅｼｹﾝｽｳ
+                   MOVE 4 TO WS-ﾌｯｷｺｰﾄﾞ
+               NOT INVALID KEY
+                   WRITE HS-ﾎｼｮｳ-ﾚｺｰﾄﾞ
+                       INVALID KEY
+                           ADD 1 TO WS-ﾎｼｮｳﾁｮｳﾌｸｹﾝｽｳ
+                           MOVE 4 TO WS-ﾌｯｷｺｰﾄﾞ
+                       NOT INVALID KEY
+                           ADD 1 TO WS-ﾎｼｮｳﾄｳﾛｸｹﾝｽｳ
+                   END-WRITE
+           END-READ
+           PERFORM ﾎｼｮｳﾁｭｳｼｭﾂ-ﾖﾐｺﾐ-RTN.
+
+      *----------------------------------------------------------------
       * ｾｲｷﾞｮ-RTN: 制御レコードを1回書く。
       *----------------------------------------------------------------
        ｾｲｷﾞｮ-RTN.
@@ -239,15 +330,29 @@
            MOVE WS-ｼｮｳﾒﾂｹﾝｽｳ TO WS-ｹﾝｽｳ-ｱﾀｲ
            WRITE ﾎｳｺｸ-ｷﾞｮｳ FROM WS-ｹﾝｽｳ-ｷﾞｮｳ
            MOVE WS-ﾕｳｺｳﾎｹﾝｷﾝｶﾞｸ TO WS-ｷﾝｶﾞｸ-ｱﾀｲ
-           WRITE ﾎｳｺｸ-ｷﾞｮｳ FROM WS-ｷﾝｶﾞｸ-ｷﾞｮｳ.
+           WRITE ﾎｳｺｸ-ｷﾞｮｳ FROM WS-ｷﾝｶﾞｸ-ｷﾞｮｳ
+           MOVE "保障抽出件数" TO WS-ｹﾝｽｳ-ﾗﾍﾞﾙ
+           MOVE WS-ﾎｼｮｳﾖﾐｺﾐｹﾝｽｳ TO WS-ｹﾝｽｳ-ｱﾀｲ
+           WRITE ﾎｳｺｸ-ｷﾞｮｳ FROM WS-ｹﾝｽｳ-ｷﾞｮｳ
+           MOVE "保障登録件数" TO WS-ｹﾝｽｳ-ﾗﾍﾞﾙ
+           MOVE WS-ﾎｼｮｳﾄｳﾛｸｹﾝｽｳ TO WS-ｹﾝｽｳ-ｱﾀｲ
+           WRITE ﾎｳｺｸ-ｷﾞｮｳ FROM WS-ｹﾝｽｳ-ｷﾞｮｳ
+           MOVE "保障重複件数" TO WS-ｹﾝｽｳ-ﾗﾍﾞﾙ
+           MOVE WS-ﾎｼｮｳﾁｮｳﾌｸｹﾝｽｳ TO WS-ｹﾝｽｳ-ｱﾀｲ
+           WRITE ﾎｳｺｸ-ｷﾞｮｳ FROM WS-ｹﾝｽｳ-ｷﾞｮｳ
+           MOVE "契約なし保障" TO WS-ｹﾝｽｳ-ﾗﾍﾞﾙ
+           MOVE WS-ｹｲﾔｸﾅｼｹﾝｽｳ TO WS-ｹﾝｽｳ-ｱﾀｲ
+           WRITE ﾎｳｺｸ-ｷﾞｮｳ FROM WS-ｹﾝｽｳ-ｷﾞｮｳ.
 
       *----------------------------------------------------------------
       * ｼｭｳﾘｮｳ-RTN: ファイルを閉じ、件数を表示する。
       *----------------------------------------------------------------
        ｼｭｳﾘｮｳ-RTN.
-           CLOSE EXTRACT-F POLMST-F GLSCTL-F REPORT-F
+           CLOSE EXTRACT-F POLMST-F COVEXT-F COVMST-F GLSCTL-F
+                 REPORT-F
            DISPLAY "GLO010 登録 " WS-ﾄｳﾛｸｹﾝｽｳ
-                   " 重複 " WS-ﾁｮｳﾌｸｹﾝｽｳ.
+                   " 重複 " WS-ﾁｮｳﾌｸｹﾝｽｳ
+                   " 保障 " WS-ﾎｼｮｳﾄｳﾛｸｹﾝｽｳ.
 
       *----------------------------------------------------------------
       * ｲｼﾞｮｳ-RTN: ファイル異常は 16 で終わる。ファイル名と状態は

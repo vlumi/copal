@@ -3,14 +3,16 @@
   "kind": "script",
   "source": "gondwana/scripts/OPEN.BAT",
   "description": [
-    "OPEN.BAT: システム開設。契約抽出ファイルから契約マスタの索引",
-    "ファイルと制御レコードを作る。一度だけ実行する。",
+    "OPEN.BAT: システム開設。契約抽出ファイルと保障抽出ファイルから",
+    "契約マスタと保障マスタの索引ファイル、制御レコードを作る。一度",
+    "だけ実行する。",
     "",
     "使い方: OPEN.BAT YYYYMMDD  業務日付",
     "環境: GLS_BIN プログラム、GLS_SCRIPTS バッチファイル、GLS_DATA データ",
     "",
     "変更履歴",
-    "1999-11-08 MS  GL-0233 初版、PC システム移行時。"
+    "1999-11-08 MS  GL-0233 初版、PC システム移行時。",
+    "2026-11-18 YN  GL-0825 保障マスタ。"
   ],
   "steps": [
     {
@@ -23,7 +25,7 @@
       "description": [
         "契約マスタの初期登録と制御レコード"
       ],
-      "source": "gondwana/scripts/OPEN.BAT:25",
+      "source": "gondwana/scripts/OPEN.BAT:29",
       "dds": [
         {
           "dd": "EXTRACT",
@@ -35,7 +37,7 @@
             "read"
           ],
           "copybook": "POLMST",
-          "source": "gondwana/scripts/OPEN.BAT:25"
+          "source": "gondwana/scripts/OPEN.BAT:29"
         },
         {
           "dd": "POLMST",
@@ -45,10 +47,36 @@
           "indexed": true,
           "file": "POLMST-F",
           "uses": [
-            "write"
+            "write",
+            "read"
           ],
           "copybook": "POLMST",
-          "source": "gondwana/scripts/OPEN.BAT:25"
+          "source": "gondwana/scripts/OPEN.BAT:29"
+        },
+        {
+          "dd": "COVEXT",
+          "datasets": [
+            "$DATA/IN/COVEXT.TXT"
+          ],
+          "file": "COVEXT-F",
+          "uses": [
+            "read"
+          ],
+          "copybook": "COVMST",
+          "source": "gondwana/scripts/OPEN.BAT:29"
+        },
+        {
+          "dd": "COVMST",
+          "datasets": [
+            "$DATA/MASTER/COVMST.IDX"
+          ],
+          "indexed": true,
+          "file": "COVMST-F",
+          "uses": [
+            "write"
+          ],
+          "copybook": "COVMST",
+          "source": "gondwana/scripts/OPEN.BAT:29"
         },
         {
           "dd": "GLSCTL",
@@ -60,7 +88,7 @@
             "write"
           ],
           "copybook": "CTLREC",
-          "source": "gondwana/scripts/OPEN.BAT:25"
+          "source": "gondwana/scripts/OPEN.BAT:29"
         },
         {
           "dd": "GLO010R",
@@ -71,7 +99,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/OPEN.BAT:25"
+          "source": "gondwana/scripts/OPEN.BAT:29"
         },
         {
           "dd": "stdout",
@@ -81,7 +109,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/OPEN.BAT:25"
+          "source": "gondwana/scripts/OPEN.BAT:29"
         }
       ]
     }
@@ -98,6 +126,26 @@
     {
       "dataset": "$DATA/MASTER/POLMST.IDX",
       "copybook": "POLMST",
+      "kind": "internal",
+      "indexed": true,
+      "writtenBy": [
+        "GLO010"
+      ],
+      "readBy": [
+        "GLO010"
+      ]
+    },
+    {
+      "dataset": "$DATA/IN/COVEXT.TXT",
+      "copybook": "COVMST",
+      "kind": "external",
+      "readBy": [
+        "GLO010"
+      ]
+    },
+    {
+      "dataset": "$DATA/MASTER/COVMST.IDX",
+      "copybook": "COVMST",
       "kind": "internal",
       "indexed": true,
       "writtenBy": [

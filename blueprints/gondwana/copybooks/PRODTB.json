@@ -7,12 +7,14 @@
     "PRODTB.TXT の1行が1商品: 商品の種類、加入できる年齢、",
     "保険金額の範囲、支払内容。入院日額率は保険金額1,000円",
     "あたりの入院日額、免責日数は契約日からその日数の間は",
-    "入院給付金を支払わない日数。",
+    "入院給付金を支払わない日数。区分が T の商品は特約で、",
+    "主契約としては売らない。",
     "",
     "変更履歴",
     "日付       担当 変更",
     "1987-04-01 KT   GL-0001 初版。",
-    "2008-06-02 YN   GL-0455 医療保険: 入院日額率、免責日数。"
+    "2008-06-02 YN   GL-0455 医療保険: 入院日額率、免責日数。",
+    "2026-11-18 YN   GL-0825 区分 (予備から): 特約。"
   ],
   "records": [
     {
@@ -22,7 +24,7 @@
       "length": 60,
       "category": "group",
       "kind": "group",
-      "source": "gondwana/copybooks/PRODTB.cpy:14",
+      "source": "gondwana/copybooks/PRODTB.cpy:16",
       "fields": [
         {
           "level": 5,
@@ -33,7 +35,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "gondwana/copybooks/PRODTB.cpy:15"
+          "source": "gondwana/copybooks/PRODTB.cpy:17"
         },
         {
           "level": 5,
@@ -44,7 +46,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "gondwana/copybooks/PRODTB.cpy:16"
+          "source": "gondwana/copybooks/PRODTB.cpy:18"
         },
         {
           "level": 5,
@@ -62,31 +64,31 @@
               "values": [
                 "1"
               ],
-              "source": "gondwana/copybooks/PRODTB.cpy:18"
+              "source": "gondwana/copybooks/PRODTB.cpy:20"
             },
             {
               "name": "PR-ｺｳｼﾝﾃｲｷ",
               "values": [
                 "2"
               ],
-              "source": "gondwana/copybooks/PRODTB.cpy:19"
+              "source": "gondwana/copybooks/PRODTB.cpy:21"
             },
             {
               "name": "PR-ﾖｳﾛｳ",
               "values": [
                 "3"
               ],
-              "source": "gondwana/copybooks/PRODTB.cpy:20"
+              "source": "gondwana/copybooks/PRODTB.cpy:22"
             },
             {
               "name": "PR-ｲﾘｮｳ",
               "values": [
                 "4"
               ],
-              "source": "gondwana/copybooks/PRODTB.cpy:21"
+              "source": "gondwana/copybooks/PRODTB.cpy:23"
             }
           ],
-          "source": "gondwana/copybooks/PRODTB.cpy:17"
+          "source": "gondwana/copybooks/PRODTB.cpy:19"
         },
         {
           "level": 5,
@@ -98,7 +100,7 @@
           "category": "numeric",
           "kind": "number",
           "digits": 2,
-          "source": "gondwana/copybooks/PRODTB.cpy:22"
+          "source": "gondwana/copybooks/PRODTB.cpy:24"
         },
         {
           "level": 5,
@@ -110,7 +112,7 @@
           "category": "numeric",
           "kind": "number",
           "digits": 2,
-          "source": "gondwana/copybooks/PRODTB.cpy:23"
+          "source": "gondwana/copybooks/PRODTB.cpy:25"
         },
         {
           "level": 5,
@@ -122,7 +124,7 @@
           "category": "numeric",
           "kind": "number",
           "digits": 2,
-          "source": "gondwana/copybooks/PRODTB.cpy:24"
+          "source": "gondwana/copybooks/PRODTB.cpy:26"
         },
         {
           "level": 5,
@@ -134,7 +136,7 @@
           "category": "numeric",
           "kind": "amount",
           "digits": 9,
-          "source": "gondwana/copybooks/PRODTB.cpy:25"
+          "source": "gondwana/copybooks/PRODTB.cpy:27"
         },
         {
           "level": 5,
@@ -146,7 +148,7 @@
           "category": "numeric",
           "kind": "amount",
           "digits": 9,
-          "source": "gondwana/copybooks/PRODTB.cpy:26"
+          "source": "gondwana/copybooks/PRODTB.cpy:28"
         },
         {
           "level": 5,
@@ -159,7 +161,7 @@
           "kind": "rate",
           "digits": 4,
           "scale": 3,
-          "source": "gondwana/copybooks/PRODTB.cpy:27"
+          "source": "gondwana/copybooks/PRODTB.cpy:29"
         },
         {
           "level": 5,
@@ -171,7 +173,7 @@
           "category": "numeric",
           "kind": "number",
           "digits": 3,
-          "source": "gondwana/copybooks/PRODTB.cpy:28"
+          "source": "gondwana/copybooks/PRODTB.cpy:30"
         },
         {
           "level": 5,
@@ -184,18 +186,27 @@
           "kind": "rate",
           "digits": 5,
           "scale": 4,
-          "source": "gondwana/copybooks/PRODTB.cpy:29"
+          "source": "gondwana/copybooks/PRODTB.cpy:31"
         },
         {
           "level": 5,
-          "name": "FILLER",
+          "name": "PR-ｸﾌﾞﾝ",
           "start": 60,
           "length": 1,
-          "picture": "X(1)",
+          "picture": "X",
           "usage": "DISPLAY",
           "category": "alphanumeric",
-          "kind": "filler",
-          "source": "gondwana/copybooks/PRODTB.cpy:30"
+          "kind": "code",
+          "conditions": [
+            {
+              "name": "PR-ﾄｸﾔｸ",
+              "values": [
+                "'T'"
+              ],
+              "source": "gondwana/copybooks/PRODTB.cpy:33"
+            }
+          ],
+          "source": "gondwana/copybooks/PRODTB.cpy:32"
         }
       ]
     }

@@ -10,8 +10,9 @@ import (
 const newBusinessRate = 0.8
 
 // NewBusiness makes up the sales system's file of a business day: the
-// applications that became policies, dated in the Western calendar as
-// the sales system writes them, a mistaken one now and then.
+// applications that became policies, with the riders they were sold
+// with, dated in the Western calendar as the sales system writes them, a
+// mistaken one now and then.
 func (g *Generator) NewBusiness(date Date, policies []Policy) ([][]byte, error) {
 	r := g.rng("new business", date.Number())
 	count := poisson(r, newBusinessRate*float64(len(policies))/1000)
@@ -33,14 +34,63 @@ func (g *Generator) NewBusiness(date Date, policies []Policy) ([][]byte, error) 
 		if err != nil {
 			return nil, err
 		}
+		riders := p.Riders()
+		if r.IntN(100) < 2 {
+			riders = []Coverage{{Product: wrongRider(r, p), Amount: 1_000_000}}
+		}
+		for i, c := range riders {
+			if err := g.setRider(rec, i, c); err != nil {
+				return nil, err
+			}
+		}
 		recs = append(recs, rec)
 	}
 	return recs, nil
 }
 
+// setRider writes the n-th rider of an application, from 0. The record
+// library addresses the first occurrence of a repeated field, so a rider
+// is written there in a record of its own and copied to its place.
+func (g *Generator) setRider(rec []byte, n int, c Coverage) error {
+	l := g.Layouts.NewPolicy
+	first, err := made(l, map[string]any{"NP-ﾄｸﾔｸ-ｼｮｳﾋﾝ": c.Product, "NP-ﾄｸﾔｸ-ｷﾝｶﾞｸ": c.Amount})
+	if err != nil {
+		return err
+	}
+	start, length := -1, 0
+	for _, f := range l.Fields() {
+		if f.Name == "NP-ﾄｸﾔｸ-ｼｮｳﾋﾝ" || f.Name == "NP-ﾄｸﾔｸ-ｷﾝｶﾞｸ" {
+			if start < 0 {
+				start = f.Start - 1
+			}
+			length += f.Length
+		}
+	}
+	copy(rec[start+n*length:], first[start:start+length])
+	return nil
+}
+
+// wrongRider is a rider the program refuses on an application: a product
+// the insurer does not sell, one it sells on its own, or a rider of the
+// main contract's kind.
+func wrongRider(r *rand.Rand, p Policy) string {
+	switch r.IntN(3) {
+	case 0:
+		return "ZZ"
+	case 1:
+		return "WL"
+	}
+	for _, pr := range products {
+		if pr.rider && pr.kind == productOf(p.Product).kind {
+			return pr.code
+		}
+	}
+	return "EN"
+}
+
 // application makes up a policy as the sales system sends it: numbered
 // by the day, contracted within the last few days, sold by an office
-// still open.
+// still open, with the riders it was sold with.
 func (g *Generator) application(r *rand.Rand, date Date, n int) Policy {
 	pr := aProduct(r)
 	holder := somebody(r)
@@ -53,6 +103,7 @@ func (g *Generator) application(r *rand.Rand, date Date, n int) Policy {
 	p.Mode = aMode(r)
 	p.Birth, p.EntryAge = g.birth(r, pr, p.Contract)
 	p.Sum = g.sum(r, pr)
+	p.Coverages = append([]Coverage{{No: 1, Product: pr.code, Status: 1, Amount: p.Sum}}, g.riders(r, p, pr, p.Contract)...)
 	return p
 }
 
