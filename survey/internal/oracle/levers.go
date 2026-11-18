@@ -53,6 +53,8 @@ const maxCount = 100
 // condition of the program, the values it compares with and their
 // boundaries, put into the input fields the condition depends on; then the
 // changes to each input's records; then the failures of each input file.
+// A field that holds a date as text takes the dates around the business
+// date, in the form the system writes them.
 func (p *program) levers() []lever {
 	var levers []lever
 	add := func(l lever) {
@@ -99,6 +101,9 @@ func (p *program) levers() []lever {
 	}
 	for _, ref := range p.references() {
 		add(lever{input: ref[0].input, field: ref[0].field, from: ref[1], change: copyField})
+	}
+	for _, l := range p.dateLevers() {
+		add(l)
 	}
 	for _, in := range p.inputs {
 		add(lever{input: in.name(), change: emptyInput})

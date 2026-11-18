@@ -39,6 +39,9 @@ type program struct {
 	units     []Unit
 	files     []blueprint.File
 	declares  map[string]int
+	// forms are the forms the system writes a date in as text, if they
+	// were learned.
+	forms DateForms
 }
 
 // Unit is a program whose decision tables a run reaches: the program run,

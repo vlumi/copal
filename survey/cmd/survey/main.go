@@ -127,13 +127,17 @@ func searchCases(args []string) error {
 		return err
 	}
 	defer func() { _ = os.RemoveAll(scratch) }()
+	forms, err := oracle.LearnDates(system, *copybooks, scratch)
+	if err != nil {
+		return err
+	}
 	var results []*oracle.Result
 	for i := range system.Programs {
 		p := &system.Programs[i]
 		if p.Kind != blueprint.KindMain || *only != "" && p.Name != *only {
 			continue
 		}
-		result, err := oracle.Search(system, p, *copybooks, scratch)
+		result, err := oracle.Search(system, p, *copybooks, scratch, forms)
 		if err != nil {
 			return err
 		}
