@@ -120,7 +120,7 @@ func TestTables(t *testing.T) {
 		table func() ([][]byte, error)
 		lines int
 	}{
-		{"products", g.Products, 6}, {"rates", g.Rates, 972}, {"cash values", g.CashValues, 960}, {"reserves", g.Reserves, 200}, {"agents", g.Agents, 10},
+		{"products", g.Products, 6}, {"rates", g.Rates, 972}, {"cash values", g.CashValues, 960}, {"reserves", g.Reserves, 3600}, {"agents", g.Agents, 10},
 	} {
 		recs, err := c.table()
 		if err != nil {

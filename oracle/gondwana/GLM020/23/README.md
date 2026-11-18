@@ -1,0 +1,7 @@
+# GLM020: case 23
+
+The run ended with return code 0.
+
+The first case to reach:
+
+- [GLM020, ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLM020.md#ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ-rtn)

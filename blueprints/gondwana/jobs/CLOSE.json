@@ -11,7 +11,8 @@
     "",
     "変更履歴",
     "1999-11-08 MS  GL-0233 初版、PC システム移行時 (旧 JCL から)。",
-    "2026-11-19 YN  GL-0828 日計表。"
+    "2026-11-19 YN  GL-0828 日計表。",
+    "2026-11-19 YN  GL-0829 責任準備金を保障ごとに。"
   ],
   "steps": [
     {
@@ -24,7 +25,7 @@
       "description": [
         "責任準備金計算"
       ],
-      "source": "gondwana/scripts/CLOSE.BAT:24",
+      "source": "gondwana/scripts/CLOSE.BAT:26",
       "dds": [
         {
           "dd": "POLMST",
@@ -37,7 +38,7 @@
             "update"
           ],
           "copybook": "POLMST",
-          "source": "gondwana/scripts/CLOSE.BAT:24"
+          "source": "gondwana/scripts/CLOSE.BAT:26"
         },
         {
           "dd": "RSVTB",
@@ -49,7 +50,7 @@
             "read"
           ],
           "copybook": "RSVTB",
-          "source": "gondwana/scripts/CLOSE.BAT:24"
+          "source": "gondwana/scripts/CLOSE.BAT:26"
         },
         {
           "dd": "PRODTB",
@@ -61,7 +62,20 @@
             "read"
           ],
           "copybook": "PRODTB",
-          "source": "gondwana/scripts/CLOSE.BAT:24"
+          "source": "gondwana/scripts/CLOSE.BAT:26"
+        },
+        {
+          "dd": "COVMST",
+          "datasets": [
+            "$DATA/MASTER/COVMST.IDX"
+          ],
+          "indexed": true,
+          "file": "COVMST-F",
+          "uses": [
+            "read"
+          ],
+          "copybook": "COVMST",
+          "source": "gondwana/scripts/CLOSE.BAT:26"
         },
         {
           "dd": "GLSCTL",
@@ -73,7 +87,7 @@
             "update"
           ],
           "copybook": "CTLREC",
-          "source": "gondwana/scripts/CLOSE.BAT:24"
+          "source": "gondwana/scripts/CLOSE.BAT:26"
         },
         {
           "dd": "GLJRNL",
@@ -85,7 +99,7 @@
             "append"
           ],
           "copybook": "GLJRNL",
-          "source": "gondwana/scripts/CLOSE.BAT:24"
+          "source": "gondwana/scripts/CLOSE.BAT:26"
         },
         {
           "dd": "GLM020R",
@@ -96,7 +110,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/CLOSE.BAT:24"
+          "source": "gondwana/scripts/CLOSE.BAT:26"
         },
         {
           "dd": "stdout",
@@ -106,7 +120,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/CLOSE.BAT:24"
+          "source": "gondwana/scripts/CLOSE.BAT:26"
         }
       ]
     },
@@ -120,7 +134,7 @@
       "description": [
         "代理店手数料計算"
       ],
-      "source": "gondwana/scripts/CLOSE.BAT:32",
+      "source": "gondwana/scripts/CLOSE.BAT:34",
       "dds": [
         {
           "dd": "POLMST",
@@ -133,7 +147,7 @@
             "read"
           ],
           "copybook": "POLMST",
-          "source": "gondwana/scripts/CLOSE.BAT:32"
+          "source": "gondwana/scripts/CLOSE.BAT:34"
         },
         {
           "dd": "AGTMST",
@@ -145,7 +159,7 @@
             "read"
           ],
           "copybook": "AGTMST",
-          "source": "gondwana/scripts/CLOSE.BAT:32"
+          "source": "gondwana/scripts/CLOSE.BAT:34"
         },
         {
           "dd": "GLSCTL",
@@ -157,7 +171,7 @@
             "update"
           ],
           "copybook": "CTLREC",
-          "source": "gondwana/scripts/CLOSE.BAT:32"
+          "source": "gondwana/scripts/CLOSE.BAT:34"
         },
         {
           "dd": "GLJRNL",
@@ -169,7 +183,7 @@
             "append"
           ],
           "copybook": "GLJRNL",
-          "source": "gondwana/scripts/CLOSE.BAT:32"
+          "source": "gondwana/scripts/CLOSE.BAT:34"
         },
         {
           "dd": "COMMIS",
@@ -180,7 +194,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/CLOSE.BAT:32"
+          "source": "gondwana/scripts/CLOSE.BAT:34"
         },
         {
           "dd": "GLM030R",
@@ -191,7 +205,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/CLOSE.BAT:32"
+          "source": "gondwana/scripts/CLOSE.BAT:34"
         },
         {
           "dd": "stdout",
@@ -201,7 +215,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/CLOSE.BAT:32"
+          "source": "gondwana/scripts/CLOSE.BAT:34"
         }
       ]
     },
@@ -215,7 +229,7 @@
       "description": [
         "日計表"
       ],
-      "source": "gondwana/scripts/CLOSE.BAT:38",
+      "source": "gondwana/scripts/CLOSE.BAT:40",
       "dds": [
         {
           "dd": "GLJRNL",
@@ -227,7 +241,7 @@
             "read"
           ],
           "copybook": "GLJRNL",
-          "source": "gondwana/scripts/CLOSE.BAT:38"
+          "source": "gondwana/scripts/CLOSE.BAT:40"
         },
         {
           "dd": "GLD080R",
@@ -238,7 +252,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/CLOSE.BAT:38"
+          "source": "gondwana/scripts/CLOSE.BAT:40"
         },
         {
           "dd": "stdout",
@@ -248,7 +262,7 @@
           "uses": [
             "write"
           ],
-          "source": "gondwana/scripts/CLOSE.BAT:38"
+          "source": "gondwana/scripts/CLOSE.BAT:40"
         }
       ]
     },
@@ -263,7 +277,7 @@
       "description": [
         "月末のアンロード"
       ],
-      "source": "gondwana/scripts/CLOSE.BAT:43",
+      "source": "gondwana/scripts/CLOSE.BAT:45",
       "dds": null
     }
   ],
@@ -293,6 +307,15 @@
       "dataset": "$DATA/MASTER/PRODTB.TXT",
       "copybook": "PRODTB",
       "kind": "external",
+      "readBy": [
+        "GLM020"
+      ]
+    },
+    {
+      "dataset": "$DATA/MASTER/COVMST.IDX",
+      "copybook": "COVMST",
+      "kind": "internal",
+      "indexed": true,
       "readBy": [
         "GLM020"
       ]

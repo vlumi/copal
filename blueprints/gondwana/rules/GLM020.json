@@ -3,13 +3,14 @@
   "tables": [
     {
       "paragraph": "ｼｮｷ-RTN",
-      "source": "gondwana/programs/GLM020.cbl:177",
+      "source": "gondwana/programs/GLM020.cbl:195",
       "conditions": [
         "WS-ﾍﾝｶﾝｹｯｶ = 0",
         "WS-RSVTB-OK",
         "WS-ｴﾗｰﾌｧｲﾙ = SPACES",
         "WS-PRODTB-OK",
         "WS-POLMST-OK",
+        "WS-COVMST-OK",
         "WS-GLSCTL-OK",
         "WS-GLJRNL-OK",
         "WS-REPORT-OK",
@@ -32,6 +33,9 @@
           "WS-POLMST-ST"
         ],
         [
+          "WS-COVMST-ST"
+        ],
+        [
           "WS-GLSCTL-ST"
         ],
         [
@@ -51,7 +55,7 @@
         "DISPLAY 'GLM020 日付不正: ' WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)",
         "MOVE 8 TO RETURN-CODE",
         "STOP RUN",
-        "OPEN INPUT RSVTB-F PRODTB-F",
+        "OPEN INPUT RSVTB-F PRODTB-F COVMST-F",
         "OPEN I-O POLMST-F GLSCTL-F",
         "OPEN EXTEND GLJRNL-F",
         "OPEN OUTPUT REPORT-F",
@@ -62,6 +66,8 @@
         "MOVE WS-PRODTB-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
         "MOVE 'POLMST' TO WS-ｴﾗｰﾌｧｲﾙ",
         "MOVE WS-POLMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "MOVE 'COVMST' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-COVMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
         "MOVE 'GLSCTL' TO WS-ｴﾗｰﾌｧｲﾙ",
         "MOVE WS-GLSCTL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
         "MOVE 'GLJRNL' TO WS-ｴﾗｰﾌｧｲﾙ",
@@ -78,6 +84,7 @@
         {
           "entries": [
             "N",
+            "",
             "",
             "",
             "",
@@ -107,6 +114,7 @@
             "",
             "",
             "",
+            "",
             ""
           ],
           "actions": [
@@ -121,7 +129,7 @@
             11,
             12
           ],
-          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0, `WS-RSVTB-ST` is not `'00'` (not `WS-RSVTB-OK`), and `WS-ｴﾗｰﾌｧｲﾙ` is not spaces, it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `RSVTB-F` and `PRODTB-F` for input; opens `POLMST-F` and `GLSCTL-F` to update; opens `GLJRNL-F` to extend; opens `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'RSVTB'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-RSVTB-ST`; and performs `ｲｼﾞｮｳ-RTN`."
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0, `WS-RSVTB-ST` is not `'00'` (not `WS-RSVTB-OK`), and `WS-ｴﾗｰﾌｧｲﾙ` is not spaces, it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `RSVTB-F`, `PRODTB-F`, and `COVMST-F` for input; opens `POLMST-F` and `GLSCTL-F` to update; opens `GLJRNL-F` to extend; opens `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'RSVTB'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-RSVTB-ST`; and performs `ｲｼﾞｮｳ-RTN`."
         },
         {
           "entries": [
@@ -129,6 +137,7 @@
             "Y",
             "N",
             "N",
+            "",
             "",
             "",
             "",
@@ -147,7 +156,7 @@
             14,
             12
           ],
-          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0, `WS-RSVTB-ST` is `'00'` (`WS-RSVTB-OK`), `WS-ｴﾗｰﾌｧｲﾙ` is not spaces, and `WS-PRODTB-ST` is not `'00'` (not `WS-PRODTB-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `RSVTB-F` and `PRODTB-F` for input; opens `POLMST-F` and `GLSCTL-F` to update; opens `GLJRNL-F` to extend; opens `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'PRODTB'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-PRODTB-ST`; and performs `ｲｼﾞｮｳ-RTN`."
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0, `WS-RSVTB-ST` is `'00'` (`WS-RSVTB-OK`), `WS-ｴﾗｰﾌｧｲﾙ` is not spaces, and `WS-PRODTB-ST` is not `'00'` (not `WS-PRODTB-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `RSVTB-F`, `PRODTB-F`, and `COVMST-F` for input; opens `POLMST-F` and `GLSCTL-F` to update; opens `GLJRNL-F` to extend; opens `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'PRODTB'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-PRODTB-ST`; and performs `ｲｼﾞｮｳ-RTN`."
         },
         {
           "entries": [
@@ -156,6 +165,7 @@
             "N",
             "Y",
             "N",
+            "",
             "",
             "",
             "",
@@ -173,7 +183,7 @@
             16,
             12
           ],
-          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0, `WS-RSVTB-ST` is `'00'` (`WS-RSVTB-OK`), `WS-ｴﾗｰﾌｧｲﾙ` is not spaces, `WS-PRODTB-ST` is `'00'` (`WS-PRODTB-OK`), and `WS-POLMST-ST` is not `'00'` (not `WS-POLMST-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `RSVTB-F` and `PRODTB-F` for input; opens `POLMST-F` and `GLSCTL-F` to update; opens `GLJRNL-F` to extend; opens `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'POLMST'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-POLMST-ST`; and performs `ｲｼﾞｮｳ-RTN`."
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0, `WS-RSVTB-ST` is `'00'` (`WS-RSVTB-OK`), `WS-ｴﾗｰﾌｧｲﾙ` is not spaces, `WS-PRODTB-ST` is `'00'` (`WS-PRODTB-OK`), and `WS-POLMST-ST` is not `'00'` (not `WS-POLMST-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `RSVTB-F`, `PRODTB-F`, and `COVMST-F` for input; opens `POLMST-F` and `GLSCTL-F` to update; opens `GLJRNL-F` to extend; opens `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'POLMST'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-POLMST-ST`; and performs `ｲｼﾞｮｳ-RTN`."
         },
         {
           "entries": [
@@ -183,6 +193,7 @@
             "Y",
             "Y",
             "N",
+            "",
             "",
             "",
             ""
@@ -199,7 +210,7 @@
             18,
             12
           ],
-          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0, `WS-RSVTB-ST` is `'00'` (`WS-RSVTB-OK`), `WS-ｴﾗｰﾌｧｲﾙ` is not spaces, `WS-PRODTB-ST` is `'00'` (`WS-PRODTB-OK`), `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`), and `WS-GLSCTL-ST` is not `'00'` (not `WS-GLSCTL-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `RSVTB-F` and `PRODTB-F` for input; opens `POLMST-F` and `GLSCTL-F` to update; opens `GLJRNL-F` to extend; opens `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'GLSCTL'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-GLSCTL-ST`; and performs `ｲｼﾞｮｳ-RTN`."
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0, `WS-RSVTB-ST` is `'00'` (`WS-RSVTB-OK`), `WS-ｴﾗｰﾌｧｲﾙ` is not spaces, `WS-PRODTB-ST` is `'00'` (`WS-PRODTB-OK`), `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`), and `WS-COVMST-ST` is not `'00'` (not `WS-COVMST-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `RSVTB-F`, `PRODTB-F`, and `COVMST-F` for input; opens `POLMST-F` and `GLSCTL-F` to update; opens `GLJRNL-F` to extend; opens `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'COVMST'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-COVMST-ST`; and performs `ｲｼﾞｮｳ-RTN`."
         },
         {
           "entries": [
@@ -210,6 +221,7 @@
             "Y",
             "Y",
             "N",
+            "",
             "",
             ""
           ],
@@ -225,13 +237,41 @@
             20,
             12
           ],
-          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0, `WS-RSVTB-ST` is `'00'` (`WS-RSVTB-OK`), `WS-ｴﾗｰﾌｧｲﾙ` is not spaces, `WS-PRODTB-ST` is `'00'` (`WS-PRODTB-OK`), `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`), `WS-GLSCTL-ST` is `'00'` (`WS-GLSCTL-OK`), and `WS-GLJRNL-ST` is neither `'00'` nor `'05'` (not `WS-GLJRNL-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `RSVTB-F` and `PRODTB-F` for input; opens `POLMST-F` and `GLSCTL-F` to update; opens `GLJRNL-F` to extend; opens `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'GLJRNL'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-GLJRNL-ST`; and performs `ｲｼﾞｮｳ-RTN`."
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0, `WS-RSVTB-ST` is `'00'` (`WS-RSVTB-OK`), `WS-ｴﾗｰﾌｧｲﾙ` is not spaces, `WS-PRODTB-ST` is `'00'` (`WS-PRODTB-OK`), `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`), `WS-COVMST-ST` is `'00'` (`WS-COVMST-OK`), and `WS-GLSCTL-ST` is not `'00'` (not `WS-GLSCTL-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `RSVTB-F`, `PRODTB-F`, and `COVMST-F` for input; opens `POLMST-F` and `GLSCTL-F` to update; opens `GLJRNL-F` to extend; opens `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'GLSCTL'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-GLSCTL-ST`; and performs `ｲｼﾞｮｳ-RTN`."
         },
         {
           "entries": [
             "Y",
             "Y",
             "N",
+            "Y",
+            "Y",
+            "Y",
+            "Y",
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            6,
+            7,
+            8,
+            9,
+            21,
+            22,
+            12
+          ],
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0, `WS-RSVTB-ST` is `'00'` (`WS-RSVTB-OK`), `WS-ｴﾗｰﾌｧｲﾙ` is not spaces, `WS-PRODTB-ST` is `'00'` (`WS-PRODTB-OK`), `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`), `WS-COVMST-ST` is `'00'` (`WS-COVMST-OK`), `WS-GLSCTL-ST` is `'00'` (`WS-GLSCTL-OK`), and `WS-GLJRNL-ST` is neither `'00'` nor `'05'` (not `WS-GLJRNL-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `RSVTB-F`, `PRODTB-F`, and `COVMST-F` for input; opens `POLMST-F` and `GLSCTL-F` to update; opens `GLJRNL-F` to extend; opens `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'GLJRNL'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-GLJRNL-ST`; and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N",
+            "Y",
             "Y",
             "Y",
             "Y",
@@ -247,14 +287,15 @@
             7,
             8,
             9,
-            21,
-            22,
+            23,
+            24,
             12
           ],
-          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-RSVTB-ST` is `'00'` (`WS-RSVTB-OK`); `WS-ｴﾗｰﾌｧｲﾙ` is not spaces; `WS-PRODTB-ST` is `'00'` (`WS-PRODTB-OK`); `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`); `WS-GLSCTL-ST` is `'00'` (`WS-GLSCTL-OK`); `WS-GLJRNL-ST` is `'00'` or `'05'` (`WS-GLJRNL-OK`); and `WS-REPORT-ST` is not `'00'` (not `WS-REPORT-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `RSVTB-F` and `PRODTB-F` for input; opens `POLMST-F` and `GLSCTL-F` to update; opens `GLJRNL-F` to extend; opens `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'GLM020R'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-REPORT-ST`; and performs `ｲｼﾞｮｳ-RTN`."
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-RSVTB-ST` is `'00'` (`WS-RSVTB-OK`); `WS-ｴﾗｰﾌｧｲﾙ` is not spaces; `WS-PRODTB-ST` is `'00'` (`WS-PRODTB-OK`); `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`); `WS-COVMST-ST` is `'00'` (`WS-COVMST-OK`); `WS-GLSCTL-ST` is `'00'` (`WS-GLSCTL-OK`); `WS-GLJRNL-ST` is `'00'` or `'05'` (`WS-GLJRNL-OK`); and `WS-REPORT-ST` is not `'00'` (not `WS-REPORT-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `RSVTB-F`, `PRODTB-F`, and `COVMST-F` for input; opens `POLMST-F` and `GLSCTL-F` to update; opens `GLJRNL-F` to extend; opens `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'GLM020R'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-REPORT-ST`; and performs `ｲｼﾞｮｳ-RTN`."
         },
         {
           "entries": [
+            "Y",
             "Y",
             "Y",
             "Y",
@@ -273,19 +314,20 @@
             7,
             8,
             9,
-            23,
-            24,
             25,
             26,
             27,
-            17,
-            18,
+            28,
+            29,
+            19,
+            20,
             12
           ],
-          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-RSVTB-ST` is `'00'` (`WS-RSVTB-OK`); `WS-ｴﾗｰﾌｧｲﾙ` is spaces; `WS-PRODTB-ST` is `'00'` (`WS-PRODTB-OK`); `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`); `WS-GLSCTL-ST` is `'00'` (`WS-GLSCTL-OK`); `WS-GLJRNL-ST` is `'00'` or `'05'` (`WS-GLJRNL-OK`); `WS-REPORT-ST` is `'00'` (`WS-REPORT-OK`); and `WS-GLSCTL-ST` is not `'00'` (not `WS-GLSCTL-OK`), tested again, it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `RSVTB-F` and `PRODTB-F` for input; opens `POLMST-F` and `GLSCTL-F` to update; opens `GLJRNL-F` to extend; opens `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to spaces; sets `JR-ｼﾜｹ-ﾚｺｰﾄﾞ` to spaces; performs `ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN`; performs `ｼﾞｭﾝﾋﾞｷﾝ-ﾖﾐｺﾐ-RTN`; reads `GLSCTL-F`; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'GLSCTL'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-GLSCTL-ST`; and performs `ｲｼﾞｮｳ-RTN`."
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-RSVTB-ST` is `'00'` (`WS-RSVTB-OK`); `WS-ｴﾗｰﾌｧｲﾙ` is spaces; `WS-PRODTB-ST` is `'00'` (`WS-PRODTB-OK`); `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`); `WS-COVMST-ST` is `'00'` (`WS-COVMST-OK`); `WS-GLSCTL-ST` is `'00'` (`WS-GLSCTL-OK`); `WS-GLJRNL-ST` is `'00'` or `'05'` (`WS-GLJRNL-OK`); `WS-REPORT-ST` is `'00'` (`WS-REPORT-OK`); and `WS-GLSCTL-ST` is not `'00'` (not `WS-GLSCTL-OK`), tested again, it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `RSVTB-F`, `PRODTB-F`, and `COVMST-F` for input; opens `POLMST-F` and `GLSCTL-F` to update; opens `GLJRNL-F` to extend; opens `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to spaces; sets `JR-ｼﾜｹ-ﾚｺｰﾄﾞ` to spaces; performs `ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN`; performs `ｼﾞｭﾝﾋﾞｷﾝ-ﾖﾐｺﾐ-RTN`; reads `GLSCTL-F`; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'GLSCTL'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-GLSCTL-ST`; and performs `ｲｼﾞｮｳ-RTN`."
         },
         {
           "entries": [
+            "Y",
             "Y",
             "Y",
             "Y",
@@ -304,19 +346,19 @@
             7,
             8,
             9,
-            23,
-            24,
             25,
             26,
-            27
+            27,
+            28,
+            29
           ],
-          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-RSVTB-ST` is `'00'` (`WS-RSVTB-OK`); `WS-ｴﾗｰﾌｧｲﾙ` is spaces; `WS-PRODTB-ST` is `'00'` (`WS-PRODTB-OK`); `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`); `WS-GLSCTL-ST` is `'00'` (`WS-GLSCTL-OK`); `WS-GLJRNL-ST` is `'00'` or `'05'` (`WS-GLJRNL-OK`); `WS-REPORT-ST` is `'00'` (`WS-REPORT-OK`); and `WS-GLSCTL-ST` is `'00'` (`WS-GLSCTL-OK`), tested again, it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `RSVTB-F` and `PRODTB-F` for input; opens `POLMST-F` and `GLSCTL-F` to update; opens `GLJRNL-F` to extend; opens `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to spaces; sets `JR-ｼﾜｹ-ﾚｺｰﾄﾞ` to spaces; performs `ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN`; performs `ｼﾞｭﾝﾋﾞｷﾝ-ﾖﾐｺﾐ-RTN`; and reads `GLSCTL-F`."
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-RSVTB-ST` is `'00'` (`WS-RSVTB-OK`); `WS-ｴﾗｰﾌｧｲﾙ` is spaces; `WS-PRODTB-ST` is `'00'` (`WS-PRODTB-OK`); `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`); `WS-COVMST-ST` is `'00'` (`WS-COVMST-OK`); `WS-GLSCTL-ST` is `'00'` (`WS-GLSCTL-OK`); `WS-GLJRNL-ST` is `'00'` or `'05'` (`WS-GLJRNL-OK`); `WS-REPORT-ST` is `'00'` (`WS-REPORT-OK`); and `WS-GLSCTL-ST` is `'00'` (`WS-GLSCTL-OK`), tested again, it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line; sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`; calls `GLC020`; opens `RSVTB-F`, `PRODTB-F`, and `COVMST-F` for input; opens `POLMST-F` and `GLSCTL-F` to update; opens `GLJRNL-F` to extend; opens `REPORT-F` for output; sets `WS-ｴﾗｰﾌｧｲﾙ` to spaces; sets `JR-ｼﾜｹ-ﾚｺｰﾄﾞ` to spaces; performs `ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN`; performs `ｼﾞｭﾝﾋﾞｷﾝ-ﾖﾐｺﾐ-RTN`; and reads `GLSCTL-F`."
         }
       ]
     },
     {
       "paragraph": "ｼﾞｭﾝﾋﾞｷﾝ-ﾖﾐｺﾐ-RTN",
-      "source": "gondwana/programs/GLM020.cbl:229",
+      "source": "gondwana/programs/GLM020.cbl:251",
       "conditions": [
         "WS-RSVTB-ｵﾜﾘ"
       ],
@@ -364,7 +406,7 @@
     {
       "paragraph": "ｼﾞｭﾝﾋﾞｷﾝ-ﾖﾐｺﾐ-RTN",
       "loop": "PERFORM UNTIL NOT WS-RSVTB-OK",
-      "source": "gondwana/programs/GLM020.cbl:232",
+      "source": "gondwana/programs/GLM020.cbl:254",
       "conditions": [
         "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = RS-ｼｮｳﾋﾝ"
       ],
@@ -378,7 +420,7 @@
       "actions": [
         "SET WS-ｼｮｳﾋﾝ-IX TO 1",
         "SEARCH WS-ｼｮｳﾋﾝ",
-        "MOVE RS-ｹｲｽｳ TO WS-ｼﾞｭﾝﾋﾞｷﾝ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX RS-ｹｲｶﾈﾝｽｳ)",
+        "MOVE RS-ｹｲｽｳ TO WS-ｼﾞｭﾝﾋﾞｷﾝ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX RS-ｾｲﾍﾞﾂ RS-ﾈﾝﾚｲｸﾌﾞﾝ RS-ｹｲｶﾈﾝｽｳ)",
         "READ RSVTB-F"
       ],
       "rules": [
@@ -392,7 +434,7 @@
             2,
             3
           ],
-          "sentence": "When `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is `RS-ｼｮｳﾋﾝ`, it sets `WS-ｼｮｳﾋﾝ-IX` to 1, searches `WS-ｼｮｳﾋﾝ`, sets `WS-ｼﾞｭﾝﾋﾞｷﾝ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX RS-ｹｲｶﾈﾝｽｳ)` to `RS-ｹｲｽｳ`, and reads `RSVTB-F`."
+          "sentence": "When `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is `RS-ｼｮｳﾋﾝ`, it sets `WS-ｼｮｳﾋﾝ-IX` to 1, searches `WS-ｼｮｳﾋﾝ`, sets `WS-ｼﾞｭﾝﾋﾞｷﾝ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX RS-ｾｲﾍﾞﾂ RS-ﾈﾝﾚｲｸﾌﾞﾝ RS-ｹｲｶﾈﾝｽｳ)` to `RS-ｹｲｽｳ`, and reads `RSVTB-F`."
         },
         {
           "entries": [
@@ -409,7 +451,7 @@
     },
     {
       "paragraph": "ｹｲｻﾝ-RTN",
-      "source": "gondwana/programs/GLM020.cbl:251",
+      "source": "gondwana/programs/GLM020.cbl:273",
       "conditions": [
         "WS-POLMST-ｵﾜﾘ"
       ],
@@ -454,7 +496,7 @@
     {
       "paragraph": "ｹｲｻﾝ-RTN",
       "loop": "PERFORM UNTIL NOT WS-POLMST-OK",
-      "source": "gondwana/programs/GLM020.cbl:253",
+      "source": "gondwana/programs/GLM020.cbl:275",
       "conditions": [
         "PM-ﾎｼｮｳﾁｭｳ",
         "PM-ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ \u003e 0"
@@ -514,27 +556,34 @@
     },
     {
       "paragraph": "ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ-RTN",
-      "source": "gondwana/programs/GLM020.cbl:275",
+      "source": "gondwana/programs/GLM020.cbl:298",
       "conditions": [
-        "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ",
-        "PM-ｹｲｶﾈﾝｽｳ \u003e 50"
+        "PM-ｹｲｶﾈﾝｽｳ \u003e 50",
+        "WS-COVMST-OK",
+        "NOT WS-COVMST-OK AND NOT WS-COVMST-ｵﾜﾘ"
       ],
       "conditionRefs": [
         [
-          "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ",
-          "WS-ｼｮｳﾋﾝ-IX",
-          "PM-ｼｮｳﾋﾝ"
+          "PM-ｹｲｶﾈﾝｽｳ"
         ],
         [
-          "PM-ｹｲｶﾈﾝｽｳ"
+          "WS-COVMST-ST"
+        ],
+        [
+          "WS-COVMST-ST"
         ]
       ],
       "actions": [
-        "SET WS-ｼｮｳﾋﾝ-IX TO 1",
-        "SEARCH WS-ｼｮｳﾋﾝ",
-        "CONTINUE",
+        "MOVE 0 TO SR-ｼﾞｭﾝﾋﾞｷﾝ",
         "MOVE 50 TO WS-ﾈﾝｽｳ",
-        "COMPUTE SR-ｼﾞｭﾝﾋﾞｷﾝ = PM-ﾎｹﾝｷﾝｶﾞｸ / 1000 * WS-ｼﾞｭﾝﾋﾞｷﾝ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX WS-ﾈﾝｽｳ)",
+        "MOVE PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ TO HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+        "MOVE 0 TO HS-ﾎｼｮｳﾊﾞﾝｺﾞｳ",
+        "START COVMST-F KEY NOT \u003c HS-ｷｰ",
+        "READ COVMST-F NEXT",
+        "PERFORM UNTIL NOT WS-COVMST-OK OR HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ NOT = PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+        "MOVE 'COVMST' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-COVMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "PERFORM ｲｼﾞｮｳ-RTN",
         "ADD 1 TO WS-ｹｲｻﾝｹﾝｽｳ",
         "MOVE PM-ｹｲｶﾈﾝｽｳ TO WS-ﾈﾝｽｳ"
       ],
@@ -542,6 +591,7 @@
         {
           "entries": [
             "Y",
+            "Y",
             "Y"
           ],
           "actions": [
@@ -550,12 +600,17 @@
             2,
             3,
             4,
-            5
+            5,
+            6,
+            7,
+            8,
+            9
           ],
-          "sentence": "When `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is `PM-ｼｮｳﾋﾝ` and `PM-ｹｲｶﾈﾝｽｳ` is more than 50, it sets `WS-ｼｮｳﾋﾝ-IX` to 1, searches `WS-ｼｮｳﾋﾝ`, sets `WS-ﾈﾝｽｳ` to 50, computes `SR-ｼﾞｭﾝﾋﾞｷﾝ` as `PM-ﾎｹﾝｷﾝｶﾞｸ / 1000 * WS-ｼﾞｭﾝﾋﾞｷﾝ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX WS-ﾈﾝｽｳ)`, and adds 1 to `WS-ｹｲｻﾝｹﾝｽｳ`."
+          "sentence": "When `PM-ｹｲｶﾈﾝｽｳ` is more than 50; `WS-COVMST-ST` is `'00'` (`WS-COVMST-OK`); and `WS-COVMST-ST` is not `'00'` (not `WS-COVMST-OK`) and `WS-COVMST-ST` is neither `'10'` nor `'23'` (not `WS-COVMST-ｵﾜﾘ`), it sets `SR-ｼﾞｭﾝﾋﾞｷﾝ` to 0; sets `WS-ﾈﾝｽｳ` to 50; sets `HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; sets `HS-ﾎｼｮｳﾊﾞﾝｺﾞｳ` to 0; runs `START COVMST-F KEY NOT \u003c HS-ｷｰ`; reads `COVMST-F`; repeats its loop until `WS-COVMST-ST` is not `'00'` (not `WS-COVMST-OK`) or `HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` is not `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'COVMST'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-COVMST-ST`; and performs `ｲｼﾞｮｳ-RTN`."
         },
         {
           "entries": [
+            "Y",
             "Y",
             "N"
           ],
@@ -563,45 +618,284 @@
             0,
             1,
             2,
-            6,
+            3,
             4,
-            5
+            5,
+            6,
+            10
           ],
-          "sentence": "When `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is `PM-ｼｮｳﾋﾝ` and `PM-ｹｲｶﾈﾝｽｳ` is at most 50, it sets `WS-ｼｮｳﾋﾝ-IX` to 1, searches `WS-ｼｮｳﾋﾝ`, sets `WS-ﾈﾝｽｳ` to `PM-ｹｲｶﾈﾝｽｳ`, computes `SR-ｼﾞｭﾝﾋﾞｷﾝ` as `PM-ﾎｹﾝｷﾝｶﾞｸ / 1000 * WS-ｼﾞｭﾝﾋﾞｷﾝ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX WS-ﾈﾝｽｳ)`, and adds 1 to `WS-ｹｲｻﾝｹﾝｽｳ`."
+          "sentence": "When `PM-ｹｲｶﾈﾝｽｳ` is more than 50; `WS-COVMST-ST` is `'00'` (`WS-COVMST-OK`); and `WS-COVMST-ST` is `'00'` (`WS-COVMST-OK`) or `WS-COVMST-ST` is `'10'` or `'23'` (`WS-COVMST-ｵﾜﾘ`), it sets `SR-ｼﾞｭﾝﾋﾞｷﾝ` to 0; sets `WS-ﾈﾝｽｳ` to 50; sets `HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; sets `HS-ﾎｼｮｳﾊﾞﾝｺﾞｳ` to 0; runs `START COVMST-F KEY NOT \u003c HS-ｷｰ`; reads `COVMST-F`; repeats its loop until `WS-COVMST-ST` is not `'00'` (not `WS-COVMST-OK`) or `HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` is not `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; and adds 1 to `WS-ｹｲｻﾝｹﾝｽｳ`."
         },
         {
           "entries": [
+            "Y",
             "N",
             "Y"
           ],
           "actions": [
             0,
             1,
+            2,
             3,
             4,
-            5
+            6,
+            7,
+            8,
+            9
           ],
-          "sentence": "When `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is not `PM-ｼｮｳﾋﾝ` and `PM-ｹｲｶﾈﾝｽｳ` is more than 50, it sets `WS-ｼｮｳﾋﾝ-IX` to 1, searches `WS-ｼｮｳﾋﾝ`, sets `WS-ﾈﾝｽｳ` to 50, computes `SR-ｼﾞｭﾝﾋﾞｷﾝ` as `PM-ﾎｹﾝｷﾝｶﾞｸ / 1000 * WS-ｼﾞｭﾝﾋﾞｷﾝ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX WS-ﾈﾝｽｳ)`, and adds 1 to `WS-ｹｲｻﾝｹﾝｽｳ`."
+          "sentence": "When `PM-ｹｲｶﾈﾝｽｳ` is more than 50; `WS-COVMST-ST` is not `'00'` (not `WS-COVMST-OK`); and `WS-COVMST-ST` is not `'00'` (not `WS-COVMST-OK`) and `WS-COVMST-ST` is neither `'10'` nor `'23'` (not `WS-COVMST-ｵﾜﾘ`), it sets `SR-ｼﾞｭﾝﾋﾞｷﾝ` to 0; sets `WS-ﾈﾝｽｳ` to 50; sets `HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; sets `HS-ﾎｼｮｳﾊﾞﾝｺﾞｳ` to 0; runs `START COVMST-F KEY NOT \u003c HS-ｷｰ`; repeats its loop until `WS-COVMST-ST` is not `'00'` (not `WS-COVMST-OK`) or `HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` is not `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'COVMST'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-COVMST-ST`; and performs `ｲｼﾞｮｳ-RTN`."
         },
         {
           "entries": [
+            "Y",
             "N",
             "N"
           ],
           "actions": [
             0,
             1,
-            6,
+            2,
+            3,
             4,
-            5
+            6,
+            10
           ],
-          "sentence": "When `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is not `PM-ｼｮｳﾋﾝ` and `PM-ｹｲｶﾈﾝｽｳ` is at most 50, it sets `WS-ｼｮｳﾋﾝ-IX` to 1, searches `WS-ｼｮｳﾋﾝ`, sets `WS-ﾈﾝｽｳ` to `PM-ｹｲｶﾈﾝｽｳ`, computes `SR-ｼﾞｭﾝﾋﾞｷﾝ` as `PM-ﾎｹﾝｷﾝｶﾞｸ / 1000 * WS-ｼﾞｭﾝﾋﾞｷﾝ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX WS-ﾈﾝｽｳ)`, and adds 1 to `WS-ｹｲｻﾝｹﾝｽｳ`."
+          "sentence": "When `PM-ｹｲｶﾈﾝｽｳ` is more than 50; `WS-COVMST-ST` is not `'00'` (not `WS-COVMST-OK`); and `WS-COVMST-ST` is `'00'` (`WS-COVMST-OK`) or `WS-COVMST-ST` is `'10'` or `'23'` (`WS-COVMST-ｵﾜﾘ`), it sets `SR-ｼﾞｭﾝﾋﾞｷﾝ` to 0; sets `WS-ﾈﾝｽｳ` to 50; sets `HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; sets `HS-ﾎｼｮｳﾊﾞﾝｺﾞｳ` to 0; runs `START COVMST-F KEY NOT \u003c HS-ｷｰ`; repeats its loop until `WS-COVMST-ST` is not `'00'` (not `WS-COVMST-OK`) or `HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` is not `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; and adds 1 to `WS-ｹｲｻﾝｹﾝｽｳ`."
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            11,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "sentence": "When `PM-ｹｲｶﾈﾝｽｳ` is at most 50; `WS-COVMST-ST` is `'00'` (`WS-COVMST-OK`); and `WS-COVMST-ST` is not `'00'` (not `WS-COVMST-OK`) and `WS-COVMST-ST` is neither `'10'` nor `'23'` (not `WS-COVMST-ｵﾜﾘ`), it sets `SR-ｼﾞｭﾝﾋﾞｷﾝ` to 0; sets `WS-ﾈﾝｽｳ` to `PM-ｹｲｶﾈﾝｽｳ`; sets `HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; sets `HS-ﾎｼｮｳﾊﾞﾝｺﾞｳ` to 0; runs `START COVMST-F KEY NOT \u003c HS-ｷｰ`; reads `COVMST-F`; repeats its loop until `WS-COVMST-ST` is not `'00'` (not `WS-COVMST-OK`) or `HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` is not `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'COVMST'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-COVMST-ST`; and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            11,
+            2,
+            3,
+            4,
+            5,
+            6,
+            10
+          ],
+          "sentence": "When `PM-ｹｲｶﾈﾝｽｳ` is at most 50; `WS-COVMST-ST` is `'00'` (`WS-COVMST-OK`); and `WS-COVMST-ST` is `'00'` (`WS-COVMST-OK`) or `WS-COVMST-ST` is `'10'` or `'23'` (`WS-COVMST-ｵﾜﾘ`), it sets `SR-ｼﾞｭﾝﾋﾞｷﾝ` to 0; sets `WS-ﾈﾝｽｳ` to `PM-ｹｲｶﾈﾝｽｳ`; sets `HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; sets `HS-ﾎｼｮｳﾊﾞﾝｺﾞｳ` to 0; runs `START COVMST-F KEY NOT \u003c HS-ｷｰ`; reads `COVMST-F`; repeats its loop until `WS-COVMST-ST` is not `'00'` (not `WS-COVMST-OK`) or `HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` is not `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; and adds 1 to `WS-ｹｲｻﾝｹﾝｽｳ`."
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            11,
+            2,
+            3,
+            4,
+            6,
+            7,
+            8,
+            9
+          ],
+          "sentence": "When `PM-ｹｲｶﾈﾝｽｳ` is at most 50; `WS-COVMST-ST` is not `'00'` (not `WS-COVMST-OK`); and `WS-COVMST-ST` is not `'00'` (not `WS-COVMST-OK`) and `WS-COVMST-ST` is neither `'10'` nor `'23'` (not `WS-COVMST-ｵﾜﾘ`), it sets `SR-ｼﾞｭﾝﾋﾞｷﾝ` to 0; sets `WS-ﾈﾝｽｳ` to `PM-ｹｲｶﾈﾝｽｳ`; sets `HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; sets `HS-ﾎｼｮｳﾊﾞﾝｺﾞｳ` to 0; runs `START COVMST-F KEY NOT \u003c HS-ｷｰ`; repeats its loop until `WS-COVMST-ST` is not `'00'` (not `WS-COVMST-OK`) or `HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` is not `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; sets `WS-ｴﾗｰﾌｧｲﾙ` to `'COVMST'`; sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-COVMST-ST`; and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            11,
+            2,
+            3,
+            4,
+            6,
+            10
+          ],
+          "sentence": "When `PM-ｹｲｶﾈﾝｽｳ` is at most 50; `WS-COVMST-ST` is not `'00'` (not `WS-COVMST-OK`); and `WS-COVMST-ST` is `'00'` (`WS-COVMST-OK`) or `WS-COVMST-ST` is `'10'` or `'23'` (`WS-COVMST-ｵﾜﾘ`), it sets `SR-ｼﾞｭﾝﾋﾞｷﾝ` to 0; sets `WS-ﾈﾝｽｳ` to `PM-ｹｲｶﾈﾝｽｳ`; sets `HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; sets `HS-ﾎｼｮｳﾊﾞﾝｺﾞｳ` to 0; runs `START COVMST-F KEY NOT \u003c HS-ｷｰ`; repeats its loop until `WS-COVMST-ST` is not `'00'` (not `WS-COVMST-OK`) or `HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` is not `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; and adds 1 to `WS-ｹｲｻﾝｹﾝｽｳ`."
+        }
+      ]
+    },
+    {
+      "paragraph": "ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ-RTN",
+      "loop": "PERFORM UNTIL NOT WS-COVMST-OK OR HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ NOT = PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
+      "source": "gondwana/programs/GLM020.cbl:311",
+      "conditions": [
+        "HS-ﾕｳｺｳ"
+      ],
+      "conditionRefs": [
+        [
+          "HS-ｼﾞｮｳﾀｲ"
+        ]
+      ],
+      "actions": [
+        "PERFORM ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ-RTN",
+        "READ COVMST-F NEXT"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1
+          ],
+          "sentence": "When `HS-ｼﾞｮｳﾀｲ` is `'1'` (`HS-ﾕｳｺｳ`), it performs `ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ-RTN` and reads `COVMST-F`."
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            1
+          ],
+          "sentence": "When `HS-ｼﾞｮｳﾀｲ` is not `'1'` (not `HS-ﾕｳｺｳ`), it reads `COVMST-F`."
+        }
+      ]
+    },
+    {
+      "paragraph": "ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ-RTN",
+      "source": "gondwana/programs/GLM020.cbl:329",
+      "conditions": [
+        "HS-ｶﾆｭｳﾈﾝﾚｲ \u003c 20",
+        "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = HS-ｼｮｳﾋﾝ",
+        "HS-ｶﾆｭｳﾈﾝﾚｲ \u003c 60"
+      ],
+      "conditionRefs": [
+        [
+          "HS-ｶﾆｭｳﾈﾝﾚｲ"
+        ],
+        [
+          "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ",
+          "WS-ｼｮｳﾋﾝ-IX",
+          "HS-ｼｮｳﾋﾝ"
+        ],
+        [
+          "HS-ｶﾆｭｳﾈﾝﾚｲ"
+        ]
+      ],
+      "actions": [
+        "MOVE 1 TO WS-ﾈﾝﾚｲｸﾌﾞﾝ",
+        "SET WS-ｼｮｳﾋﾝ-IX TO 1",
+        "SEARCH WS-ｼｮｳﾋﾝ",
+        "COMPUTE WS-ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ = HS-ﾎｹﾝｷﾝｶﾞｸ / 1000 * WS-ｼﾞｭﾝﾋﾞｷﾝ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX PM-ｾｲﾍﾞﾂ WS-ﾈﾝﾚｲｸﾌﾞﾝ WS-ﾈﾝｽｳ)",
+        "ADD WS-ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ TO SR-ｼﾞｭﾝﾋﾞｷﾝ",
+        "COMPUTE WS-ﾈﾝﾚｲｸﾌﾞﾝ = HS-ｶﾆｭｳﾈﾝﾚｲ / 10",
+        "MOVE 6 TO WS-ﾈﾝﾚｲｸﾌﾞﾝ"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "sentence": "When `HS-ｶﾆｭｳﾈﾝﾚｲ` is less than 20 and `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is `HS-ｼｮｳﾋﾝ`, it sets `WS-ﾈﾝﾚｲｸﾌﾞﾝ` to 1, sets `WS-ｼｮｳﾋﾝ-IX` to 1, searches `WS-ｼｮｳﾋﾝ`, computes `WS-ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ` as `HS-ﾎｹﾝｷﾝｶﾞｸ / 1000 * WS-ｼﾞｭﾝﾋﾞｷﾝ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX PM-ｾｲﾍﾞﾂ WS-ﾈﾝﾚｲｸﾌﾞﾝ WS-ﾈﾝｽｳ)`, and adds `WS-ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ` to `SR-ｼﾞｭﾝﾋﾞｷﾝ`."
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ],
+          "sentence": "When `HS-ｶﾆｭｳﾈﾝﾚｲ` is less than 20 and `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is not `HS-ｼｮｳﾋﾝ`, it sets `WS-ﾈﾝﾚｲｸﾌﾞﾝ` to 1, sets `WS-ｼｮｳﾋﾝ-IX` to 1, and searches `WS-ｼｮｳﾋﾝ`."
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            5,
+            1,
+            2,
+            3,
+            4
+          ],
+          "sentence": "When `HS-ｶﾆｭｳﾈﾝﾚｲ` is at least 20, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is `HS-ｼｮｳﾋﾝ`, and `HS-ｶﾆｭｳﾈﾝﾚｲ` is less than 60, it computes `WS-ﾈﾝﾚｲｸﾌﾞﾝ` as `HS-ｶﾆｭｳﾈﾝﾚｲ / 10`, sets `WS-ｼｮｳﾋﾝ-IX` to 1, searches `WS-ｼｮｳﾋﾝ`, computes `WS-ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ` as `HS-ﾎｹﾝｷﾝｶﾞｸ / 1000 * WS-ｼﾞｭﾝﾋﾞｷﾝ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX PM-ｾｲﾍﾞﾂ WS-ﾈﾝﾚｲｸﾌﾞﾝ WS-ﾈﾝｽｳ)`, and adds `WS-ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ` to `SR-ｼﾞｭﾝﾋﾞｷﾝ`."
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "Y"
+          ],
+          "actions": [
+            5,
+            1,
+            2
+          ],
+          "sentence": "When `HS-ｶﾆｭｳﾈﾝﾚｲ` is at least 20, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is not `HS-ｼｮｳﾋﾝ`, and `HS-ｶﾆｭｳﾈﾝﾚｲ` is less than 60, it computes `WS-ﾈﾝﾚｲｸﾌﾞﾝ` as `HS-ｶﾆｭｳﾈﾝﾚｲ / 10`, sets `WS-ｼｮｳﾋﾝ-IX` to 1, and searches `WS-ｼｮｳﾋﾝ`."
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            6,
+            1,
+            2,
+            3,
+            4
+          ],
+          "sentence": "When `HS-ｶﾆｭｳﾈﾝﾚｲ` is at least 20, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is `HS-ｼｮｳﾋﾝ`, and `HS-ｶﾆｭｳﾈﾝﾚｲ` is at least 60, it sets `WS-ﾈﾝﾚｲｸﾌﾞﾝ` to 6, sets `WS-ｼｮｳﾋﾝ-IX` to 1, searches `WS-ｼｮｳﾋﾝ`, computes `WS-ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ` as `HS-ﾎｹﾝｷﾝｶﾞｸ / 1000 * WS-ｼﾞｭﾝﾋﾞｷﾝ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX PM-ｾｲﾍﾞﾂ WS-ﾈﾝﾚｲｸﾌﾞﾝ WS-ﾈﾝｽｳ)`, and adds `WS-ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ` to `SR-ｼﾞｭﾝﾋﾞｷﾝ`."
+        },
+        {
+          "entries": [
+            "N",
+            "N",
+            "N"
+          ],
+          "actions": [
+            6,
+            1,
+            2
+          ],
+          "sentence": "When `HS-ｶﾆｭｳﾈﾝﾚｲ` is at least 20, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is not `HS-ｼｮｳﾋﾝ`, and `HS-ｶﾆｭｳﾈﾝﾚｲ` is at least 60, it sets `WS-ﾈﾝﾚｲｸﾌﾞﾝ` to 6, sets `WS-ｼｮｳﾋﾝ-IX` to 1, and searches `WS-ｼｮｳﾋﾝ`."
         }
       ]
     },
     {
       "paragraph": "ｷｼﾞｭﾝ-RTN",
-      "source": "gondwana/programs/GLM020.cbl:293",
+      "source": "gondwana/programs/GLM020.cbl:350",
       "conditions": [
         "SR-ｿﾞｳｹﾞﾝ = 0",
         "WS-POLMST-OK"
@@ -708,7 +1002,7 @@
     },
     {
       "paragraph": "ｼﾜｹ-RTN",
-      "source": "gondwana/programs/GLM020.cbl:317",
+      "source": "gondwana/programs/GLM020.cbl:374",
       "conditions": [
         "SR-ｿﾞｳｹﾞﾝ \u003e 0",
         "WS-GLJRNL-OK"
@@ -831,7 +1125,7 @@
     },
     {
       "paragraph": "ﾎｳｺｸ-RTN",
-      "source": "gondwana/programs/GLM020.cbl:345",
+      "source": "gondwana/programs/GLM020.cbl:402",
       "conditions": [
         "RETURN SORT-F AT END"
       ],
@@ -877,7 +1171,7 @@
     {
       "paragraph": "ﾎｳｺｸ-RTN",
       "loop": "PERFORM UNTIL SR-ｼｮｳﾋﾝ = SPACES",
-      "source": "gondwana/programs/GLM020.cbl:352",
+      "source": "gondwana/programs/GLM020.cbl:409",
       "conditions": [
         "RETURN SORT-F AT END"
       ],
@@ -914,7 +1208,7 @@
     },
     {
       "paragraph": "ﾒｲｻｲ-RTN",
-      "source": "gondwana/programs/GLM020.cbl:366",
+      "source": "gondwana/programs/GLM020.cbl:423",
       "conditions": [
         "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = SR-ｼｮｳﾋﾝ"
       ],
@@ -961,7 +1255,7 @@
     },
     {
       "paragraph": "ｼｭｳﾘｮｳ-RTN",
-      "source": "gondwana/programs/GLM020.cbl:379",
+      "source": "gondwana/programs/GLM020.cbl:436",
       "conditions": [
         "WS-GLSCTL-OK"
       ],
@@ -975,7 +1269,7 @@
         "MOVE 'GLSCTL' TO WS-ｴﾗｰﾌｧｲﾙ",
         "MOVE WS-GLSCTL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
         "PERFORM ｲｼﾞｮｳ-RTN",
-        "CLOSE POLMST-F RSVTB-F PRODTB-F GLSCTL-F GLJRNL-F REPORT-F",
+        "CLOSE POLMST-F COVMST-F RSVTB-F PRODTB-F GLSCTL-F GLJRNL-F REPORT-F",
         "DISPLAY 'GLM020 計算 ' WS-ｹｲｻﾝｹﾝｽｳ ' 戻入 ' WS-ﾓﾄﾞｼｹﾝｽｳ ' 準備金 ' WS-ｼﾞｭﾝﾋﾞｷﾝｺﾞｳｹｲ"
       ],
       "rules": [
@@ -1000,7 +1294,7 @@
             4,
             5
           ],
-          "sentence": "When `WS-GLSCTL-ST` is `'00'` (`WS-GLSCTL-OK`), it rewrites `CT-ｾｲｷﾞｮ-ﾚｺｰﾄﾞ`; closes `POLMST-F`, `RSVTB-F`, `PRODTB-F`, `GLSCTL-F`, `GLJRNL-F`, and `REPORT-F`; and displays `'GLM020 計算 '` `WS-ｹｲｻﾝｹﾝｽｳ` `' 戻入 '` `WS-ﾓﾄﾞｼｹﾝｽｳ` `' 準備金 '` `WS-ｼﾞｭﾝﾋﾞｷﾝｺﾞｳｹｲ`."
+          "sentence": "When `WS-GLSCTL-ST` is `'00'` (`WS-GLSCTL-OK`), it rewrites `CT-ｾｲｷﾞｮ-ﾚｺｰﾄﾞ`; closes `POLMST-F`, `COVMST-F`, `RSVTB-F`, `PRODTB-F`, `GLSCTL-F`, `GLJRNL-F`, and `REPORT-F`; and displays `'GLM020 計算 '` `WS-ｹｲｻﾝｹﾝｽｳ` `' 戻入 '` `WS-ﾓﾄﾞｼｹﾝｽｳ` `' 準備金 '` `WS-ｼﾞｭﾝﾋﾞｷﾝｺﾞｳｹｲ`."
         }
       ]
     },

@@ -221,7 +221,7 @@ func (g *Generator) standing(r *rand.Rand, p *Policy, pr product, opening Date) 
 		p.Arrears = min(p.Arrears, 2)
 	}
 	if p.Covered() {
-		p.Reserve = p.Sum / 1000 * int64(pr.reserve(min(p.Year, 50))) / 1000
+		p.Reserve = p.reserve()
 	}
 	if p.Status <= 3 && pr.dividend > 0 {
 		p.Dividends = g.dividends(p, pr, opening)

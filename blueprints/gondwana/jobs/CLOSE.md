@@ -10,6 +10,7 @@ CLOSE.BAT: 月次締め。月末の日次処理の後に、責任準備金の計
 変更履歴
 1999-11-08 MS  GL-0233 初版、PC システム移行時 (旧 JCL から)。
 2026-11-19 YN  GL-0828 日計表。
+2026-11-19 YN  GL-0829 責任準備金を保障ごとに。
 ```
 
 Script [CLOSE.BAT](../../../gondwana/scripts/CLOSE.BAT): 4 steps.
@@ -32,10 +33,10 @@ Script [CLOSE.BAT](../../../gondwana/scripts/CLOSE.BAT): 4 steps.
 
 | Step | Program | Reads | Writes | Stops the script if | Description | Source |
 | --- | --- | --- | --- | --- | --- | --- |
-| GLM020 | [GLM020](../programs/GLM020.md), with $DATE | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/RSVTB.TXT, $DATA/MASTER/PRODTB.TXT, $DATA/MASTER/GLSCTL.BIN | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/GLSCTL.BIN, $DATA/OUT/GLJRNL.$DATE.TXT, $DATA/RPT/GLM020.$DATE.RPT, $DATA/RPT/GLM020.$DATE.OUT | RC >= 8 | 責任準備金計算 | [CLOSE.BAT:24](../../../gondwana/scripts/CLOSE.BAT#L24) |
-| GLM030 | [GLM030](../programs/GLM030.md), with $DATE | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/AGTMST.TXT, $DATA/MASTER/GLSCTL.BIN | $DATA/MASTER/GLSCTL.BIN, $DATA/OUT/GLJRNL.$DATE.TXT, $DATA/OUT/COMMIS.$DATE.TXT, $DATA/RPT/GLM030.$DATE.RPT, $DATA/RPT/GLM030.$DATE.OUT | RC >= 8 | 代理店手数料計算 | [CLOSE.BAT:32](../../../gondwana/scripts/CLOSE.BAT#L32) |
-| GLD080 | [GLD080](../programs/GLD080.md), with $DATE | $DATA/OUT/GLJRNL.$DATE.TXT | $DATA/RPT/GLD080.$DATE.RPT, $DATA/RPT/GLD080.$DATE.OUT | RC >= 8 | 日計表 | [CLOSE.BAT:38](../../../gondwana/scripts/CLOSE.BAT#L38) |
-| UNLOAD | script [UNLOAD](UNLOAD.md), with $DATE | | | RC >= 8 | 月末のアンロード | [CLOSE.BAT:43](../../../gondwana/scripts/CLOSE.BAT#L43) |
+| GLM020 | [GLM020](../programs/GLM020.md), with $DATE | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/RSVTB.TXT, $DATA/MASTER/PRODTB.TXT, $DATA/MASTER/COVMST.IDX, $DATA/MASTER/GLSCTL.BIN | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/GLSCTL.BIN, $DATA/OUT/GLJRNL.$DATE.TXT, $DATA/RPT/GLM020.$DATE.RPT, $DATA/RPT/GLM020.$DATE.OUT | RC >= 8 | 責任準備金計算 | [CLOSE.BAT:26](../../../gondwana/scripts/CLOSE.BAT#L26) |
+| GLM030 | [GLM030](../programs/GLM030.md), with $DATE | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/AGTMST.TXT, $DATA/MASTER/GLSCTL.BIN | $DATA/MASTER/GLSCTL.BIN, $DATA/OUT/GLJRNL.$DATE.TXT, $DATA/OUT/COMMIS.$DATE.TXT, $DATA/RPT/GLM030.$DATE.RPT, $DATA/RPT/GLM030.$DATE.OUT | RC >= 8 | 代理店手数料計算 | [CLOSE.BAT:34](../../../gondwana/scripts/CLOSE.BAT#L34) |
+| GLD080 | [GLD080](../programs/GLD080.md), with $DATE | $DATA/OUT/GLJRNL.$DATE.TXT | $DATA/RPT/GLD080.$DATE.RPT, $DATA/RPT/GLD080.$DATE.OUT | RC >= 8 | 日計表 | [CLOSE.BAT:40](../../../gondwana/scripts/CLOSE.BAT#L40) |
+| UNLOAD | script [UNLOAD](UNLOAD.md), with $DATE | | | RC >= 8 | 月末のアンロード | [CLOSE.BAT:45](../../../gondwana/scripts/CLOSE.BAT#L45) |
 
 ### GLM020
 
@@ -44,6 +45,7 @@ Script [CLOSE.BAT](../../../gondwana/scripts/CLOSE.BAT): 4 steps.
 | POLMST | $DATA/MASTER/POLMST.IDX (indexed) | POLMST-F | [POLMST](../copybooks/POLMST.md) | update |
 | RSVTB | $DATA/MASTER/RSVTB.TXT | RSVTB-F | [RSVTB](../copybooks/RSVTB.md) | read |
 | PRODTB | $DATA/MASTER/PRODTB.TXT | PRODTB-F | [PRODTB](../copybooks/PRODTB.md) | read |
+| COVMST | $DATA/MASTER/COVMST.IDX (indexed) | COVMST-F | [COVMST](../copybooks/COVMST.md) | read |
 | GLSCTL | $DATA/MASTER/GLSCTL.BIN | GLSCTL-F | [CTLREC](../copybooks/CTLREC.md) | update |
 | GLJRNL | $DATA/OUT/GLJRNL.$DATE.TXT | GLJRNL-F | [GLJRNL](../copybooks/GLJRNL.md) | append |
 | GLM020R | $DATA/RPT/GLM020.$DATE.RPT | REPORT-F | | write |
@@ -78,6 +80,7 @@ Each dataset the job names, the copybook that describes its records, from the pr
 | $DATA/MASTER/POLMST.IDX | [POLMST](../copybooks/POLMST.md) | GLM020 | GLM020, GLM030 |
 | $DATA/MASTER/RSVTB.TXT | [RSVTB](../copybooks/RSVTB.md) | | GLM020 |
 | $DATA/MASTER/PRODTB.TXT | [PRODTB](../copybooks/PRODTB.md) | | GLM020 |
+| $DATA/MASTER/COVMST.IDX | [COVMST](../copybooks/COVMST.md) | | GLM020 |
 | $DATA/MASTER/GLSCTL.BIN | [CTLREC](../copybooks/CTLREC.md) | GLM020, GLM030 | GLM020, GLM030 |
 | $DATA/OUT/GLJRNL.$DATE.TXT | [GLJRNL](../copybooks/GLJRNL.md) | GLM020, GLM030 | GLD080 |
 | $DATA/RPT/GLM020.$DATE.RPT | | GLM020 | |

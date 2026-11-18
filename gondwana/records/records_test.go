@@ -30,7 +30,7 @@ func TestLoad(t *testing.T) {
 		{l.Product, 60, "PR-ｺｰﾄﾞ", "WL"},
 		{l.Rate, 10, "RT-ｼｮｳﾋﾝ", "WL"},
 		{l.CashValue, 12, "CV-ｼｮｳﾋﾝ", "EN"},
-		{l.Reserve, 11, "RS-ｼｮｳﾋﾝ", "TM"},
+		{l.Reserve, 13, "RS-ｼｮｳﾋﾝ", "TM"},
 		{l.Journal, 80, "JR-ﾌﾟﾛｸﾞﾗﾑ", "GLD010"},
 		{l.Payment, 100, "PY-ｼｭﾍﾞﾂ", "D"},
 	} {

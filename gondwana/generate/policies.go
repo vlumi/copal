@@ -94,6 +94,19 @@ func (p Policy) cashValue() int64 {
 	return 0
 }
 
+// reserve is the policy's reserve at the end of its policy year: that of
+// each coverage in force, by its product, the insured's sex and the age
+// the coverage is rated at.
+func (p Policy) reserve() int64 {
+	var total int64
+	for _, c := range p.Coverages {
+		if c.InForce() {
+			total += c.Amount / 1000 * int64(productOf(c.Product).reserve(p.Sex, ageBand(c.RatedAge), min(p.Year, 50))) / 1000
+		}
+	}
+	return total
+}
+
 // Lapsed reports whether the policy has lapsed and may be reinstated.
 func (p Policy) Lapsed() bool { return p.Status == 3 }
 
