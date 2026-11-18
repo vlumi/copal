@@ -31,8 +31,11 @@ func (p Policy) StatusName() string { return statuses[p.Status] }
 
 // ModeName is how the policy's premium is paid, in words.
 func (p Policy) ModeName() string {
-	if p.Mode == 2 {
+	switch p.Mode {
+	case 2:
 		return "annual"
+	case 3:
+		return "half-yearly"
 	}
 	return "monthly"
 }
