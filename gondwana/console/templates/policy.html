@@ -11,6 +11,15 @@
   <div><dt>Reserve</dt><dd>{{yen $p.Reserve}}</dd></div>
   <div><dt>Dividends</dt><dd>{{yen $p.Dividends}}</dd></div>
 </dl>
+<h2>Coverages</h2>
+<p class="note">The main contract and the riders, from the coverage file; the premium above is the total of those in force.</p>
+<table>
+  <thead><tr><th class="num">No.</th><th>Product</th><th>State</th><th class="num">Amount</th><th class="num">Premium</th><th>Contract</th><th>Maturity</th><th class="num">Rated at age</th><th>Ended</th></tr></thead>
+  <tbody>
+  {{range $p.Coverages}}<tr><td class="num">{{.No}}</td><td>{{.Product}}</td><td>{{coverageStatus .}}</td><td class="num">{{yen .Amount}}</td><td class="num">{{yen .Premium}}</td><td>{{dateOrNone .Contract}}</td><td>{{dateOrNone .Maturity}}</td><td class="num">{{.RatedAge}}</td><td>{{dateOrNone .Ended}}</td></tr>
+  {{end}}
+  </tbody>
+</table>
 <h2>The master record</h2>
 <p class="note">Each field as the copybook names it, its bytes and their value, read from Shift_JIS; dates are kept in their era, as the system keeps them.</p>
 <table>

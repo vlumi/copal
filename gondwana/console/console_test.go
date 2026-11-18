@@ -45,7 +45,7 @@ func TestConsole(t *testing.T) {
 		t.Fatal("no policy in the list")
 	}
 	get(t, server.URL+"/policies?q="+first[1], http.StatusOK, first[1])
-	page := get(t, server.URL+"/policies/"+first[1], http.StatusOK, "PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ", "PM-ｼﾒｲ")
+	page := get(t, server.URL+"/policies/"+first[1], http.StatusOK, "PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ", "PM-ｼﾒｲ", "Coverages", "in force")
 	if strings.ContainsRune(page, '�') {
 		t.Error("the policy's page has bytes not read from Shift_JIS")
 	}
