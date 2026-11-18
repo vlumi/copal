@@ -259,7 +259,7 @@ Gondwana is convincing as a batch system and thin as a life insurer: a policy is
 - The policyholders' notices and the premium certificates, by the Report Writer.
 - Collection: an annual payer debited again, a half-yearly mode, the agent's other results (done).
 - The national holidays and the year-end closure (done).
-- Riders: a coverage file beside the master.
+- Riders: a coverage file beside the master, in [plans/gondwana-riders.md](plans/gondwana-riders.md) (done).
 - The books: both sides of an entry, reserves by entry age, commissions charged back.
 
 Done when: every program reads or writes what a life insurer's would, no field on the master is kept by nothing, and the survey's blueprints and cases of it are as right as before.
