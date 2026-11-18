@@ -7,7 +7,7 @@ The batch file ended with errorlevel 0.
 | Step | Program | Outcome | Rules reached |
 | --- | --- | --- | --: |
 | GLM020 | [GLM020](../../GLM020/) | RC=0000 | 20 of 69 |
-| GLM030 | [GLM030](../../GLM030/) | RC=0000 | 15 of 51 |
+| GLM030 | [GLM030](../../GLM030/) | RC=0000 | 17 of 65 |
 | GLD080 | [GLD080](../../GLD080/) | RC=0000 | 7 of 30 |
 | UNLOAD | UNLOAD | RC=0000 | |
 | UNLOAD.GLD090 | [GLD090](../../GLD090/) | RC=0000 | 11 of 42 |

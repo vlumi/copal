@@ -15,7 +15,7 @@ For each main program, input data that reaches the rules of its decision tables,
 | [GLD090](GLD090/) | 23 of 42 | 11 |
 | [GLM010](GLM010/) | 32 of 52 | 14 |
 | [GLM020](GLM020/) | 45 of 69 | 23 |
-| [GLM030](GLM030/) | 19 of 51 | 9 |
+| [GLM030](GLM030/) | 22 of 65 | 9 |
 | [GLO010](GLO010/) | 24 of 45 | 14 |
 | [GLY010](GLY010/) | 20 of 38 | 10 |
 | [GLY020](GLY020/) | 40 of 64 | 24 |
