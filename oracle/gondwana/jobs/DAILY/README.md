@@ -12,5 +12,6 @@ The batch file ended with errorlevel 0.
 | GLD040 | [GLD040](../../GLD040/) | RC=0000 | 9 of 105 |
 | GLD060 | [GLD060](../../GLD060/) | RC=0001 | 9 of 97 |
 | GLD070 | [GLD070](../../GLD070/) | RC=0000 | 7 of 102 |
+| GLD080 | [GLD080](../../GLD080/) | RC=0000 | 6 of 30 |
 | UNLOAD | UNLOAD | RC=0000 | |
 | UNLOAD.GLD090 | [GLD090](../../GLD090/) | RC=0000 | 11 of 42 |

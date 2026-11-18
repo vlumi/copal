@@ -7,6 +7,7 @@ rem 環境: GLS_BIN プログラム、GLS_SCRIPTS バッチファイル、GLS_DA
 rem
 rem 変更履歴
 rem 1999-11-08 MS  GL-0233 初版、PC システム移行時 (旧 JCL から)。
+rem 2026-11-19 YN  GL-0828 日計表。
 setlocal
 set DATE=%1
 set BIN=%GLS_BIN%
@@ -30,6 +31,12 @@ set DD_COMMIS=%DATA%¥OUT¥COMMIS.%DATE%.TXT
 set DD_GLM030R=%DATA%¥RPT¥GLM030.%DATE%.RPT
 "%BIN%¥GLM030.EXE" %DATE% > "%DATA%¥RPT¥GLM030.%DATE%.OUT" 2>&1
 >>"%LOG%" echo GLM030 GLM030 %ERRORLEVEL%
+if errorlevel 8 exit /b %ERRORLEVEL%
+
+rem STEP GLD080: 日計表
+set DD_GLD080R=%DATA%¥RPT¥GLD080.%DATE%.RPT
+"%BIN%¥GLD080.EXE" %DATE% > "%DATA%¥RPT¥GLD080.%DATE%.OUT" 2>&1
+>>"%LOG%" echo GLD080 GLD080 %ERRORLEVEL%
 if errorlevel 8 exit /b %ERRORLEVEL%
 
 rem STEP UNLOAD: 月末のアンロード

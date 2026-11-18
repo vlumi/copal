@@ -30,6 +30,7 @@
       * 2026-10-05 YN   GL-0815 前回業務日付からの応当日。
       * 2026-11-16 YN   GL-0823 半年払の更新保険料。
       * 2026-11-18 YN   GL-0825 保障マスタ、特約の更新と満了。
+      * 2026-11-19 YN   GL-0828 仕訳に相手科目。
       *----------------------------------------------------------------
        IDENTIFICATION DIVISION.
        PROGRAM-ID. GLD020.
@@ -464,6 +465,7 @@
            IF WS-ﾘｿｸ > 0
                ADD WS-ﾘｿｸ TO PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ WS-ﾘｿｸｷﾝｶﾞｸ
                MOVE 4310 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
+               MOVE 1210 TO JR-ｱｲﾃｶﾓｸ
                SET JR-ｶｼｶﾀ TO TRUE
                MOVE WS-ﾘｿｸ TO JR-ｷﾝｶﾞｸ
                MOVE "貸付金利息" TO JR-ﾃｷﾖｳ
@@ -509,12 +511,14 @@
            MOVE SPACES TO PY-ｾｲｷｭｳﾊﾞﾝｺﾞｳ
            WRITE PY-ｼﾊﾗｲ-ﾚｺｰﾄﾞ
            MOVE 5140 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
+           MOVE 1110 TO JR-ｱｲﾃｶﾓｸ
            SET JR-ｶﾘｶﾀ TO TRUE
            MOVE PM-ﾎｹﾝｷﾝｶﾞｸ TO JR-ｷﾝｶﾞｸ
            MOVE "満期保険金" TO JR-ﾃｷﾖｳ
            PERFORM ｼﾜｹ-RTN
            IF PM-ﾊｲﾄｳﾙｲｹｲ > 0
                MOVE 2310 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
+               MOVE 1110 TO JR-ｱｲﾃｶﾓｸ
                SET JR-ｶﾘｶﾀ TO TRUE
                MOVE PM-ﾊｲﾄｳﾙｲｹｲ TO JR-ｷﾝｶﾞｸ
                MOVE "配当金支払" TO JR-ﾃｷﾖｳ
@@ -522,6 +526,7 @@
            END-IF
            IF PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ > 0
                MOVE 1210 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
+               MOVE 1110 TO JR-ｱｲﾃｶﾓｸ
                SET JR-ｶｼｶﾀ TO TRUE
                MOVE PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ TO JR-ｷﾝｶﾞｸ
                MOVE "貸付金回収" TO JR-ﾃｷﾖｳ

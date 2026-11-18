@@ -9,9 +9,10 @@ CLOSE.BAT: 月次締め。月末の日次処理の後に、責任準備金の計
 
 変更履歴
 1999-11-08 MS  GL-0233 初版、PC システム移行時 (旧 JCL から)。
+2026-11-19 YN  GL-0828 日計表。
 ```
 
-Script [CLOSE.BAT](../../../gondwana/scripts/CLOSE.BAT): 3 steps.
+Script [CLOSE.BAT](../../../gondwana/scripts/CLOSE.BAT): 4 steps.
 
 ## Contents
 
@@ -19,6 +20,7 @@ Script [CLOSE.BAT](../../../gondwana/scripts/CLOSE.BAT): 3 steps.
 - [Steps](#steps)
   - [GLM020](#glm020)
   - [GLM030](#glm030)
+  - [GLD080](#gld080)
 - [Datasets](#datasets)
 - [Findings](#findings)
 
@@ -30,9 +32,10 @@ Script [CLOSE.BAT](../../../gondwana/scripts/CLOSE.BAT): 3 steps.
 
 | Step | Program | Reads | Writes | Stops the script if | Description | Source |
 | --- | --- | --- | --- | --- | --- | --- |
-| GLM020 | [GLM020](../programs/GLM020.md), with $DATE | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/RSVTB.TXT, $DATA/MASTER/PRODTB.TXT, $DATA/MASTER/GLSCTL.BIN | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/GLSCTL.BIN, $DATA/OUT/GLJRNL.$DATE.TXT, $DATA/RPT/GLM020.$DATE.RPT, $DATA/RPT/GLM020.$DATE.OUT | RC >= 8 | 責任準備金計算 | [CLOSE.BAT:23](../../../gondwana/scripts/CLOSE.BAT#L23) |
-| GLM030 | [GLM030](../programs/GLM030.md), with $DATE | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/AGTMST.TXT, $DATA/MASTER/GLSCTL.BIN | $DATA/MASTER/GLSCTL.BIN, $DATA/OUT/GLJRNL.$DATE.TXT, $DATA/OUT/COMMIS.$DATE.TXT, $DATA/RPT/GLM030.$DATE.RPT, $DATA/RPT/GLM030.$DATE.OUT | RC >= 8 | 代理店手数料計算 | [CLOSE.BAT:31](../../../gondwana/scripts/CLOSE.BAT#L31) |
-| UNLOAD | script [UNLOAD](UNLOAD.md), with $DATE | | | RC >= 8 | 月末のアンロード | [CLOSE.BAT:36](../../../gondwana/scripts/CLOSE.BAT#L36) |
+| GLM020 | [GLM020](../programs/GLM020.md), with $DATE | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/RSVTB.TXT, $DATA/MASTER/PRODTB.TXT, $DATA/MASTER/GLSCTL.BIN | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/GLSCTL.BIN, $DATA/OUT/GLJRNL.$DATE.TXT, $DATA/RPT/GLM020.$DATE.RPT, $DATA/RPT/GLM020.$DATE.OUT | RC >= 8 | 責任準備金計算 | [CLOSE.BAT:24](../../../gondwana/scripts/CLOSE.BAT#L24) |
+| GLM030 | [GLM030](../programs/GLM030.md), with $DATE | $DATA/MASTER/POLMST.IDX, $DATA/MASTER/AGTMST.TXT, $DATA/MASTER/GLSCTL.BIN | $DATA/MASTER/GLSCTL.BIN, $DATA/OUT/GLJRNL.$DATE.TXT, $DATA/OUT/COMMIS.$DATE.TXT, $DATA/RPT/GLM030.$DATE.RPT, $DATA/RPT/GLM030.$DATE.OUT | RC >= 8 | 代理店手数料計算 | [CLOSE.BAT:32](../../../gondwana/scripts/CLOSE.BAT#L32) |
+| GLD080 | [GLD080](../programs/GLD080.md), with $DATE | $DATA/OUT/GLJRNL.$DATE.TXT | $DATA/RPT/GLD080.$DATE.RPT, $DATA/RPT/GLD080.$DATE.OUT | RC >= 8 | 日計表 | [CLOSE.BAT:38](../../../gondwana/scripts/CLOSE.BAT#L38) |
+| UNLOAD | script [UNLOAD](UNLOAD.md), with $DATE | | | RC >= 8 | 月末のアンロード | [CLOSE.BAT:43](../../../gondwana/scripts/CLOSE.BAT#L43) |
 
 ### GLM020
 
@@ -58,6 +61,14 @@ Script [CLOSE.BAT](../../../gondwana/scripts/CLOSE.BAT): 3 steps.
 | GLM030R | $DATA/RPT/GLM030.$DATE.RPT | REPORT-F | | write |
 | stdout | $DATA/RPT/GLM030.$DATE.OUT | | | write |
 
+### GLD080
+
+| Name | File | File in the program | Copybook | Use |
+| --- | --- | --- | --- | --- |
+| GLJRNL | $DATA/OUT/GLJRNL.$DATE.TXT | GLJRNL-F | [GLJRNL](../copybooks/GLJRNL.md) | read |
+| GLD080R | $DATA/RPT/GLD080.$DATE.RPT | REPORT-F | | write |
+| stdout | $DATA/RPT/GLD080.$DATE.OUT | | | write |
+
 ## Datasets
 
 Each dataset the job names, the copybook that describes its records, from the programs that read or write it in any job, and the steps that write and read it.
@@ -68,13 +79,15 @@ Each dataset the job names, the copybook that describes its records, from the pr
 | $DATA/MASTER/RSVTB.TXT | [RSVTB](../copybooks/RSVTB.md) | | GLM020 |
 | $DATA/MASTER/PRODTB.TXT | [PRODTB](../copybooks/PRODTB.md) | | GLM020 |
 | $DATA/MASTER/GLSCTL.BIN | [CTLREC](../copybooks/CTLREC.md) | GLM020, GLM030 | GLM020, GLM030 |
-| $DATA/OUT/GLJRNL.$DATE.TXT | [GLJRNL](../copybooks/GLJRNL.md) | GLM020, GLM030 | |
+| $DATA/OUT/GLJRNL.$DATE.TXT | [GLJRNL](../copybooks/GLJRNL.md) | GLM020, GLM030 | GLD080 |
 | $DATA/RPT/GLM020.$DATE.RPT | | GLM020 | |
 | $DATA/RPT/GLM020.$DATE.OUT | | GLM020 | |
 | $DATA/MASTER/AGTMST.TXT | [AGTMST](../copybooks/AGTMST.md) | | GLM030 |
 | $DATA/OUT/COMMIS.$DATE.TXT | | GLM030 | |
 | $DATA/RPT/GLM030.$DATE.RPT | | GLM030 | |
 | $DATA/RPT/GLM030.$DATE.OUT | | GLM030 | |
+| $DATA/RPT/GLD080.$DATE.RPT | | GLD080 | |
+| $DATA/RPT/GLD080.$DATE.OUT | | GLD080 | |
 
 ## Findings
 

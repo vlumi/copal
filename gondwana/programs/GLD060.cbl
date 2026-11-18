@@ -21,6 +21,7 @@
       * 2014-04-07 YN   GL-0598 自動振替貸付。
       * 2026-11-16 YN   GL-0823 半年払。
       * 2026-11-19 YN   GL-0827 収納を収納履歴に残す。
+      * 2026-11-19 YN   GL-0828 仕訳に相手科目。
       *----------------------------------------------------------------
        IDENTIFICATION DIVISION.
        PROGRAM-ID. GLD060.
@@ -287,20 +288,17 @@
        ﾌﾘｶｴ-RTN.
            IF WS-ﾘｿｸ > 0
                MOVE 4310 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
+               MOVE 1210 TO JR-ｱｲﾃｶﾓｸ
                SET JR-ｶｼｶﾀ TO TRUE
                MOVE WS-ﾘｿｸ TO JR-ｷﾝｶﾞｸ
                MOVE "貸付金利息" TO JR-ﾃｷﾖｳ
                PERFORM ｼﾜｹ-RTN
            END-IF
            MOVE 1210 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
+           MOVE 4110 TO JR-ｱｲﾃｶﾓｸ
            SET JR-ｶﾘｶﾀ TO TRUE
            MOVE WS-ﾌﾘｶｴ-ｶﾞｸ TO JR-ｷﾝｶﾞｸ
            MOVE "自動振替貸付" TO JR-ﾃｷﾖｳ
-           PERFORM ｼﾜｹ-RTN
-           MOVE 4110 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
-           SET JR-ｶｼｶﾀ TO TRUE
-           MOVE WS-ﾌﾘｶｴ-ｶﾞｸ TO JR-ｷﾝｶﾞｸ
-           MOVE "振替貸付保険料" TO JR-ﾃｷﾖｳ
            PERFORM ｼﾜｹ-RTN
            MOVE WS-ｻﾞﾝﾀﾞｶ TO PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ
            MOVE WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ TO PM-ｶｼﾂｹｷｻﾝﾋﾞ PM-ｼﾞｮｳﾀｲﾋﾂﾞｹ

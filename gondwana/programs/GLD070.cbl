@@ -18,6 +18,7 @@
       * 変更履歴
       * 日付       担当 変更
       * 2012-09-03 YN   GL-0561 初版、支社の貸付台帳をシステム化。
+      * 2026-11-19 YN   GL-0828 仕訳に相手科目。
       *----------------------------------------------------------------
        IDENTIFICATION DIVISION.
        PROGRAM-ID. GLD070.
@@ -330,6 +331,7 @@
        ﾊﾝｴｲ-RTN.
            IF WS-ﾘｿｸ > 0
                MOVE 4310 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
+               MOVE 1210 TO JR-ｱｲﾃｶﾓｸ
                SET JR-ｶｼｶﾀ TO TRUE
                MOVE WS-ﾘｿｸ TO JR-ｷﾝｶﾞｸ
                MOVE "貸付金利息" TO JR-ﾃｷﾖｳ
@@ -376,6 +378,7 @@
                PERFORM ｲｼﾞｮｳ-RTN
            END-IF
            MOVE 1210 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
+           MOVE 1110 TO JR-ｱｲﾃｶﾓｸ
            SET JR-ｶﾘｶﾀ TO TRUE
            MOVE LR-ｷﾝｶﾞｸ TO JR-ｷﾝｶﾞｸ
            MOVE "契約者貸付" TO JR-ﾃｷﾖｳ
@@ -389,6 +392,7 @@
        ﾍﾝｻｲ-RTN.
            SUBTRACT LR-ｷﾝｶﾞｸ FROM WS-ｻﾞﾝﾀﾞｶ
            MOVE 1210 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
+           MOVE 1110 TO JR-ｱｲﾃｶﾓｸ
            SET JR-ｶｼｶﾀ TO TRUE
            MOVE LR-ｷﾝｶﾞｸ TO JR-ｷﾝｶﾞｸ
            MOVE "貸付金返済" TO JR-ﾃｷﾖｳ
