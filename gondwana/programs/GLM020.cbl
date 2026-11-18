@@ -1,9 +1,12 @@
       *----------------------------------------------------------------
       * GLM020: 責任準備金計算
       *
-      * 月末。保障中 (有効・猶予中) の契約ごとに、責任準備金係数
-      * (商品・経過年数、50年まで) を保険金額1,000円あたりに掛けて
-      * 月末の責任準備金を求め、前月末との差額を繰入 (借方) または
+      * 月末。保障中 (有効・猶予中) の契約ごとに、有効な保障 (保障
+      * マスタ COVMST の主契約と特約) それぞれの責任準備金を、係数
+      * (商品・性別・加入年齢区分・経過年数、50年まで) を保険金額
+      * 1,000円あたりに掛けて求め、その合計を契約の月末の責任準備金
+      * とする。年齢区分は保障の保険料を決めた年齢による。
+      * 前月末との差額を繰入 (借方) または
       * 戻入 (貸方) として仕訳し、マスタに書き戻す。保障の終わった
       * 契約に残る準備金は全額戻入する。
       * 報告書は商品順に報告書作成機能 (REPORT WRITER) で: 商品ごとの
@@ -15,6 +18,8 @@
       * 日付       担当 変更
       * 1987-04-01 KT   GL-0001 初版。
       * 1995-10-02 KT   GL-0188 報告書作成機能で商品別に。
+      * 2026-11-19 YN   GL-0828 仕訳に相手科目。
+      * 2026-11-19 YN   GL-0829 保障ごと、性別・加入年齢区分別に。
       *----------------------------------------------------------------
        IDENTIFICATION DIVISION.
        PROGRAM-ID. GLM020.
@@ -24,6 +29,11 @@
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
+           SELECT COVMST-F ASSIGN TO "COVMST"
+               ORGANIZATION IS INDEXED
+               ACCESS MODE IS DYNAMIC
+               RECORD KEY IS HS-ｷｰ
+               FILE STATUS IS WS-COVMST-ST.
            SELECT POLMST-F ASSIGN TO "POLMST"
                ORGANIZATION IS INDEXED
                ACCESS MODE IS DYNAMIC
@@ -54,6 +64,8 @@
        COPY RSVTB.
        FD  PRODTB-F.
        COPY PRODTB.
+       FD  COVMST-F.
+       COPY COVMST.
        SD  SORT-F.
        01  SR-ｾｲﾚﾂ-ﾚｺｰﾄﾞ.
            05  SR-ｼｮｳﾋﾝ                PIC X(2).
@@ -76,6 +88,9 @@
            05  WS-POLMST-ST            PIC XX.
                88  WS-POLMST-OK                VALUE "00".
                88  WS-POLMST-ｵﾜﾘ               VALUE "10".
+           05  WS-COVMST-ST            PIC XX.
+               88  WS-COVMST-OK                VALUE "00".
+               88  WS-COVMST-ｵﾜﾘ               VALUE "10" "23".
            05  WS-RSVTB-ST             PIC XX.
                88  WS-RSVTB-OK                 VALUE "00".
                88  WS-RSVTB-ｵﾜﾘ                VALUE "10".
@@ -98,9 +113,13 @@
        01  WS-ｼｮｳﾋﾝﾒｲ                  PIC X(20).
        01  WS-ﾈﾝｽｳ                     PIC 99.
        COPY TBLWS.
+       01  WS-ﾈﾝﾚｲｸﾌﾞﾝ                 PIC 9.
+       01  WS-ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ            PIC 9(9).
        01  WS-ｼﾞｭﾝﾋﾞｷﾝ-TBL.
            05  WS-ｼﾞｭﾝﾋﾞｷﾝ-ｼｮｳﾋﾝ OCCURS 10 TIMES.
-               10  WS-ｼﾞｭﾝﾋﾞｷﾝ-ｹｲｽｳ OCCURS 50 TIMES
+               10  WS-ｼﾞｭﾝﾋﾞｷﾝ-ｾｲﾍﾞﾂ OCCURS 2 TIMES.
+                   15  WS-ｼﾞｭﾝﾋﾞｷﾝ-ｸﾌﾞﾝ OCCURS 6 TIMES.
+                       20  WS-ｼﾞｭﾝﾋﾞｷﾝ-ｹｲｽｳ OCCURS 50 TIMES
                                            PIC 9(4)V9(3).
        01  WS-ｹﾝｽｳ.
            05  WS-ｹｲｻﾝｹﾝｽｳ             PIC 9(7) VALUE 0.
@@ -183,7 +202,7 @@
                MOVE 8 TO RETURN-CODE
                STOP RUN
            END-IF
-           OPEN INPUT RSVTB-F PRODTB-F
+           OPEN INPUT RSVTB-F PRODTB-F COVMST-F
            OPEN I-O POLMST-F GLSCTL-F
            OPEN EXTEND GLJRNL-F
            OPEN OUTPUT REPORT-F
@@ -197,6 +216,9 @@
                WHEN NOT WS-POLMST-OK
                    MOVE "POLMST" TO WS-ｴﾗｰﾌｧｲﾙ
                    MOVE WS-POLMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
+               WHEN NOT WS-COVMST-OK
+                   MOVE "COVMST" TO WS-ｴﾗｰﾌｧｲﾙ
+                   MOVE WS-COVMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
                WHEN NOT WS-GLSCTL-OK
                    MOVE "GLSCTL" TO WS-ｴﾗｰﾌｧｲﾙ
                    MOVE WS-GLSCTL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
@@ -223,7 +245,8 @@
            END-IF.
 
       *----------------------------------------------------------------
-      * ｼﾞｭﾝﾋﾞｷﾝ-ﾖﾐｺﾐ-RTN: 係数を商品・経過年数のテーブルに読み込む。
+      * ｼﾞｭﾝﾋﾞｷﾝ-ﾖﾐｺﾐ-RTN: 係数を商品・性別・加入年齢区分・経過年数
+      * のテーブルに読み込む。
       *----------------------------------------------------------------
        ｼﾞｭﾝﾋﾞｷﾝ-ﾖﾐｺﾐ-RTN.
            MOVE ZEROS TO WS-ｼﾞｭﾝﾋﾞｷﾝ-TBL
@@ -233,7 +256,7 @@
                SEARCH WS-ｼｮｳﾋﾝ
                    WHEN WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = RS-ｼｮｳﾋﾝ
                        MOVE RS-ｹｲｽｳ TO WS-ｼﾞｭﾝﾋﾞｷﾝ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX,
-                                                        RS-ｹｲｶﾈﾝｽｳ)
+                           RS-ｾｲﾍﾞﾂ, RS-ﾈﾝﾚｲｸﾌﾞﾝ, RS-ｹｲｶﾈﾝｽｳ)
                END-SEARCH
                READ RSVTB-F
            END-PERFORM
@@ -269,22 +292,57 @@
            END-IF.
 
       *----------------------------------------------------------------
-      * ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ-RTN: 係数から月末の責任準備金。
+      * ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ-RTN: 契約の有効な保障を保障番号順にたどり、
+      * それぞれの責任準備金を合計する。
       *----------------------------------------------------------------
        ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ-RTN.
-           SET WS-ｼｮｳﾋﾝ-IX TO 1
-           SEARCH WS-ｼｮｳﾋﾝ
-               WHEN WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ
-                   CONTINUE
-           END-SEARCH
+           MOVE 0 TO SR-ｼﾞｭﾝﾋﾞｷﾝ
            IF PM-ｹｲｶﾈﾝｽｳ > 50
                MOVE 50 TO WS-ﾈﾝｽｳ
            ELSE
                MOVE PM-ｹｲｶﾈﾝｽｳ TO WS-ﾈﾝｽｳ
            END-IF
-           COMPUTE SR-ｼﾞｭﾝﾋﾞｷﾝ = PM-ﾎｹﾝｷﾝｶﾞｸ / 1000
-               * WS-ｼﾞｭﾝﾋﾞｷﾝ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX, WS-ﾈﾝｽｳ)
+           MOVE PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ TO HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ
+           MOVE 0 TO HS-ﾎｼｮｳﾊﾞﾝｺﾞｳ
+           START COVMST-F KEY NOT < HS-ｷｰ
+           IF WS-COVMST-OK
+               READ COVMST-F NEXT
+           END-IF
+           PERFORM UNTIL NOT WS-COVMST-OK
+                   OR HS-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ NOT = PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ
+               IF HS-ﾕｳｺｳ
+                   PERFORM ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ-RTN
+               END-IF
+               READ COVMST-F NEXT
+           END-PERFORM
+           IF NOT WS-COVMST-OK AND NOT WS-COVMST-ｵﾜﾘ
+               MOVE "COVMST" TO WS-ｴﾗｰﾌｧｲﾙ
+               MOVE WS-COVMST-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
+               PERFORM ｲｼﾞｮｳ-RTN
+           END-IF
            ADD 1 TO WS-ｹｲｻﾝｹﾝｽｳ.
+
+      *----------------------------------------------------------------
+      * ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ-RTN: 保障1件の責任準備金。保険料を決めた年齢
+      * の区分は 20歳未満が 1、以後10歳ごと、60歳以上が 6。
+      *----------------------------------------------------------------
+       ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ-RTN.
+           EVALUATE TRUE
+               WHEN HS-ｶﾆｭｳﾈﾝﾚｲ < 20
+                   MOVE 1 TO WS-ﾈﾝﾚｲｸﾌﾞﾝ
+               WHEN HS-ｶﾆｭｳﾈﾝﾚｲ < 60
+                   COMPUTE WS-ﾈﾝﾚｲｸﾌﾞﾝ = HS-ｶﾆｭｳﾈﾝﾚｲ / 10
+               WHEN OTHER
+                   MOVE 6 TO WS-ﾈﾝﾚｲｸﾌﾞﾝ
+           END-EVALUATE
+           SET WS-ｼｮｳﾋﾝ-IX TO 1
+           SEARCH WS-ｼｮｳﾋﾝ
+               WHEN WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = HS-ｼｮｳﾋﾝ
+                   COMPUTE WS-ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ = HS-ﾎｹﾝｷﾝｶﾞｸ / 1000
+                       * WS-ｼﾞｭﾝﾋﾞｷﾝ-ｹｲｽｳ(WS-ｼｮｳﾋﾝ-IX, PM-ｾｲﾍﾞﾂ,
+                                          WS-ﾈﾝﾚｲｸﾌﾞﾝ, WS-ﾈﾝｽｳ)
+                   ADD WS-ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ TO SR-ｼﾞｭﾝﾋﾞｷﾝ
+           END-SEARCH.
 
       *----------------------------------------------------------------
       * ｷｼﾞｭﾝ-RTN: 差額の仕訳、マスタの更新、整列レコード。
@@ -319,6 +377,7 @@
            MOVE WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ TO JR-ﾋﾂﾞｹ
            MOVE "GLM020" TO JR-ﾌﾟﾛｸﾞﾗﾑ
            MOVE 5210 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
+           MOVE 2110 TO JR-ｱｲﾃｶﾓｸ
            IF SR-ｿﾞｳｹﾞﾝ > 0
                SET JR-ｶﾘｶﾀ TO TRUE
                MOVE SR-ｿﾞｳｹﾞﾝ TO JR-ｷﾝｶﾞｸ
@@ -381,7 +440,7 @@
                MOVE WS-GLSCTL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
                PERFORM ｲｼﾞｮｳ-RTN
            END-IF
-           CLOSE POLMST-F RSVTB-F PRODTB-F GLSCTL-F GLJRNL-F
+           CLOSE POLMST-F COVMST-F RSVTB-F PRODTB-F GLSCTL-F GLJRNL-F
                  REPORT-F
            DISPLAY "GLM020 計算 " WS-ｹｲｻﾝｹﾝｽｳ " 戻入 " WS-ﾓﾄﾞｼｹﾝｽｳ
                    " 準備金 " WS-ｼﾞｭﾝﾋﾞｷﾝｺﾞｳｹｲ.

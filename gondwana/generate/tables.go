@@ -86,20 +86,27 @@ func (p product) cashValue(band, year int) int {
 	return 0
 }
 
-// reserve is the policy reserve per 1,000 yen of the sum at the year's
-// end, in thousandths of a yen, by product and policy year.
-func (p product) reserve(year int) int {
+// reserve is the reserve of a coverage per 1,000 yen of its amount at
+// the year's end, in thousandths of a yen, by product, sex, the band of
+// the age it is rated at and policy year: more for an older entrant, and
+// a woman's ninety-five hundredths of a man's.
+func (p product) reserve(sex, band, year int) int {
+	var base int
 	switch p.kind {
 	case 1:
-		return 9 * year * 1000
+		base = 9 * year * 1000
 	case 2:
-		return min(year, 10) * 1500
+		base = min(year, 10) * 1500
 	case 3:
-		return min(48*year, 1000) * 1000
+		base = min(48*year, 1000) * 1000
 	case 4:
-		return 2 * year * 1000
+		base = 2 * year * 1000
 	}
-	return 0
+	base = base * (85 + 5*band) / 100
+	if sex == 2 {
+		base = base * 95 / 100
+	}
+	return base
 }
 
 // ageBand is the entry age band of the cash value table.
@@ -216,20 +223,21 @@ func (g *Generator) CashValues() ([][]byte, error) {
 	return recs, nil
 }
 
-// Reserves writes the reserve factor table: a line for each product sold
-// on its own and policy year to 50. The reserve is the main contract's.
+// Reserves writes the reserve factor table: a line for each product,
+// rider or not, sex, age band and policy year to 50.
 func (g *Generator) Reserves() ([][]byte, error) {
 	var recs [][]byte
 	for _, p := range products {
-		if p.rider {
-			continue
-		}
-		for year := 1; year <= 50; year++ {
-			rec, err := made(g.Layouts.Reserve, map[string]any{"RS-ｼｮｳﾋﾝ": p.code, "RS-ｹｲｶﾈﾝｽｳ": year, "RS-ｹｲｽｳ": p.reserve(year)})
-			if err != nil {
-				return nil, err
+		for sex := 1; sex <= 2; sex++ {
+			for band := 1; band <= 6; band++ {
+				for year := 1; year <= 50; year++ {
+					rec, err := made(g.Layouts.Reserve, map[string]any{"RS-ｼｮｳﾋﾝ": p.code, "RS-ｾｲﾍﾞﾂ": sex, "RS-ﾈﾝﾚｲｸﾌﾞﾝ": band, "RS-ｹｲｶﾈﾝｽｳ": year, "RS-ｹｲｽｳ": p.reserve(sex, band, year)})
+					if err != nil {
+						return nil, err
+					}
+					recs = append(recs, rec)
+				}
 			}
-			recs = append(recs, rec)
 		}
 	}
 	return recs, nil

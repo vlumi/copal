@@ -97,7 +97,7 @@ func checkDays(t *testing.T, days []Day) {
 		if d.Date.String() != wantDates[i] {
 			t.Errorf("day %d is %s, want %s", i+1, d.Date, wantDates[i])
 		}
-		if len(d.Batches) < 2 || d.Batches[0].Name != "DAILY" || len(d.Batches[0].Steps) != 6 || d.Batches[1].Name != "UNLOAD" {
+		if len(d.Batches) < 2 || d.Batches[0].Name != "DAILY" || len(d.Batches[0].Steps) != 7 || d.Batches[1].Name != "UNLOAD" {
 			t.Errorf("%s: batches %+v", d.Date, d.Batches)
 		}
 		if d.RC() > 4 || d.InForce < 750 || d.InForce+d.InGrace+d.Lapsed+d.Ended < 1000 {

@@ -4,7 +4,14 @@
       * 月末。当月に保険料の入金があった契約 (最終入金年月が業務月)
       * ごとに、入金額に経過年数による料率を掛けて代理店手数料を
       * 求める: 1年目 40%、2〜3年目 7%、4〜10年目 2%、11年目から
-      * なし、円未満切捨て。代理店順に整列し、報告書作成機能で代理店
+      * なし。これに代理店の資格による割増 (資格 1 はなし、2 は
+      * 10%、3 は 20%) を掛け、円未満切捨て。
+      * 戻入: 当月に失効か解約となった契約のうち経過年数が2年目
+      * までのものは、初年度の手数料を戻し入れる。戻入額は、契約月
+      * から払込済年月までに払い込まれた初年度の保険料 (月払は12回
+      * まで、年払は1回、半年払は2回まで) の 40% に資格の割増を
+      * 掛けた額。
+      * 代理店順に整列し、報告書作成機能で代理店
       * ごとの見出し (代理店マスタの名称、支社、入社年月) と計を
       * 印字する。代理店ごとの合計を手数料ファイルに書き、仕訳する。
       * 代理店マスタにない代理店は "(未登録)" として印字する。
@@ -15,6 +22,8 @@
       * 日付       担当 変更
       * 1987-04-01 KT   GL-0001 初版。
       * 1995-10-02 KT   GL-0188 報告書作成機能で代理店別に。
+      * 2026-11-19 YN   GL-0828 仕訳に相手科目。
+      * 2026-11-19 YN   GL-0830 資格による割増、早期失効・解約の戻入。
       *----------------------------------------------------------------
        IDENTIFICATION DIVISION.
        PROGRAM-ID. GLM030.
@@ -61,6 +70,7 @@
            05  SR-ﾆｭｳｷﾝｶﾞｸ             PIC 9(7).
            05  SR-ﾘﾂ                   PIC 99.
            05  SR-ﾃｽｳﾘｮｳ               PIC 9(7).
+           05  SR-ﾓﾄﾞｼｲﾚ               PIC 9(7).
        FD  GLSCTL-F
            RECORD CONTAINS 64 CHARACTERS.
        COPY CTLREC.
@@ -73,6 +83,7 @@
            05  CM-ｹﾝｽｳ                 PIC 9(5).
            05  CM-ﾆｭｳｷﾝｶﾞｸ             PIC 9(11).
            05  CM-ﾃｽｳﾘｮｳ               PIC 9(9).
+           05  CM-ﾓﾄﾞｼｲﾚ               PIC 9(9).
        FD  REPORT-F
            REPORT IS COMMISSION-RPT.
 
@@ -109,14 +120,32 @@
                10  WS-ﾀﾞｲﾘﾃﾝ-ｼﾒｲ           PIC X(20).
                10  WS-ﾀﾞｲﾘﾃﾝ-ｼﾃﾝ           PIC X(4).
                10  WS-ﾀﾞｲﾘﾃﾝ-ﾆｭｳｼｬ         PIC 9(4).
+               10  WS-ﾀﾞｲﾘﾃﾝ-ｼｶｸ           PIC 9.
        01  WS-ﾐﾀﾞｼ.
            05  WS-ﾐﾀﾞｼ-ｼﾒｲ             PIC X(20).
            05  WS-ﾐﾀﾞｼ-ｼﾃﾝ             PIC X(4).
            05  WS-ﾐﾀﾞｼ-ﾆｭｳｼｬ           PIC X(5).
+           05  WS-ﾐﾀﾞｼ-ｼｶｸ             PIC 9.
+       01  WS-ｼｶｸ                      PIC 9.
+       01  WS-ｹｲﾔｸﾋﾞ                   PIC 9(8).
+       01  WS-ｹｲﾔｸﾋﾞ-ﾌﾞﾝｶｲ REDEFINES WS-ｹｲﾔｸﾋﾞ.
+           05  WS-ｹｲﾔｸ-YYYY            PIC 9(4).
+           05  WS-ｹｲﾔｸ-MM              PIC 99.
+           05  WS-ｹｲﾔｸ-DD              PIC 99.
+       01  WS-ｼﾞｮｳﾀｲﾋﾞ                 PIC 9(8).
+       01  WS-ｼﾞｮｳﾀｲﾋﾞ-ﾌﾞﾝｶｲ REDEFINES WS-ｼﾞｮｳﾀｲﾋﾞ.
+           05  WS-ｼﾞｮｳﾀｲ-YYYYMM        PIC 9(6).
+           05  WS-ｼﾞｮｳﾀｲ-DD            PIC 99.
+       01  WS-ﾊﾗｲｺﾐｽﾞﾐ.
+           05  WS-ﾊﾗｲｺﾐ-YYYY           PIC 9(4).
+           05  WS-ﾊﾗｲｺﾐ-MM             PIC 99.
+       01  WS-ｶｲｽｳ                     PIC S9(5).
        01  WS-ｿｳﾀﾞｲﾘﾃﾝ                 PIC X(6).
        01  WS-ｹﾝｽｳ.
            05  WS-ﾀｲｼｮｳｹﾝｽｳ            PIC 9(7) VALUE 0.
            05  WS-ﾃｽｳﾘｮｳｺﾞｳｹｲ          PIC 9(13) VALUE 0.
+           05  WS-ﾓﾄﾞｼｲﾚｺﾞｳｹｲ          PIC 9(13) VALUE 0.
+           05  WS-ﾀﾞｲﾘﾃﾝ-ﾓﾄﾞｼｲﾚ        PIC 9(9) VALUE 0.
            05  WS-ﾀﾞｲﾘﾃﾝ-ｹﾝｽｳ          PIC 9(5) VALUE 0.
            05  WS-ﾀﾞｲﾘﾃﾝ-ﾆｭｳｷﾝ         PIC 9(11) VALUE 0.
            05  WS-ﾀﾞｲﾘﾃﾝ-ﾃｽｳﾘｮｳ        PIC 9(9) VALUE 0.
@@ -143,6 +172,7 @@
                10  COLUMN 29  PIC X(6)  VALUE "入金額".
                10  COLUMN 38  PIC X(4)  VALUE "料率".
                10  COLUMN 48  PIC X(6)  VALUE "手数料".
+               10  COLUMN 61  PIC X(4)  VALUE "戻入".
        01  TYPE IS CONTROL HEADING SR-ﾀﾞｲﾘﾃﾝｺｰﾄﾞ.
            05  LINE PLUS 1.
                10  COLUMN 1   PIC X(6)  VALUE "代理店".
@@ -151,6 +181,8 @@
                10  COLUMN 38  PIC X(4)  SOURCE WS-ﾐﾀﾞｼ-ｼﾃﾝ.
                10  COLUMN 44  PIC X(8)  VALUE "入社年月".
                10  COLUMN 53  PIC X(5)  SOURCE WS-ﾐﾀﾞｼ-ﾆｭｳｼｬ.
+               10  COLUMN 60  PIC X(4)  VALUE "資格".
+               10  COLUMN 65  PIC 9     SOURCE WS-ﾐﾀﾞｼ-ｼｶｸ.
        01  COMMISSION-DETAIL TYPE IS DETAIL.
            05  LINE PLUS 1.
                10  COLUMN 1   PIC X(10) SOURCE SR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ.
@@ -160,11 +192,13 @@
                10  COLUMN 38  PIC Z9    SOURCE SR-ﾘﾂ.
                10  COLUMN 40  PIC X(1)  VALUE "%".
                10  COLUMN 44  PIC Z,ZZZ,ZZ9 SOURCE SR-ﾃｽｳﾘｮｳ.
+               10  COLUMN 56  PIC Z,ZZZ,ZZ9 SOURCE SR-ﾓﾄﾞｼｲﾚ.
        01  TYPE IS CONTROL FOOTING SR-ﾀﾞｲﾘﾃﾝｺｰﾄﾞ.
            05  LINE PLUS 1.
                10  COLUMN 1   PIC X(8)  VALUE "代理店計".
                10  COLUMN 21  PIC ZZZ,ZZZ,ZZ9 SUM SR-ﾆｭｳｷﾝｶﾞｸ.
                10  COLUMN 40  PIC ZZZ,ZZZ,ZZ9 SUM SR-ﾃｽｳﾘｮｳ.
+               10  COLUMN 54  PIC ZZZ,ZZZ,ZZ9 SUM SR-ﾓﾄﾞｼｲﾚ.
            05  LINE PLUS 1.
                10  COLUMN 1   PIC X(1)  VALUE " ".
        01  TYPE IS CONTROL FOOTING FINAL.
@@ -172,6 +206,7 @@
                10  COLUMN 1   PIC X(8)  VALUE "合計".
                10  COLUMN 21  PIC ZZZ,ZZZ,ZZ9 SUM SR-ﾆｭｳｷﾝｶﾞｸ.
                10  COLUMN 40  PIC ZZZ,ZZZ,ZZ9 SUM SR-ﾃｽｳﾘｮｳ.
+               10  COLUMN 54  PIC ZZZ,ZZZ,ZZ9 SUM SR-ﾓﾄﾞｼｲﾚ.
 
        PROCEDURE DIVISION.
       *----------------------------------------------------------------
@@ -250,6 +285,7 @@
                MOVE AG-ｼﾒｲ TO WS-ﾀﾞｲﾘﾃﾝ-ｼﾒｲ(WS-ﾀﾞｲﾘﾃﾝ-IX)
                MOVE AG-ｼﾃﾝ TO WS-ﾀﾞｲﾘﾃﾝ-ｼﾃﾝ(WS-ﾀﾞｲﾘﾃﾝ-IX)
                MOVE AG-ﾆｭｳｼｬﾈﾝｹﾞﾂ TO WS-ﾀﾞｲﾘﾃﾝ-ﾆｭｳｼｬ(WS-ﾀﾞｲﾘﾃﾝ-IX)
+               MOVE AG-ｼｶｸ TO WS-ﾀﾞｲﾘﾃﾝ-ｼｶｸ(WS-ﾀﾞｲﾘﾃﾝ-IX)
                READ AGTMST-F
            END-PERFORM
            IF NOT WS-AGTMST-ｵﾜﾘ
@@ -259,7 +295,8 @@
            END-IF.
 
       *----------------------------------------------------------------
-      * ｾﾝﾀｸ-RTN: 当月入金のあった契約の手数料を求め、整列に渡す。
+      * ｾﾝﾀｸ-RTN: 当月入金のあった契約の手数料と、当月に早期に失効
+      * か解約となった契約の戻入を求め、整列に渡す。
       *----------------------------------------------------------------
        ｾﾝﾀｸ-RTN.
            READ POLMST-F NEXT
@@ -267,6 +304,9 @@
                IF PM-ｻｲｼｭｳﾆｭｳｷﾝﾈﾝｹﾞﾂ = WS-ｷﾞｮｳﾑ-YYYYMM
                        AND PM-ｻｲｼｭｳﾆｭｳｷﾝｶﾞｸ > 0
                    PERFORM ﾃｽｳﾘｮｳ-RTN
+               END-IF
+               IF (PM-ｼｯｺｳ OR PM-ｶｲﾔｸ) AND PM-ｹｲｶﾈﾝｽｳ < 3
+                   PERFORM ﾓﾄﾞｼｲﾚ-ﾊﾝﾃｲ-RTN
                END-IF
                READ POLMST-F NEXT
            END-PERFORM
@@ -277,7 +317,7 @@
            END-IF.
 
       *----------------------------------------------------------------
-      * ﾃｽｳﾘｮｳ-RTN: 経過年数による料率と手数料。
+      * ﾃｽｳﾘｮｳ-RTN: 経過年数による料率に資格の割増を掛けた手数料。
       *----------------------------------------------------------------
        ﾃｽｳﾘｮｳ-RTN.
            EVALUATE TRUE
@@ -290,15 +330,76 @@
                WHEN OTHER
                    MOVE 0 TO SR-ﾘﾂ
            END-EVALUATE
+           PERFORM ｼｶｸ-RTN
            COMPUTE SR-ﾃｽｳﾘｮｳ = PM-ｻｲｼｭｳﾆｭｳｷﾝｶﾞｸ * SR-ﾘﾂ / 100
+                             * (90 + 10 * WS-ｼｶｸ) / 100
+           MOVE 0 TO SR-ﾓﾄﾞｼｲﾚ
+           MOVE PM-ｻｲｼｭｳﾆｭｳｷﾝｶﾞｸ TO SR-ﾆｭｳｷﾝｶﾞｸ
+           PERFORM ﾜﾀｼ-RTN
+           ADD 1 TO WS-ﾀｲｼｮｳｹﾝｽｳ
+           ADD SR-ﾃｽｳﾘｮｳ TO WS-ﾃｽｳﾘｮｳｺﾞｳｹｲ.
+
+      *----------------------------------------------------------------
+      * ｼｶｸ-RTN: 契約の代理店の資格。代理店マスタになければ 1。
+      *----------------------------------------------------------------
+       ｼｶｸ-RTN.
+           MOVE 1 TO WS-ｼｶｸ
+           SET WS-ﾀﾞｲﾘﾃﾝ-IX TO 1
+           SEARCH WS-ﾀﾞｲﾘﾃﾝ
+               WHEN WS-ﾀﾞｲﾘﾃﾝ-ｺｰﾄﾞ(WS-ﾀﾞｲﾘﾃﾝ-IX) = PM-ﾀﾞｲﾘﾃﾝｺｰﾄﾞ
+                   MOVE WS-ﾀﾞｲﾘﾃﾝ-ｼｶｸ(WS-ﾀﾞｲﾘﾃﾝ-IX) TO WS-ｼｶｸ
+           END-SEARCH.
+
+      *----------------------------------------------------------------
+      * ﾓﾄﾞｼｲﾚ-ﾊﾝﾃｲ-RTN: 失効か解約が当月なら戻入を求める。
+      *----------------------------------------------------------------
+       ﾓﾄﾞｼｲﾚ-ﾊﾝﾃｲ-RTN.
+           MOVE "S" TO WS-ﾎｳｺｳ
+           CALL "GLC020" USING WS-ﾎｳｺｳ WS-ｼﾞｮｳﾀｲﾋﾞ
+                               PM-ｼﾞｮｳﾀｲﾋﾂﾞｹ WS-ﾍﾝｶﾝｹｯｶ
+           IF WS-ﾍﾝｶﾝｹｯｶ = 0 AND WS-ｼﾞｮｳﾀｲ-YYYYMM = WS-ｷﾞｮｳﾑ-YYYYMM
+               PERFORM ﾓﾄﾞｼｲﾚ-RTN
+           END-IF.
+
+      *----------------------------------------------------------------
+      * ﾓﾄﾞｼｲﾚ-RTN: 契約月から払込済年月までに払い込まれた初年度の
+      * 保険料の回数 (月払は12回まで、年払は1回、半年払は2回まで)
+      * から、初年度の手数料の戻入額。
+      *----------------------------------------------------------------
+       ﾓﾄﾞｼｲﾚ-RTN.
+           CALL "GLC020" USING WS-ﾎｳｺｳ WS-ｹｲﾔｸﾋﾞ
+                               PM-ｹｲﾔｸﾋﾞ WS-ﾍﾝｶﾝｹｯｶ
+           MOVE PM-ﾊﾗｲｺﾐｽﾞﾐﾈﾝｹﾞﾂ TO WS-ﾊﾗｲｺﾐｽﾞﾐ
+           COMPUTE WS-ｶｲｽｳ = (WS-ﾊﾗｲｺﾐ-YYYY - WS-ｹｲﾔｸ-YYYY) * 12
+                           + WS-ﾊﾗｲｺﾐ-MM - WS-ｹｲﾔｸ-MM + 1
+           EVALUATE TRUE
+               WHEN PM-ﾈﾝﾊﾞﾗｲ
+                   MOVE 1 TO WS-ｶｲｽｳ
+               WHEN PM-ﾊﾝﾄｼﾊﾞﾗｲ
+                   COMPUTE WS-ｶｲｽｳ = (WS-ｶｲｽｳ + 5) / 6
+                   IF WS-ｶｲｽｳ > 2
+                       MOVE 2 TO WS-ｶｲｽｳ
+                   END-IF
+               WHEN WS-ｶｲｽｳ > 12
+                   MOVE 12 TO WS-ｶｲｽｳ
+           END-EVALUATE
+           PERFORM ｼｶｸ-RTN
+           MOVE 40 TO SR-ﾘﾂ
+           COMPUTE SR-ﾓﾄﾞｼｲﾚ = PM-ﾎｹﾝﾘｮｳ * WS-ｶｲｽｳ * SR-ﾘﾂ / 100
+                             * (90 + 10 * WS-ｼｶｸ) / 100
+           MOVE 0 TO SR-ﾃｽｳﾘｮｳ SR-ﾆｭｳｷﾝｶﾞｸ
+           PERFORM ﾜﾀｼ-RTN
+           ADD SR-ﾓﾄﾞｼｲﾚ TO WS-ﾓﾄﾞｼｲﾚｺﾞｳｹｲ.
+
+      *----------------------------------------------------------------
+      * ﾜﾀｼ-RTN: 整列レコードの残りを入れて RELEASE する。
+      *----------------------------------------------------------------
+       ﾜﾀｼ-RTN.
            MOVE PM-ﾀﾞｲﾘﾃﾝｺｰﾄﾞ TO SR-ﾀﾞｲﾘﾃﾝｺｰﾄﾞ
            MOVE PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ TO SR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ
            MOVE PM-ｼｮｳﾋﾝ TO SR-ｼｮｳﾋﾝ
            MOVE PM-ｹｲｶﾈﾝｽｳ TO SR-ｹｲｶﾈﾝｽｳ
-           MOVE PM-ｻｲｼｭｳﾆｭｳｷﾝｶﾞｸ TO SR-ﾆｭｳｷﾝｶﾞｸ
-           RELEASE SR-ｾｲﾚﾂ-ﾚｺｰﾄﾞ
-           ADD 1 TO WS-ﾀｲｼｮｳｹﾝｽｳ
-           ADD SR-ﾃｽｳﾘｮｳ TO WS-ﾃｽｳﾘｮｳｺﾞｳｹｲ.
+           RELEASE SR-ｾｲﾚﾂ-ﾚｺｰﾄﾞ.
 
       *----------------------------------------------------------------
       * ﾎｳｺｸ-RTN: 整列済みの1件ごとに明細を生成し、代理店が変わる
@@ -341,7 +442,8 @@
            GENERATE COMMISSION-DETAIL
            ADD 1 TO WS-ﾀﾞｲﾘﾃﾝ-ｹﾝｽｳ
            ADD SR-ﾆｭｳｷﾝｶﾞｸ TO WS-ﾀﾞｲﾘﾃﾝ-ﾆｭｳｷﾝ
-           ADD SR-ﾃｽｳﾘｮｳ TO WS-ﾀﾞｲﾘﾃﾝ-ﾃｽｳﾘｮｳ.
+           ADD SR-ﾃｽｳﾘｮｳ TO WS-ﾀﾞｲﾘﾃﾝ-ﾃｽｳﾘｮｳ
+           ADD SR-ﾓﾄﾞｼｲﾚ TO WS-ﾀﾞｲﾘﾃﾝ-ﾓﾄﾞｼｲﾚ.
 
       *----------------------------------------------------------------
       * ﾐﾀﾞｼ-RTN: 代理店マスタから見出しの名称、支社、入社年月。
@@ -352,9 +454,11 @@
                AT END
                    MOVE "(未登録)" TO WS-ﾐﾀﾞｼ-ｼﾒｲ
                    MOVE SPACES TO WS-ﾐﾀﾞｼ-ｼﾃﾝ WS-ﾐﾀﾞｼ-ﾆｭｳｼｬ
+                   MOVE 1 TO WS-ﾐﾀﾞｼ-ｼｶｸ
                WHEN WS-ﾀﾞｲﾘﾃﾝ-ｺｰﾄﾞ(WS-ﾀﾞｲﾘﾃﾝ-IX) = SR-ﾀﾞｲﾘﾃﾝｺｰﾄﾞ
                    MOVE WS-ﾀﾞｲﾘﾃﾝ-ｼﾒｲ(WS-ﾀﾞｲﾘﾃﾝ-IX) TO WS-ﾐﾀﾞｼ-ｼﾒｲ
                    MOVE WS-ﾀﾞｲﾘﾃﾝ-ｼﾃﾝ(WS-ﾀﾞｲﾘﾃﾝ-IX) TO WS-ﾐﾀﾞｼ-ｼﾃﾝ
+                   MOVE WS-ﾀﾞｲﾘﾃﾝ-ｼｶｸ(WS-ﾀﾞｲﾘﾃﾝ-IX) TO WS-ﾐﾀﾞｼ-ｼｶｸ
                    MOVE WS-ﾀﾞｲﾘﾃﾝ-ﾆｭｳｼｬ(WS-ﾀﾞｲﾘﾃﾝ-IX)(1:2)
                        TO WS-ﾐﾀﾞｼ-ﾆｭｳｼｬ(1:2)
                    MOVE "/" TO WS-ﾐﾀﾞｼ-ﾆｭｳｼｬ(3:1)
@@ -372,6 +476,7 @@
            MOVE WS-ﾀﾞｲﾘﾃﾝ-ｹﾝｽｳ TO CM-ｹﾝｽｳ
            MOVE WS-ﾀﾞｲﾘﾃﾝ-ﾆｭｳｷﾝ TO CM-ﾆｭｳｷﾝｶﾞｸ
            MOVE WS-ﾀﾞｲﾘﾃﾝ-ﾃｽｳﾘｮｳ TO CM-ﾃｽｳﾘｮｳ
+           MOVE WS-ﾀﾞｲﾘﾃﾝ-ﾓﾄﾞｼｲﾚ TO CM-ﾓﾄﾞｼｲﾚ
            WRITE CM-ﾃｽｳﾘｮｳ-ﾚｺｰﾄﾞ
            IF NOT WS-COMMIS-OK
                MOVE "COMMIS" TO WS-ｴﾗｰﾌｧｲﾙ
@@ -379,23 +484,38 @@
                PERFORM ｲｼﾞｮｳ-RTN
            END-IF
            IF WS-ﾀﾞｲﾘﾃﾝ-ﾃｽｳﾘｮｳ > 0
-               MOVE CT-ｼﾞｶｲｼﾜｹﾊﾞﾝｺﾞｳ TO JR-ｼﾜｹﾊﾞﾝｺﾞｳ
-               ADD 1 TO CT-ｼﾞｶｲｼﾜｹﾊﾞﾝｺﾞｳ
-               MOVE WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ TO JR-ﾋﾂﾞｹ
-               MOVE "GLM030" TO JR-ﾌﾟﾛｸﾞﾗﾑ
-               MOVE 5410 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
                SET JR-ｶﾘｶﾀ TO TRUE
                MOVE WS-ﾀﾞｲﾘﾃﾝ-ﾃｽｳﾘｮｳ TO JR-ｷﾝｶﾞｸ
-               MOVE WS-ｿｳﾀﾞｲﾘﾃﾝ TO JR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ
                MOVE "代理店手数料" TO JR-ﾃｷﾖｳ
-               WRITE JR-ｼﾜｹ-ﾚｺｰﾄﾞ
-               IF NOT WS-GLJRNL-OK
-                   MOVE "GLJRNL" TO WS-ｴﾗｰﾌｧｲﾙ
-                   MOVE WS-GLJRNL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
-                   PERFORM ｲｼﾞｮｳ-RTN
-               END-IF
+               PERFORM ｼﾜｹ-RTN
            END-IF
-           MOVE 0 TO WS-ﾀﾞｲﾘﾃﾝ-ｹﾝｽｳ WS-ﾀﾞｲﾘﾃﾝ-ﾆｭｳｷﾝ WS-ﾀﾞｲﾘﾃﾝ-ﾃｽｳﾘｮｳ.
+           IF WS-ﾀﾞｲﾘﾃﾝ-ﾓﾄﾞｼｲﾚ > 0
+               SET JR-ｶｼｶﾀ TO TRUE
+               MOVE WS-ﾀﾞｲﾘﾃﾝ-ﾓﾄﾞｼｲﾚ TO JR-ｷﾝｶﾞｸ
+               MOVE "手数料戻入" TO JR-ﾃｷﾖｳ
+               PERFORM ｼﾜｹ-RTN
+           END-IF
+           MOVE 0 TO WS-ﾀﾞｲﾘﾃﾝ-ｹﾝｽｳ WS-ﾀﾞｲﾘﾃﾝ-ﾆｭｳｷﾝ WS-ﾀﾞｲﾘﾃﾝ-ﾃｽｳﾘｮｳ
+                     WS-ﾀﾞｲﾘﾃﾝ-ﾓﾄﾞｼｲﾚ.
+
+      *----------------------------------------------------------------
+      * ｼﾜｹ-RTN: 代理店手数料を未払手数料に対して仕訳する。貸借、
+      * 金額、摘要は呼ぶ側が入れる。
+      *----------------------------------------------------------------
+       ｼﾜｹ-RTN.
+           MOVE CT-ｼﾞｶｲｼﾜｹﾊﾞﾝｺﾞｳ TO JR-ｼﾜｹﾊﾞﾝｺﾞｳ
+           ADD 1 TO CT-ｼﾞｶｲｼﾜｹﾊﾞﾝｺﾞｳ
+           MOVE WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ TO JR-ﾋﾂﾞｹ
+           MOVE "GLM030" TO JR-ﾌﾟﾛｸﾞﾗﾑ
+           MOVE 5410 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
+           MOVE 2410 TO JR-ｱｲﾃｶﾓｸ
+           MOVE WS-ｿｳﾀﾞｲﾘﾃﾝ TO JR-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ
+           WRITE JR-ｼﾜｹ-ﾚｺｰﾄﾞ
+           IF NOT WS-GLJRNL-OK
+               MOVE "GLJRNL" TO WS-ｴﾗｰﾌｧｲﾙ
+               MOVE WS-GLJRNL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ
+               PERFORM ｲｼﾞｮｳ-RTN
+           END-IF.
 
       *----------------------------------------------------------------
       * ｼｭｳﾘｮｳ-RTN: 制御レコードを書き戻し、ファイルを閉じる。
@@ -410,7 +530,7 @@
            CLOSE POLMST-F AGTMST-F GLSCTL-F GLJRNL-F COMMIS-F
                  REPORT-F
            DISPLAY "GLM030 対象 " WS-ﾀｲｼｮｳｹﾝｽｳ " 手数料 "
-                   WS-ﾃｽｳﾘｮｳｺﾞｳｹｲ.
+                   WS-ﾃｽｳﾘｮｳｺﾞｳｹｲ " 戻入 " WS-ﾓﾄﾞｼｲﾚｺﾞｳｹｲ.
 
       *----------------------------------------------------------------
       * ｲｼﾞｮｳ-RTN: ファイル異常は 16 で終わる。

@@ -14,6 +14,7 @@ rem 2012-09-03 YN  GL-0561 契約者貸付。
 rem 2026-11-16 YN  GL-0822 給付履歴。
 rem 2026-11-18 YN  GL-0825 保障マスタ。
 rem 2026-11-19 YN  GL-0827 収納履歴。
+rem 2026-11-19 YN  GL-0828 日計表。
 setlocal
 set DATE=%1
 set BIN=%GLS_BIN%
@@ -72,6 +73,12 @@ set DD_LONREJ=%DATA%¥OUT¥LONREJ.%DATE%.TXT
 set DD_GLD070R=%DATA%¥RPT¥GLD070.%DATE%.RPT
 "%BIN%¥GLD070.EXE" %DATE% > "%DATA%¥RPT¥GLD070.%DATE%.OUT" 2>&1
 >>"%LOG%" echo GLD070 GLD070 %ERRORLEVEL%
+if errorlevel 8 exit /b %ERRORLEVEL%
+
+rem STEP GLD080: 日計表
+set DD_GLD080R=%DATA%¥RPT¥GLD080.%DATE%.RPT
+"%BIN%¥GLD080.EXE" %DATE% > "%DATA%¥RPT¥GLD080.%DATE%.OUT" 2>&1
+>>"%LOG%" echo GLD080 GLD080 %ERRORLEVEL%
 if errorlevel 8 exit /b %ERRORLEVEL%
 
 rem STEP UNLOAD: 契約マスタのアンロードと制御レコードの更新

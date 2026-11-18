@@ -5,16 +5,20 @@
     "GLJRNL: 仕訳 レコード (80バイト)",
     "",
     "総勘定元帳向けの仕訳1件が GLJRNL.YYYYMMDD.TXT の1行:",
-    "起票したプログラム、勘定科目、貸借と金額、元の契約。",
-    "勘定科目は 1210 契約者貸付金、2310 配当金支払、4110 保険料",
-    "収入、4310 貸付金利息、5110 死亡保険金、5120 入院給付金、",
+    "起票したプログラム、勘定科目、貸借と金額、相手科目、元の",
+    "契約。1行が振替伝票の1件で、勘定科目を貸借の側に、相手科目",
+    "をその反対の側に同じ金額で記帳する。",
+    "勘定科目は 1110 預金、1210 契約者貸付金、2110 責任準備金、",
+    "2310 契約者配当準備金、2410 未払手数料、4110 保険料収入、",
+    "4310 貸付金利息、5110 死亡保険金、5120 入院給付金、",
     "5130 解約返戻金、5140 満期保険金、5210 責任準備金繰入、",
     "5310 契約者配当金、5410 代理店手数料。",
     "",
     "変更履歴",
     "日付       担当 変更",
     "1987-04-01 KT   GL-0001 初版。",
-    "2012-09-03 YN   GL-0561 契約者貸付金と貸付金利息。"
+    "2012-09-03 YN   GL-0561 契約者貸付金と貸付金利息。",
+    "2026-11-19 YN   GL-0828 相手科目 (予備から)。"
   ],
   "records": [
     {
@@ -24,7 +28,7 @@
       "length": 80,
       "category": "group",
       "kind": "group",
-      "source": "gondwana/copybooks/GLJRNL.cpy:16",
+      "source": "gondwana/copybooks/GLJRNL.cpy:20",
       "fields": [
         {
           "level": 5,
@@ -36,7 +40,7 @@
           "category": "numeric",
           "kind": "number",
           "digits": 9,
-          "source": "gondwana/copybooks/GLJRNL.cpy:17"
+          "source": "gondwana/copybooks/GLJRNL.cpy:21"
         },
         {
           "level": 5,
@@ -47,7 +51,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "date",
-          "source": "gondwana/copybooks/GLJRNL.cpy:18"
+          "source": "gondwana/copybooks/GLJRNL.cpy:22"
         },
         {
           "level": 5,
@@ -58,7 +62,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "gondwana/copybooks/GLJRNL.cpy:19"
+          "source": "gondwana/copybooks/GLJRNL.cpy:23"
         },
         {
           "level": 5,
@@ -70,7 +74,7 @@
           "category": "numeric",
           "kind": "number",
           "digits": 4,
-          "source": "gondwana/copybooks/GLJRNL.cpy:20"
+          "source": "gondwana/copybooks/GLJRNL.cpy:24"
         },
         {
           "level": 5,
@@ -87,17 +91,17 @@
               "values": [
                 "'D'"
               ],
-              "source": "gondwana/copybooks/GLJRNL.cpy:22"
+              "source": "gondwana/copybooks/GLJRNL.cpy:26"
             },
             {
               "name": "JR-ｶｼｶﾀ",
               "values": [
                 "'C'"
               ],
-              "source": "gondwana/copybooks/GLJRNL.cpy:23"
+              "source": "gondwana/copybooks/GLJRNL.cpy:27"
             }
           ],
-          "source": "gondwana/copybooks/GLJRNL.cpy:21"
+          "source": "gondwana/copybooks/GLJRNL.cpy:25"
         },
         {
           "level": 5,
@@ -109,7 +113,7 @@
           "category": "numeric",
           "kind": "amount",
           "digits": 11,
-          "source": "gondwana/copybooks/GLJRNL.cpy:24"
+          "source": "gondwana/copybooks/GLJRNL.cpy:28"
         },
         {
           "level": 5,
@@ -120,7 +124,7 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "gondwana/copybooks/GLJRNL.cpy:25"
+          "source": "gondwana/copybooks/GLJRNL.cpy:29"
         },
         {
           "level": 5,
@@ -131,18 +135,30 @@
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "text",
-          "source": "gondwana/copybooks/GLJRNL.cpy:26"
+          "source": "gondwana/copybooks/GLJRNL.cpy:30"
+        },
+        {
+          "level": 5,
+          "name": "JR-ｱｲﾃｶﾓｸ",
+          "start": 69,
+          "length": 4,
+          "picture": "9(4)",
+          "usage": "DISPLAY",
+          "category": "numeric",
+          "kind": "number",
+          "digits": 4,
+          "source": "gondwana/copybooks/GLJRNL.cpy:31"
         },
         {
           "level": 5,
           "name": "FILLER",
-          "start": 69,
-          "length": 12,
-          "picture": "X(12)",
+          "start": 73,
+          "length": 8,
+          "picture": "X(8)",
           "usage": "DISPLAY",
           "category": "alphanumeric",
           "kind": "filler",
-          "source": "gondwana/copybooks/GLJRNL.cpy:27"
+          "source": "gondwana/copybooks/GLJRNL.cpy:32"
         }
       ]
     }
@@ -155,6 +171,7 @@
     "GLD050",
     "GLD060",
     "GLD070",
+    "GLD080",
     "GLM020",
     "GLM030",
     "GLY010"

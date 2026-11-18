@@ -45,6 +45,7 @@
       *                         差引、自殺免責、医療保険の死亡請求。
       * 2026-11-16 YN   GL-0822 給付履歴、通算日数、手術給付金。
       * 2026-11-18 YN   GL-0825 保障マスタ: 特約の死亡保障と入院。
+      * 2026-11-19 YN   GL-0828 仕訳に相手科目。
       *----------------------------------------------------------------
        IDENTIFICATION DIVISION.
        PROGRAM-ID. GLD030.
@@ -615,6 +616,7 @@
                COMPUTE WS-ｷﾝｶﾞｸ = WS-ｼﾎﾞｳｷﾝｶﾞｸ + PM-ﾊｲﾄｳﾙｲｹｲ
                                - PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ - WS-ﾐﾉｳｶﾞｸ
                MOVE 5110 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
+               MOVE 1110 TO JR-ｱｲﾃｶﾓｸ
                MOVE WS-ｼﾎﾞｳｷﾝｶﾞｸ TO JR-ｷﾝｶﾞｸ
                SET JR-ｶﾘｶﾀ TO TRUE
                MOVE "死亡保険金" TO JR-ﾃｷﾖｳ
@@ -622,6 +624,7 @@
                PERFORM ﾊｲﾄｳ-ｶｼﾂｹ-ｼﾜｹ-RTN
                IF WS-ﾐﾉｳｶﾞｸ > 0
                    MOVE 4110 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
+                   MOVE 1110 TO JR-ｱｲﾃｶﾓｸ
                    MOVE WS-ﾐﾉｳｶﾞｸ TO JR-ｷﾝｶﾞｸ
                    SET JR-ｶｼｶﾀ TO TRUE
                    MOVE "未納保険料充当" TO JR-ﾃｷﾖｳ
@@ -667,6 +670,7 @@
                            - PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ
            IF WS-ｷﾝｶﾞｸ > 0
                MOVE 5130 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
+               MOVE 1110 TO JR-ｱｲﾃｶﾓｸ
                MOVE WS-ﾍﾝﾚｲｷﾝ TO JR-ｷﾝｶﾞｸ
                SET JR-ｶﾘｶﾀ TO TRUE
                MOVE "免責時返戻金" TO JR-ﾃｷﾖｳ
@@ -735,6 +739,7 @@
                * WS-ｼｮｳﾋﾝ-ﾆｭｳｲﾝﾆﾁｶﾞｸﾘﾂ(WS-ﾆｭｳｲﾝﾎｼｮｳ-ｿｴｼﾞ) / 1000
            COMPUTE WS-ｷﾝｶﾞｸ = WS-ﾆﾁｶﾞｸ * WS-ﾆｯｽｳ
            MOVE 5120 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
+           MOVE 1110 TO JR-ｱｲﾃｶﾓｸ
            MOVE WS-ｷﾝｶﾞｸ TO JR-ｷﾝｶﾞｸ
            SET JR-ｶﾘｶﾀ TO TRUE
            MOVE "入院給付金" TO JR-ﾃｷﾖｳ
@@ -750,6 +755,7 @@
                * WS-ｼｮｳﾋﾝ-ﾆｭｳｲﾝﾆﾁｶﾞｸﾘﾂ(WS-ﾆｭｳｲﾝﾎｼｮｳ-ｿｴｼﾞ) / 1000
            COMPUTE WS-ｷﾝｶﾞｸ = WS-ﾆﾁｶﾞｸ * WS-ﾆｯｽｳ
            MOVE 5120 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
+           MOVE 1110 TO JR-ｱｲﾃｶﾓｸ
            MOVE WS-ｷﾝｶﾞｸ TO JR-ｷﾝｶﾞｸ
            SET JR-ｶﾘｶﾀ TO TRUE
            MOVE "手術給付金" TO JR-ﾃｷﾖｳ
@@ -772,6 +778,7 @@
            COMPUTE WS-ｷﾝｶﾞｸ = WS-ﾍﾝﾚｲｷﾝ - PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ
            IF WS-ｷﾝｶﾞｸ > 0
                MOVE 5130 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
+               MOVE 1110 TO JR-ｱｲﾃｶﾓｸ
                MOVE WS-ﾍﾝﾚｲｷﾝ TO JR-ｷﾝｶﾞｸ
                SET JR-ｶﾘｶﾀ TO TRUE
                MOVE "解約返戻金" TO JR-ﾃｷﾖｳ
@@ -826,6 +833,7 @@
            IF WS-ﾘｿｸ > 0
                ADD WS-ﾘｿｸ TO PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ
                MOVE 4310 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
+               MOVE 1210 TO JR-ｱｲﾃｶﾓｸ
                MOVE WS-ﾘｿｸ TO JR-ｷﾝｶﾞｸ
                SET JR-ｶｼｶﾀ TO TRUE
                MOVE "貸付金利息" TO JR-ﾃｷﾖｳ
@@ -838,6 +846,7 @@
        ﾊｲﾄｳ-ｶｼﾂｹ-ｼﾜｹ-RTN.
            IF CR-ｼﾎﾞｳ AND PM-ﾊｲﾄｳﾙｲｹｲ > 0
                MOVE 2310 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
+               MOVE 1110 TO JR-ｱｲﾃｶﾓｸ
                MOVE PM-ﾊｲﾄｳﾙｲｹｲ TO JR-ｷﾝｶﾞｸ
                SET JR-ｶﾘｶﾀ TO TRUE
                MOVE "配当金支払" TO JR-ﾃｷﾖｳ
@@ -845,6 +854,7 @@
            END-IF
            IF PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ > 0
                MOVE 1210 TO JR-ｶﾝｼﾞｮｳｶﾓｸ
+               MOVE 1110 TO JR-ｱｲﾃｶﾓｸ
                MOVE PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ TO JR-ｷﾝｶﾞｸ
                SET JR-ｶｼｶﾀ TO TRUE
                MOVE "貸付金回収" TO JR-ﾃｷﾖｳ

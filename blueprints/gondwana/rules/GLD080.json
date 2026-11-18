@@ -1,0 +1,345 @@
+{
+  "program": "GLD080",
+  "tables": [
+    {
+      "paragraph": "ｼｮｷ-RTN",
+      "source": "gondwana/programs/GLD080.cbl:129",
+      "conditions": [
+        "WS-ﾍﾝｶﾝｹｯｶ = 0",
+        "WS-GLJRNL-OK",
+        "WS-REPORT-OK"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ﾍﾝｶﾝｹｯｶ"
+        ],
+        [
+          "WS-GLJRNL-ST"
+        ],
+        [
+          "WS-REPORT-ST"
+        ]
+      ],
+      "actions": [
+        "ACCEPT WS-ｺﾏﾝﾄﾞｷﾞｮｳ FROM COMMAND-LINE",
+        "MOVE WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8) TO WS-ｷﾞｮｳﾑﾋﾂﾞｹ",
+        "CALL 'GLC020' USING WS-ﾎｳｺｳ WS-ｷﾞｮｳﾑﾋﾂﾞｹ WS-ｷﾞｮｳﾑﾋﾂﾞｹ-ﾜﾚｷ WS-ﾍﾝｶﾝｹｯｶ",
+        "DISPLAY 'GLD080 日付不正: ' WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)",
+        "MOVE 8 TO RETURN-CODE",
+        "STOP RUN",
+        "MOVE ZEROS TO WS-ｼｭｳｹｲ-TBL",
+        "OPEN INPUT GLJRNL-F",
+        "OPEN OUTPUT REPORT-F",
+        "MOVE 'GLJRNL' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-GLJRNL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "PERFORM ｲｼﾞｮｳ-RTN",
+        "MOVE 'GLD080R' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-REPORT-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "PERFORM GLJRNL-ﾖﾐｺﾐ-RTN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "N",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is not 0, it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line, sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`, calls `GLC020`, displays `'GLD080 日付不正: '` `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`, sets `RETURN-CODE` to 8, and stops the run."
+        },
+        {
+          "entries": [
+            "Y",
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0 and `WS-GLJRNL-ST` is neither `'00'` nor `'05'` (not `WS-GLJRNL-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line, sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`, calls `GLC020`, sets `WS-ｼｭｳｹｲ-TBL` to zero, opens `GLJRNL-F` for input, opens `REPORT-F` for output, sets `WS-ｴﾗｰﾌｧｲﾙ` to `'GLJRNL'`, sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-GLJRNL-ST`, and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            6,
+            7,
+            8,
+            12,
+            13,
+            11
+          ],
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-GLJRNL-ST` is `'00'` or `'05'` (`WS-GLJRNL-OK`); and `WS-REPORT-ST` is not `'00'` (not `WS-REPORT-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line, sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`, calls `GLC020`, sets `WS-ｼｭｳｹｲ-TBL` to zero, opens `GLJRNL-F` for input, opens `REPORT-F` for output, sets `WS-ｴﾗｰﾌｧｲﾙ` to `'GLD080R'`, sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-REPORT-ST`, and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "Y",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            6,
+            7,
+            8,
+            14
+          ],
+          "sentence": "When `WS-ﾍﾝｶﾝｹｯｶ` is 0; `WS-GLJRNL-ST` is `'00'` or `'05'` (`WS-GLJRNL-OK`); and `WS-REPORT-ST` is `'00'` (`WS-REPORT-OK`), it accepts `WS-ｺﾏﾝﾄﾞｷﾞｮｳ` from its command line, sets `WS-ｷﾞｮｳﾑﾋﾂﾞｹ` to `WS-ｺﾏﾝﾄﾞｷﾞｮｳ(1:8)`, calls `GLC020`, sets `WS-ｼｭｳｹｲ-TBL` to zero, opens `GLJRNL-F` for input, opens `REPORT-F` for output, and performs `GLJRNL-ﾖﾐｺﾐ-RTN`."
+        }
+      ]
+    },
+    {
+      "paragraph": "GLJRNL-ﾖﾐｺﾐ-RTN",
+      "source": "gondwana/programs/GLD080.cbl:157",
+      "conditions": [
+        "NOT WS-GLJRNL-OK AND NOT WS-GLJRNL-ｵﾜﾘ"
+      ],
+      "conditionRefs": [
+        [
+          "WS-GLJRNL-ST"
+        ]
+      ],
+      "actions": [
+        "READ GLJRNL-F",
+        "MOVE 'GLJRNL' TO WS-ｴﾗｰﾌｧｲﾙ",
+        "MOVE WS-GLJRNL-ST TO WS-ｴﾗｰｽﾃｰﾀｽ",
+        "PERFORM ｲｼﾞｮｳ-RTN"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "sentence": "When `WS-GLJRNL-ST` is neither `'00'` nor `'05'` (not `WS-GLJRNL-OK`) and `WS-GLJRNL-ST` is not `'10'` (not `WS-GLJRNL-ｵﾜﾘ`), it reads `GLJRNL-F`, sets `WS-ｴﾗｰﾌｧｲﾙ` to `'GLJRNL'`, sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-GLJRNL-ST`, and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": [
+            0
+          ],
+          "sentence": "When `WS-GLJRNL-ST` is `'00'` or `'05'` (`WS-GLJRNL-OK`) or `WS-GLJRNL-ST` is `'10'` (`WS-GLJRNL-ｵﾜﾘ`), it reads `GLJRNL-F`."
+        }
+      ]
+    },
+    {
+      "paragraph": "ｼﾜｹ-RTN",
+      "source": "gondwana/programs/GLD080.cbl:169",
+      "conditions": [
+        "JR-ｱｲﾃｶﾓｸ IS NOT NUMERIC OR JR-ｱｲﾃｶﾓｸ = 0",
+        "JR-ｶﾘｶﾀ"
+      ],
+      "conditionRefs": [
+        [
+          "JR-ｱｲﾃｶﾓｸ"
+        ],
+        [
+          "JR-ﾀｲｼｬｸ"
+        ]
+      ],
+      "actions": [
+        "ADD 1 TO WS-ｼﾜｹｹﾝｽｳ",
+        "ADD 1 TO WS-ﾌｾｲｹﾝｽｳ",
+        "MOVE 4 TO WS-ﾌｯｷｺｰﾄﾞ",
+        "PERFORM GLJRNL-ﾖﾐｺﾐ-RTN",
+        "MOVE JR-ｶﾝｼﾞｮｳｶﾓｸ TO WS-ｷﾁｮｳ-ｶﾓｸ",
+        "MOVE JR-ﾀｲｼｬｸ TO WS-ｷﾁｮｳ-ｶﾞﾜ",
+        "PERFORM ｷﾁｮｳ-RTN",
+        "MOVE JR-ｱｲﾃｶﾓｸ TO WS-ｷﾁｮｳ-ｶﾓｸ",
+        "MOVE 'C' TO WS-ｷﾁｮｳ-ｶﾞﾜ",
+        "MOVE 'D' TO WS-ｷﾁｮｳ-ｶﾞﾜ"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "sentence": "When `JR-ｱｲﾃｶﾓｸ` is not numeric or `JR-ｱｲﾃｶﾓｸ` is 0, it adds 1 to `WS-ｼﾜｹｹﾝｽｳ`, adds 1 to `WS-ﾌｾｲｹﾝｽｳ`, sets `WS-ﾌｯｷｺｰﾄﾞ` to 4, and performs `GLJRNL-ﾖﾐｺﾐ-RTN`."
+        },
+        {
+          "entries": [
+            "N",
+            "Y"
+          ],
+          "actions": [
+            0,
+            4,
+            5,
+            6,
+            7,
+            8,
+            6,
+            3
+          ],
+          "sentence": "When `JR-ｱｲﾃｶﾓｸ` is numeric and `JR-ｱｲﾃｶﾓｸ` is not 0; and `JR-ﾀｲｼｬｸ` is `'D'` (`JR-ｶﾘｶﾀ`), it adds 1 to `WS-ｼﾜｹｹﾝｽｳ`, sets `WS-ｷﾁｮｳ-ｶﾓｸ` to `JR-ｶﾝｼﾞｮｳｶﾓｸ`, sets `WS-ｷﾁｮｳ-ｶﾞﾜ` to `JR-ﾀｲｼｬｸ`, performs `ｷﾁｮｳ-RTN`, sets `WS-ｷﾁｮｳ-ｶﾓｸ` to `JR-ｱｲﾃｶﾓｸ`, sets `WS-ｷﾁｮｳ-ｶﾞﾜ` to `'C'`, performs `ｷﾁｮｳ-RTN`, and performs `GLJRNL-ﾖﾐｺﾐ-RTN`."
+        },
+        {
+          "entries": [
+            "N",
+            "N"
+          ],
+          "actions": [
+            0,
+            4,
+            5,
+            6,
+            7,
+            9,
+            6,
+            3
+          ],
+          "sentence": "When `JR-ｱｲﾃｶﾓｸ` is numeric and `JR-ｱｲﾃｶﾓｸ` is not 0; and `JR-ﾀｲｼｬｸ` is not `'D'` (not `JR-ｶﾘｶﾀ`), it adds 1 to `WS-ｼﾜｹｹﾝｽｳ`, sets `WS-ｷﾁｮｳ-ｶﾓｸ` to `JR-ｶﾝｼﾞｮｳｶﾓｸ`, sets `WS-ｷﾁｮｳ-ｶﾞﾜ` to `JR-ﾀｲｼｬｸ`, performs `ｷﾁｮｳ-RTN`, sets `WS-ｷﾁｮｳ-ｶﾓｸ` to `JR-ｱｲﾃｶﾓｸ`, sets `WS-ｷﾁｮｳ-ｶﾞﾜ` to `'D'`, performs `ｷﾁｮｳ-RTN`, and performs `GLJRNL-ﾖﾐｺﾐ-RTN`."
+        }
+      ]
+    },
+    {
+      "paragraph": "ｷﾁｮｳ-RTN",
+      "source": "gondwana/programs/GLD080.cbl:192",
+      "conditions": [
+        "WS-ｶﾓｸ-ｺｰﾄﾞ(WS-ｶﾓｸ-IX) = WS-ｷﾁｮｳ-ｶﾓｸ",
+        "WS-ｷﾁｮｳ-ｶﾘｶﾀ"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ｶﾓｸ-ｺｰﾄﾞ",
+          "WS-ｶﾓｸ-IX",
+          "WS-ｷﾁｮｳ-ｶﾓｸ"
+        ],
+        [
+          "WS-ｷﾁｮｳ-ｶﾞﾜ"
+        ]
+      ],
+      "actions": [
+        "SET WS-ｶﾓｸ-IX TO 1",
+        "SEARCH WS-ｶﾓｸ",
+        "SET WS-N TO WS-ｶﾓｸ-IX",
+        "ADD JR-ｷﾝｶﾞｸ TO WS-ｶﾘｶﾀ(WS-N) WS-ｶﾘｶﾀｺﾞｳｹｲ",
+        "ADD JR-ｷﾝｶﾞｸ TO WS-ｶｼｶﾀ(WS-N) WS-ｶｼｶﾀｺﾞｳｹｲ",
+        "ADD 1 TO WS-ﾌｾｲｹﾝｽｳ",
+        "MOVE 4 TO WS-ﾌｯｷｺｰﾄﾞ"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "sentence": "When `WS-ｶﾓｸ-ｺｰﾄﾞ(WS-ｶﾓｸ-IX)` is `WS-ｷﾁｮｳ-ｶﾓｸ` and `WS-ｷﾁｮｳ-ｶﾞﾜ` is `'D'` (`WS-ｷﾁｮｳ-ｶﾘｶﾀ`), it sets `WS-ｶﾓｸ-IX` to 1; searches `WS-ｶﾓｸ`; runs `SET WS-N TO WS-ｶﾓｸ-IX`; and adds `JR-ｷﾝｶﾞｸ` to `WS-ｶﾘｶﾀ(WS-N)` and `WS-ｶﾘｶﾀｺﾞｳｹｲ`."
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            4
+          ],
+          "sentence": "When `WS-ｶﾓｸ-ｺｰﾄﾞ(WS-ｶﾓｸ-IX)` is `WS-ｷﾁｮｳ-ｶﾓｸ` and `WS-ｷﾁｮｳ-ｶﾞﾜ` is not `'D'` (not `WS-ｷﾁｮｳ-ｶﾘｶﾀ`), it sets `WS-ｶﾓｸ-IX` to 1; searches `WS-ｶﾓｸ`; runs `SET WS-N TO WS-ｶﾓｸ-IX`; and adds `JR-ｷﾝｶﾞｸ` to `WS-ｶｼｶﾀ(WS-N)` and `WS-ｶｼｶﾀｺﾞｳｹｲ`."
+        },
+        {
+          "entries": [
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            5,
+            6
+          ],
+          "sentence": "When `WS-ｶﾓｸ-ｺｰﾄﾞ(WS-ｶﾓｸ-IX)` is not `WS-ｷﾁｮｳ-ｶﾓｸ`, it sets `WS-ｶﾓｸ-IX` to 1, searches `WS-ｶﾓｸ`, adds 1 to `WS-ﾌｾｲｹﾝｽｳ`, and sets `WS-ﾌｯｷｺｰﾄﾞ` to 4."
+        }
+      ]
+    },
+    {
+      "paragraph": "ﾎｳｺｸ-RTN",
+      "loop": "PERFORM VARYING WS-N FROM 1 BY 1 UNTIL WS-N \u003e 14",
+      "source": "gondwana/programs/GLD080.cbl:216",
+      "conditions": [
+        "WS-ｶﾘｶﾀ(WS-N) \u003e 0 OR WS-ｶｼｶﾀ(WS-N) \u003e 0"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ｶﾘｶﾀ",
+          "WS-N",
+          "WS-ｶｼｶﾀ"
+        ]
+      ],
+      "actions": [
+        "MOVE WS-ｶﾓｸ-ｺｰﾄﾞ(WS-N) TO WS-ﾒｲｻｲ-ｺｰﾄﾞ",
+        "MOVE WS-ｶﾓｸ-ﾒｲ(WS-N) TO WS-ﾒｲｻｲ-ﾒｲ",
+        "MOVE WS-ｶﾘｶﾀ(WS-N) TO WS-ﾒｲｻｲ-ｶﾘｶﾀ",
+        "MOVE WS-ｶｼｶﾀ(WS-N) TO WS-ﾒｲｻｲ-ｶｼｶﾀ",
+        "WRITE ﾎｳｺｸ-ｷﾞｮｳ FROM WS-ﾒｲｻｲ-ｷﾞｮｳ"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "sentence": "When `WS-ｶﾘｶﾀ(WS-N)` is more than 0 or `WS-ｶｼｶﾀ(WS-N)` is more than 0, it sets `WS-ﾒｲｻｲ-ｺｰﾄﾞ` to `WS-ｶﾓｸ-ｺｰﾄﾞ(WS-N)`, sets `WS-ﾒｲｻｲ-ﾒｲ` to `WS-ｶﾓｸ-ﾒｲ(WS-N)`, sets `WS-ﾒｲｻｲ-ｶﾘｶﾀ` to `WS-ｶﾘｶﾀ(WS-N)`, sets `WS-ﾒｲｻｲ-ｶｼｶﾀ` to `WS-ｶｼｶﾀ(WS-N)`, and writes `ﾎｳｺｸ-ｷﾞｮｳ` from `WS-ﾒｲｻｲ-ｷﾞｮｳ`."
+        },
+        {
+          "entries": [
+            "N"
+          ],
+          "actions": null,
+          "sentence": "When `WS-ｶﾘｶﾀ(WS-N)` is at most 0 and `WS-ｶｼｶﾀ(WS-N)` is at most 0, it does nothing more."
+        }
+      ]
+    }
+  ]
+}
