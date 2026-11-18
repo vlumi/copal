@@ -130,6 +130,13 @@ func TestTables(t *testing.T) {
 			t.Errorf("%d %s, want %d", len(recs), c.name, c.lines)
 		}
 	}
+	table, err := g.Products()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if daily, _ := g.Layouts.Product.Text(table[3], "PR-ﾆｭｳｲﾝﾆﾁｶﾞｸﾘﾂ"); daily != "1000" {
+		t.Errorf("the medical policy's daily benefit per 1,000 yen is written %q, want 1000, a yen", daily)
+	}
 	if r := products[0].rate(1, 40); r != 400 {
 		t.Errorf("a man of 40 pays %d hundredths per 1,000 yen of whole life, want 400", r)
 	}

@@ -16,7 +16,7 @@ type product struct {
 	term       int
 	minSum     int64
 	maxSum     int64
-	dailyRate  int // thousandths per 1,000 yen
+	dailyRate  int // the daily benefit per 1,000 yen, in thousandths of a yen
 	waiting    int
 	dividend   int // ten-thousandths of the sum, a year
 	weight     int // how much of the business it is
@@ -30,9 +30,9 @@ var products = []product{
 	{"WL", sjis("終身保険"), 1, 15, 70, 0, 1_000_000, 100_000_000, 0, 0, 20, 45, 260, 20, 7, false},
 	{"TM", sjis("定期保険"), 2, 20, 60, 10, 1_000_000, 300_000_000, 0, 0, 0, 20, 80, 20, 3, false},
 	{"EN", sjis("養老保険"), 3, 0, 55, 20, 500_000, 50_000_000, 0, 0, 15, 20, 380, 0, 2, false},
-	{"MD", sjis("医療保険"), 4, 15, 75, 0, 1_000_000, 20_000_000, 1, 90, 0, 15, 90, 20, 2, false},
+	{"MD", sjis("医療保険"), 4, 15, 75, 0, 1_000_000, 20_000_000, 1000, 90, 0, 15, 90, 20, 2, false},
 	{"TR", sjis("定期特約"), 2, 20, 60, 10, 1_000_000, 50_000_000, 0, 0, 0, 0, 75, 20, 3, true},
-	{"HR", sjis("入院特約"), 4, 15, 70, 10, 1_000_000, 10_000_000, 1, 90, 0, 0, 85, 20, 2, true},
+	{"HR", sjis("入院特約"), 4, 15, 70, 10, 1_000_000, 10_000_000, 1000, 90, 0, 0, 85, 20, 2, true},
 }
 
 // productOf finds a product by its code.
