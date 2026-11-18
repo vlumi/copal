@@ -1,6 +1,6 @@
 # Operations guide
 
-Gondwana Life Insurance, Systems Department. Revision of 2026-11. Supersedes the 2026-10 edition; policy loans, their interest and the automatic premium loan are described for the first time, a benefit is judged by the day of its event, and a policy has riders, kept with its main contract in the coverage file.
+Gondwana Life Insurance, Systems Department. Revision of 2026-11. Supersedes the 2026-10 edition; the payment history, the policyholders' notices and the premium certificates are new; policy loans, their interest and the automatic premium loan are described for the first time, a benefit is judged by the day of its event, and a policy has riders, kept with its main contract in the coverage file.
 
 ## The runs
 
@@ -14,6 +14,7 @@ The batch files are in `scripts\`, and the scheduler starts them with the progra
 - `RESULTS.BAT DATE`, on the day the agent's results arrive, a few business days after the debit, before the daily run.
 - `CLOSE.BAT DATE`, on the last business day of the month, after the daily run.
 - `ANNUAL.BAT DATE`, on March 31, after the close: the fiscal year ends.
+- `CERT.BAT DATE`, on the first business day of October, after the daily run: the premium certificates for the calendar year.
 
 ## Coverages
 
@@ -41,14 +42,20 @@ Every program that books anything appends to the day's journal, `OUT\GLJRNL.DATE
 
 **GLM020** works out each covered policy's reserve at the month's end, by product and policy year per 1,000 yen of the sum, books the change since last month, releases the reserve of a policy no longer covered, and prints the reserves by product. **GLM030** works out the agents' commissions on the premiums collected in the month, forty percent in the first policy year, seven in the second and third, two to the tenth, nothing after, prints them by agent with the agent's branch and the month the agent joined, and writes each agent's total to `OUT\COMMIS.DATE.TXT` for payroll. The close ends with the unload.
 
-**GLY010**, at the fiscal year's end, credits a dividend to every covered policy in its third year or later whose product pays one, a rate on the sum, into the policy's accumulated dividends, which the death and maturity benefits pay out.
+**GLY010**, at the fiscal year's end, credits a dividend to every covered policy in its third year or later whose product pays one, a rate on the sum, into the policy's accumulated dividends, which the death and maturity benefits pay out. **GLY020** then writes every covered policy's notice, `OUT\NOTICE.DATE.TXT`, for the printer: a page a policy, with the policyholder's address and name, the policy as it stands, its paid-to month, premium, accumulated dividends, loan and cash value, a line for each coverage in force and the total of their premiums.
+
+## Premiums paid and their certificates
+
+Every premium collected is kept in the payment history, `MASTER\PRMHST.IDX`, indexed by policy number and a number within the policy: the first premium of a new policy, a debit that went through, the arrears a reinstatement took at the counter and the premiums the automatic premium loan lent, each with its date in the Western calendar, its amount, the number of premiums it covered and the paid-to month after it. The programs that collect call **GLC050**, which keeps the file.
+
+**GLY030**, in `CERT.BAT`, reads the history through and writes a certificate for every policy with a premium collected from January 1 of the year to the day of the run, `OUT\PRMCERT.DATE.TXT`, a record a certificate for the printer: the amount collected so far and the amount the year will come to if the policy goes on paying, the premiums due by December added. A policy no longer paying is certified for what it paid.
 
 ## Where the output is
 
 Under `%GLS_DATA%`:
 
-- `LOG\`: a line for each step, its name, the program and its errorlevel; `DAILY.DATE.LOG`, `BILLING.DATE.LOG`, `RESULTS.DATE.LOG`, `CLOSE.DATE.LOG`, `ANNUAL.DATE.LOG`, `UNLOAD.DATE.LOG` and `OPEN.LOG`.
-- `OUT\`: what goes to the other systems: the rejects, `NEWREJ`, `CLMREJ`, `MNTREJ`, `LONREJ` and `RESREJ`; the journal; the payments; the transfer request; the commissions; the unloaded master, benefit history and coverage file.
+- `LOG\`: a line for each step, its name, the program and its errorlevel; `DAILY.DATE.LOG`, `BILLING.DATE.LOG`, `RESULTS.DATE.LOG`, `CLOSE.DATE.LOG`, `ANNUAL.DATE.LOG`, `CERT.DATE.LOG`, `UNLOAD.DATE.LOG` and `OPEN.LOG`.
+- `OUT\`: what goes to the other systems: the rejects, `NEWREJ`, `CLMREJ`, `MNTREJ`, `LONREJ` and `RESREJ`; the journal; the payments; the transfer request; the commissions; the unloaded master, benefit history and coverage file; the policyholders' notices and the premium certificates.
 - `RPT\`: each program's report, `.RPT`, in Japanese, with its counts and amounts, and anything it displayed, `.OUT`.
 
 ## The console
