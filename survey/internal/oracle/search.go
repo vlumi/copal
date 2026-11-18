@@ -45,11 +45,12 @@ func (r *Result) Rules(unit int) (reached, total int) {
 // records what each writes. The system's programs are compiled from the
 // directory of the program's source, in a scratch directory that other
 // searches of the same system may share.
-func Search(system *blueprint.System, bp *blueprint.Program, copybookDir, scratch string) (*Result, error) {
+func Search(system *blueprint.System, bp *blueprint.Program, copybookDir, scratch string, forms DateForms) (*Result, error) {
 	s, err := newSearcher(system, bp, copybookDir, scratch)
 	if err != nil {
 		return nil, err
 	}
+	s.program.forms = forms
 	found, err := s.search()
 	if err != nil {
 		return nil, err

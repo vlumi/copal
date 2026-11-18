@@ -1,7 +1,7 @@
 # GLD070: case 06
 
-The run ended with return code 0.
+The run ended with return code 16.
 
 The first case to reach:
 
-- [GLD070, LONREQ-ﾖﾐｺﾐ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLD070.md#lonreq-ﾖﾐｺﾐ-rtn)
+- [GLD070, ｼｮｷ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLD070.md#ｼｮｷ-rtn)

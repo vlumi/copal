@@ -2,10 +2,8 @@
 
 The run ended with return code 16.
 
-CSVTB-F is missing, so opening it fails.
+REPORT-F's directory is missing, so creating it fails.
 
 The first case to reach:
 
-- [GLD060, ﾌﾘｶｴ-ﾊﾝﾃｲ-RTN, rule 4](../../../../blueprints/gondwana/rules/GLD060.md#ﾌﾘｶｴ-ﾊﾝﾃｲ-rtn)
-- [GLC030, ﾒｲﾝ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLC030.md#ﾒｲﾝ-rtn)
-- [GLC030, ﾖﾐｺﾐ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLC030.md#ﾖﾐｺﾐ-rtn)
+- [GLD060, ｵｰﾌﾟﾝ-ｹﾝｻ-RTN, rule 4](../../../../blueprints/gondwana/rules/GLD060.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)

@@ -282,7 +282,10 @@ func walk(f *layout.Field, visit func(*layout.Field)) {
 
 // base is the first case: for each input, a record of each of its types,
 // or a single record, filled field by field by kind.
-func (p *program) base() Case {
+func (p *program) base() Case { return p.baseOn(businessDate) }
+
+// baseOn is the base case with its dates on a date.
+func (p *program) baseOn(date int64) Case {
 	kinds := p.kinds()
 	c := Case{}
 	for _, in := range p.inputs {
@@ -296,11 +299,11 @@ func (p *program) base() Case {
 			if len(s.types) == 0 {
 				kind = -1
 			}
-			c[in.name()] = append(c[in.name()], p.typical(in, s, kind, index, kinds))
+			c[in.name()] = append(c[in.name()], p.typical(in, s, kind, index, kinds, date))
 		}
 	}
 	c = p.matchKeys(c, kinds)
-	c = p.dateParts(c, kinds)
+	c = p.dateParts(c, kinds, date)
 	p.balance(c, nil)
 	return c
 }
@@ -308,7 +311,7 @@ func (p *program) base() Case {
 // dateParts puts the business date into the bytes of the inputs' text
 // fields that the program takes a date from, the first eight of its
 // command line, say, so that the base case's run has a date to open with.
-func (p *program) dateParts(c Case, kinds map[string]string) Case {
+func (p *program) dateParts(c Case, kinds map[string]string, date int64) Case {
 	for _, name := range slices.Sorted(maps.Keys(kinds)) {
 		if kinds[name] != blueprint.KindDate {
 			continue
@@ -317,7 +320,7 @@ func (p *program) dateParts(c Case, kinds map[string]string) Case {
 			if t.part == (part{}) || kinds[t.field.Name] != blueprint.KindText {
 				continue
 			}
-			if next, ok := (lever{input: t.input, field: t.field, part: t.part, value: number(dateOf(t.part.length))}).apply(p, c); ok {
+			if next, ok := (lever{input: t.input, field: t.field, part: t.part, value: number(dateOf(t.part.length, date))}).apply(p, c); ok {
 				c = next
 			}
 		}
@@ -354,7 +357,7 @@ func (p *program) matchKeys(c Case, kinds map[string]string) Case {
 // records of its type, for types that redefine the record, so that the
 // first records of two files refer to each other; among all the records
 // of the input otherwise, so that its keys are unique.
-func (p *program) typical(in input, s shape, kind, index int, kinds map[string]string) []byte {
+func (p *program) typical(in input, s shape, kind, index int, kinds map[string]string, date int64) []byte {
 	r := in.layout.Blank()
 	for _, f := range in.root.Children {
 		if t, ok := s.variants[f]; ok && !s.hasVariant(t, kind) {
@@ -364,7 +367,7 @@ func (p *program) typical(in input, s shape, kind, index int, kinds map[string]s
 			if len(leaf.Children) > 0 || leaf.Name == "FILLER" {
 				return
 			}
-			if v, ok := typicalValue(leaf, kinds[leaf.Name], index); ok {
+			if v, ok := p.typicalValue(leaf, kinds[leaf.Name], index, date); ok {
 				set(r, in.root, leaf, in.layout, v)
 			}
 		})
@@ -375,13 +378,18 @@ func (p *program) typical(in input, s shape, kind, index int, kinds map[string]s
 	return r
 }
 
-// typicalValue is a field's value in the base case, by its kind.
-func typicalValue(f *layout.Field, kind string, index int) (value, bool) {
+// typicalValue is a field's value in the base case, by its kind: for a
+// date kept as text, the date in the form the system writes it, when
+// that was learned.
+func (p *program) typicalValue(f *layout.Field, kind string, index int, date int64) (value, bool) {
 	switch {
 	case len(f.Conditions) > 0 && len(f.Conditions[0].Values) > 0:
 		return literal(f, f.Conditions[0].Values[0])
 	case kind == blueprint.KindDate:
-		return dateValue(f), true
+		if t, ok := p.forms.text(f.Length, date); ok && !numeric(f) {
+			return text(t), true
+		}
+		return dateValue(f, date), true
 	case kind == blueprint.KindAmount, kind == blueprint.KindRate:
 		return number(10 * pow10(f.Scale)), true
 	case kind == blueprint.KindKey, kind == blueprint.KindNumber:
@@ -392,25 +400,25 @@ func typicalValue(f *layout.Field, kind string, index int) (value, bool) {
 	return value{}, false
 }
 
-// dateValue is the business date in a date field's form: eight digits, a
-// month in six, or six digits, or fourteen with a time of day.
-func dateValue(f *layout.Field) value {
+// dateValue is a date in a date field's form: eight digits, a month in
+// six, or six digits, or fourteen with a time of day.
+func dateValue(f *layout.Field, date int64) value {
 	if f.Digits == 6 && (strings.Contains(f.Name, "MONTH") || strings.Contains(f.Name, "YYMM")) {
-		return number(businessDate / 100)
+		return number(date / 100)
 	}
-	return number(dateOf(f.Digits))
+	return number(dateOf(f.Digits, date))
 }
 
-// dateOf is the business date in a number of digits: eight, six without
-// the century, or fourteen with a time of day.
-func dateOf(digits int) int64 {
+// dateOf is a date in a number of digits: eight, six without the
+// century, or fourteen with a time of day.
+func dateOf(digits int, date int64) int64 {
 	switch digits {
 	case 14:
-		return businessDate*1000000 + 120000
+		return date*1000000 + 120000
 	case 6:
-		return businessDate % 1000000
+		return date % 1000000
 	}
-	return businessDate
+	return date
 }
 
 func pow10(n int) int64 {

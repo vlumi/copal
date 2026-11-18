@@ -1,9 +1,10 @@
 # GLD070: case 15
 
-The run ended with return code 4.
+The run ended with return code 1.
 
 The first case to reach:
 
-- [GLD070, ｹﾞﾝﾄﾞ-RTN, rule 4](../../../../blueprints/gondwana/rules/GLD070.md#ｹﾞﾝﾄﾞ-rtn)
-- [GLD070, ﾊﾝｴｲ-RTN, rule 14](../../../../blueprints/gondwana/rules/GLD070.md#ﾊﾝｴｲ-rtn)
-- [GLD070, ｼﾜｹ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLD070.md#ｼﾜｹ-rtn)
+- [GLD070, LONREQ-ﾖﾐｺﾐ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLD070.md#lonreq-ﾖﾐｺﾐ-rtn)
+- [GLD070, ｹﾝｻ-RTN, rule 5](../../../../blueprints/gondwana/rules/GLD070.md#ｹﾝｻ-rtn)
+- [GLC040, ﾒｲﾝ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLC040.md#ﾒｲﾝ-rtn)
+- [GLC030, ﾄｳﾛｸ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLC030.md#ﾄｳﾛｸ-rtn)

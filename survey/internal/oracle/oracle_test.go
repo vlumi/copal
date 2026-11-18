@@ -20,7 +20,7 @@ func TestSearch(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	res, err := Search(system, &system.Programs[0], "testdata/copybooks", t.TempDir())
+	res, err := Search(system, &system.Programs[0], "testdata/copybooks", t.TempDir(), nil)
 	if err != nil {
 		t.Fatal(err)
 	}

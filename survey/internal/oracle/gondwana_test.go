@@ -66,3 +66,30 @@ func TestGondwana(t *testing.T) {
 		t.Errorf("oracle/gondwana/README.md differs:\n%s", got)
 	}
 }
+
+// TestLearnDates checks that the forms of Gondwana's dates kept as text
+// are learned from what its programs write: a date of seven bytes is the
+// era's letter, its year and the month and day.
+func TestLearnDates(t *testing.T) {
+	t.Chdir("../../..")
+	programs, err := filepath.Glob("gondwana/programs/*.cbl")
+	if err != nil {
+		t.Fatal(err)
+	}
+	system, err := blueprint.Analyze(programs, "gondwana/copybooks", cobol.Fujitsu)
+	if err != nil {
+		t.Fatal(err)
+	}
+	forms, err := LearnDates(system, "gondwana/copybooks", t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	for date, want := range map[int64]string{businessDate: "R081016", businessDate - 1: "R081015", businessDate - 50000: "R031016"} {
+		if got, _ := forms.text(7, date); got != want {
+			t.Errorf("%d in seven bytes of text is %q, want %q", date, got, want)
+		}
+	}
+	if _, ok := forms.text(8, businessDate); ok {
+		t.Error("a form for eight bytes of text, which no program writes a date in")
+	}
+}
