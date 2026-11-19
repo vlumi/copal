@@ -1,8 +1,9 @@
 # GLY010: case 08
 
-The run ended with return code 0.
+The run ended with return code 16.
+
+GLJRNL-F's directory is missing, so creating it fails.
 
 The first case to reach:
 
-- [GLY010, ｼｮﾘ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLY010.md#ｼｮﾘ-rtn)
-- [GLY010, ﾊｲﾄｳ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLY010.md#ﾊｲﾄｳ-rtn)
+- [GLY010, ｼｮｷ-RTN, rule 5](../../../../blueprints/gondwana/rules/GLY010.md#ｼｮｷ-rtn)

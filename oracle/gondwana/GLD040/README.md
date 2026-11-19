@@ -89,20 +89,20 @@
 | --: | --- |
 | 1 | [case 22](22/) |
 | 2 | [case 35](35/) |
-| 3 | [case 30](30/) |
-| 4 | [case 34](34/) |
+| 3 | [case 34](34/) |
+| 4 | [case 30](30/) |
 | 5 | [case 37](37/) |
-| 6 | [case 31](31/) |
-| 7 | [case 36](36/) |
+| 6 | [case 36](36/) |
+| 7 | [case 31](31/) |
 | 8 | [case 33](33/) |
-| 9 | [case 25](25/) |
-| 10 | [case 32](32/) |
+| 9 | [case 32](32/) |
+| 10 | [case 25](25/) |
 
 ### [ﾄｸﾔｸｶｲﾔｸ-RTN](../../../blueprints/gondwana/rules/GLD040.md#ﾄｸﾔｸｶｲﾔｸ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 25](25/) |
+| 1 | [case 32](32/) |
 | 2 | [case 23](23/) |
 | 3 | not reached: `PM-ﾕｳｺｳ` Y, `WS-COVMST-ﾅｼ` N, `WS-COVMST-OK` N |
 | 4 | not reached: `PM-ﾕｳｺｳ` Y, `WS-COVMST-ﾅｼ` N, `WS-COVMST-OK` Y, `HS-ｼｭｹｲﾔｸ OR NOT HS-ﾕｳｺｳ` Y |
@@ -187,7 +187,7 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | not reached: `WS-ｵｰﾌﾟﾝﾏｴ` Y, `WS-PRMHST-OK` Y, `WS-ｵｰﾌﾟﾝｽﾞﾐ` Y, `WS-ｵｰﾌﾟﾝｽﾞﾐ AND (WS-PRMHST-OK OR WS-PRMHST-ｵﾜﾘ)` Y, `WS-PRMHST-OK, again` N |
-| 2 | [case 32](32/) |
+| 2 | [case 25](25/) |
 | 3 | not reached: `WS-ｵｰﾌﾟﾝﾏｴ` Y, `WS-PRMHST-OK` Y, `WS-ｵｰﾌﾟﾝｽﾞﾐ` Y, `WS-ｵｰﾌﾟﾝｽﾞﾐ AND (WS-PRMHST-OK OR WS-PRMHST-ｵﾜﾘ)` N, `WS-PRMHST-OK, again` N |
 | 4 | not reached: `WS-ｵｰﾌﾟﾝﾏｴ` Y, `WS-PRMHST-OK` N, `WS-ｵｰﾌﾟﾝｽﾞﾐ` N, `WS-ｵｰﾌﾟﾝｽﾞﾐ AND (WS-PRMHST-OK OR WS-PRMHST-ｵﾜﾘ)` N |
 | 5 | not reached: `WS-ｵｰﾌﾟﾝﾏｴ` N, `WS-PRMHST-OK` N, `WS-ｵｰﾌﾟﾝｽﾞﾐ` Y, `WS-ｵｰﾌﾟﾝｽﾞﾐ AND (WS-PRMHST-OK OR WS-PRMHST-ｵﾜﾘ)` Y |
@@ -201,4 +201,4 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | not reached: `WS-PRMHST-OK` Y |
-| 2 | [case 32](32/) |
+| 2 | [case 25](25/) |

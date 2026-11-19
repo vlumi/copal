@@ -1,11 +1,9 @@
 # GLD020: case 11
 
-The run ended with return code 0.
+The run ended with return code 16.
+
+PAYOUT-F's directory is missing, so creating it fails.
 
 The first case to reach:
 
-- [GLD020, ｼｮﾘ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLD020.md#ｼｮﾘ-rtn)
-- [GLD020, ｵｳﾄｳﾋﾞ-RTN, rule 4](../../../../blueprints/gondwana/rules/GLD020.md#ｵｳﾄｳﾋﾞ-rtn)
-- [GLD020, ﾘｮｳﾘﾂ-ﾖﾐｺﾐ-RTN, in its loop, rule 1](../../../../blueprints/gondwana/rules/GLD020.md#ﾘｮｳﾘﾂ-ﾖﾐｺﾐ-rtn-in-its-loop)
-- [GLC020, ｾｲﾚｷ-ﾍﾝｶﾝ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLC020.md#ｾｲﾚｷ-ﾍﾝｶﾝ-rtn)
-- [GLC020, ﾊﾝｲ-ｹﾝｻ-RTN, rule 7](../../../../blueprints/gondwana/rules/GLC020.md#ﾊﾝｲ-ｹﾝｻ-rtn)
+- [GLD020, ｵｰﾌﾟﾝ-ｹﾝｻ-RTN, rule 6](../../../../blueprints/gondwana/rules/GLD020.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)

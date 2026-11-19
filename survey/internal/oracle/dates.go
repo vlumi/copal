@@ -11,11 +11,20 @@ import (
 	"github.com/vlumi/copal/survey/blueprint"
 )
 
-// DateForms are the forms a system writes a date in when it keeps it as
-// text: for each length of field, what each of a few dates looks like.
-// A year of an era, a date with separators and a date in digits are all
-// text to a layout, and only the system's own programs say which it is.
-type DateForms map[int]map[int64]string
+// DateForms are the forms a system writes a date in: for each shape of
+// field, text or digits of a length, what each of a few dates looks
+// like. A year of an era, a date with separators and a date in digits
+// are all text to a layout, and six digits are a month of a year in one
+// system and a day without its century in another; only the system's
+// own programs say which.
+type DateForms map[dateShape]map[int64]string
+
+// dateShape is the shape of a field that holds a date: digits or text,
+// and how many bytes.
+type dateShape struct {
+	numeric bool
+	length  int
+}
 
 // probeDates are the dates the forms are learned for: the business date
 // first, then the days around it, a year before and five years before,
@@ -23,21 +32,27 @@ type DateForms map[int]map[int64]string
 // or by years.
 var probeDates = []int64{businessDate, businessDate - 1, businessDate + 1, businessDate - 10000, businessDate - 50000}
 
-// text is a date in the form of a text field of a length, if the system
-// was seen to write one.
-func (d DateForms) text(length int, date int64) (string, bool) {
-	t, ok := d[length][date]
+// of is a date in the form of a field, if the system was seen to write
+// one in a field of its shape.
+func (d DateForms) of(f *layout.Field, date int64) (string, bool) {
+	t, ok := d[shapeOfDate(f)][date]
 	return t, ok
 }
 
-// LearnDates runs each main program of a system on its base case, once
-// for each probe date, and reads the dates the runs wrote as text. A
-// form is learned for a length of field when every date written in a
-// field of that length for a probe date is the same text, and the probe
-// dates' texts all differ: then the text follows the date, and is how
-// the system writes it.
+// shapeOfDate is the shape a date field's form is learned by.
+func shapeOfDate(f *layout.Field) dateShape {
+	return dateShape{numeric: numeric(f), length: f.Length}
+}
+
+// LearnDates runs each main program of a system once for each probe
+// date, on its base case with the dates of its files left out, so that
+// the dates it writes are those it makes from the date it runs on, and
+// reads them. A form is learned for a shape of field when every date
+// written in a field of that shape for a probe date is the same, and the
+// probe dates' are not all one: then it follows the date, and is how the
+// system writes it.
 func LearnDates(system *blueprint.System, copybookDir, scratch string) (DateForms, error) {
-	seen := map[int]map[int64][]string{}
+	seen := map[dateShape]map[int64][]string{}
 	for i := range system.Programs {
 		bp := &system.Programs[i]
 		if bp.Kind != blueprint.KindMain {
@@ -47,50 +62,79 @@ func LearnDates(system *blueprint.System, copybookDir, scratch string) (DateForm
 		if err != nil {
 			return nil, err
 		}
-		if len(s.program.writtenTextDates()) == 0 {
+		if len(s.program.writtenDates()) == 0 {
 			continue
 		}
 		cases := make([]Case, len(probeDates))
 		for j, date := range probeDates {
-			cases[j] = s.program.baseOn(date)
+			cases[j] = s.program.probe(date)
 		}
 		results, err := s.runAll(cases, true)
 		if err != nil {
 			return nil, err
 		}
 		for j, res := range results {
-			for length, texts := range s.program.textDatesIn(res.outputs) {
-				if seen[length] == nil {
-					seen[length] = map[int64][]string{}
+			for shape, dates := range s.program.datesIn(res.outputs) {
+				if seen[shape] == nil {
+					seen[shape] = map[int64][]string{}
 				}
-				seen[length][probeDates[j]] = append(seen[length][probeDates[j]], texts...)
+				seen[shape][probeDates[j]] = append(seen[shape][probeDates[j]], dates...)
 			}
 		}
 	}
 	forms := DateForms{}
-	for length, byDate := range seen {
+	for shape, byDate := range seen {
 		form := map[int64]string{}
-		for date, texts := range byDate {
-			if len(slices.Compact(slices.Sorted(slices.Values(texts)))) == 1 {
-				form[date] = texts[0]
+		for date, dates := range byDate {
+			if len(slices.Compact(slices.Sorted(slices.Values(dates)))) == 1 {
+				form[date] = dates[0]
 			}
 		}
 		distinct := slices.Compact(slices.Sorted(maps.Values(form)))
-		if len(form) == len(probeDates) && len(distinct) == len(probeDates) {
-			forms[length] = form
+		if len(form) == len(probeDates) && len(distinct) > 1 {
+			forms[shape] = form
 		}
 	}
 	return forms, nil
 }
 
-// textDate reports whether a field holds a date as text.
-func textDate(f *layout.Field, kinds map[string]string) bool {
-	return len(f.Children) == 0 && kinds[f.Name] == blueprint.KindDate && !numeric(f)
+// probe is the base case on a date with no date in the records of its
+// files: only the date the run is given, on its command line or SYSIN.
+func (p *program) probe(date int64) Case {
+	c := p.baseOn(date)
+	kinds := p.kinds()
+	for _, in := range p.inputs {
+		if in.file.Name == "" {
+			continue
+		}
+		for _, r := range c[in.name()] {
+			walk(in.root, func(leaf *layout.Field) {
+				if !dateField(leaf, kinds) {
+					return
+				}
+				if numeric(leaf) {
+					set(r, in.root, leaf, in.layout, number(0))
+				} else {
+					set(r, in.root, leaf, in.layout, text(""))
+				}
+			})
+		}
+	}
+	return c
 }
 
-// writtenTextDates are the fields of the files the program writes or
-// updates that hold a date as text, by file.
-func (p *program) writtenTextDates() map[string][]*layout.Field {
+// dateField reports whether a field holds a date whose form can be
+// learned: text, or unsigned digits a byte each.
+func dateField(f *layout.Field, kinds map[string]string) bool {
+	if len(f.Children) > 0 || kinds[f.Name] != blueprint.KindDate {
+		return false
+	}
+	return !numeric(f) || (f.Usage == "" || f.Usage == "DISPLAY") && !f.Signed && f.Scale == 0 && f.Digits == f.Length
+}
+
+// writtenDates are the date fields of the files the program writes or
+// updates, by file.
+func (p *program) writtenDates() map[string][]*layout.Field {
 	kinds := p.kinds()
 	fields := map[string][]*layout.Field{}
 	for _, f := range p.files {
@@ -102,7 +146,7 @@ func (p *program) writtenTextDates() map[string][]*layout.Field {
 			continue
 		}
 		walk(root, func(leaf *layout.Field) {
-			if textDate(leaf, kinds) {
+			if dateField(leaf, kinds) {
 				fields[f.Name] = append(fields[f.Name], leaf)
 			}
 		})
@@ -110,11 +154,12 @@ func (p *program) writtenTextDates() map[string][]*layout.Field {
 	return fields
 }
 
-// textDatesIn reads the dates kept as text from what a run wrote, a
-// record a line as the runner returns it, by the length of their fields.
-func (p *program) textDatesIn(outputs map[string][]byte) map[int][]string {
-	found := map[int][]string{}
-	for file, fields := range p.writtenTextDates() {
+// datesIn reads the dates from what a run wrote, a record a line as the
+// runner returns it, by the shape of their fields: text that is not
+// blank, and digits that are not zero.
+func (p *program) datesIn(outputs map[string][]byte) map[dateShape][]string {
+	found := map[dateShape][]string{}
+	for file, fields := range p.writtenDates() {
 		for _, line := range bytes.Split(bytes.TrimSuffix(outputs[file], []byte("\n")), []byte("\n")) {
 			record := string(line)
 			if unquoted, err := strconv.Unquote(record); err == nil {
@@ -124,9 +169,11 @@ func (p *program) textDatesIn(outputs map[string][]byte) map[int][]string {
 				if f.Start-1+f.Length > len(record) {
 					continue
 				}
-				if t := strings.TrimSpace(record[f.Start-1 : f.Start-1+f.Length]); t != "" {
-					found[f.Length] = append(found[f.Length], t)
+				t := strings.TrimSpace(record[f.Start-1 : f.Start-1+f.Length])
+				if n, err := strconv.ParseInt(t, 10, 64); numeric(f) && (err != nil || n == 0) || t == "" {
+					continue
 				}
+				found[shapeOfDate(f)] = append(found[shapeOfDate(f)], t)
 			}
 		}
 	}
@@ -134,9 +181,9 @@ func (p *program) textDatesIn(outputs map[string][]byte) map[int][]string {
 }
 
 // dateLevers are the changes that put each probe date, in the form the
-// system writes it, into each field of the inputs that holds a date as
-// text. Every such field is tried, not only those a condition names: a
-// date reaches a condition through a called program's conversion more
+// system writes it, into each date field of the inputs whose form was
+// learned. Every such field is tried, not only those a condition names:
+// a date reaches a condition through a called program's conversion more
 // often than not, and the origins of a condition's items stop short of
 // some of those.
 func (p *program) dateLevers() []lever {
@@ -144,11 +191,11 @@ func (p *program) dateLevers() []lever {
 	var levers []lever
 	for _, in := range p.inputs {
 		walk(in.root, func(leaf *layout.Field) {
-			if !textDate(leaf, kinds) {
+			if !dateField(leaf, kinds) {
 				return
 			}
 			for _, date := range probeDates {
-				if t, ok := p.forms.text(leaf.Length, date); ok {
+				if t, ok := p.forms.of(leaf, date); ok {
 					levers = append(levers, lever{input: in.name(), field: leaf, value: text(t)})
 				}
 			}

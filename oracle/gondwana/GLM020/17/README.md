@@ -1,7 +1,9 @@
 # GLM020: case 17
 
-The run ended with return code 0.
+The run ended with return code 16.
+
+COVMST-F is missing, so opening it fails.
 
 The first case to reach:
 
-- [GLM020, ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLM020.md#ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ-rtn)
+- [GLM020, ｼｮｷ-RTN, rule 5](../../../../blueprints/gondwana/rules/GLM020.md#ｼｮｷ-rtn)

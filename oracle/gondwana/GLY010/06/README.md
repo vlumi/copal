@@ -2,8 +2,8 @@
 
 The run ended with return code 16.
 
-GLJRNL-F's directory is missing, so creating it fails.
+PRODTB-F is missing, so opening it fails.
 
 The first case to reach:
 
-- [GLY010, ｼｮｷ-RTN, rule 5](../../../../blueprints/gondwana/rules/GLY010.md#ｼｮｷ-rtn)
+- [GLY010, ｼｮｷ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLY010.md#ｼｮｷ-rtn)

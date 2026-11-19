@@ -1,9 +1,7 @@
 # GLM020: case 04
 
-The run ended with return code 16.
-
-RSVTB-F is missing, so opening it fails.
+The run ended with return code 0.
 
 The first case to reach:
 
-- [GLM020, ｼｮｷ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLM020.md#ｼｮｷ-rtn)
+- [GLM020, ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ-RTN, rule 6](../../../../blueprints/gondwana/rules/GLM020.md#ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ-rtn)

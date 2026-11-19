@@ -1,9 +1,7 @@
 # GLD030: case 03
 
-The run ended with return code 16.
-
-POLMST-F is missing, so opening it fails.
+The run ended with return code 4.
 
 The first case to reach:
 
-- [GLD030, ｵｰﾌﾟﾝ-ｹﾝｻ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLD030.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)
+- [GLD030, ｹﾝｻ-RTN, rule 15](../../../../blueprints/gondwana/rules/GLD030.md#ｹﾝｻ-rtn)

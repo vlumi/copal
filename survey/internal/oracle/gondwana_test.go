@@ -67,9 +67,10 @@ func TestGondwana(t *testing.T) {
 	}
 }
 
-// TestLearnDates checks that the forms of Gondwana's dates kept as text
-// are learned from what its programs write: a date of seven bytes is the
-// era's letter, its year and the month and day.
+// TestLearnDates checks that the forms of Gondwana's dates are learned
+// from what its programs write: a date of seven bytes of text is the
+// era's letter, its year and the month and day, and one of six digits is
+// a month of a year.
 func TestLearnDates(t *testing.T) {
 	t.Chdir("../../..")
 	programs, err := filepath.Glob("gondwana/programs/*.cbl")
@@ -85,11 +86,16 @@ func TestLearnDates(t *testing.T) {
 		t.Fatal(err)
 	}
 	for date, want := range map[int64]string{businessDate: "R081016", businessDate - 1: "R081015", businessDate - 50000: "R031016"} {
-		if got, _ := forms.text(7, date); got != want {
+		if got := forms[dateShape{length: 7}][date]; got != want {
 			t.Errorf("%d in seven bytes of text is %q, want %q", date, got, want)
 		}
 	}
-	if _, ok := forms.text(8, businessDate); ok {
+	for date, want := range map[int64]string{businessDate: "202610", businessDate - 10000: "202510"} {
+		if got := forms[dateShape{numeric: true, length: 6}][date]; got != want {
+			t.Errorf("%d in six digits is %q, want %q", date, got, want)
+		}
+	}
+	if _, ok := forms[dateShape{length: 8}]; ok {
 		t.Error("a form for eight bytes of text, which no program writes a date in")
 	}
 }

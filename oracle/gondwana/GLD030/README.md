@@ -1,6 +1,6 @@
 # GLD030: cases
 
-53 cases reach 65 of the 153 rules of GLD030's decision tables, and of the programs it calls, 8 of the 16 of GLC020, 10 of the 23 of GLC030, 4 of the 5 of GLC040. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's. A rule that finds two totals the program adds up itself to differ, items of its own that it only adds to, says so: no input field sets either, so the search has nothing to change to reach it. A rule that finds a write or rewrite by key to fail says so too: the search fails a file only when it is opened or read, and a program that writes keys it made new, or rewrites the record it read, meets that failure only when something else changes the file meanwhile.
+67 cases reach 95 of the 153 rules of GLD030's decision tables, and of the programs it calls, 8 of the 16 of GLC020, 14 of the 23 of GLC030, 4 of the 5 of GLC040. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's. A rule that finds two totals the program adds up itself to differ, items of its own that it only adds to, says so: no input field sets either, so the search has nothing to change to reach it. A rule that finds a write or rewrite by key to fail says so too: the search fails a file only when it is opened or read, and a program that writes keys it made new, or rewrites the record it read, meets that failure only when something else changes the file meanwhile.
 
 ## GLD030
 
@@ -8,83 +8,83 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 01](01/) |
-| 2 | [case 17](17/) |
-| 3 | [case 11](11/) |
+| 1 | [case 06](06/) |
+| 2 | [case 08](08/) |
+| 3 | [case 01](01/) |
 
 ### [ｵｰﾌﾟﾝ-ｹﾝｻ-RTN](../../../blueprints/gondwana/rules/GLD030.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 02](02/) |
-| 2 | [case 05](05/) |
-| 3 | [case 03](03/) |
-| 4 | [case 04](04/) |
-| 5 | [case 06](06/) |
-| 6 | [case 07](07/) |
-| 7 | [case 08](08/) |
-| 8 | [case 09](09/) |
+| 1 | [case 09](09/) |
+| 2 | [case 12](12/) |
+| 3 | [case 10](10/) |
+| 4 | [case 11](11/) |
+| 5 | [case 13](13/) |
+| 6 | [case 14](14/) |
+| 7 | [case 15](15/) |
+| 8 | [case 16](16/) |
 | 9 | not reached: `WS-CLMREQ-OK` Y, `WS-ｴﾗｰﾌｧｲﾙ = SPACES` N, `WS-PRODTB-OK` Y, `WS-POLMST-OK` Y, `WS-COVMST-OK` Y, `WS-GLSCTL-OK` Y, `WS-PAYOUT-OK` Y, `WS-GLJRNL-OK` Y, `WS-REJECT-OK` Y, `WS-BENHST-OK` N |
-| 10 | [case 10](10/) |
-| 11 | [case 11](11/) |
+| 10 | [case 17](17/) |
+| 11 | [case 01](01/) |
 
 ### [CLMREQ-ﾖﾐｺﾐ-RTN](../../../blueprints/gondwana/rules/GLD030.md#clmreq-ﾖﾐｺﾐ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 20](20/) |
+| 1 | [case 19](19/) |
 | 2 | not reached: `WS-CLMREQ-OK` N, `WS-CLMREQ-ｵﾜﾘ` N |
-| 3 | [case 16](16/) |
+| 3 | [case 07](07/) |
 
 ### [ｼｮﾘ-RTN](../../../blueprints/gondwana/rules/GLD030.md#ｼｮﾘ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
 | 1 | not reached: `WS-ﾘﾕｳ-ﾅｼ` Y |
-| 2 | [case 11](11/) |
+| 2 | [case 01](01/) |
 
 ### [ｹﾝｻ-RTN](../../../blueprints/gondwana/rules/GLD030.md#ｹﾝｻ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 11](11/) |
+| 1 | [case 01](01/) |
 | 2 | not reached: `CR-ｼﾎﾞｳ` Y, `WS-ﾘﾕｳ-ﾅｼ` Y, `WS-POLMST-ﾅｼ` N, `WS-POLMST-OK` N |
-| 3 | [case 30](30/) |
-| 4 | [case 31](31/) |
-| 5 | [case 32](32/) |
+| 3 | [case 25](25/) |
+| 4 | [case 26](26/) |
+| 5 | [case 27](27/) |
 | 6 | [case 18](18/) |
-| 7 | [case 28](28/) |
-| 8 | [case 12](12/) |
+| 7 | [case 23](23/) |
+| 8 | [case 02](02/) |
 | 9 | not reached: `CR-ｼﾎﾞｳ` N, `WS-ﾘﾕｳ-ﾅｼ` Y, `WS-POLMST-ﾅｼ` N, `WS-POLMST-OK` N, `CR-ﾆｭｳｲﾝ` Y |
-| 10 | [case 35](35/) |
-| 11 | [case 36](36/) |
-| 12 | [case 37](37/) |
-| 13 | [case 19](19/) |
-| 14 | [case 33](33/) |
-| 15 | [case 13](13/) |
+| 10 | [case 30](30/) |
+| 11 | [case 31](31/) |
+| 12 | [case 32](32/) |
+| 13 | [case 29](29/) |
+| 14 | [case 28](28/) |
+| 15 | [case 03](03/) |
 | 16 | not reached: `CR-ｼﾎﾞｳ` N, `WS-ﾘﾕｳ-ﾅｼ` Y, `WS-POLMST-ﾅｼ` N, `WS-POLMST-OK` N, `CR-ｶｲﾔｸ` Y, `CR-ﾆｭｳｲﾝ` N |
-| 17 | [case 39](39/) |
-| 18 | [case 40](40/) |
-| 19 | [case 41](41/) |
-| 20 | [case 38](38/) |
-| 21 | [case 20](20/) |
-| 22 | [case 14](14/) |
+| 17 | [case 34](34/) |
+| 18 | [case 35](35/) |
+| 19 | [case 36](36/) |
+| 20 | [case 33](33/) |
+| 21 | [case 19](19/) |
+| 22 | [case 04](04/) |
 | 23 | not reached: `CR-ｼﾎﾞｳ` N, `WS-ﾘﾕｳ-ﾅｼ` Y, `WS-POLMST-ﾅｼ` N, `WS-POLMST-OK` N, `CR-ｶｲﾔｸ` N, `CR-ﾆｭｳｲﾝ` N, `CR-ｼｭｼﾞｭﾂ` Y |
-| 24 | [case 43](43/) |
-| 25 | [case 44](44/) |
-| 26 | [case 45](45/) |
-| 27 | [case 21](21/) |
-| 28 | [case 42](42/) |
-| 29 | [case 15](15/) |
+| 24 | [case 38](38/) |
+| 25 | [case 39](39/) |
+| 26 | [case 40](40/) |
+| 27 | [case 54](54/) |
+| 28 | [case 37](37/) |
+| 29 | [case 05](05/) |
 
 ### [ﾎｼｮｳ-ｹﾝｻ-RTN](../../../blueprints/gondwana/rules/GLD030.md#ﾎｼｮｳ-ｹﾝｻ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 18](18/) |
-| 2 | [case 28](28/) |
-| 3 | [case 46](46/) |
-| 4 | [case 22](22/) |
+| 2 | [case 23](23/) |
+| 3 | [case 41](41/) |
+| 4 | [case 20](20/) |
 
 ### [ﾎｼｮｳ-ｿｳｻ-RTN](../../../blueprints/gondwana/rules/GLD030.md#ﾎｼｮｳ-ｿｳｻ-rtn)
 
@@ -92,40 +92,40 @@
 | --: | --- |
 | 1 | not reached: `WS-COVMST-OK` Y, `NOT WS-COVMST-OK AND NOT WS-COVMST-ｵﾜﾘ` Y |
 | 2 | [case 18](18/) |
-| 3 | [case 19](19/) |
-| 4 | [case 48](48/) |
+| 3 | [case 54](54/) |
+| 4 | [case 43](43/) |
 | 5 | not reached: `WS-COVMST-OK` N, `NOT WS-COVMST-OK AND NOT WS-COVMST-ｵﾜﾘ` Y |
-| 6 | [case 29](29/) |
-| 7 | [case 34](34/) |
+| 6 | [case 24](24/) |
+| 7 | [case 29](29/) |
 | 8 | not reached: `WS-COVMST-OK` N, `NOT WS-COVMST-OK AND NOT WS-COVMST-ｵﾜﾘ` N, `CR-ｼﾎﾞｳ AND WS-ｼﾎﾞｳｷﾝｶﾞｸ = 0` N, `CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ` N |
 
 ### [ﾎｼｮｳ-ﾊﾝﾃｲ-RTN](../../../blueprints/gondwana/rules/GLD030.md#ﾎｼｮｳ-ﾊﾝﾃｲ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 47](47/) |
-| 2 | not reached: `HS-ﾕｳｺｳ` N, `WS-ｼﾞﾕｳﾋﾞ < WS-ｼｮｳﾒﾂﾋﾞ` Y, `WS-ﾎｼｮｳ-ｱﾘ` Y, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = HS-ｼｮｳﾋﾝ` Y, `WS-ｼｮｳﾋﾝ-ｲﾘｮｳ(WS-ｼｮｳﾋﾝ-IX)` N |
+| 1 | [case 53](53/) |
+| 2 | [case 52](52/) |
 | 3 | not reached: `HS-ﾕｳｺｳ` N, `WS-ｼﾞﾕｳﾋﾞ < WS-ｼｮｳﾒﾂﾋﾞ` Y, `WS-ﾎｼｮｳ-ｱﾘ` Y, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = HS-ｼｮｳﾋﾝ` Y, `WS-ｼｮｳﾋﾝ-ｲﾘｮｳ(WS-ｼｮｳﾋﾝ-IX)` Y, `WS-ﾆｭｳｲﾝﾎｼｮｳ-ﾅｼ` Y |
 | 4 | not reached: `HS-ﾕｳｺｳ` N, `WS-ｼﾞﾕｳﾋﾞ < WS-ｼｮｳﾒﾂﾋﾞ` Y, `WS-ﾎｼｮｳ-ｱﾘ` Y, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = HS-ｼｮｳﾋﾝ` Y, `WS-ｼｮｳﾋﾝ-ｲﾘｮｳ(WS-ｼｮｳﾋﾝ-IX)` Y, `WS-ﾆｭｳｲﾝﾎｼｮｳ-ﾅｼ` N |
 | 5 | not reached: `HS-ﾕｳｺｳ` N, `WS-ｼﾞﾕｳﾋﾞ < WS-ｼｮｳﾒﾂﾋﾞ` Y, `WS-ﾎｼｮｳ-ｱﾘ` Y, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = HS-ｼｮｳﾋﾝ` N, `WS-ｼｮｳﾋﾝ-ｲﾘｮｳ(WS-ｼｮｳﾋﾝ-IX)` N |
 | 6 | not reached: `HS-ﾕｳｺｳ` N, `WS-ｼﾞﾕｳﾋﾞ < WS-ｼｮｳﾒﾂﾋﾞ` Y, `WS-ﾎｼｮｳ-ｱﾘ` Y, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = HS-ｼｮｳﾋﾝ` N, `WS-ｼｮｳﾋﾝ-ｲﾘｮｳ(WS-ｼｮｳﾋﾝ-IX)` Y, `WS-ﾆｭｳｲﾝﾎｼｮｳ-ﾅｼ` Y |
 | 7 | not reached: `HS-ﾕｳｺｳ` N, `WS-ｼﾞﾕｳﾋﾞ < WS-ｼｮｳﾒﾂﾋﾞ` Y, `WS-ﾎｼｮｳ-ｱﾘ` Y, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = HS-ｼｮｳﾋﾝ` N, `WS-ｼｮｳﾋﾝ-ｲﾘｮｳ(WS-ｼｮｳﾋﾝ-IX)` Y, `WS-ﾆｭｳｲﾝﾎｼｮｳ-ﾅｼ` N |
-| 8 | [case 48](48/) |
-| 9 | not reached: `HS-ﾕｳｺｳ` Y, `WS-ﾎｼｮｳ-ｱﾘ` Y, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = HS-ｼｮｳﾋﾝ` Y, `WS-ｼｮｳﾋﾝ-ｲﾘｮｳ(WS-ｼｮｳﾋﾝ-IX)` Y, `WS-ﾆｭｳｲﾝﾎｼｮｳ-ﾅｼ` Y |
+| 8 | [case 43](43/) |
+| 9 | [case 54](54/) |
 | 10 | not reached: `HS-ﾕｳｺｳ` Y, `WS-ﾎｼｮｳ-ｱﾘ` Y, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = HS-ｼｮｳﾋﾝ` Y, `WS-ｼｮｳﾋﾝ-ｲﾘｮｳ(WS-ｼｮｳﾋﾝ-IX)` Y, `WS-ﾆｭｳｲﾝﾎｼｮｳ-ﾅｼ` N |
 | 11 | not reached: `HS-ﾕｳｺｳ` Y, `WS-ﾎｼｮｳ-ｱﾘ` Y, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = HS-ｼｮｳﾋﾝ` N, `WS-ｼｮｳﾋﾝ-ｲﾘｮｳ(WS-ｼｮｳﾋﾝ-IX)` N |
 | 12 | not reached: `HS-ﾕｳｺｳ` Y, `WS-ﾎｼｮｳ-ｱﾘ` Y, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = HS-ｼｮｳﾋﾝ` N, `WS-ｼｮｳﾋﾝ-ｲﾘｮｳ(WS-ｼｮｳﾋﾝ-IX)` Y, `WS-ﾆｭｳｲﾝﾎｼｮｳ-ﾅｼ` Y |
-| 13 | [case 24](24/) |
+| 13 | [case 42](42/) |
 
 ### [ﾆｭｳｲﾝ-ｹﾝｻ-RTN](../../../blueprints/gondwana/rules/GLD030.md#ﾆｭｳｲﾝ-ｹﾝｻ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 19](19/) |
-| 2 | not reached: `WS-ﾆｭｳｲﾝﾎｼｮｳ-ﾅｼ` N, `CR-ﾆｭｳｲﾝ AND CR-ﾆｯｽｳ = 0` Y |
-| 3 | not reached: `WS-ﾆｭｳｲﾝﾎｼｮｳ-ﾅｼ` N, `CR-ﾆｭｳｲﾝ AND CR-ﾆｯｽｳ = 0` N, `CR-ｼｭｼﾞｭﾂ AND CR-ﾆｯｽｳ NOT = 10 AND CR-ﾆｯｽｳ NOT = 20 AND CR-ﾆｯｽｳ NOT = 40` Y |
-| 4 | not reached: `WS-ﾆｭｳｲﾝﾎｼｮｳ-ﾅｼ` N, `CR-ﾆｭｳｲﾝ AND CR-ﾆｯｽｳ = 0` N, `CR-ｼｭｼﾞｭﾂ AND CR-ﾆｯｽｳ NOT = 10 AND CR-ﾆｯｽｳ NOT = 20 AND CR-ﾆｯｽｳ NOT = 40` N, `WS-ｹｲｶﾆｯｽｳ < WS-ｼｮｳﾋﾝ-ﾒﾝｾｷﾆｯｽｳ(WS-ﾆｭｳｲﾝﾎｼｮｳ-ｿｴｼﾞ)` Y |
-| 5 | not reached: `WS-ﾆｭｳｲﾝﾎｼｮｳ-ﾅｼ` N, `CR-ﾆｭｳｲﾝ AND CR-ﾆｯｽｳ = 0` N, `CR-ｼｭｼﾞｭﾂ AND CR-ﾆｯｽｳ NOT = 10 AND CR-ﾆｯｽｳ NOT = 20 AND CR-ﾆｯｽｳ NOT = 40` N, `WS-ｹｲｶﾆｯｽｳ < WS-ｼｮｳﾋﾝ-ﾒﾝｾｷﾆｯｽｳ(WS-ﾆｭｳｲﾝﾎｼｮｳ-ｿｴｼﾞ)` N |
+| 1 | [case 21](21/) |
+| 2 | [case 55](55/) |
+| 3 | [case 54](54/) |
+| 4 | [case 57](57/) |
+| 5 | [case 56](56/) |
 
 ### [ﾘﾚｷ-ｹﾝｻ-RTN](../../../blueprints/gondwana/rules/GLD030.md#ﾘﾚｷ-ｹﾝｻ-rtn)
 
@@ -133,7 +133,7 @@
 | --: | --- |
 | 1 | not reached: `WS-BENHST-OK` Y, `NOT WS-BENHST-OK AND NOT WS-BENHST-ｵﾜﾘ` Y |
 | 2 | not reached: `WS-BENHST-OK` Y, `NOT WS-BENHST-OK AND NOT WS-BENHST-ｵﾜﾘ` N, `WS-ﾘﾕｳ-ﾅｼ AND CR-ﾆｭｳｲﾝ AND WS-ﾂｳｻﾝﾆｯｽｳ NOT < 1000` Y |
-| 3 | not reached: `WS-BENHST-OK` Y, `NOT WS-BENHST-OK AND NOT WS-BENHST-ｵﾜﾘ` N, `WS-ﾘﾕｳ-ﾅｼ AND CR-ﾆｭｳｲﾝ AND WS-ﾂｳｻﾝﾆｯｽｳ NOT < 1000` N |
+| 3 | [case 56](56/) |
 | 4 | not reached: `WS-BENHST-OK` N, `NOT WS-BENHST-OK AND NOT WS-BENHST-ｵﾜﾘ` Y |
 | 5 | not reached: `WS-BENHST-OK` N, `NOT WS-BENHST-OK AND NOT WS-BENHST-ｵﾜﾘ` N, `WS-ﾘﾕｳ-ﾅｼ AND CR-ﾆｭｳｲﾝ AND WS-ﾂｳｻﾝﾆｯｽｳ NOT < 1000` Y |
 | 6 | not reached: `WS-BENHST-OK` N, `NOT WS-BENHST-OK AND NOT WS-BENHST-ｵﾜﾘ` N, `WS-ﾘﾕｳ-ﾅｼ AND CR-ﾆｭｳｲﾝ AND WS-ﾂｳｻﾝﾆｯｽｳ NOT < 1000` N |
@@ -152,9 +152,9 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | not reached: `CR-ｼﾎﾞｳ` Y, `WS-ｷﾝｶﾞｸ > 0` Y, `CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ` N, `WS-POLMST-OK` N |
-| 2 | not reached: `CR-ｼﾎﾞｳ` Y, `WS-ｷﾝｶﾞｸ > 0` Y, `CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ` N, `WS-POLMST-OK` Y |
+| 2 | [case 44](44/) |
 | 3 | not reached: `CR-ｼﾎﾞｳ` Y, `WS-ｷﾝｶﾞｸ > 0` N, `CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ` N, `WS-POLMST-OK` N |
-| 4 | not reached: `CR-ｼﾎﾞｳ` Y, `WS-ｷﾝｶﾞｸ > 0` N, `CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ` N, `WS-POLMST-OK` Y |
+| 4 | [case 45](45/) |
 | 5 | not reached: `CR-ｼﾎﾞｳ` N, `WS-ｷﾝｶﾞｸ > 0` Y, `CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ` Y, `WS-POLMST-OK` N, `CR-ﾆｭｳｲﾝ` Y |
 | 6 | not reached: `CR-ｼﾎﾞｳ` N, `WS-ｷﾝｶﾞｸ > 0` Y, `CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ` Y, `WS-POLMST-OK` Y, `CR-ﾆｭｳｲﾝ` Y |
 | 7 | not reached: `CR-ｼﾎﾞｳ` N, `WS-ｷﾝｶﾞｸ > 0` N, `CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ` Y, `WS-POLMST-OK` N, `CR-ﾆｭｳｲﾝ` Y |
@@ -166,7 +166,7 @@
 | 13 | not reached: `CR-ｼﾎﾞｳ` N, `WS-ｷﾝｶﾞｸ > 0` Y, `CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ` N, `WS-POLMST-OK` N, `CR-ﾆｭｳｲﾝ` N, `CR-ｼｭｼﾞｭﾂ` N, `CR-ｶｲﾔｸ` Y |
 | 14 | not reached: `CR-ｼﾎﾞｳ` N, `WS-ｷﾝｶﾞｸ > 0` Y, `CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ` N, `WS-POLMST-OK` Y, `CR-ﾆｭｳｲﾝ` N, `CR-ｼｭｼﾞｭﾂ` N, `CR-ｶｲﾔｸ` Y |
 | 15 | not reached: `CR-ｼﾎﾞｳ` N, `WS-ｷﾝｶﾞｸ > 0` N, `CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ` N, `WS-POLMST-OK` N, `CR-ﾆｭｳｲﾝ` N, `CR-ｼｭｼﾞｭﾂ` N, `CR-ｶｲﾔｸ` Y |
-| 16 | [case 26](26/) |
+| 16 | [case 47](47/) |
 | 17 | not reached: `CR-ｼﾎﾞｳ` N, `WS-ｷﾝｶﾞｸ > 0` Y, `CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ` N, `WS-POLMST-OK` N, `CR-ﾆｭｳｲﾝ` N, `CR-ｼｭｼﾞｭﾂ` N, `CR-ｶｲﾔｸ` N |
 | 18 | not reached: `CR-ｼﾎﾞｳ` N, `WS-ｷﾝｶﾞｸ > 0` Y, `CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ` N, `WS-POLMST-OK` Y, `CR-ﾆｭｳｲﾝ` N, `CR-ｼｭｼﾞｭﾂ` N, `CR-ｶｲﾔｸ` N |
 | 19 | not reached: `CR-ｼﾎﾞｳ` N, `WS-ｷﾝｶﾞｸ > 0` N, `CR-ﾆｭｳｲﾝ OR CR-ｼｭｼﾞｭﾂ` N, `WS-POLMST-OK` N, `CR-ﾆｭｳｲﾝ` N, `CR-ｼｭｼﾞｭﾂ` N, `CR-ｶｲﾔｸ` N |
@@ -176,43 +176,43 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | not reached: `WS-ﾒﾝｾｷ-ｱﾘ` Y |
-| 2 | not reached: `WS-ﾒﾝｾｷ-ｱﾘ` N, `WS-ﾐﾉｳｶﾞｸ > 0` Y |
-| 3 | not reached: `WS-ﾒﾝｾｷ-ｱﾘ` N, `WS-ﾐﾉｳｶﾞｸ > 0` N |
+| 1 | [case 45](45/) |
+| 2 | [case 59](59/) |
+| 3 | [case 44](44/) |
 
 ### [ﾒﾝｾｷ-ﾊﾝﾃｲ-RTN](../../../blueprints/gondwana/rules/GLD030.md#ﾒﾝｾｷ-ﾊﾝﾃｲ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 48](48/) |
-| 2 | not reached: `CR-ｼﾞｻﾂ` Y, `PM-ﾌｯｶﾂﾋﾞ = SPACES` N, `WS-ｼﾞﾕｳﾋﾞ < WS-ﾒﾝｾｷｷｹﾞﾝ` N |
-| 3 | not reached: `CR-ｼﾞｻﾂ` Y, `PM-ﾌｯｶﾂﾋﾞ = SPACES` Y, `WS-ｼﾞﾕｳﾋﾞ < WS-ﾒﾝｾｷｷｹﾞﾝ` Y |
-| 4 | not reached: `CR-ｼﾞｻﾂ` Y, `PM-ﾌｯｶﾂﾋﾞ = SPACES` Y, `WS-ｼﾞﾕｳﾋﾞ < WS-ﾒﾝｾｷｷｹﾞﾝ` N |
-| 5 | not reached: `CR-ｼﾞｻﾂ` N |
+| 1 | [case 45](45/) |
+| 2 | [case 44](44/) |
+| 3 | [case 43](43/) |
+| 4 | [case 62](62/) |
+| 5 | [case 58](58/) |
 
 ### [ﾒﾝｾｷ-RTN](../../../blueprints/gondwana/rules/GLD030.md#ﾒﾝｾｷ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | not reached: `WS-CSVTB-OK` N |
-| 2 | not reached: `WS-CSVTB-OK` Y, `WS-ｷﾝｶﾞｸ > 0` Y |
-| 3 | not reached: `WS-CSVTB-OK` Y, `WS-ｷﾝｶﾞｸ > 0` N |
+| 1 | [case 46](46/) |
+| 2 | [case 63](63/) |
+| 3 | [case 45](45/) |
 
 ### [ﾐﾉｳ-RTN](../../../blueprints/gondwana/rules/GLD030.md#ﾐﾉｳ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
 | 1 | not reached: `PM-ﾂｷﾊﾞﾗｲ` N, `PM-ﾕｳｺｳ` N |
-| 2 | not reached: `PM-ﾂｷﾊﾞﾗｲ` N, `PM-ﾕｳｺｳ` Y |
-| 3 | not reached: `PM-ﾂｷﾊﾞﾗｲ` Y, `WS-ﾐﾉｳﾂｷｽｳ < 0` Y |
-| 4 | not reached: `PM-ﾂｷﾊﾞﾗｲ` Y, `WS-ﾐﾉｳﾂｷｽｳ < 0` N |
+| 2 | [case 61](61/) |
+| 3 | [case 60](60/) |
+| 4 | [case 44](44/) |
 
 ### [ﾘﾚｷ-ｶｷｺﾐ-RTN](../../../blueprints/gondwana/rules/GLD030.md#ﾘﾚｷ-ｶｷｺﾐ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
 | 1 | not reached: `WS-BENHST-OK` N |
-| 2 | not reached: `WS-BENHST-OK` Y |
+| 2 | [case 56](56/) |
 
 ### [ﾆｭｳｲﾝ-RTN](../../../blueprints/gondwana/rules/GLD030.md#ﾆｭｳｲﾝ-rtn)
 
@@ -221,49 +221,49 @@
 | 1 | not reached: `CR-ﾆｯｽｳ > 120` Y, `WS-ﾂｳｻﾝﾆｯｽｳ + WS-ﾆｯｽｳ > 1000` Y |
 | 2 | not reached: `CR-ﾆｯｽｳ > 120` Y, `WS-ﾂｳｻﾝﾆｯｽｳ + WS-ﾆｯｽｳ > 1000` N |
 | 3 | not reached: `CR-ﾆｯｽｳ > 120` N, `WS-ﾂｳｻﾝﾆｯｽｳ + WS-ﾆｯｽｳ > 1000` Y |
-| 4 | not reached: `CR-ﾆｯｽｳ > 120` N, `WS-ﾂｳｻﾝﾆｯｽｳ + WS-ﾆｯｽｳ > 1000` N |
+| 4 | [case 56](56/) |
 
 ### [ｶｲﾔｸ-RTN](../../../blueprints/gondwana/rules/GLD030.md#ｶｲﾔｸ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 27](27/) |
+| 1 | [case 22](22/) |
 | 2 | not reached: `WS-CSVTB-OK` Y, `WS-ｷﾝｶﾞｸ > 0` Y |
-| 3 | [case 26](26/) |
+| 3 | [case 47](47/) |
 
 ### [ﾎｼｮｳ-ｼｭｳﾘｮｳ-RTN](../../../blueprints/gondwana/rules/GLD030.md#ﾎｼｮｳ-ｼｭｳﾘｮｳ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
 | 1 | not reached: `WS-COVMST-OK` Y, `NOT WS-COVMST-OK AND NOT WS-COVMST-ｵﾜﾘ` Y |
-| 2 | [case 26](26/) |
+| 2 | [case 44](44/) |
 | 3 | not reached: `WS-COVMST-OK` N, `NOT WS-COVMST-OK AND NOT WS-COVMST-ｵﾜﾘ` Y |
-| 4 | [case 49](49/) |
+| 4 | [case 47](47/) |
 
 ### [ﾎｼｮｳ-ｼｭｳﾘｮｳ-RTN, in its loop](../../../blueprints/gondwana/rules/GLD030.md#ﾎｼｮｳ-ｼｭｳﾘｮｳ-rtn-in-its-loop)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | not reached: `HS-ﾕｳｺｳ` Y, `CR-ｼﾎﾞｳ` Y, `WS-COVMST-OK` Y |
+| 1 | [case 44](44/) |
 | 2 | not reached: `HS-ﾕｳｺｳ` Y, `CR-ｼﾎﾞｳ` Y, `WS-COVMST-OK` N |
-| 3 | not reached: `HS-ﾕｳｺｳ` Y, `CR-ｼﾎﾞｳ` N, `WS-COVMST-OK` Y |
+| 3 | [case 57](57/) |
 | 4 | not reached: `HS-ﾕｳｺｳ` Y, `CR-ｼﾎﾞｳ` N, `WS-COVMST-OK` N |
-| 5 | not reached: `HS-ﾕｳｺｳ` N, `WS-COVMST-OK` Y |
+| 5 | [case 53](53/) |
 
 ### [ﾘｿｸ-RTN](../../../blueprints/gondwana/rules/GLD030.md#ﾘｿｸ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 25](25/) |
-| 2 | [case 20](20/) |
+| 1 | [case 21](21/) |
+| 2 | [case 19](19/) |
 
 ### [ﾊｲﾄｳ-ｶｼﾂｹ-ｼﾜｹ-RTN](../../../blueprints/gondwana/rules/GLD030.md#ﾊｲﾄｳ-ｶｼﾂｹ-ｼﾜｹ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | not reached: `CR-ｼﾎﾞｳ AND PM-ﾊｲﾄｳﾙｲｹｲ > 0` Y, `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ > 0` Y |
-| 2 | not reached: `CR-ｼﾎﾞｳ AND PM-ﾊｲﾄｳﾙｲｹｲ > 0` Y, `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ > 0` N |
-| 3 | not reached: `CR-ｼﾎﾞｳ AND PM-ﾊｲﾄｳﾙｲｹｲ > 0` N, `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ > 0` Y |
+| 1 | [case 44](44/) |
+| 2 | [case 63](63/) |
+| 3 | [case 58](58/) |
 | 4 | not reached: `CR-ｼﾎﾞｳ AND PM-ﾊｲﾄｳﾙｲｹｲ > 0` N, `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ > 0` N |
 
 ### [ｼﾜｹ-RTN](../../../blueprints/gondwana/rules/GLD030.md#ｼﾜｹ-rtn)
@@ -271,21 +271,21 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | not reached: `WS-GLJRNL-OK` N |
-| 2 | [case 25](25/) |
+| 2 | [case 21](21/) |
 
 ### [ｼｭｳﾘｮｳ-RTN](../../../blueprints/gondwana/rules/GLD030.md#ｼｭｳﾘｮｳ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
 | 1 | not reached: `WS-GLSCTL-OK` N |
-| 2 | [case 11](11/) |
+| 2 | [case 01](01/) |
 
 ### [ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN](../../../blueprints/gondwana/rules/GLD030.md#ｼｮｳﾋﾝ-ﾖﾐｺﾐ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
 | 1 | not reached: `WS-PRODTB-ｵﾜﾘ` N |
-| 2 | [case 11](11/) |
+| 2 | [case 01](01/) |
 
 ## GLC020
 
@@ -301,22 +301,22 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 01](01/) |
-| 2 | [case 02](02/) |
+| 1 | [case 06](06/) |
+| 2 | [case 01](01/) |
 
 ### [ﾜﾚｷ-ﾍﾝｶﾝ-RTN, in its loop](../../../blueprints/gondwana/rules/GLC020.md#ﾜﾚｷ-ﾍﾝｶﾝ-rtn-in-its-loop)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 02](02/) |
-| 2 | [case 01](01/) |
+| 1 | [case 01](01/) |
+| 2 | [case 06](06/) |
 
 ### [ｾｲﾚｷ-ﾍﾝｶﾝ-RTN](../../../blueprints/gondwana/rules/GLC020.md#ｾｲﾚｷ-ﾍﾝｶﾝ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 18](18/) |
-| 2 | [case 30](30/) |
+| 2 | [case 25](25/) |
 
 ### [ﾊﾝｲ-ｹﾝｻ-RTN](../../../blueprints/gondwana/rules/GLC020.md#ﾊﾝｲ-ｹﾝｻ-rtn)
 
@@ -336,23 +336,23 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 26](26/) |
-| 2 | [case 27](27/) |
+| 1 | [case 45](45/) |
+| 2 | [case 22](22/) |
 | 3 | not reached: `WS-ﾖﾐｺﾐｽﾞﾐ` Y |
 
 ### [ﾖﾐｺﾐ-RTN](../../../blueprints/gondwana/rules/GLC030.md#ﾖﾐｺﾐ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 26](26/) |
+| 1 | [case 45](45/) |
 | 2 | not reached: `WS-CSVTB-OK` Y, `WS-CSVTB-ｵﾜﾘ` N |
-| 3 | [case 27](27/) |
+| 3 | [case 22](22/) |
 
 ### [ﾄｳﾛｸ-RTN](../../../blueprints/gondwana/rules/GLC030.md#ﾄｳﾛｸ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 20](20/) |
+| 1 | [case 19](19/) |
 | 2 | not reached: `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = CV-ｼｮｳﾋﾝ OR WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = ZEROS` N |
 
 ### [ｹｲｻﾝ-RTN](../../../blueprints/gondwana/rules/GLC030.md#ｹｲｻﾝ-rtn)
@@ -360,20 +360,20 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | not reached: `LK-ｶﾆｭｳﾈﾝﾚｲ < 20` Y, `LK-ｹｲｶﾈﾝｽｳ > 40` Y, `WS-ﾈﾝｽｳ > 0` Y, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = LK-ｼｮｳﾋﾝ` Y |
-| 2 | [case 52](52/) |
+| 2 | [case 50](50/) |
 | 3 | not reached: `LK-ｶﾆｭｳﾈﾝﾚｲ < 20` Y, `LK-ｹｲｶﾈﾝｽｳ > 40` N, `WS-ﾈﾝｽｳ > 0` Y, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = LK-ｼｮｳﾋﾝ` Y |
-| 4 | [case 26](26/) |
-| 5 | [case 53](53/) |
+| 4 | [case 45](45/) |
+| 5 | [case 51](51/) |
 | 6 | not reached: `LK-ｶﾆｭｳﾈﾝﾚｲ < 20` N, `LK-ｹｲｶﾈﾝｽｳ > 40` Y, `WS-ﾈﾝｽｳ > 0` Y, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = LK-ｼｮｳﾋﾝ` Y, `LK-ｶﾆｭｳﾈﾝﾚｲ < 60` Y |
-| 7 | not reached: `LK-ｶﾆｭｳﾈﾝﾚｲ < 20` N, `LK-ｹｲｶﾈﾝｽｳ > 40` Y, `WS-ﾈﾝｽｳ > 0` Y, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = LK-ｼｮｳﾋﾝ` N, `LK-ｶﾆｭｳﾈﾝﾚｲ < 60` Y |
+| 7 | [case 64](64/) |
 | 8 | not reached: `LK-ｶﾆｭｳﾈﾝﾚｲ < 20` N, `LK-ｹｲｶﾈﾝｽｳ > 40` N, `WS-ﾈﾝｽｳ > 0` Y, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = LK-ｼｮｳﾋﾝ` Y, `LK-ｶﾆｭｳﾈﾝﾚｲ < 60` Y |
-| 9 | [case 50](50/) |
-| 10 | not reached: `LK-ｶﾆｭｳﾈﾝﾚｲ < 20` N, `LK-ｹｲｶﾈﾝｽｳ > 40` N, `WS-ﾈﾝｽｳ > 0` N, `LK-ｶﾆｭｳﾈﾝﾚｲ < 60` Y |
+| 9 | [case 48](48/) |
+| 10 | [case 65](65/) |
 | 11 | not reached: `LK-ｶﾆｭｳﾈﾝﾚｲ < 20` N, `LK-ｹｲｶﾈﾝｽｳ > 40` Y, `WS-ﾈﾝｽｳ > 0` Y, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = LK-ｼｮｳﾋﾝ` Y, `LK-ｶﾆｭｳﾈﾝﾚｲ < 60` N |
-| 12 | not reached: `LK-ｶﾆｭｳﾈﾝﾚｲ < 20` N, `LK-ｹｲｶﾈﾝｽｳ > 40` Y, `WS-ﾈﾝｽｳ > 0` Y, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = LK-ｼｮｳﾋﾝ` N, `LK-ｶﾆｭｳﾈﾝﾚｲ < 60` N |
+| 12 | [case 66](66/) |
 | 13 | not reached: `LK-ｶﾆｭｳﾈﾝﾚｲ < 20` N, `LK-ｹｲｶﾈﾝｽｳ > 40` N, `WS-ﾈﾝｽｳ > 0` Y, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = LK-ｼｮｳﾋﾝ` Y, `LK-ｶﾆｭｳﾈﾝﾚｲ < 60` N |
-| 14 | [case 51](51/) |
-| 15 | not reached: `LK-ｶﾆｭｳﾈﾝﾚｲ < 20` N, `LK-ｹｲｶﾈﾝｽｳ > 40` N, `WS-ﾈﾝｽｳ > 0` N, `LK-ｶﾆｭｳﾈﾝﾚｲ < 60` N |
+| 14 | [case 49](49/) |
+| 15 | [case 67](67/) |
 
 ## GLC040
 
@@ -381,13 +381,13 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 20](20/) |
+| 1 | [case 19](19/) |
 | 2 | not reached: `LK-ｻﾞﾝﾀﾞｶ > 0 AND LK-ｷｻﾝﾋﾞ NOT = SPACES` Y, `WS-ﾍﾝｶﾝｹｯｶ = 0` N |
-| 3 | [case 23](23/) |
+| 3 | [case 63](63/) |
 
 ### [ﾋﾜﾘ-RTN](../../../blueprints/gondwana/rules/GLC040.md#ﾋﾜﾘ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 25](25/) |
-| 2 | [case 20](20/) |
+| 1 | [case 21](21/) |
+| 2 | [case 19](19/) |
