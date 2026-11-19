@@ -3,7 +3,7 @@
   "tables": [
     {
       "paragraph": "ｼｮｷ-RTN",
-      "source": "gondwana/programs/GLD010.cbl:235",
+      "source": "gondwana/programs/GLD010.cbl:236",
       "conditions": [
         "WS-ﾍﾝｶﾝｹｯｶ = 0",
         "WS-GLSCTL-OK"
@@ -112,7 +112,7 @@
     },
     {
       "paragraph": "ｵｰﾌﾟﾝ-ｹﾝｻ-RTN",
-      "source": "gondwana/programs/GLD010.cbl:268",
+      "source": "gondwana/programs/GLD010.cbl:269",
       "conditions": [
         "WS-NEWPOL-OK",
         "WS-ｴﾗｰﾌｧｲﾙ = SPACES",
@@ -382,7 +382,7 @@
     },
     {
       "paragraph": "NEWPOL-ﾖﾐｺﾐ-RTN",
-      "source": "gondwana/programs/GLD010.cbl:307",
+      "source": "gondwana/programs/GLD010.cbl:308",
       "conditions": [
         "WS-NEWPOL-OK",
         "WS-NEWPOL-ｵﾜﾘ"
@@ -441,7 +441,7 @@
     },
     {
       "paragraph": "ｼｮﾘ-RTN",
-      "source": "gondwana/programs/GLD010.cbl:322",
+      "source": "gondwana/programs/GLD010.cbl:323",
       "conditions": [
         "WS-ﾘﾕｳ-ﾅｼ"
       ],
@@ -483,10 +483,9 @@
     },
     {
       "paragraph": "ｹﾝｻ-RTN",
-      "source": "gondwana/programs/GLD010.cbl:335",
+      "source": "gondwana/programs/GLD010.cbl:336",
       "conditions": [
-        "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = NP-ｼｮｳﾋﾝ",
-        "WS-ｼｮｳﾋﾝ-ﾄｸﾔｸ(WS-ｼｮｳﾋﾝ-IX)",
+        "NP-ｼｮｳﾋﾝ = SPACES",
         "WS-ﾘﾕｳ-ﾅｼ",
         "WS-ﾘﾕｳ-ﾅｼ AND NP-ﾊﾗｲｺﾐﾎｳﾎｳ NOT = '1' AND NP-ﾊﾗｲｺﾐﾎｳﾎｳ = '2' AND NP-ﾊﾗｲｺﾐﾎｳﾎｳ = '3'",
         "WS-ﾘﾕｳ-ﾅｼ AND NP-ｾｲﾍﾞﾂ NOT = 1 AND NP-ｾｲﾍﾞﾂ = 2",
@@ -498,13 +497,7 @@
       ],
       "conditionRefs": [
         [
-          "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ",
-          "WS-ｼｮｳﾋﾝ-IX",
           "NP-ｼｮｳﾋﾝ"
-        ],
-        [
-          "WS-ｼｮｳﾋﾝ-ｸﾌﾞﾝ",
-          "WS-ｼｮｳﾋﾝ-IX"
         ],
         [
           "WS-ﾘﾕｳ"
@@ -537,12 +530,9 @@
         "SET WS-ﾘﾕｳ-ﾅｼ TO TRUE",
         "MOVE 1 TO WS-ﾎｼｮｳｽｳ",
         "MOVE NP-ﾎｹﾝｷﾝｶﾞｸ TO WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(1)",
-        "SET WS-ｼｮｳﾋﾝ-IX TO 1",
-        "SEARCH WS-ｼｮｳﾋﾝ",
         "SET WS-ｼｮｳﾋﾝ-ﾅｼ TO TRUE",
         "PERFORM ﾄｸﾔｸ-ｹﾝｻ-RTN VARYING WS-ﾄｸﾔｸ-N FROM 1 BY 1 UNTIL WS-ﾄｸﾔｸ-N \u003e 2 OR NOT WS-ﾘﾕｳ-ﾅｼ",
-        "SET WS-ﾎｼｮｳ-ｿｴｼﾞ(1) TO WS-ｼｮｳﾋﾝ-IX",
-        "MOVE WS-ｼｮｳﾋﾝ-ｼｭﾙｲ(WS-ｼｮｳﾋﾝ-IX) TO WS-ｼｭｹｲﾔｸ-ｼｭﾙｲ",
+        "PERFORM ｼｮｳﾋﾝ-ｹﾝｻｸ-RTN",
         "MOVE NP-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ TO PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ",
         "READ POLMST-F",
         "SET WS-ｼｮｳｹﾝ-ﾁｮｳﾌｸ TO TRUE",
@@ -565,7 +555,6 @@
         {
           "entries": [
             "Y",
-            "Y",
             "N",
             "N",
             "N",
@@ -580,43 +569,36 @@
             1,
             2,
             3,
-            4,
+            4
+          ],
+          "sentence": "When `NP-ｼｮｳﾋﾝ` is spaces; `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`); `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'1'`, `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'2'`, or `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'3'`; and `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ｾｲﾍﾞﾂ` is 1, or `NP-ｾｲﾍﾞﾂ` is not 2, it sets `WS-ﾘﾕｳ` to `WS-ﾘﾕｳ-ﾅｼ`; sets `WS-ﾎｼｮｳｽｳ` to 1; sets `WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(1)` to `NP-ﾎｹﾝｷﾝｶﾞｸ`; sets `WS-ﾘﾕｳ` to `WS-ｼｮｳﾋﾝ-ﾅｼ`; and performs `ﾄｸﾔｸ-ｹﾝｻ-RTN` varying `WS-ﾄｸﾔｸ-N` from 1 by 1 until `WS-ﾄｸﾔｸ-N` is more than 2 or `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`)."
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N",
+            "N",
+            "Y",
+            "N",
+            "",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
             5,
-            6
-          ],
-          "sentence": "When `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is `NP-ｼｮｳﾋﾝ`; `WS-ｼｮｳﾋﾝ-ｸﾌﾞﾝ` is `'T'` (`WS-ｼｮｳﾋﾝ-ﾄｸﾔｸ(WS-ｼｮｳﾋﾝ-IX)`); `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`); `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'1'`, `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'2'`, or `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'3'`; and `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ｾｲﾍﾞﾂ` is 1, or `NP-ｾｲﾍﾞﾂ` is not 2, it sets `WS-ﾘﾕｳ` to `WS-ﾘﾕｳ-ﾅｼ`; sets `WS-ﾎｼｮｳｽｳ` to 1; sets `WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(1)` to `NP-ﾎｹﾝｷﾝｶﾞｸ`; sets `WS-ｼｮｳﾋﾝ-IX` to 1; searches `WS-ｼｮｳﾋﾝ`; sets `WS-ﾘﾕｳ` to `WS-ｼｮｳﾋﾝ-ﾅｼ`; and performs `ﾄｸﾔｸ-ｹﾝｻ-RTN` varying `WS-ﾄｸﾔｸ-N` from 1 by 1 until `WS-ﾄｸﾔｸ-N` is more than 2 or `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`)."
-        },
-        {
-          "entries": [
-            "Y",
-            "N",
-            "Y",
-            "N",
-            "N",
-            "Y",
-            "N",
-            "",
-            "",
-            ""
-          ],
-          "actions": [
-            0,
-            1,
-            2,
-            3,
-            4,
+            6,
             7,
             8,
-            9,
-            10,
-            11,
-            6
+            4
           ],
-          "sentence": "When `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is `NP-ｼｮｳﾋﾝ`; `WS-ｼｮｳﾋﾝ-ｸﾌﾞﾝ` is not `'T'` (not `WS-ｼｮｳﾋﾝ-ﾄｸﾔｸ(WS-ｼｮｳﾋﾝ-IX)`); `WS-ﾘﾕｳ` is 0 (`WS-ﾘﾕｳ-ﾅｼ`); `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'1'`, `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'2'`, or `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'3'`; `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ｾｲﾍﾞﾂ` is 1, or `NP-ｾｲﾍﾞﾂ` is not 2; `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`); and `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), tested again, it sets `WS-ﾘﾕｳ` to `WS-ﾘﾕｳ-ﾅｼ`; sets `WS-ﾎｼｮｳｽｳ` to 1; sets `WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(1)` to `NP-ﾎｹﾝｷﾝｶﾞｸ`; sets `WS-ｼｮｳﾋﾝ-IX` to 1; searches `WS-ｼｮｳﾋﾝ`; runs `SET WS-ﾎｼｮｳ-ｿｴｼﾞ(1) TO WS-ｼｮｳﾋﾝ-IX`; sets `WS-ｼｭｹｲﾔｸ-ｼｭﾙｲ` to `WS-ｼｮｳﾋﾝ-ｼｭﾙｲ(WS-ｼｮｳﾋﾝ-IX)`; sets `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `NP-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; reads `POLMST-F`; sets `WS-ﾘﾕｳ` to `WS-ｼｮｳｹﾝ-ﾁｮｳﾌｸ`; and performs `ﾄｸﾔｸ-ｹﾝｻ-RTN` varying `WS-ﾄｸﾔｸ-N` from 1 by 1 until `WS-ﾄｸﾔｸ-N` is more than 2 or `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`)."
+          "sentence": "When `NP-ｼｮｳﾋﾝ` is not spaces; `WS-ﾘﾕｳ` is 0 (`WS-ﾘﾕｳ-ﾅｼ`); `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'1'`, `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'2'`, or `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'3'`; `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ｾｲﾍﾞﾂ` is 1, or `NP-ｾｲﾍﾞﾂ` is not 2; `WS-POLMST-ST` is `'00'` (`WS-POLMST-OK`); and `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), tested again, it sets `WS-ﾘﾕｳ` to `WS-ﾘﾕｳ-ﾅｼ`; sets `WS-ﾎｼｮｳｽｳ` to 1; sets `WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(1)` to `NP-ﾎｹﾝｷﾝｶﾞｸ`; performs `ｼｮｳﾋﾝ-ｹﾝｻｸ-RTN`; sets `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `NP-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; reads `POLMST-F`; sets `WS-ﾘﾕｳ` to `WS-ｼｮｳｹﾝ-ﾁｮｳﾌｸ`; and performs `ﾄｸﾔｸ-ｹﾝｻ-RTN` varying `WS-ﾄｸﾔｸ-N` from 1 by 1 until `WS-ﾄｸﾔｸ-N` is more than 2 or `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`)."
         },
         {
           "entries": [
-            "Y",
             "N",
             "Y",
             "",
@@ -631,79 +613,67 @@
             0,
             1,
             2,
-            3,
-            4,
+            5,
+            6,
             7,
-            8,
             9,
             10,
+            11
+          ],
+          "sentence": "When `NP-ｼｮｳﾋﾝ` is not spaces, `WS-ﾘﾕｳ` is 0 (`WS-ﾘﾕｳ-ﾅｼ`), `WS-POLMST-ST` is not `'00'` (not `WS-POLMST-OK`), and `WS-POLMST-ST` is not `'23'` (not `WS-POLMST-ﾅｼ`), it sets `WS-ﾘﾕｳ` to `WS-ﾘﾕｳ-ﾅｼ`, sets `WS-ﾎｼｮｳｽｳ` to 1, sets `WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(1)` to `NP-ﾎｹﾝｷﾝｶﾞｸ`, performs `ｼｮｳﾋﾝ-ｹﾝｻｸ-RTN`, sets `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `NP-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`, reads `POLMST-F`, sets `WS-ｴﾗｰﾌｧｲﾙ` to `'POLMST'`, sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-POLMST-ST`, and performs `ｲｼﾞｮｳ-RTN`."
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "Y",
+            "N",
+            "N",
+            "N",
+            "Y",
+            "",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            5,
+            6,
+            7,
             12,
+            4
+          ],
+          "sentence": "When `NP-ｼｮｳﾋﾝ` is not spaces; `WS-ﾘﾕｳ` is 0 (`WS-ﾘﾕｳ-ﾅｼ`); `WS-ﾘﾕｳ` is 0 (`WS-ﾘﾕｳ-ﾅｼ`), `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'1'`, `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'2'`, and `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'3'`; `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ｾｲﾍﾞﾂ` is 1, or `NP-ｾｲﾍﾞﾂ` is not 2; `WS-POLMST-ST` is not `'00'` (not `WS-POLMST-OK`); `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), tested again; and `WS-POLMST-ST` is `'23'` (`WS-POLMST-ﾅｼ`), it sets `WS-ﾘﾕｳ` to `WS-ﾘﾕｳ-ﾅｼ`; sets `WS-ﾎｼｮｳｽｳ` to 1; sets `WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(1)` to `NP-ﾎｹﾝｷﾝｶﾞｸ`; performs `ｼｮｳﾋﾝ-ｹﾝｻｸ-RTN`; sets `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `NP-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; reads `POLMST-F`; sets `WS-ﾘﾕｳ` to `WS-ﾊﾗｲｺﾐ-ﾌｾｲ`; and performs `ﾄｸﾔｸ-ｹﾝｻ-RTN` varying `WS-ﾄｸﾔｸ-N` from 1 by 1 until `WS-ﾄｸﾔｸ-N` is more than 2 or `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`)."
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N",
+            "N",
+            "N",
+            "N",
+            "Y",
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            5,
+            6,
+            7,
             13,
-            14
-          ],
-          "sentence": "When `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is `NP-ｼｮｳﾋﾝ`, `WS-ｼｮｳﾋﾝ-ｸﾌﾞﾝ` is not `'T'` (not `WS-ｼｮｳﾋﾝ-ﾄｸﾔｸ(WS-ｼｮｳﾋﾝ-IX)`), `WS-ﾘﾕｳ` is 0 (`WS-ﾘﾕｳ-ﾅｼ`), `WS-POLMST-ST` is not `'00'` (not `WS-POLMST-OK`), and `WS-POLMST-ST` is not `'23'` (not `WS-POLMST-ﾅｼ`), it sets `WS-ﾘﾕｳ` to `WS-ﾘﾕｳ-ﾅｼ`, sets `WS-ﾎｼｮｳｽｳ` to 1, sets `WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(1)` to `NP-ﾎｹﾝｷﾝｶﾞｸ`, sets `WS-ｼｮｳﾋﾝ-IX` to 1, searches `WS-ｼｮｳﾋﾝ`, runs `SET WS-ﾎｼｮｳ-ｿｴｼﾞ(1) TO WS-ｼｮｳﾋﾝ-IX`, sets `WS-ｼｭｹｲﾔｸ-ｼｭﾙｲ` to `WS-ｼｮｳﾋﾝ-ｼｭﾙｲ(WS-ｼｮｳﾋﾝ-IX)`, sets `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `NP-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`, reads `POLMST-F`, sets `WS-ｴﾗｰﾌｧｲﾙ` to `'POLMST'`, sets `WS-ｴﾗｰｽﾃｰﾀｽ` to `WS-POLMST-ST`, and performs `ｲｼﾞｮｳ-RTN`."
-        },
-        {
-          "entries": [
-            "Y",
-            "N",
-            "Y",
-            "Y",
-            "N",
-            "N",
-            "N",
-            "Y",
-            "",
-            ""
-          ],
-          "actions": [
-            0,
-            1,
-            2,
-            3,
-            4,
-            7,
-            8,
-            9,
-            10,
+            14,
             15,
-            6
+            4
           ],
-          "sentence": "When `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is `NP-ｼｮｳﾋﾝ`; `WS-ｼｮｳﾋﾝ-ｸﾌﾞﾝ` is not `'T'` (not `WS-ｼｮｳﾋﾝ-ﾄｸﾔｸ(WS-ｼｮｳﾋﾝ-IX)`); `WS-ﾘﾕｳ` is 0 (`WS-ﾘﾕｳ-ﾅｼ`); `WS-ﾘﾕｳ` is 0 (`WS-ﾘﾕｳ-ﾅｼ`), `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'1'`, `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'2'`, and `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'3'`; `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ｾｲﾍﾞﾂ` is 1, or `NP-ｾｲﾍﾞﾂ` is not 2; `WS-POLMST-ST` is not `'00'` (not `WS-POLMST-OK`); `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), tested again; and `WS-POLMST-ST` is `'23'` (`WS-POLMST-ﾅｼ`), it sets `WS-ﾘﾕｳ` to `WS-ﾘﾕｳ-ﾅｼ`; sets `WS-ﾎｼｮｳｽｳ` to 1; sets `WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(1)` to `NP-ﾎｹﾝｷﾝｶﾞｸ`; sets `WS-ｼｮｳﾋﾝ-IX` to 1; searches `WS-ｼｮｳﾋﾝ`; runs `SET WS-ﾎｼｮｳ-ｿｴｼﾞ(1) TO WS-ｼｮｳﾋﾝ-IX`; sets `WS-ｼｭｹｲﾔｸ-ｼｭﾙｲ` to `WS-ｼｮｳﾋﾝ-ｼｭﾙｲ(WS-ｼｮｳﾋﾝ-IX)`; sets `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `NP-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; reads `POLMST-F`; sets `WS-ﾘﾕｳ` to `WS-ﾊﾗｲｺﾐ-ﾌｾｲ`; and performs `ﾄｸﾔｸ-ｹﾝｻ-RTN` varying `WS-ﾄｸﾔｸ-N` from 1 by 1 until `WS-ﾄｸﾔｸ-N` is more than 2 or `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`)."
+          "sentence": "When `NP-ｼｮｳﾋﾝ` is not spaces; `WS-ﾘﾕｳ` is 0 (`WS-ﾘﾕｳ-ﾅｼ`); `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'1'`, `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'2'`, or `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'3'`; `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ｾｲﾍﾞﾂ` is 1, or `NP-ｾｲﾍﾞﾂ` is not 2; `WS-POLMST-ST` is not `'00'` (not `WS-POLMST-OK`); `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), tested again; `WS-POLMST-ST` is `'23'` (`WS-POLMST-ﾅｼ`); and `WS-ﾍﾝｶﾝｹｯｶ` is not 0, it sets `WS-ﾘﾕｳ` to `WS-ﾘﾕｳ-ﾅｼ`; sets `WS-ﾎｼｮｳｽｳ` to 1; sets `WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(1)` to `NP-ﾎｹﾝｷﾝｶﾞｸ`; performs `ｼｮｳﾋﾝ-ｹﾝｻｸ-RTN`; sets `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `NP-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; reads `POLMST-F`; sets `WS-ﾎｳｺｳ` to `'W'`; calls `GLC020`; sets `WS-ﾘﾕｳ` to `WS-ｹｲﾔｸﾋﾞ-ﾌｾｲ`; and performs `ﾄｸﾔｸ-ｹﾝｻ-RTN` varying `WS-ﾄｸﾔｸ-N` from 1 by 1 until `WS-ﾄｸﾔｸ-N` is more than 2 or `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`)."
         },
         {
           "entries": [
-            "Y",
-            "N",
-            "Y",
-            "N",
-            "N",
-            "N",
-            "N",
-            "Y",
-            "N",
-            ""
-          ],
-          "actions": [
-            0,
-            1,
-            2,
-            3,
-            4,
-            7,
-            8,
-            9,
-            10,
-            16,
-            17,
-            18,
-            6
-          ],
-          "sentence": "When `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is `NP-ｼｮｳﾋﾝ`; `WS-ｼｮｳﾋﾝ-ｸﾌﾞﾝ` is not `'T'` (not `WS-ｼｮｳﾋﾝ-ﾄｸﾔｸ(WS-ｼｮｳﾋﾝ-IX)`); `WS-ﾘﾕｳ` is 0 (`WS-ﾘﾕｳ-ﾅｼ`); `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'1'`, `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'2'`, or `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'3'`; `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ｾｲﾍﾞﾂ` is 1, or `NP-ｾｲﾍﾞﾂ` is not 2; `WS-POLMST-ST` is not `'00'` (not `WS-POLMST-OK`); `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), tested again; `WS-POLMST-ST` is `'23'` (`WS-POLMST-ﾅｼ`); and `WS-ﾍﾝｶﾝｹｯｶ` is not 0, it sets `WS-ﾘﾕｳ` to `WS-ﾘﾕｳ-ﾅｼ`; sets `WS-ﾎｼｮｳｽｳ` to 1; sets `WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(1)` to `NP-ﾎｹﾝｷﾝｶﾞｸ`; sets `WS-ｼｮｳﾋﾝ-IX` to 1; searches `WS-ｼｮｳﾋﾝ`; runs `SET WS-ﾎｼｮｳ-ｿｴｼﾞ(1) TO WS-ｼｮｳﾋﾝ-IX`; sets `WS-ｼｭｹｲﾔｸ-ｼｭﾙｲ` to `WS-ｼｮｳﾋﾝ-ｼｭﾙｲ(WS-ｼｮｳﾋﾝ-IX)`; sets `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `NP-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; reads `POLMST-F`; sets `WS-ﾎｳｺｳ` to `'W'`; calls `GLC020`; sets `WS-ﾘﾕｳ` to `WS-ｹｲﾔｸﾋﾞ-ﾌｾｲ`; and performs `ﾄｸﾔｸ-ｹﾝｻ-RTN` varying `WS-ﾄｸﾔｸ-N` from 1 by 1 until `WS-ﾄｸﾔｸ-N` is more than 2 or `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`)."
-        },
-        {
-          "entries": [
-            "Y",
             "N",
             "Y",
             "N",
@@ -718,89 +688,77 @@
             0,
             1,
             2,
-            3,
-            4,
+            5,
+            6,
             7,
-            8,
-            9,
-            10,
+            13,
+            14,
             16,
             17,
+            4
+          ],
+          "sentence": "When `NP-ｼｮｳﾋﾝ` is not spaces; `WS-ﾘﾕｳ` is 0 (`WS-ﾘﾕｳ-ﾅｼ`); `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'1'`, `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'2'`, or `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'3'`; `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ｾｲﾍﾞﾂ` is 1, or `NP-ｾｲﾍﾞﾂ` is not 2; `WS-POLMST-ST` is not `'00'` (not `WS-POLMST-OK`); `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), tested again; `WS-POLMST-ST` is `'23'` (`WS-POLMST-ﾅｼ`); `WS-ﾍﾝｶﾝｹｯｶ` is 0; and `WS-ﾍﾝｶﾝｹｯｶ` is not 0, tested again, it sets `WS-ﾘﾕｳ` to `WS-ﾘﾕｳ-ﾅｼ`; sets `WS-ﾎｼｮｳｽｳ` to 1; sets `WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(1)` to `NP-ﾎｹﾝｷﾝｶﾞｸ`; performs `ｼｮｳﾋﾝ-ｹﾝｻｸ-RTN`; sets `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `NP-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; reads `POLMST-F`; sets `WS-ﾎｳｺｳ` to `'W'`; calls `GLC020`; calls `GLC020`; sets `WS-ﾘﾕｳ` to `WS-ｾｲﾈﾝｶﾞｯﾋﾟ-ﾌｾｲ`; and performs `ﾄｸﾔｸ-ｹﾝｻ-RTN` varying `WS-ﾄｸﾔｸ-N` from 1 by 1 until `WS-ﾄｸﾔｸ-N` is more than 2 or `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`)."
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N",
+            "Y",
+            "N",
+            "N",
+            "Y",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            5,
+            6,
+            7,
+            13,
+            14,
+            16,
+            18,
+            4
+          ],
+          "sentence": "When `NP-ｼｮｳﾋﾝ` is not spaces; `WS-ﾘﾕｳ` is 0 (`WS-ﾘﾕｳ-ﾅｼ`); `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'1'`, `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'2'`, or `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'3'`; `WS-ﾘﾕｳ` is 0 (`WS-ﾘﾕｳ-ﾅｼ`), `NP-ｾｲﾍﾞﾂ` is not 1, and `NP-ｾｲﾍﾞﾂ` is 2; `WS-POLMST-ST` is not `'00'` (not `WS-POLMST-OK`); `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), tested again; `WS-POLMST-ST` is `'23'` (`WS-POLMST-ﾅｼ`); `WS-ﾍﾝｶﾝｹｯｶ` is 0; and `WS-ﾍﾝｶﾝｹｯｶ` is 0, tested again, it sets `WS-ﾘﾕｳ` to `WS-ﾘﾕｳ-ﾅｼ`; sets `WS-ﾎｼｮｳｽｳ` to 1; sets `WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(1)` to `NP-ﾎｹﾝｷﾝｶﾞｸ`; performs `ｼｮｳﾋﾝ-ｹﾝｻｸ-RTN`; sets `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `NP-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; reads `POLMST-F`; sets `WS-ﾎｳｺｳ` to `'W'`; calls `GLC020`; calls `GLC020`; sets `WS-ﾘﾕｳ` to `WS-ｾｲﾍﾞﾂ-ﾌｾｲ`; and performs `ﾄｸﾔｸ-ｹﾝｻ-RTN` varying `WS-ﾄｸﾔｸ-N` from 1 by 1 until `WS-ﾄｸﾔｸ-N` is more than 2 or `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`)."
+        },
+        {
+          "entries": [
+            "N",
+            "Y",
+            "N",
+            "N",
+            "N",
+            "",
+            "Y",
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2,
+            5,
+            6,
+            7,
+            13,
+            14,
+            16,
             19,
             20,
-            6
-          ],
-          "sentence": "When `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is `NP-ｼｮｳﾋﾝ`; `WS-ｼｮｳﾋﾝ-ｸﾌﾞﾝ` is not `'T'` (not `WS-ｼｮｳﾋﾝ-ﾄｸﾔｸ(WS-ｼｮｳﾋﾝ-IX)`); `WS-ﾘﾕｳ` is 0 (`WS-ﾘﾕｳ-ﾅｼ`); `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'1'`, `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'2'`, or `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'3'`; `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ｾｲﾍﾞﾂ` is 1, or `NP-ｾｲﾍﾞﾂ` is not 2; `WS-POLMST-ST` is not `'00'` (not `WS-POLMST-OK`); `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), tested again; `WS-POLMST-ST` is `'23'` (`WS-POLMST-ﾅｼ`); `WS-ﾍﾝｶﾝｹｯｶ` is 0; and `WS-ﾍﾝｶﾝｹｯｶ` is not 0, tested again, it sets `WS-ﾘﾕｳ` to `WS-ﾘﾕｳ-ﾅｼ`; sets `WS-ﾎｼｮｳｽｳ` to 1; sets `WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(1)` to `NP-ﾎｹﾝｷﾝｶﾞｸ`; sets `WS-ｼｮｳﾋﾝ-IX` to 1; searches `WS-ｼｮｳﾋﾝ`; runs `SET WS-ﾎｼｮｳ-ｿｴｼﾞ(1) TO WS-ｼｮｳﾋﾝ-IX`; sets `WS-ｼｭｹｲﾔｸ-ｼｭﾙｲ` to `WS-ｼｮｳﾋﾝ-ｼｭﾙｲ(WS-ｼｮｳﾋﾝ-IX)`; sets `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `NP-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; reads `POLMST-F`; sets `WS-ﾎｳｺｳ` to `'W'`; calls `GLC020`; calls `GLC020`; sets `WS-ﾘﾕｳ` to `WS-ｾｲﾈﾝｶﾞｯﾋﾟ-ﾌｾｲ`; and performs `ﾄｸﾔｸ-ｹﾝｻ-RTN` varying `WS-ﾄｸﾔｸ-N` from 1 by 1 until `WS-ﾄｸﾔｸ-N` is more than 2 or `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`)."
-        },
-        {
-          "entries": [
-            "Y",
-            "N",
-            "Y",
-            "N",
-            "Y",
-            "N",
-            "N",
-            "Y",
-            "Y",
-            "Y"
-          ],
-          "actions": [
-            0,
-            1,
-            2,
-            3,
-            4,
-            7,
-            8,
-            9,
-            10,
-            16,
-            17,
-            19,
             21,
-            6
-          ],
-          "sentence": "When `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is `NP-ｼｮｳﾋﾝ`; `WS-ｼｮｳﾋﾝ-ｸﾌﾞﾝ` is not `'T'` (not `WS-ｼｮｳﾋﾝ-ﾄｸﾔｸ(WS-ｼｮｳﾋﾝ-IX)`); `WS-ﾘﾕｳ` is 0 (`WS-ﾘﾕｳ-ﾅｼ`); `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'1'`, `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'2'`, or `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'3'`; `WS-ﾘﾕｳ` is 0 (`WS-ﾘﾕｳ-ﾅｼ`), `NP-ｾｲﾍﾞﾂ` is not 1, and `NP-ｾｲﾍﾞﾂ` is 2; `WS-POLMST-ST` is not `'00'` (not `WS-POLMST-OK`); `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), tested again; `WS-POLMST-ST` is `'23'` (`WS-POLMST-ﾅｼ`); `WS-ﾍﾝｶﾝｹｯｶ` is 0; and `WS-ﾍﾝｶﾝｹｯｶ` is 0, tested again, it sets `WS-ﾘﾕｳ` to `WS-ﾘﾕｳ-ﾅｼ`; sets `WS-ﾎｼｮｳｽｳ` to 1; sets `WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(1)` to `NP-ﾎｹﾝｷﾝｶﾞｸ`; sets `WS-ｼｮｳﾋﾝ-IX` to 1; searches `WS-ｼｮｳﾋﾝ`; runs `SET WS-ﾎｼｮｳ-ｿｴｼﾞ(1) TO WS-ｼｮｳﾋﾝ-IX`; sets `WS-ｼｭｹｲﾔｸ-ｼｭﾙｲ` to `WS-ｼｮｳﾋﾝ-ｼｭﾙｲ(WS-ｼｮｳﾋﾝ-IX)`; sets `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `NP-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; reads `POLMST-F`; sets `WS-ﾎｳｺｳ` to `'W'`; calls `GLC020`; calls `GLC020`; sets `WS-ﾘﾕｳ` to `WS-ｾｲﾍﾞﾂ-ﾌｾｲ`; and performs `ﾄｸﾔｸ-ｹﾝｻ-RTN` varying `WS-ﾄｸﾔｸ-N` from 1 by 1 until `WS-ﾄｸﾔｸ-N` is more than 2 or `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`)."
-        },
-        {
-          "entries": [
-            "Y",
-            "N",
-            "Y",
-            "N",
-            "N",
-            "N",
-            "",
-            "Y",
-            "Y",
-            "Y"
-          ],
-          "actions": [
-            0,
-            1,
-            2,
-            3,
-            4,
-            7,
-            8,
-            9,
-            10,
-            16,
-            17,
-            19,
             22,
-            23,
-            24,
-            25,
-            6
+            4
           ],
-          "sentence": "When `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is `NP-ｼｮｳﾋﾝ`; `WS-ｼｮｳﾋﾝ-ｸﾌﾞﾝ` is not `'T'` (not `WS-ｼｮｳﾋﾝ-ﾄｸﾔｸ(WS-ｼｮｳﾋﾝ-IX)`); `WS-ﾘﾕｳ` is 0 (`WS-ﾘﾕｳ-ﾅｼ`); `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'1'`, `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'2'`, or `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'3'`; `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ｾｲﾍﾞﾂ` is 1, or `NP-ｾｲﾍﾞﾂ` is not 2; `WS-POLMST-ST` is not `'00'` (not `WS-POLMST-OK`); `WS-POLMST-ST` is `'23'` (`WS-POLMST-ﾅｼ`); `WS-ﾍﾝｶﾝｹｯｶ` is 0; and `WS-ﾍﾝｶﾝｹｯｶ` is 0, tested again, it sets `WS-ﾘﾕｳ` to `WS-ﾘﾕｳ-ﾅｼ`; sets `WS-ﾎｼｮｳｽｳ` to 1; sets `WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(1)` to `NP-ﾎｹﾝｷﾝｶﾞｸ`; sets `WS-ｼｮｳﾋﾝ-IX` to 1; searches `WS-ｼｮｳﾋﾝ`; runs `SET WS-ﾎｼｮｳ-ｿｴｼﾞ(1) TO WS-ｼｮｳﾋﾝ-IX`; sets `WS-ｼｭｹｲﾔｸ-ｼｭﾙｲ` to `WS-ｼｮｳﾋﾝ-ｼｭﾙｲ(WS-ｼｮｳﾋﾝ-IX)`; sets `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `NP-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; reads `POLMST-F`; sets `WS-ﾎｳｺｳ` to `'W'`; calls `GLC020`; calls `GLC020`; calls `GLC010`; computes `WS-ﾈﾝﾚｲ-ｿｴｼﾞ` as `WS-ﾈﾝﾚｲ + 1`; sets `WS-N` to 1; performs `ﾈﾝﾚｲ-ｷﾝｶﾞｸ-ｹﾝｻ-RTN`; and performs `ﾄｸﾔｸ-ｹﾝｻ-RTN` varying `WS-ﾄｸﾔｸ-N` from 1 by 1 until `WS-ﾄｸﾔｸ-N` is more than 2 or `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`)."
+          "sentence": "When `NP-ｼｮｳﾋﾝ` is not spaces; `WS-ﾘﾕｳ` is 0 (`WS-ﾘﾕｳ-ﾅｼ`); `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'1'`, `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'2'`, or `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'3'`; `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ｾｲﾍﾞﾂ` is 1, or `NP-ｾｲﾍﾞﾂ` is not 2; `WS-POLMST-ST` is not `'00'` (not `WS-POLMST-OK`); `WS-POLMST-ST` is `'23'` (`WS-POLMST-ﾅｼ`); `WS-ﾍﾝｶﾝｹｯｶ` is 0; and `WS-ﾍﾝｶﾝｹｯｶ` is 0, tested again, it sets `WS-ﾘﾕｳ` to `WS-ﾘﾕｳ-ﾅｼ`; sets `WS-ﾎｼｮｳｽｳ` to 1; sets `WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(1)` to `NP-ﾎｹﾝｷﾝｶﾞｸ`; performs `ｼｮｳﾋﾝ-ｹﾝｻｸ-RTN`; sets `PM-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ` to `NP-ｼｮｳｹﾝﾊﾞﾝｺﾞｳ`; reads `POLMST-F`; sets `WS-ﾎｳｺｳ` to `'W'`; calls `GLC020`; calls `GLC020`; calls `GLC010`; computes `WS-ﾈﾝﾚｲ-ｿｴｼﾞ` as `WS-ﾈﾝﾚｲ + 1`; sets `WS-N` to 1; performs `ﾈﾝﾚｲ-ｷﾝｶﾞｸ-ｹﾝｻ-RTN`; and performs `ﾄｸﾔｸ-ｹﾝｻ-RTN` varying `WS-ﾄｸﾔｸ-N` from 1 by 1 until `WS-ﾄｸﾔｸ-N` is more than 2 or `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`)."
         },
         {
           "entries": [
             "N",
-            "",
             "N",
             "N",
             "N",
@@ -814,18 +772,81 @@
             0,
             1,
             2,
-            3,
-            4,
             5,
-            6
+            4
           ],
-          "sentence": "When `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is not `NP-ｼｮｳﾋﾝ`; `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`); `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'1'`, `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'2'`, or `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'3'`; and `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ｾｲﾍﾞﾂ` is 1, or `NP-ｾｲﾍﾞﾂ` is not 2, it sets `WS-ﾘﾕｳ` to `WS-ﾘﾕｳ-ﾅｼ`; sets `WS-ﾎｼｮｳｽｳ` to 1; sets `WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(1)` to `NP-ﾎｹﾝｷﾝｶﾞｸ`; sets `WS-ｼｮｳﾋﾝ-IX` to 1; searches `WS-ｼｮｳﾋﾝ`; sets `WS-ﾘﾕｳ` to `WS-ｼｮｳﾋﾝ-ﾅｼ`; and performs `ﾄｸﾔｸ-ｹﾝｻ-RTN` varying `WS-ﾄｸﾔｸ-N` from 1 by 1 until `WS-ﾄｸﾔｸ-N` is more than 2 or `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`)."
+          "sentence": "When `NP-ｼｮｳﾋﾝ` is not spaces; `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`); `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is `'1'`, `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'2'`, or `NP-ﾊﾗｲｺﾐﾎｳﾎｳ` is not `'3'`; and `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`), `NP-ｾｲﾍﾞﾂ` is 1, or `NP-ｾｲﾍﾞﾂ` is not 2, it sets `WS-ﾘﾕｳ` to `WS-ﾘﾕｳ-ﾅｼ`; sets `WS-ﾎｼｮｳｽｳ` to 1; sets `WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(1)` to `NP-ﾎｹﾝｷﾝｶﾞｸ`; performs `ｼｮｳﾋﾝ-ｹﾝｻｸ-RTN`; and performs `ﾄｸﾔｸ-ｹﾝｻ-RTN` varying `WS-ﾄｸﾔｸ-N` from 1 by 1 until `WS-ﾄｸﾔｸ-N` is more than 2 or `WS-ﾘﾕｳ` is not 0 (not `WS-ﾘﾕｳ-ﾅｼ`)."
+        }
+      ]
+    },
+    {
+      "paragraph": "ｼｮｳﾋﾝ-ｹﾝｻｸ-RTN",
+      "source": "gondwana/programs/GLD010.cbl:393",
+      "conditions": [
+        "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = NP-ｼｮｳﾋﾝ",
+        "WS-ｼｮｳﾋﾝ-ﾄｸﾔｸ(WS-ｼｮｳﾋﾝ-IX)"
+      ],
+      "conditionRefs": [
+        [
+          "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ",
+          "WS-ｼｮｳﾋﾝ-IX",
+          "NP-ｼｮｳﾋﾝ"
+        ],
+        [
+          "WS-ｼｮｳﾋﾝ-ｸﾌﾞﾝ",
+          "WS-ｼｮｳﾋﾝ-IX"
+        ]
+      ],
+      "actions": [
+        "SET WS-ｼｮｳﾋﾝ-IX TO 1",
+        "SEARCH WS-ｼｮｳﾋﾝ",
+        "SET WS-ｼｮｳﾋﾝ-ﾅｼ TO TRUE",
+        "SET WS-ﾎｼｮｳ-ｿｴｼﾞ(1) TO WS-ｼｮｳﾋﾝ-IX",
+        "MOVE WS-ｼｮｳﾋﾝ-ｼｭﾙｲ(WS-ｼｮｳﾋﾝ-IX) TO WS-ｼｭｹｲﾔｸ-ｼｭﾙｲ"
+      ],
+      "rules": [
+        {
+          "entries": [
+            "Y",
+            "Y"
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ],
+          "sentence": "When `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is `NP-ｼｮｳﾋﾝ` and `WS-ｼｮｳﾋﾝ-ｸﾌﾞﾝ` is `'T'` (`WS-ｼｮｳﾋﾝ-ﾄｸﾔｸ(WS-ｼｮｳﾋﾝ-IX)`), it sets `WS-ｼｮｳﾋﾝ-IX` to 1, searches `WS-ｼｮｳﾋﾝ`, and sets `WS-ﾘﾕｳ` to `WS-ｼｮｳﾋﾝ-ﾅｼ`."
+        },
+        {
+          "entries": [
+            "Y",
+            "N"
+          ],
+          "actions": [
+            0,
+            1,
+            3,
+            4
+          ],
+          "sentence": "When `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is `NP-ｼｮｳﾋﾝ` and `WS-ｼｮｳﾋﾝ-ｸﾌﾞﾝ` is not `'T'` (not `WS-ｼｮｳﾋﾝ-ﾄｸﾔｸ(WS-ｼｮｳﾋﾝ-IX)`), it sets `WS-ｼｮｳﾋﾝ-IX` to 1, searches `WS-ｼｮｳﾋﾝ`, runs `SET WS-ﾎｼｮｳ-ｿｴｼﾞ(1) TO WS-ｼｮｳﾋﾝ-IX`, and sets `WS-ｼｭｹｲﾔｸ-ｼｭﾙｲ` to `WS-ｼｮｳﾋﾝ-ｼｭﾙｲ(WS-ｼｮｳﾋﾝ-IX)`."
+        },
+        {
+          "entries": [
+            "N",
+            ""
+          ],
+          "actions": [
+            0,
+            1,
+            2
+          ],
+          "sentence": "When `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX)` is not `NP-ｼｮｳﾋﾝ`, it sets `WS-ｼｮｳﾋﾝ-IX` to 1, searches `WS-ｼｮｳﾋﾝ`, and sets `WS-ﾘﾕｳ` to `WS-ｼｮｳﾋﾝ-ﾅｼ`."
         }
       ]
     },
     {
       "paragraph": "ﾈﾝﾚｲ-ｷﾝｶﾞｸ-ｹﾝｻ-RTN",
-      "source": "gondwana/programs/GLD010.cbl:399",
+      "source": "gondwana/programs/GLD010.cbl:412",
       "conditions": [
         "WS-ﾈﾝﾚｲ \u003c WS-ｼｮｳﾋﾝ-ｻｲﾃｲﾈﾝﾚｲ(WS-ｼｮｳﾋﾝ-IX) OR WS-ﾈﾝﾚｲ \u003e WS-ｼｮｳﾋﾝ-ｻｲｺｳﾈﾝﾚｲ(WS-ｼｮｳﾋﾝ-IX)",
         "WS-N = 1",
@@ -946,7 +967,7 @@
     },
     {
       "paragraph": "ﾄｸﾔｸ-ｹﾝｻ-RTN",
-      "source": "gondwana/programs/GLD010.cbl:426",
+      "source": "gondwana/programs/GLD010.cbl:439",
       "conditions": [
         "NP-ﾄｸﾔｸ-ｼｮｳﾋﾝ(WS-ﾄｸﾔｸ-N) = SPACES",
         "WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = NP-ﾄｸﾔｸ-ｼｮｳﾋﾝ(WS-ﾄｸﾔｸ-N)",
@@ -1036,7 +1057,7 @@
     },
     {
       "paragraph": "ﾄｸﾔｸ-ｷｿｸ-RTN",
-      "source": "gondwana/programs/GLD010.cbl:450",
+      "source": "gondwana/programs/GLD010.cbl:463",
       "conditions": [
         "NOT WS-ｼｮｳﾋﾝ-ﾄｸﾔｸ(WS-ｼｮｳﾋﾝ-IX) OR WS-ｼｮｳﾋﾝ-ｼｭﾙｲ(WS-ｼｮｳﾋﾝ-IX) = WS-ｼｭｹｲﾔｸ-ｼｭﾙｲ OR (WS-ﾄｸﾔｸ-N = 2 AND NP-ﾄｸﾔｸ-ｼｮｳﾋﾝ(2) = NP-ﾄｸﾔｸ-ｼｮｳﾋﾝ(1))"
       ],
@@ -1074,7 +1095,7 @@
     },
     {
       "paragraph": "ﾄｳﾛｸ-RTN",
-      "source": "gondwana/programs/GLD010.cbl:462",
+      "source": "gondwana/programs/GLD010.cbl:475",
       "conditions": [
         "WS-POLMST-OK"
       ],
@@ -1239,7 +1260,7 @@
     },
     {
       "paragraph": "ﾎｼｮｳ-ﾄｳﾛｸ-RTN",
-      "source": "gondwana/programs/GLD010.cbl:521",
+      "source": "gondwana/programs/GLD010.cbl:534",
       "conditions": [
         "WS-COVMST-OK"
       ],
@@ -1324,7 +1345,7 @@
     },
     {
       "paragraph": "ﾎｹﾝﾘｮｳ-RTN",
-      "source": "gondwana/programs/GLD010.cbl:549",
+      "source": "gondwana/programs/GLD010.cbl:562",
       "conditions": [
         "NP-ﾊﾗｲｺﾐﾎｳﾎｳ = '2'",
         "NP-ﾊﾗｲｺﾐﾎｳﾎｳ = '3'"
@@ -1381,7 +1402,7 @@
     },
     {
       "paragraph": "ﾏﾝｷﾋﾞ-RTN",
-      "source": "gondwana/programs/GLD010.cbl:567",
+      "source": "gondwana/programs/GLD010.cbl:580",
       "conditions": [
         "WS-ｼｮｳﾋﾝ-ﾎｹﾝｷｶﾝ(WS-ｼｮｳﾋﾝ-IX) = 0"
       ],
@@ -1422,7 +1443,7 @@
     },
     {
       "paragraph": "ｼｭｳﾘｮｳ-RTN",
-      "source": "gondwana/programs/GLD010.cbl:656",
+      "source": "gondwana/programs/GLD010.cbl:669",
       "conditions": [
         "WS-GLSCTL-OK"
       ],

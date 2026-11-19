@@ -1,9 +1,8 @@
 # GLD010: case 04
 
-The run ended with return code 8.
+The run ended with return code 4.
 
 The first case to reach:
 
-- [GLD010, ｼｮｷ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLD010.md#ｼｮｷ-rtn)
-- [GLC020, ﾜﾚｷ-ﾍﾝｶﾝ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLC020.md#ﾜﾚｷ-ﾍﾝｶﾝ-rtn)
-- [GLC020, ﾜﾚｷ-ﾍﾝｶﾝ-RTN, in its loop, rule 2](../../../../blueprints/gondwana/rules/GLC020.md#ﾜﾚｷ-ﾍﾝｶﾝ-rtn-in-its-loop)
+- [GLD010, ｹﾝｻ-RTN, rule 4](../../../../blueprints/gondwana/rules/GLD010.md#ｹﾝｻ-rtn)
+- [GLD010, ｼｮｳﾋﾝ-ｹﾝｻｸ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLD010.md#ｼｮｳﾋﾝ-ｹﾝｻｸ-rtn)
