@@ -1,6 +1,6 @@
 # GLM020: cases
 
-23 cases reach 40 of the 53 rules of GLM020's decision tables, and of the programs it calls, 5 of the 16 of GLC020. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's. A rule that finds two totals the program adds up itself to differ, items of its own that it only adds to, says so: no input field sets either, so the search has nothing to change to reach it. A rule that finds a write or rewrite by key to fail says so too: the search fails a file only when it is opened or read, and a program that writes keys it made new, or rewrites the record it read, meets that failure only when something else changes the file meanwhile.
+21 cases reach 40 of the 53 rules of GLM020's decision tables, and of the programs it calls, 5 of the 16 of GLC020. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's. A rule that finds two totals the program adds up itself to differ, items of its own that it only adds to, says so: no input field sets either, so the search has nothing to change to reach it. A rule that finds a write or rewrite by key to fail says so too: the search fails a file only when it is opened or read, and a program that writes keys it made new, or rewrites the record it read, meets that failure only when something else changes the file meanwhile.
 
 ## GLM020
 
@@ -8,15 +8,15 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 11](11/) |
-| 2 | [case 15](15/) |
-| 3 | [case 16](16/) |
-| 4 | [case 14](14/) |
-| 5 | [case 17](17/) |
-| 6 | [case 18](18/) |
-| 7 | [case 19](19/) |
-| 8 | [case 20](20/) |
-| 9 | [case 13](13/) |
+| 1 | [case 10](10/) |
+| 2 | [case 14](14/) |
+| 3 | [case 15](15/) |
+| 4 | [case 13](13/) |
+| 5 | [case 16](16/) |
+| 6 | [case 17](17/) |
+| 7 | [case 18](18/) |
+| 8 | [case 19](19/) |
+| 9 | [case 12](12/) |
 | 10 | [case 01](01/) |
 
 ### [ｼﾞｭﾝﾋﾞｷﾝ-ﾖﾐｺﾐ-RTN](../../../blueprints/gondwana/rules/GLM020.md#ｼﾞｭﾝﾋﾞｷﾝ-ﾖﾐｺﾐ-rtn)
@@ -55,28 +55,28 @@
 | 1 | not reached: `PM-ｹｲｶﾈﾝｽｳ > 50` Y, `WS-COVMST-OK` Y, `NOT WS-COVMST-OK AND NOT WS-COVMST-ｵﾜﾘ` Y |
 | 2 | [case 05](05/) |
 | 3 | not reached: `PM-ｹｲｶﾈﾝｽｳ > 50` Y, `WS-COVMST-OK` N, `NOT WS-COVMST-OK AND NOT WS-COVMST-ｵﾜﾘ` Y |
-| 4 | [case 22](22/) |
+| 4 | [case 05](05/) |
 | 5 | not reached: `PM-ｹｲｶﾈﾝｽｳ > 50` N, `WS-COVMST-OK` Y, `NOT WS-COVMST-OK AND NOT WS-COVMST-ｵﾜﾘ` Y |
 | 6 | [case 01](01/) |
 | 7 | not reached: `PM-ｹｲｶﾈﾝｽｳ > 50` N, `WS-COVMST-OK` N, `NOT WS-COVMST-OK AND NOT WS-COVMST-ｵﾜﾘ` Y |
-| 8 | [case 07](07/) |
+| 8 | [case 01](01/) |
 
 ### [ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ-RTN, in its loop](../../../blueprints/gondwana/rules/GLM020.md#ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ-rtn-in-its-loop)
 
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 01](01/) |
-| 2 | [case 08](08/) |
+| 2 | [case 07](07/) |
 
 ### [ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ-RTN](../../../blueprints/gondwana/rules/GLM020.md#ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 10](10/) |
+| 1 | [case 09](09/) |
 | 2 | [case 01](01/) |
-| 3 | [case 23](23/) |
-| 4 | [case 09](09/) |
-| 5 | [case 21](21/) |
+| 3 | [case 21](21/) |
+| 4 | [case 08](08/) |
+| 5 | [case 20](20/) |
 | 6 | [case 04](04/) |
 
 ### [ｷｼﾞｭﾝ-RTN](../../../blueprints/gondwana/rules/GLM020.md#ｷｼﾞｭﾝ-rtn)
@@ -101,7 +101,7 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 12](12/) |
+| 1 | [case 11](11/) |
 | 2 | [case 01](01/) |
 
 ### [ﾎｳｺｸ-RTN, in its loop](../../../blueprints/gondwana/rules/GLM020.md#ﾎｳｺｸ-rtn-in-its-loop)
@@ -146,7 +146,7 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 11](11/) |
+| 1 | [case 10](10/) |
 | 2 | [case 01](01/) |
 
 ### [ﾜﾚｷ-ﾍﾝｶﾝ-RTN, in its loop](../../../blueprints/gondwana/rules/GLC020.md#ﾜﾚｷ-ﾍﾝｶﾝ-rtn-in-its-loop)
@@ -154,7 +154,7 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 01](01/) |
-| 2 | [case 11](11/) |
+| 2 | [case 10](10/) |
 
 ### [ｾｲﾚｷ-ﾍﾝｶﾝ-RTN](../../../blueprints/gondwana/rules/GLC020.md#ｾｲﾚｷ-ﾍﾝｶﾝ-rtn)
 

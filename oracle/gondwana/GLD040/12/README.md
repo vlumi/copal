@@ -1,9 +1,8 @@
 # GLD040: case 12
 
-The run ended with return code 16.
-
-POLMST-F is missing, so opening it fails.
+The run ended with return code 4.
 
 The first case to reach:
 
-- [GLD040, ｵｰﾌﾟﾝ-ｹﾝｻ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLD040.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)
+- [GLD040, ｼｮﾘ-RTN, rule 29](../../../../blueprints/gondwana/rules/GLD040.md#ｼｮﾘ-rtn)
+- [GLD040, ﾍﾝｺｳ-RTN, rule 11](../../../../blueprints/gondwana/rules/GLD040.md#ﾍﾝｺｳ-rtn)

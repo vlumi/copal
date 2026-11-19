@@ -2,8 +2,8 @@
 
 The run ended with return code 16.
 
-POLMST-F is missing, so opening it fails.
+PRMRES-F is a directory, so it opens but reading it fails.
 
 The first case to reach:
 
-- [GLD050, ｵｰﾌﾟﾝ-ｹﾝｻ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLD050.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)
+- [GLD050, ﾖﾐｺﾐ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLD050.md#ﾖﾐｺﾐ-rtn)

@@ -11,6 +11,7 @@ The first case to reach:
 - [GLM020, ｹｲｻﾝ-RTN, in its loop, rule 1](../../../../blueprints/gondwana/rules/GLM020.md#ｹｲｻﾝ-rtn-in-its-loop)
 - [GLM020, ｹｲｻﾝ-RTN, in its loop, rule 2](../../../../blueprints/gondwana/rules/GLM020.md#ｹｲｻﾝ-rtn-in-its-loop)
 - [GLM020, ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ-RTN, rule 6](../../../../blueprints/gondwana/rules/GLM020.md#ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ-rtn)
+- [GLM020, ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ-RTN, rule 8](../../../../blueprints/gondwana/rules/GLM020.md#ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ-rtn)
 - [GLM020, ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ-RTN, in its loop, rule 1](../../../../blueprints/gondwana/rules/GLM020.md#ｾｷﾆﾝｼﾞｭﾝﾋﾞｷﾝ-rtn-in-its-loop)
 - [GLM020, ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLM020.md#ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ-rtn)
 - [GLM020, ｷｼﾞｭﾝ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLM020.md#ｷｼﾞｭﾝ-rtn)

@@ -30,7 +30,7 @@ func traced(t *testing.T, name string) (*cobol.Program, []Event) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	events, err := Read(bytes.NewReader(data))
+	events, err := Read(bytes.NewReader(data), "")
 	if err != nil {
 		t.Fatal(err)
 	}

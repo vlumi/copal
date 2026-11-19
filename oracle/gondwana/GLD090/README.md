@@ -1,6 +1,6 @@
 # GLD090: cases
 
-11 cases reach 18 of the 26 rules of GLD090's decision tables, and of the programs it calls, 5 of the 16 of GLC020. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's. A rule that finds two totals the program adds up itself to differ, items of its own that it only adds to, says so: no input field sets either, so the search has nothing to change to reach it. A rule that finds a write or rewrite by key to fail says so too: the search fails a file only when it is opened or read, and a program that writes keys it made new, or rewrites the record it read, meets that failure only when something else changes the file meanwhile.
+10 cases reach 18 of the 26 rules of GLD090's decision tables, and of the programs it calls, 5 of the 16 of GLC020. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's. A rule that finds two totals the program adds up itself to differ, items of its own that it only adds to, says so: no input field sets either, so the search has nothing to change to reach it. A rule that finds a write or rewrite by key to fail says so too: the search fails a file only when it is opened or read, and a program that writes keys it made new, or rewrites the record it read, meets that failure only when something else changes the file meanwhile.
 
 ## GLD090
 
@@ -8,16 +8,16 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 03](03/) |
-| 2 | [case 06](06/) |
-| 3 | [case 10](10/) |
+| 1 | [case 02](02/) |
+| 2 | [case 05](05/) |
+| 3 | [case 09](09/) |
 | 4 | not reached: `WS-ﾍﾝｶﾝｹｯｶ = 0` Y, `WS-COVMST-OK` Y, `WS-ｴﾗｰﾌｧｲﾙ = SPACES` N, `WS-COVUNL-OK` Y, `WS-BENHST-OK` N |
-| 5 | [case 09](09/) |
-| 6 | [case 05](05/) |
-| 7 | [case 07](07/) |
-| 8 | [case 08](08/) |
-| 9 | [case 11](11/) |
-| 10 | [case 04](04/) |
+| 5 | [case 08](08/) |
+| 6 | [case 04](04/) |
+| 7 | [case 06](06/) |
+| 8 | [case 07](07/) |
+| 9 | [case 10](10/) |
+| 10 | [case 03](03/) |
 | 11 | [case 01](01/) |
 
 ### [POLMST-ﾖﾐｺﾐ-RTN](../../../blueprints/gondwana/rules/GLD090.md#polmst-ﾖﾐｺﾐ-rtn)
@@ -33,7 +33,7 @@
 | --: | --- |
 | 1 | not reached: `WS-UNLOAD-OK` N |
 | 2 | [case 01](01/) |
-| 3 | [case 02](02/) |
+| 3 | [case 01](01/) |
 
 ### [BENHST-ﾖﾐｺﾐ-RTN](../../../blueprints/gondwana/rules/GLD090.md#benhst-ﾖﾐｺﾐ-rtn)
 
@@ -84,7 +84,7 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 03](03/) |
+| 1 | [case 02](02/) |
 | 2 | [case 01](01/) |
 
 ### [ﾜﾚｷ-ﾍﾝｶﾝ-RTN, in its loop](../../../blueprints/gondwana/rules/GLC020.md#ﾜﾚｷ-ﾍﾝｶﾝ-rtn-in-its-loop)
@@ -92,7 +92,7 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 01](01/) |
-| 2 | [case 03](03/) |
+| 2 | [case 02](02/) |
 
 ### [ｾｲﾚｷ-ﾍﾝｶﾝ-RTN](../../../blueprints/gondwana/rules/GLC020.md#ｾｲﾚｷ-ﾍﾝｶﾝ-rtn)
 

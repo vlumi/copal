@@ -1,9 +1,7 @@
 # GLD010: case 16
 
-The run ended with return code 16.
-
-REPORT-F's directory is missing, so creating it fails.
+The run ended with return code 4.
 
 The first case to reach:
 
-- [GLD010, ｵｰﾌﾟﾝ-ｹﾝｻ-RTN, rule 9](../../../../blueprints/gondwana/rules/GLD010.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)
+- [GLD010, ｹﾝｻ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLD010.md#ｹﾝｻ-rtn)

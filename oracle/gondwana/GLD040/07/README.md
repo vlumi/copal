@@ -1,7 +1,9 @@
 # GLD040: case 07
 
-The run ended with return code 4.
+The run ended with return code 16.
+
+COVMST-F is missing, so opening it fails.
 
 The first case to reach:
 
-- [GLD040, ｼｮﾘ-RTN, rule 7](../../../../blueprints/gondwana/rules/GLD040.md#ｼｮﾘ-rtn)
+- [GLD040, ｵｰﾌﾟﾝ-ｹﾝｻ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLD040.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)

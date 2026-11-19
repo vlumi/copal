@@ -6,6 +6,8 @@ The first case to reach:
 
 - [GLD010, ｼｮｷ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLD010.md#ｼｮｷ-rtn)
 - [GLD010, ｵｰﾌﾟﾝ-ｹﾝｻ-RTN, rule 10](../../../../blueprints/gondwana/rules/GLD010.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)
+- [GLD010, NEWPOL-ﾖﾐｺﾐ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLD010.md#newpol-ﾖﾐｺﾐ-rtn)
+- [GLD010, NEWPOL-ﾖﾐｺﾐ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLD010.md#newpol-ﾖﾐｺﾐ-rtn)
 - [GLD010, ｼｮﾘ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLD010.md#ｼｮﾘ-rtn)
 - [GLD010, ｹﾝｻ-RTN, rule 9](../../../../blueprints/gondwana/rules/GLD010.md#ｹﾝｻ-rtn)
 - [GLD010, ｼｮｳﾋﾝ-ｹﾝｻｸ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLD010.md#ｼｮｳﾋﾝ-ｹﾝｻｸ-rtn)

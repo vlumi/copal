@@ -2,8 +2,8 @@
 
 The run ended with return code 16.
 
-POLMST-F is missing, so opening it fails.
+PAYOUT-F's directory is missing, so creating it fails.
 
 The first case to reach:
 
-- [GLD030, ｵｰﾌﾟﾝ-ｹﾝｻ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLD030.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)
+- [GLD030, ｵｰﾌﾟﾝ-ｹﾝｻ-RTN, rule 6](../../../../blueprints/gondwana/rules/GLD030.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)
