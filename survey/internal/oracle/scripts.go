@@ -617,7 +617,7 @@ func (b *Batch) replayTrace(r *Result, path string) error {
 	if err != nil {
 		return err
 	}
-	events, err := coverage.Read(bytes.NewReader(data))
+	events, err := coverage.Read(bytes.NewReader(data), r.program.dialect.Encoding)
 	if err != nil {
 		return err
 	}

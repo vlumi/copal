@@ -1,9 +1,9 @@
 # GLD040: case 08
 
-The run ended with return code 8.
+The run ended with return code 16.
+
+GLSCTL-F is missing, so opening it fails.
 
 The first case to reach:
 
-- [GLD040, ｼｮｷ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLD040.md#ｼｮｷ-rtn)
-- [GLC020, ﾜﾚｷ-ﾍﾝｶﾝ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLC020.md#ﾜﾚｷ-ﾍﾝｶﾝ-rtn)
-- [GLC020, ﾜﾚｷ-ﾍﾝｶﾝ-RTN, in its loop, rule 2](../../../../blueprints/gondwana/rules/GLC020.md#ﾜﾚｷ-ﾍﾝｶﾝ-rtn-in-its-loop)
+- [GLD040, ｵｰﾌﾟﾝ-ｹﾝｻ-RTN, rule 4](../../../../blueprints/gondwana/rules/GLD040.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)

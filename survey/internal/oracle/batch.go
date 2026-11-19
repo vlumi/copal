@@ -278,7 +278,7 @@ func (b *Batch) replay(job *jcl.Job, traces string) error {
 		if err != nil {
 			return err
 		}
-		events, err := coverage.Read(bytes.NewReader(data))
+		events, err := coverage.Read(bytes.NewReader(data), result.program.dialect.Encoding)
 		if err != nil {
 			return err
 		}

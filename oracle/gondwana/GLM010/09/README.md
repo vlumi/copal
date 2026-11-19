@@ -11,3 +11,4 @@ The first case to reach:
 - [GLM010, ｻｸｾｲ-RTN, in its loop, rule 1](../../../../blueprints/gondwana/rules/GLM010.md#ｻｸｾｲ-rtn-in-its-loop)
 - [GLM010, ｻｸｾｲ-RTN, in its loop, rule 2](../../../../blueprints/gondwana/rules/GLM010.md#ｻｸｾｲ-rtn-in-its-loop)
 - [GLM010, ﾃﾞｰﾀ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLM010.md#ﾃﾞｰﾀ-rtn)
+- [GLM010, ﾃﾞｰﾀ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLM010.md#ﾃﾞｰﾀ-rtn)

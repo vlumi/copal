@@ -45,11 +45,22 @@ var (
 // which no rule needs, and the tests of WHEN, which are no statement but
 // share the line of the one after them when it is written on the same
 // line. A section entered starts its own statements, the paragraph named
-// after it.
-func Read(r io.Reader) ([]Event, error) {
+// after it. The trace names paragraphs as the source does, in the
+// source's encoding, and the events name them in UTF-8, as the decision
+// tables do: a paragraph named in Shift_JIS is otherwise entered without
+// its passes being told apart.
+func Read(r io.Reader, encoding string) ([]Event, error) {
+	raw, err := io.ReadAll(r)
+	if err != nil {
+		return nil, err
+	}
+	text, err := cobol.ToUTF8(string(raw), encoding)
+	if err != nil {
+		return nil, err
+	}
 	var events []Event
 	file := ""
-	scanner := bufio.NewScanner(r)
+	scanner := bufio.NewScanner(strings.NewReader(text))
 	for scanner.Scan() {
 		line := scanner.Text()
 		if m := sourceLine.FindStringSubmatch(line); m != nil {

@@ -1,7 +1,9 @@
 # GLO010: case 05
 
-The run ended with return code 4.
+The run ended with return code 16.
+
+COVMST-F's directory is missing, so creating it fails.
 
 The first case to reach:
 
-- [GLO010, ｼｭｳｹｲ-RTN, rule 4](../../../../blueprints/gondwana/rules/GLO010.md#ｼｭｳｹｲ-rtn)
+- [GLO010, ﾎｼｮｳ-ｼﾞｭﾝﾋﾞ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLO010.md#ﾎｼｮｳ-ｼﾞｭﾝﾋﾞ-rtn)

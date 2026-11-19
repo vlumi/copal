@@ -1,9 +1,8 @@
 # GLD040: case 15
 
-The run ended with return code 16.
-
-GLJRNL-F's directory is missing, so creating it fails.
+The run ended with return code 4.
 
 The first case to reach:
 
-- [GLD040, ｵｰﾌﾟﾝ-ｹﾝｻ-RTN, rule 5](../../../../blueprints/gondwana/rules/GLD040.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)
+- [GLD040, ｼｮﾘ-RTN, rule 17](../../../../blueprints/gondwana/rules/GLD040.md#ｼｮﾘ-rtn)
+- [GLD040, ﾍﾝｺｳ-RTN, rule 5](../../../../blueprints/gondwana/rules/GLD040.md#ﾍﾝｺｳ-rtn)

@@ -1,7 +1,7 @@
 # GLD060: case 04
 
-The run ended with return code 16.
+The run ended with return code 1.
 
 The first case to reach:
 
-- [GLD060, ｼｮｷ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLD060.md#ｼｮｷ-rtn)
+- [GLC020, ｾｲﾚｷ-ﾍﾝｶﾝ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLC020.md#ｾｲﾚｷ-ﾍﾝｶﾝ-rtn)

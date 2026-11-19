@@ -2,8 +2,8 @@
 
 The run ended with return code 16.
 
-PRODTB-F is missing, so opening it fails.
+PRMCERT-F's directory is missing, so creating it fails.
 
 The first case to reach:
 
-- [GLY030, ｼｮｷ-RTN, rule 4](../../../../blueprints/gondwana/rules/GLY030.md#ｼｮｷ-rtn)
+- [GLY030, ｼｮｷ-RTN, rule 5](../../../../blueprints/gondwana/rules/GLY030.md#ｼｮｷ-rtn)

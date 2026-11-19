@@ -1,7 +1,9 @@
 # GLY020: case 18
 
-The run ended with return code 0.
+The run ended with return code 16.
+
+CSVTB-F is missing, so opening it fails.
 
 The first case to reach:
 
-- [GLC030, ｹｲｻﾝ-RTN, rule 5](../../../../blueprints/gondwana/rules/GLC030.md#ｹｲｻﾝ-rtn)
+- [GLY020, ｹｲﾔｸ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLY020.md#ｹｲﾔｸ-rtn)

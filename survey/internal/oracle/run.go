@@ -104,7 +104,7 @@ func (r *runner) run(c Case, dir string, record bool) (result, error) {
 	if err != nil && !os.IsNotExist(err) {
 		return result{}, err
 	}
-	events, err := coverage.Read(bytes.NewReader(data))
+	events, err := coverage.Read(bytes.NewReader(data), r.program.dialect.Encoding)
 	if err != nil {
 		return result{}, err
 	}
