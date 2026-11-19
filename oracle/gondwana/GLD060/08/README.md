@@ -1,8 +1,9 @@
 # GLD060: case 08
 
-The run ended with return code 1.
+The run ended with return code 16.
+
+GLJRNL-F's directory is missing, so creating it fails.
 
 The first case to reach:
 
-- [GLC040, ﾒｲﾝ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLC040.md#ﾒｲﾝ-rtn)
-- [GLC030, ﾄｳﾛｸ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLC030.md#ﾄｳﾛｸ-rtn)
+- [GLD060, ｵｰﾌﾟﾝ-ｹﾝｻ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLD060.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)

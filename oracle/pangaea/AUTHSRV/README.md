@@ -8,15 +8,15 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 13](13/) |
-| 2 | [case 10](10/) |
+| 1 | [case 14](14/) |
+| 2 | [case 11](11/) |
 | 3 | [case 01](01/) |
 
 ### [1100-FIND-LAST-HOLD](../../../blueprints/pangaea/rules/AUTHSRV.md#1100-find-last-hold)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 12](12/) |
+| 1 | [case 13](13/) |
 | 2 | [case 01](01/) |
 
 ### [1100-FIND-LAST-HOLD, in its loop](../../../blueprints/pangaea/rules/AUTHSRV.md#1100-find-last-hold-in-its-loop)
@@ -39,14 +39,14 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 02](02/) |
-| 2 | [case 15](15/) |
+| 2 | [case 16](16/) |
 | 3 | [case 09](09/) |
 | 4 | [case 08](08/) |
 | 5 | [case 01](01/) |
 | 6 | [case 32](32/) |
 | 7 | [case 09](09/) |
 | 8 | [case 09](09/) |
-| 9 | [case 23](23/) |
+| 9 | [case 25](25/) |
 | 10 | [case 01](01/) |
 | 11 | [case 03](03/) |
 
@@ -55,7 +55,7 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 01](01/) |
-| 2 | [case 11](11/) |
+| 2 | [case 12](12/) |
 | 3 | [case 01](01/) |
 
 ### [2300-READ-HOLD](../../../blueprints/pangaea/rules/AUTHSRV.md#2300-read-hold)
@@ -94,7 +94,7 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 08](08/) |
-| 2 | [case 25](25/) |
+| 2 | [case 10](10/) |
 | 3 | [case 01](01/) |
 
 ## AUTHREV
@@ -103,9 +103,9 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 15](15/) |
-| 2 | [case 16](16/) |
-| 3 | [case 17](17/) |
+| 1 | [case 16](16/) |
+| 2 | [case 17](17/) |
+| 3 | [case 18](18/) |
 | 4 | [case 02](02/) |
 
 ### [2000-APPROVE](../../../blueprints/pangaea/rules/AUTHREV.md#2000-approve)
@@ -113,7 +113,7 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 02](02/) |
-| 2 | [case 14](14/) |
+| 2 | [case 15](15/) |
 
 ## ATMWDL
 
@@ -121,15 +121,15 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 18](18/) |
-| 2 | [case 19](19/) |
+| 1 | [case 19](19/) |
+| 2 | [case 20](20/) |
 | 3 | [case 09](09/) |
-| 4 | [case 22](22/) |
+| 4 | [case 23](23/) |
 | 5 | [case 30](30/) |
 | 6 | [case 32](32/) |
-| 7 | [case 26](26/) |
-| 8 | [case 27](27/) |
-| 9 | [case 21](21/) |
+| 7 | [case 27](27/) |
+| 8 | [case 28](28/) |
+| 9 | [case 22](22/) |
 | 10 | [case 29](29/) |
 | 11 | [case 31](31/) |
 | 12 | not reached: `CR-MONTH-WITHDRAWALS < WS-FREE-WITHDRAWALS` N, `CR-BLOCKED` N, `AO-OPEN` Y, `RQ-AMOUNT = 0 OR FUNCTION MOD(RQ-AMOUNT WS-NOTE) NOT = 0` N, `WS-DAY-CASH > CR-CASH-LIMIT` N, `WS-TO-HOLD > WS-AVAILABLE` N |
@@ -138,8 +138,8 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 20](20/) |
-| 2 | [case 28](28/) |
+| 1 | [case 21](21/) |
+| 2 | [case 24](24/) |
 | 3 | [case 09](09/) |
 
 ## ATMBAL
@@ -148,6 +148,6 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 23](23/) |
-| 2 | [case 24](24/) |
+| 1 | [case 25](25/) |
+| 2 | [case 26](26/) |
 | 3 | [case 09](09/) |

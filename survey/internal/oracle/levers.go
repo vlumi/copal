@@ -83,16 +83,18 @@ func (p *program) levers() []lever {
 			}
 		}
 	}
-	for _, c := range p.conditions() {
-		for _, pair := range relations(c) {
-			for _, to := range p.origins(pair[0]) {
-				for _, from := range p.origins(pair[1]) {
-					if to.field == from.field || to.part != (part{}) || from.part != (part{}) {
-						continue
-					}
-					for _, delta := range []int64{0, 1, -1} {
-						if delta == 0 || numeric(to.field) {
-							add(lever{input: to.input, field: to.field, from: from, delta: delta, change: copyField})
+	for _, u := range p.units {
+		for _, c := range conditionsOf(u.source) {
+			for _, pair := range relations(c) {
+				for _, to := range p.callerOrigins(u, pair[0]) {
+					for _, from := range p.callerOrigins(u, pair[1]) {
+						if to.field == from.field || to.part != (part{}) || from.part != (part{}) {
+							continue
+						}
+						for _, delta := range []int64{0, 1, -1} {
+							if delta == 0 || numeric(to.field) {
+								add(lever{input: to.input, field: to.field, from: from, delta: delta, change: copyField})
+							}
 						}
 					}
 				}
@@ -520,35 +522,68 @@ func conditionField(records *layout.ProgramRecords, name string) *layout.Field {
 // called that is no item passed to it, those of the files the program
 // called reads itself and of the items passed that its values come from.
 func (p *program) callerOrigins(u Unit, item string) []target {
-	if name := p.inCaller(u, item); name != "" || u.blueprint == p.blueprint {
-		return p.origins(name)
+	if u.blueprint == p.blueprint {
+		return p.origins(item)
 	}
-	targets := p.originsIn(u, item)
-	for _, o := range u.flow.Origins(item) {
-		if o.Parameter == 0 {
-			continue
-		}
-		for _, t := range p.origins(p.inCaller(u, o.Item)) {
-			if !slices.Contains(targets, t) {
-				targets = append(targets, t)
+	var targets []target
+	add := func(sites []callerItem) {
+		for _, site := range sites {
+			for _, t := range within(p.origins(site.name), site.part) {
+				if !slices.Contains(targets, t) {
+					targets = append(targets, t)
+				}
 			}
+		}
+	}
+	if sites := p.inCaller(u, item); len(sites) > 0 {
+		add(sites)
+		return targets
+	}
+	targets = p.originsIn(u, item)
+	for _, o := range u.flow.Origins(item) {
+		if o.Parameter != 0 {
+			add(p.inCaller(u, o.Item))
 		}
 	}
 	return targets
 }
 
-// inCaller is the item of the program run that a unit's item is: itself
-// in the program run; in a program it calls, the caller's field over the
-// same bytes of the argument passed where the item's USING record is. A
-// condition name stands for its field; an item the caller passes nothing
-// for is none.
-func (p *program) inCaller(u Unit, item string) string {
-	if u.blueprint == p.blueprint {
-		return item
+// within narrows targets to a part of their fields: the bytes of an
+// argument a called program's item is over, when no field of the caller
+// is over exactly those. A target that is a part already, or whose field
+// is shorter than the part reaches, is left out.
+func within(targets []target, pt part) []target {
+	if pt == (part{}) {
+		return targets
 	}
+	var parts []target
+	for _, t := range targets {
+		if t.part == (part{}) && pt.offset+pt.length <= t.field.Length {
+			t.part = pt
+			parts = append(parts, t)
+		}
+	}
+	return parts
+}
+
+// callerItem is an item of the program run, or a part of one, that an
+// item of a program it calls is at one of its calls.
+type callerItem struct {
+	name string
+	part part
+}
+
+// inCaller lists the items of the program run that an item of a program
+// it calls is, one for each call that passes something for it: the
+// caller's field over the same bytes of the argument passed where the
+// item's USING record is, or, when no field is over exactly those bytes,
+// the field they are within and the part of it they are. A condition
+// name stands for its field.
+func (p *program) inCaller(u Unit, item string) []callerItem {
 	if f := conditionField(u.records, item); f != nil {
 		item = f.Name
 	}
+	var items []callerItem
 	for n, using := range u.blueprint.Using {
 		record, field, ok := locate(u.blueprint, using, item)
 		if !ok {
@@ -558,14 +593,36 @@ func (p *program) inCaller(u Unit, item string) string {
 			if call.Program != u.Program || len(call.Using) <= n {
 				continue
 			}
-			if arg, ok := fieldOf(p.blueprint, call.Using[n]); ok {
-				if name, ok := over(arg, arg.Start+field.Start-record.Start, field.Length); ok {
-					return name
-				}
+			arg, ok := fieldOf(p.blueprint, call.Using[n])
+			if !ok {
+				continue
+			}
+			start := arg.Start + field.Start - record.Start
+			var found callerItem
+			if name, ok := over(arg, start, field.Length); ok {
+				found = callerItem{name: name}
+			} else if leaf, ok := around(arg, start, field.Length); ok {
+				found = callerItem{name: leaf.Name, part: part{offset: start - leaf.Start, length: field.Length}}
+			}
+			if found.name != "" && !slices.Contains(items, found) {
+				items = append(items, found)
 			}
 		}
 	}
-	return ""
+	return items
+}
+
+// around is the elementary field of a record that bytes are within.
+func around(f blueprint.Field, start, length int) (blueprint.Field, bool) {
+	for _, child := range f.Fields {
+		if leaf, ok := around(child, start, length); ok {
+			return leaf, true
+		}
+	}
+	if len(f.Fields) == 0 && f.Name != "FILLER" && f.Start <= start && start+length <= f.Start+f.Length {
+		return f, true
+	}
+	return blueprint.Field{}, false
 }
 
 // fieldOf finds a field of any of a program's records by name: an argument
