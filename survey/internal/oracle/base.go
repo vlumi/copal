@@ -311,18 +311,25 @@ func (p *program) baseOn(date int64) Case {
 // dateParts puts the business date into the bytes of the inputs' text
 // fields that the program takes a date from, the first eight of its
 // command line, say, so that the base case's run has a date to open with.
+// The longer parts are put last: where a program takes both the eight
+// digits of a date and the six of its month from the same bytes, the
+// date's own digits are what the month is read from.
 func (p *program) dateParts(c Case, kinds map[string]string, date int64) Case {
+	var parts []target
 	for _, name := range slices.Sorted(maps.Keys(kinds)) {
 		if kinds[name] != blueprint.KindDate {
 			continue
 		}
 		for _, t := range p.origins(name) {
-			if t.part == (part{}) || kinds[t.field.Name] != blueprint.KindText {
-				continue
+			if t.part != (part{}) && kinds[t.field.Name] == blueprint.KindText {
+				parts = append(parts, t)
 			}
-			if next, ok := (lever{input: t.input, field: t.field, part: t.part, value: number(dateOf(t.part.length, date))}).apply(p, c); ok {
-				c = next
-			}
+		}
+	}
+	slices.SortStableFunc(parts, func(a, b target) int { return a.part.length - b.part.length })
+	for _, t := range parts {
+		if next, ok := (lever{input: t.input, field: t.field, part: t.part, value: number(dateOf(t.part.length, date))}).apply(p, c); ok {
+			c = next
 		}
 	}
 	return c
@@ -378,20 +385,24 @@ func (p *program) typical(in input, s shape, kind, index int, kinds map[string]s
 	return r
 }
 
-// typicalValue is a field's value in the base case, by its kind: for a
-// date kept as text, the date in the form the system writes it, when
-// that was learned.
+// typicalValue is a field's value in the base case, by its kind: ten for
+// an amount or a rate, or one where the field has no room for ten; for a
+// date, the date in the form the system writes it in a field of its
+// shape, when that was learned.
 func (p *program) typicalValue(f *layout.Field, kind string, index int, date int64) (value, bool) {
 	switch {
 	case len(f.Conditions) > 0 && len(f.Conditions[0].Values) > 0:
 		return literal(f, f.Conditions[0].Values[0])
 	case kind == blueprint.KindDate:
-		if t, ok := p.forms.text(f.Length, date); ok && !numeric(f) {
+		if t, ok := p.forms.of(f, date); ok {
 			return text(t), true
 		}
 		return dateValue(f, date), true
 	case kind == blueprint.KindAmount, kind == blueprint.KindRate:
-		return number(10 * pow10(f.Scale)), true
+		if ten := 10 * pow10(f.Scale); ten <= largest(f) || !numeric(f) {
+			return number(ten), true
+		}
+		return number(pow10(f.Scale)), true
 	case kind == blueprint.KindKey, kind == blueprint.KindNumber:
 		return number(int64(index + 1)), true
 	case kind == blueprint.KindText:

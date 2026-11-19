@@ -1,9 +1,7 @@
 # GLD010: case 05
 
-The run ended with return code 16.
-
-PRODTB-F is missing, so opening it fails.
+The run ended with return code 0.
 
 The first case to reach:
 
-- [GLD010, ｵｰﾌﾟﾝ-ｹﾝｻ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLD010.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)
+- [GLD010, NEWPOL-ﾖﾐｺﾐ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLD010.md#newpol-ﾖﾐｺﾐ-rtn)

@@ -54,8 +54,8 @@
 | 3 | [case 12](12/) |
 | 4 | [case 11](11/) |
 | 5 | not reached: `PM-ﾂｷﾊﾞﾗｲ` Y, `WS-CSVTB-OK` Y, `WS-ﾌﾘｶｴ-ｶｲｽｳ > 0` Y, `WS-ｻﾞﾝﾀﾞｶ > WS-ﾍﾝﾚｲｷﾝ` N |
-| 6 | [case 13](13/) |
-| 7 | [case 10](10/) |
+| 6 | [case 10](10/) |
+| 7 | [case 13](13/) |
 
 ### [ﾌﾘｶｴ-RTN](../../../blueprints/gondwana/rules/GLD060.md#ﾌﾘｶｴ-rtn)
 

@@ -2,8 +2,8 @@
 
 The run ended with return code 16.
 
-PRODTB-F is missing, so opening it fails.
+POLMST-F is missing, so opening it fails.
 
 The first case to reach:
 
-- [GLY020, ｼｮｷ-RTN, rule 4](../../../../blueprints/gondwana/rules/GLY020.md#ｼｮｷ-rtn)
+- [GLY020, ｼｮｷ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLY020.md#ｼｮｷ-rtn)

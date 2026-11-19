@@ -6,4 +6,4 @@ The first case to reach:
 
 - [GLY030, ｼｮｳﾒｲ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLY030.md#ｼｮｳﾒｲ-rtn)
 - [GLY030, ﾖﾃｲ-RTN, rule 5](../../../../blueprints/gondwana/rules/GLY030.md#ﾖﾃｲ-rtn)
-- [GLY030, ｶｷｺﾐ-RTN, rule 4](../../../../blueprints/gondwana/rules/GLY030.md#ｶｷｺﾐ-rtn)
+- [GLY030, ｶｷｺﾐ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLY030.md#ｶｷｺﾐ-rtn)

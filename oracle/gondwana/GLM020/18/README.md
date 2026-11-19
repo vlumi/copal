@@ -1,7 +1,9 @@
 # GLM020: case 18
 
-The run ended with return code 0.
+The run ended with return code 16.
+
+GLSCTL-F is missing, so opening it fails.
 
 The first case to reach:
 
-- [GLM020, ﾒｲｻｲ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLM020.md#ﾒｲｻｲ-rtn)
+- [GLM020, ｼｮｷ-RTN, rule 6](../../../../blueprints/gondwana/rules/GLM020.md#ｼｮｷ-rtn)
