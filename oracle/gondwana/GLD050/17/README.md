@@ -10,4 +10,4 @@ The first case to reach:
 - [GLC050, ﾒｲﾝ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLC050.md#ﾒｲﾝ-rtn)
 - [GLC050, ﾒｲﾝ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLC050.md#ﾒｲﾝ-rtn)
 - [GLC050, ｶｷｺﾐ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLC050.md#ｶｷｺﾐ-rtn)
-- [GLC050, ﾚﾝﾊﾞﾝ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLC050.md#ﾚﾝﾊﾞﾝ-rtn)
+- [GLC050, ﾚﾝﾊﾞﾝ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLC050.md#ﾚﾝﾊﾞﾝ-rtn)

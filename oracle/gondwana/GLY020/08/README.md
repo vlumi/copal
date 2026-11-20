@@ -1,9 +1,7 @@
 # GLY020: case 08
 
-The run ended with return code 16.
-
-NOTICE-F's directory is missing, so creating it fails.
+The run ended with return code 0.
 
 The first case to reach:
 
-- [GLY020, ｼｮｷ-RTN, rule 5](../../../../blueprints/gondwana/rules/GLY020.md#ｼｮｷ-rtn)
+- [GLC030, ｹｲｻﾝ-RTN, rule 14](../../../../blueprints/gondwana/rules/GLC030.md#ｹｲｻﾝ-rtn)

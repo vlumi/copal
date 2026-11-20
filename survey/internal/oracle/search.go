@@ -10,10 +10,6 @@ import (
 	"github.com/vlumi/copal/survey/blueprint"
 )
 
-// maxRounds bounds the search: each round tries every lever on each case
-// the round before kept.
-const maxRounds = 4
-
 // Result is the cases of a program: the units whose decision tables they
 // reach, the cases, and for each case, what its run reached, wrote and
 // returned; and for each rule reached, the first case that reaches it.
@@ -97,6 +93,9 @@ type found struct {
 	reached map[rule]bool
 }
 
+// search tries every lever on the base case, then on each case that
+// reached a rule no case before it had, round by round until a round
+// finds none: every case kept reaches a new rule, so the rounds end.
 func (s *searcher) search() ([]found, error) {
 	var kept []found
 	reached := map[rule]bool{}
@@ -125,7 +124,7 @@ func (s *searcher) search() ([]found, error) {
 	if err != nil {
 		return nil, err
 	}
-	for range maxRounds {
+	for len(frontier) > 0 {
 		var candidates []Case
 		for _, c := range frontier {
 			for _, l := range levers {
@@ -136,9 +135,6 @@ func (s *searcher) search() ([]found, error) {
 		}
 		if frontier, err = keep(candidates); err != nil {
 			return nil, err
-		}
-		if len(frontier) == 0 {
-			break
 		}
 	}
 	return kept, nil

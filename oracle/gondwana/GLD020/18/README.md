@@ -1,6 +1,6 @@
 # GLD020: case 18
 
-The run ended with return code 1.
+The run ended with return code 16.
 
 The first case to reach:
 
