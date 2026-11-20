@@ -6,4 +6,4 @@ The batch file ended with errorlevel 0.
 
 | Step | Program | Outcome | Rules reached |
 | --- | --- | --- | --: |
-| GLD050 | [GLD050](../../GLD050/) | RC=0000 | 21 of 94 |
+| GLD050 | [GLD050](../../GLD050/) | RC=0004 | 16 of 94 |

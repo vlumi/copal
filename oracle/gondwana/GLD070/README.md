@@ -1,6 +1,6 @@
 # GLD070: cases
 
-29 cases reach 37 of the 58 rules of GLD070's decision tables, and of the programs it calls, 9 of the 16 of GLC020, 5 of the 5 of GLC040, 15 of the 23 of GLC030. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's. A rule that finds two totals the program adds up itself to differ, items of its own that it only adds to, says so: no input field sets either, so the search has nothing to change to reach it. A rule that finds a write or rewrite by key to fail says so too: the search fails a file only when it is opened or read, and a program that writes keys it made new, or rewrites the record it read, meets that failure only when something else changes the file meanwhile.
+35 cases reach 37 of the 58 rules of GLD070's decision tables, and of the programs it calls, 8 of the 16 of GLC020, 4 of the 5 of GLC040, 21 of the 23 of GLC030. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's. A rule that finds two totals the program adds up itself to differ, items of its own that it only adds to, says so: no input field sets either, so the search has nothing to change to reach it. A rule that finds a write or rewrite by key to fail says so too: the search fails a file only when it is opened or read, and a program that writes keys it made new, or rewrites the record it read, meets that failure only when something else changes the file meanwhile.
 
 ## GLD070
 
@@ -42,8 +42,8 @@
 | 3 | [case 01](01/) |
 | 4 | not reached: `WS-POLMST-ﾅｼ` N, `WS-POLMST-OK` N |
 | 5 | not reached: `WS-POLMST-ﾅｼ` N, `LR-ｶｼﾂｹ` Y, `WS-ﾘﾕｳ-ﾅｼ` Y, `WS-POLMST-OK` Y, `WS-ﾘﾕｳ-ﾅｼ, again` Y |
-| 6 | [case 14](14/) |
-| 7 | [case 16](16/) |
+| 6 | [case 04](04/) |
+| 7 | [case 04](04/) |
 | 8 | [case 14](14/) |
 | 9 | not reached: `WS-POLMST-ﾅｼ` N, `LR-ｶｼﾂｹ` N, `WS-ﾘﾕｳ-ﾅｼ` Y, `LR-ﾍﾝｻｲ` N, `WS-POLMST-OK` Y, `WS-ﾘﾕｳ-ﾅｼ, again` Y |
 | 10 | [case 13](13/) |
@@ -54,19 +54,19 @@
 | --: | --- |
 | 1 | [case 13](13/) |
 | 2 | [case 14](14/) |
-| 3 | [case 15](15/) |
-| 4 | [case 15](15/) |
+| 3 | [case 18](18/) |
+| 4 | [case 18](18/) |
 | 5 | [case 04](04/) |
 
 ### [ｹﾞﾝﾄﾞ-RTN](../../../blueprints/gondwana/rules/GLD070.md#ｹﾞﾝﾄﾞ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 17](17/) |
-| 2 | [case 16](16/) |
+| 1 | [case 25](25/) |
+| 2 | [case 04](04/) |
 | 3 | not reached: `LR-ｶｼﾂｹ` Y, `WS-CSVTB-OK` Y, `WS-ｻﾞﾝﾀﾞｶ + LR-ｷﾝｶﾞｸ > WS-ｹﾞﾝﾄﾞｶﾞｸ` N |
-| 4 | [case 18](18/) |
-| 5 | [case 16](16/) |
+| 4 | [case 16](16/) |
+| 5 | [case 04](04/) |
 
 ### [ﾊﾝｴｲ-RTN](../../../blueprints/gondwana/rules/GLD070.md#ﾊﾝｴｲ-rtn)
 
@@ -77,17 +77,17 @@
 | 3 | not reached: `WS-ﾘｿｸ > 0` Y, `LR-ｶｼﾂｹ` Y, `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ = 0` N, `WS-POLMST-OK` N |
 | 4 | not reached: `WS-ﾘｿｸ > 0` Y, `LR-ｶｼﾂｹ` Y, `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ = 0` N, `WS-POLMST-OK` Y |
 | 5 | not reached: `WS-ﾘｿｸ > 0` Y, `LR-ｶｼﾂｹ` N, `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ = 0` Y, `WS-POLMST-OK` N |
-| 6 | [case 25](25/) |
+| 6 | [case 33](33/) |
 | 7 | not reached: `WS-ﾘｿｸ > 0` Y, `LR-ｶｼﾂｹ` N, `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ = 0` N, `WS-POLMST-OK` N |
-| 8 | [case 18](18/) |
+| 8 | [case 24](24/) |
 | 9 | not reached: `WS-ﾘｿｸ > 0` N, `LR-ｶｼﾂｹ` Y, `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ = 0` Y, `WS-POLMST-OK` N |
 | 10 | not reached: `WS-ﾘｿｸ > 0` N, `LR-ｶｼﾂｹ` Y, `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ = 0` Y, `WS-POLMST-OK` Y |
 | 11 | not reached: `WS-ﾘｿｸ > 0` N, `LR-ｶｼﾂｹ` Y, `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ = 0` N, `WS-POLMST-OK` N |
 | 12 | not reached: `WS-ﾘｿｸ > 0` N, `LR-ｶｼﾂｹ` Y, `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ = 0` N, `WS-POLMST-OK` Y |
 | 13 | not reached: `WS-ﾘｿｸ > 0` N, `LR-ｶｼﾂｹ` N, `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ = 0` Y, `WS-POLMST-OK` N |
-| 14 | [case 16](16/) |
+| 14 | [case 04](04/) |
 | 15 | not reached: `WS-ﾘｿｸ > 0` N, `LR-ｶｼﾂｹ` N, `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ = 0` N, `WS-POLMST-OK` N |
-| 16 | [case 24](24/) |
+| 16 | [case 17](17/) |
 
 ### [ｶｼﾂｹ-RTN](../../../blueprints/gondwana/rules/GLD070.md#ｶｼﾂｹ-rtn)
 
@@ -101,7 +101,7 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | not reached: `WS-GLJRNL-OK` N |
-| 2 | [case 16](16/) |
+| 2 | [case 04](04/) |
 
 ### [ﾒｲｻｲ-RTN](../../../blueprints/gondwana/rules/GLD070.md#ﾒｲｻｲ-rtn)
 
@@ -153,7 +153,7 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | not reached: `LK-ﾈﾝ = 0` Y, `LK-ﾍﾝｶﾝｽﾞﾐ` N |
-| 2 | [case 24](24/) |
+| 2 | not reached: `LK-ﾈﾝ = 0` N, `LK-ﾍﾝｶﾝｽﾞﾐ` N, `WS-MM < 1 OR WS-MM > 12` Y |
 | 3 | not reached: `LK-ﾈﾝ = 0` N, `LK-ﾍﾝｶﾝｽﾞﾐ` N, `WS-MM < 1 OR WS-MM > 12` N, `WS-DD < 1 OR WS-DD > 31` Y |
 | 4 | not reached: `LK-ﾈﾝ = 0` N, `LK-ﾍﾝｶﾝｽﾞﾐ` N, `WS-MM < 1 OR WS-MM > 12` N, `WS-DD < 1 OR WS-DD > 31` N, `WS-YYYYMMDD < ｹﾞﾝｺﾞｳ-ｶｲｼﾋﾞ(ｹﾞﾝｺﾞｳ-IX)` Y |
 | 5 | not reached: `LK-ﾈﾝ = 0` N, `LK-ﾍﾝｶﾝｽﾞﾐ` N, `WS-MM < 1 OR WS-MM > 12` N, `WS-DD < 1 OR WS-DD > 31` N, `WS-YYYYMMDD < ｹﾞﾝｺﾞｳ-ｶｲｼﾋﾞ(ｹﾞﾝｺﾞｳ-IX)` N, `ｹﾞﾝｺﾞｳ-IX < ｹﾞﾝｺﾞｳ-ｹﾝｽｳ` Y, `WS-YYYYMMDD < ｹﾞﾝｺﾞｳ-ｶｲｼﾋﾞ(ｹﾞﾝｺﾞｳ-IX), again` N |
@@ -167,14 +167,14 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 04](04/) |
-| 2 | [case 24](24/) |
-| 3 | [case 25](25/) |
+| 2 | not reached: `LK-ｻﾞﾝﾀﾞｶ > 0 AND LK-ｷｻﾝﾋﾞ NOT = SPACES` Y, `WS-ﾍﾝｶﾝｹｯｶ = 0` N |
+| 3 | [case 16](16/) |
 
 ### [ﾋﾜﾘ-RTN](../../../blueprints/gondwana/rules/GLC040.md#ﾋﾜﾘ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 18](18/) |
+| 1 | [case 24](24/) |
 | 2 | [case 04](04/) |
 
 ## GLC030
@@ -183,17 +183,17 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 16](16/) |
-| 2 | [case 17](17/) |
-| 3 | [case 19](19/) |
+| 1 | [case 04](04/) |
+| 2 | [case 25](25/) |
+| 3 | [case 15](15/) |
 
 ### [ﾖﾐｺﾐ-RTN](../../../blueprints/gondwana/rules/GLC030.md#ﾖﾐｺﾐ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 16](16/) |
+| 1 | [case 04](04/) |
 | 2 | not reached: `WS-CSVTB-OK` Y, `WS-CSVTB-ｵﾜﾘ` N |
-| 3 | [case 17](17/) |
+| 3 | [case 25](25/) |
 
 ### [ﾄｳﾛｸ-RTN](../../../blueprints/gondwana/rules/GLC030.md#ﾄｳﾛｸ-rtn)
 
@@ -206,18 +206,18 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | not reached: `LK-ｶﾆｭｳﾈﾝﾚｲ < 20` Y, `LK-ｹｲｶﾈﾝｽｳ > 40` Y, `WS-ﾈﾝｽｳ > 0` Y, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = LK-ｼｮｳﾋﾝ` Y |
-| 2 | [case 22](22/) |
-| 3 | not reached: `LK-ｶﾆｭｳﾈﾝﾚｲ < 20` Y, `LK-ｹｲｶﾈﾝｽｳ > 40` N, `WS-ﾈﾝｽｳ > 0` Y, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = LK-ｼｮｳﾋﾝ` Y |
-| 4 | [case 16](16/) |
-| 5 | [case 23](23/) |
-| 6 | not reached: `LK-ｶﾆｭｳﾈﾝﾚｲ < 20` N, `LK-ｹｲｶﾈﾝｽｳ > 40` Y, `WS-ﾈﾝｽｳ > 0` Y, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = LK-ｼｮｳﾋﾝ` Y, `LK-ｶﾆｭｳﾈﾝﾚｲ < 60` Y |
+| 1 | [case 32](32/) |
+| 2 | [case 21](21/) |
+| 3 | [case 23](23/) |
+| 4 | [case 04](04/) |
+| 5 | [case 22](22/) |
+| 6 | [case 34](34/) |
 | 7 | [case 26](26/) |
-| 8 | not reached: `LK-ｶﾆｭｳﾈﾝﾚｲ < 20` N, `LK-ｹｲｶﾈﾝｽｳ > 40` N, `WS-ﾈﾝｽｳ > 0` Y, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = LK-ｼｮｳﾋﾝ` Y, `LK-ｶﾆｭｳﾈﾝﾚｲ < 60` Y |
-| 9 | [case 20](20/) |
+| 8 | [case 28](28/) |
+| 9 | [case 19](19/) |
 | 10 | [case 27](27/) |
-| 11 | not reached: `LK-ｶﾆｭｳﾈﾝﾚｲ < 20` N, `LK-ｹｲｶﾈﾝｽｳ > 40` Y, `WS-ﾈﾝｽｳ > 0` Y, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = LK-ｼｮｳﾋﾝ` Y, `LK-ｶﾆｭｳﾈﾝﾚｲ < 60` N |
-| 12 | [case 28](28/) |
-| 13 | not reached: `LK-ｶﾆｭｳﾈﾝﾚｲ < 20` N, `LK-ｹｲｶﾈﾝｽｳ > 40` N, `WS-ﾈﾝｽｳ > 0` Y, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = LK-ｼｮｳﾋﾝ` Y, `LK-ｶﾆｭｳﾈﾝﾚｲ < 60` N |
-| 14 | [case 21](21/) |
-| 15 | [case 29](29/) |
+| 11 | [case 35](35/) |
+| 12 | [case 29](29/) |
+| 13 | [case 31](31/) |
+| 14 | [case 20](20/) |
+| 15 | [case 30](30/) |

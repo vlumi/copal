@@ -440,18 +440,24 @@ func pow10(n int) int64 {
 	return p
 }
 
-// kinds are the kinds of the program's fields, by name.
+// kinds are the kinds of the fields of the program and of the programs it
+// calls, by name: a called program's files are inputs of the run too. The
+// program's own kind of a name stands where two of them use it.
 func (p *program) kinds() map[string]string {
 	kinds := map[string]string{}
 	var visit func(f blueprint.Field)
 	visit = func(f blueprint.Field) {
-		kinds[f.Name] = f.Kind
+		if _, ok := kinds[f.Name]; !ok {
+			kinds[f.Name] = f.Kind
+		}
 		for _, child := range f.Fields {
 			visit(child)
 		}
 	}
-	for _, r := range p.blueprint.Records {
-		visit(r.Field)
+	for _, u := range p.units {
+		for _, r := range u.blueprint.Records {
+			visit(r.Field)
+		}
 	}
 	return kinds
 }

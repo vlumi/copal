@@ -4,8 +4,10 @@ The run ended with return code 4.
 
 The first case to reach:
 
-- [GLD030, ｹﾝｻ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLD030.md#ｹﾝｻ-rtn)
-- [GLD030, ｹﾝｻ-RTN, rule 10](../../../../blueprints/gondwana/rules/GLD030.md#ｹﾝｻ-rtn)
-- [GLD030, ｹﾝｻ-RTN, rule 17](../../../../blueprints/gondwana/rules/GLD030.md#ｹﾝｻ-rtn)
-- [GLD030, ｹﾝｻ-RTN, rule 24](../../../../blueprints/gondwana/rules/GLD030.md#ｹﾝｻ-rtn)
-- [GLC020, ｾｲﾚｷ-ﾍﾝｶﾝ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLC020.md#ｾｲﾚｷ-ﾍﾝｶﾝ-rtn)
+- [GLD030, ｹﾝｻ-RTN, rule 6](../../../../blueprints/gondwana/rules/GLD030.md#ｹﾝｻ-rtn)
+- [GLD030, ｹﾝｻ-RTN, rule 13](../../../../blueprints/gondwana/rules/GLD030.md#ｹﾝｻ-rtn)
+- [GLD030, ﾎｼｮｳ-ｹﾝｻ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLD030.md#ﾎｼｮｳ-ｹﾝｻ-rtn)
+- [GLD030, ﾎｼｮｳ-ｿｳｻ-RTN, rule 6](../../../../blueprints/gondwana/rules/GLD030.md#ﾎｼｮｳ-ｿｳｻ-rtn)
+- [GLD030, ﾎｼｮｳ-ｿｳｻ-RTN, rule 7](../../../../blueprints/gondwana/rules/GLD030.md#ﾎｼｮｳ-ｿｳｻ-rtn)
+- [GLD030, ﾆｭｳｲﾝ-ｹﾝｻ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLD030.md#ﾆｭｳｲﾝ-ｹﾝｻ-rtn)
+- [GLD030, ﾎｼｮｳ-ｼｭｳﾘｮｳ-RTN, rule 4](../../../../blueprints/gondwana/rules/GLD030.md#ﾎｼｮｳ-ｼｭｳﾘｮｳ-rtn)

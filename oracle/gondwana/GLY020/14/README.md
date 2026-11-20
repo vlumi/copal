@@ -1,7 +1,9 @@
 # GLY020: case 14
 
-The run ended with return code 0.
+The run ended with return code 16.
+
+PRODTB-F is missing, so opening it fails.
 
 The first case to reach:
 
-- [GLC030, ｹｲｻﾝ-RTN, rule 14](../../../../blueprints/gondwana/rules/GLC030.md#ｹｲｻﾝ-rtn)
+- [GLY020, ｼｮｷ-RTN, rule 4](../../../../blueprints/gondwana/rules/GLY020.md#ｼｮｷ-rtn)

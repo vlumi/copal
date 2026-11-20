@@ -1,8 +1,8 @@
 # GLD060: case 12
 
-The run ended with return code 1.
+The run ended with return code 0.
 
 The first case to reach:
 
-- [GLC020, ﾊﾝｲ-ｹﾝｻ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLC020.md#ﾊﾝｲ-ｹﾝｻ-rtn)
-- [GLC040, ﾋﾜﾘ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLC040.md#ﾋﾜﾘ-rtn)
+- [GLD060, ﾌﾘｶｴ-ﾊﾝﾃｲ-RTN, rule 6](../../../../blueprints/gondwana/rules/GLD060.md#ﾌﾘｶｴ-ﾊﾝﾃｲ-rtn)
+- [GLC030, ｹｲｻﾝ-RTN, rule 9](../../../../blueprints/gondwana/rules/GLC030.md#ｹｲｻﾝ-rtn)

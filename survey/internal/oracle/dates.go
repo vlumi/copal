@@ -84,18 +84,31 @@ func LearnDates(system *blueprint.System, copybookDir, scratch string) (DateForm
 	}
 	forms := DateForms{}
 	for shape, byDate := range seen {
-		form := map[int64]string{}
-		for date, dates := range byDate {
-			if len(slices.Compact(slices.Sorted(slices.Values(dates)))) == 1 {
-				form[date] = dates[0]
-			}
-		}
-		distinct := slices.Compact(slices.Sorted(maps.Values(form)))
-		if len(form) == len(probeDates) && len(distinct) > 1 {
+		if form, ok := formOf(byDate); ok {
 			forms[shape] = form
 		}
 	}
 	return forms, nil
+}
+
+// formOf is the form the dates written in fields of one shape show, by
+// probe date: for each probe date the value most of them hold, more than
+// half, when the probe dates' are not all one. A date a program makes
+// partly from a date of its files, the year it runs in with the day of a
+// contract, has nothing of the file's to take in a probe, and is the odd
+// one out.
+func formOf(byDate map[int64][]string) (map[int64]string, bool) {
+	form := map[int64]string{}
+	for date, dates := range byDate {
+		count := map[string]int{}
+		for _, t := range dates {
+			if count[t]++; 2*count[t] > len(dates) {
+				form[date] = t
+			}
+		}
+	}
+	distinct := slices.Compact(slices.Sorted(maps.Values(form)))
+	return form, len(form) == len(probeDates) && len(distinct) > 1
 }
 
 // probe is the base case on a date with no date in the records of its
