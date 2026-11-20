@@ -42,6 +42,9 @@ type program struct {
 	// forms are the forms the system writes a date in as text, if they
 	// were learned.
 	forms DateForms
+	// presets are the values each unit's tables are written with, by the
+	// unit's program.
+	presets map[string]map[string][]string
 }
 
 // Unit is a program whose decision tables a run reaches: the program run,

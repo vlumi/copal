@@ -6,12 +6,12 @@ The batch file ended with errorlevel 0.
 
 | Step | Program | Outcome | Rules reached |
 | --- | --- | --- | --: |
-| GLD010 | [GLD010](../../GLD010/) | RC=0000 | 26 of 99 |
-| GLD020 | [GLD020](../../GLD020/) | RC=0000 | 16 of 132 |
-| GLD030 | [GLD030](../../GLD030/) | RC=0004 | 33 of 197 |
-| GLD040 | [GLD040](../../GLD040/) | RC=0004 | 16 of 105 |
-| GLD060 | [GLD060](../../GLD060/) | RC=0000 | 15 of 97 |
-| GLD070 | [GLD070](../../GLD070/) | RC=0004 | 10 of 102 |
-| GLD080 | [GLD080](../../GLD080/) | RC=0000 | 9 of 30 |
+| GLD010 | [GLD010](../../GLD010/) | RC=0000 | 27 of 99 |
+| GLD020 | [GLD020](../../GLD020/) | RC=0000 | 17 of 132 |
+| GLD030 | [GLD030](../../GLD030/) | RC=0004 | 18 of 197 |
+| GLD040 | [GLD040](../../GLD040/) | RC=0004 | 17 of 105 |
+| GLD060 | [GLD060](../../GLD060/) | RC=0000 | 16 of 97 |
+| GLD070 | [GLD070](../../GLD070/) | RC=0004 | 26 of 102 |
+| GLD080 | [GLD080](../../GLD080/) | RC=0000 | 11 of 30 |
 | UNLOAD | UNLOAD | RC=0000 | |
-| UNLOAD.GLD090 | [GLD090](../../GLD090/) | RC=0000 | 12 of 42 |
+| UNLOAD.GLD090 | [GLD090](../../GLD090/) | RC=0000 | 13 of 42 |

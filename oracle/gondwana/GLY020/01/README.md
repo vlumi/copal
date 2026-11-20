@@ -6,7 +6,7 @@ The first case to reach:
 
 - [GLY020, ｼｮｷ-RTN, rule 6](../../../../blueprints/gondwana/rules/GLY020.md#ｼｮｷ-rtn)
 - [GLY020, POLMST-ﾖﾐｺﾐ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLY020.md#polmst-ﾖﾐｺﾐ-rtn)
-- [GLY020, ｹｲﾔｸ-RTN, rule 6](../../../../blueprints/gondwana/rules/GLY020.md#ｹｲﾔｸ-rtn)
+- [GLY020, ｹｲﾔｸ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLY020.md#ｹｲﾔｸ-rtn)
 - [GLY020, ｹｲﾔｸ-RTN, rule 7](../../../../blueprints/gondwana/rules/GLY020.md#ｹｲﾔｸ-rtn)
 - [GLY020, ﾎｼｮｳ-ｿｳｻ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLY020.md#ﾎｼｮｳ-ｿｳｻ-rtn)
 - [GLY020, ﾎｼｮｳ-ｿｳｻ-RTN, rule 4](../../../../blueprints/gondwana/rules/GLY020.md#ﾎｼｮｳ-ｿｳｻ-rtn)

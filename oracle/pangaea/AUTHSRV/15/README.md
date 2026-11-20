@@ -4,4 +4,6 @@ The run ended with return code 0.
 
 The first case to reach:
 
-- [AUTHREV, 2000-APPROVE, rule 2](../../../../blueprints/pangaea/rules/AUTHREV.md#2000-approve)
+- [AUTHPUR, 0000-MAIN, rule 2](../../../../blueprints/pangaea/rules/AUTHPUR.md#0000-main)
+- [ATMWDL, 0000-MAIN, rule 2](../../../../blueprints/pangaea/rules/ATMWDL.md#0000-main)
+- [ATMBAL, 0000-MAIN, rule 2](../../../../blueprints/pangaea/rules/ATMBAL.md#0000-main)
