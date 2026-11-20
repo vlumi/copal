@@ -342,8 +342,8 @@ func (p *program) dateParts(c Case, kinds map[string]string, date int64) Case {
 func (p *program) matchKeys(c Case, kinds map[string]string) Case {
 	for _, cond := range p.conditions() {
 		for _, pair := range relations(cond) {
-			for _, to := range p.origins(pair[0]) {
-				for _, from := range p.origins(pair[1]) {
+			for _, to := range p.direct(pair[0]) {
+				for _, from := range p.direct(pair[1]) {
 					if to.input == from.input || to.part != (part{}) || from.part != (part{}) ||
 						kinds[to.field.Name] != blueprint.KindText || kinds[from.field.Name] == blueprint.KindText {
 						continue

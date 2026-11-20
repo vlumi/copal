@@ -9,13 +9,15 @@ import (
 	"github.com/vlumi/cobolith/cobol"
 	"github.com/vlumi/cobolith/layout"
 	"github.com/vlumi/copal/survey/blueprint"
+	"github.com/vlumi/copal/survey/internal/dataflow"
 )
 
 // lever is one change to a case: a value put into a field of an input, in
 // each record that has the field, or the value of another input field,
 // give or take one, or a change to an input's records: none at all, one
 // of each type more, none of one type, those of one type of none, or as
-// many as a count; or the input file failed.
+// many as a count, or one more under each key of several parts; or the
+// input file failed.
 type lever struct {
 	input  string
 	field  *layout.Field
@@ -43,6 +45,7 @@ const (
 	withoutType
 	untyped
 	repeated
+	continued
 	failFile
 )
 
@@ -119,6 +122,9 @@ func (p *program) levers() []lever {
 		for _, n := range p.counts() {
 			add(lever{input: in.name(), change: repeated, count: n})
 		}
+		if _, ok := in.lastOfKey(); ok {
+			add(lever{input: in.name(), change: continued})
+		}
 	}
 	for _, l := range p.failures() {
 		add(l)
@@ -172,8 +178,12 @@ func (p *program) fieldLevers(u Unit, c *cobol.Condition) []lever {
 			if text, ok := target.part.textOf(target.field); ok {
 				as = append(as, text)
 			}
+			compared := c
+			if target.madeFrom {
+				compared = &cobol.Condition{}
+			}
 			for _, f := range as {
-				for _, v := range valuesFor(u.records, constantsOf(u.blueprint), c, item, f) {
+				for _, v := range valuesFor(u.records, constantsOf(u.blueprint), p.presetsOf(u), compared, item, f) {
 					l := lever{input: target.input, field: target.field, part: target.part, value: v}
 					if !slices.Contains(levers, l) {
 						levers = append(levers, l)
@@ -260,11 +270,15 @@ func (p *program) inputField(f blueprint.FileField) (target, bool) {
 	return target{}, false
 }
 
-// target is a field of an input, or a part of one.
+// target is a field of an input, or a part of one. It is made from when
+// the item it is a target for does not hold its value but one a program
+// called made from it, a cash value from a sum insured: what a condition
+// compares the item with is then nothing to put into the field.
 type target struct {
-	input string
-	field *layout.Field
-	part  part
+	input    string
+	field    *layout.Field
+	part     part
+	madeFrom bool
 }
 
 // part is bytes of a field, from offset, 0-based, for length, which a
@@ -316,14 +330,43 @@ func (pt part) set(r []byte, root, f *layout.Field, v value) bool {
 // A condition name stands for its field.
 func (p *program) origins(item string) []target { return p.originsIn(p.units[0], item) }
 
+// direct lists the input fields an item of the program run has its values
+// from without a program called between them: what the base case matches
+// to each other, which a field a called program only may have made a
+// value from is too little to go by.
+func (p *program) direct(item string) []target { return p.originsBehind(p.units[0], item, nil) }
+
 // originsIn lists the input fields an item of a unit has its values from
-// within the unit: the fields of the records it reads them from.
+// within the unit: the fields of the records it reads them from, and for
+// a value a program it calls gives back, what that program made it from.
 func (p *program) originsIn(u Unit, item string) []target {
+	return p.originsBehind(u, item, map[string]bool{})
+}
+
+// originsBehind is originsIn, with the calls already followed, or with
+// no call followed at all when there is nowhere to note them.
+func (p *program) originsBehind(u Unit, item string, followed map[string]bool) []target {
 	if f := conditionField(u.records, item); f != nil {
 		item = f.Name
 	}
 	var targets []target
+	add := func(found []target) {
+		for _, t := range found {
+			if !slices.Contains(targets, t) {
+				targets = append(targets, t)
+			}
+		}
+	}
 	for _, o := range u.flow.Origins(item) {
+		if o.Call != "" && o.Arg > 0 {
+			if followed != nil {
+				for _, t := range p.behindCall(u, item, o, followed) {
+					t.madeFrom = true
+					add([]target{t})
+				}
+			}
+			continue
+		}
 		name := o.File
 		if o.Stream != "" {
 			name = o.Stream
@@ -336,16 +379,77 @@ func (p *program) originsIn(u Unit, item string) []target {
 		if over := fieldOverBytes(p.inputs[i].root, o.Start, o.Length); o.Length > 0 && over != nil {
 			f = over
 		} else if digits := digitsOver(p.inputs[i].root, o.Start, o.Length); o.Length > 0 && digits != nil {
-			targets = append(targets, target{input: name, field: digits, part: part{offset: o.Start - digits.Start, length: o.Length}})
+			add([]target{{input: name, field: digits, part: part{offset: o.Start - digits.Start, length: o.Length}}})
 			continue
 		}
 		if f != nil {
 			for _, leaf := range leaves(f) {
-				targets = append(targets, target{input: name, field: leaf})
+				add([]target{{input: name, field: leaf}})
 			}
 		}
 	}
 	return targets
+}
+
+// behindCall lists the input fields a program called makes a value from
+// that it gives back to an item of the unit that calls it: the fields of
+// the files it reads itself and, for the program run, those the other
+// arguments have their values from at each call. The item is followed
+// when it is the argument itself or a field of it, into the called
+// program's field over the same bytes; each once.
+func (p *program) behindCall(u Unit, item string, o dataflow.Origin, followed map[string]bool) []target {
+	i := slices.IndexFunc(p.units, func(c Unit) bool { return c.Program == o.Call })
+	if i < 0 || len(p.units[i].blueprint.Using) < o.Arg {
+		return nil
+	}
+	callee := p.units[i]
+	inner, ok := calleeItem(u, callee, item, o)
+	key := fmt.Sprintf("%s %s %s", u.Program, o.Call, inner)
+	if !ok || followed[key] {
+		return nil
+	}
+	followed[key] = true
+	targets := p.originsBehind(callee, inner, followed)
+	if u.blueprint != p.blueprint {
+		return targets
+	}
+	for _, q := range callee.flow.Origins(inner) {
+		if q.Parameter == 0 || q.Item == inner {
+			continue
+		}
+		for _, site := range p.inCaller(callee, q.Item) {
+			for _, t := range within(p.originsBehind(u, site.name, followed), site.part) {
+				if !slices.Contains(targets, t) {
+					targets = append(targets, t)
+				}
+			}
+		}
+	}
+	return targets
+}
+
+// calleeItem is the item of a program called that an item of its caller
+// has its value from, by the argument a call passes: the parameter, for
+// an argument of one field, whatever the item makes of it, or for a
+// record passed, the field of the parameter over the same bytes as the
+// item is of the argument. An item that is no field of a record passed
+// has its value from some field of it the call does not tell, and is not
+// followed.
+func calleeItem(u, callee Unit, item string, o dataflow.Origin) (string, bool) {
+	parameter := callee.blueprint.Using[o.Arg-1]
+	argument, ok := fieldOf(u.blueprint, o.Item)
+	if !ok {
+		return "", false
+	}
+	if len(argument.Fields) == 0 {
+		return parameter, true
+	}
+	field, ok := findField(argument, item)
+	record, _, found := locate(callee.blueprint, parameter, parameter)
+	if !ok || !found {
+		return "", false
+	}
+	return over(record, record.Start+field.Start-argument.Start, field.Length)
 }
 
 // fieldOverBytes is the field of a record over the bytes from start,
@@ -401,8 +505,9 @@ func leaves(f *layout.Field) []*layout.Field {
 // it tests, and a value of none of them; for a class test, a value of the
 // class and one not; and for a number that reaches the item through other
 // statements, zero, one, minus one and its largest, and with decimals, one
-// and minus one whole, which survive rounding to fewer.
-func valuesFor(records *layout.ProgramRecords, constants map[string]string, c *cobol.Condition, item string, f *layout.Field) []value {
+// and minus one whole, which survive rounding to fewer. An item compared
+// with a field of a table written with its values takes each of them.
+func valuesFor(records *layout.ProgramRecords, constants map[string]string, presets map[string][]string, c *cobol.Condition, item string, f *layout.Field) []value {
 	var values []value
 	addLiteral := func(lit string) {
 		v, ok := literal(f, lit)
@@ -427,6 +532,11 @@ func valuesFor(records *layout.ProgramRecords, constants map[string]string, c *c
 				}
 				if sides[0] == nil || sides[0].Name != item || sides[1] == nil {
 					continue
+				}
+				for _, preset := range presets[sides[1].Name] {
+					if v, ok := literal(f, strconv.Quote(preset)); ok && !slices.Contains(values, v) {
+						values = append(values, v)
+					}
 				}
 				if value, ok := constants[sides[1].Name]; ok {
 					addLiteral(value)
@@ -460,6 +570,17 @@ func valuesFor(records *layout.ProgramRecords, constants map[string]string, c *c
 		values = append(values, text(""))
 	}
 	return values
+}
+
+// presetsOf are the values a unit's tables are written with, found once.
+func (p *program) presetsOf(u Unit) map[string][]string {
+	if p.presets == nil {
+		p.presets = map[string]map[string][]string{}
+	}
+	if _, ok := p.presets[u.Program]; !ok {
+		p.presets[u.Program] = presets(u.records, p.dialect.Encoding)
+	}
+	return p.presets[u.Program]
 }
 
 // divisor is what an operand divides an item by, as written, if it is a
@@ -702,6 +823,24 @@ func (l lever) apply(p *program, c Case) (Case, bool) {
 			records = append(records, slices.Clone(records[i%len(c[l.input])]))
 		}
 		next[l.input] = records
+	case continued:
+		in := p.input(l.input)
+		last, _ := in.lastOfKey()
+		key := find(in.root, in.file.RecordKey)
+		keyOf := func(r []byte) string { return string(r[key.Start-in.root.Start:][:key.Size()]) }
+		for _, r := range c[l.input] {
+			more := slices.Clone(r)
+			n, err := in.layout.Number(more, last.Name)
+			if err != nil || !set(more, in.root, last, in.layout, number(n+1)) ||
+				slices.ContainsFunc(records, func(o []byte) bool { return keyOf(o) == keyOf(more) }) {
+				continue
+			}
+			records = append(records, more)
+		}
+		if len(records) == len(c[l.input]) {
+			return nil, false
+		}
+		next[l.input] = records
 	case untyped:
 		in := p.input(l.input)
 		changed := false
@@ -781,6 +920,24 @@ func (p *program) valueOf(c Case, from target, to *layout.Field, delta int64) (v
 func (p *program) input(name string) input {
 	i := slices.IndexFunc(p.inputs, func(in input) bool { return in.name() == name })
 	return p.inputs[i]
+}
+
+// lastOfKey is the last field of an indexed input's record key, when the
+// key is several fields and that one a number: a coverage's number under
+// its policy's, which one more record of the same policy counts on.
+func (in input) lastOfKey() (*layout.Field, bool) {
+	if in.file.RecordKey == "" {
+		return nil, false
+	}
+	key := find(in.root, in.file.RecordKey)
+	if key == nil {
+		return nil, false
+	}
+	parts := leaves(key)
+	if len(parts) < 2 || !numeric(parts[len(parts)-1]) {
+		return nil, false
+	}
+	return parts[len(parts)-1], true
 }
 
 // typeOfRecord is the type a record is of, by its discriminator; -1 for a

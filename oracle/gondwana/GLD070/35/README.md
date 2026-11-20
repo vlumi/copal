@@ -1,7 +1,7 @@
 # GLD070: case 35
 
-The run ended with return code 4.
+The run ended with return code 0.
 
 The first case to reach:
 
-- [GLC030, ｹｲｻﾝ-RTN, rule 11](../../../../blueprints/gondwana/rules/GLC030.md#ｹｲｻﾝ-rtn)
+- [GLC020, ﾊﾝｲ-ｹﾝｻ-RTN, rule 6](../../../../blueprints/gondwana/rules/GLC020.md#ﾊﾝｲ-ｹﾝｻ-rtn)

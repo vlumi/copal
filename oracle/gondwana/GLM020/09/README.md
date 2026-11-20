@@ -4,4 +4,4 @@ The run ended with return code 0.
 
 The first case to reach:
 
-- [GLM020, ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLM020.md#ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ-rtn)
+- [GLC020, ﾜﾚｷ-ﾍﾝｶﾝ-RTN, in its loop, rule 2](../../../../blueprints/gondwana/rules/GLC020.md#ﾜﾚｷ-ﾍﾝｶﾝ-rtn-in-its-loop)

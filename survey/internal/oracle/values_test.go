@@ -65,7 +65,7 @@ func TestConditionNameValues(t *testing.T) {
 	debit := &cobol.Condition{Op: "NAME", Left: &cobol.Operand{Text: "WS-RT-DEBIT(WS-RX)", Name: "WS-RT-DEBIT"}}
 	both := &cobol.Condition{Op: "AND", Parts: []*cobol.Condition{debit,
 		{Op: "NAME", Left: &cobol.Operand{Text: "RATE-FOUND", Name: "RATE-FOUND"}}}}
-	got := valuesFor(records, nil, both, "WS-RT-DEBIT", input)
+	got := valuesFor(records, nil, nil, both, "WS-RT-DEBIT", input)
 	if want := []value{text("C"), text("D"), text("?"), text("")}; !slices.Equal(got, want) {
 		t.Errorf("values %v, want %v", got, want)
 	}

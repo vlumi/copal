@@ -27,11 +27,11 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 17](17/) |
-| 2 | [case 02](02/) |
+| 2 | [case 01](01/) |
 | 3 | [case 18](18/) |
-| 4 | [case 03](03/) |
+| 4 | [case 02](02/) |
 | 5 | [case 15](15/) |
-| 6 | [case 01](01/) |
+| 6 | [case 03](03/) |
 | 7 | [case 01](01/) |
 
 ### [ﾎｼｮｳ-ｿｳｻ-RTN](../../../blueprints/gondwana/rules/GLY020.md#ﾎｼｮｳ-ｿｳｻ-rtn)
@@ -48,14 +48,14 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 01](01/) |
-| 2 | [case 04](04/) |
+| 2 | [case 03](03/) |
 
 ### [ﾒｲｻｲ-RTN](../../../blueprints/gondwana/rules/GLY020.md#ﾒｲｻｲ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 01](01/) |
-| 2 | [case 05](05/) |
+| 2 | [case 04](04/) |
 
 ### [ｼｮｳﾋﾝ-ﾖﾐｺﾐ-RTN](../../../blueprints/gondwana/rules/GLY020.md#ｼｮｳﾋﾝ-ﾖﾐｺﾐ-rtn)
 
@@ -86,7 +86,7 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 01](01/) |
-| 2 | [case 06](06/) |
+| 2 | [case 05](05/) |
 
 ### [ｾｲﾚｷ-ﾍﾝｶﾝ-RTN](../../../blueprints/gondwana/rules/GLC020.md#ｾｲﾚｷ-ﾍﾝｶﾝ-rtn)
 

@@ -1,13 +1,10 @@
 # GLD010: case 28
 
-The run ended with return code 0.
+The run ended with return code 16.
 
 The first case to reach:
 
-- [GLD010, ｼｮﾘ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLD010.md#ｼｮﾘ-rtn)
-- [GLD010, ﾄｳﾛｸ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLD010.md#ﾄｳﾛｸ-rtn)
-- [GLD010, ﾎｼｮｳ-ﾄｳﾛｸ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLD010.md#ﾎｼｮｳ-ﾄｳﾛｸ-rtn)
-- [GLC050, ﾒｲﾝ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLC050.md#ﾒｲﾝ-rtn)
-- [GLC050, ﾒｲﾝ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLC050.md#ﾒｲﾝ-rtn)
-- [GLC050, ｶｷｺﾐ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLC050.md#ｶｷｺﾐ-rtn)
-- [GLC050, ﾚﾝﾊﾞﾝ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLC050.md#ﾚﾝﾊﾞﾝ-rtn)
+- [GLD010, ﾄｸﾔｸ-ｹﾝｻ-RTN, rule 4](../../../../blueprints/gondwana/rules/GLD010.md#ﾄｸﾔｸ-ｹﾝｻ-rtn)
+- [GLD010, ﾎｼｮｳ-ﾄｳﾛｸ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLD010.md#ﾎｼｮｳ-ﾄｳﾛｸ-rtn)
+- [GLD010, ﾎｹﾝﾘｮｳ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLD010.md#ﾎｹﾝﾘｮｳ-rtn)
+- [GLD010, ﾏﾝｷﾋﾞ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLD010.md#ﾏﾝｷﾋﾞ-rtn)

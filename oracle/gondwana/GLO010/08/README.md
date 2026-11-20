@@ -1,8 +1,9 @@
 # GLO010: case 08
 
-The run ended with return code 4.
+The run ended with return code 16.
+
+REPORT-F's directory is missing, so creating it fails.
 
 The first case to reach:
 
-- [GLO010, ﾄｳﾛｸ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLO010.md#ﾄｳﾛｸ-rtn)
-- [GLO010, ﾄｳﾛｸ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLO010.md#ﾄｳﾛｸ-rtn)
+- [GLO010, ｼｮｷ-RTN, rule 5](../../../../blueprints/gondwana/rules/GLO010.md#ｼｮｷ-rtn)

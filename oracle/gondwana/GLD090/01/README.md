@@ -16,3 +16,4 @@ The first case to reach:
 - [GLC020, ﾒｲﾝ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLC020.md#ﾒｲﾝ-rtn)
 - [GLC020, ﾜﾚｷ-ﾍﾝｶﾝ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLC020.md#ﾜﾚｷ-ﾍﾝｶﾝ-rtn)
 - [GLC020, ﾜﾚｷ-ﾍﾝｶﾝ-RTN, in its loop, rule 1](../../../../blueprints/gondwana/rules/GLC020.md#ﾜﾚｷ-ﾍﾝｶﾝ-rtn-in-its-loop)
+- [GLC020, ﾜﾚｷ-ﾍﾝｶﾝ-RTN, in its loop, rule 2](../../../../blueprints/gondwana/rules/GLC020.md#ﾜﾚｷ-ﾍﾝｶﾝ-rtn-in-its-loop)

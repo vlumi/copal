@@ -6,4 +6,4 @@ The batch file ended with errorlevel 0.
 
 | Step | Program | Outcome | Rules reached |
 | --- | --- | --- | --: |
-| GLM010 | [GLM010](../../GLM010/) | RC=0000 | 10 of 52 |
+| GLM010 | [GLM010](../../GLM010/) | RC=0000 | 11 of 52 |

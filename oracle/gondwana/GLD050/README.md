@@ -8,8 +8,8 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 02](02/) |
-| 2 | [case 01](01/) |
+| 1 | [case 01](01/) |
+| 2 | [case 02](02/) |
 
 ### [ｼｮｷ-RTN](../../../blueprints/gondwana/rules/GLD050.md#ｼｮｷ-rtn)
 
@@ -37,18 +37,18 @@
 | --: | --- |
 | 1 | [case 05](05/) |
 | 2 | [case 08](08/) |
-| 3 | [case 02](02/) |
-| 4 | [case 01](01/) |
-| 5 | [case 02](02/) |
-| 6 | [case 02](02/) |
-| 7 | [case 02](02/) |
-| 8 | [case 03](03/) |
+| 3 | [case 01](01/) |
+| 4 | [case 03](03/) |
+| 5 | [case 01](01/) |
+| 6 | [case 01](01/) |
+| 7 | [case 01](01/) |
+| 8 | [case 02](02/) |
 
 ### [ﾀﾒﾙ-RTN](../../../blueprints/gondwana/rules/GLD050.md#ﾀﾒﾙ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 02](02/) |
+| 1 | [case 01](01/) |
 | 2 | [case 18](18/) |
 
 ### [ｹﾝｻﾝ-RTN](../../../blueprints/gondwana/rules/GLD050.md#ｹﾝｻﾝ-rtn)
@@ -58,13 +58,13 @@
 | 1 | [case 14](14/) |
 | 2 | [case 15](15/) |
 | 3 | [case 16](16/) |
-| 4 | [case 02](02/) |
+| 4 | [case 01](01/) |
 
 ### [ﾊﾝｴｲ-RTN](../../../blueprints/gondwana/rules/GLD050.md#ﾊﾝｴｲ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 02](02/) |
+| 1 | [case 01](01/) |
 | 2 | not reached: `WS-POLMST-ﾅｼ` N, `WS-POLMST-OK` N |
 | 3 | [case 26](26/) |
 | 4 | not reached: `WS-POLMST-ﾅｼ` N, `WS-ﾘﾕｳ-ﾅｼ` Y, `WS-POLMST-OK` Y, `PM-ﾊﾗｲｺﾐﾁｭｳ` Y, `ZG-D-ﾌﾘｶｴｽﾞﾐ` Y, `WS-POLMST-OK, again` N |
@@ -150,7 +150,7 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 01](01/) |
-| 2 | [case 04](04/) |
+| 2 | [case 03](03/) |
 
 ### [ｾｲﾚｷ-ﾍﾝｶﾝ-RTN](../../../blueprints/gondwana/rules/GLC020.md#ｾｲﾚｷ-ﾍﾝｶﾝ-rtn)
 
