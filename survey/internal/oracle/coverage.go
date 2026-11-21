@@ -31,13 +31,17 @@ type UnitCoverage struct {
 // TableCoverage is a decision table's coverage: for each rule, the number
 // of the first case that reaches it, from 1, or 0 for none; and the rules,
 // by number, that no case reaches and that find totals the program adds
-// up itself to differ, or a write or rewrite by key to fail.
+// up itself to differ, or a write or rewrite by key to fail, or that take
+// a parameter to be what no call passes, or are in a paragraph performed
+// only from such rules.
 type TableCoverage struct {
 	Paragraph    string `json:"paragraph"`
 	Loop         string `json:"loop,omitempty"`
 	ReachedBy    []int  `json:"reachedBy"`
 	OwnTotals    []int  `json:"ownTotals,omitempty"`
 	FailedWrites []int  `json:"failedWrites,omitempty"`
+	Unpassed     []int  `json:"unpassed,omitempty"`
+	Unperformed  []int  `json:"unperformed,omitempty"`
 }
 
 // Reached counts the rules of a table some case reaches.
@@ -65,11 +69,15 @@ func (r *Result) coverageJSON() []byte {
 					tc.ReachedBy[i] = first + 1
 					continue
 				}
-				switch unit.mark(table, table.Rules[i]) {
+				switch r.program.marks()[rule{u, t, i}] {
 				case ownTotals:
 					tc.OwnTotals = append(tc.OwnTotals, i+1)
 				case failedWrite:
 					tc.FailedWrites = append(tc.FailedWrites, i+1)
+				case unpassed:
+					tc.Unpassed = append(tc.Unpassed, i+1)
+				case unperformed:
+					tc.Unperformed = append(tc.Unperformed, i+1)
 				}
 			}
 			uc.Tables = append(uc.Tables, tc)

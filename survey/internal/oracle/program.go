@@ -45,6 +45,8 @@ type program struct {
 	// presets are the values each unit's tables are written with, by the
 	// unit's program.
 	presets map[string]map[string][]string
+	// marked are the rules no run can reach, with why, once found.
+	marked map[rule]mark
 }
 
 // Unit is a program whose decision tables a run reaches: the program run,
