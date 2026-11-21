@@ -338,20 +338,35 @@ func (p *program) dateParts(c Case, kinds map[string]string, date int64) Case {
 // matchKeys gives each field of text that the program compares with a
 // field of another input of a kind of its own, a key, a number or a code,
 // that field's value, so that the base case's records find each other: an
-// accrual's account number held as text, say, the account's number.
+// accrual's account number held as text, say, the account's number. A
+// field given a value so passes it on to the fields of text it is
+// compared with in turn, a product's code from the policy to the product
+// table and from there to the tables of rates.
 func (p *program) matchKeys(c Case, kinds map[string]string) Case {
+	var pairs [][2]target
 	for _, cond := range p.conditions() {
 		for _, pair := range relations(cond) {
-			for _, to := range p.direct(pair[0]) {
-				for _, from := range p.direct(pair[1]) {
-					if to.input == from.input || to.part != (part{}) || from.part != (part{}) ||
-						kinds[to.field.Name] != blueprint.KindText || kinds[from.field.Name] == blueprint.KindText {
-						continue
-					}
-					if next, ok := (lever{input: to.input, field: to.field, from: from, change: copyField}).apply(p, c); ok {
-						c = next
+			for _, a := range p.direct(pair[0]) {
+				for _, b := range p.direct(pair[1]) {
+					if a.input != b.input && a.part == (part{}) && b.part == (part{}) {
+						pairs = append(pairs, [2]target{a, b}, [2]target{b, a})
 					}
 				}
+			}
+		}
+	}
+	matched := map[*layout.Field]bool{}
+	for again := true; again; {
+		again = false
+		for _, pair := range pairs {
+			to, from := pair[0], pair[1]
+			given := kinds[from.field.Name] != blueprint.KindText || matched[from.field]
+			if kinds[to.field.Name] != blueprint.KindText || matched[to.field] || !given {
+				continue
+			}
+			matched[to.field], again = true, true
+			if next, ok := (lever{input: to.input, field: to.field, from: from, change: copyField}).apply(p, c); ok {
+				c = next
 			}
 		}
 	}
