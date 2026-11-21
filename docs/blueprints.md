@@ -79,9 +79,11 @@ Under each table, each rule is a sentence, and the JSON has it as `sentence`: wh
 Beside the blueprints, `survey oracle` writes the cases it found for each main program: the evidence of what the programs do when each rule applies.
 
 - **`README.md`** lists the programs, with the rules their cases reach.
-- **`PROGRAM/README.md`** lists every rule of the program's decision tables, and of the programs it calls, with the first case that reaches it. A rule no case reaches shows the outcomes of its conditions; most of those are rules no run can take, which the tables do not rule out. Two kinds are marked with the reason the search cannot reach them, and `coverage.json` lists them as `ownTotals` and `failedWrites`:
+- **`PROGRAM/README.md`** lists every rule of the program's decision tables, and of the programs it calls, with the first case that reaches it. A rule no case reaches shows the outcomes of its conditions; most of those are rules no run can take, which the tables do not rule out. Four kinds are marked with the reason no case reaches them, and `coverage.json` lists them as `ownTotals`, `failedWrites`, `unpassed` and `unperformed`:
   - a rule that finds two totals the program adds up itself to differ, items of its own working storage it only adds to from zero, since no input field sets either;
-  - a rule that finds a WRITE or REWRITE by key to fail, since the search fails a file only when it is opened or read, and a program that writes keys it made new, or rewrites the record it read, meets that failure only when something else changes the file meanwhile.
+  - a rule that finds a WRITE or REWRITE by key to fail, since the search fails a file only when it is opened or read, and a program that writes keys it made new, or rewrites the record it read, meets that failure only when something else changes the file meanwhile;
+  - a rule of a program called that takes a condition name of a parameter to be what no call passes: the program run calls it alone, the called program does not write the parameter, and every call passes an item that holds only literals, none of which makes the rule's outcome;
+  - a rule of a paragraph of a program called that is performed only on the paths of rules so marked, or from paragraphs so found, in a program whose paragraphs are entered by PERFORM alone.
 - **A case** is a directory:
   - `README.md`: how the run ended, and the rules it is the first to reach;
   - `input/FILE.txt`: each input file, a record a block, a field a line, `NAME VALUE`, a number as a decimal and text quoted; `SYSIN.txt` is what the program accepts;

@@ -65,7 +65,9 @@ func (r *Result) coverage(rulesDir string) string {
 		"A rule that finds two totals the program adds up itself to differ, items of its own that it only adds to, says so: no input " +
 		"field sets either, so the search has nothing to change to reach it. A rule that finds a write or rewrite by key to fail says so " +
 		"too: the search fails a file only when it is opened or read, and a program that writes keys it made new, or rewrites the record " +
-		"it read, meets that failure only when something else changes the file meanwhile.\n")
+		"it read, meets that failure only when something else changes the file meanwhile. And a rule of a program called that takes " +
+		"a parameter to be what no call of this program passes, a direction it never asks for, says so, as do the rules of the paragraphs " +
+		"performed only from such rules: no run of this program reaches them, whatever its input.\n")
 	for u, unit := range r.Units {
 		level := "##"
 		if len(r.Units) > 1 {
@@ -80,7 +82,7 @@ func (r *Result) coverage(rulesDir string) string {
 				cell := "not reached: " + outcomes(table.Conditions, rl.Entries)
 				if c, ok := r.First[rule{u, t, i}]; ok {
 					cell = fmt.Sprintf("[case %s](%s/)", caseName(c), caseName(c))
-				} else if why := unit.mark(table, rl); why != unmarked {
+				} else if why := r.program.marks()[rule{u, t, i}]; why != unmarked {
 					cell = "not reached, " + why.String() + ": " + outcomes(table.Conditions, rl.Entries)
 				}
 				fmt.Fprintf(&b, "| %d | %s |\n", i+1, cell)

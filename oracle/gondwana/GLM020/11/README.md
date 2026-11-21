@@ -1,7 +1,9 @@
 # GLM020: case 11
 
-The run ended with return code 0.
+The run ended with return code 16.
+
+POLMST-F is missing, so opening it fails.
 
 The first case to reach:
 
-- [GLM020, ﾎｳｺｸ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLM020.md#ﾎｳｺｸ-rtn)
+- [GLM020, ｼｮｷ-RTN, rule 4](../../../../blueprints/gondwana/rules/GLM020.md#ｼｮｷ-rtn)

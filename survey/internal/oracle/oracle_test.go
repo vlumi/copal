@@ -41,3 +41,17 @@ func TestSearch(t *testing.T) {
 		t.Errorf("%d rules marked as own totals, want 1", own)
 	}
 }
+
+// checkUnreachable fails if a case reaches a rule marked as one no run of
+// the program can reach: taking a parameter to be what no call passes, or
+// in a paragraph performed only from such rules.
+func checkUnreachable(t *testing.T, r *Result) {
+	t.Helper()
+	marks := r.program.marks()
+	for reached := range r.First {
+		if why := marks[reached]; why == unpassed || why == unperformed {
+			table := r.Units[reached.unit].Tables[reached.table]
+			t.Errorf("%s: %s %s rule %d is reached, and marked as %s", r.Program, r.Units[reached.unit].Program, table.Paragraph, reached.rule+1, why)
+		}
+	}
+}

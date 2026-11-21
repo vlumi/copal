@@ -1,9 +1,7 @@
 # GLM020: case 18
 
-The run ended with return code 16.
-
-GLJRNL-F's directory is missing, so creating it fails.
+The run ended with return code 0.
 
 The first case to reach:
 
-- [GLM020, ｼｮｷ-RTN, rule 7](../../../../blueprints/gondwana/rules/GLM020.md#ｼｮｷ-rtn)
+- [GLM020, ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ-RTN, rule 6](../../../../blueprints/gondwana/rules/GLM020.md#ﾎｼｮｳ-ｼﾞｭﾝﾋﾞｷﾝ-rtn)

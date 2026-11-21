@@ -43,6 +43,7 @@ func TestGondwana(t *testing.T) {
 		if err != nil {
 			t.Fatalf("%s: %v", p.Name, err)
 		}
+		checkUnreachable(t, result)
 		golden.CompareFiles(t, result.Files("../../../blueprints/gondwana/rules"), dir)
 		results = append(results, result)
 		byName[p.Name] = result
