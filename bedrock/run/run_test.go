@@ -63,3 +63,32 @@ func TestStepTimeout(t *testing.T) {
 		t.Errorf("outcome %+v, want killed for running out of time", outcome)
 	}
 }
+
+// A program run with the library that keeps it from waiting for the disk
+// reads and writes its files as it does without it.
+func TestStepUnsynced(t *testing.T) {
+	programs, dir := t.TempDir(), t.TempDir()
+	if _, err := (Build{Dialect: cobol.IBM, Sources: "testdata/files", Copybooks: "testdata/copybooks", Out: programs}).Programs(); err != nil {
+		t.Fatal(err)
+	}
+	unsynced, err := Unsynced(filepath.Join(dir, "unsynced"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	in, out := filepath.Join(dir, "in"), filepath.Join(dir, "out")
+	if err := os.WriteFile(in, []byte("ALPHABRAVO"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	var stdout bytes.Buffer
+	outcome, err := Step{Programs: programs, Program: "COPYIT", DDs: map[string]string{"INFILE": in, "OUTFILE": out},
+		Stdout: &stdout, Unsynced: unsynced}.Run()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if outcome != (Outcome{RC: 2}) || stdout.String() != "COPIED 2\n" {
+		t.Errorf("outcome %+v, output %q, want return code 2 and COPIED 2", outcome, stdout.String())
+	}
+	if copied, err := os.ReadFile(out); err != nil || string(copied) != "ALPHABRAVO" {
+		t.Errorf("copied %q, %v, want both records", copied, err)
+	}
+}
