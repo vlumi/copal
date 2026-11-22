@@ -39,16 +39,24 @@ const timeout = 10 * time.Second
 const loadTimeout = time.Minute
 
 // runner runs a program on cases: the system's programs compiled with
-// trace code, and the loaders of the indexed files it reads. It keeps
-// each indexed file it has loaded, by its records, since most cases of a
-// search share most of their files and a copy is cheaper than a load.
+// trace code, and the loaders of the indexed files it reads, each named
+// for its file and its source, since the programs of a system share
+// their files and one loader serves them all. It keeps each indexed file
+// it has loaded, by its records, since most cases of a search share most
+// of their files and a copy is cheaper than a load. Its runs do not wait
+// for the disk: their files are thrown away.
 type runner struct {
 	program  *program
 	programs string
 	loaders  string
+	tools    map[string]tools // by file
+	unsynced string
 	loaded   string
 	loading  sync.Map // the file's name and records, hashed, to its *sync.Once
 }
+
+// tools are the executables that load and unload a file.
+type tools struct{ loader, unloader string }
 
 // result is what a run reached, and how it ended; and, for a run that
 // records its outputs, what it wrote to each file it writes or updates,
@@ -90,7 +98,7 @@ func (r *runner) run(c Case, dir string, record bool) (result, error) {
 		args = []string{strings.TrimRight(string(line[0]), " ")}
 	}
 	outcome, err := run.Step{Programs: r.programs, Program: executable(r.program.blueprint), Args: args, DDs: dds, Stdout: &stdout,
-		Stdin: bytes.NewReader(lines(c[sysin])), TraceFile: trace, Timeout: timeout}.Run()
+		Stdin: bytes.NewReader(lines(c[sysin])), TraceFile: trace, Timeout: timeout, Unsynced: r.unsynced}.Run()
 	if err != nil {
 		return result{}, err
 	}
@@ -147,8 +155,8 @@ func (r *runner) read(f blueprint.File, path, unloaded string) ([]byte, error) {
 		return nil, nil
 	}
 	if keyed(f) {
-		outcome, err := run.Step{Programs: r.loaders, Program: unloaderName(f), DDs: map[string]string{"UNLOADIN": path, "UNLOADOUT": unloaded},
-			Stdout: io.Discard, Timeout: loadTimeout}.Run()
+		outcome, err := run.Step{Programs: r.loaders, Program: r.tools[f.Name].unloader, DDs: map[string]string{"UNLOADIN": path, "UNLOADOUT": unloaded},
+			Stdout: io.Discard, Timeout: loadTimeout, Unsynced: r.unsynced}.Run()
 		if err == nil && (outcome.RC != 0 || outcome.Abended) {
 			err = fmt.Errorf("unloading %s: %+v", f.Name, outcome)
 		}
@@ -274,8 +282,8 @@ func (r *runner) loadInto(f blueprint.File, data []byte, path string) error {
 	if err := os.WriteFile(in, data, 0o644); err != nil {
 		return err
 	}
-	outcome, err := run.Step{Programs: r.loaders, Program: loaderName(f), DDs: map[string]string{"LOADIN": in, "LOADOUT": path},
-		Stdout: io.Discard, Timeout: loadTimeout}.Run()
+	outcome, err := run.Step{Programs: r.loaders, Program: r.tools[f.Name].loader, DDs: map[string]string{"LOADIN": in, "LOADOUT": path},
+		Stdout: io.Discard, Timeout: loadTimeout, Unsynced: r.unsynced}.Run()
 	if err == nil && (outcome.RC != 0 || outcome.Abended) {
 		err = fmt.Errorf("loading %s: %+v", f.Name, outcome)
 	}
@@ -408,7 +416,8 @@ func loaderSource(f blueprint.File, length, keyStart, keyLength int) string {
 // file the program uses, a loader and an unloader.
 func newRunner(p *program, sources, copybookDir, scratch string) (*runner, error) {
 	dir := filepath.Join(scratch, p.blueprint.Name)
-	r := &runner{program: p, programs: filepath.Join(scratch, "programs"), loaders: filepath.Join(dir, "loaders"), loaded: filepath.Join(dir, "loaded")}
+	r := &runner{program: p, programs: filepath.Join(scratch, "programs"), loaders: filepath.Join(scratch, "loaders"),
+		tools: map[string]tools{}, unsynced: filepath.Join(scratch, "unsynced", "unsynced.so"), loaded: filepath.Join(dir, "loaded")}
 	if err := os.MkdirAll(r.loaded, 0o755); err != nil {
 		return nil, err
 	}
@@ -417,38 +426,66 @@ func newRunner(p *program, sources, copybookDir, scratch string) (*runner, error
 			return nil, err
 		}
 	}
-	loaderSources := filepath.Join(dir, "loader-sources")
-	if err := os.MkdirAll(loaderSources, 0o755); err != nil {
-		return nil, err
+	if _, err := os.Stat(r.unsynced); os.IsNotExist(err) {
+		if _, err := run.Unsynced(filepath.Dir(r.unsynced)); err != nil {
+			return nil, err
+		}
 	}
-	for _, f := range p.files {
+	return r, r.buildTools(filepath.Join(dir, "loader-sources"))
+}
+
+// buildTools compiles the loader and the unloader of each indexed or
+// relative file of the program that another program's runner has not
+// compiled already, from sources written to a directory of its own.
+func (r *runner) buildTools(sources string) error {
+	if err := os.RemoveAll(sources); err != nil {
+		return err
+	}
+	if err := os.MkdirAll(sources, 0o755); err != nil {
+		return err
+	}
+	missing := false
+	for _, f := range r.program.files {
 		if !keyed(f) {
 			continue
 		}
-		root := fileRecord(p.recordsOf(f), f.Name)
+		root := fileRecord(r.program.recordsOf(f), f.Name)
 		if root == nil {
-			return nil, fmt.Errorf("%s: no record", f.Name)
+			return fmt.Errorf("%s: no record", f.Name)
 		}
 		length, keyStart, keyLength := root.Size(), 0, 0
 		if f.Organization == "INDEXED" {
 			key := find(root, f.RecordKey)
 			if key == nil {
-				return nil, fmt.Errorf("%s: no record key %s", f.Name, f.RecordKey)
+				return fmt.Errorf("%s: no record key %s", f.Name, f.RecordKey)
 			}
 			keyStart, keyLength = key.Start-root.Start+1, key.Size()
 		}
-		for name, source := range map[string]string{
-			loaderName(f):   loaderSource(f, length, keyStart, keyLength),
-			unloaderName(f): unloaderSource(f, length, keyStart, keyLength),
-		} {
-			if err := os.WriteFile(filepath.Join(loaderSources, name+".cbl"), []byte(source), 0o644); err != nil {
-				return nil, err
+		loader, unloader := loaderSource(f, length, keyStart, keyLength), unloaderSource(f, length, keyStart, keyLength)
+		t := tools{loader: toolName(loaderName(f), loader), unloader: toolName(unloaderName(f), unloader)}
+		r.tools[f.Name] = t
+		for name, source := range map[string]string{t.loader: loader, t.unloader: unloader} {
+			if _, err := os.Stat(filepath.Join(r.loaders, name)); err == nil {
+				continue
+			}
+			missing = true
+			if err := os.WriteFile(filepath.Join(sources, name+".cbl"), []byte(source), 0o644); err != nil {
+				return err
 			}
 		}
 	}
-	// The loaders are the oracle's own, in IBM's fixed format.
-	if _, err := (run.Build{Dialect: cobol.IBM, Sources: loaderSources, Copybooks: loaderSources, Out: r.loaders}).Programs(); err != nil {
-		return nil, err
+	if !missing {
+		return nil
 	}
-	return r, nil
+	// The loaders are the oracle's own, in IBM's fixed format.
+	_, err := (run.Build{Dialect: cobol.IBM, Sources: sources, Copybooks: sources, Out: r.loaders}).Programs()
+	return err
+}
+
+// toolName names a loader or an unloader's executable after its program
+// and its source, so that one compiled for a file laid out the same way
+// is the same one.
+func toolName(program, source string) string {
+	sum := sha256.Sum256([]byte(source))
+	return program + "-" + hex.EncodeToString(sum[:4])
 }
