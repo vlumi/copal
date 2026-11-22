@@ -44,12 +44,15 @@ func TestSearch(t *testing.T) {
 
 // checkUnreachable fails if a case reaches a rule marked as one no run of
 // the program can reach: taking a parameter to be what no call passes, or
-// in a paragraph performed only from such rules.
+// in a paragraph performed only from such rules; or reaches a rule marked
+// as finding a file to fail once open without failing a file itself.
 func checkUnreachable(t *testing.T, r *Result) {
 	t.Helper()
 	marks := r.program.marks()
-	for reached := range r.First {
-		if why := marks[reached]; why == unpassed || why == unperformed {
+	for reached, first := range r.First {
+		why := marks[reached]
+		_, _, fails := r.Cases[first].failedFile()
+		if why == unpassed || why == unperformed || why == failedLater && !fails {
 			table := r.Units[reached.unit].Tables[reached.table]
 			t.Errorf("%s: %s %s rule %d is reached, and marked as %s", r.Program, r.Units[reached.unit].Program, table.Paragraph, reached.rule+1, why)
 		}

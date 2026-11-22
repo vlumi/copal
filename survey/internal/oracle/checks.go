@@ -11,7 +11,8 @@ import (
 
 // mark is why the search cannot reach a rule no case reaches, when it
 // knows: the rule finds the program's own totals to differ, or a write
-// or rewrite by key to fail; or, in a program called, it takes a
+// or rewrite by key to fail, or a file to fail once it is open; or, in a
+// program called, it takes a
 // parameter to be what no call passes, or is in a paragraph performed
 // only from rules that do.
 type mark int
@@ -20,6 +21,7 @@ const (
 	unmarked mark = iota
 	ownTotals
 	failedWrite
+	failedLater
 	unpassed
 	unperformed
 )
@@ -29,6 +31,7 @@ func (m mark) String() string {
 	return map[mark]string{
 		ownTotals:   "totals the program adds up itself found to differ",
 		failedWrite: "a write or rewrite by key found to fail",
+		failedLater: "a file found to fail once open",
 		unpassed:    "a parameter taken to be what no call passes",
 		unperformed: "a paragraph performed only where no call leads",
 	}[m]
@@ -42,6 +45,8 @@ func (u Unit) mark(t rules.Table, r rules.Rule) mark {
 		return ownTotals
 	case failsWrite(t, r):
 		return failedWrite
+	case u.failsLater(t, r):
+		return failedLater
 	}
 	return unmarked
 }

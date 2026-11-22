@@ -65,7 +65,9 @@ func (r *Result) coverage(rulesDir string) string {
 		"A rule that finds two totals the program adds up itself to differ, items of its own that it only adds to, says so: no input " +
 		"field sets either, so the search has nothing to change to reach it. A rule that finds a write or rewrite by key to fail says so " +
 		"too: the search fails a file only when it is opened or read, and a program that writes keys it made new, or rewrites the record " +
-		"it read, meets that failure only when something else changes the file meanwhile. And a rule of a program called that takes " +
+		"it read, meets that failure only when something else changes the file meanwhile. A rule that finds a file to have failed once " +
+		"open says so: it takes the file's status after a read, a write, a rewrite, a delete or a close to be none that the file's records make, " +
+		"a record or the end for a read in order, a record or none of that key for a read by key, which is the device's doing. And a rule of a program called that takes " +
 		"a parameter to be what no call of this program passes, a direction it never asks for, says so, as do the rules of the paragraphs " +
 		"performed only from such rules: no run of this program reaches them, whatever its input.\n")
 	for u, unit := range r.Units {
