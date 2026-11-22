@@ -17,8 +17,9 @@ import (
 // the arguments on its command line, its DD names bound to files, what it
 // reads as SYSIN on standard input,
 // where its standard output and error go, for a program compiled with
-// trace code, the file the trace is written to, and, if set, how long it
-// may run before it is killed.
+// trace code, the file the trace is written to, if set, how long it
+// may run before it is killed, and the library Unsynced built, for a run
+// that is not to wait for the disk.
 type Step struct {
 	Programs  string
 	Program   string
@@ -28,6 +29,7 @@ type Step struct {
 	Stdout    io.Writer
 	TraceFile string
 	Timeout   time.Duration
+	Unsynced  string
 }
 
 // Outcome is how a run ended: its return code, or an abend, when the
@@ -55,6 +57,9 @@ func (s Step) Run() (Outcome, error) {
 	}
 	if s.TraceFile != "" {
 		cmd.Env = append(cmd.Env, "COB_SET_TRACE=Y", "COB_TRACE_FILE="+s.TraceFile)
+	}
+	if s.Unsynced != "" {
+		cmd.Env = append(cmd.Env, preload()+"="+s.Unsynced)
 	}
 	cmd.Stdin, cmd.Stdout, cmd.Stderr = s.Stdin, s.Stdout, s.Stdout
 	err := cmd.Run()
