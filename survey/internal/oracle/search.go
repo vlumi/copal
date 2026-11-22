@@ -1,9 +1,13 @@
 package oracle
 
 import (
+	"crypto/sha256"
+	"fmt"
+	"maps"
 	"os"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strconv"
 	"sync"
 
@@ -87,6 +91,19 @@ func newSearcher(system *blueprint.System, bp *blueprint.Program, copybookDir, s
 	return &searcher{program: p, runner: r, scratch: filepath.Join(scratch, bp.Name)}, nil
 }
 
+// sum identifies a case by what it holds: its inputs by name, and the
+// records of each in order.
+func (c Case) sum() [sha256.Size]byte {
+	var held []byte
+	for _, name := range slices.Sorted(maps.Keys(c)) {
+		held = fmt.Appendf(held, "%s\x00%d\x00", name, len(c[name]))
+		for _, r := range c[name] {
+			held = append(fmt.Appendf(held, "%d\x00", len(r)), r...)
+		}
+	}
+	return sha256.Sum256(held)
+}
+
 // found is a case the search kept, and the rules its run reached.
 type found struct {
 	c       Case
@@ -95,7 +112,8 @@ type found struct {
 
 // search tries every lever on the base case, then on each case that
 // reached a rule no case before it had, round by round until a round
-// finds none: every case kept reaches a new rule, so the rounds end.
+// finds none: every case kept reaches a new rule, so the rounds end. Two
+// levers in either order make the same case, which is run once.
 func (s *searcher) search() ([]found, error) {
 	var kept []found
 	reached := map[rule]bool{}
@@ -124,11 +142,14 @@ func (s *searcher) search() ([]found, error) {
 	if err != nil {
 		return nil, err
 	}
+	tried := map[[sha256.Size]byte]bool{s.program.base().sum(): true}
 	for len(frontier) > 0 {
 		var candidates []Case
 		for _, c := range frontier {
 			for _, l := range levers {
-				if next, ok := l.apply(s.program, c); ok {
+				next, ok := l.apply(s.program, c)
+				if ok && !tried[next.sum()] {
+					tried[next.sum()] = true
 					candidates = append(candidates, next)
 				}
 			}
