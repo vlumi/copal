@@ -91,7 +91,8 @@ func (p *program) levers() []lever {
 			for _, pair := range relations(c) {
 				for _, to := range p.callerOrigins(u, pair[0]) {
 					for _, from := range p.callerOrigins(u, pair[1]) {
-						if to.field == from.field || to.part != (part{}) || from.part != (part{}) {
+						digits := numeric(to.field) && from.part.length == to.field.Digits && to.field.Scale == 0
+						if to.field == from.field || to.part != (part{}) || from.part != (part{}) && !digits {
 							continue
 						}
 						for _, delta := range []int64{0, 1, -1} {
@@ -662,25 +663,80 @@ func (p *program) callerOrigins(u Unit, item string) []target {
 	}
 	targets = p.originsIn(u, item)
 	for _, o := range u.flow.Origins(item) {
-		if o.Parameter != 0 {
-			add(p.inCaller(u, o.Item))
+		if o.Parameter == 0 {
+			continue
 		}
+		sites := p.inCaller(u, o.Item)
+		if moved, ok := u.movedFrom(item, o.Item); ok {
+			for i := range sites {
+				sites[i].part = moved.inside(sites[i].part)
+			}
+		}
+		add(sites)
 	}
 	return targets
 }
 
+// movedFrom is the part of an item that another has its value from, when
+// a statement moves the one into bytes the other is some of: the day of
+// a date, from the last two digits of a month and day moved into the
+// date's last four.
+func (u Unit) movedFrom(item, from string) (part, bool) {
+	held, source := u.declared(item), u.declared(from)
+	if held == nil || source == nil {
+		return part{}, false
+	}
+	for _, e := range u.flow.Lineage {
+		into := u.declared(e.To)
+		if e.From != from || e.FromFile || e.FromLiteral || into == nil {
+			continue
+		}
+		start, length := into.Start+max(e.ToStart, 1)-1, e.ToLength
+		if e.ToStart == 0 {
+			length = into.Size()
+		}
+		at := held.Start - start + max(e.FromStart, 1) - 1
+		if held.Start >= start && held.Start+held.Size() <= start+length && at+held.Size() <= source.Size() && held.Size() < source.Size() {
+			return part{offset: at, length: held.Size()}, true
+		}
+	}
+	return part{}, false
+}
+
+// declared finds an item of the unit by name.
+func (u Unit) declared(name string) *layout.Field {
+	for _, r := range u.records.All() {
+		if f := find(r, name); f != nil {
+			return f
+		}
+	}
+	return nil
+}
+
+// inside is a part as a part of another: itself, of a whole field.
+func (pt part) inside(outer part) part {
+	if outer == (part{}) {
+		return pt
+	}
+	return part{offset: outer.offset + pt.offset, length: pt.length}
+}
+
 // within narrows targets to a part of their fields: the bytes of an
 // argument a called program's item is over, when no field of the caller
-// is over exactly those. A target that is a part already, or whose field
-// is shorter than the part reaches, is left out.
+// is over exactly those. A target that is a part already is narrowed to
+// the part of that part, and one the part reaches beyond is left out.
 func within(targets []target, pt part) []target {
 	if pt == (part{}) {
 		return targets
 	}
 	var parts []target
 	for _, t := range targets {
-		if t.part == (part{}) && pt.offset+pt.length <= t.field.Length {
-			t.part = pt
+		room := t.field.Length
+		if t.part != (part{}) {
+			room = t.part.length
+		}
+		if pt.offset+pt.length <= room {
+			t.part = pt.inside(t.part)
 			parts = append(parts, t)
 		}
 	}
@@ -899,13 +955,20 @@ func (l lever) apply(p *program, c Case) (Case, bool) {
 }
 
 // valueOf reads an input field's value from the first record of a case
-// that has it, give or take a delta, for another field.
+// that has it, give or take a delta, for another field: the digits of a
+// part of it, for a field of as many digits, a month a program takes from
+// its command line for the month a record holds.
 func (p *program) valueOf(c Case, from target, to *layout.Field, delta int64) (value, bool) {
 	in := p.input(from.input)
 	s := p.shapes[from.input]
 	for _, r := range c[from.input] {
 		if !s.has(in, r, from.field) {
 			continue
+		}
+		if from.part != (part{}) {
+			start := from.field.Start - in.root.Start + from.part.offset
+			n, err := strconv.ParseInt(string(r[start:start+from.part.length]), 10, 64)
+			return number(n + delta), err == nil
 		}
 		if numeric(from.field) && numeric(to) {
 			n, err := in.layout.Number(r, from.field.Name)

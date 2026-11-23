@@ -1,6 +1,6 @@
 # GLD040: cases
 
-32 cases reach 61 of the 75 rules of GLD040's decision tables, and of the programs it calls, 13 of the 16 of GLC020, 6 of the 14 of GLC050. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's. A rule that finds two totals the program adds up itself to differ, items of its own that it only adds to, says so: no input field sets either, so the search has nothing to change to reach it. A rule that finds a write or rewrite by key to fail says so too: the search fails a file only when it is opened or read, and a program that writes keys it made new, or rewrites the record it read, meets that failure only when something else changes the file meanwhile. A rule that finds a file to have failed once open says so: it takes the file's status after a read, a write, a rewrite, a delete or a close to be none that the file's records make, a record or the end for a read in order, a record or none of that key for a read by key, which is the device's doing. And a rule of a program called that takes a parameter to be what no call of this program passes, a direction it never asks for, says so, as do the rules of the paragraphs performed only from such rules: no run of this program reaches them, whatever its input.
+33 cases reach 61 of the 75 rules of GLD040's decision tables, and of the programs it calls, 14 of the 16 of GLC020, 6 of the 14 of GLC050. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's. A rule that finds two totals the program adds up itself to differ, items of its own that it only adds to, says so: no input field sets either, so the search has nothing to change to reach it. A rule that finds a write or rewrite by key to fail says so too: the search fails a file only when it is opened or read, and a program that writes keys it made new, or rewrites the record it read, meets that failure only when something else changes the file meanwhile. A rule that finds a file to have failed once open says so: it takes the file's status after a read, a write, a rewrite, a delete or a close to be none that the file's records make, a record or the end for a read in order, a record or none of that key for a read by key, which is the device's doing. And a rule of a program called that takes a parameter to be what no call of this program passes, a direction it never asks for, says so, as do the rules of the paragraphs performed only from such rules: no run of this program reaches them, whatever its input.
 
 ## GLD040
 
@@ -88,11 +88,11 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 14](14/) |
-| 2 | [case 29](29/) |
-| 3 | [case 28](28/) |
+| 2 | [case 30](30/) |
+| 3 | [case 29](29/) |
 | 4 | [case 20](20/) |
-| 5 | [case 31](31/) |
-| 6 | [case 30](30/) |
+| 5 | [case 32](32/) |
+| 6 | [case 31](31/) |
 | 7 | [case 21](21/) |
 | 8 | [case 23](23/) |
 | 9 | [case 22](22/) |
@@ -166,9 +166,9 @@
 | --: | --- |
 | 1 | [case 24](24/) |
 | 2 | [case 23](23/) |
-| 3 | not reached: `LK-ﾈﾝ = 0` N, `LK-ﾍﾝｶﾝｽﾞﾐ` N, `WS-MM < 1 OR WS-MM > 12` N, `WS-DD < 1 OR WS-DD > 31` Y |
+| 3 | [case 27](27/) |
 | 4 | not reached: `LK-ﾈﾝ = 0` N, `LK-ﾍﾝｶﾝｽﾞﾐ` N, `WS-MM < 1 OR WS-MM > 12` N, `WS-DD < 1 OR WS-DD > 31` N, `WS-YYYYMMDD < ｹﾞﾝｺﾞｳ-ｶｲｼﾋﾞ(ｹﾞﾝｺﾞｳ-IX)` Y |
-| 5 | [case 32](32/) |
+| 5 | [case 33](33/) |
 | 6 | [case 26](26/) |
 | 7 | [case 18](18/) |
 
@@ -201,4 +201,4 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 18](18/) |
-| 2 | [case 27](27/) |
+| 2 | [case 28](28/) |

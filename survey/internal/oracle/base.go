@@ -427,12 +427,18 @@ func (p *program) typicalValue(f *layout.Field, kind string, index int, date int
 }
 
 // dateValue is a date in a date field's form: eight digits, a month in
-// six, or six digits, or fourteen with a time of day.
+// six, or six digits, or fourteen with a time of day; and in a number of
+// fewer digits than the form has, as many of its last as fit, a month
+// and a day in four, so that the field holds digits whatever part of a
+// date it is.
 func dateValue(f *layout.Field, date int64) value {
 	if f.Digits == 6 && (strings.Contains(f.Name, "MONTH") || strings.Contains(f.Name, "YYMM")) {
 		return number(date / 100)
 	}
-	return number(dateOf(f.Digits, date))
+	if n := dateOf(f.Digits, date); !numeric(f) || n <= largest(f) {
+		return number(n)
+	}
+	return number(date % pow10(f.Digits))
 }
 
 // dateOf is a date in a number of digits: eight, six without the
