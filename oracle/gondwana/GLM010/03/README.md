@@ -1,9 +1,19 @@
 # GLM010: case 03
 
-The run ended with return code 8.
+The run ended with return code 0.
 
 The first case to reach:
 
-- [GLM010, ｼｮｷ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLM010.md#ｼｮｷ-rtn)
-- [GLC020, ﾜﾚｷ-ﾍﾝｶﾝ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLC020.md#ﾜﾚｷ-ﾍﾝｶﾝ-rtn)
-- [GLC020, ﾜﾚｷ-ﾍﾝｶﾝ-RTN, in its loop, rule 2](../../../../blueprints/gondwana/rules/GLC020.md#ﾜﾚｷ-ﾍﾝｶﾝ-rtn-in-its-loop)
+- [GLM010, ｼｮｷ-RTN, rule 8](../../../../blueprints/gondwana/rules/GLM010.md#ｼｮｷ-rtn)
+- [GLM010, ｾﾝﾀｸ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLM010.md#ｾﾝﾀｸ-rtn)
+- [GLM010, ｾﾝﾀｸ-RTN, in its loop, rule 1](../../../../blueprints/gondwana/rules/GLM010.md#ｾﾝﾀｸ-rtn-in-its-loop)
+- [GLM010, ｾﾝﾀｸ-RTN, in its loop, rule 2](../../../../blueprints/gondwana/rules/GLM010.md#ｾﾝﾀｸ-rtn-in-its-loop)
+- [GLM010, ﾊﾝﾃｲ-RTN, rule 4](../../../../blueprints/gondwana/rules/GLM010.md#ﾊﾝﾃｲ-rtn)
+- [GLM010, ﾊﾝﾃｲ-RTN, rule 5](../../../../blueprints/gondwana/rules/GLM010.md#ﾊﾝﾃｲ-rtn)
+- [GLM010, ﾜﾀｼ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLM010.md#ﾜﾀｼ-rtn)
+- [GLM010, ｻｸｾｲ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLM010.md#ｻｸｾｲ-rtn)
+- [GLM010, ｻｸｾｲ-RTN, in its loop, rule 1](../../../../blueprints/gondwana/rules/GLM010.md#ｻｸｾｲ-rtn-in-its-loop)
+- [GLM010, ﾃﾞｰﾀ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLM010.md#ﾃﾞｰﾀ-rtn)
+- [GLM010, ﾃﾞｰﾀ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLM010.md#ﾃﾞｰﾀ-rtn)
+- [GLM010, PRMREQ-ｶｷｺﾐ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLM010.md#prmreq-ｶｷｺﾐ-rtn)
+- [GLM010, ｾｲｷﾞｮ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLM010.md#ｾｲｷﾞｮ-rtn)

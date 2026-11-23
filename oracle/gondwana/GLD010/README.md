@@ -47,13 +47,13 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 02](02/) |
-| 2 | [case 16](16/) |
+| 2 | [case 17](17/) |
 | 3 | not reached, a file found to fail once open: `NP-ｼｮｳﾋﾝ = SPACES` N, `WS-ﾘﾕｳ-ﾅｼ` Y, `WS-POLMST-OK` N, `WS-POLMST-ﾅｼ` N |
 | 4 | [case 04](04/) |
-| 5 | [case 20](20/) |
-| 6 | [case 18](18/) |
-| 7 | [case 17](17/) |
-| 8 | [case 19](19/) |
+| 5 | [case 21](21/) |
+| 6 | [case 19](19/) |
+| 7 | [case 18](18/) |
+| 8 | [case 16](16/) |
 | 9 | [case 01](01/) |
 
 ### [ｼｮｳﾋﾝ-ｹﾝｻｸ-RTN](../../../blueprints/gondwana/rules/GLD010.md#ｼｮｳﾋﾝ-ｹﾝｻｸ-rtn)
@@ -68,11 +68,11 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 19](19/) |
+| 1 | [case 16](16/) |
 | 2 | not reached: `WS-ﾈﾝﾚｲ < WS-ｼｮｳﾋﾝ-ｻｲﾃｲﾈﾝﾚｲ(WS-ｼｮｳﾋﾝ-IX) OR WS-ﾈﾝﾚｲ > WS-ｼｮｳﾋﾝ-ｻｲｺｳﾈﾝﾚｲ(WS-ｼｮｳﾋﾝ-IX)` Y, `WS-N = 1` N |
 | 3 | [case 27](27/) |
 | 4 | not reached: `WS-ﾈﾝﾚｲ < WS-ｼｮｳﾋﾝ-ｻｲﾃｲﾈﾝﾚｲ(WS-ｼｮｳﾋﾝ-IX) OR WS-ﾈﾝﾚｲ > WS-ｼｮｳﾋﾝ-ｻｲｺｳﾈﾝﾚｲ(WS-ｼｮｳﾋﾝ-IX)` N, `WS-N = 1` N, `WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(WS-N) < WS-ｼｮｳﾋﾝ-ｻｲﾃｲｷﾝｶﾞｸ(WS-ｼｮｳﾋﾝ-IX) OR WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(WS-N) > WS-ｼｮｳﾋﾝ-ｻｲｺｳｷﾝｶﾞｸ(WS-ｼｮｳﾋﾝ-IX)` Y |
-| 5 | [case 21](21/) |
+| 5 | [case 22](22/) |
 | 6 | [case 26](26/) |
 
 ### [ﾄｸﾔｸ-ｹﾝｻ-RTN](../../../blueprints/gondwana/rules/GLD010.md#ﾄｸﾔｸ-ｹﾝｻ-rtn)
@@ -205,13 +205,13 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | not reached: `WS-A-DD < WS-B-DD` Y, `WS-ﾂｷｽｳ < 0` Y, `WS-ｱﾏﾘ < 6` N |
-| 2 | [case 19](19/) |
-| 3 | [case 24](24/) |
-| 4 | [case 23](23/) |
+| 2 | [case 20](20/) |
+| 3 | [case 25](25/) |
+| 4 | [case 24](24/) |
 | 5 | not reached: `WS-A-DD < WS-B-DD` N, `WS-ﾂｷｽｳ < 0` Y, `WS-ｱﾏﾘ < 6` N |
-| 6 | [case 22](22/) |
-| 7 | [case 25](25/) |
-| 8 | [case 21](21/) |
+| 6 | [case 23](23/) |
+| 7 | [case 26](26/) |
+| 8 | [case 16](16/) |
 
 ## GLC050
 

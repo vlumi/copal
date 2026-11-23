@@ -4,4 +4,4 @@ The run ended with return code 4.
 
 The first case to reach:
 
-- [GLC010, ﾒｲﾝ-RTN, rule 6](../../../../blueprints/gondwana/rules/GLC010.md#ﾒｲﾝ-rtn)
+- [GLD010, ﾈﾝﾚｲ-ｷﾝｶﾞｸ-ｹﾝｻ-RTN, rule 5](../../../../blueprints/gondwana/rules/GLD010.md#ﾈﾝﾚｲ-ｷﾝｶﾞｸ-ｹﾝｻ-rtn)

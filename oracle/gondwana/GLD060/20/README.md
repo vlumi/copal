@@ -1,7 +1,11 @@
 # GLD060: case 20
 
-The run ended with return code 0.
+The run ended with return code 16.
+
+CSVTB-F is missing, so opening it fails.
 
 The first case to reach:
 
-- [GLC020, ﾊﾝｲ-ｹﾝｻ-RTN, rule 5](../../../../blueprints/gondwana/rules/GLC020.md#ﾊﾝｲ-ｹﾝｻ-rtn)
+- [GLD060, ﾌﾘｶｴ-ﾊﾝﾃｲ-RTN, rule 4](../../../../blueprints/gondwana/rules/GLD060.md#ﾌﾘｶｴ-ﾊﾝﾃｲ-rtn)
+- [GLC030, ﾒｲﾝ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLC030.md#ﾒｲﾝ-rtn)
+- [GLC030, ﾖﾐｺﾐ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLC030.md#ﾖﾐｺﾐ-rtn)
