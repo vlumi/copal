@@ -17,7 +17,9 @@ import (
 // give or take one, or a change to an input's records: none at all, one
 // of each type more, none of one type, those of one type of none, or as
 // many as a count, or one more under each key of several parts; or the
-// input file failed.
+// value of a field of another input's record unlike its others, in every
+// record or in one more; or a value in the last record alone, of records
+// that differ; or the input file failed.
 type lever struct {
 	input  string
 	field  *layout.Field
@@ -28,6 +30,8 @@ type lever struct {
 	change recordChange
 	kind   int
 	count  int
+	// last is whether a field change is to the last record alone.
+	last bool
 	// failure is how the input fails, for a lever that fails it.
 	failure failure
 	// also is a second field change made with this one, for a condition
@@ -46,6 +50,8 @@ const (
 	untyped
 	repeated
 	continued
+	copyAnother
+	addAnother
 	failFile
 )
 
@@ -105,8 +111,30 @@ func (p *program) levers() []lever {
 			}
 		}
 	}
+	for _, u := range p.units {
+		for _, c := range lookups(u.source) {
+			for _, pair := range relations(c) {
+				for _, to := range p.callerOrigins(u, pair[0]) {
+					for _, from := range p.callerOrigins(u, pair[1]) {
+						for _, l := range anotherLevers(to, from) {
+							add(l)
+						}
+					}
+				}
+			}
+		}
+	}
 	for _, ref := range p.references() {
 		add(lever{input: ref[0].input, field: ref[0].field, from: ref[1], change: copyField})
+		for _, l := range anotherLevers(ref[0], ref[1]) {
+			add(l)
+		}
+	}
+	for _, l := range levers {
+		if l.change == setField && l.also == nil {
+			l.last = true
+			add(l)
+		}
 	}
 	for _, l := range p.dateLevers() {
 		add(l)
@@ -131,6 +159,21 @@ func (p *program) levers() []lever {
 		add(l)
 	}
 	return levers
+}
+
+// anotherLevers are the levers that give a field the value another
+// input's field has in a record unlike its others, for a field the
+// program finds a record of the other input by: in every record, an
+// application naming a second product as its rider, and in one more, a
+// rate for the second product.
+func anotherLevers(to, from target) []lever {
+	if to.input == from.input || to.part != (part{}) || from.part != (part{}) {
+		return nil
+	}
+	return []lever{
+		{input: to.input, field: to.field, from: from, change: copyAnother},
+		{input: to.input, field: to.field, from: from, change: addAnother},
+	}
 }
 
 // counts are the numbers of records worth trying an input with: one more
@@ -216,6 +259,22 @@ func conjuncts(c *cobol.Condition) []*cobol.Condition {
 		return parts
 	}
 	return []*cobol.Condition{c}
+}
+
+// lookups lists the conditions a program finds an entry of a table by:
+// those of the WHENs of its SEARCHes.
+func lookups(source *cobol.Program) []*cobol.Condition {
+	var conditions []*cobol.Condition
+	for _, para := range source.Paragraphs {
+		cobol.Walk(para.Statements, func(s cobol.Statement) {
+			for _, b := range s.Branches {
+				if s.Verb == "SEARCH" && b.Condition != nil {
+					conditions = append(conditions, b.Condition)
+				}
+			}
+		})
+	}
+	return conditions
 }
 
 // conditions lists every condition the program tests.
@@ -918,15 +977,33 @@ func (l lever) apply(p *program, c Case) (Case, bool) {
 	default:
 		in := p.input(l.input)
 		v := l.value
-		if l.change == copyField {
-			var ok bool
-			if v, ok = p.valueOf(next, l.from, l.field, l.delta); !ok {
+		ok := true
+		switch l.change {
+		case copyField:
+			v, ok = p.valueOf(next[l.from.input], l.from, l.field, l.delta)
+		case copyAnother, addAnother:
+			if ok = len(records) > 0 && p.another(next, l.from); ok {
+				others := next[l.from.input]
+				v, ok = p.valueOf(others[len(others)-1:], l.from, l.field, 0)
+			}
+		}
+		if !ok {
+			return nil, false
+		}
+		only := -1
+		switch {
+		case l.change == addAnother:
+			records = append(records, slices.Clone(records[len(records)-1]))
+			next[l.input], only = records, len(records)-1
+		case l.last:
+			if !s.lastDiffers(in, records) {
 				return nil, false
 			}
+			only = len(records) - 1
 		}
 		changed := false
 		for i, r := range records {
-			if !s.has(in, r, l.field) {
+			if !s.has(in, r, l.field) || only >= 0 && i != only {
 				continue
 			}
 			before := slices.Clone(r)
@@ -941,7 +1018,7 @@ func (l lever) apply(p *program, c Case) (Case, bool) {
 			}
 			records[i] = r
 		}
-		if !changed {
+		if !changed || l.change == addAnother && !p.distinct(in, records[:only], records[only]) {
 			return nil, false
 		}
 		if l.also != nil {
@@ -954,14 +1031,14 @@ func (l lever) apply(p *program, c Case) (Case, bool) {
 	return next, true
 }
 
-// valueOf reads an input field's value from the first record of a case
+// valueOf reads an input field's value from the first of its records
 // that has it, give or take a delta, for another field: the digits of a
 // part of it, for a field of as many digits, a month a program takes from
 // its command line for the month a record holds.
-func (p *program) valueOf(c Case, from target, to *layout.Field, delta int64) (value, bool) {
+func (p *program) valueOf(records [][]byte, from target, to *layout.Field, delta int64) (value, bool) {
 	in := p.input(from.input)
 	s := p.shapes[from.input]
-	for _, r := range c[from.input] {
+	for _, r := range records {
 		if !s.has(in, r, from.field) {
 			continue
 		}
@@ -1001,6 +1078,22 @@ func (in input) lastOfKey() (*layout.Field, bool) {
 		return nil, false
 	}
 	return parts[len(parts)-1], true
+}
+
+// lastDiffers reports whether the last of an input's records differs from
+// the first of its type, which a change to it alone then tells further
+// apart; the one record of a type is not another of anything.
+func (s shape) lastDiffers(in input, records [][]byte) bool {
+	if len(records) < 2 {
+		return false
+	}
+	last := records[len(records)-1]
+	for _, r := range records[:len(records)-1] {
+		if s.typeOfRecord(in, r) == s.typeOfRecord(in, last) {
+			return !slices.Equal(r, last)
+		}
+	}
+	return false
 }
 
 // typeOfRecord is the type a record is of, by its discriminator; -1 for a

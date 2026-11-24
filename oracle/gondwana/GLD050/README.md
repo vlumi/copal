@@ -49,7 +49,7 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 01](01/) |
-| 2 | [case 18](18/) |
+| 2 | [case 19](19/) |
 
 ### [ｹﾝｻﾝ-RTN](../../../blueprints/gondwana/rules/GLD050.md#ｹﾝｻﾝ-rtn)
 
@@ -66,19 +66,19 @@
 | --: | --- |
 | 1 | [case 01](01/) |
 | 2 | not reached, a file found to fail once open: `WS-POLMST-ﾅｼ` N, `WS-POLMST-OK` N |
-| 3 | [case 26](26/) |
+| 3 | [case 18](18/) |
 | 4 | not reached: `WS-POLMST-ﾅｼ` N, `WS-ﾘﾕｳ-ﾅｼ` Y, `WS-POLMST-OK` Y, `PM-ﾊﾗｲｺﾐﾁｭｳ` Y, `ZG-D-ﾌﾘｶｴｽﾞﾐ` Y, `WS-POLMST-OK, again` N |
 | 5 | [case 17](17/) |
 | 6 | not reached: `WS-POLMST-ﾅｼ` N, `WS-ﾘﾕｳ-ﾅｼ` Y, `WS-POLMST-OK` Y, `PM-ﾊﾗｲｺﾐﾁｭｳ` Y, `ZG-D-ﾌﾘｶｴｽﾞﾐ` N, `WS-POLMST-OK, again` N |
-| 7 | [case 18](18/) |
-| 8 | [case 24](24/) |
+| 7 | [case 19](19/) |
+| 8 | [case 25](25/) |
 
 ### [ｷﾝｶﾞｸ-ｹﾝｻ-RTN](../../../blueprints/gondwana/rules/GLD050.md#ｷﾝｶﾞｸ-ｹﾝｻ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 17](17/) |
-| 2 | [case 24](24/) |
+| 2 | [case 25](25/) |
 
 ### [ﾌﾘｶｴｽﾞﾐ-RTN](../../../blueprints/gondwana/rules/GLD050.md#ﾌﾘｶｴｽﾞﾐ-rtn)
 
@@ -94,19 +94,19 @@
 | 8 | [case 41](41/) |
 | 9 | [case 39](39/) |
 | 10 | [case 29](29/) |
-| 11 | [case 25](25/) |
+| 11 | [case 26](26/) |
 | 12 | [case 17](17/) |
 
 ### [ﾌﾘｶｴﾌﾉｳ-RTN](../../../blueprints/gondwana/rules/GLD050.md#ﾌﾘｶｴﾌﾉｳ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 18](18/) |
-| 2 | [case 19](19/) |
-| 3 | [case 20](20/) |
-| 4 | [case 21](21/) |
-| 5 | [case 22](22/) |
-| 6 | [case 23](23/) |
+| 1 | [case 19](19/) |
+| 2 | [case 20](20/) |
+| 3 | [case 21](21/) |
+| 4 | [case 22](22/) |
+| 5 | [case 23](23/) |
+| 6 | [case 24](24/) |
 | 7 | [case 31](31/) |
 | 8 | [case 32](32/) |
 | 9 | [case 33](33/) |

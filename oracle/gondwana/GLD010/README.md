@@ -1,6 +1,6 @@
 # GLD010: cases
 
-32 cases reach 49 of the 61 rules of GLD010's decision tables, and of the programs it calls, 5 of the 16 of GLC020, 6 of the 8 of GLC010, 6 of the 14 of GLC050. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's. A rule that finds two totals the program adds up itself to differ, items of its own that it only adds to, says so: no input field sets either, so the search has nothing to change to reach it. A rule that finds a write or rewrite by key to fail says so too: the search fails a file only when it is opened or read, and a program that writes keys it made new, or rewrites the record it read, meets that failure only when something else changes the file meanwhile. A rule that finds a file to have failed once open says so: it takes the file's status after a read, a write, a rewrite, a delete or a close to be none that the file's records make, a record or the end for a read in order, a record or none of that key for a read by key, which is the device's doing. And a rule of a program called that takes a parameter to be what no call of this program passes, a direction it never asks for, says so, as do the rules of the paragraphs performed only from such rules: no run of this program reaches them, whatever its input.
+35 cases reach 54 of the 61 rules of GLD010's decision tables, and of the programs it calls, 5 of the 16 of GLC020, 6 of the 8 of GLC010, 6 of the 14 of GLC050. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's. A rule that finds two totals the program adds up itself to differ, items of its own that it only adds to, says so: no input field sets either, so the search has nothing to change to reach it. A rule that finds a write or rewrite by key to fail says so too: the search fails a file only when it is opened or read, and a program that writes keys it made new, or rewrites the record it read, meets that failure only when something else changes the file meanwhile. A rule that finds a file to have failed once open says so: it takes the file's status after a read, a write, a rewrite, a delete or a close to be none that the file's records make, a record or the end for a read in order, a record or none of that key for a read by key, which is the device's doing. And a rule of a program called that takes a parameter to be what no call of this program passes, a direction it never asks for, says so, as do the rules of the paragraphs performed only from such rules: no run of this program reaches them, whatever its input.
 
 ## GLD010
 
@@ -69,27 +69,27 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 16](16/) |
-| 2 | not reached: `WS-ﾈﾝﾚｲ < WS-ｼｮｳﾋﾝ-ｻｲﾃｲﾈﾝﾚｲ(WS-ｼｮｳﾋﾝ-IX) OR WS-ﾈﾝﾚｲ > WS-ｼｮｳﾋﾝ-ｻｲｺｳﾈﾝﾚｲ(WS-ｼｮｳﾋﾝ-IX)` Y, `WS-N = 1` N |
-| 3 | [case 27](27/) |
-| 4 | not reached: `WS-ﾈﾝﾚｲ < WS-ｼｮｳﾋﾝ-ｻｲﾃｲﾈﾝﾚｲ(WS-ｼｮｳﾋﾝ-IX) OR WS-ﾈﾝﾚｲ > WS-ｼｮｳﾋﾝ-ｻｲｺｳﾈﾝﾚｲ(WS-ｼｮｳﾋﾝ-IX)` N, `WS-N = 1` N, `WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(WS-N) < WS-ｼｮｳﾋﾝ-ｻｲﾃｲｷﾝｶﾞｸ(WS-ｼｮｳﾋﾝ-IX) OR WS-ﾎｼｮｳ-ｷﾝｶﾞｸ(WS-N) > WS-ｼｮｳﾋﾝ-ｻｲｺｳｷﾝｶﾞｸ(WS-ｼｮｳﾋﾝ-IX)` Y |
-| 5 | [case 22](22/) |
-| 6 | [case 26](26/) |
+| 2 | [case 34](34/) |
+| 3 | [case 26](26/) |
+| 4 | [case 32](32/) |
+| 5 | [case 27](27/) |
+| 6 | [case 25](25/) |
 
 ### [ﾄｸﾔｸ-ｹﾝｻ-RTN](../../../blueprints/gondwana/rules/GLD010.md#ﾄｸﾔｸ-ｹﾝｻ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | not reached: `NP-ﾄｸﾔｸ-ｼｮｳﾋﾝ(WS-ﾄｸﾔｸ-N) = SPACES` N, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = NP-ﾄｸﾔｸ-ｼｮｳﾋﾝ(WS-ﾄｸﾔｸ-N)` Y, `WS-ﾘﾕｳ-ﾅｼ` Y |
-| 2 | [case 26](26/) |
-| 3 | not reached: `NP-ﾄｸﾔｸ-ｼｮｳﾋﾝ(WS-ﾄｸﾔｸ-N) = SPACES` N, `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = NP-ﾄｸﾔｸ-ｼｮｳﾋﾝ(WS-ﾄｸﾔｸ-N)` N, `WS-ﾘﾕｳ-ﾅｼ` N |
+| 1 | [case 27](27/) |
+| 2 | [case 25](25/) |
+| 3 | [case 33](33/) |
 | 4 | [case 28](28/) |
 
 ### [ﾄｸﾔｸ-ｷｿｸ-RTN](../../../blueprints/gondwana/rules/GLD010.md#ﾄｸﾔｸ-ｷｿｸ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 26](26/) |
-| 2 | not reached: `NOT WS-ｼｮｳﾋﾝ-ﾄｸﾔｸ(WS-ｼｮｳﾋﾝ-IX) OR WS-ｼｮｳﾋﾝ-ｼｭﾙｲ(WS-ｼｮｳﾋﾝ-IX) = WS-ｼｭｹｲﾔｸ-ｼｭﾙｲ OR (WS-ﾄｸﾔｸ-N = 2 AND NP-ﾄｸﾔｸ-ｼｮｳﾋﾝ(2) = NP-ﾄｸﾔｸ-ｼｮｳﾋﾝ(1))` N |
+| 1 | [case 25](25/) |
+| 2 | [case 27](27/) |
 
 ### [ﾄｳﾛｸ-RTN](../../../blueprints/gondwana/rules/GLD010.md#ﾄｳﾛｸ-rtn)
 
@@ -206,11 +206,11 @@
 | --: | --- |
 | 1 | not reached: `WS-A-DD < WS-B-DD` Y, `WS-ﾂｷｽｳ < 0` Y, `WS-ｱﾏﾘ < 6` N |
 | 2 | [case 20](20/) |
-| 3 | [case 25](25/) |
-| 4 | [case 24](24/) |
+| 3 | [case 24](24/) |
+| 4 | [case 23](23/) |
 | 5 | not reached: `WS-A-DD < WS-B-DD` N, `WS-ﾂｷｽｳ < 0` Y, `WS-ｱﾏﾘ < 6` N |
-| 6 | [case 23](23/) |
-| 7 | [case 26](26/) |
+| 6 | [case 22](22/) |
+| 7 | [case 25](25/) |
 | 8 | [case 16](16/) |
 
 ## GLC050
@@ -242,4 +242,4 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 31](31/) |
-| 2 | [case 32](32/) |
+| 2 | [case 35](35/) |

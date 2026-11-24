@@ -10,10 +10,10 @@
 | --: | --- |
 | 1 | [case 03](03/) |
 | 2 | not reached: `WS-ﾍﾝｶﾝｹｯｶ = 0` Y, `WS-PRMHST-OK` N, `WS-ｴﾗｰﾌｧｲﾙ = SPACES` N |
-| 3 | [case 04](04/) |
-| 4 | [case 05](05/) |
-| 5 | [case 06](06/) |
-| 6 | [case 07](07/) |
+| 3 | [case 05](05/) |
+| 4 | [case 06](06/) |
+| 5 | [case 07](07/) |
+| 6 | [case 08](08/) |
 | 7 | [case 01](01/) |
 
 ### [PRMHST-ﾖﾐｺﾐ-RTN](../../../blueprints/gondwana/rules/GLY030.md#prmhst-ﾖﾐｺﾐ-rtn)
@@ -44,7 +44,7 @@
 | --: | --- |
 | 1 | [case 01](01/) |
 | 2 | not reached, a file found to fail once open: `WS-POLMST-ﾅｼ` N, `WS-POLMST-OK` N |
-| 3 | [case 08](08/) |
+| 3 | [case 04](04/) |
 
 ### [ﾖﾃｲ-RTN](../../../blueprints/gondwana/rules/GLY030.md#ﾖﾃｲ-rtn)
 
@@ -54,7 +54,7 @@
 | 2 | [case 09](09/) |
 | 3 | [case 10](10/) |
 | 4 | [case 11](11/) |
-| 5 | [case 08](08/) |
+| 5 | [case 04](04/) |
 
 ### [ｷｹﾞﾂ-RTN](../../../blueprints/gondwana/rules/GLY030.md#ｷｹﾞﾂ-rtn)
 
@@ -70,7 +70,7 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | not reached, a file found to fail once open: `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ` Y, `WS-PRMCERT-OK` N |
-| 2 | [case 08](08/) |
+| 2 | [case 04](04/) |
 | 3 | not reached, a file found to fail once open: `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ` N, `WS-PRMCERT-OK` N |
 | 4 | [case 11](11/) |
 
