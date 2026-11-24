@@ -1,6 +1,6 @@
 # AUTHSRV: cases
 
-27 cases reach 28 of the 32 rules of AUTHSRV's decision tables, and of the programs it calls, 9 of the 9 of AUTHPUR, 6 of the 6 of AUTHREV, 15 of the 15 of ATMWDL, 3 of the 3 of ATMBAL. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's. A rule that finds two totals the program adds up itself to differ, items of its own that it only adds to, says so: no input field sets either, so the search has nothing to change to reach it. A rule that finds a write or rewrite by key to fail says so too: the search fails a file only when it is opened or read, and a program that writes keys it made new, or rewrites the record it read, meets that failure only when something else changes the file meanwhile. A rule that finds a file to have failed once open says so: it takes the file's status after a read, a write, a rewrite, a delete or a close to be none that the file's records make, a record or the end for a read in order, a record or none of that key for a read by key, which is the device's doing. And a rule of a program called that takes a parameter to be what no call of this program passes, a direction it never asks for, says so, as do the rules of the paragraphs performed only from such rules: no run of this program reaches them, whatever its input.
+26 cases reach 28 of the 32 rules of AUTHSRV's decision tables, and of the programs it calls, 9 of the 9 of AUTHPUR, 6 of the 6 of AUTHREV, 15 of the 15 of ATMWDL, 3 of the 3 of ATMBAL. Each case is a directory: the input files, field by field, the files the program wrote and what it displayed, and what it returned. The cases were found by running the program, compiled with GnuCOBOL's trace code, on inputs made from its own conditions and with files that cannot be opened or read, and are as few as reach the same rules. A rule no case reaches is listed with the outcomes of its conditions: most are rules no run can reach, as a table does not weigh what one condition's outcome says about another's. A rule that finds two totals the program adds up itself to differ, items of its own that it only adds to, says so: no input field sets either, so the search has nothing to change to reach it. A rule that finds a write or rewrite by key to fail says so too: the search fails a file only when it is opened or read, and a program that writes keys it made new, or rewrites the record it read, meets that failure only when something else changes the file meanwhile. A rule that finds a file to have failed once open says so: it takes the file's status after a read, a write, a rewrite, a delete or a close to be none that the file's records make, a record or the end for a read in order, a record or none of that key for a read by key, which is the device's doing. And a rule of a program called that takes a parameter to be what no call of this program passes, a direction it never asks for, says so, as do the rules of the paragraphs performed only from such rules: no run of this program reaches them, whatever its input.
 
 ## AUTHSRV
 
@@ -25,7 +25,7 @@
 | --: | --- |
 | 1 | [case 01](01/) |
 | 2 | [case 01](01/) |
-| 3 | [case 05](05/) |
+| 3 | [case 04](04/) |
 
 ### [2000-SERVE-REQUEST](../../../blueprints/pangaea/rules/AUTHSRV.md#2000-serve-request)
 
@@ -38,32 +38,32 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 13](13/) |
-| 2 | [case 13](13/) |
-| 3 | [case 12](12/) |
-| 4 | [case 03](03/) |
+| 1 | [case 14](14/) |
+| 2 | [case 12](12/) |
+| 3 | [case 07](07/) |
+| 4 | [case 06](06/) |
 | 5 | [case 01](01/) |
-| 6 | [case 26](26/) |
-| 7 | [case 11](11/) |
-| 8 | [case 12](12/) |
-| 9 | [case 14](14/) |
+| 6 | [case 25](25/) |
+| 7 | [case 07](07/) |
+| 8 | [case 13](13/) |
+| 9 | [case 07](07/) |
 | 10 | [case 01](01/) |
-| 11 | [case 06](06/) |
+| 11 | [case 05](05/) |
 
 ### [2200-READ-CARD-AND-ACCOUNT](../../../blueprints/pangaea/rules/AUTHSRV.md#2200-read-card-and-account)
 
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 01](01/) |
-| 2 | [case 04](04/) |
+| 2 | [case 03](03/) |
 | 3 | [case 01](01/) |
 
 ### [2300-READ-HOLD](../../../blueprints/pangaea/rules/AUTHSRV.md#2300-read-hold)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 12](12/) |
-| 2 | [case 13](13/) |
+| 1 | [case 07](07/) |
+| 2 | [case 12](12/) |
 
 ### [2400-SAVE-CHANGES](../../../blueprints/pangaea/rules/AUTHSRV.md#2400-save-changes)
 
@@ -72,9 +72,9 @@
 | 1 | not reached, a write or rewrite by key found to fail: `REWRITE ACCT-ONLINE-RECORD INVALID KEY` Y |
 | 2 | not reached, a write or rewrite by key found to fail: `REWRITE ACCT-ONLINE-RECORD INVALID KEY` N, `REWRITE CARD-RECORD INVALID KEY` Y |
 | 3 | not reached, a write or rewrite by key found to fail: `REWRITE ACCT-ONLINE-RECORD INVALID KEY` N, `REWRITE CARD-RECORD INVALID KEY` N, `RQ-REVERSAL` Y, `REWRITE HOLD-RECORD INVALID KEY` Y |
-| 4 | [case 13](13/) |
+| 4 | [case 14](14/) |
 | 5 | not reached, a write or rewrite by key found to fail: `REWRITE ACCT-ONLINE-RECORD INVALID KEY` N, `REWRITE CARD-RECORD INVALID KEY` N, `RQ-REVERSAL` N, `WRITE HOLD-RECORD INVALID KEY` Y |
-| 6 | [case 03](03/) |
+| 6 | [case 06](06/) |
 
 ## AUTHPUR
 
@@ -82,19 +82,19 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 14](14/) |
+| 1 | [case 07](07/) |
 | 2 | [case 15](15/) |
 | 3 | [case 01](01/) |
-| 4 | [case 05](05/) |
+| 4 | [case 04](04/) |
 | 5 | [case 02](02/) |
-| 6 | [case 03](03/) |
+| 6 | [case 06](06/) |
 
 ### [1000-START-CARD-TOTALS](../../../blueprints/pangaea/rules/AUTHPUR.md#1000-start-card-totals)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 03](03/) |
-| 2 | [case 07](07/) |
+| 1 | [case 12](12/) |
+| 2 | [case 06](06/) |
 | 3 | [case 01](01/) |
 
 ## AUTHREV
@@ -103,17 +103,17 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 18](18/) |
-| 2 | [case 19](19/) |
-| 3 | [case 13](13/) |
-| 4 | [case 13](13/) |
+| 1 | [case 12](12/) |
+| 2 | [case 17](17/) |
+| 3 | [case 14](14/) |
+| 4 | [case 14](14/) |
 
 ### [2000-APPROVE](../../../blueprints/pangaea/rules/AUTHREV.md#2000-approve)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 13](13/) |
-| 2 | [case 17](17/) |
+| 1 | [case 14](14/) |
+| 2 | [case 18](18/) |
 
 ## ATMWDL
 
@@ -121,26 +121,26 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 14](14/) |
+| 1 | [case 07](07/) |
 | 2 | [case 15](15/) |
 | 3 | [case 11](11/) |
 | 4 | [case 16](16/) |
-| 5 | [case 24](24/) |
-| 6 | [case 26](26/) |
-| 7 | [case 21](21/) |
-| 8 | [case 22](22/) |
-| 9 | [case 12](12/) |
-| 10 | [case 23](23/) |
-| 11 | [case 25](25/) |
-| 12 | [case 27](27/) |
+| 5 | [case 23](23/) |
+| 6 | [case 25](25/) |
+| 7 | [case 20](20/) |
+| 8 | [case 21](21/) |
+| 9 | [case 13](13/) |
+| 10 | [case 22](22/) |
+| 11 | [case 24](24/) |
+| 12 | [case 26](26/) |
 
 ### [1000-START-CARD-TOTALS](../../../blueprints/pangaea/rules/ATMWDL.md#1000-start-card-totals)
 
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 11](11/) |
-| 2 | [case 20](20/) |
-| 3 | [case 12](12/) |
+| 2 | [case 19](19/) |
+| 3 | [case 07](07/) |
 
 ## ATMBAL
 
@@ -148,6 +148,6 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 14](14/) |
+| 1 | [case 07](07/) |
 | 2 | [case 15](15/) |
-| 3 | [case 12](12/) |
+| 3 | [case 13](13/) |

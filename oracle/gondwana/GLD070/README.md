@@ -9,20 +9,20 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 03](03/) |
-| 2 | [case 04](04/) |
+| 2 | [case 05](05/) |
 | 3 | [case 01](01/) |
 
 ### [ｵｰﾌﾟﾝ-ｹﾝｻ-RTN](../../../blueprints/gondwana/rules/GLD070.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 05](05/) |
-| 2 | [case 06](06/) |
-| 3 | [case 07](07/) |
-| 4 | [case 08](08/) |
-| 5 | [case 09](09/) |
-| 6 | [case 10](10/) |
-| 7 | [case 11](11/) |
+| 1 | [case 06](06/) |
+| 2 | [case 07](07/) |
+| 3 | [case 08](08/) |
+| 4 | [case 09](09/) |
+| 5 | [case 10](10/) |
+| 6 | [case 11](11/) |
+| 7 | [case 12](12/) |
 | 8 | [case 01](01/) |
 
 ### [LONREQ-ﾖﾐｺﾐ-RTN](../../../blueprints/gondwana/rules/GLD070.md#lonreq-ﾖﾐｺﾐ-rtn)
@@ -42,31 +42,31 @@
 | 3 | [case 01](01/) |
 | 4 | not reached, a file found to fail once open: `WS-POLMST-ﾅｼ` N, `WS-POLMST-OK` N |
 | 5 | [case 34](34/) |
-| 6 | [case 13](13/) |
-| 7 | [case 15](15/) |
-| 8 | [case 13](13/) |
+| 6 | [case 04](04/) |
+| 7 | [case 16](16/) |
+| 8 | [case 04](04/) |
 | 9 | not reached: `WS-POLMST-ﾅｼ` N, `LR-ｶｼﾂｹ` N, `WS-ﾘﾕｳ-ﾅｼ` Y, `LR-ﾍﾝｻｲ` N, `WS-POLMST-OK` Y, `WS-ﾘﾕｳ-ﾅｼ, again` Y |
-| 10 | [case 12](12/) |
+| 10 | [case 13](13/) |
 
 ### [ｹﾝｻ-RTN](../../../blueprints/gondwana/rules/GLD070.md#ｹﾝｻ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 12](12/) |
-| 2 | [case 13](13/) |
-| 3 | [case 16](16/) |
-| 4 | [case 16](16/) |
-| 5 | [case 14](14/) |
+| 1 | [case 13](13/) |
+| 2 | [case 14](14/) |
+| 3 | [case 04](04/) |
+| 4 | [case 04](04/) |
+| 5 | [case 15](15/) |
 
 ### [ｹﾞﾝﾄﾞ-RTN](../../../blueprints/gondwana/rules/GLD070.md#ｹﾞﾝﾄﾞ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 23](23/) |
-| 2 | [case 14](14/) |
+| 2 | [case 15](15/) |
 | 3 | [case 34](34/) |
-| 4 | [case 15](15/) |
-| 5 | [case 15](15/) |
+| 4 | [case 16](16/) |
+| 5 | [case 16](16/) |
 
 ### [ﾊﾝｴｲ-RTN](../../../blueprints/gondwana/rules/GLD070.md#ﾊﾝｴｲ-rtn)
 
@@ -85,7 +85,7 @@
 | 11 | not reached, a file found to fail once open: `WS-ﾘｿｸ > 0` N, `LR-ｶｼﾂｹ` Y, `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ = 0` N, `WS-POLMST-OK` N |
 | 12 | [case 34](34/) |
 | 13 | not reached, a file found to fail once open: `WS-ﾘｿｸ > 0` N, `LR-ｶｼﾂｹ` N, `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ = 0` Y, `WS-POLMST-OK` N |
-| 14 | [case 15](15/) |
+| 14 | [case 16](16/) |
 | 15 | not reached, a file found to fail once open: `WS-ﾘｿｸ > 0` N, `LR-ｶｼﾂｹ` N, `PM-ｶｼﾂｹｻﾞﾝﾀﾞｶ = 0` N, `WS-POLMST-OK` N |
 | 16 | [case 34](34/) |
 
@@ -101,7 +101,7 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | not reached, a file found to fail once open: `WS-GLJRNL-OK` N |
-| 2 | [case 15](15/) |
+| 2 | [case 16](16/) |
 
 ### [ﾒｲｻｲ-RTN](../../../blueprints/gondwana/rules/GLD070.md#ﾒｲｻｲ-rtn)
 
@@ -124,7 +124,7 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 01](01/) |
-| 2 | [case 14](14/) |
+| 2 | [case 15](15/) |
 | 3 | not reached: `LK-ﾜﾚｷ-ﾍ` N, `LK-ｾｲﾚｷ-ﾍ` N |
 
 ### [ﾜﾚｷ-ﾍﾝｶﾝ-RTN](../../../blueprints/gondwana/rules/GLC020.md#ﾜﾚｷ-ﾍﾝｶﾝ-rtn)
@@ -145,7 +145,7 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 14](14/) |
+| 1 | [case 15](15/) |
 | 2 | not reached: `ｹﾞﾝｺﾞｳ-ｷｺﾞｳ(ｹﾞﾝｺﾞｳ-IX) = LK-ｹﾞﾝｺﾞｳ` N, `WS-ｹﾞﾝｺﾞｳ-ｱﾘ` N |
 
 ### [ﾊﾝｲ-ｹﾝｻ-RTN](../../../blueprints/gondwana/rules/GLC020.md#ﾊﾝｲ-ｹﾝｻ-rtn)
@@ -158,7 +158,7 @@
 | 4 | not reached: `LK-ﾈﾝ = 0` N, `LK-ﾍﾝｶﾝｽﾞﾐ` N, `WS-MM < 1 OR WS-MM > 12` N, `WS-DD < 1 OR WS-DD > 31` N, `WS-YYYYMMDD < ｹﾞﾝｺﾞｳ-ｶｲｼﾋﾞ(ｹﾞﾝｺﾞｳ-IX)` Y |
 | 5 | not reached: `LK-ﾈﾝ = 0` N, `LK-ﾍﾝｶﾝｽﾞﾐ` N, `WS-MM < 1 OR WS-MM > 12` N, `WS-DD < 1 OR WS-DD > 31` N, `WS-YYYYMMDD < ｹﾞﾝｺﾞｳ-ｶｲｼﾋﾞ(ｹﾞﾝｺﾞｳ-IX)` N, `ｹﾞﾝｺﾞｳ-IX < ｹﾞﾝｺﾞｳ-ｹﾝｽｳ` Y, `WS-YYYYMMDD < ｹﾞﾝｺﾞｳ-ｶｲｼﾋﾞ(ｹﾞﾝｺﾞｳ-IX), again` N |
 | 6 | [case 35](35/) |
-| 7 | [case 14](14/) |
+| 7 | [case 15](15/) |
 
 ## GLC040
 
@@ -166,16 +166,16 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 14](14/) |
+| 1 | [case 15](15/) |
 | 2 | [case 34](34/) |
-| 3 | [case 15](15/) |
+| 3 | [case 16](16/) |
 
 ### [ﾋﾜﾘ-RTN](../../../blueprints/gondwana/rules/GLC040.md#ﾋﾜﾘ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 20](20/) |
-| 2 | [case 14](14/) |
+| 2 | [case 15](15/) |
 
 ## GLC030
 
@@ -183,15 +183,15 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 14](14/) |
+| 1 | [case 15](15/) |
 | 2 | [case 23](23/) |
-| 3 | [case 14](14/) |
+| 3 | [case 15](15/) |
 
 ### [ﾖﾐｺﾐ-RTN](../../../blueprints/gondwana/rules/GLC030.md#ﾖﾐｺﾐ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 14](14/) |
+| 1 | [case 15](15/) |
 | 2 | not reached, a file found to fail once open: `WS-CSVTB-OK` Y, `WS-CSVTB-ｵﾜﾘ` N |
 | 3 | [case 23](23/) |
 
@@ -199,7 +199,7 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 14](14/) |
+| 1 | [case 15](15/) |
 | 2 | not reached: `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = CV-ｼｮｳﾋﾝ OR WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = ZEROS` N |
 
 ### [ｹｲｻﾝ-RTN](../../../blueprints/gondwana/rules/GLC030.md#ｹｲｻﾝ-rtn)
@@ -209,7 +209,7 @@
 | 1 | [case 29](29/) |
 | 2 | [case 19](19/) |
 | 3 | [case 34](34/) |
-| 4 | [case 14](14/) |
+| 4 | [case 15](15/) |
 | 5 | [case 18](18/) |
 | 6 | [case 33](33/) |
 | 7 | [case 28](28/) |

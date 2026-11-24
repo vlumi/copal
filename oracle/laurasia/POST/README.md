@@ -8,7 +8,7 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 03](03/) |
+| 1 | [case 04](04/) |
 | 2 | [case 01](01/) |
 | 3 | [case 02](02/) |
 
@@ -25,21 +25,21 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 01](01/) |
-| 2 | [case 05](05/) |
-| 3 | [case 06](06/) |
+| 2 | [case 06](06/) |
+| 3 | [case 07](07/) |
 | 4 | not reached, a write or rewrite by key found to fail: `READ ACCOUNTS INVALID KEY` N, `CA-BLOCKED` N, `CA-CLOSED` N, `CA-BALANCE > CA-LIMIT` Y, `REWRITE CARD-ACCOUNT INVALID KEY` Y |
 | 5 | [case 02](02/) |
 | 6 | not reached, a write or rewrite by key found to fail: `READ ACCOUNTS INVALID KEY` N, `CA-BLOCKED` N, `CA-CLOSED` N, `CA-BALANCE > CA-LIMIT` N, `REWRITE CARD-ACCOUNT INVALID KEY` Y |
-| 7 | [case 07](07/) |
+| 7 | [case 08](08/) |
 
 ### [CHARGE-OVER-LIMIT](../../../blueprints/laurasia/rules/POST.md#charge-over-limit)
 
 | Rule | Reached by |
 | --: | --- |
 | 1 | not reached: `CA-BUSINESS` Y, `WS-FEE > ZERO` Y |
-| 2 | [case 09](09/) |
+| 2 | [case 03](03/) |
 | 3 | [case 02](02/) |
-| 4 | [case 08](08/) |
+| 4 | [case 09](09/) |
 
 ## OVLBIZ
 
@@ -49,7 +49,7 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 08](08/) |
+| 1 | [case 09](09/) |
 | 2 | [case 02](02/) |
 | 3 | [case 10](10/) |
-| 4 | [case 04](04/) |
+| 4 | [case 05](05/) |

@@ -4,8 +4,8 @@ For each main program, input data that reaches the rules of its decision tables,
 
 | Program | Rules reached | Cases |
 | --- | --: | --: |
-| [GLD010](GLD010/) | 66 of 99 | 32 |
-| [GLD020](GLD020/) | 102 of 132 | 49 |
+| [GLD010](GLD010/) | 71 of 99 | 35 |
+| [GLD020](GLD020/) | 102 of 132 | 50 |
 | [GLD030](GLD030/) | 153 of 197 | 65 |
 | [GLD040](GLD040/) | 81 of 105 | 33 |
 | [GLD050](GLD050/) | 70 of 94 | 43 |
