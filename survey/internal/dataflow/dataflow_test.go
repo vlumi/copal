@@ -378,3 +378,27 @@ func TestRedefinedRecord(t *testing.T) {
 		t.Errorf("WS-MM comes from %q, want %q", got, want)
 	}
 }
+
+// A WRITE from another item changes its record, which takes the item's
+// value; a REWRITE of a record as it is sends it to the file and leaves
+// it what it was.
+func TestWriteKeepsRecord(t *testing.T) {
+	flow := analyze(t, "testdata/FLOW.cbl")
+	var write, rewrite cobol.Statement
+	for _, para := range flow.program.Paragraphs {
+		cobol.Walk(para.Statements, func(s cobol.Statement) {
+			switch s.Verb {
+			case "WRITE":
+				write = s
+			case "REWRITE":
+				rewrite = s
+			}
+		})
+	}
+	if !flow.MayChange(write, []string{"OUT-RECORD"}) {
+		t.Errorf("%s does not change OUT-RECORD", write.Text)
+	}
+	if flow.MayChange(rewrite, []string{"IN-RECORD"}) {
+		t.Errorf("%s changes IN-RECORD", rewrite.Text)
+	}
+}
