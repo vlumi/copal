@@ -1,6 +1,7 @@
 package rules
 
 import (
+	"maps"
 	"slices"
 	"strings"
 	"testing"
@@ -137,6 +138,43 @@ N Y N Y N | MATURED
 2 2 2 1 1 | PERFORM SETTLE-PARA
 3         | PERFORM EXCESS-PARA
   3   2   | DISPLAY 'MATURED'
+`
+	if got := layout(Tables(p, knowledge)[0]); got != want {
+		t.Errorf("got\n%s\nwant\n%s", got, want)
+	}
+}
+
+// TestDomain checks that a field that starts with a value and is only
+// ever given values is one of those: a switch found not off, which only
+// ever is off or on, is on.
+func TestDomain(t *testing.T) {
+	p, err := cobol.ReadProgram("testdata/SWITCH.cbl", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	writers := writersIn(p)
+	names := map[string][]string{"NOT-OPEN": {"'N'"}, "IS-OPEN": {"'Y'"}}
+	of := func(s cobol.Statement, fields []string) []cobol.Statement {
+		if fields[0] == "OPEN-SWITCH" {
+			fields = slices.Collect(maps.Keys(names))
+		}
+		return writers(s, fields)
+	}
+	knowledge := Knowledge{
+		MayChange: func(s cobol.Statement, fields []string) bool { return len(of(s, fields)) > 0 },
+		Writers:   of,
+		ConditionNames: func(name string) (string, []string, bool) {
+			values, ok := names[name]
+			return "OPEN-SWITCH", values, ok
+		},
+		InitialValues: map[string]string{"OPEN-SWITCH": "'N'"},
+	}
+	want := `WRITE-PARA 
+Y Y N | NOT-OPEN
+Y N Y | IS-OPEN
+1 1   | PERFORM OPEN-PARA
+2   1 | DISPLAY 'WRITE'
+3 2 2 | GOBACK
 `
 	if got := layout(Tables(p, knowledge)[0]); got != want {
 		t.Errorf("got\n%s\nwant\n%s", got, want)

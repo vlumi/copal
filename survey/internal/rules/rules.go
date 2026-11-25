@@ -159,6 +159,8 @@ type extractor struct {
 	collapsed []cobol.Pos
 	// never are the paragraphs that never return to a PERFORM of them.
 	never map[string]bool
+	// domain gives the values a field can ever hold, if the program tells.
+	domain func(field string) ([]string, bool)
 }
 
 // paths lists the ways through a list of statements.

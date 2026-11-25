@@ -22,11 +22,12 @@ type program struct {
 	performed map[int]bool
 	followed  map[int]*extractor
 	following map[int]bool
+	domains   map[string][]string // by field; nil for a field with none
 }
 
 func newProgram(p *cobol.Program, knowledge Knowledge) *program {
 	g := &program{source: p, knowledge: knowledge, never: neverReturning(p),
-		followed: map[int]*extractor{}, following: map[int]bool{}}
+		followed: map[int]*extractor{}, following: map[int]bool{}, domains: map[string][]string{}}
 	g.start = slices.IndexFunc(p.Paragraphs, func(para cobol.Paragraph) bool { return !para.Declarative })
 	g.performed, g.runOnce = g.entries()
 	return g
@@ -40,7 +41,7 @@ func (g *program) follow(i int) *extractor {
 	g.following[i] = true
 	given := g.entry(i)
 	para := g.source.Paragraphs[i]
-	e := &extractor{paragraph: para.Name, knowledge: g.knowledge, never: g.never}
+	e := &extractor{paragraph: para.Name, knowledge: g.knowledge, never: g.never, domain: g.domain}
 	e.top = e.pathsKnowing(given, para.Statements)
 	delete(g.following, i)
 	g.followed[i] = e
@@ -56,6 +57,41 @@ func (g *program) entry(i int) []event {
 		return g.atPerforms(i)
 	}
 	return nil
+}
+
+// domain is every value a field of the working storage can hold in a
+// run: the one it starts with and those statements give it, if every
+// statement of the program that may change it gives it a value. A switch
+// that starts off and is only ever set on or off is one or the other.
+func (g *program) domain(field string) ([]string, bool) {
+	if values, found := g.domains[field]; found {
+		return values, values != nil
+	}
+	g.domains[field] = g.heldBy(field)
+	return g.domains[field], g.domains[field] != nil
+}
+
+// heldBy works out a field's domain, nil if the program does not tell.
+func (g *program) heldBy(field string) []string {
+	initial, starts := g.knowledge.InitialValues[field]
+	if !starts || g.knowledge.MayChange == nil {
+		return nil
+	}
+	x := &extractor{knowledge: g.knowledge}
+	values := []string{initial}
+	for _, para := range g.source.Paragraphs {
+		for _, s := range para.Statements {
+			if !g.knowledge.MayChange(s, []string{field}) {
+				continue
+			}
+			given, gives := x.gives(s, field)
+			if !gives {
+				return nil
+			}
+			values = union(values, given)
+		}
+	}
+	return values
 }
 
 // initialValues are the values the working storage starts with, as
@@ -127,7 +163,7 @@ func (g *program) agreed(i int, known [][]event) []event {
 	if len(known) == 0 {
 		return nil
 	}
-	x := &extractor{knowledge: g.knowledge}
+	x := &extractor{knowledge: g.knowledge, domain: g.domain}
 	var given []event
 	for _, c := range conditionsIn(g.statementsReached(i)) {
 		outcome, ok := x.evaluate(known[0], c)
