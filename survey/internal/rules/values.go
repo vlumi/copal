@@ -116,7 +116,9 @@ func (e *extractor) names(name string) (string, []string, bool) {
 // have, or whether it does not know, and the values tests found it not to
 // be, since. A field has the value it was last given, by a statement or by
 // a test found true; after a statement that may change it, by statements
-// that each give it a value, one of those or what it had before.
+// that each give it a value, one of those or what it had before. A field
+// the path knows nothing of has one of the values it can ever hold, where
+// the program tells those.
 func (e *extractor) known(events []event, field string) (values []string, ok bool, not []string) {
 	for i, ev := range slices.Backward(events) {
 		switch {
@@ -140,6 +142,11 @@ func (e *extractor) known(events []event, field string) (values []string, ok boo
 					not = append(not, values...)
 				}
 			}
+		}
+	}
+	if e.domain != nil {
+		if values, ok := e.domain(field); ok {
+			return values, true, not
 		}
 	}
 	return nil, false, not
