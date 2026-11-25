@@ -11,7 +11,7 @@
 | 1 | [case 02](02/) |
 | 2 | [case 05](05/) |
 | 3 | [case 09](09/) |
-| 4 | not reached: `WS-ﾍﾝｶﾝｹｯｶ = 0` Y, `WS-COVMST-OK` Y, `WS-ｴﾗｰﾌｧｲﾙ = SPACES` N, `WS-COVUNL-OK` Y, `WS-BENHST-OK` N |
+| 4 | not reached, a file found to fail once open: `WS-ﾍﾝｶﾝｹｯｶ = 0` Y, `WS-COVMST-OK` Y, `WS-ｴﾗｰﾌｧｲﾙ = SPACES` N, `WS-COVUNL-OK` Y, `WS-BENHST-OK` N |
 | 5 | [case 08](08/) |
 | 6 | [case 04](04/) |
 | 7 | [case 06](06/) |

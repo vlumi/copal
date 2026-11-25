@@ -178,10 +178,13 @@ type File struct {
 	Kind         string `json:"kind"`
 	Assign       string `json:"assign"`
 	Organization string `json:"organization"`
-	Access       string `json:"access,omitempty"` // RANDOM or DYNAMIC; empty for SEQUENTIAL
-	RecordKey    string `json:"recordKey,omitempty"`
-	RelativeKey  string `json:"relativeKey,omitempty"`
-	Status       string `json:"status,omitempty"`
+	// Optional is whether the file need not be there when the program
+	// opens it, SELECT OPTIONAL.
+	Optional    bool   `json:"optional,omitempty"`
+	Access      string `json:"access,omitempty"` // RANDOM or DYNAMIC; empty for SEQUENTIAL
+	RecordKey   string `json:"recordKey,omitempty"`
+	RelativeKey string `json:"relativeKey,omitempty"`
+	Status      string `json:"status,omitempty"`
 	// MinLength and MaxLength are the record lengths the file's RECORD
 	// clause gives, if it has one, and LengthIn the item a variable
 	// length is in.
@@ -517,6 +520,7 @@ func describeFile(p *cobol.Program, fd cobol.FileDescription) (File, error) {
 		Kind:         fd.Kind,
 		Assign:       selected.Assign,
 		Organization: selected.Organization,
+		Optional:     selected.Optional,
 		RecordKey:    selected.RecordKey,
 		RelativeKey:  selected.RelativeKey,
 		Status:       selected.Status,

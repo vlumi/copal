@@ -9,7 +9,7 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 03](03/) |
-| 2 | not reached: `WS-ﾍﾝｶﾝｹｯｶ = 0` Y, `WS-GLJRNL-OK` N |
+| 2 | not reached, a file found to fail once open: `WS-ﾍﾝｶﾝｹｯｶ = 0` Y, `WS-GLJRNL-OK` N |
 | 3 | [case 04](04/) |
 | 4 | [case 01](01/) |
 

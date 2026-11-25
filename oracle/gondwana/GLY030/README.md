@@ -9,7 +9,7 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 02](02/) |
-| 2 | not reached: `WS-ﾍﾝｶﾝｹｯｶ = 0` Y, `WS-PRMHST-OK` N, `WS-ｴﾗｰﾌｧｲﾙ = SPACES` N |
+| 2 | not reached, a file found to fail once open: `WS-ﾍﾝｶﾝｹｯｶ = 0` Y, `WS-PRMHST-OK` N, `WS-ｴﾗｰﾌｧｲﾙ = SPACES` N |
 | 3 | [case 04](04/) |
 | 4 | [case 05](05/) |
 | 5 | [case 06](06/) |
