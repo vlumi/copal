@@ -1,8 +1,9 @@
 # GLD070: case 13
 
-The run ended with return code 4.
+The run ended with return code 16.
+
+REPORT-F's directory is missing, so creating it fails.
 
 The first case to reach:
 
-- [GLD070, ｼｮﾘ-RTN, rule 10](../../../../blueprints/gondwana/rules/GLD070.md#ｼｮﾘ-rtn)
-- [GLD070, ｹﾝｻ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLD070.md#ｹﾝｻ-rtn)
+- [GLD070, ｵｰﾌﾟﾝ-ｹﾝｻ-RTN, rule 7](../../../../blueprints/gondwana/rules/GLD070.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)

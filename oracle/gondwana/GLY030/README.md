@@ -8,12 +8,12 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 03](03/) |
+| 1 | [case 02](02/) |
 | 2 | not reached: `WS-ﾍﾝｶﾝｹｯｶ = 0` Y, `WS-PRMHST-OK` N, `WS-ｴﾗｰﾌｧｲﾙ = SPACES` N |
-| 3 | [case 05](05/) |
-| 4 | [case 06](06/) |
-| 5 | [case 07](07/) |
-| 6 | [case 08](08/) |
+| 3 | [case 04](04/) |
+| 4 | [case 05](05/) |
+| 5 | [case 06](06/) |
+| 6 | [case 07](07/) |
 | 7 | [case 01](01/) |
 
 ### [PRMHST-ﾖﾐｺﾐ-RTN](../../../blueprints/gondwana/rules/GLY030.md#prmhst-ﾖﾐｺﾐ-rtn)
@@ -28,23 +28,23 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 01](01/) |
-| 2 | [case 02](02/) |
+| 1 | [case 03](03/) |
+| 2 | [case 01](01/) |
 
 ### [ｹｲﾔｸ-RTN, in its loop](../../../blueprints/gondwana/rules/GLY030.md#ｹｲﾔｸ-rtn-in-its-loop)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 01](01/) |
-| 2 | [case 02](02/) |
+| 1 | [case 03](03/) |
+| 2 | [case 01](01/) |
 
 ### [ｼｮｳﾒｲ-RTN](../../../blueprints/gondwana/rules/GLY030.md#ｼｮｳﾒｲ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 01](01/) |
+| 1 | [case 03](03/) |
 | 2 | not reached, a file found to fail once open: `WS-POLMST-ﾅｼ` N, `WS-POLMST-OK` N |
-| 3 | [case 04](04/) |
+| 3 | [case 08](08/) |
 
 ### [ﾖﾃｲ-RTN](../../../blueprints/gondwana/rules/GLY030.md#ﾖﾃｲ-rtn)
 
@@ -54,23 +54,23 @@
 | 2 | [case 09](09/) |
 | 3 | [case 10](10/) |
 | 4 | [case 11](11/) |
-| 5 | [case 04](04/) |
+| 5 | [case 08](08/) |
 
 ### [ｷｹﾞﾂ-RTN](../../../blueprints/gondwana/rules/GLY030.md#ｷｹﾞﾂ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 13](13/) |
-| 2 | [case 09](09/) |
-| 3 | [case 12](12/) |
-| 4 | [case 09](09/) |
+| 1 | [case 09](09/) |
+| 2 | [case 12](12/) |
+| 3 | [case 09](09/) |
+| 4 | [case 13](13/) |
 
 ### [ｶｷｺﾐ-RTN](../../../blueprints/gondwana/rules/GLY030.md#ｶｷｺﾐ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
 | 1 | not reached, a file found to fail once open: `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ` Y, `WS-PRMCERT-OK` N |
-| 2 | [case 04](04/) |
+| 2 | [case 08](08/) |
 | 3 | not reached, a file found to fail once open: `WS-ｼｮｳﾋﾝ-ｺｰﾄﾞ(WS-ｼｮｳﾋﾝ-IX) = PM-ｼｮｳﾋﾝ` N, `WS-PRMCERT-OK` N |
 | 4 | [case 11](11/) |
 
@@ -95,7 +95,7 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 03](03/) |
+| 1 | [case 02](02/) |
 | 2 | [case 01](01/) |
 
 ### [ﾜﾚｷ-ﾍﾝｶﾝ-RTN, in its loop](../../../blueprints/gondwana/rules/GLC020.md#ﾜﾚｷ-ﾍﾝｶﾝ-rtn-in-its-loop)
@@ -103,7 +103,7 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 01](01/) |
-| 2 | [case 03](03/) |
+| 2 | [case 02](02/) |
 
 ### [ｾｲﾚｷ-ﾍﾝｶﾝ-RTN](../../../blueprints/gondwana/rules/GLC020.md#ｾｲﾚｷ-ﾍﾝｶﾝ-rtn)
 

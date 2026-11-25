@@ -1,9 +1,7 @@
 # GLD020: case 10
 
-The run ended with return code 16.
-
-COVMST-F is missing, so opening it fails.
+The run ended with return code 0.
 
 The first case to reach:
 
-- [GLD020, ｵｰﾌﾟﾝ-ｹﾝｻ-RTN, rule 4](../../../../blueprints/gondwana/rules/GLD020.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)
+- [GLC020, ﾊﾝｲ-ｹﾝｻ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLC020.md#ﾊﾝｲ-ｹﾝｻ-rtn)

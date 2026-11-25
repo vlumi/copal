@@ -1,9 +1,7 @@
 # GLM030: case 12
 
-The run ended with return code 16.
-
-COMMIS-F's directory is missing, so creating it fails.
+The run ended with return code 0.
 
 The first case to reach:
 
-- [GLM030, ｼｮｷ-RTN, rule 6](../../../../blueprints/gondwana/rules/GLM030.md#ｼｮｷ-rtn)
+- [GLC020, ﾊﾝｲ-ｹﾝｻ-RTN, rule 6](../../../../blueprints/gondwana/rules/GLC020.md#ﾊﾝｲ-ｹﾝｻ-rtn)

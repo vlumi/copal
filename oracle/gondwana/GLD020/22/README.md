@@ -2,6 +2,8 @@
 
 The run ended with return code 16.
 
+RATETB-F is missing, so opening it fails.
+
 The first case to reach:
 
-- [GLC040, ﾒｲﾝ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLC040.md#ﾒｲﾝ-rtn)
+- [GLD020, ｵｰﾌﾟﾝ-ｹﾝｻ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLD020.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)

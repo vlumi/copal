@@ -2,8 +2,6 @@
 
 The run ended with return code 16.
 
-GLSCTL-F is missing, so opening it fails.
-
 The first case to reach:
 
-- [GLD020, ｵｰﾌﾟﾝ-ｹﾝｻ-RTN, rule 5](../../../../blueprints/gondwana/rules/GLD020.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)
+- [GLC030, ｹｲｻﾝ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLC030.md#ｹｲｻﾝ-rtn)
