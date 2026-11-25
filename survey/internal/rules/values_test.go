@@ -98,3 +98,47 @@ N | CM-MONTH = 12
 		t.Errorf("got\n%s\nwant\n%s", strings.Join(got, "\n"), strings.Join(want, "\n"))
 	}
 }
+
+// TestKeptOutcomes checks that an outcome holds across a statement that
+// may only give the field values that leave it so, a balance not above
+// zero set to zero, and that a condition name of several values found
+// true, as a part of an AND, leaves the field one of them: a policy in
+// force, lapsed since or not, is not matured.
+func TestKeptOutcomes(t *testing.T) {
+	p, err := cobol.ReadProgram("testdata/KEEPS.cbl", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	writers := writersIn(p)
+	status := map[string][]string{"IN-FORCE": {"'1'", "'2'"}, "LAPSED": {"'3'"}, "MATURED": {"'5'"}}
+	knowledge := Knowledge{
+		MayChange: func(s cobol.Statement, names []string) bool {
+			if _, named := status[names[0]]; named || names[0] == "POLICY-STATUS" {
+				names = []string{"LAPSED"}
+			}
+			return len(writers(s, names)) > 0
+		},
+		Writers: func(s cobol.Statement, names []string) []cobol.Statement {
+			if names[0] == "POLICY-STATUS" {
+				names = []string{"LAPSED"}
+			}
+			return writers(s, names)
+		},
+		ConditionNames: func(name string) (string, []string, bool) {
+			values, ok := status[name]
+			return "POLICY-STATUS", values, ok
+		},
+	}
+	want := `LOAN-PARA 
+Y Y Y N N | BALANCE > 0
+Y N N N N | IN-FORCE AND BALANCE > 0
+N Y N Y N | MATURED
+1 1 1     | PERFORM INTEREST-PARA
+2 2 2 1 1 | PERFORM SETTLE-PARA
+3         | PERFORM EXCESS-PARA
+  3   2   | DISPLAY 'MATURED'
+`
+	if got := layout(Tables(p, knowledge)[0]); got != want {
+		t.Errorf("got\n%s\nwant\n%s", got, want)
+	}
+}
