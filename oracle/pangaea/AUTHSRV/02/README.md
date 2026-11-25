@@ -4,4 +4,4 @@ The run ended with return code 0.
 
 The first case to reach:
 
-- [AUTHPUR, 0000-MAIN, rule 5](../../../../blueprints/pangaea/rules/AUTHPUR.md#0000-main)
+- [AUTHSRV, 2200-READ-CARD-AND-ACCOUNT, rule 2](../../../../blueprints/pangaea/rules/AUTHSRV.md#2200-read-card-and-account)

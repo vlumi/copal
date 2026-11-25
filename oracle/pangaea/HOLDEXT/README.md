@@ -6,24 +6,24 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 06](06/) |
-| 2 | [case 05](05/) |
+| 1 | [case 04](04/) |
+| 2 | [case 03](03/) |
 | 3 | [case 01](01/) |
 
 ## [1200-READ-HOLD](../../../blueprints/pangaea/rules/HOLDEXT.md#1200-read-hold)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 01](01/) |
+| 1 | [case 02](02/) |
 | 2 | [case 01](01/) |
 
 ## [2000-EXTRACT-HOLD](../../../blueprints/pangaea/rules/HOLDEXT.md#2000-extract-hold)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 02](02/) |
-| 2 | [case 03](03/) |
-| 3 | [case 01](01/) |
-| 4 | [case 04](04/) |
-| 5 | [case 01](01/) |
-| 6 | [case 04](04/) |
+| 1 | [case 01](01/) |
+| 2 | [case 05](05/) |
+| 3 | [case 02](02/) |
+| 4 | [case 06](06/) |
+| 5 | [case 02](02/) |
+| 6 | [case 06](06/) |

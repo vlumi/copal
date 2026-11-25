@@ -1,9 +1,7 @@
 # GLM030: case 13
 
-The run ended with return code 16.
-
-REPORT-F's directory is missing, so creating it fails.
+The run ended with return code 0.
 
 The first case to reach:
 
-- [GLM030, ｼｮｷ-RTN, rule 7](../../../../blueprints/gondwana/rules/GLM030.md#ｼｮｷ-rtn)
+- [GLC020, ﾊﾝｲ-ｹﾝｻ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLC020.md#ﾊﾝｲ-ｹﾝｻ-rtn)

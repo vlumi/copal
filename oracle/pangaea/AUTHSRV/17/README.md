@@ -4,4 +4,4 @@ The run ended with return code 0.
 
 The first case to reach:
 
-- [AUTHREV, 0000-MAIN, rule 2](../../../../blueprints/pangaea/rules/AUTHREV.md#0000-main)
+- [ATMWDL, 0000-MAIN, rule 4](../../../../blueprints/pangaea/rules/ATMWDL.md#0000-main)

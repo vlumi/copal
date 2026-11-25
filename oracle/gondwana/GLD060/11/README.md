@@ -1,9 +1,7 @@
 # GLD060: case 11
 
-The run ended with return code 16.
-
-GLSCTL-F is missing, so opening it fails.
+The run ended with return code 0.
 
 The first case to reach:
 
-- [GLD060, ｵｰﾌﾟﾝ-ｹﾝｻ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLD060.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)
+- [GLC020, ﾊﾝｲ-ｹﾝｻ-RTN, rule 6](../../../../blueprints/gondwana/rules/GLC020.md#ﾊﾝｲ-ｹﾝｻ-rtn)

@@ -2,8 +2,6 @@
 
 The run ended with return code 16.
 
-PAYOUT-F's directory is missing, so creating it fails.
-
 The first case to reach:
 
-- [GLD020, ｵｰﾌﾟﾝ-ｹﾝｻ-RTN, rule 6](../../../../blueprints/gondwana/rules/GLD020.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)
+- [GLC030, ｹｲｻﾝ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLC030.md#ｹｲｻﾝ-rtn)

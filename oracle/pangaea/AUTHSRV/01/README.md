@@ -15,4 +15,4 @@ The first case to reach:
 - [AUTHSRV, 2200-READ-CARD-AND-ACCOUNT, rule 1](../../../../blueprints/pangaea/rules/AUTHSRV.md#2200-read-card-and-account)
 - [AUTHSRV, 2200-READ-CARD-AND-ACCOUNT, rule 3](../../../../blueprints/pangaea/rules/AUTHSRV.md#2200-read-card-and-account)
 - [AUTHPUR, 0000-MAIN, rule 3](../../../../blueprints/pangaea/rules/AUTHPUR.md#0000-main)
-- [AUTHPUR, 1000-START-CARD-TOTALS, rule 3](../../../../blueprints/pangaea/rules/AUTHPUR.md#1000-start-card-totals)
+- [AUTHPUR, 1000-START-CARD-TOTALS, rule 1](../../../../blueprints/pangaea/rules/AUTHPUR.md#1000-start-card-totals)

@@ -281,11 +281,19 @@ func walk(f *layout.Field, visit func(*layout.Field)) {
 }
 
 // base is the first case: for each input, a record of each of its types,
-// or a single record, filled field by field by kind.
-func (p *program) base() Case { return p.baseOn(businessDate) }
+// or a single record, filled field by field by kind. The records of an
+// indexed file, which were kept from before the run, have their dates a
+// year before the business date the others have: an insured is a year
+// old, a loan has a year's interest on it, and a benefit in the history
+// was not for the day a claim is for.
+func (p *program) base() Case { return p.baseFrom(businessDate, businessDate-10000) }
 
-// baseOn is the base case with its dates on a date.
-func (p *program) baseOn(date int64) Case {
+// baseOn is the base case with all its dates on a date.
+func (p *program) baseOn(date int64) Case { return p.baseFrom(date, date) }
+
+// baseFrom is the base case with its dates on a date, and those of the
+// records of its indexed files on another.
+func (p *program) baseFrom(date, kept int64) Case {
 	kinds := p.kinds()
 	c := Case{}
 	for _, in := range p.inputs {
@@ -299,7 +307,11 @@ func (p *program) baseOn(date int64) Case {
 			if len(s.types) == 0 {
 				kind = -1
 			}
-			c[in.name()] = append(c[in.name()], p.typical(in, s, kind, index, kinds, date))
+			on := date
+			if in.file.RecordKey != "" {
+				on = kept
+			}
+			c[in.name()] = append(c[in.name()], p.typical(in, s, kind, index, kinds, on))
 		}
 	}
 	c = p.matchKeys(c, kinds)

@@ -58,7 +58,7 @@
 | 19 | [case 14](14/) |
 | 20 | [case 17](17/) |
 | 21 | not reached: `WS-POLMST-ﾅｼ` N, `MR-ｼﾞｭｳｼｮﾍﾝｺｳ` N, `WS-ﾘﾕｳ-ﾅｼ` Y, `MR-ｺｳｻﾞﾍﾝｺｳ` N, `MR-ｼﾒｲﾍﾝｺｳ` N, `MR-ｳｹﾄﾘﾆﾝﾍﾝｺｳ` N, `MR-ﾌｯｶﾂ` Y, `WS-POLMST-OK` Y, `WS-ﾘﾕｳ-ﾅｼ, again` Y, `WS-POLMST-OK, again` N |
-| 22 | [case 18](18/) |
+| 22 | [case 20](20/) |
 | 23 | [case 14](14/) |
 | 24 | not reached: `WS-POLMST-ﾅｼ` N, `MR-ｼﾞｭｳｼｮﾍﾝｺｳ` N, `WS-ﾘﾕｳ-ﾅｼ` Y, `MR-ｺｳｻﾞﾍﾝｺｳ` N, `MR-ｼﾒｲﾍﾝｺｳ` N, `MR-ｳｹﾄﾘﾆﾝﾍﾝｺｳ` N, `MR-ﾌｯｶﾂ` N, `MR-ﾄｸﾔｸｶｲﾔｸ` Y, `WS-POLMST-OK` Y, `WS-ﾘﾕｳ-ﾅｼ, again` Y, `WS-POLMST-OK, again` N |
 | 25 | [case 19](19/) |
@@ -92,17 +92,17 @@
 | 3 | [case 29](29/) |
 | 4 | [case 20](20/) |
 | 5 | [case 32](32/) |
-| 6 | [case 31](31/) |
-| 7 | [case 21](21/) |
+| 6 | [case 21](21/) |
+| 7 | [case 31](31/) |
 | 8 | [case 23](23/) |
-| 9 | [case 22](22/) |
-| 10 | [case 18](18/) |
+| 9 | [case 18](18/) |
+| 10 | [case 22](22/) |
 
 ### [ﾄｸﾔｸｶｲﾔｸ-RTN](../../../blueprints/gondwana/rules/GLD040.md#ﾄｸﾔｸｶｲﾔｸ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 22](22/) |
+| 1 | [case 18](18/) |
 | 2 | [case 13](13/) |
 | 3 | not reached, a file found to fail once open: `PM-ﾕｳｺｳ` Y, `WS-COVMST-ﾅｼ` N, `WS-COVMST-OK` N |
 | 4 | [case 13](13/) |
@@ -178,8 +178,8 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 18](18/) |
-| 2 | [case 18](18/) |
+| 1 | [case 20](20/) |
+| 2 | [case 20](20/) |
 | 3 | [case 01](01/) |
 
 ### [ｶｷｺﾐ-RTN](../../../blueprints/gondwana/rules/GLC050.md#ｶｷｺﾐ-rtn)
@@ -187,7 +187,7 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | not reached: `WS-ｵｰﾌﾟﾝﾏｴ` Y, `WS-PRMHST-OK` Y, `WS-ｵｰﾌﾟﾝｽﾞﾐ` Y, `WS-ｵｰﾌﾟﾝｽﾞﾐ AND (WS-PRMHST-OK OR WS-PRMHST-ｵﾜﾘ)` Y, `WS-PRMHST-OK, again` N |
-| 2 | [case 18](18/) |
+| 2 | [case 20](20/) |
 | 3 | not reached: `WS-ｵｰﾌﾟﾝﾏｴ` Y, `WS-PRMHST-OK` Y, `WS-ｵｰﾌﾟﾝｽﾞﾐ` Y, `WS-ｵｰﾌﾟﾝｽﾞﾐ AND (WS-PRMHST-OK OR WS-PRMHST-ｵﾜﾘ)` N, `WS-PRMHST-OK, again` N |
 | 4 | not reached: `WS-ｵｰﾌﾟﾝﾏｴ` Y, `WS-PRMHST-OK` N, `WS-ｵｰﾌﾟﾝｽﾞﾐ` N, `WS-ｵｰﾌﾟﾝｽﾞﾐ AND (WS-PRMHST-OK OR WS-PRMHST-ｵﾜﾘ)` N |
 | 5 | not reached: `WS-ｵｰﾌﾟﾝﾏｴ` N, `WS-PRMHST-OK` N, `WS-ｵｰﾌﾟﾝｽﾞﾐ` Y, `WS-ｵｰﾌﾟﾝｽﾞﾐ AND (WS-PRMHST-OK OR WS-PRMHST-ｵﾜﾘ)` Y |
@@ -200,5 +200,5 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 18](18/) |
+| 1 | [case 20](20/) |
 | 2 | [case 28](28/) |

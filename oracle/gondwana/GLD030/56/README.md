@@ -1,7 +1,8 @@
 # GLD030: case 56
 
-The run ended with return code 1.
+The run ended with return code 4.
 
 The first case to reach:
 
-- [GLD030, ﾎｼｮｳ-ﾊﾝﾃｲ-RTN, rule 7](../../../../blueprints/gondwana/rules/GLD030.md#ﾎｼｮｳ-ﾊﾝﾃｲ-rtn)
+- [GLD030, ﾘﾚｷ-ｹﾝｻ-RTN, in its loop, rule 2](../../../../blueprints/gondwana/rules/GLD030.md#ﾘﾚｷ-ｹﾝｻ-rtn-in-its-loop)
+- [GLD030, ﾘﾚｷ-ｹﾝｻ-RTN, in its loop, rule 4](../../../../blueprints/gondwana/rules/GLD030.md#ﾘﾚｷ-ｹﾝｻ-rtn-in-its-loop)

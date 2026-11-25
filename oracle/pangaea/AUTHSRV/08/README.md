@@ -1,7 +1,7 @@
 # AUTHSRV: case 08
 
-The run ended with return code 16.
+The run ended with return code 0.
 
 The first case to reach:
 
-- [AUTHSRV, 1000-INITIALIZE, rule 2](../../../../blueprints/pangaea/rules/AUTHSRV.md#1000-initialize)
+- [AUTHPUR, 1000-START-CARD-TOTALS, rule 2](../../../../blueprints/pangaea/rules/AUTHPUR.md#1000-start-card-totals)
