@@ -133,10 +133,12 @@ func (e *extractor) known(events []event, field string) (values []string, ok boo
 			}
 			return union(before, given), true, not
 		case ev.test != nil && ev.test.cond != nil:
-			if v, isValue := e.valueOfTest(ev.test, field); isValue && ev.test.outcome {
-				return []string{v}, true, not
-			} else if isValue {
-				not = append(not, v)
+			for _, f := range facts(ev.test.cond, ev.test.outcome) {
+				if values, isValue := e.valuesOfTest(f.cond, field); isValue && f.holds {
+					return values, true, not
+				} else if isValue {
+					not = append(not, values...)
+				}
 			}
 		}
 	}
@@ -179,24 +181,47 @@ func possible(values, not []string) []string {
 	})
 }
 
-// valueOfTest is the value a test compares a field with for equality, if
-// it is one: FIELD = literal, or a condition name of one value on it.
-func (e *extractor) valueOfTest(t *test, field string) (string, bool) {
-	c := t.cond
+// fact is a condition a test's outcome settles, and whether it holds.
+type fact struct {
+	cond  *cobol.Condition
+	holds bool
+}
+
+// facts are the conditions an outcome of a condition settles: itself, or
+// for an AND found true, or an OR found false, each of its parts, and
+// for a NOT, what it negates, the other way.
+func facts(c *cobol.Condition, holds bool) []fact {
+	switch {
+	case c.Op == "AND" && holds, c.Op == "OR" && !holds:
+		var all []fact
+		for _, part := range c.Parts {
+			all = append(all, facts(part, holds)...)
+		}
+		return all
+	case c.Op == "NOT":
+		return facts(c.Parts[0], !holds)
+	}
+	return []fact{{c, holds}}
+}
+
+// valuesOfTest are the values a condition finds a field to be one of when
+// it holds, and none of when it does not, if it is such a one: FIELD =
+// literal, or a condition name on the field, with its values.
+func (e *extractor) valuesOfTest(c *cobol.Condition, field string) ([]string, bool) {
 	switch c.Op {
 	case "=":
 		if c.Left.Name == field && isLiteral(c.Right) {
-			return c.Right.Text, true
+			return []string{c.Right.Text}, true
 		}
 		if c.Right.Name == field && isLiteral(c.Left) {
-			return c.Left.Text, true
+			return []string{c.Left.Text}, true
 		}
 	case "NAME":
-		if f, values, ok := e.names(c.Left.Text); ok && f == field && len(values) == 1 {
-			return values[0], true
+		if f, values, ok := e.names(c.Left.Text); ok && f == field && len(values) > 0 {
+			return values, true
 		}
 	}
-	return "", false
+	return nil, false
 }
 
 func isLiteral(op *cobol.Operand) bool { return op != nil && op.Name == "" && len(op.Refs) == 0 }
@@ -307,18 +332,53 @@ func (e *extractor) ordered(events []event, a, b string) bool {
 func isField(op *cobol.Operand) bool { return op != nil && op.Name != "" && op.Text == op.Name }
 
 // tested is the outcome of the path's latest test of a condition, if
-// nothing since may have changed what it refers to.
+// nothing since may have changed what it refers to, or only to values
+// that leave the outcome what it was: a balance found not above zero is
+// not above zero after a statement that may set it to zero.
 func (e *extractor) tested(events []event, c *cobol.Condition) (outcome, ok bool) {
 	condition, refs := c.String(), c.Refs()
+	var since []bool // the outcomes the values given since make
 	for _, ev := range slices.Backward(events) {
 		switch {
 		case ev.change != nil && e.knowledge.MayChange(*ev.change, refs):
-			return false, false
+			made, decided := e.makes(*ev.change, c)
+			if !decided {
+				return false, false
+			}
+			since = append(since, made)
 		case ev.test != nil && ev.test.cond != nil && ev.test.condition == condition:
-			return ev.test.outcome, true
+			return ev.test.outcome, !slices.Contains(since, !ev.test.outcome)
 		}
 	}
 	return false, false
+}
+
+// makes is the outcome a comparison of one field with a literal has for
+// every value a statement may give the field, if the statement only gives
+// it values and they all decide it the same way.
+func (e *extractor) makes(s cobol.Statement, c *cobol.Condition) (outcome, ok bool) {
+	var field string
+	switch {
+	case c.Left == nil || c.Right == nil:
+		return false, false
+	case isField(c.Left) && isLiteral(c.Right):
+		field = c.Left.Name
+	case isField(c.Right) && isLiteral(c.Left):
+		field = c.Right.Name
+	default:
+		return false, false
+	}
+	given, gives := e.gives(s, field)
+	if !gives {
+		return false, false
+	}
+	side := func(op *cobol.Operand) []string {
+		if isLiteral(op) {
+			return []string{op.Text}
+		}
+		return given
+	}
+	return agreeAll(side(c.Left), side(c.Right), func(a, b string) (bool, bool) { return compare(c.Op, a, b) })
 }
 
 // excludes reports whether a path knows a field not to have a literal's

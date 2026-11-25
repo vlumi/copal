@@ -7,7 +7,7 @@ The batch file ended with errorlevel 0.
 | Step | Program | Outcome | Rules reached |
 | --- | --- | --- | --: |
 | GLD010 | [GLD010](../../GLD010/) | RC=0000 | 27 of 99 |
-| GLD020 | [GLD020](../../GLD020/) | RC=0000 | 17 of 132 |
+| GLD020 | [GLD020](../../GLD020/) | RC=0000 | 17 of 127 |
 | GLD030 | [GLD030](../../GLD030/) | RC=0004 | 18 of 197 |
 | GLD040 | [GLD040](../../GLD040/) | RC=0004 | 17 of 105 |
 | GLD060 | [GLD060](../../GLD060/) | RC=0000 | 16 of 97 |

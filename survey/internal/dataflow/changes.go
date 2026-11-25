@@ -49,12 +49,26 @@ func (f Flow) Writers(s cobol.Statement, names []string) []cobol.Statement {
 	return writers
 }
 
+// changed are the items a statement writes that it may change: all of
+// them, but for a WRITE or a REWRITE with no FROM, which sends its record
+// to the file as it is and leaves it what it was.
+func (n *names) changed(s cobol.Statement, writes []string) []string {
+	if s.Verb != "WRITE" && s.Verb != "REWRITE" || len(s.Reads) > 0 {
+		return writes
+	}
+	return slices.DeleteFunc(slices.Clone(writes), func(w string) bool {
+		_, isRecord := n.files[w]
+		return isRecord
+	})
+}
+
 // runs visits the statements a statement runs, with the items each
 // writes: it, those nested in it, and those of the paragraphs it
 // performs, each paragraph once.
 func (f Flow) runs(s cobol.Statement, performed map[string]bool, visit func(n cobol.Statement, writes []string)) {
 	cobol.Walk([]cobol.Statement{s}, func(n cobol.Statement) {
 		_, writes := f.names.uses(n)
+		writes = f.names.changed(n, writes)
 		if n.Verb == "CALL" && f.callWrites != nil {
 			if called, known := f.callWrites(n); known {
 				writes = called
