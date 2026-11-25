@@ -16,8 +16,9 @@ import (
 // read in order leaves a record or the file's end, a read by key a record
 // or none of that key, a write the record written or, by key, a key the
 // file holds; and a rewrite or a delete of the record read, and a close,
-// only succeed. Any other status is the device's or the file handler's
-// doing, which the search does not make.
+// only succeed. An optional file opens whether it is there or not, where
+// the open is not to make it new. Any other status is the device's or the
+// file handler's doing, which the search does not make.
 func (u Unit) failsLater(t rules.Table, r rules.Rule) bool {
 	statements := statementsOf(u.source)
 	for _, f := range u.blueprint.Files {
@@ -43,7 +44,8 @@ func (u Unit) failsLater(t rules.Table, r rules.Rule) bool {
 			}
 			takes := func(v string) bool {
 				for _, i := range columns {
-					if held := u.holds(t.Tests[i].Condition, status, v); held == yes && r.Entries[i] == "N" || held == no && r.Entries[i] == "Y" {
+					settled := u.settledBefore(t, r, statements, i, status)
+					if held := u.holds(t.Tests[i].Condition, status, v, settled); held == yes && r.Entries[i] == "N" || held == no && r.Entries[i] == "Y" {
 						return false
 					}
 				}
@@ -121,8 +123,9 @@ func (u Unit) operations(step cobol.Statement, status *layout.Field) []cobol.Sta
 
 // madeBy lists the statuses a file's records can make a step leave: those
 // of the operations it runs, narrowed, after a loop, to those its UNTIL
-// ends on. It has no answer for a step that opens the file, which the
-// search does fail, or that sets the status any other way.
+// ends on. It has no answer for a step that opens a file that has to be
+// there, which the search does fail, or that sets the status any other
+// way.
 func (u Unit) madeBy(f blueprint.File, step cobol.Statement, status *layout.Field) ([]string, bool) {
 	var made []string
 	for _, s := range u.operations(step, status) {
@@ -136,6 +139,8 @@ func (u Unit) madeBy(f blueprint.File, step cobol.Statement, status *layout.Fiel
 			statuses = []string{"00", "22"}
 		case s.Verb == "WRITE", s.Verb == "REWRITE", s.Verb == "DELETE", s.Verb == "CLOSE":
 			statuses = []string{"00"}
+		case s.Verb == "OPEN" && f.Optional && !opensNew(s, f):
+			statuses = []string{"00", "05"}
 		default:
 			return nil, false
 		}
@@ -146,9 +151,15 @@ func (u Unit) madeBy(f blueprint.File, step cobol.Statement, status *layout.Fiel
 		}
 	}
 	if step.Verb == "PERFORM" && step.Condition != nil {
-		made = slices.DeleteFunc(made, func(v string) bool { return u.holds(step.Condition, status, v) == no })
+		made = slices.DeleteFunc(made, func(v string) bool { return u.holds(step.Condition, status, v, nil) == no })
 	}
 	return made, len(made) > 0
+}
+
+// opensNew reports whether an OPEN opens a file for output, to make it
+// new, which fails where it cannot be made.
+func opensNew(s cobol.Statement, f blueprint.File) bool {
+	return slices.ContainsFunc(s.Files, func(ref cobol.FileRef) bool { return ref.Name == f.Name && ref.Mode == "OUTPUT" })
 }
 
 // held is whether a condition holds: yes, no, or unknown, for one that
@@ -161,9 +172,45 @@ const (
 	no
 )
 
+// settledBefore gives what a rule's other columns settle of the
+// conditions a column tests beside the status: the outcome the rule has
+// for a condition it tested before, with nothing since that may have
+// changed what it refers to. A switch found on, tested again with the
+// status, is still on.
+func (u Unit) settledBefore(t rules.Table, r rules.Rule, statements map[cobol.Pos]cobol.Statement, column int, status *layout.Field) func(*cobol.Condition) held {
+	testing := func(c *cobol.Condition) int {
+		return slices.IndexFunc(r.Steps, func(pos cobol.Pos) bool { return tests(statements[pos], c) })
+	}
+	at := testing(t.Tests[column].Condition)
+	return func(c *cobol.Condition) held {
+		if slices.ContainsFunc(c.Refs(), func(ref string) bool { return u.item(ref) == status.Name }) {
+			return unknown
+		}
+		for j, entry := range r.Entries {
+			before := t.Tests[j].Condition
+			if j == column || entry == "" || before == nil || t.Tests[j].Time > 1 || before.String() != c.String() {
+				continue
+			}
+			from := testing(before)
+			if from < 0 || from >= at || slices.ContainsFunc(r.Steps[from+1:at], func(pos cobol.Pos) bool {
+				return u.flow.MayChange(statements[pos], c.Refs())
+			}) {
+				continue
+			}
+			return map[string]held{"Y": yes, "N": no}[entry]
+		}
+		return unknown
+	}
+}
+
 // holds tells whether a condition holds when a file's status is a value,
-// as far as the status alone tells.
-func (u Unit) holds(c *cobol.Condition, status *layout.Field, v string) held {
+// as far as the status tells, and what is settled of its other parts.
+func (u Unit) holds(c *cobol.Condition, status *layout.Field, v string, settled func(*cobol.Condition) held) held {
+	if settled != nil {
+		if known := settled(c); known != unknown {
+			return known
+		}
+	}
 	is := func(literals ...string) held {
 		if slices.ContainsFunc(literals, func(lit string) bool { return strings.Trim(lit, `'"`) == v }) {
 			return yes
@@ -181,11 +228,11 @@ func (u Unit) holds(c *cobol.Condition, status *layout.Field, v string) held {
 			return is(c.Right.Text)
 		}
 	case "NOT":
-		return map[held]held{yes: no, no: yes}[u.holds(c.Parts[0], status, v)]
+		return map[held]held{yes: no, no: yes}[u.holds(c.Parts[0], status, v, settled)]
 	case "AND", "OR":
 		parts := make([]held, len(c.Parts))
 		for i, part := range c.Parts {
-			parts[i] = u.holds(part, status, v)
+			parts[i] = u.holds(part, status, v, settled)
 		}
 		decides, other := no, yes // a part that is no settles an AND
 		if c.Op == "OR" {
