@@ -9,20 +9,20 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | [case 03](03/) |
-| 2 | [case 06](06/) |
+| 2 | [case 05](05/) |
 | 3 | [case 01](01/) |
 
 ### [ｵｰﾌﾟﾝ-ｹﾝｻ-RTN](../../../blueprints/gondwana/rules/GLD070.md#ｵｰﾌﾟﾝ-ｹﾝｻ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 07](07/) |
-| 2 | [case 08](08/) |
-| 3 | [case 09](09/) |
-| 4 | [case 10](10/) |
-| 5 | [case 11](11/) |
-| 6 | [case 12](12/) |
-| 7 | [case 13](13/) |
+| 1 | [case 06](06/) |
+| 2 | [case 07](07/) |
+| 3 | [case 08](08/) |
+| 4 | [case 09](09/) |
+| 5 | [case 10](10/) |
+| 6 | [case 11](11/) |
+| 7 | [case 12](12/) |
 | 8 | [case 01](01/) |
 
 ### [LONREQ-ﾖﾐｺﾐ-RTN](../../../blueprints/gondwana/rules/GLD070.md#lonreq-ﾖﾐｺﾐ-rtn)
@@ -44,18 +44,18 @@
 | 5 | [case 33](33/) |
 | 6 | [case 04](04/) |
 | 7 | [case 04](04/) |
-| 8 | [case 05](05/) |
+| 8 | [case 14](14/) |
 | 9 | not reached: `WS-POLMST-ﾅｼ` N, `LR-ｶｼﾂｹ` N, `WS-ﾘﾕｳ-ﾅｼ` Y, `LR-ﾍﾝｻｲ` N, `WS-POLMST-OK` Y, `WS-ﾘﾕｳ-ﾅｼ, again` Y |
-| 10 | [case 14](14/) |
+| 10 | [case 13](13/) |
 
 ### [ｹﾝｻ-RTN](../../../blueprints/gondwana/rules/GLD070.md#ｹﾝｻ-rtn)
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 14](14/) |
-| 2 | [case 15](15/) |
-| 3 | [case 05](05/) |
-| 4 | [case 05](05/) |
+| 1 | [case 13](13/) |
+| 2 | [case 14](14/) |
+| 3 | [case 17](17/) |
+| 4 | [case 17](17/) |
 | 5 | [case 04](04/) |
 
 ### [ｹﾞﾝﾄﾞ-RTN](../../../blueprints/gondwana/rules/GLD070.md#ｹﾞﾝﾄﾞ-rtn)
@@ -65,7 +65,7 @@
 | 1 | [case 23](23/) |
 | 2 | [case 04](04/) |
 | 3 | [case 33](33/) |
-| 4 | [case 17](17/) |
+| 4 | [case 16](16/) |
 | 5 | [case 04](04/) |
 
 ### [ﾊﾝｴｲ-RTN](../../../blueprints/gondwana/rules/GLD070.md#ﾊﾝｴｲ-rtn)
@@ -168,7 +168,7 @@
 | --: | --- |
 | 1 | [case 04](04/) |
 | 2 | [case 33](33/) |
-| 3 | [case 17](17/) |
+| 3 | [case 16](16/) |
 
 ### [ﾋﾜﾘ-RTN](../../../blueprints/gondwana/rules/GLC040.md#ﾋﾜﾘ-rtn)
 
@@ -185,7 +185,7 @@
 | --: | --- |
 | 1 | [case 04](04/) |
 | 2 | [case 23](23/) |
-| 3 | [case 16](16/) |
+| 3 | [case 15](15/) |
 
 ### [ﾖﾐｺﾐ-RTN](../../../blueprints/gondwana/rules/GLC030.md#ﾖﾐｺﾐ-rtn)
 

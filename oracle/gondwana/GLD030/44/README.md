@@ -1,10 +1,9 @@
 # GLD030: case 44
 
-The run ended with return code 4.
+The run ended with return code 16.
+
+CSVTB-F is missing, so opening it fails.
 
 The first case to reach:
 
-- [GLD030, ｼﾊﾗｲ-RTN, rule 14](../../../../blueprints/gondwana/rules/GLD030.md#ｼﾊﾗｲ-rtn)
-- [GLD030, ｶｲﾔｸ-RTN, rule 2](../../../../blueprints/gondwana/rules/GLD030.md#ｶｲﾔｸ-rtn)
-- [GLD030, ﾊｲﾄｳ-ｶｼﾂｹ-ｼﾜｹ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLD030.md#ﾊｲﾄｳ-ｶｼﾂｹ-ｼﾜｹ-rtn)
-- [GLC030, ｹｲｻﾝ-RTN, rule 3](../../../../blueprints/gondwana/rules/GLC030.md#ｹｲｻﾝ-rtn)
+- [GLD030, ﾒﾝｾｷ-RTN, rule 1](../../../../blueprints/gondwana/rules/GLD030.md#ﾒﾝｾｷ-rtn)

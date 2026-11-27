@@ -37,9 +37,9 @@
 | Rule | Reached by |
 | --: | --- |
 | 1 | not reached: `CA-BUSINESS` Y, `WS-FEE > ZERO` Y |
-| 2 | [case 03](03/) |
+| 2 | [case 09](09/) |
 | 3 | [case 02](02/) |
-| 4 | [case 09](09/) |
+| 4 | [case 03](03/) |
 
 ## OVLBIZ
 
@@ -49,7 +49,7 @@
 
 | Rule | Reached by |
 | --: | --- |
-| 1 | [case 09](09/) |
+| 1 | [case 03](03/) |
 | 2 | [case 02](02/) |
 | 3 | [case 10](10/) |
 | 4 | [case 05](05/) |

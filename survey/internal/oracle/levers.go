@@ -17,9 +17,9 @@ import (
 // give or take one, or a change to an input's records: none at all, one
 // of each type more, none of one type, those of one type of none, or as
 // many as a count, or one more under each key of several parts; or the
-// value of a field of another input's record unlike its others, in every
-// record or in one more; or a value in the last record alone, of records
-// that differ; or the input file failed.
+// value of a field of another input's record unlike its first, in every
+// record or in one more; or a value in the last record that has the
+// field alone, of records that differ; or the input file failed.
 type lever struct {
 	input  string
 	field  *layout.Field
@@ -982,24 +982,32 @@ func (l lever) apply(p *program, c Case) (Case, bool) {
 		case copyField:
 			v, ok = p.valueOf(next[l.from.input], l.from, l.field, l.delta)
 		case copyAnother, addAnother:
-			if ok = len(records) > 0 && p.another(next, l.from); ok {
-				others := next[l.from.input]
-				v, ok = p.valueOf(others[len(others)-1:], l.from, l.field, 0)
+			var at int
+			if at, ok = p.another(next, l.from); ok {
+				v, ok = p.valueOf(next[l.from.input][at:at+1], l.from, l.field, 0)
 			}
 		}
 		if !ok {
 			return nil, false
 		}
-		only := -1
+		only, lastWith := -1, -1
+		for i, r := range records {
+			if s.has(in, r, l.field) {
+				lastWith = i
+			}
+		}
 		switch {
+		case (l.change == addAnother || l.last) && lastWith < 0:
+			return nil, false
 		case l.change == addAnother:
-			records = append(records, slices.Clone(records[len(records)-1]))
-			next[l.input], only = records, len(records)-1
+			only = lastWith + 1
+			records = slices.Insert(records, only, slices.Clone(records[lastWith]))
+			next[l.input] = records
 		case l.last:
-			if !s.lastDiffers(in, records) {
+			if !s.lastDiffers(in, records[:lastWith+1]) {
 				return nil, false
 			}
-			only = len(records) - 1
+			only = lastWith
 		}
 		changed := false
 		for i, r := range records {
@@ -1018,7 +1026,7 @@ func (l lever) apply(p *program, c Case) (Case, bool) {
 			}
 			records[i] = r
 		}
-		if !changed || l.change == addAnother && !p.distinct(in, records[:only], records[only]) {
+		if !changed || l.change == addAnother && !p.distinct(in, slices.Concat(records[:only], records[only+1:]), records[only]) {
 			return nil, false
 		}
 		if l.also != nil {

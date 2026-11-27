@@ -32,17 +32,18 @@ func TestAnother(t *testing.T) {
 	p, in := products("")
 	code := target{input: "PRODUCTS", field: find(in.root, "PR-CODE")}
 	c := Case{"PRODUCTS": {[]byte("A 1 ")}}
-	if !p.another(c, code) {
-		t.Fatal("no other record")
+	if at, ok := p.another(c, code); !ok || at != 1 {
+		t.Fatalf("another record at %d, %v, want at 1", at, ok)
 	}
 	want := [][]byte{[]byte("A 1 "), []byte("B 2T")}
 	if !slices.EqualFunc(c["PRODUCTS"], want, slices.Equal) {
 		t.Errorf("records %q, want %q", c["PRODUCTS"], want)
 	}
-	if !p.another(c, code) || len(c["PRODUCTS"]) != 2 {
+	if at, ok := p.another(c, code); !ok || at != 1 || len(c["PRODUCTS"]) != 2 {
 		t.Errorf("records %q, want the two that differ kept", c["PRODUCTS"])
 	}
-	if empty := (Case{"PRODUCTS": {[]byte("  1 ")}}); p.another(empty, code) {
+	empty := Case{"PRODUCTS": {[]byte("  1 ")}}
+	if _, ok := p.another(empty, code); ok {
 		t.Errorf("records %q, of a code with none after it", empty["PRODUCTS"])
 	}
 }
@@ -52,10 +53,10 @@ func TestAnother(t *testing.T) {
 func TestAnotherOfTheSameKey(t *testing.T) {
 	p, in := products("PR-CODE")
 	c := Case{"PRODUCTS": {[]byte("A 1 ")}}
-	if p.another(c, target{input: "PRODUCTS", field: find(in.root, "PR-KIND")}) {
+	if _, ok := p.another(c, target{input: "PRODUCTS", field: find(in.root, "PR-KIND")}); ok {
 		t.Errorf("records %q, two of one key", c["PRODUCTS"])
 	}
-	if !p.another(c, target{input: "PRODUCTS", field: find(in.root, "PR-CODE")}) {
+	if _, ok := p.another(c, target{input: "PRODUCTS", field: find(in.root, "PR-CODE")}); !ok {
 		t.Error("no record of another key")
 	}
 }
@@ -85,5 +86,30 @@ func TestLastDiffers(t *testing.T) {
 		if got := tt.s.lastDiffers(in, records); got != tt.want {
 			t.Errorf("%s: %v, want %v", tt.name, got, tt.want)
 		}
+	}
+}
+
+// A record is added after the last that has the field, before a trailer
+// that has none, and the first record that differs from the first is the
+// other one, not the last.
+func TestAnotherAmongTypes(t *testing.T) {
+	p, in := products("")
+	kind := find(in.root, "PR-KIND")
+	class := find(in.root, "PR-CLASS")
+	p.shapes["PRODUCTS"] = shape{discriminator: kind, types: []value{number(1), number(9)},
+		variants: map[*layout.Field]int{class: 0}}
+	c := Case{"PRODUCTS": {[]byte("A 1 "), []byte("  9 ")}}
+	at, ok := p.another(c, target{input: "PRODUCTS", field: class})
+	if ok {
+		t.Fatalf("a record at %d for a class with none after it", at)
+	}
+	c = Case{"PRODUCTS": {[]byte("A 1S"), []byte("  9 ")}}
+	want := [][]byte{[]byte("A 1S"), []byte("A 1T"), []byte("  9 ")}
+	if at, ok := p.another(c, target{input: "PRODUCTS", field: class}); !ok || at != 1 || !slices.EqualFunc(c["PRODUCTS"], want, slices.Equal) {
+		t.Errorf("another record at %d, %v, in %q, want %q", at, ok, c["PRODUCTS"], want)
+	}
+	c = Case{"PRODUCTS": {[]byte("A 1S"), []byte("A 1T"), []byte("A 1U"), []byte("  9 ")}}
+	if at, ok := p.another(c, target{input: "PRODUCTS", field: class}); !ok || at != 1 || len(c["PRODUCTS"]) != 4 {
+		t.Errorf("another record at %d, %v, of %d, want the second of four", at, ok, len(c["PRODUCTS"]))
 	}
 }

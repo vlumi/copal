@@ -7,30 +7,42 @@ import (
 	"github.com/vlumi/cobolith/layout"
 )
 
-// another makes sure the last record of an input holds another value in a
-// field than its first, and reports whether it does: if they hold the
-// same, it adds a record unlike the others, a second product for a rider
-// to name beside the one the policy is of.
-func (p *program) another(c Case, t target) bool {
-	in := p.input(t.input)
+// another finds the first record of an input that holds another value
+// in a field than the first that has the field: a second product for a
+// rider to name beside the one the policy is of, a second policy for a
+// payment. Where they all hold the same, it adds one unlike the others
+// after the last of them. It gives the record's place among the input's.
+func (p *program) another(c Case, t target) (int, bool) {
+	in, s := p.input(t.input), p.shapes[t.input]
 	records := c[t.input]
-	if len(records) == 0 || t.part != (part{}) {
-		return false
+	if t.part != (part{}) {
+		return 0, false
 	}
-	last := records[len(records)-1]
-	if !bytes.Equal(bytesOf(in, records[0], t.field), bytesOf(in, last, t.field)) {
-		return true
+	first, last := -1, -1
+	for i, r := range records {
+		if !s.has(in, r, t.field) {
+			continue
+		}
+		if first < 0 {
+			first = i
+		}
+		if last = i; !bytes.Equal(bytesOf(in, records[first], t.field), bytesOf(in, r, t.field)) {
+			return i, true
+		}
 	}
-	more := slices.Clone(last)
+	if first < 0 {
+		return 0, false
+	}
+	more := slices.Clone(records[last])
 	if !p.next(in, more, t.field) {
-		return false
+		return 0, false
 	}
 	p.vary(in, more, t.field)
 	if !p.distinct(in, records, more) {
-		return false
+		return 0, false
 	}
-	c[t.input] = append(records, more)
-	return true
+	c[t.input] = slices.Insert(records, last+1, more)
+	return last + 1, true
 }
 
 func bytesOf(in input, r []byte, f *layout.Field) []byte {
